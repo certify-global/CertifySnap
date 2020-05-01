@@ -676,6 +676,9 @@ public class Util {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, out);
         byte[] imageBytes = out.toByteArray();
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        options.inSampleSize = 3;
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
