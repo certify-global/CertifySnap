@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/splash_white"
+    android:layout_height="match_parent">
+
+    <!--<include layout="@layout/titlebar" />-->
+
+    <ImageView
+        android:id="@+id/img_telpo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/final_logo"
+        android:visibility="visible"/>
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:text="Welcome to \n CERTIFY"
+    android:textSize="30dp"
+    android:textColor="@color/dark_text_color"
+    android:gravity="bottom|center"
+    android:layout_marginBottom="40dp">
+
+</TextView>
+
+</RelativeLayout>

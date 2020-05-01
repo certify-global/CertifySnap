@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/free_dialog_bg"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:text="Please select Date"
+            android:textColor="@color/lilyblue"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:text="Please select the date range of the exported data. The location of the exported file is /sdcard/offline/record/"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Start Time(year/month): "/>
+
+            <EditText
+                android:id="@+id/record_select_startyear"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:inputType="number"
+                android:maxLength="4"
+                android:hint="2020"
+                android:text="2020"
+                android:gravity="center"
+                android:layout_marginLeft="30dp" />
+
+            <EditText
+                android:id="@+id/record_select_startmonth"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
+                android:hint="04"
+                android:text="04"
+                android:gravity="center"
+                android:layout_marginLeft="5dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="End Time(year/month): "/>
+
+            <EditText
+                android:id="@+id/record_select_endyear"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:inputType="number"
+                android:maxLength="4"
+                android:hint="2020"
+                android:text="2020"
+                android:gravity="center"
+                android:layout_marginLeft="30dp" />
+
+            <EditText
+                android:id="@+id/record_select_endmonth"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:inputType="number"
+                android:maxLength="2"
+                android:hint="05"
+                android:text="05"
+                android:gravity="center"
+                android:layout_marginLeft="5dp" />
+
+        </LinearLayout>
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="10dp"
+            android:background="#E4E4E4" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/record_select_confirm"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center"
+                android:lines="1"
+                android:text="Confirm"
+                android:textColor="@color/lilyblue"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="1px"
+                android:layout_height="match_parent"
+                android:background="#E4E4E4" />
+
+
+            <Button
+                android:id="@+id/record_select_cancel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center"
+                android:lines="1"
+                android:text="Cancel"
+                android:textColor="@color/lilyblue"
+                android:textSize="16sp" />
+
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

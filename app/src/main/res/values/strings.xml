@@ -1,0 +1,203 @@
+<resources>
+    <string name="app_name">Certify</string>
+
+    <!--settings、choose function page-->
+    <string name="page_preview">face attributes detect(video)</string>
+    <string name="page_ir_preview">ir liveness detect(video)</string>
+    <string name="page_face_recognize">face compare 1:n(video vs database,rgb liveness detect)</string>
+    <string name="page_ir_face_recognize">face compare 1:n(video vs database,ir liveness detect)</string>
+    <string name="page_single_image">face attributes detect(image)</string>
+    <string name="page_multi_image">face compare 1:n(image vs image)</string>
+    <string name="page_face_manage">face manage</string>
+    <string name="get_device_finger_failed">get device finger failed, code is: %d</string>
+    <string name="choose_detect_degree">choose video-mode detect degree</string>
+    <string name="copy_device_fingerprint">copy device fingerprint</string>
+    <string name="device_fingerprint_copied">device fingerprint：：\n%s\n copied</string>
+    <string name="active_engine">active engine</string>
+    <string name="active_success">active success</string>
+    <string name="already_activated">already activated</string>
+    <string name="active_failed">active failed,code is %d</string>
+    <string name="library_not_found">library not found, please check if you put .so files into the project directory app\\src\\main\\jniLibs</string>
+    <string name="ft_op_0">only detect 0 degree in video mode</string>
+    <string name="ft_op_90">only detect 90 degree in video mode</string>
+    <string name="ft_op_180">only detect 180 degree in video mode</string>
+    <string name="ft_op_270">only detect 270 degree in video mode</string>
+    <string name="ft_op_all">detect all degrees in video mode</string>
+    <string name="clear_faces">clear faces</string>
+    <string name="no_face_need_to_delete">no face need to delete</string>
+    <string name="notification">notification</string>
+    <string name="confirm_delete">delete the images , face features and clear database ?</string>
+    <string name="ok">OK</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="registering_please_wait">registering,please wait</string>
+
+    <!--face attributes detect(image) page-->
+    <string name="start_process">process</string>
+    <string name="choose_local_image">choose local image</string>
+    <string name="processing">processing</string>
+
+    <!--face compare 1:n(image vs image) page-->
+    <string name="choose_main_image">choose main image</string>
+    <string name="add_item_image">add item image</string>
+    <string name="notice_choose_main_img">please choose main image first</string>
+    <string name="compare_failed">compare failed!code is %d</string>
+
+    <!--global get picture failed notification-->
+    <string name="get_picture_failed">failed to get picture!</string>
+
+    <!--global permission denied notification-->
+    <string name="permission_denied">permission denied!</string>
+
+    <!--global init failed notification-->
+    <string name="init_failed">init failed,code is %d</string>
+    <string name="engine_not_initialized">engine not initialized! code is %d</string>
+
+    <!--single/dual camera register&recognize page-->
+    <string name="register">register</string>
+    <string name="switch_camera">switch camera</string>
+    <string name="switch_camera_failed">switch camera failed</string>
+    <string name="notice_change_detect_degree">camera switched, if no face detected, please change face detect degree in homepage</string>
+    <string name="recognize_failed_notice">DENIED:%s</string>
+    <string name="recognize_success_notice">PASS:%s</string>
+    <string name="low_confidence_level">face low confidence level</string>
+    <string name="specific_engine_init_failed">%s init failed, code is:%d</string>
+    <string name="liveness_detect">liveness detect</string>
+    <string name="camera_rgb">RGB CAMERA</string>
+    <string name="camera_ir">IR CAMERA</string>
+    <string name="camera_rgb_preview_size">RGB CAMERA\n%dx%d</string>
+    <string name="camera_ir_preview_size">IR CAMERA\n%dx%d</string>
+    <string name="camera_error_notice">\npossible reason:open two cameras at the same time is not allowed on this device</string>
+    <string name="draw_ir_rect_mirror_horizontal">draw IR face rect mirror horizontal</string>
+    <string name="draw_ir_rect_mirror_vertical">draw IR face rect mirror vertical</string>
+
+    <string name="camera_type">Camera Type: </string>
+    <string name="camera_type_0">Single Camera</string>
+    <string name="camera_type_1">Binocular Camera</string>
+    <string name="face_Angle">Face Angle: </string>
+    <string name="living_type">Living Type: </string>
+    <string name="living_type_0">No</string>
+    <string name="living_type_1">Yes</string>
+    <string name="orientation">Orientation: </string>
+
+    <string name="txt_data_management_title">Data Management</string>
+    <string name="txt_initialize_title">Initialization</string>
+    <string name="txt_initialize">initialize</string>
+    <string name="txt_initialize_download">download</string>
+    <string name="txt_initialize_process">process</string>
+    <string name="txt_initialize_import">import</string>
+    <string name="toast_initialize_download_no_data">No data to download,please import the data first</string>
+    <string name="toast_initialize_download">You have downloaded all the data</string>
+    <string name="txt_initialize_download_fail">Download stopped, please try again</string>
+    <string name="dialog_initialize_wait">Processing...pls wait for a while</string>
+    <string name="txt_initialize_result_item">The result of initialization</string>
+    <string name="txt_data_clear_all">Clear all data</string>
+    <string name="txt_initialize_delete">clear</string>
+    <string name="txt_initialize_result">You should download the data first,and then process and import</string>
+    <string name="txt_initialize_get_list_wait_dialog_result">Get the data successfully, start downloading pictures</string>
+    <string name="txt_initialize_processing_data">Processing data now</string>
+    <string name="txt_initialize_process_data_wait_dialog_title">The result of process pictures</string>
+    <string name="txt_initialize_import_data_wait_dialog_title">The result of import data to database</string>
+    <string name="txt_initialize_import_data_wait_dialog_result">Database initialization completed</string>
+
+    <string name="txt_update_title">Update</string>
+    <string name="txt_update_auto">Auto update</string>
+    <string name="txt_update_manual">Manual update</string>
+    <string name="txt_update_item">update</string>
+    <string name="txt_update_delete">delete</string>
+    <string name="txt_update_wait_dialog_title">The result of update</string>
+    <string name="txt_update_delete_wait_dialog_title">The result of delete</string>
+    <string name="txt_update_wait_dialog_success">Update success</string>
+    <string name="txt_update_wait_dialog_failed">Update failed</string>
+    <string name="txt_update_wait_dialog_network_error">Network error,update failed</string>
+    <string name="txt_update_delete_wait_dialog_success">Delete success</string>
+    <string name="txt_update_delete_wait_dialog_failed">Delete failed</string>
+    <string name="txt_update_delete_wait_dialog_network_error">Network error,delete failed</string>
+    <string name="txt_update_no_data">No data to update</string>
+    <string name="txt_update_delete_no_data">No data to delete</string>
+
+
+    <string name="led_switch">LED Switch: </string>
+    <string name="Led_On">LED On</string>
+    <string name="Led_Off">LED Off</string>
+
+    <string name="StatusBar">StatusBar: </string>
+    <string name="statusbar_show">Show</string>
+    <string name="statusbar_hide">Hide</string>
+
+    <string name="NavigationBar">NavigationBar: </string>
+    <string name="navigation_show">Show</string>
+    <string name="navigation_hide">Hide</string>
+
+    <string name="RelayTime">Relay Time: </string>
+    <string name="relayinfo">pls input a time!</string>
+    <string name="time">(s)</string>
+
+    <string name="text_batchimport">batch import</string>
+    <string name="text_batchimporthint">Note:\nTo batch import, you need to put the picture file in this path.\n\n Path: /sdcard/offline/register/ \n File format: .jpg \n Name format:\n peter_12345678901_2020-04-09-12-10-00.jpg\n Note that the third parameter time is the validity time.</string>
+    <string name="toast_Dirnotexist">Folder does not exist, please create folder /sdcard/offline/register/</string>
+    <string name="toast_filenotexist">No files found. Please add at least one picture file to this folder</string>
+    <string name="toast_translateBitmapfail">Register failed! Fail to translate bitmap!</string>
+    <string name="toast_batch_translateBitmapfail">Translate failed! Fail to translate bitmap!</string>
+    <string name="toast_batch_fileformaterror">The file name format is not correct, please check!</string>
+
+    <string name="text_nfc_activatecard">Activate Card</string>
+    <string name="text_nfc_title">Activate Card</string>
+    <string name="toast_tempservice_notinstall">not install TempatureServices.apk!pls install it!</string>
+    <string name="toast_guide_permission">Please give permission manually!</string>
+    <string name="toast_init_deleteinfo"> faces cleared!</string>
+
+    <string name="toast_init_batchtotal">total count =&#160;</string>
+    <string name="toast_init_batchsuccess">success count =&#160;</string>
+    <string name="toast_init_batchfailed">failed count =&#160;</string>
+    <string name="toast_init_batchresult">failed images are in directory: /sdcard/offline/failed/</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="welcome">Welcome&#160;</string>
+    <string name="Unrecognized">Unrecognized</string>
+
+    <string name="toast_rgbir_pwderror">Password not correct!</string>
+    <string name="toast_ocrnotinstall">API moudle is not install</string>
+    <string name="text_notpasstime">Non-passage time,Please contact the administrator!</string>
+    <string name="text_nopermission">No Permission,Please contact the administrator!</string>
+    <string name="text_expiredtime">It is beyond the date of expiry,Please contact the administrator!</string>
+    <string name="text_passcodeexpired">Passcode has expired</string>
+    <string name="centigrade">&#160;°F</string>
+    <string name="temperature_normal">Temperature Normal:&#160;</string>
+    <string name="temperature_anormaly">Temperature High:&#160;</string>
+    <string name="temperature_retry">Trying to get the temperature, please wait...</string>
+    <string name="temperature_failresult">Failed to get temperature!</string>
+
+    <string name="ExtractCode">ExtractCode:</string>
+    <string name="ProcessCode">ProcessCode:</string>
+    <string name="VISITOR">VISITOR </string>
+
+
+    <string name="toast_manage_photoerror">This photo have some error,pls check the photo!</string>
+    <string name="toast_manage_dateerror">Date format or length is wrong, please check!</string>
+    <string name="toast_manage_notfullinfo">pls input full information!</string>
+    <string name="SetDate">Set Date</string>
+    <string name="SetTime">Set Time</string>
+    <string name="delete">Delete</string>
+    <string name="delete_wait">Delete! pls wait...</string>
+    <string name="Register">Register</string>
+    <string name="register_wait">Register! pls wait...</string>
+    <string name="register_takephoto">pls click image and take a face photo!</string>
+    <string name="Register_success">Register Success!</string>
+    <string name="register_failed">Register failed! Pls try again!</string>
+    <string name="register_failprocess">Register failed! Fail to process bitmap!</string>
+    <string name="Update_success">Update Success!</string>
+    <string name="Update_failed">Update failed! Pls try again!</string>
+    <string name="Delete_success">Delete Success!</string>
+    <string name="Delete_failed">Register failed! Pls try again!</string>
+    <string name="camera_temp">Temperature</string>
+    <string name="camera_face">Temperature and Face</string>
+    <string name="work_flow">Work Flow</string>
+    <string name="thermal_scan">THERMAL SCAN</string>
+    <string name="network_error">Internet is not available.Please check your internet connection!</string>
+    <string name="SetTemp">Set Temperature</string>
+    <string name="upload_logo">Upload Logo</string>
+    <string name="acces_password">Access Password</string>
+    <string name="endpoint">Endpoint URL</string>
+
+</resources>

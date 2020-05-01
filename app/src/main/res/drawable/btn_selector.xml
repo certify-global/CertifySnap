@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+       <item android:state_pressed="true"> <!-- pressed the button status -->
+        <shape>
+            <!-- 实心 -->
+            <solid android:color="#EBEBEB" />
+            <!-- 圆角 -->
+            <corners android:radius="5dp" />
+        </shape>
+    </item>
+    <item android:state_focused="true"> <!-- get the focus button sttaus -->
+        <shape>
+            <!-- 实心 -->
+            <solid android:color="#EBEBEB" />
+            <!-- 圆角 -->
+            <corners android:radius="5dp" />
+        </shape>
+    </item>
+    <item> <!-- no focus the button status(the normal status button) -->
+        <shape>
+            <!-- 实心 -->
+            <solid android:color="#ffffff" />
+            <!-- 圆角 -->
+            <corners android:radius="5dp" />
+        </shape>
+    </item>
+
+</selector>

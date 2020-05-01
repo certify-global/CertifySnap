@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/layout_dialog_initialize_wait"
+    android:padding="20dp">
+
+        <LinearLayout
+            android:id="@+id/layout_initialize_wait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true">
+
+                <ImageView
+                    android:id="@+id/img_initialize_wait"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@mipmap/telpoxuanzhuan" />
+
+                <TextView
+                    android:id="@+id/txt_initialize_wait_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:paddingStart="10dp"
+                    android:textSize="23sp"
+                    android:textColor="@color/skyblue"
+                    android:text="@string/dialog_initialize_wait"
+                    android:gravity="center"/>
+
+        </LinearLayout>
+
+
+
+        <ProgressBar
+            style="?android:progressBarStyleHorizontal"
+            android:id="@+id/progress_download"
+            android:layout_below="@id/layout_initialize_wait"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+
+        <TextView
+            android:id="@+id/txt_initialize_result_dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_below="@id/progress_download"
+            android:textSize="20sp"
+            android:text="The result of download data"
+            android:textColor="@color/skyblue"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/txt_initialize_result_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_initialize_result_dialog_title"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            android:text="Result"
+            android:textColor="@color/skyblue"
+            android:gravity="center"
+            />
+
+        <Button
+            android:id="@+id/btn_wait_dialog_ok"
+            android:layout_below="@id/txt_initialize_result_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="20dp"
+            android:onClick="dismissWaitingDialog"
+            android:text="ok"
+            android:background="@drawable/btn_shape"/>
+
+
+</RelativeLayout>
