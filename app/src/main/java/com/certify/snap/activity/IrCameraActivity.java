@@ -124,6 +124,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
 import com.certify.snap.R;
 
 public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, JSONObjectCallback, RecordTemperatureCallback {
@@ -232,7 +233,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public static final String WALLPAPER_CHANGE = "com.telpo.telpo_face_system_wallpaper";
 
     private volatile byte[] rgbData;
-    private byte[] byteData;
     private volatile byte[] irData;
     private AnimatorSet animatorSet;
     private boolean tackPickRgb = false;
@@ -291,7 +291,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             JSONObject json1 = null;
             try {
                 String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-          //      json1 = new JSONObject(formatedString.replace("\\", ""));
+                //      json1 = new JSONObject(formatedString.replace("\\", ""));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -791,7 +791,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     temperature_image.setVisibility(View.VISIBLE);
                                                     //  rl_header.setVisibility(View.VISIBLE);
                                                     temperature_image.setImageBitmap(data.getBitmap());
-                                                    //temperature_image.setImageBitmap(da);
+                                                    //                        //temperature_image.setImageBitmap(da);
                                                 }
                                             }
                                         });
@@ -855,13 +855,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         });
         if (retrynumber < 3) {
-            Logger.error(Util.getSNCode()+"retry temperature---", retrytemp + "-" + tempretrynum);
+            Logger.error(Util.getSNCode() + "retry temperature---", retrytemp + "-" + tempretrynum);
             runTemperature();
             retrynumber++;
             // showTip(getString(R.string.temperature_retry), false);
         } else {
             showTip(getString(R.string.temperature_failresult), false);
-            Logger.error(Util.getSNCode()+"temperature failed", retrytemp + "-" + tempretrynum);
+            Logger.error(Util.getSNCode() + "temperature failed", retrytemp + "-" + tempretrynum);
             isSearch = true;
         }
     }
@@ -882,13 +882,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 //FR成功
                 if (faceFeature != null) {
-
-//                    temperature_image.setVisibility(View.VISIBLE);
-                    //     temperature_image.setImageBitmap( Util.faceValidation(faceFeature.getFeatureData()));
                     Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isIdentified);
                     if (isIdentified) return;
-                    //
-                    //
                     // isIdentified = false;
                     if (compareResultList != null) {
 //                        for (int i = compareResultList.size() - 1; i >= 0; i--) {
@@ -921,8 +916,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     //if(ir!=null)
                                                     tackPickRgb = false;
                                                     tackPickIr = false;
-                                                    // temperature_image.setImageBitmap(irBitmap);
-                                                    // temperature_image.setVisibility(View.VISIBLE); // if (result)
+                                                    //temperature_image.setImageBitmap(rgbBitmap);
+                                                    //temperature_image.setVisibility(View.VISIBLE); // if (result)
                                                     // //.playBeepSoundAndVibrate();
                                                     requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  img_temperature.setImageResource(result ? R.drawable.stop : R.drawable.r);
@@ -1122,10 +1117,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void run() {
                         if (tackPickRgb && rgbBitmap == null) {
                             rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
-                            Log.d("ddddddddddddddddddddddd", "" + rgbBitmap.getByteCount() + "  byte = " + nv21.length);
-                            temperature_image.setImageBitmap(rgbBitmap);
-                            temperature_image.setVisibility(View.VISIBLE);
-                            tackPickIr = false;
+                            //                   Log.d("ddddddddddddddddddddddd", "" + rgbBitmap.getByteCount() + "  byte = " + nv21.length);
                             tackPickRgb = false;
                         }
                     }
@@ -1182,9 +1174,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 irData = nv21;
                 if (tackPickIr && irBitmap == null) {
                     irBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
-                    Log.d("ddddddddddddddddddddddd", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
-                    temperature_image.setImageBitmap(irBitmap);
-                    temperature_image.setVisibility(View.VISIBLE);
+                    //  Log.d("irBitmap", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
                     tackPickIr = false;
                 }
             }
@@ -1231,23 +1221,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private synchronized void processPreviewData() {
         if (rgbData != null && irData != null) {
             final byte[] cloneNv21Rgb = rgbData.clone();
-            byteData = cloneNv21Rgb;
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
-
             clearLeftFace(facePreviewInfoList);
-
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
                 for (int i = 0; i < facePreviewInfoList.size(); i++) {
-                    // 注意：这里虽然使用的是IR画面活体检测，RGB画面特征提取，但是考虑到成像接近，所以只用了RGB画面的图像质量检测
                     Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
-
-
                     if (GlobalParameters.livenessDetect && (status == null || status != RequestFeatureStatus.SUCCEED)) {
                         Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
                         if (liveness == null
                                 || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
                             livenessMap.put(facePreviewInfoList.get(i).getTrackId(), RequestLivenessStatus.ANALYZING);
-                            // IR数据偏移
+                            // IR
                             FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
                             faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
                             faceHelperIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
@@ -1824,7 +1808,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                  //  Util.enableLedPower(1);
+                    //  Util.enableLedPower(1);
                 }
             }, 500);
         }
@@ -1954,10 +1938,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public class AsyncTime extends AsyncTask<Void, Void, String> {
         private ProgressDialog progress;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progress=new ProgressDialog(IrCameraActivity.this);
+            progress = new ProgressDialog(IrCameraActivity.this);
             progress.setMessage("Application Initializing...");
             progress.show();
 

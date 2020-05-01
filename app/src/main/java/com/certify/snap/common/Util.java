@@ -26,6 +26,7 @@ import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -407,6 +408,7 @@ public class Util {
         immage.compress(Bitmap.CompressFormat.PNG, 80, baos);
         byte[] b = baos.toByteArray();
         String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
+     //   Log.d("imageEncoded",""+imageEncoded.length());
         return imageEncoded;
     }
 
@@ -674,12 +676,12 @@ public class Util {
         Camera.Size size = parameters.getPreviewSize();
         YuvImage image = new YuvImage(data, parameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        image.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, out);
+        image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, out);
         byte[] imageBytes = out.toByteArray();
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inJustDecodeBounds = true;
-//        options.inSampleSize = 3;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = 3;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length,options);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);

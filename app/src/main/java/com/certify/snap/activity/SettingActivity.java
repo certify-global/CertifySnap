@@ -405,7 +405,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.editTextDialogUserInput);
-
+        userInput.setText(sp.getString(GlobalParameters.TEMP_TEST, "99"));
 
         // set dialog message
         alertDialogBuilder
@@ -415,7 +415,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
                                 // edit text
-                                userInput.setText(userInput.getText());
+
                                 Util.writeString(sp, GlobalParameters.TEMP_TEST, userInput.getText().toString().trim());
 
                             }

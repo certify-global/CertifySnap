@@ -21,7 +21,7 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!-- 适配Android N系统必需的ContentProvider写权限声明，写权限包含应用包名 -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!--ContentProvide -->
     <uses-permission android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.certify.snap" />
 
     <permission
@@ -91,9 +91,9 @@
         <receiver android:name="com.certify.snap.service.MyPushMessageReceiver">
             <intent-filter>
 
-                <!-- 接收push消息 -->
+                <!-- push -->
                 <action android:name="com.baidu.android.pushservice.action.MESSAGE" />
-                <!-- 接收bind,unbind,fetch,delete等反馈消息 -->
+                <!-- bind,unbind,fetch,delete -->
                 <action android:name="com.baidu.android.pushservice.action.RECEIVE" />
                 <action android:name="com.baidu.android.pushservice.action.notification.CLICK" />
             </intent-filter>
