@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission
         android:name="android.permission.READ_LOGS"
-        tools:ignore="ProtectedPermissions" /> <!-- Push service  -->
+        tools:ignore="ProtectedPermissions" /> <!-- Push service -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
@@ -36,11 +36,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.certify.snap.activity.NFCCardActivity"
-            android:launchMode="singleTask"/>
+        <activity
+            android:name="com.certify.snap.activity.NFCCardActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.certify.snap.activity.RecordActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.certify.snap.activity.RgbCameraActivity"
             android:launchMode="singleTask" />
@@ -56,6 +59,9 @@
         <activity
             android:name=".activity.ThermalSetting"
             android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.ScanViewActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.certify.snap.activity.InitializationActivity"
             android:launchMode="singleTask" />
