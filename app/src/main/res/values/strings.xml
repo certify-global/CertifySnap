@@ -208,6 +208,7 @@
     <string name="display_temperature">Display Temperature Details to the User on Screen</string>
     <string name="color_code">Display color Code for Temperature on the Screen</string>
     <string name="color_message">show Green/Red colors cues on the screen</string>
+    <string name="tv_scan_setting">Scan view settings</string>
     <string name="capture_images">Capture images of Users Temperature above Threshold</string>
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound on High temperature</string>

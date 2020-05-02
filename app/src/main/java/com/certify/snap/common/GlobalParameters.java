@@ -60,6 +60,9 @@ public class GlobalParameters {
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";
     public static final String CAPTURE_IMAGES_ABOVE = "c_m_above";
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
+    public static final String CAPTURE_TEMPERATURE = "c_m_temp";
+    public static final String CAPTURE_SOUND = "c_m_sound";
+    public static final String DELAY_VALUE="delay_value";
 
 
 }

@@ -53,10 +53,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sp;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-    thermal_check_setting;
+    thermal_check_setting,scan_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint,tv_version,tv_thermal_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint,tv_version,tv_thermal_setting,tv_scan_setting;
     Typeface rubiklight;
     private String userMail;
 
@@ -130,6 +130,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         endpoint = findViewById(R.id.endpoint);
         tv_version = findViewById(R.id.tv_version);
         tv_thermal_setting = findViewById(R.id.tv_thermal_setting);
+        tv_scan_setting = findViewById(R.id.tv_scan_setting);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -138,6 +139,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         endpoint.setTypeface(rubiklight);
         tv_version.setTypeface(rubiklight);
         tv_thermal_setting.setTypeface(rubiklight);
+        tv_scan_setting.setTypeface(rubiklight);
         tv_version.setText("Version: "+sp.getString(GlobalParameters.MobileAppVersion, ""));
     }
 
@@ -240,7 +242,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             case R.id.setting_upload:
                 Intent i = new Intent(
                         Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
                 startActivityForResult(i, 101);
                 break;
@@ -253,6 +255,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             case R.id.thermal_check_setting:
                 Intent intent=new Intent(SettingActivity.this,ThermalSetting.class);
                 startActivity(intent);
+                break;
+            case R.id.scan_setting:
+                Intent intent1=new Intent(SettingActivity.this,ScanViewActivity.class);
+                startActivity(intent1);
                 break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);

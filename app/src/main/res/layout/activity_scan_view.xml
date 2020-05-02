@@ -44,7 +44,7 @@
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
-    <TextView
+  <!--  <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/color_code"
@@ -86,7 +86,7 @@
         android:text="@string/color_message"
         android:textColor="@color/black"
         android:textSize="@dimen/font_18"
-        />
+        />-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -209,5 +209,18 @@
         android:layout_marginTop="@dimen/margin_5"
         android:inputType="number"
         android:hint="@string/screen_delay"/>
+
+    <Button
+        android:id="@+id/btn_exit"
+        style="@style/buttonNumberStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/btn_shape"
+        android:text="Save"
+        android:textSize="25sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"/>
 </LinearLayout>
+
 </LinearLayout>
