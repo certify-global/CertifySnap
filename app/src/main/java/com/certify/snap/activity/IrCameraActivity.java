@@ -249,7 +249,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     TemperatureListenter mTemperatureListenter;
     private float temperature = 0;
     RelativeLayout relative_main;
-    TextView tv_thermal,tv_thermal_subtitle;
+    TextView tv_thermal, tv_thermal_subtitle;
 
 
     @Override
@@ -426,8 +426,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 "rubiklight.ttf");
         tv_thermal = findViewById(R.id.tv_thermal);
         tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
-        tv_thermal.setText(sp.getString(GlobalParameters.Thermalscan_title,"THERMAL SCAN"));
-        tv_thermal_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle,""));
+        tv_thermal.setText(sp.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN"));
+        tv_thermal_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
         tv_thermal.setTypeface(rubiklight);
         tv_thermal_subtitle.setTypeface(rubiklight);
 
@@ -819,16 +819,20 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Log.e("temperatureBitmap", "" + (temperatureBitmap == null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
-
+                                    if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
+                                    else
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null);
                                 }
                             } else {
                                 text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
                                 mTemperatureListenter.onTemperatureCall(false, text);
-                                Log.e("temperture---", "isUnusualTem-" + temperatureData.isUnusualTem() + "-" + text);
+                                Log.d("temperture---", "isUnusualTem-" + temperatureData.isUnusualTem() + "-" + text);
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null);
-
+                                    if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
+                                    else
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null);
                                 }
                             }
 
@@ -998,12 +1002,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
                         //  searchFace(faceFeature, requestId);
-                    }
-                    else if (liveness != null && liveness == LivenessInfo.ALIVE) {
+                    } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.e("liveness---", "LivenessInfo.ALIVE---" + isTemperature);
                         //searchFace(faceFeature, requestId);
-                    }
-                    else {
+                    } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
                             Observable.timer(WAIT_LIVENESS_INTERVAL, TimeUnit.MILLISECONDS)
@@ -1035,8 +1037,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
 
-                }
-                else {
+                } else {
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
                         String msg;
@@ -1764,16 +1765,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void showAnimation() {
         if (outerCircleAnimator == null && innerCircleAnimator == null) {
-            outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);//硬件加速
+            outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
-            outerCircleAnimator.setDuration(3000);//
-            outerCircleAnimator.setRepeatCount(Animation.INFINITE);//设定无限循环
-            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);// 循环模式
-            outerCircleAnimator.setInterpolator(new LinearInterpolator());// 匀速
+            outerCircleAnimator.setDuration(3000);
+            outerCircleAnimator.setRepeatCount(Animation.INFINITE);
+            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);
+            outerCircleAnimator.setInterpolator(new LinearInterpolator());
             outerCircleAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationCancel(Animator animation) {
-                    outerCircle.setLayerType(View.LAYER_TYPE_NONE, null);//取消动画后恢复默认设置
+                    outerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
                 }
             });
             innerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
@@ -1822,13 +1823,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Glide.with(IrCameraActivity.this)
                     .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
                     .error(R.mipmap.telpo)
-                    .skipMemoryCache(true) // 不使用内存缓存
-                    .diskCacheStrategy(DiskCacheStrategy.NONE);// 不使用磁盘缓存
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE);
             //.into(relativeLayout);
         }
     }
 
-    //获取所有限制时间段的数组
     public String[] processLimitedTime(String data) {
         if (data.contains(";")) {
             return data.split(";");
@@ -1837,7 +1837,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    //比较所有限制时间段
     public boolean compareAllLimitedTime(String compareTime, String[] limitedTimes) {
         if (compareTime == null || limitedTimes == null) {
             return false;
@@ -1849,7 +1848,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         return result;
     }
 
-    //比较具体一个时间段的方法
     public boolean compareLimitedTime(String compareTime, String limitedStartTime, String limitedEndTime) {
         if (compareTime == null || limitedStartTime == null || limitedEndTime == null) return false;
         boolean result = false;

@@ -323,16 +323,16 @@ public class Util {
         }
     }
 
-    //开关led
+    //led TODOMe
     public static void setLedPower(int status) {
-        if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
-            new SDKUtil().camera_led(status);
-        } else {
-            PosUtil.setLedPower(status);
-        }
+//        if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
+//            new SDKUtil().camera_led(status);
+//        } else {
+//            PosUtil.setLedPower(status);
+//        }
     }
 
-    //开关led2
+    //led2
     public static void enableLedPower(int status) {
         try {
             if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {

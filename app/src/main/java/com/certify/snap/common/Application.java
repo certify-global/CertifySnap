@@ -81,12 +81,12 @@ public class Application extends android.app.Application {
         return temperatureUtil;
     }
 
-    // 添加Activity到容器中
+    // Activity
     public void addActivity(Activity activity) {
         activityList.add(activity);
     }
 
-    // 遍历所有Activity并finish
+    // Activity finish
     public void exit() {
         for (Activity activity : activityList) {
             if(activity!=null && !activity.isFinishing()) {

@@ -46,13 +46,17 @@ public class ParameterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_parameter);
+        try {
+            supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setContentView(R.layout.activity_parameter);
 
-        Application.getInstance().addActivity(this);
-        sp = Util.getSharedPreferences(this);
-        initView();
+            Application.getInstance().addActivity(this);
+            sp = Util.getSharedPreferences(this);
+            initView();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void initView(){
@@ -230,12 +234,12 @@ public class ParameterActivity extends AppCompatActivity {
             case 1:
                 radio_led_off.setChecked(true);
                // PosUtil.setLedPower(0);
-                Util.setLedPower(0);
+  //              Util.setLedPower(0);
                 break;
             case 2:
                 radio_led_lamp.setChecked(true);
                 //PosUtil.setLedPower(0);
-                Util.setLedPower(0);
+ //               Util.setLedPower(0);
                 break;
 
             default:
