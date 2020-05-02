@@ -529,10 +529,6 @@ public class Util {
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
 
-            getNumberVersion((Activity) context);
-            getDeviceUUid((Activity) context);
-
-
             JSONObject obj = new JSONObject();
             obj.put("deviceInfo", MobileDetails(context));
 

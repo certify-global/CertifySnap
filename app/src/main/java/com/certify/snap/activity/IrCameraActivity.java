@@ -249,7 +249,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     TemperatureListenter mTemperatureListenter;
     private float temperature = 0;
     RelativeLayout relative_main;
-    TextView tv_thermal;
+    TextView tv_thermal,tv_thermal_subtitle;
 
 
     @Override
@@ -425,7 +425,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Typeface rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
         tv_thermal = findViewById(R.id.tv_thermal);
+        tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
+        tv_thermal.setText(sp.getString(GlobalParameters.Thermalscan_title,"THERMAL SCAN"));
+        tv_thermal_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle,""));
         tv_thermal.setTypeface(rubiklight);
+        tv_thermal_subtitle.setTypeface(rubiklight);
 
         final PackageManager packageManager = getPackageManager();
         scan.setOnClickListener(new View.OnClickListener() {

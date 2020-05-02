@@ -52,19 +52,22 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sp;
-    private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint;
+    private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
+    thermal_check_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint,tv_version,tv_thermal_setting;
     Typeface rubiklight;
     private String userMail;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_setting);
+        Util.getNumberVersion(SettingActivity.this);
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
         sp = Util.getSharedPreferences(this);
@@ -104,6 +107,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 
 
     private void initView() {
+
         activate = (RelativeLayout) findViewById(R.id.setting_activate);
         init = (RelativeLayout) findViewById(R.id.setting_init);
         updatelist = (RelativeLayout) findViewById(R.id.setting_updatelist);
@@ -111,6 +115,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         register = (RelativeLayout) findViewById(R.id.setting_register);
         parameter = (RelativeLayout) findViewById(R.id.setting_parameter);
         led = (RelativeLayout) findViewById(R.id.setting_led);
+        thermal_check_setting = (RelativeLayout) findViewById(R.id.thermal_check_setting);
         card = findViewById(R.id.setting_activate_card);
         record = findViewById(R.id.setting_record);
         setting_temperature = findViewById(R.id.setting_temperature);
@@ -123,12 +128,17 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         parameter_setting = findViewById(R.id.parameter_setting);
         activate_tv = findViewById(R.id.activate_tv);
         endpoint = findViewById(R.id.endpoint);
+        tv_version = findViewById(R.id.tv_version);
+        tv_thermal_setting = findViewById(R.id.tv_thermal_setting);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
         parameter_setting.setTypeface(rubiklight);
         activate_tv.setTypeface(rubiklight);
         endpoint.setTypeface(rubiklight);
+        tv_version.setTypeface(rubiklight);
+        tv_thermal_setting.setTypeface(rubiklight);
+        tv_version.setText("Version: "+sp.getString(GlobalParameters.MobileAppVersion, ""));
     }
 
     @Override
@@ -240,6 +250,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             case R.id.setting_endpoint:
                 endpointDialog();
                 break;
+            case R.id.thermal_check_setting:
+                Intent intent=new Intent(SettingActivity.this,ThermalSetting.class);
+                startActivity(intent);
+                break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);
                 finish();
@@ -274,56 +288,6 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                                 if (url.endsWith("/"))
                                     url = url.substring(0, url.length() - 1);
                                 Util.writeString(sp, GlobalParameters.URL, url);
-
-                            }
-                        })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // show it
-        alertDialog.show();
-    }
-
-    private void passwordDialog() {
-        LayoutInflater li = LayoutInflater.from(this);
-        View promptsView = li.inflate(R.layout.access_password, null);
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this);
-
-        // set prompts.xml to alertdialog builder
-        alertDialogBuilder.setView(promptsView);
-
-
-        final EditText userInput = promptsView.findViewById(R.id.access_pwd);
-        final TextInputLayout text_input_pwd = (TextInputLayout) findViewById(R.id.text_input_layout);
-
-
-        // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // get user input and set it to result
-                                // edit text
-
-                                if (userInput.getText().toString().equals("")) {
-                                    userInput.setError("Password should be minimum six characters");
-
-                                } else {
-                                    userInput.setError(null);
-                                    userInput.setText(userInput.getText());
-                                    Util.writeString(sp, GlobalParameters.DEVICE_PASSWORD, userInput.getText().toString().trim());
-                                    dialog.cancel();
-                                }
 
                             }
                         })

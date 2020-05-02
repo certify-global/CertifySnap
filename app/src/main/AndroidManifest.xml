@@ -54,6 +54,9 @@
             android:name="com.certify.snap.activity.SettingActivity"
             android:launchMode="singleTask" />
         <activity
+            android:name=".activity.ThermalSetting"
+            android:launchMode="singleTask" />
+        <activity
             android:name="com.certify.snap.activity.InitializationActivity"
             android:launchMode="singleTask" />
         <activity

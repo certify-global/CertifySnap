@@ -58,16 +58,30 @@
                 android:layout_marginTop="200dp"
                 android:background="@color/white"/>
 
+
+
             <TextView
                 android:id="@+id/tv_thermal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="120dp"
+                android:layout_marginBottom="140dp"
                 android:gravity="center"
                 android:text="@string/thermal_scan"
                 android:textColor="@color/black"
                 android:textSize="38sp"
+                android:visibility="visible" />
+            <TextView
+                android:id="@+id/tv_thermal_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="90dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/thermal_scan"
+                android:textColor="@color/black"
+                android:textSize="32sp"
                 android:visibility="visible" />
 
             <TextView
