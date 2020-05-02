@@ -199,5 +199,6 @@
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
     <string name="endpoint">Endpoint URL</string>
+    <string name="add_cloud">Add device to CERTIFY.me Cloud</string>
 
 </resources>

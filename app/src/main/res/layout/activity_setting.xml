@@ -87,7 +87,7 @@
                 android:layout_margin="4dp"
                 android:drawablePadding="5dp"
                 android:gravity="center"
-                android:text="Activate"
+                android:text="@string/add_cloud"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:paddingLeft="6dp"
@@ -540,5 +540,6 @@
 
 
     </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
