@@ -996,16 +996,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
 
                     Integer liveness = livenessMap.get(requestId);
-                    //不做活体检测的情况，直接搜索
                     if (!GlobalParameters.livenessDetect) {
                         //  searchFace(faceFeature, requestId);
                     }
-                    //活体检测通过，搜索特征
                     else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.e("liveness---", "LivenessInfo.ALIVE---" + isTemperature);
                         //searchFace(faceFeature, requestId);
                     }
-                    //活体检测未出结果，或者非活体，延迟执行该函数
                     else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
@@ -1039,19 +1036,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
 
                 }
-                //特征提取失败
                 else {
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
                         String msg;
-                        // 传入的FaceInfo在指定的图像上无法解析人脸，此处使用的是RGB人脸数据，一般是人脸模糊
+                        // FaceInfo RGB
                         if (errorCode != null && errorCode == ErrorInfo.MERR_FSDK_FACEFEATURE_LOW_CONFIDENCE_LEVEL) {
                             msg = getString(R.string.low_confidence_level);
                         } else {
                             msg = getString(R.string.ExtractCode) + errorCode;
                         }
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
-                        // 在尝试最大次数后，特征提取仍然失败，则认为识别未通过
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                         retryRecognizeDelayed(requestId);
                     } else {
@@ -1065,24 +1060,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (livenessInfo != null) {
                     int liveness = livenessInfo.getLiveness();
                     livenessMap.put(requestId, liveness);
-                    // 非活体，重试
                     if (liveness == LivenessInfo.NOT_ALIVE) {
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
-                        // 延迟 FAIL_RETRY_INTERVAL 后，将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
+                        //  FAIL_RETRY_INTERVAL UNKNOWN
                         retryLivenessDetectDelayed(requestId);
                     }
                 } else {
                     if (increaseAndGetValue(livenessErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         livenessErrorRetryMap.put(requestId, 0);
                         String msg;
-                        // 传入的FaceInfo在指定的图像上无法解析人脸，此处使用RGB人脸框 + IR数据，一般是人脸模糊或画面中无人脸
+                        // FaceInfo + IR
                         if (errorCode != null && errorCode == ErrorInfo.MERR_FSDK_FACEFEATURE_LOW_CONFIDENCE_LEVEL) {
                             msg = getString(R.string.low_confidence_level);
                         } else {
                             msg = getString(R.string.ProcessCode) + errorCode;
                         }
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
-                        // 在尝试最大次数后，活体检测仍然失败，则认定为非活体
                         livenessMap.put(requestId, LivenessInfo.NOT_ALIVE);
                         retryLivenessDetectDelayed(requestId);
                     } else {
@@ -1209,8 +1202,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 .previewOn(previewViewIr)
                 .cameraListener(irCameraListener)
                 .isMirror(cameraIrId != null && Camera.CameraInfo.CAMERA_FACING_FRONT == cameraIrId)
-//                .previewSize(new Point(1280, 960)) //相机预览大小设置，RGB与IR需使用相同大小
-//                .additionalRotation(270) //额外旋转角度
+//                .previewSize(new Point(1280, 960)) //Size，RGB of IR
+//                .additionalRotation(270) //
                 .build();
         cameraHelperIr.init();
         try {
@@ -1380,7 +1373,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
                             if (!isAdded) {  //&& isTemperature
-                                //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
+                                // MAX_DETECT_NUM
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
                                     compareResultList.remove(0);
                                     adapter.notifyItemRemoved(0);
@@ -1397,7 +1390,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
-                                Log.e("yw——人脸来1", compareResult.getUserName() + "  " + verify_time);
+                                Log.e("yw——1", compareResult.getUserName() + "  " + verify_time);
 
                                 registeredMemberslist = LitePal.where("mobile = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
@@ -1407,17 +1400,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String name = registeredMembers.getName();
                                     String image = registeredMembers.getImage();
 
-                                    Log.e("yw——超时时间和状态", "expire_time:" + expire_time + " status:" + status + Util.isDateOneBigger(expire_time, verify_time));
+                                    Log.e("yw—", "expire_time:" + expire_time + " status:" + status + Util.isDateOneBigger(expire_time, verify_time));
                                     if (status.equals("1") && Util.isDateOneBigger(expire_time, verify_time)) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                            // 符合条件开门 在限制时间内
                                             message = name;
 
                                             addOfflineMember(name, mobile, image, new Date(), temperature);
 
                                             time2 = System.currentTimeMillis();
-                                            Log.e("result---", "识别+测温时间=" + (time2 - time1));
+                                            Log.e("result---", "=" + (time2 - time1));
                                             String testing_tempe = sp.getString(GlobalParameters.TEMP_TEST, "99");
                                             Float tmpFloat = Float.parseFloat(testing_tempe);
                                             if (testing_tempe.length() > 1)
@@ -1433,16 +1425,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     }
                                                 }
                                         } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
-                                            //不符合条件 非限制时间
+                                            //Unqualified conditions Unrestricted time
                                             message = getString(R.string.text_notpasstime);
                                             showResult(compareResult, requestId, message, false);
                                         }
                                     } else if (!status.equals("1")) {
-                                        //不符合条件
                                         message = getString(R.string.text_nopermission);
                                         showResult(compareResult, requestId, message, false);
                                     } else if (!Util.isDateOneBigger(expire_time, verify_time)) {
-                                        //不符合条件
                                         message = getString(R.string.text_expiredtime);
                                         showResult(compareResult, requestId, message, false);
                                     }
@@ -1482,7 +1472,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showResult(CompareResult compareResult, int requestId, String message, final boolean isdoor) {
-        //添加显示人员时，保存其trackId
+        //When adding display personnel, save their trackId
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
         compareResultList.add(compareResult);
@@ -1565,7 +1555,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onComplete() {
-                        // 将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
+                        // UNKNOWN
                         if (GlobalParameters.livenessDetect) {
                             faceHelperIr.setName(requestId, Integer.toString(requestId));
                         }
@@ -1600,7 +1590,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onComplete() {
-                        // 将该人脸特征提取状态置为FAILED，帧回调处理时会重新进行活体检测
+                        // FAILED
                         faceHelperIr.setName(requestId, Integer.toString(requestId));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                         delayFaceTaskCompositeDisposable.remove(disposable);
@@ -1776,7 +1766,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (outerCircleAnimator == null && innerCircleAnimator == null) {
             outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);//硬件加速
             outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
-            outerCircleAnimator.setDuration(3000);//设定转一圈的时间
+            outerCircleAnimator.setDuration(3000);//
             outerCircleAnimator.setRepeatCount(Animation.INFINITE);//设定无限循环
             outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);// 循环模式
             outerCircleAnimator.setInterpolator(new LinearInterpolator());// 匀速
