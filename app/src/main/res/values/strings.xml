@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Certify</string>
+    <string name="app_name">CERTIFY Snap</string>
 
     <!--settings、choose function page-->
     <string name="page_preview">face attributes detect(video)</string>
