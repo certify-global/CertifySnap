@@ -17,12 +17,7 @@ import com.certify.snap.model.OfflineVerifyMembers;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-/**
- * 作者    ljf
- * 时间    2019/6/13 0013 11:55
- * 文件    Telpo_Face_Demo_0610
- * 描述
- */
+
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHolder> {
 
     Context mcontext;
@@ -87,8 +82,8 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
 
             Glide.with(mcontext)
                     .load(path)
-                    .skipMemoryCache(true) // 不使用内存缓存
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.mipmap.face_title)
                     .into(holder.image);
         } catch (Exception e) {

@@ -18,7 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * 相机辅助类，和{@link CameraListener}共同使用，获取nv21数据等操作
+ * {@link CameraListener}
  */
 public class CameraHelper implements Camera.PreviewCallback {
     private static final String TAG = "CameraHelper";

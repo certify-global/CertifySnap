@@ -69,12 +69,10 @@ public class GuideActivity extends Activity {
     private SharedPreferences sp;
 
     boolean libraryExists = true;
-    // Demo 所需的动态库文件
+    // Demo
     private static final String[] LIBRARIES = new String[]{
-            // 人脸相关
             "libarcsoft_face_engine.so",
             "libarcsoft_face.so",
-            // 图像库相关
             "libarcsoft_image_util.so",
     };
 
@@ -162,10 +160,9 @@ public class GuideActivity extends Activity {
     }
 
     /**
-     * 检查能否找到动态链接库，如果找不到，请修改工程配置
      *
-     * @param libraries 需要的动态链接库
-     * @return 动态库是否存在
+     * @param libraries
+     * @return
      */
     private boolean checkSoFile(String[] libraries) {
         File dir = new File(getApplicationInfo().nativeLibraryDir);
@@ -196,7 +193,6 @@ public class GuideActivity extends Activity {
         }
     }
     /**
-     * 获取权限的返回
      *
      * @param requestCode
      * @param permissions

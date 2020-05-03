@@ -7,12 +7,7 @@ import android.util.Log;
 
 import com.certify.snap.activity.GuideActivity;
 
-/**
- * 作者    ljf
- * 时间    2019/12/26 0026 15:17
- * 文件    DownloadTest
- * 描述
- */
+
 public class BootBroadcastReceiver extends BroadcastReceiver {
     private final String ACTION_BOOT = "android.intent.action.BOOT_COMPLETED";
 

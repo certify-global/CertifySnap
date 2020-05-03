@@ -264,7 +264,6 @@ public class ParameterActivity extends AppCompatActivity {
                         break;
                     case R.id.radio_led_lamp:
                         Util.writeInt(sp, GlobalParameters.LedType,2);
-                        //开启服务设置
 
                     default:
                         Util.writeInt(sp, GlobalParameters.LedType,1);
@@ -365,7 +364,6 @@ public class ParameterActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // 当拖动条的滑块位置发生改变时触发该方法,在这里直接使用参数progress，即当前滑块代表的进度值
                 if(Build.MODEL.contains("950")||"TPS980Q".equals(Build.MODEL)){
                     progress /= 8;
                     Log.e("progress---",progress+"");
@@ -381,12 +379,10 @@ public class ParameterActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // Log.e("------------", "开始滑动！");
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // Log.e("------------", "停止滑动！");
             }
         });
 

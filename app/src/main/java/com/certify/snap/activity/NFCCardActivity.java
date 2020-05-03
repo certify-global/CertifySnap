@@ -30,8 +30,8 @@ public class NFCCardActivity extends AppCompatActivity {
     private BeepManager mBeepManager;
     private BeepManager mBeepManager1;
     private int relaytimenumber = 5;
-    private int DATA_BLOCK = 8;//第二扇区第1快
-    private final int PASSWORD_BLOCK = 11;//第2扇区第4块
+    private int DATA_BLOCK = 8;
+    private final int PASSWORD_BLOCK = 11;
 
     private final byte[] password = new byte[]{(byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
@@ -114,9 +114,7 @@ public class NFCCardActivity extends AppCompatActivity {
         protected Integer doInBackground(Void... params) {
             int amount = -1;
             try {
-                //初始化卡内数据为111
                 M1CardUtils.writeBlockWithKeyA(mTag, DATA_BLOCK, 111, password);
-                //修改密码
                 M1CardUtils.changeKeyA(mTag, PASSWORD_BLOCK, password1, password);
                 amount = 0;
                 Log.e("tag","init card success");

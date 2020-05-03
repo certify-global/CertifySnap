@@ -18,12 +18,6 @@ import com.certify.snap.model.RegisteredFailedMembers;
 import java.io.File;
 import java.util.List;
 
-/**
- * 作者    ljf
- * 时间    2019/6/13 0013 11:55
- * 文件    Telpo_Face_Demo_0610
- * 描述
- */
 public class MemberFailedAdapter extends RecyclerView.Adapter<MemberFailedAdapter.MyViewHolder> {
 
     private Context mcontext;
@@ -69,8 +63,8 @@ public class MemberFailedAdapter extends RecyclerView.Adapter<MemberFailedAdapte
             Log.e("failed image path---", path);
             Glide.with(mcontext)
                     .load(path)
-                    .skipMemoryCache(true) // 不使用内存缓存
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.mipmap.face_title)
                     .into(holder.image);
 

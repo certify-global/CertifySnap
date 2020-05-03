@@ -119,9 +119,9 @@ public class ManagementActivity extends AppCompatActivity {
         ROOT_PATH_STRING = this.getFilesDir().getAbsolutePath();
         FaceServer.getInstance().init(this);//init FaceServer;
 
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        failed_recyclerView = (RecyclerView) findViewById(R.id.failed_recyclerview);
-        msearch = (EditText) findViewById(R.id.edit_search);
+        recyclerView = findViewById(R.id.recyclerview);
+        failed_recyclerView = findViewById(R.id.failed_recyclerview);
+        msearch = findViewById(R.id.edit_search);
         msearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -314,21 +314,21 @@ public class ManagementActivity extends AppCompatActivity {
         builder.setView(view).setCancelable(false);
         if (mUpdateDialog == null) mUpdateDialog = builder.create();
 
-        final TextView muserid = (TextView) view.findViewById(R.id.dialog_edit_userid);
-        mnametext = (TextView) view.findViewById(R.id.dialog_text_name);
-        mmobiletext = (TextView) view.findViewById(R.id.dialog_text_mobile);
-        mtimetext = (TextView) view.findViewById(R.id.dialog_text_time);
-        mname = (EditText) view.findViewById(R.id.dialog_edit_name);
-        mmobile = (EditText) view.findViewById(R.id.dialog_edit_mobile);
-        mtime = (EditText) view.findViewById(R.id.dialog_edit_time);
-        textbody = (LinearLayout) view.findViewById(R.id.linear_body);
-        editbody = (LinearLayout) view.findViewById(R.id.linear_edit_body);
+        final TextView muserid = view.findViewById(R.id.dialog_edit_userid);
+        mnametext = view.findViewById(R.id.dialog_text_name);
+        mmobiletext = view.findViewById(R.id.dialog_text_mobile);
+        mtimetext = view.findViewById(R.id.dialog_text_time);
+        mname = view.findViewById(R.id.dialog_edit_name);
+        mmobile = view.findViewById(R.id.dialog_edit_mobile);
+        mtime = view.findViewById(R.id.dialog_edit_time);
+        textbody = view.findViewById(R.id.linear_body);
+        editbody = view.findViewById(R.id.linear_edit_body);
 
         mnametext.setText(member.getName());
         mmobiletext.setText(member.getMobile());
         mtimetext.setText(member.getExpire_time());
 
-        mfaceimg = (ImageView) view.findViewById(R.id.dialog_faceimg);
+        mfaceimg = view.findViewById(R.id.dialog_faceimg);
         setViewclick(mfaceimg, false);
         mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
         mfaceimg.setOnClickListener(new View.OnClickListener() {
@@ -349,7 +349,7 @@ public class ManagementActivity extends AppCompatActivity {
             }
         });
 
-        medit = (ImageView) view.findViewById(R.id.dialog_edit);
+        medit = view.findViewById(R.id.dialog_edit);
         medit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,7 +364,7 @@ public class ManagementActivity extends AppCompatActivity {
                 mtime.setText(member.getExpire_time());
             }
         });
-        ImageView mexit = (ImageView) view.findViewById(R.id.dialog_exit);
+        ImageView mexit = view.findViewById(R.id.dialog_exit);
         mexit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -374,7 +374,7 @@ public class ManagementActivity extends AppCompatActivity {
                 }
             }
         });
-        mupdate = (Button) view.findViewById(R.id.btn_update);
+        mupdate = view.findViewById(R.id.btn_update);
         mupdate.setVisibility(View.GONE);
         mupdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -448,7 +448,7 @@ public class ManagementActivity extends AppCompatActivity {
                         date.delete(0, date.length());
                     }
 
-                    String datestr = date.append(String.valueOf(year)).append("-").append(getnumberString(month))
+                    String datestr = date.append(year).append("-").append(getnumberString(month))
                             .append("-").append(getnumberString(day)).append(" ").toString();
                     showUpdateTimePicker(editText, datestr);
                     dialog.dismiss();
@@ -462,11 +462,10 @@ public class ManagementActivity extends AppCompatActivity {
             });
             AlertDialog dialog = builder.create();
             View dialogView = View.inflate(this, R.layout.dialog_date, null);
-            DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.datePicker);
+            DatePicker datePicker = dialogView.findViewById(R.id.datePicker);
             dialog.setTitle(getString(R.string.SetDate));
             dialog.setView(dialogView);
             dialog.show();
-            //初始化日期监听事件
             datePicker.init(year, month - 1, day, new DatePicker.OnDateChangedListener() {
                 @Override
                 public void onDateChanged(DatePicker view, int years, int monthOfYears, int dayOfMonths) {
@@ -486,7 +485,7 @@ public class ManagementActivity extends AppCompatActivity {
         builder2.setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (time.length() > 0) { //清除上次记录的日期
+                if (time.length() > 0) {
                     time.delete(0, time.length());
                 }
                 String timestr = time.append(getnumberString(hour)).append(":")
@@ -504,10 +503,10 @@ public class ManagementActivity extends AppCompatActivity {
         });
         AlertDialog dialog2 = builder2.create();
         View dialogView2 = View.inflate(this, R.layout.dialog_time, null);
-        TimePicker timePicker = (TimePicker) dialogView2.findViewById(R.id.timePicker);
+        TimePicker timePicker = dialogView2.findViewById(R.id.timePicker);
         timePicker.setCurrentHour(hour);
         timePicker.setCurrentMinute(minute);
-        timePicker.setIs24HourView(true); //设置24小时制
+        timePicker.setIs24HourView(true);
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minutes) {
@@ -526,7 +525,7 @@ public class ManagementActivity extends AppCompatActivity {
         builder.setView(view).setCancelable(false);
         mDeleteDialog = builder.create();
 
-        Button confirm = (Button) view.findViewById(R.id.delete_confirm);
+        Button confirm = view.findViewById(R.id.delete_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -535,7 +534,7 @@ public class ManagementActivity extends AppCompatActivity {
                 localDelete(members);
             }
         });
-        Button cancel = (Button) view.findViewById(R.id.delete_cancel);
+        Button cancel = view.findViewById(R.id.delete_cancel);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -560,9 +559,9 @@ public class ManagementActivity extends AppCompatActivity {
         mpopupwindow.setBackgroundDrawable(new ColorDrawable(R.color.backwhite));
 
         registerpath = "";
-        final EditText mname = (EditText) view.findViewById(R.id.popup_name);
-        final EditText mmobile = (EditText) view.findViewById(R.id.popup_mobile);
-        final EditText mregistertime = (EditText) view.findViewById(R.id.popup_time);
+        final EditText mname = view.findViewById(R.id.popup_name);
+        final EditText mmobile = view.findViewById(R.id.popup_mobile);
+        final EditText mregistertime = view.findViewById(R.id.popup_time);
         mregistertime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -574,7 +573,7 @@ public class ManagementActivity extends AppCompatActivity {
             }
         });
 
-        mregisterfaceimg = (ImageView) view.findViewById(R.id.popup_faceimg);
+        mregisterfaceimg = view.findViewById(R.id.popup_faceimg);
         mregisterfaceimg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -582,7 +581,7 @@ public class ManagementActivity extends AppCompatActivity {
             }
         });
 
-        ImageView mexit = (ImageView) view.findViewById(R.id.popup_exit);
+        ImageView mexit = view.findViewById(R.id.popup_exit);
         mexit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -592,7 +591,7 @@ public class ManagementActivity extends AppCompatActivity {
                 }
             }
         });
-        Button mregister = (Button) view.findViewById(R.id.btn_register);
+        Button mregister = view.findViewById(R.id.btn_register);
         mregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -745,15 +744,14 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
     /**
-     * 重命名文件
      *
-     * @param oldPath 原来的文件地址
-     * @param newPath 新的文件地址
+     *
+     * @param oldPath
+     * @param newPath
      */
     public static void renameFile(String oldPath, String newPath) {
         File oleFile = new File(oldPath);
         File newFile = new File(newPath);
-        //执行重命名
         oleFile.renameTo(newFile);
     }
 
@@ -808,7 +806,6 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
     private void takephoto() {
-        //创建File对象，用于存储拍照后的图片
         File outputImage = new File(getExternalCacheDir(), "register.jpg");
         if (outputImage.exists()) outputImage.delete();
         try {
@@ -822,7 +819,6 @@ public class ManagementActivity extends AppCompatActivity {
         } else {
             registerUri = Uri.fromFile(outputImage);
         }
-        //启动相机程序
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, registerUri);
         startActivityForResult(intent, REGISTER_PHOTO);
@@ -830,7 +826,6 @@ public class ManagementActivity extends AppCompatActivity {
 
 
     private void takefacephoto() {
-        //创建File对象，用于存储拍照后的图片
         File outputImage = new File(getExternalCacheDir(), "update.jpg");
         if (outputImage.exists()) outputImage.delete();
         try {
@@ -844,7 +839,6 @@ public class ManagementActivity extends AppCompatActivity {
         } else {
             updateUri = Uri.fromFile(outputImage);
         }
-        //启动相机程序
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         intent.putExtra(MediaStore.EXTRA_OUTPUT, updateUri);
         startActivityForResult(intent, UPDATE_PHOTO);
@@ -942,11 +936,7 @@ public class ManagementActivity extends AppCompatActivity {
         int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
         if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) { }
         boolean success = FaceServer.getInstance().registerBgr24Test(ManagementActivity.this, bgr24, bitmap.getWidth(), bitmap.getHeight());
-        if (!success) {
-            return false;
-        } else {
-            return true;
-        }
+        return success;
     }
 
 

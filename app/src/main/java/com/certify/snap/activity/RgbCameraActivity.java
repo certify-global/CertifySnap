@@ -117,8 +117,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     private ObjectAnimator outerCircleAnimator, innerCircleAnimator;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
-    private long exitTime = 0;//点击时间控制
-    private int pressTimes = 0;//连续点击次数
+    private long exitTime = 0;
+    private int pressTimes = 0;
     private static final int GUEST_QR_CODE = 333;
     public static final int HIDE_VERIFY_UI = 334;
     private static final int CARD_ID_ERROR = 335;
@@ -129,9 +129,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     private RelativeLayout rlHeader;
     private boolean isIdentified;
 
-    /**
-     * 相机预览显示的控件，可为SurfaceView或TextureView
-     */
+
     private View previewView;
 
     private TextView tv_display_time, tv_message, template_view;
@@ -142,59 +140,36 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
 
-    /**
-     * 用于记录人脸识别相关状态
-     */
+
     private ConcurrentHashMap<Integer, Integer> requestFeatureStatusMap = new ConcurrentHashMap<>();
-    /**
-     * 用于记录人脸特征提取出错重试次数
-     */
+
     private ConcurrentHashMap<Integer, Integer> extractErrorRetryMap = new ConcurrentHashMap<>();
-    /**
-     * 用于存储活体值
-     */
+
     private ConcurrentHashMap<Integer, Integer> livenessMap = new ConcurrentHashMap<>();
-    /**
-     * 用于存储活体检测出错重试次数
-     */
+
     private ConcurrentHashMap<Integer, Integer> livenessErrorRetryMap = new ConcurrentHashMap<>();
 
     private CompositeDisposable getFeatureDelayedDisposables = new CompositeDisposable();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
 
     private static final int MAX_DETECT_NUM = 10;
-    /**
-     * 当FR成功，活体未成功时，FR等待活体的时间
-     */
+
     private static final int WAIT_LIVENESS_INTERVAL = 100;
-    /**
-     * 失败重试间隔时间（ms）
-     */
+
     private static final long FAIL_RETRY_INTERVAL = 1000;
-    /**
-     * 出错重试最大次数
-     */
+
     private static final int MAX_RETRY_TIME = 3;
 
     private CameraHelper cameraHelper;
     private DrawHelper drawHelper;
     private Camera.Size previewSize;
-    /**
-     * 优先打开的摄像头
-     */
+
     private Integer rgbCameraID = Camera.CameraInfo.CAMERA_FACING_BACK;
 
-    /**
-     * VIDEO模式人脸检测引擎，用于预览帧人脸追踪
-     */
     private FaceEngine ftEngine;
-    /**
-     * 用于特征提取的引擎
-     */
+
     private FaceEngine frEngine;
-    /**
-     * IMAGE模式活体检测引擎，用于预览帧人脸活体检测
-     */
+
     private FaceEngine flEngine;
 
     private int ftInitCode = -1;
@@ -206,9 +181,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     private ShowFaceInfoAdapter adapter;
     SharedPreferences sp;
 
-    /**
-     * 所需的所有权限信息
-     */
+
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
             Manifest.permission.READ_PHONE_STATE
@@ -247,7 +220,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     private PendingIntent mPendingIntent;
     private boolean isDetected = false;
     private SwipeCardThread mSwipeCardThread;
-    private int DATA_BLOCK = 8;//第二扇区第1快
+    private int DATA_BLOCK = 8;
     private final byte[] password1 = new byte[]{(byte) 0x80, (byte) 0x60,
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private AlertDialog nfcDialog;
@@ -267,7 +240,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_rgb);
 
-        //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
 
@@ -350,7 +322,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             @Override
             public void run() {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//yyyy-MM-dd HH:mm:ss
-                Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                Date curDate = new Date(System.currentTimeMillis());
                 final String str = formatter.format(curDate);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -482,9 +454,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         });
     }
 
-    /**
-     * 初始化引擎
-     */
+
     private void initEngine() {
         ftEngine = new FaceEngine();
         ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(this),
@@ -517,9 +487,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         }
     }
 
-    /**
-     * 销毁引擎，faceHelper中可能会有特征提取耗时操作仍在执行，加锁防止crash
-     */
+
     private void unInitEngine() {
         if (ftInitCode == ErrorInfo.MOK && ftEngine != null) {
             synchronized (ftEngine) {
@@ -594,7 +562,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    //传入距离
 
                     try {
                         TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
@@ -682,10 +649,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 Log.e(TAG, "imagefaillllllllllll: " + e.getMessage());
             }
 
-            //请求FR的回调
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
-                //FR成功
                 if (faceFeature != null) {
 //                    Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId);
 
@@ -748,23 +713,20 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
                                             this.cancel();
                                         }
-                                    }, 3* 1000);//20秒
+                                    }, 3* 1000);//20
                                 }
                             });
                         }
                     }
 
                     Integer liveness = livenessMap.get(requestId);
-                    //不做活体检测的情况，直接搜索
                     if (!GlobalParameters.livenessDetect) {
                         searchFace(faceFeature, requestId);
                     }
-                    //活体检测通过，搜索特征
                     else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.e("liveness---", "LivenessInfo.ALIVE---"+isTemperature);
                         searchFace(faceFeature, requestId);
                     }
-                    //活体检测未出结果，或者非活体，延迟执行该函数
                     else {
                         if (requestFeatureStatusMap.containsKey(requestId)) {
                             Observable.timer(WAIT_LIVENESS_INTERVAL, TimeUnit.MILLISECONDS)
@@ -796,20 +758,17 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                     }
 
                 }
-                //特征提取失败
                 else {
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
 
                         String msg;
-                        // 传入的FaceInfo在指定的图像上无法解析人脸，此处使用的是RGB人脸数据，一般是人脸模糊
                         if (errorCode != null && errorCode == ErrorInfo.MERR_FSDK_FACEFEATURE_LOW_CONFIDENCE_LEVEL) {
                             msg = getString(R.string.low_confidence_level);
                         } else {
                             msg = getString(R.string.ExtractCode) + errorCode;
                         }
                         faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
-                        // 在尝试最大次数后，特征提取仍然失败，则认为识别未通过
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                         retryRecognizeDelayed(requestId);
                     } else {
@@ -823,17 +782,14 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 if (livenessInfo != null) {
                     int liveness = livenessInfo.getLiveness();
                     livenessMap.put(requestId, liveness);
-                    // 非活体，重试
                     if (liveness == LivenessInfo.NOT_ALIVE) {
                         faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
-                        // 延迟 FAIL_RETRY_INTERVAL 后，将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
                         retryLivenessDetectDelayed(requestId);
                     }
                 } else {
                     if (increaseAndGetValue(livenessErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         livenessErrorRetryMap.put(requestId, 0);
                         String msg;
-                        // 传入的FaceInfo在指定的图像上无法解析人脸，此处使用的是RGB人脸数据，一般是人脸模糊
                         if (errorCode != null && errorCode == ErrorInfo.MERR_FSDK_FACEFEATURE_LOW_CONFIDENCE_LEVEL) {
                             msg = getString(R.string.low_confidence_level);
                         } else {
@@ -882,9 +838,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
                     for (int i = 0; i < facePreviewInfoList.size(); i++) {
                         Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
-                        /**
-                         * 在活体检测开启，在人脸识别状态不为成功或人脸活体状态不为处理中（ANALYZING）且不为处理完成（ALIVE、NOT_ALIVE）时重新进行活体检测
-                         */
+
                         if (GlobalParameters.livenessDetect && (status == null || status != RequestFeatureStatus.SUCCEED)) {
                             Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
                             if (liveness == null
@@ -894,10 +848,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                         FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId(), LivenessType.RGB);
                             }
                         }
-                        /**
-                         * 对于每个人脸，若状态为空或者为失败，则请求特征提取（可根据需要添加其他判断以限制特征提取次数），
-                         * 特征提取回传的人脸特征结果在{@link FaceListener#onFaceFeatureInfoGet(FaceFeature, Integer, Integer)}中回传
-                         */
+
                         if (status == null
                                 || status == RequestFeatureStatus.TO_RETRY) {
                             requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
@@ -960,9 +911,9 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     }
 
     /**
-     * 删除已经离开的人脸
+
      *
-     * @param facePreviewInfoList 人脸和trackId列表
+     * @param facePreviewInfoList
      */
     private void clearLeftFace(List<FacePreviewInfo> facePreviewInfoList) {
         if (compareResultList != null) {
@@ -1054,7 +1005,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                 }
                                 Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
                                 if (!isAdded) {  //&& isTemperature
-                                    //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
                                     if (compareResultList.size() >= MAX_DETECT_NUM) {
                                         compareResultList.remove(0);
                                         adapter.notifyItemRemoved(0);
@@ -1085,7 +1035,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                         if (status.equals("1") && Util.isDateOneBigger(expire_time, verify_time)) {
                                             if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                     || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                                // 符合条件开门 在限制时间内
                                                 message =name;
 
                                                 addOfflineMember(name, mobile, image, new Date(), temperature);
@@ -1104,16 +1053,13 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                                     }
                                                 }
                                             } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
-                                                //不符合条件 非限制时间
                                                 message = getString(R.string.text_notpasstime);
                                                 showResult(compareResult, requestId, message, false);
                                             }
                                         } else if (!status.equals("1")) {
-                                            //不符合条件
                                             message = getString(R.string.text_nopermission);
                                             showResult(compareResult, requestId, message, false);
                                         } else if (!Util.isDateOneBigger(expire_time, verify_time)) {
-                                            //不符合条件
                                             message = getString(R.string.text_expiredtime);
                                             showResult(compareResult, requestId, message, false);
                                         }
@@ -1162,7 +1108,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
 
     private void showResult(CompareResult compareResult, int requestId, String message, final boolean isdoor){
-        //添加显示人员时，保存其trackId
         sendMessageToStopAnimation(HIDE_VERIFY_UI);
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
@@ -1196,9 +1141,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         offlineVerifyMembers.save();
     }
 
-    /**
-     * 在{@link #previewView}第一次布局完成后，去除该监听，并且进行引擎和相机的初始化
-     */
+
     @Override
     public void onGlobalLayout() {
         previewView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -1211,11 +1154,10 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     }
 
     /**
-     * 将map中key对应的value增1回传
      *
      * @param countMap map
      * @param key      key
-     * @return 增1后的value
+     * @return
      */
     public int increaseAndGetValue(Map<Integer, Integer> countMap, int key) {
         if (countMap == null) {
@@ -1230,9 +1172,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     }
 
     /**
-     * 延迟 FAIL_RETRY_INTERVAL 重新进行活体检测
      *
-     * @param requestId 人脸ID
+     * @param requestId ID
      */
     private void retryLivenessDetectDelayed(final Integer requestId) {
         Observable.timer(FAIL_RETRY_INTERVAL, TimeUnit.MILLISECONDS)
@@ -1257,7 +1198,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
                     @Override
                     public void onComplete() {
-                        // 将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
                         if (GlobalParameters.livenessDetect) {
                             faceHelper.setName(requestId, Integer.toString(requestId));
                         }
@@ -1268,9 +1208,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
     }
 
     /**
-     * 延迟 FAIL_RETRY_INTERVAL 重新进行人脸识别
      *
-     * @param requestId 人脸ID
+     * @param requestId ID
      */
     private void retryRecognizeDelayed(final Integer requestId) {
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -1296,7 +1235,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
                     @Override
                     public void onComplete() {
-                        // 将该人脸特征提取状态置为FAILED，帧回调处理时会重新进行活体检测
                         faceHelper.setName(requestId, Integer.toString(requestId));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                         delayFaceTaskCompositeDisposable.remove(disposable);
@@ -1447,10 +1385,10 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         if (outerCircleAnimator == null && innerCircleAnimator == null) {
             outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
             outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
-            outerCircleAnimator.setDuration(3000);//设定转一圈的时间
-            outerCircleAnimator.setRepeatCount(Animation.INFINITE);//设定无限循环
-            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);// 循环模式
-            outerCircleAnimator.setInterpolator(new LinearInterpolator());// 匀速
+            outerCircleAnimator.setDuration(3000);
+            outerCircleAnimator.setRepeatCount(Animation.INFINITE);
+            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);
+            outerCircleAnimator.setInterpolator(new LinearInterpolator());
             outerCircleAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationCancel(Animator animation) {
@@ -1562,8 +1500,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             Glide.with(RgbCameraActivity.this)
                     .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
                     .error(R.mipmap.telpo)
-                    .skipMemoryCache(true) // 不使用内存缓存
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)// 不使用磁盘缓存
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(img_telpo);
         }
     }
@@ -1579,7 +1517,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         return allGranted;
     }
 
-    //获取所有限制时间段的数组
     public String[] processLimitedTime(String data) {
         if (data.contains(";")) {
             return data.split(";");
@@ -1588,7 +1525,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         }
     }
 
-    //比较所有限制时间段
     public boolean compareAllLimitedTime(String compareTime, String[] limitedTimes) {
         boolean result = false;
         if (compareTime != null && limitedTimes != null) {
@@ -1599,7 +1535,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         return result;
     }
 
-    //比较具体一个时间段的方法
     public boolean compareLimitedTime(String compareTime, String limitedStartTime, String limitedEndTime) {
         boolean result = false;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");

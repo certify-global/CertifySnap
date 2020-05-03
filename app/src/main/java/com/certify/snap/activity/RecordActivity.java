@@ -117,7 +117,6 @@ public class RecordActivity extends AppCompatActivity {
 
     private CellStyle getcellstyle(SXSSFWorkbook sxssfWorkbook){
         CellStyle cellStyle = sxssfWorkbook.createCellStyle();
-        //对齐
         cellStyle.setAlignment((short)2);
         cellStyle.setVerticalAlignment((short)1);
 
@@ -130,7 +129,6 @@ public class RecordActivity extends AppCompatActivity {
 
     private CellStyle getcellstyle1(SXSSFWorkbook sxssfWorkbook){
         CellStyle cellStyle = sxssfWorkbook.createCellStyle();
-        //对齐
         cellStyle.setAlignment((short)2);
         cellStyle.setVerticalAlignment((short)1);
 
@@ -171,9 +169,7 @@ public class RecordActivity extends AppCompatActivity {
         SXSSFWorkbook sxssfWorkbook = null;
         BufferedOutputStream outputStream = null;
         try {
-            //这样表示SXSSFWorkbook只会保留100条数据在内存中，其它的数据都会写到磁盘里，这样的话占用的内存就会很少
             sxssfWorkbook = new SXSSFWorkbook(getXSSFWorkbook(filePath), 100);
-            //获取第一个Sheet页
             SXSSFSheet sheet = (SXSSFSheet) sxssfWorkbook.getSheetAt(0);
             for(int z=0;z<6;z++){
                 sheet.setColumnWidth(z,25*256);
@@ -196,7 +192,7 @@ public class RecordActivity extends AppCompatActivity {
             outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
             sxssfWorkbook.write(outputStream);
             outputStream.flush();
-            sxssfWorkbook.dispose();// 释放workbook所占用的所有windows资源
+            sxssfWorkbook.dispose();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

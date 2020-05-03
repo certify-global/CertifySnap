@@ -171,7 +171,6 @@ public class InitializationActivity extends Activity {
                     if(!TextUtils.isEmpty(validtime)) {
                         if (processImg(name + "-" + mobile, jpgpath, mobile)) {
                             Log.e(TAG, "processImg success");
-                            //信息写入成功数据库,先检测有没有数据，有则更新，无则写入
                             boolean issuccess = writeRegisterDatabase(name, mobile, validtime);
                             if(issuccess){
                                 progressBar.setProgress(successNum++);
@@ -386,7 +385,6 @@ public class InitializationActivity extends Activity {
         dialog.show();
     }
 
-    //删除文件夹所有文件
     private void deleteDirFile(String path){
         File Dir = new File(path);
         if (Dir.exists() && Dir.isDirectory()) {

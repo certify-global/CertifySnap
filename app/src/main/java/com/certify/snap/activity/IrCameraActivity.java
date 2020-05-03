@@ -321,7 +321,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private PendingIntent mPendingIntent;
     private boolean isDetected = false;
     private SwipeCardThread mSwipeCardThread;
-    private int DATA_BLOCK = 8;//第二扇区第1快
+    private int DATA_BLOCK = 8;
     private final byte[] password1 = new byte[]{(byte) 0x80, (byte) 0x60,
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private AlertDialog nfcDialog;
@@ -360,7 +360,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Logger.toast(this, getResources().getString(R.string.network_error));
             }
 
-        //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
@@ -586,7 +585,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, YYYY hh:mm:ss a", Locale.ENGLISH);//yyyy-MM-dd HH:mm:ss
-                Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                Date curDate = new Date(System.currentTimeMillis());
                 final String str = formatter.format(curDate);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -885,10 +884,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
             }
 
-            //请求FR的回调
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
-                //FR成功
                 if (faceFeature != null) {
                     Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isIdentified);
                     if (isIdentified) return;
@@ -1003,7 +1000,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                             this.cancel();
                                         }
-                                    }, 3 * 1000);//20秒
+                                    }, 3 * 1000);//20
                                 }
                             });
                         }

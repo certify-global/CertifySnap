@@ -16,12 +16,7 @@ import com.certify.snap.model.RegisteredMembers;
 import java.io.InputStream;
 import java.util.List;
 
-/**
- * 作者    ljf
- * 时间    2019/6/13 0013 11:55
- * 文件    Telpo_Face_Demo_0610
- * 描述
- */
+
 public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHolder> {
 
     Context mcontext;
@@ -77,19 +72,14 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
 
             Glide.with(mcontext)
                     .load(path)
-                    .skipMemoryCache(true) // 不使用内存缓存
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.mipmap.face_title)
                     .into(holder.image);
 //            inputStream = new FileInputStream(new File(path));
-//            // 创建一个原图的拷贝, 把拷贝的图片 放在iv
-//            // 原图对应的bitmap 注意:这个图片是只读的 不可以被修改.
 //            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//            // 创建一个可以被修改的位图资源,宽高信息 和 图片的类型 跟原图是一模一样
-//            // 下面的代码创建的图片 是一个空白的图片
 //            if(bitmap!=null) {
 //                Bitmap bitmap2 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-//                // 拿着可以被修改的图片创建一个画布.
 //                Canvas canvas = new Canvas(bitmap2);
 //                Paint paint = new Paint();
 //                canvas.drawBitmap(bitmap, new Matrix(), paint);
@@ -140,10 +130,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
 
         public MyViewHolder(View view) {
             super(view);
-            image = (ImageView) view.findViewById(R.id.member_image);
-            name = (TextView) view.findViewById(R.id.member_name);
-            mobile = (TextView) view.findViewById(R.id.member_mobile);
-            time = (TextView) view.findViewById(R.id.member_time);
+            image = view.findViewById(R.id.member_image);
+            name = view.findViewById(R.id.member_name);
+            mobile = view.findViewById(R.id.member_mobile);
+            time = view.findViewById(R.id.member_time);
         }
     }
 
