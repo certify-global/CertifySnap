@@ -1,5 +1,6 @@
 package com.certify.snap.activity;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +16,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
-public class ScanViewActivity extends AppCompatActivity {
+public class ScanViewActivity extends Activity {
 
     private SharedPreferences sp;
     EditText et_screen_delay;
@@ -94,6 +95,7 @@ public class ScanViewActivity extends AppCompatActivity {
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    finish();
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
                 }
             });

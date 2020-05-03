@@ -212,6 +212,6 @@
     <string name="capture_images">Capture images of Users Temperature above Threshold</string>
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound on High temperature</string>
-    <string name="screen_delay">Screen Delay</string>
+    <string name="screen_delay">Enter delay time in millisec</string>
 
 </resources>

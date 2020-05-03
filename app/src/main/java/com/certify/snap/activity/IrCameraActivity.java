@@ -250,6 +250,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private float temperature = 0;
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
+    private long delayMilli=0;
 
 
     @Override
@@ -808,8 +809,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             tackPickRgb = true;
                             temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
                             String tempString = String.format("%,.1f", temperature);
-
-
                             Log.e("temperature str-", temperature + "");
                             String testing_tempe = sp.getString(GlobalParameters.TEMP_TEST, "99");
                             Float tmpFloat = Float.parseFloat(testing_tempe);
@@ -818,6 +817,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
                                 Log.e("temperatureBitmap", "" + (temperatureBitmap == null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
+                                malertBeep.playBeepSoundAndVibrate();
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
                                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
@@ -929,11 +929,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     // //.playBeepSoundAndVibrate();
                                                     requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  img_temperature.setImageResource(result ? R.drawable.stop : R.drawable.r);
-                                                    tv_message.setVisibility(View.VISIBLE);
+                                                    if(sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)) {
+                                                        tv_message.setVisibility(View.VISIBLE);
+                                                    }else{
+                                                        tv_message.setVisibility(View.GONE);
+                                                    }
                                                     tv_message.setTextColor(getResources().getColor(R.color.white));
                                                     tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.green));
                                                     tv_message.setText(temperature);
                                                     img_temperature.setVisibility(View.GONE);
+                                                    String longVal=sp.getString(GlobalParameters.DELAY_VALUE,"3000");
+                                                    if(longVal.equals("")){
+                                                        delayMilli=3000;
+                                                    }else{
+                                                        delayMilli = Long.parseLong(longVal);
+                                                    }
                                                     new Handler().postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
@@ -954,10 +964,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                                 public void run() {
                                                                     clearLeftFace(null);
                                                                 }
-                                                            }, 3000);
+                                                            }, delayMilli);
                                                             //     clearLeftFace(null);
                                                         }
-                                                    }, 3000);
+                                                    }, delayMilli);
                                                     //requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  faceHelper.setName(requestId, getString(R.string.VISITOR) + requestId);
                                                 }

@@ -30,40 +30,41 @@ public class ThermalSetting extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_thermal_setting);
-         rubiklight = Typeface.createFromAsset(getAssets(),
-                "rubiklight.ttf");
-        text_input_title=findViewById(R.id.text_input_title);
-        text_input_subtitle=findViewById(R.id.text_input_subtitle);
-        edittext_title=findViewById(R.id.edittext_title);
-        edittext_subtitle=findViewById(R.id.edittext_subtitle);
-        btn_save=findViewById(R.id.btn_exit);
-        tv_welcome=findViewById(R.id.tv_welcome);
-        tv_welcome.setTypeface(rubiklight);
-        sp=Util.getSharedPreferences(this);
+        try {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setContentView(R.layout.activity_thermal_setting);
+            rubiklight = Typeface.createFromAsset(getAssets(),
+                    "rubiklight.ttf");
+            text_input_title = findViewById(R.id.text_input_title);
+            text_input_subtitle = findViewById(R.id.text_input_subtitle);
+            edittext_title = findViewById(R.id.edittext_title);
+            edittext_subtitle = findViewById(R.id.edittext_subtitle);
+            btn_save = findViewById(R.id.btn_exit);
+            tv_welcome = findViewById(R.id.tv_welcome);
+            tv_welcome.setTypeface(rubiklight);
+            sp = Util.getSharedPreferences(this);
 
 
+            btn_save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                    title = edittext_title.getText().toString();
+                    if (title.equals("")) {
+                        Util.writeString(sp, GlobalParameters.Thermalscan_title, "THERMAL SCAN");
+                    } else {
+                        Util.writeString(sp, GlobalParameters.Thermalscan_title, title);
+                    }
+                    Util.writeString(sp, GlobalParameters.Thermalscan_subtitle, edittext_subtitle.getText().toString());
 
-        btn_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                title=edittext_title.getText().toString();
-                if(title.equals("")) {
-                    Util.writeString(sp, GlobalParameters.Thermalscan_title, "THERMAL SCAN");
-                }else{
-                    Util.writeString(sp, GlobalParameters.Thermalscan_title,title);
                 }
-                Util.writeString(sp, GlobalParameters.Thermalscan_subtitle,edittext_subtitle.getText().toString());
-
-            }
-        });
+            });
 
 
-
-
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
 
 
