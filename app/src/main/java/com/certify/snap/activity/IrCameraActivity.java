@@ -250,7 +250,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private float temperature = 0;
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
-    private long delayMilli=0;
+    private long delayMilli = 0;
 
 
     @Override
@@ -383,41 +383,43 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                View view = LayoutInflater.from(IrCameraActivity.this).inflate(R.layout.layout_login, null);
-                final EditText etPassword = view.findViewById(R.id.et_password);
-
-
-                builder = new AlertDialog.Builder(IrCameraActivity.this).setView(view).setTitle(getString(R.string.login)).setIcon(R.drawable.logo_small)
-                        .setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                String input = Util.getSNCode();     //input string
-                                String lastsixDigits = "";     //substring containing last 4 characters
-
-                                if (input.length() > 6) {
-                                    lastsixDigits = input.substring(input.length() - 6);
-                                } else {
-                                    lastsixDigits = input;
-                                }
-
-
-                                if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
-                                    Intent loginIt = new Intent(IrCameraActivity.this, SettingActivity.class);
-                                    startActivity(loginIt);
-                                    finish();
-                                } else {
-                                    Toast.makeText(IrCameraActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                            }
-                        });
-
-                builder.create().show();
+                Intent loginIt = new Intent(IrCameraActivity.this, SettingActivity.class);
+                startActivity(loginIt);
+                finish();
+//                View view = LayoutInflater.from(IrCameraActivity.this).inflate(R.layout.layout_login, null);
+//                final EditText etPassword = view.findViewById(R.id.et_password);
+//
+//
+//                builder = new AlertDialog.Builder(IrCameraActivity.this).setView(view).setTitle(getString(R.string.login)).setIcon(R.drawable.logo_small)
+//                        .setPositiveButton(getString(R.string.confirm), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                String input = Util.getSNCode();     //input string
+//                                String lastsixDigits = "";     //substring containing last 4 characters
+//
+//                                if (input.length() > 6) {
+//                                    lastsixDigits = input.substring(input.length() - 6);
+//                                } else {
+//                                    lastsixDigits = input;
+//                                }
+//
+//
+//                                if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
+//                                    Intent loginIt = new Intent(IrCameraActivity.this, SettingActivity.class);
+//                                    startActivity(loginIt);
+//                                    finish();
+//                                } else {
+//                                    Toast.makeText(IrCameraActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
+//                                }
+//                            }
+//                        }).setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//
+//                            }
+//                        });
+//
+//                builder.create().show();
             }
         });
 
@@ -926,19 +928,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     // //.playBeepSoundAndVibrate();
                                                     requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  img_temperature.setImageResource(result ? R.drawable.stop : R.drawable.r);
-                                                    if(sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)) {
+                                                    if (sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true)) {
                                                         tv_message.setVisibility(View.VISIBLE);
-                                                    }else{
+                                                    } else {
                                                         tv_message.setVisibility(View.GONE);
                                                     }
                                                     tv_message.setTextColor(getResources().getColor(R.color.white));
                                                     tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.green));
                                                     tv_message.setText(temperature);
                                                     img_temperature.setVisibility(View.GONE);
-                                                    String longVal=sp.getString(GlobalParameters.DELAY_VALUE,"3000");
-                                                    if(longVal.equals("")){
-                                                        delayMilli=3000;
-                                                    }else{
+                                                    String longVal = sp.getString(GlobalParameters.DELAY_VALUE, "3000");
+                                                    if (longVal.equals("")) {
+                                                        delayMilli = 3000;
+                                                    } else {
                                                         delayMilli = Long.parseLong(longVal);
                                                     }
                                                     new Handler().postDelayed(new Runnable() {

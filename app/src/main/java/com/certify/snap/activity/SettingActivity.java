@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,17 +15,21 @@ import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
@@ -53,12 +58,14 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sp;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-    thermal_check_setting,scan_setting;
+            thermal_check_setting, scan_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint,tv_version,tv_thermal_setting,tv_scan_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting;
     Typeface rubiklight;
     private String userMail;
+    private LinearLayout llSettings;
+    private AlertDialog.Builder builder;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -102,20 +109,20 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             Log.e("sp---false", "activate:" + sp.getBoolean("activate", false));
         }
 
-
+        LoginDialog();
     }
 
 
     private void initView() {
-
-        activate = (RelativeLayout) findViewById(R.id.setting_activate);
-        init = (RelativeLayout) findViewById(R.id.setting_init);
-        updatelist = (RelativeLayout) findViewById(R.id.setting_updatelist);
-        management = (RelativeLayout) findViewById(R.id.setting_managment);
-        register = (RelativeLayout) findViewById(R.id.setting_register);
-        parameter = (RelativeLayout) findViewById(R.id.setting_parameter);
-        led = (RelativeLayout) findViewById(R.id.setting_led);
-        thermal_check_setting = (RelativeLayout) findViewById(R.id.thermal_check_setting);
+        llSettings = findViewById(R.id.ll_settings);
+        activate = findViewById(R.id.setting_activate);
+        init = findViewById(R.id.setting_init);
+        updatelist = findViewById(R.id.setting_updatelist);
+        management = findViewById(R.id.setting_managment);
+        register = findViewById(R.id.setting_register);
+        parameter = findViewById(R.id.setting_parameter);
+        led = findViewById(R.id.setting_led);
+        thermal_check_setting = findViewById(R.id.thermal_check_setting);
         card = findViewById(R.id.setting_activate_card);
         record = findViewById(R.id.setting_record);
         setting_temperature = findViewById(R.id.setting_temperature);
@@ -140,7 +147,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         tv_version.setTypeface(rubiklight);
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
-        tv_version.setText("Version: "+sp.getString(GlobalParameters.MobileAppVersion, ""));
+        tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
     }
 
     @Override
@@ -156,7 +163,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = faceEngine.activeOnline(SettingActivity.this, Constants.APP_ID, Constants.SDK_KEY);
+                int activeCode = FaceEngine.activeOnline(SettingActivity.this, Constants.APP_ID, Constants.SDK_KEY);
                 emitter.onNext(activeCode);
             }
         })
@@ -183,7 +190,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                             view.setClickable(true);
                         }
                         ActiveFileInfo activeFileInfo = new ActiveFileInfo();
-                        int res = faceEngine.getActiveFileInfo(SettingActivity.this, activeFileInfo);
+                        int res = FaceEngine.getActiveFileInfo(SettingActivity.this, activeFileInfo);
                         if (res == ErrorInfo.MOK) {
                             Log.e("activate---", activeFileInfo.toString());
                         }
@@ -253,11 +260,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                 endpointDialog();
                 break;
             case R.id.thermal_check_setting:
-                Intent intent=new Intent(SettingActivity.this,ThermalSetting.class);
+                Intent intent = new Intent(SettingActivity.this, ThermalSetting.class);
                 startActivity(intent);
                 break;
             case R.id.scan_setting:
-                Intent intent1=new Intent(SettingActivity.this,ScanViewActivity.class);
+                Intent intent1 = new Intent(SettingActivity.this, ScanViewActivity.class);
                 startActivity(intent1);
                 break;
             case R.id.btn_exit:
@@ -277,7 +284,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
 
-        final EditText userInput = (EditText) promptsView
+        final EditText userInput = promptsView
                 .findViewById(R.id.et_endpoint);
         userInput.setText(sp.getString(GlobalParameters.URL, EndPoints.prod_url));
 
@@ -314,7 +321,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     private void pwdDialog() {
         View view = getLayoutInflater().inflate(R.layout.access_password, null);
 
-        final EditText acceptUserInput = (EditText) view.findViewById(R.id.access_pwd);
+        final EditText acceptUserInput = view.findViewById(R.id.access_pwd);
 
         final AlertDialog alertDialog = new AlertDialog.Builder(SettingActivity.this)
                 .setView(view)
@@ -373,7 +380,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
 
-        final EditText userInput = (EditText) promptsView
+        final EditText userInput = promptsView
                 .findViewById(R.id.editTextDialogUserInput);
         userInput.setText(sp.getString(GlobalParameters.TEMP_TEST, "99"));
 
@@ -470,6 +477,58 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+        }
+    }
+
+    private void LoginDialog() {
+        try {
+            final Dialog dialogL = new Dialog(SettingActivity.this);
+            dialogL.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialogL.setContentView(R.layout.layout_login);
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            if (dialogL.getWindow() == null) return;
+            dialogL.getWindow().setGravity(Gravity.CENTER);
+            dialogL.getWindow().setLayout(displayMetrics.widthPixels, LinearLayout.LayoutParams.WRAP_CONTENT);
+            TextView tv_confirm = dialogL.findViewById(R.id.tv_confirm);
+            TextView tv_cancel = dialogL.findViewById(R.id.tv_cancel);
+            final EditText etPassword = dialogL.findViewById(R.id.et_password);
+            tv_confirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    String input = Util.getSNCode();     //input string
+                    String lastsixDigits = "";     //substring containing last 4 characters
+
+                    if (input.length() > 6) {
+                        lastsixDigits = input.substring(input.length() - 6);
+                    } else {
+                        lastsixDigits = input;
+                    }
+                    if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
+                        dialogL.dismiss();
+                         llSettings.setVisibility(View.VISIBLE);
+                    } else {
+                        Toast.makeText(SettingActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+            //  Button btNo = dialogL.findViewById(R.id.bt_no_lang);
+            tv_cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogL.dismiss();
+                    Util.switchRgbOrIrActivity(SettingActivity.this, true);
+                    finish();
+                }
+            });
+
+            dialogL.show();
+//
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

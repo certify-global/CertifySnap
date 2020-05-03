@@ -379,7 +379,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             public boolean onLongClick(View v) {
 
                 View view = LayoutInflater.from(RgbCameraActivity.this).inflate(R.layout.layout_login, null);
-                final EditText etUsername = view.findViewById(R.id.et_username);
+               // final EditText etUsername = view.findViewById(R.id.et_username);
                 final EditText etPassword = view.findViewById(R.id.et_password);
 
                 builder = new AlertDialog.Builder(RgbCameraActivity.this).setView(view).setTitle(getString(R.string.logout)).setIcon(R.drawable.logo_small)

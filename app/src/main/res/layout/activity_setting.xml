@@ -6,10 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.certify.snap.activity.SettingActivity">
 
-    <LinearLayout
+    <LinearLayout android:id="@+id/ll_settings"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="match_parent"
