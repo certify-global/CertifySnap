@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
@@ -21,12 +23,16 @@ public class ScanViewActivity extends Activity {
     private SharedPreferences sp;
     EditText et_screen_delay;
     Button btn_save;
+    Typeface rubiklight;
+    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            rubiklight = Typeface.createFromAsset(getAssets(),
+                    "rubiklight.ttf");
             setContentView(R.layout.activity_scan_view);
             sp = Util.getSharedPreferences(this);
             RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
@@ -43,6 +49,16 @@ public class ScanViewActivity extends Activity {
             RadioButton radio_no_sound = findViewById(R.id.radio_no_sound);
             et_screen_delay = findViewById(R.id.et_screen_delay);
             btn_save = findViewById(R.id.btn_exit);
+            tv_delay = findViewById(R.id.tv_delay);
+            tv_sound = findViewById(R.id.tv_sound);
+            tv_temp_all = findViewById(R.id.tv_temp_all);
+            tv_capture_image = findViewById(R.id.tv_capture_image);
+            tv_temp_details = findViewById(R.id.tv_temp_details);
+            tv_delay.setTypeface(rubiklight);
+            tv_sound.setTypeface(rubiklight);
+            tv_temp_all.setTypeface(rubiklight);
+            tv_capture_image.setTypeface(rubiklight);
+            tv_temp_details.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);

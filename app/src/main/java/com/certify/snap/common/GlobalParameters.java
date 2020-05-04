@@ -63,6 +63,12 @@ public class GlobalParameters {
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
     public static final String CAPTURE_SOUND = "c_m_sound";
     public static final String DELAY_VALUE="delay_value";
+    public static final String DELAY_VALUE_CONFIRM="delay_value_confirm";
+    public static final String CONFIRM_SCREEN="confirm_screen";
+    public static final String Confirm_title_below = "Confirm_title_below";
+    public static final String Confirm_subtitle_below = "Confirm_subtitle_below";
+    public static final String Confirm_title_above = "Confirm_title_above";
+    public static final String Confirm_subtitle_above = "Confirm_subtitle_above";
 
 
 }

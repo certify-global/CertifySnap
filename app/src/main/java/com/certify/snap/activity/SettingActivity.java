@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,10 +57,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sp;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-            thermal_check_setting, scan_setting;
+            thermal_check_setting, scan_setting,confirmation_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting,tv_confirmation_setting;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -127,6 +126,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         parameter = findViewById(R.id.setting_parameter);
         led = findViewById(R.id.setting_led);
         thermal_check_setting = findViewById(R.id.thermal_check_setting);
+        confirmation_setting = findViewById(R.id.confirmation_setting);
         card = findViewById(R.id.setting_activate_card);
         record = findViewById(R.id.setting_record);
         setting_temperature = findViewById(R.id.setting_temperature);
@@ -142,6 +142,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         tv_version = findViewById(R.id.tv_version);
         tv_thermal_setting = findViewById(R.id.tv_thermal_setting);
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
+        tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -151,6 +152,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         tv_version.setTypeface(rubiklight);
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
+        tv_confirmation_setting.setTypeface(rubiklight);
         tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
     }
 
@@ -270,6 +272,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             case R.id.scan_setting:
                 Intent intent1 = new Intent(SettingActivity.this, ScanViewActivity.class);
                 startActivity(intent1);
+                break;
+            case R.id.confirmation_setting:
+                Intent confirmationIntent = new Intent(SettingActivity.this, ConfirmationViewSetting.class);
+                startActivity(confirmationIntent);
                 break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);

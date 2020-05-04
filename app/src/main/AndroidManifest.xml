@@ -60,6 +60,15 @@
             android:name=".activity.ThermalSetting"
             android:launchMode="singleTask" />
         <activity
+            android:name=".activity.ConfirmationScreenActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.ConfirmationViewSetting"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.ThermalSetting"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".activity.ScanViewActivity"
             android:screenOrientation="portrait" />
         <activity
