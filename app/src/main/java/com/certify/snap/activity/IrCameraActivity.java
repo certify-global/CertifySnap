@@ -783,10 +783,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
                                 .getDataAndBitmap(50, true, new HotImageCallback.Stub() {
                                     @Override
-                                    public void onTemperatureFail(String e) throws RemoteException {
-                                        if (e != null)
-                                            Toast.makeText(IrCameraActivity.this, e, Toast.LENGTH_LONG).show();
-                                        Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", e);
+                                    public void onTemperatureFail(final String e) throws RemoteException {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    if (e != null && !e.isEmpty()) {
+                                                        JSONObject obj = new JSONObject(e);
+                                                        Toast.makeText(IrCameraActivity.this, obj.getString("err"), Toast.LENGTH_LONG).show();
+                                                    } else
+                                                        Toast.makeText(IrCameraActivity.this, "" + e, Toast.LENGTH_LONG).show();
+                                                } catch (Exception ee) {
+
+                                                }
+                                            }
+                                        }); Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", e);
                                         retry(tempretrynum);
                                     }
 
@@ -799,7 +810,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             public void run() {
                                                 if (data.getBitmap() != null) {
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
-                                                    temperature_image.setVisibility(View.VISIBLE);
+                                                  //  temperature_image.setVisibility(View.VISIBLE);
                                                     //  rl_header.setVisibility(View.VISIBLE);
                                                     temperature_image.setImageBitmap(data.getBitmap());
                                                     //                        //temperature_image.setImageBitmap(da);
@@ -930,8 +941,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     //if(ir!=null)
                                                     tackPickRgb = false;
                                                     tackPickIr = false;
-                                                    //temperature_image.setImageBitmap(rgbBitmap);
-                                                    //temperature_image.setVisibility(View.VISIBLE); // if (result)
+                                                    if(temperatureBitmap!=null)
+                                                    temperature_image.setVisibility(View.VISIBLE); // if (result)
                                                     // //.playBeepSoundAndVibrate();
                                                     requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  img_temperature.setImageResource(result ? R.drawable.stop : R.drawable.r);
@@ -965,6 +976,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             tackPickRgb = true;
                                                             irBitmap = null;
                                                             rgbBitmap = null;
+                                                            temperature_image.setVisibility(View.GONE);
                                                             if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, false)) {
                                                                 Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                                                                 intent.putExtra("tempVal", tempVal);
