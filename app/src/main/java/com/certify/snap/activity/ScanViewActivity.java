@@ -75,6 +75,8 @@ public class ScanViewActivity extends Activity {
                 radio_yes_sound.setChecked(true);
             else radio_no_sound.setChecked(true);
 
+            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3000"));
+
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {

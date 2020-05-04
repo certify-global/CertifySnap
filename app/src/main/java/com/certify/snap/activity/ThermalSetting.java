@@ -47,6 +47,9 @@ public class ThermalSetting extends Activity {
             tv_thermal_view.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
 
+            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title,""));
+            edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle,""));
+
 
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override

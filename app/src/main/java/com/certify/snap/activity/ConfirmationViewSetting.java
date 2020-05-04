@@ -73,7 +73,11 @@ public class ConfirmationViewSetting extends Activity {
                 }
             });
 
-
+            edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,""));
+            edittext_subtitle_below.setText(sp.getString(GlobalParameters.Confirm_subtitle_below,""));
+            edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,""));
+            edittext_subtitle_above.setText(sp.getString(GlobalParameters.Confirm_subtitle_above,""));
+            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,""));
             btn_exit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
