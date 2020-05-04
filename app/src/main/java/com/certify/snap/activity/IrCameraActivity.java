@@ -252,7 +252,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
     public static boolean loginAction = false;
-    private String tempVal;
+    private String tempVal = "";
 
 
     @Override
@@ -784,6 +784,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 .getDataAndBitmap(50, true, new HotImageCallback.Stub() {
                                     @Override
                                     public void onTemperatureFail(String e) throws RemoteException {
+                                        if (e != null)
+                                            Toast.makeText(IrCameraActivity.this, e, Toast.LENGTH_LONG).show();
                                         Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", e);
                                         retry(tempretrynum);
                                     }
@@ -822,7 +824,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Log.e("temperatureBitmap", "" + (temperatureBitmap == null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
                                 malertBeep.playBeepSoundAndVibrate();
-                                tempVal="high";
+                                tempVal = "high";
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
                                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
@@ -832,7 +834,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             } else {
                                 text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
                                 mTemperatureListenter.onTemperatureCall(false, text);
-                                tempVal="normal";
+                                tempVal = "normal";
                                 Log.d("temperture---", "isUnusualTem-" + temperatureData.isUnusualTem() + "-" + text);
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
@@ -963,11 +965,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             tackPickRgb = true;
                                                             irBitmap = null;
                                                             rgbBitmap = null;
-                                                            if(sp.getBoolean(GlobalParameters.CONFIRM_SCREEN,false)){
-                                                                Intent intent=new Intent(IrCameraActivity.this,ConfirmationScreenActivity.class);
-                                                                intent.putExtra("tempVal",tempVal);
+                                                            if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, false)) {
+                                                                Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
+                                                                intent.putExtra("tempVal", tempVal);
                                                                 startActivity(intent);
-                                                            }else {
+                                                                finish();
+                                                            } else {
                                                                 new Handler().postDelayed(new Runnable() {
                                                                     @Override
                                                                     public void run() {

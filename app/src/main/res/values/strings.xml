@@ -218,5 +218,7 @@
     <string name="enable_temperature">Enable Confirmation Screen</string>
     <string name="confirmation_text_below">Confirmation text for temperature below threshold</string>
     <string name="confirmation_text_above">Confirmation text for temperature above threshold</string>
+    <string name="scan_view">Scan view</string>
+    <string name="thermal_view">Thermal view</string>
 
 </resources>

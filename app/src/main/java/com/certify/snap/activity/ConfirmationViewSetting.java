@@ -23,7 +23,7 @@ import com.certify.snap.common.Util;
 public class ConfirmationViewSetting extends Activity {
     Typeface rubiklight;
     TextView tv_welcome,confirmation_screen,tv_confirm_above,tv_confirm_below;
-    TextInputLayout text_input_title_below,text_input_subtitle_below,text_input_title_above,text_input_subtitle_above;
+    TextInputLayout text_input_title_below,text_input_subtitle_below,text_input_title_above,text_input_subtitle_above,text_input_delay;
     private SharedPreferences sp;
     EditText edittext_title_below,edittext_subtitle_below,edittext_title_above,edittext_subtitle_above,et_screen_delay;
     Button btn_exit;
@@ -54,6 +54,7 @@ public class ConfirmationViewSetting extends Activity {
             edittext_title_above = findViewById(R.id.edittext_title_above);
             edittext_subtitle_above = findViewById(R.id.edittext_subtitle_above);
             et_screen_delay = findViewById(R.id.et_screen_delay);
+            text_input_delay = findViewById(R.id.text_input_delay);
             btn_exit = findViewById(R.id.btn_exit);
             tv_welcome.setTypeface(rubiklight);
             confirmation_screen.setTypeface(rubiklight);
@@ -76,13 +77,13 @@ public class ConfirmationViewSetting extends Activity {
             btn_exit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE_CONFIRM,et_screen_delay.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.Confirm_title_below, edittext_title_below.getText().toString());
                     Util.writeString(sp, GlobalParameters.Confirm_subtitle_below, edittext_subtitle_below.getText().toString());
                     Util.writeString(sp, GlobalParameters.Confirm_title_above, edittext_title_above.getText().toString());
                     Util.writeString(sp, GlobalParameters.Confirm_subtitle_above, edittext_subtitle_above.getText().toString());
 
+                    finish();
                 }
             });
 

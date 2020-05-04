@@ -3,7 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+    <TextView
+        android:id="@+id/tv_thermal_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/thermal_view"
+        android:gravity="left"
+        android:textSize="22dp"
+        android:textColor="@color/blue"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"></TextView>
     <TextView
         android:id="@+id/tv_welcome"
         android:layout_width="match_parent"

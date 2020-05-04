@@ -23,7 +23,7 @@ public class ThermalSetting extends Activity {
     SharedPreferences sp;
     Button btn_save;
     Typeface rubiklight;
-    TextView tv_welcome;
+    TextView tv_welcome,tv_thermal_view;
     String title="";
 
 
@@ -42,7 +42,9 @@ public class ThermalSetting extends Activity {
             edittext_subtitle = findViewById(R.id.edittext_subtitle);
             btn_save = findViewById(R.id.btn_exit);
             tv_welcome = findViewById(R.id.tv_welcome);
+            tv_thermal_view = findViewById(R.id.tv_thermal_view);
             tv_welcome.setTypeface(rubiklight);
+            tv_thermal_view.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
 
 

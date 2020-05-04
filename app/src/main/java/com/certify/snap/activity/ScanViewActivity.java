@@ -24,7 +24,7 @@ public class ScanViewActivity extends Activity {
     EditText et_screen_delay;
     Button btn_save;
     Typeface rubiklight;
-    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details;
+    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +53,14 @@ public class ScanViewActivity extends Activity {
             tv_sound = findViewById(R.id.tv_sound);
             tv_temp_all = findViewById(R.id.tv_temp_all);
             tv_capture_image = findViewById(R.id.tv_capture_image);
+            tv_scan = findViewById(R.id.tv_scan);
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
             tv_capture_image.setTypeface(rubiklight);
             tv_temp_details.setTypeface(rubiklight);
+            tv_scan.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);

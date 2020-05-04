@@ -12,6 +12,7 @@
         android:text="Thank You"
         android:textSize="@dimen/margin_30"
         android:layout_centerInParent="true"
+        android:textColor="@color/black"
         android:gravity="center"></TextView>
 
 
@@ -22,6 +23,7 @@
         android:text="Welcome"
         android:textSize="@dimen/margin_30"
         android:gravity="center"
+        android:textColor="@color/black"
         android:layout_below="@id/tv_title"
         android:layout_marginTop="10dp"></TextView>
 
