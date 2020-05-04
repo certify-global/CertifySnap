@@ -108,8 +108,12 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             activeEngine(null);
             Log.e("sp---false", "activate:" + sp.getBoolean("activate", false));
         }
-
-        LoginDialog();
+        if (IrCameraActivity.loginAction) {
+            LoginDialog();
+            IrCameraActivity.loginAction = false;
+        } else {
+            llSettings.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -506,7 +510,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                     }
                     if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                         dialogL.dismiss();
-                         llSettings.setVisibility(View.VISIBLE);
+                        llSettings.setVisibility(View.VISIBLE);
                     } else {
                         Toast.makeText(SettingActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
                     }

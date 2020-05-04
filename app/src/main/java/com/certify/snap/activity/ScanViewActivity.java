@@ -53,7 +53,7 @@ public class ScanViewActivity extends Activity {
             if(sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true))
                 radio_yes_temp.setChecked(true);
             else radio_no_temp.setChecked(true);
-            if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,true))
+            if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false))
                 radio_yes_sound.setChecked(true);
             else radio_no_sound.setChecked(true);
 
@@ -90,7 +90,6 @@ public class ScanViewActivity extends Activity {
                     else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, false);
                 }
             });
-
 
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override

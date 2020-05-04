@@ -175,8 +175,8 @@ public class Util {
                         true);
     }
 
-    //保存bitmap
-    public static String saveBitmapFile(Bitmap bm, String fileName) throws IOException {//将Bitmap类型的图片转化成file类型，便于上传到服务器
+    //bitmap
+    public static String saveBitmapFile(Bitmap bm, String fileName) throws IOException {//Bitmap
         String path = Environment.getExternalStorageDirectory() + "/pic/";
         File dirFile = new File(path);
         if (!dirFile.exists()) {
@@ -195,7 +195,6 @@ public class Util {
 
     }
 
-    //获取带0的数值
     public static String getnumberString(int number) {
         String numberstr = "";
         try {
@@ -211,7 +210,7 @@ public class Util {
     }
 
     /**
-     * 缩放Bitmap图片
+     * Bitmap
      **/
     public static Bitmap zoomBitmap(Bitmap bitmap, int width, int height) {
         int w = bitmap.getWidth();
@@ -219,20 +218,18 @@ public class Util {
         Matrix matrix = new Matrix();
         float scaleWidth = ((float) width / w);
         float scaleHeight = ((float) height / h);
-        matrix.postScale(scaleWidth, scaleHeight);// 利用矩阵进行缩放不会造成内存溢出
+        matrix.postScale(scaleWidth, scaleHeight);
         Bitmap newbmp = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
         return newbmp;
     }
 
     /**
-     * 以最省内存的方式读取本地资源的图片
      */
     public static Bitmap readBitMap(String path) {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
         opt.inPurgeable = true;
         opt.inInputShareable = true;
-        // 获取资源图片
         return BitmapFactory.decodeFile(path, opt);
     }
 
@@ -251,25 +248,25 @@ public class Util {
         return inSampleSize;
     }
 
-    // 如果是放大图片，filter决定是否平滑，如果是缩小图片，filter无影响
+    //filter
     public static Bitmap createScaleBitmap(Bitmap src, int dstWidth, int dstHeight) {
         Bitmap dst = Bitmap.createScaledBitmap(src, dstWidth, dstHeight, false);
-        if (src != dst) { // 如果没有缩放，那么不回收
-            src.recycle(); // 释放Bitmap的native像素数组
+        if (src != dst) {
+            src.recycle(); // Bitmap native
         }
         return dst;
     }
 
-    // 从Resources中加载图片
+    //Resources
     public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId, int reqWidth, int reqHeight) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(res, resId, options); // 读取图片长款
+        BitmapFactory.decodeResource(res, resId, options); //
         options.inSampleSize = calculateInSampleSize(options, reqWidth,
-                reqHeight); // 计算inSampleSize
+                reqHeight); // inSampleSize
         options.inJustDecodeBounds = false;
-        Bitmap src = BitmapFactory.decodeResource(res, resId, options); // 载入一个稍大的缩略图
-        return createScaleBitmap(src, reqWidth, reqHeight); // 进一步得到目标大小的缩略图
+        Bitmap src = BitmapFactory.decodeResource(res, resId, options);
+        return createScaleBitmap(src, reqWidth, reqHeight);
     }
 
     // 从sd卡上加载图片

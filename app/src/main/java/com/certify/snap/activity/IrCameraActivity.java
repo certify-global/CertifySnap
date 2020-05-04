@@ -251,6 +251,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
+    public static boolean loginAction = false;
 
 
     @Override
@@ -383,6 +384,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginAction = true;
                 Intent loginIt = new Intent(IrCameraActivity.this, SettingActivity.class);
                 startActivity(loginIt);
                 finish();
