@@ -22,7 +22,7 @@ public class Logger {
             Log.e(classname,message);
             Analytics.trackEvent(Util.getSNCode()+"Error:"+message);
         }else{
-            Analytics.trackEvent(Util.getSNCode()+"Error:"+message);
+            Analytics.trackEvent("Date Time"+Util.getMMDDYYYYDate()+"SN"+Util.getSNCode()+"Error:"+message);
         }
 
     }
