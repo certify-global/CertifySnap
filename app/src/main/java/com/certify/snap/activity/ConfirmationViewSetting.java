@@ -92,7 +92,7 @@ public class ConfirmationViewSetting extends Activity {
             });
 
         }catch (Exception e){
-            Logger.error(" onCreate(@Nullable Bundle savedInstanceState)",e.getMessage());
+          //  Logger.error(" onCreate(@Nullable Bundle savedInstanceState)",e.getMessage());
         }
     }
 }
