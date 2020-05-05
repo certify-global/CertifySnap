@@ -44,6 +44,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -224,6 +225,7 @@ public class Util {
     }
 
     /**
+     *
      */
     public static Bitmap readBitMap(String path) {
         BitmapFactory.Options opt = new BitmapFactory.Options();
@@ -339,7 +341,7 @@ public class Util {
                 if (status == 1)
                     ShellUtils.execCommand("echo 5 > /sys/class/backlight/led-brightness/brightness", false);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -377,6 +379,7 @@ public class Util {
         }
         return convertSuccess;
     }
+
     public static String getMMDDYYYYDate() {
         try {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -389,6 +392,7 @@ public class Util {
         }
         return "";
     }
+
     public static float FahrenheitToCelcius(float celcius) {
 
         return ((celcius * 9) / 5) + 32;
@@ -405,7 +409,7 @@ public class Util {
         immage.compress(Bitmap.CompressFormat.PNG, 80, baos);
         byte[] b = baos.toByteArray();
         String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
-     //   Log.d("imageEncoded",""+imageEncoded.length());
+        //   Log.d("imageEncoded",""+imageEncoded.length());
         return imageEncoded;
     }
 
@@ -421,7 +425,7 @@ public class Util {
             JSONObject obj = new JSONObject();
             //  obj.put("DeviceSN", Util.getSerialNumber());
 
-            new AsyncJSONObjectSender(obj, callback,sharedPreferences.getString(GlobalParameters.URL,EndPoints.prod_url)+ EndPoints.GenerateToken, context).execute();
+            new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GenerateToken, context).execute();
 
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
@@ -499,7 +503,7 @@ public class Util {
             obj.put("thermalTemplate", therbit == null ? "" : Util.encodeToBase64(therbit));
             obj.put("deviceData", MobileDetails(context));
 
-            new AsyncRecordUserTemperature(obj, callback,sp.getString(GlobalParameters.URL,EndPoints.prod_url)+EndPoints.RecordTemperature, context).execute();
+            new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
@@ -530,7 +534,7 @@ public class Util {
             obj.put("deviceInfo", MobileDetails(context));
 
 
-            new AsyncJSONObjectSender(obj, callback,sp.getString(GlobalParameters.URL,EndPoints.prod_url)+ EndPoints.ActivateApplication, context).execute();
+            new AsyncJSONObjectSender(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ActivateApplication, context).execute();
 
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
@@ -564,8 +568,9 @@ public class Util {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
 
         }
-        return  obj;
+        return obj;
     }
+
     public static Bitmap faceValidation(byte[] oldImage) {
 //       ByteArrayOutputStream oldByte = new ByteArrayOutputStream();
 //       ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(oldImage);
@@ -674,10 +679,30 @@ public class Util {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = false;
         options.inSampleSize = 3;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length,options);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
+    public static void KillApp() {
+        try {
+            Process suProcess = Runtime.getRuntime().exec("su");
+            DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
+
+            os.writeBytes("adb shell" + "\n");
+
+            os.flush();
+
+            os.writeBytes("am force-stop com.telpo.temperatureservice" + "\n");
+
+            os.flush();
+
+//            int pid = getPid(com.XXX);
+//            android.os.Process.killProcess(android.os.Process.myPid());
+
+        } catch (Exception e) {
+            Logger.error(LOG + "KillApp()", e.getMessage());
+        }
+    }
 }

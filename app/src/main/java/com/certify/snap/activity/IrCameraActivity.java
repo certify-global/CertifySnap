@@ -152,7 +152,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isIdentified = false;
     RelativeLayout rl_header;
 
-
     private View previewViewRgb;
     private View previewViewIr;
 
@@ -788,9 +787,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             @Override
                                             public void run() {
                                                 try {
+
+                                                 //  Util.KillApp();
                                                     if (e != null && !e.isEmpty()) {
                                                         JSONObject obj = new JSONObject(e);
-                                                        Toast.makeText(IrCameraActivity.this, obj.getString("err"), Toast.LENGTH_LONG).show();
+                                                        Toast.makeText(IrCameraActivity.this, obj.getString("err"), Toast.LENGTH_SHORT).show();
+                                                 /*   if(obj.getString("err").equals("wrong tem , too cold"))
+                                                        new Handler().postDelayed(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                              //
+                                                            }
+                                                        },2000);*/
                                                     } else
                                                         Toast.makeText(IrCameraActivity.this, "" + e, Toast.LENGTH_LONG).show();
                                                 } catch (Exception ee) {
@@ -810,7 +818,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             public void run() {
                                                 if (data.getBitmap() != null) {
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
-                                                  //  temperature_image.setVisibility(View.VISIBLE);
+                                                    temperature_image.setVisibility(View.VISIBLE);
                                                     //  rl_header.setVisibility(View.VISIBLE);
                                                     temperature_image.setImageBitmap(data.getBitmap());
                                                     //                        //temperature_image.setImageBitmap(da);
@@ -1327,7 +1335,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     relative_main.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
                     temperature_image.setVisibility(View.GONE);
-
                     logo.setVisibility(View.VISIBLE);
 //                    Util.enableLedPower(0);
                 }
