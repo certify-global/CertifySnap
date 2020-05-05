@@ -5,26 +5,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:text="Thank You"
-        android:textSize="@dimen/margin_30"
-        android:layout_centerInParent="true"
+        android:textSize="38sp"
         android:textColor="@color/black"
-        android:gravity="center"></TextView>
+        android:gravity="bottom|center_horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:ellipsize="end"></TextView>
+
 
 
     <TextView
         android:id="@+id/tv_subtitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Welcome"
-        android:textSize="@dimen/margin_30"
-        android:gravity="center"
+        android:layout_height="300dp"
+        android:text="Welcome "
+        android:textSize="32sp"
+        android:gravity="top|center_horizontal"
         android:textColor="@color/black"
         android:layout_below="@id/tv_title"
-        android:layout_marginTop="10dp"></TextView>
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"></TextView>
+
+
 
 </RelativeLayout>

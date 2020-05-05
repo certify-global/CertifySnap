@@ -823,7 +823,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
                                 Log.e("temperatureBitmap", "" + (temperatureBitmap == null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
-                                malertBeep.playBeepSoundAndVibrate();
+                                if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false)) {
+                                    malertBeep.playBeepSoundAndVibrate();
+                                }
                                 tempVal = "high";
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
