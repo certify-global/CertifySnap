@@ -61,9 +61,9 @@ public class ConfirmationScreenActivity extends Activity {
             }
             tv_title.setTypeface(rubiklight);
             tv_subtitle.setTypeface(rubiklight);
-            String longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM, "3000");
+            String longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM, "3");
             if (longVal.equals("")) {
-                delayMilli = 3000;
+                delayMilli = 3;
             } else {
                 delayMilli = Long.parseLong(longVal);
             }
@@ -76,7 +76,7 @@ public class ConfirmationScreenActivity extends Activity {
 //                    startActivity(intent);
 
                 }
-            }, delayMilli);
+            }, delayMilli*1000);
 
         } catch (Exception e) {
             Logger.error(" onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());

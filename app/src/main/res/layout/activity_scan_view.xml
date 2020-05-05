@@ -56,43 +56,6 @@
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
-
-    <TextView
-        android:id="@+id/tv_capture_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_15"
-        android:text="@string/capture_images"
-        android:textColor="@color/black"
-        android:textSize="@dimen/font_18"
-        />
-    <RadioGroup
-        android:id="@+id/radio_group_capture"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_5"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/radio_yes_capture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_30"
-            android:textColor="@color/black"
-            android:text="@string/living_type_1"
-            android:textSize="@dimen/font_14"
-            android:theme="@style/MyCheckBox" />
-
-        <RadioButton
-            android:id="@+id/radio_no_capture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_14"
-            android:text="@string/living_type_0"
-            android:theme="@style/MyCheckBox" />
-
-    </RadioGroup>
     <TextView
         android:id="@+id/tv_temp_all"
         android:layout_width="match_parent"
@@ -129,6 +92,43 @@
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
+    <TextView
+        android:id="@+id/tv_capture_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_15"
+        android:text="@string/capture_images"
+        android:textColor="@color/black"
+        android:textSize="@dimen/font_18"
+        />
+    <RadioGroup
+        android:id="@+id/radio_group_capture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_yes_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_30"
+            android:textColor="@color/black"
+            android:text="@string/living_type_1"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+        <RadioButton
+            android:id="@+id/radio_no_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:text="@string/living_type_0"
+            android:theme="@style/MyCheckBox" />
+
+    </RadioGroup>
+
     <TextView
         android:id="@+id/tv_sound"
         android:layout_width="match_parent"

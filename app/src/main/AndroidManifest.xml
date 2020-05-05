@@ -72,6 +72,9 @@
             android:name=".activity.ScanViewActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".activity.TemperatureActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.certify.snap.activity.InitializationActivity"
             android:launchMode="singleTask" />
         <activity

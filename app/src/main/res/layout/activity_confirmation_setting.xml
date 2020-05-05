@@ -81,9 +81,10 @@
             android:id="@+id/edittext_title_below"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:hint="@string/enter_title"
+            android:hint="@string/enter_title_main"
             android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -99,9 +100,10 @@
             android:id="@+id/edittext_subtitle_below"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:hint="@string/enter_subtitle"
+            android:hint="@string/enter_subtitle_sub"
             android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp" />
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" />
 
     </android.support.design.widget.TextInputLayout>
     <TextView
@@ -124,9 +126,10 @@
             android:id="@+id/edittext_title_above"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:hint="@string/enter_title"
+            android:hint="@string/enter_title_main"
             android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -142,9 +145,10 @@
             android:id="@+id/edittext_subtitle_above"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:hint="@string/enter_subtitle"
+            android:hint="@string/enter_subtitle_sub"
             android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"/>
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
 
     </android.support.design.widget.TextInputLayout>
 

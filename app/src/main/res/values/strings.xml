@@ -163,6 +163,7 @@
     <string name="text_expiredtime">It is beyond the date of expiry,Please contact the administrator!</string>
     <string name="text_passcodeexpired">Passcode has expired</string>
     <string name="centigrade">&#160;°F</string>
+    <string name="centi">&#160;°C</string>
     <string name="temperature_normal">Temperature Normal:&#160;</string>
     <string name="temperature_anormaly">Temperature High:&#160;</string>
     <string name="temperature_retry">Trying to get the temperature, please wait...</string>
@@ -203,22 +204,26 @@
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Thermal check settings</string>
     <string name="welcome_thermal">Welcome Text For Thermal Check</string>
-    <string name="enter_title">Enter Title</string>
-    <string name="enter_subtitle">Enter Subtitle</string>
+    <string name="enter_title">Enter Large Text </string>
+    <string name="enter_subtitle">Enter Small Text </string>
     <string name="display_temperature">Display Temperature Details to the User on Screen</string>
     <string name="color_code">Display color Code for Temperature on the Screen</string>
     <string name="color_message">show Green/Red colors cues on the screen</string>
     <string name="tv_scan_setting">Scan view settings</string>
-    <string name="capture_images">Capture images of Users Temperature above Threshold</string>
+    <string name="capture_images">Capture images of Users with Temperature above Threshold</string>
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound on High temperature</string>
-    <string name="screen_delay">Enter delay time in millisec</string>
+    <string name="screen_delay">Screen display time (seconds)</string>
     <string name="tv_confirmation_setting">Confirmation view settings</string>
     <string name="confirmation_view">Confirmation View</string>
     <string name="enable_temperature">Enable Confirmation Screen</string>
     <string name="confirmation_text_below">Confirmation text for temperature below threshold</string>
     <string name="confirmation_text_above">Confirmation text for temperature above threshold</string>
     <string name="scan_view">Scan view</string>
-    <string name="thermal_view">Thermal view</string>
+    <string name="thermal_view">Home view</string>
+    <string name="enter_title_main">Enter Main Text</string>
+    <string name="enter_subtitle_sub">Enter Sub Text</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="celcius">Celcius</string>
 
 </resources>

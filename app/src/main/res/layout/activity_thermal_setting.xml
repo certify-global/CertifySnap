@@ -11,7 +11,7 @@
         android:gravity="left"
         android:textSize="22dp"
         android:textColor="@color/blue"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:layout_marginLeft="10dp"></TextView>
     <TextView
         android:id="@+id/tv_welcome"
@@ -59,7 +59,7 @@
             android:background="@drawable/edittextbackground"
             android:paddingLeft="05dp"
             android:singleLine="true"
-            android:maxLength="25" />
+            android:maxLength="40"/>
 
     </android.support.design.widget.TextInputLayout>
 

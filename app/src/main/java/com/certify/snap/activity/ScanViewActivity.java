@@ -35,14 +35,14 @@ public class ScanViewActivity extends Activity {
                     "rubiklight.ttf");
             setContentView(R.layout.activity_scan_view);
             sp = Util.getSharedPreferences(this);
-            RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
-            RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
+            final RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
+           final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
             RadioButton rbCaptureNo = findViewById(R.id.radio_no_capture);
             RadioGroup rgCaptureAll = findViewById(R.id.radio_group_capture_all);
             RadioButton rbCaptureAllYes = findViewById(R.id.radio_yes_capture_all);
             RadioButton rbCaptureAllNo = findViewById(R.id.radio_no_capture_all);
-            RadioGroup radio_group_tempe = findViewById(R.id.radio_group_tempe);
-            RadioButton radio_yes_temp = findViewById(R.id.radio_yes_temp);
+            final RadioGroup radio_group_tempe = findViewById(R.id.radio_group_tempe);
+            final RadioButton radio_yes_temp = findViewById(R.id.radio_yes_temp);
             RadioButton radio_no_temp = findViewById(R.id.radio_no_temp);
             RadioGroup radio_group_sound = findViewById(R.id.radio_group_sound);
             RadioButton radio_yes_sound = findViewById(R.id.radio_yes_sound);
@@ -75,7 +75,7 @@ public class ScanViewActivity extends Activity {
                 radio_yes_sound.setChecked(true);
             else radio_no_sound.setChecked(true);
 
-            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3000"));
+            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -88,8 +88,10 @@ public class ScanViewActivity extends Activity {
             rgCaptureAll.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if(checkedId==R.id.radio_yes_capture_all)
+                    if(checkedId==R.id.radio_yes_capture_all) {
+                        rbCaptureYes.setChecked(true);
                         Util.writeBoolean(sp, GlobalParameters.CAPTURE_IMAGES_ALL, true);
+                    }
                     else Util.writeBoolean(sp, GlobalParameters.CAPTURE_IMAGES_ALL, false);
 
                 }

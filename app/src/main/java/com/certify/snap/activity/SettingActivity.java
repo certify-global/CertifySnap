@@ -250,7 +250,9 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                 if (isopen) startActivity(new Intent(SettingActivity.this, RecordActivity.class));
                 break;
             case R.id.setting_temperature:
-                temperatureDialog();
+                //temperatureDialog();
+                Intent tempIntent=new Intent(SettingActivity.this,TemperatureActivity.class);
+                startActivity(tempIntent);
                 break;
             case R.id.setting_upload:
                 Intent i = new Intent(

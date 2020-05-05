@@ -832,14 +832,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             String text = "";
                             tackPickIr = true;
                             tackPickRgb = true;
-                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                            if(sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+                                temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                            }else{
+                                temperature=temperatureData.getTemperature();
+                            }
                             String tempString = String.format("%,.1f", temperature);
                             Log.e("temperature str-", temperature + "");
                             String testing_tempe = sp.getString(GlobalParameters.TEMP_TEST, "99");
                             Float tmpFloat = Float.parseFloat(testing_tempe);
                             Log.e("temperature str-", temperature + " tmpFloat " + tmpFloat);
                             if (temperature > tmpFloat) {
-                                text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
+                                if(sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+                                    text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
+                                }else{
+                                    text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
+                                }
                                 Log.e("temperatureBitmap", "" + (temperatureBitmap == null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
                                 if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false)) {
@@ -853,7 +861,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null);
                                 }
                             } else {
-                                text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
+                                if(sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+                                    text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
+                                }else{
+                                    text = getString(R.string.temperature_normal) + tempString + getString(R.string.centi);
+                                }
                                 mTemperatureListenter.onTemperatureCall(false, text);
                                 tempVal = "normal";
                                 Log.d("temperture---", "isUnusualTem-" + temperatureData.isUnusualTem() + "-" + text);
@@ -965,9 +977,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.green));
                                                     tv_message.setText(temperature);
                                                     img_temperature.setVisibility(View.GONE);
-                                                    String longVal = sp.getString(GlobalParameters.DELAY_VALUE, "3000");
+                                                    String longVal = sp.getString(GlobalParameters.DELAY_VALUE, "3");
                                                     if (longVal.equals("")) {
-                                                        delayMilli = 3000;
+                                                        delayMilli = 3;
                                                     } else {
                                                         delayMilli = Long.parseLong(longVal);
                                                     }
@@ -998,11 +1010,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                                     public void run() {
                                                                         clearLeftFace(null);
                                                                     }
-                                                                }, delayMilli);
+                                                                }, delayMilli*1000);
                                                             }
                                                             //     clearLeftFace(null);
                                                         }
-                                                    }, delayMilli);
+                                                    }, delayMilli*1000);
                                                     //requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  faceHelper.setName(requestId, getString(R.string.VISITOR) + requestId);
                                                 }
