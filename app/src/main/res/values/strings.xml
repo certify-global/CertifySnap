@@ -202,8 +202,8 @@
     <string name="endpoint">Endpoint URL</string>
     <string name="add_cloud">Add device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
-    <string name="tv_thermal_setting">Thermal check settings</string>
-    <string name="welcome_thermal">Welcome Text For Thermal Check</string>
+    <string name="tv_thermal_setting">Home view settings</string>
+    <string name="welcome_thermal">Welcome Text For Home View</string>
     <string name="enter_title">Enter Large Text </string>
     <string name="enter_subtitle">Enter Small Text </string>
     <string name="display_temperature">Display Temperature Details to the User on Screen</string>
