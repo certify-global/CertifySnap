@@ -252,9 +252,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private long delayMilli = 0;
     public static boolean loginAction = false;
     private String tempVal = "";
+    private int countTempError = 1;
 
 
     @Override
+
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
@@ -787,25 +789,27 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             @Override
                                             public void run() {
                                                 try {
-
-                                                 //  Util.KillApp();
                                                     if (e != null && !e.isEmpty()) {
                                                         JSONObject obj = new JSONObject(e);
                                                         Toast.makeText(IrCameraActivity.this, obj.getString("err"), Toast.LENGTH_SHORT).show();
-                                                 /*   if(obj.getString("err").equals("wrong tem , too cold"))
-                                                        new Handler().postDelayed(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                              //
-                                                            }
-                                                        },2000);*/
-                                                    } else
-                                                        Toast.makeText(IrCameraActivity.this, "" + e, Toast.LENGTH_LONG).show();
+                                                        tv_message.setText(obj.getString("err"));
+                                                        tv_message.setVisibility(View.VISIBLE);
+                                                        tv_message.setTextColor(getResources().getColor(R.color.black));
+                                                        tv_message.setBackgroundColor(getResources().getColor(R.color.white));
+
+                                                    }
+                                                    if (countTempError < 10)
+                                                        ++countTempError;
+                                                    else {
+                                                        Util.KillApp();
+                                                        clearLeftFace(null);
+                                                    }
                                                 } catch (Exception ee) {
 
                                                 }
                                             }
-                                        }); Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", e);
+                                        });
+                                        Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", e);
                                         retry(tempretrynum);
                                     }
 
@@ -850,7 +854,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 }
                                 Log.e("temperatureBitmap", "" + (temperatureBitmap == null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
-                                if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false)) {
+                                if (sp.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
                                     malertBeep.playBeepSoundAndVibrate();
                                 }
                                 tempVal = "high";
@@ -963,8 +967,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     //if(ir!=null)
                                                     tackPickRgb = false;
                                                     tackPickIr = false;
-                                                    if(temperatureBitmap!=null)
-                                                    temperature_image.setVisibility(View.VISIBLE); // if (result)
+                                                    if (temperatureBitmap != null)
+                                                        temperature_image.setVisibility(View.VISIBLE); // if (result)
                                                     // //.playBeepSoundAndVibrate();
                                                     requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  img_temperature.setImageResource(result ? R.drawable.stop : R.drawable.r);
