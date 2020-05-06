@@ -225,5 +225,8 @@
     <string name="enter_subtitle_sub">Enter Sub Text</string>
     <string name="fahrenheit">Fahrenheit</string>
     <string name="celcius">Celcius</string>
+    <string name="enter_login">Enter password</string>
+    <string name="save">SAVE</string>
+    <string name="temperature_threshold">Set Temperature Threshold</string>
 
 </resources>

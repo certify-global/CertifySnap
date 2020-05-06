@@ -66,13 +66,13 @@
             android:name=".activity.ConfirmationViewSetting"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activity.ThermalSetting"
-            android:launchMode="singleTask" />
-        <activity
             android:name=".activity.ScanViewActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.TemperatureActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.certify.snap.activity.InitializationActivity"

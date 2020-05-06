@@ -153,7 +153,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
-        tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
+        tv_version.setText("Serial No: "+Util.getSNCode() +"  "+"Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
     }
 
     @Override

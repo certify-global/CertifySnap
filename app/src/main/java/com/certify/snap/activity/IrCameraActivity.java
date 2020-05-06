@@ -387,7 +387,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onClick(View v) {
                 loginAction = true;
-                Intent loginIt = new Intent(IrCameraActivity.this, SettingActivity.class);
+                Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                 startActivity(loginIt);
                 finish();
 //                View view = LayoutInflater.from(IrCameraActivity.this).inflate(R.layout.layout_login, null);

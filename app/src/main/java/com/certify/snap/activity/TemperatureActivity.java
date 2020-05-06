@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
@@ -17,14 +19,14 @@ import com.certify.snap.common.Util;
 public class TemperatureActivity extends Activity {
     EditText editTextDialogUserInput;
     SharedPreferences sp;
-    Button btn_save;
+    TextView btn_save;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_temperature);
         editTextDialogUserInput=findViewById(R.id.editTextDialogUserInput);
-        btn_save=findViewById(R.id.btn_exit);
+        btn_save=findViewById(R.id.btn_save);
         sp= Util.getSharedPreferences(this);
         RadioGroup radio_group_f_c = findViewById(R.id.radio_group_f_c);
         final RadioButton radio_f = findViewById(R.id.radio_f);
@@ -57,5 +59,10 @@ public class TemperatureActivity extends Activity {
 
 
 
+    }
+
+    public void onParamterback(View view) {
+        startActivity(new Intent(TemperatureActivity.this,SettingActivity.class));
+        finish();
     }
 }

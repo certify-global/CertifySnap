@@ -3,9 +3,45 @@
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:padding="10dp" >
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/skyblue">
 
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/back"
+            android:onClick="onParamterback"
+            />
+
+        <TextView
+            android:id="@+id/titles"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="left|center"
+            android:background="@color/skyblue"
+            android:text="@string/temperature_threshold"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginLeft="10dp"
+            android:onClick="onParamterback" />
+        <TextView
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="right|center"
+            android:background="@color/skyblue"
+            android:text="@string/save"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginRight="10dp"/>
+
+    </LinearLayout>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/text_input_delay"
@@ -19,7 +55,7 @@
             android:id="@+id/editTextDialogUserInput"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/SetTemp"
+            android:hint="@string/temperature_threshold"
             android:background="@drawable/edittextbackground"
             android:paddingLeft="05dp"/>
 
@@ -52,17 +88,5 @@
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
-
-    <Button
-        android:id="@+id/btn_exit"
-        style="@style/buttonNumberStyle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/btn_shape"
-        android:text="Save"
-        android:textSize="25sp"
-        android:layout_marginTop="60dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"/>
 
 </LinearLayout>

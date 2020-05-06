@@ -24,13 +24,25 @@
 
         <TextView
             android:id="@+id/titles"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:gravity="center"
+            android:gravity="left|center"
             android:background="@color/skyblue"
             android:text="Parameter"
             android:textColor="#ffffff"
-            android:textSize="22sp" />
+            android:textSize="22sp"
+            android:layout_marginLeft="10dp"
+            android:onClick="onParamterback" />
+        <TextView
+            android:id="@+id/title_save"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="right|center"
+            android:background="@color/skyblue"
+            android:text="@string/save"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginRight="10dp"/>
 
     </LinearLayout>
 
@@ -47,7 +59,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="0dp"
@@ -84,7 +97,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="0dp"
@@ -147,17 +161,20 @@
                         android:text="90°"
                         android:id="@+id/rb_orientation_90"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"/>
                     <RadioButton
                         android:text="180°"
                         android:id="@+id/rb_orientation_180"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"/>
                     <RadioButton
                         android:text="270°"
                         android:id="@+id/rb_orientation_270"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"/>
 
                 </RadioGroup>
             </LinearLayout>
@@ -187,7 +204,8 @@
                     android:text="@string/ft_op_0"
                     android:id="@+id/rb_orient_0"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
                 <RadioButton
                     android:text="@string/ft_op_90"
                     android:id="@+id/rb_orient_90"
@@ -197,17 +215,20 @@
                     android:text="@string/ft_op_180"
                     android:id="@+id/rb_orient_180"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
                 <RadioButton
                     android:text="@string/ft_op_270"
                     android:id="@+id/rb_orient_270"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
                 <RadioButton
                     android:text="@string/ft_op_all"
                     android:id="@+id/rb_orient_all"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
             </RadioGroup>
         </LinearLayout>
 
@@ -215,7 +236,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="0dp"
@@ -260,7 +282,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="0dp"
@@ -275,7 +298,8 @@
                 <RadioGroup android:id="@+id/radio_group_statusbar"
                     android:layout_width="0dp"
                     android:layout_weight="3"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
 
                     <RadioButton
                         android:text="@string/statusbar_show"
@@ -298,7 +322,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="0dp"
@@ -337,7 +362,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="0dp"
@@ -356,7 +382,8 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <EditText android:id="@+id/edit_relaytime"
                     android:layout_width="150dp"
@@ -390,7 +417,8 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:text="Brightness: "/>
+                android:text="Brightness: "
+                android:visibility="gone"/>
 
             <SeekBar
                 android:layout_margin="20dp"
@@ -399,7 +427,7 @@
                 android:layout_width="match_parent"
                 android:max="255"
                 android:progress="70"
-                />
+               android:visibility="gone" />
 
         </LinearLayout>
 

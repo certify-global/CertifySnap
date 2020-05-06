@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
@@ -43,6 +44,7 @@ public class ParameterActivity extends AppCompatActivity {
     RadioButton radio_statusbar_show,radio_statusbar_hide,radio_navigationbar_show,radio_navigationbar_hide;
     private SeekBar seekBar;
     SharedPreferences sp;
+    TextView title_save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,7 @@ public class ParameterActivity extends AppCompatActivity {
         radioGroupCamera = findViewById(R.id.radio_group_camera_type);
         rgbCamera = findViewById(R.id.radio_camera_0);
         irCamera = findViewById(R.id.radio_camera_1);
+        title_save = findViewById(R.id.title_save);
         int cameratype = sp.getInt(GlobalParameters.CameraType, Camera.CameraInfo.CAMERA_FACING_BACK);
         switch (cameratype) {
             case Camera.CameraInfo.CAMERA_FACING_BACK:
