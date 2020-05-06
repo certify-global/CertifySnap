@@ -16,7 +16,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="@color/skyblue">
+        android:background="@color/bg_green">
 
         <ImageView
             android:layout_width="30dp"
@@ -31,7 +31,6 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:gravity="left|center"
-            android:background="@color/skyblue"
             android:text="@string/scan_view"
             android:textColor="#ffffff"
             android:textSize="22sp"
@@ -42,7 +41,6 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="right|center"
-            android:background="@color/skyblue"
             android:text="@string/save"
             android:textColor="#ffffff"
             android:textSize="22sp"

@@ -62,17 +62,13 @@ public class ConfirmationViewSetting extends Activity {
             if(sp.getBoolean(GlobalParameters.CONFIRM_SCREEN,false))
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
+            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,"3"));
 
-            if(sp.getString(GlobalParameters.Confirm_title_above,"Thank You").equals("")) {
-                edittext_title_above.setText("Thank You");
-            } else{
-                edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,""));
-            }
-            if(sp.getString(GlobalParameters.Confirm_title_below,"").equals("")) {
-                edittext_title_below.setText("Thank You");
-            }else{
-                edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,""));
-            }
+
+                edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,"Thank You"));
+
+                edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,"Thank You"));
+
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -86,14 +82,19 @@ public class ConfirmationViewSetting extends Activity {
 
             edittext_subtitle_below.setText(sp.getString(GlobalParameters.Confirm_subtitle_below,""));
             edittext_subtitle_above.setText(sp.getString(GlobalParameters.Confirm_subtitle_above,""));
-            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,""));
+            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,"3"));
             btn_exit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(!et_screen_delay.getText().toString().isEmpty())
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE_CONFIRM,et_screen_delay.getText().toString().trim());
+                    if(!edittext_title_below.getText().toString().isEmpty())
                     Util.writeString(sp, GlobalParameters.Confirm_title_below, edittext_title_below.getText().toString());
+                    if(!edittext_subtitle_below.getText().toString().isEmpty())
                     Util.writeString(sp, GlobalParameters.Confirm_subtitle_below, edittext_subtitle_below.getText().toString());
+                    if(!edittext_title_above.getText().toString().isEmpty())
                     Util.writeString(sp, GlobalParameters.Confirm_title_above, edittext_title_above.getText().toString());
+                    if(!edittext_subtitle_above.getText().toString().isEmpty())
                     Util.writeString(sp, GlobalParameters.Confirm_subtitle_above, edittext_subtitle_above.getText().toString());
                     finish();
                 }

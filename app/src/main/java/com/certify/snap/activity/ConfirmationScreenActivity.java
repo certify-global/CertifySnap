@@ -76,7 +76,7 @@ public class ConfirmationScreenActivity extends Activity {
 //                    startActivity(intent);
 
                 }
-            }, delayMilli*1000);
+            }, delayMilli*900);
 
             Log.d("delayyyyyyyyyyyyyyyyyyy",""+delayMilli);
 

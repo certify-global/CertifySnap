@@ -154,6 +154,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private View previewViewRgb;
     private View previewViewIr;
+    private static boolean ConfirmationBoolean = false;
 
     private TextView tv_display_time, tv_message, template_view;
 
@@ -661,7 +662,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             delayMilli = Long.parseLong(longVal);
         }
-        Log.d("resumeeeeeeee",""+delayMilli);
+        if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, false)) {
+            Log.i("CONFIRM_SCREEN ",""+ConfirmationBoolean);
+            if (ConfirmationBoolean) {
+                isIdentified = true;
+                relative_main.setVisibility(View.VISIBLE);
+                logo.setVisibility(View.VISIBLE);
+                rl_header.setVisibility(View.VISIBLE);
+                tv_message.setVisibility(View.GONE);
+                temperature_image.setVisibility(View.GONE);
+            }
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ConfirmationBoolean = false;
+                    clearLeftFace(null);
+                    isIdentified = false;
+                }
+            }, 3000);
+        }
+        Log.d("resumeeeeeeee", "" + delayMilli);
 
         if (mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
@@ -766,31 +786,32 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 try {
                                                     JSONObject obj = new JSONObject(e);
                                                     if (countTempError < 10)
-                                                        if(!obj.getString("err").equals("face out of range or forhead too low"))
-                                                        ++countTempError;
-                                                    else {
-                                                        try {
+                                                        if (!obj.getString("err").equals("face out of range or forhead too low"))
                                                             ++countTempError;
-                                                           // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
-                                                            clearLeftFace(null);
-                                                           if(obj.getString("err").equals("not enough validData , get tem fail , please get again"))
-                                                            Util.KillApp();
-                                                           // StopView();
-                                                            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.telpo.temperatureservice");
-                                                            if (launchIntent != null) {
-                                                                startActivity(launchIntent);
+                                                        else {
+                                                            try {
+                                                                ++countTempError;
+                                                                // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
+                                                                clearLeftFace(null);
+                                                                if (obj.getString("err").equals("not enough validData , get tem fail , please get again"))
+                                                                    Util.KillApp();
+                                                                Logger.error(Util.getSNCode() + "onTemperatureFail  KillApp ->","KillApp");
+                                                                // StopView();
+                                                                Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.telpo.temperatureservice");
+                                                                if (launchIntent != null) {
+                                                                    startActivity(launchIntent);
+                                                                }
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
                                                             }
-                                                        }catch (Exception e){
-                                                            e.printStackTrace();
-                                                        }
 
-                                                    }
+                                                        }
                                                 } catch (Exception ee) {
 
                                                 }
                                             }
                                         });
-                                        Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", e);
+                                        Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", "countTempError "+countTempError+ ", "+e);
                                         retry(tempretrynum);
                                     }
 
@@ -941,9 +962,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    isIdentified = true;
                                                     if (tempServiceColes) return;
                                                     sendMessageToStopAnimation(HIDE_VERIFY_UI);
-                                                    isIdentified = true;
+
                                                     tvDisplayingCount.setVisibility(View.GONE);//ch
                                                     //   setTimerCount();
                                                     //if(ir!=null)
@@ -971,17 +993,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             tvDisplayingCount.setVisibility(View.GONE);
                                                             img_temperature.setVisibility(View.GONE);
                                                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-
-                                                            if (countDown != null)
-                                                                countDown.cancel();
-
                                                             temperature_image.setVisibility(View.GONE);
+
                                                             if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, false)) {
                                                                 Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                                                                 intent.putExtra("tempVal", tempVal);
                                                                 startActivity(intent);
+                                                                ConfirmationBoolean = true;
                                                                 finish();
                                                             } else {
+                                                                relative_main.setVisibility(View.VISIBLE);
+                                                                logo.setVisibility(View.VISIBLE);
+                                                                rl_header.setVisibility(View.VISIBLE);
+                                                                tv_message.setVisibility(View.GONE);
                                                                 new Handler().postDelayed(new Runnable() {
                                                                     @Override
                                                                     public void run() {
@@ -1014,7 +1038,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 public void run() {
                                                     isSearch = true;
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
-                                                    if (isIdentified) return;
+                                                    if (isIdentified || !tackPickRgb) return;
 
                                                     stopAnimation();
                                                     tv_message.setText("");
@@ -1206,10 +1230,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onPreview(final byte[] nv21, final Camera camera) {
 
                 irData = nv21;
-                if (tackPickIr ) {
+                if (tackPickIr) {
                     irBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
                     //  Log.d("irBitmap", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
-                  //  tackPickIr = false;
+                    //  tackPickIr = false;
                 }
             }
 
@@ -1987,14 +2011,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         }
     }
-    public void StopView(){
-        try{
+
+    public void StopView() {
+        try {
             sendMessageToStopAnimation(HIDE_VERIFY_UI);
-           // requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
+            // requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
             //isIdentified = true;
 
-        }catch (Exception e){
-e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

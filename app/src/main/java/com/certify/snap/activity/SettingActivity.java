@@ -34,6 +34,7 @@ import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.certify.callback.JSONObjectCallback;
+import com.certify.snap.BuildConfig;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
@@ -150,7 +151,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
-        tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
+        tv_version.setText("Version: " + BuildConfig.VERSION_NAME);
         tv_serial_no.setText("Serial No: "+Util.getSNCode());
     }
 

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -39,7 +40,7 @@ public class LoginActivity extends Activity {
                     "rubiklight.ttf");
             textview_name.setTypeface(rubiklight);
 
-            tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
+            tv_version.setText("Version: " + BuildConfig.VERSION_NAME);
             tv_serial_no.setText("Serial No: "+Util.getSNCode());
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
