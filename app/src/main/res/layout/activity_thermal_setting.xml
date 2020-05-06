@@ -90,7 +90,7 @@
             android:background="@drawable/edittextbackground"
             android:paddingLeft="05dp"
             android:singleLine="true"
-            android:maxLength="40"/>
+            android:maxLength="30"/>
 
     </android.support.design.widget.TextInputLayout>
 

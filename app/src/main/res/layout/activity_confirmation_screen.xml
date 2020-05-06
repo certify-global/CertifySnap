@@ -3,13 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/splash_white">
 
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="400dp"
         android:text="Thank You djhfdjhfdjfjdfhdfjdhdjfhjdjdfh"
         android:textSize="40sp"
         android:textColor="@color/black"
@@ -23,7 +24,7 @@
     <TextView
         android:id="@+id/tv_subtitle"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="550dp"
         android:text="Welcome  shdjsdjsdjhsjdhsjdhsjhsjdhshh"
         android:textSize="28sp"
         android:gravity="top|center_horizontal"

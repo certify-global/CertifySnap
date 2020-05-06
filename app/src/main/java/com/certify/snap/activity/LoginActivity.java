@@ -31,8 +31,6 @@ public class LoginActivity extends Activity {
             setContentView(R.layout.activity_login);
             etPassword = findViewById(R.id.edittext_login);
              btn_confirm = findViewById(R.id.btn_login);
-             btn_confirm = findViewById(R.id.btn_login);
-             btn_confirm = findViewById(R.id.btn_login);
             textview_name = findViewById(R.id.textview_name);
             tv_version = findViewById(R.id.tv_version);
             tv_serial_no = findViewById(R.id.tv_serial_no);

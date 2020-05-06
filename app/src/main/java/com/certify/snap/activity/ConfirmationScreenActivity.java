@@ -78,6 +78,8 @@ public class ConfirmationScreenActivity extends Activity {
                 }
             }, delayMilli*1000);
 
+            Log.d("delayyyyyyyyyyyyyyyyyyy",""+delayMilli);
+
         } catch (Exception e) {
             Logger.error(" onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }

@@ -223,7 +223,7 @@ public class ParameterActivity extends AppCompatActivity {
                         ConfigUtil.setFtOrient(ParameterActivity.this, ASF_OP_ALL_OUT);
                         break;
                     default:
-                        ConfigUtil.setFtOrient(ParameterActivity.this, ASF_OP_ALL_OUT);
+                        ConfigUtil.setFtOrient(ParameterActivity.this, ASF_OP_90_ONLY);
                         break;
                 }
             }
