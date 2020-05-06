@@ -135,8 +135,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ObjectAnimator outerCircleAnimator, innerCircleAnimator;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
-    private long exitTime = 0;//点击时间控制
-    private int pressTimes = 0;//连续点击次数
+    private long exitTime = 0;
+    private int pressTimes = 0;
     private FaceEngine faceEngine = new FaceEngine();
 
     private static final int GUEST_QR_CODE = 333;
@@ -764,18 +764,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             @Override
                                             public void run() {
                                                 try {
-
-//                                                    if (tempServiceColes && countTempError >= 10)
-//                                                        Util.KillApp();
-//                                                    if (e != null && !e.isEmpty()) {
-////                                                        //
-//////                                                        Toast.makeText(IrCameraActivity.this, obj.getString("err"), Toast.LENGTH_SHORT).show();
-//////                                                        tv_message.setText(obj.getString("err"));
-//////                                                        tv_message.setVisibility(View.VISIBLE);
-//////                                                        tv_message.setTextColor(getResources().getColor(R.color.black));
-//////                                                        tv_message.setBackgroundColor(getResources().getColor(R.color.white));
-////
-////                                                    }
                                                     JSONObject obj = new JSONObject(e);
                                                     if (countTempError < 10)
                                                         if(!obj.getString("err").equals("face out of range or forhead too low"))
@@ -815,13 +803,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             @Override
                                             public void run() {
                                                 if (data.getBitmap() != null) {
-//                                                    tackPickIr = false;
-//                                                    tackPickRgbr = false;
-                                                    //  tvDisplayingCount.setVisibility(View.GONE);
                                                     temperature_image.setVisibility(tempServiceColes ? View.GONE : View.VISIBLE);
-                                                    //  rl_header.setVisibility(View.VISIBLE);
                                                     temperature_image.setImageBitmap(data.getBitmap());
-                                                    //                        //temperature_image.setImageBitmap(da);
                                                 }
                                             }
                                         });
@@ -1170,7 +1153,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void run() {
                         if (tackPickRgb) {
                             rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
-                           // tackPickRgb = false;
                         }
                     }
                 });
