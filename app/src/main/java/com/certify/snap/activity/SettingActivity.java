@@ -60,7 +60,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             thermal_check_setting, scan_setting,confirmation_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting,tv_confirmation_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting,tv_confirmation_setting,tv_serial_no;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -135,6 +135,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         activate_tv = findViewById(R.id.activate_tv);
         endpoint = findViewById(R.id.endpoint);
         tv_version = findViewById(R.id.tv_version);
+        tv_serial_no = findViewById(R.id.tv_serial_no);
         tv_thermal_setting = findViewById(R.id.tv_thermal_setting);
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
@@ -145,10 +146,12 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         activate_tv.setTypeface(rubiklight);
         endpoint.setTypeface(rubiklight);
         tv_version.setTypeface(rubiklight);
+        tv_serial_no.setTypeface(rubiklight);
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
-        tv_version.setText("Serial No: "+Util.getSNCode() +"  "+"Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
+        tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
+        tv_serial_no.setText("Serial No: "+Util.getSNCode());
     }
 
     @Override

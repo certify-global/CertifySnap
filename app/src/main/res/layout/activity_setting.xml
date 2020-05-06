@@ -649,10 +649,19 @@
 
 
     </LinearLayout>
-
+    <TextView
+        android:id="@+id/tv_serial_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_serial"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="20dp"
+        android:textSize="22dp"
+        android:gravity="left"
+        android:paddingLeft="@dimen/margin_20"></TextView>
     <TextView
         android:id="@+id/tv_version"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_version"
         android:layout_alignParentBottom="true"
@@ -660,7 +669,7 @@
         android:layout_marginRight="20dp"
         android:paddingRight="20dp"
         android:textSize="22dp"
-        android:gravity="right"></TextView>
+        android:layout_alignParentRight="true"></TextView>
 
 
 </RelativeLayout>

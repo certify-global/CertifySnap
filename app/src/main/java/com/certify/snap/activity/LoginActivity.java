@@ -22,7 +22,7 @@ public class LoginActivity extends Activity {
     EditText etPassword;
     SharedPreferences sp;
     Button btn_confirm;
-    TextView textview_name;
+    TextView textview_name,tv_version,tv_serial_no;
     Typeface rubiklight;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,15 +31,22 @@ public class LoginActivity extends Activity {
             setContentView(R.layout.activity_login);
             etPassword = findViewById(R.id.edittext_login);
              btn_confirm = findViewById(R.id.btn_login);
+             btn_confirm = findViewById(R.id.btn_login);
+             btn_confirm = findViewById(R.id.btn_login);
             textview_name = findViewById(R.id.textview_name);
+            tv_version = findViewById(R.id.tv_version);
+            tv_serial_no = findViewById(R.id.tv_serial_no);
              sp = Util.getSharedPreferences(LoginActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             textview_name.setTypeface(rubiklight);
+
+            tv_version.setText("Version: " + sp.getString(GlobalParameters.MobileAppVersion, ""));
+            tv_serial_no.setText("Serial No: "+Util.getSNCode());
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String input = "1234567";//Util.getSNCode();     //input string
+                    String input = Util.getSNCode();     //input string
                     String lastsixDigits = "";     //substring containing last 4 characters
 
                     if (input.length() >6) {

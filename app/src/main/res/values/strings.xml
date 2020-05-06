@@ -229,5 +229,6 @@
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
     <string name="temperature">Temperature</string>
+    <string name="app_serial">Serial No:</string>
 
 </resources>
