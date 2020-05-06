@@ -95,6 +95,13 @@ public class ParameterActivity extends AppCompatActivity {
             }
         });
 
+        title_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         radioGroupLiving = findViewById(R.id.radio_group_living_type);
         rbLiving0 = findViewById(R.id.radio_living_0);
         rbLiving1 = findViewById(R.id.radio_living_1);

@@ -107,12 +107,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             activeEngine(null);
             Log.e("sp---false", "activate:" + sp.getBoolean("activate", false));
         }
-        if (IrCameraActivity.loginAction) {
-            LoginDialog();
-            IrCameraActivity.loginAction = false;
-        } else {
-            llSettings.setVisibility(View.VISIBLE);
-        }
+
     }
 
 
@@ -382,49 +377,6 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     }
 
 
-    private void temperatureDialog() {
-        LayoutInflater li = LayoutInflater.from(this);
-        View promptsView = li.inflate(R.layout.prompts, null);
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this);
-
-        // set prompts.xml to alertdialog builder
-        alertDialogBuilder.setView(promptsView);
-
-        final EditText userInput = promptsView
-                .findViewById(R.id.editTextDialogUserInput);
-        userInput.setText(sp.getString(GlobalParameters.TEMP_TEST, "99"));
-
-        // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // get user input and set it to result
-                                // edit text
-
-                                Util.writeString(sp, GlobalParameters.TEMP_TEST, userInput.getText().toString().trim());
-
-                            }
-                        })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // show it
-        alertDialog.show();
-
-    }
-
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -492,55 +444,5 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         }
     }
 
-    private void LoginDialog() {
-        try {
-            final Dialog dialogL = new Dialog(SettingActivity.this);
-            dialogL.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialogL.setContentView(R.layout.layout_login);
-            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            if (dialogL.getWindow() == null) return;
-            dialogL.getWindow().setGravity(Gravity.CENTER);
-            dialogL.getWindow().setLayout(displayMetrics.widthPixels, LinearLayout.LayoutParams.WRAP_CONTENT);
-            TextView tv_confirm = dialogL.findViewById(R.id.tv_confirm);
-            TextView tv_cancel = dialogL.findViewById(R.id.tv_cancel);
-            final EditText etPassword = dialogL.findViewById(R.id.et_password);
-            tv_confirm.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
 
-                    String input = Util.getSNCode();     //input string
-                    String lastsixDigits = "";     //substring containing last 4 characters
-
-                    if (input.length() > 6) {
-                        lastsixDigits = input.substring(input.length() - 6);
-                    } else {
-                        lastsixDigits = input;
-                    }
-                    if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
-                        dialogL.dismiss();
-                        llSettings.setVisibility(View.VISIBLE);
-                    } else {
-                        Toast.makeText(SettingActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-
-            //  Button btNo = dialogL.findViewById(R.id.bt_no_lang);
-            tv_cancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialogL.dismiss();
-                    Util.switchRgbOrIrActivity(SettingActivity.this, true);
-                    finish();
-                }
-            });
-
-            dialogL.show();
-//
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
@@ -22,9 +23,8 @@ public class ScanViewActivity extends Activity {
 
     private SharedPreferences sp;
     EditText et_screen_delay;
-    Button btn_save;
     Typeface rubiklight;
-    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan;
+    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +53,7 @@ public class ScanViewActivity extends Activity {
             tv_sound = findViewById(R.id.tv_sound);
             tv_temp_all = findViewById(R.id.tv_temp_all);
             tv_capture_image = findViewById(R.id.tv_capture_image);
-            tv_scan = findViewById(R.id.tv_scan);
+            tv_scan = findViewById(R.id.titles);
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
@@ -123,5 +123,10 @@ public class ScanViewActivity extends Activity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void onParamterback(View view) {
+        startActivity(new Intent(ScanViewActivity.this,SettingActivity.class));
+        finish();
     }
 }

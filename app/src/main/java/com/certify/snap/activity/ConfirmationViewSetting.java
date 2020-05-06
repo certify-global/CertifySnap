@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -22,11 +23,11 @@ import com.certify.snap.common.Util;
 
 public class ConfirmationViewSetting extends Activity {
     Typeface rubiklight;
-    TextView tv_welcome,confirmation_screen,tv_confirm_above,tv_confirm_below;
+    TextView confirmation_screen,tv_confirm_above,tv_confirm_below;
     TextInputLayout text_input_title_below,text_input_subtitle_below,text_input_title_above,text_input_subtitle_above,text_input_delay;
     private SharedPreferences sp;
     EditText edittext_title_below,edittext_subtitle_below,edittext_title_above,edittext_subtitle_above,et_screen_delay;
-    Button btn_exit;
+    TextView btn_exit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +42,6 @@ public class ConfirmationViewSetting extends Activity {
             RadioGroup rgCapture = findViewById(R.id.radio_group_tempe);
             RadioButton rbCaptureYes = findViewById(R.id.radio_yes_temp);
             RadioButton rbCaptureNo = findViewById(R.id.radio_no_temp);
-             tv_welcome = findViewById(R.id.tv_welcome);
              confirmation_screen = findViewById(R.id.confirmation_screen);
             tv_confirm_above = findViewById(R.id.tv_confirm_above);
             tv_confirm_below = findViewById(R.id.tv_confirm_below);
@@ -56,13 +56,23 @@ public class ConfirmationViewSetting extends Activity {
             et_screen_delay = findViewById(R.id.et_screen_delay);
             text_input_delay = findViewById(R.id.text_input_delay);
             btn_exit = findViewById(R.id.btn_exit);
-            tv_welcome.setTypeface(rubiklight);
             confirmation_screen.setTypeface(rubiklight);
             tv_confirm_above.setTypeface(rubiklight);
             tv_confirm_below.setTypeface(rubiklight);
             if(sp.getBoolean(GlobalParameters.CONFIRM_SCREEN,false))
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
+
+            if(sp.getString(GlobalParameters.Confirm_title_above,"Thank You").equals("")) {
+                edittext_title_above.setText("Thank You");
+            } else{
+                edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,""));
+            }
+            if(sp.getString(GlobalParameters.Confirm_title_below,"").equals("")) {
+                edittext_title_below.setText("Thank You");
+            }else{
+                edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,""));
+            }
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -73,9 +83,8 @@ public class ConfirmationViewSetting extends Activity {
                 }
             });
 
-            edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,""));
+
             edittext_subtitle_below.setText(sp.getString(GlobalParameters.Confirm_subtitle_below,""));
-            edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,""));
             edittext_subtitle_above.setText(sp.getString(GlobalParameters.Confirm_subtitle_above,""));
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,""));
             btn_exit.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +95,6 @@ public class ConfirmationViewSetting extends Activity {
                     Util.writeString(sp, GlobalParameters.Confirm_subtitle_below, edittext_subtitle_below.getText().toString());
                     Util.writeString(sp, GlobalParameters.Confirm_title_above, edittext_title_above.getText().toString());
                     Util.writeString(sp, GlobalParameters.Confirm_subtitle_above, edittext_subtitle_above.getText().toString());
-
                     finish();
                 }
             });
@@ -94,5 +102,9 @@ public class ConfirmationViewSetting extends Activity {
         }catch (Exception e){
             Logger.error(" onCreate(@Nullable Bundle savedInstanceState)",e.getMessage());
         }
+    }
+    public void onParamterback(View view) {
+        startActivity(new Intent(ConfirmationViewSetting.this,SettingActivity.class));
+        finish();
     }
 }

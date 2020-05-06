@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -21,9 +22,9 @@ public class ThermalSetting extends Activity {
     TextInputLayout  text_input_title,text_input_subtitle;
     EditText edittext_subtitle,edittext_title;
     SharedPreferences sp;
-    Button btn_save;
+    TextView btn_save;
     Typeface rubiklight;
-    TextView tv_welcome,tv_thermal_view;
+    TextView tv_welcome,titles;
     String title="";
 
 
@@ -42,10 +43,14 @@ public class ThermalSetting extends Activity {
             edittext_subtitle = findViewById(R.id.edittext_subtitle);
             btn_save = findViewById(R.id.btn_exit);
             tv_welcome = findViewById(R.id.tv_welcome);
-            tv_thermal_view = findViewById(R.id.tv_thermal_view);
+            titles = findViewById(R.id.titles);
             tv_welcome.setTypeface(rubiklight);
-            tv_thermal_view.setTypeface(rubiklight);
+            titles.setTypeface(rubiklight);
+            btn_save.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
+            if(sp.getString(GlobalParameters.Thermalscan_title,"").equals(""))
+                edittext_title.setText("THERMAL SCAN");
+
 
             edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title,""));
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle,""));
@@ -71,7 +76,10 @@ public class ThermalSetting extends Activity {
             e.printStackTrace();
         }
 
+    }
 
-
+    public void onParamterback(View view) {
+        startActivity(new Intent(ThermalSetting.this,SettingActivity.class));
+        finish();
     }
 }

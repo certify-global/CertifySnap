@@ -3,23 +3,54 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <TextView
-        android:id="@+id/tv_thermal_view"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/thermal_view"
-        android:gravity="left"
-        android:textSize="22dp"
-        android:textColor="@color/blue"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="10dp"></TextView>
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/skyblue">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/back"
+            android:onClick="onParamterback"
+            />
+
+        <TextView
+            android:id="@+id/titles"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="left|center"
+            android:background="@color/skyblue"
+            android:text="@string/thermal_view"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginLeft="10dp"
+            android:onClick="onParamterback" />
+        <TextView
+            android:id="@+id/btn_exit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="right|center"
+            android:background="@color/skyblue"
+            android:text="@string/save"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginRight="10dp"
+            android:onClick="onclick"/>
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_welcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/welcome_thermal"
         android:gravity="center"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:textSize="22dp"></TextView>
 
 
@@ -63,17 +94,6 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <Button
-        android:id="@+id/btn_exit"
-        style="@style/buttonNumberStyle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/btn_shape"
-        android:onClick="onclick"
-        android:text="Save"
-        android:textSize="25sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"/>
+
 
 </LinearLayout>

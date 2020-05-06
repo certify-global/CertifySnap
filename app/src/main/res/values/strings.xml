@@ -219,8 +219,8 @@
     <string name="enable_temperature">Enable Confirmation Screen</string>
     <string name="confirmation_text_below">Confirmation text for temperature below threshold</string>
     <string name="confirmation_text_above">Confirmation text for temperature above threshold</string>
-    <string name="scan_view">Scan view</string>
-    <string name="thermal_view">Home view</string>
+    <string name="scan_view">Scan View</string>
+    <string name="thermal_view">Home View</string>
     <string name="enter_title_main">Enter Main Text</string>
     <string name="enter_subtitle_sub">Enter Sub Text</string>
     <string name="fahrenheit">Fahrenheit</string>
@@ -228,5 +228,6 @@
     <string name="enter_login">Enter password</string>
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
+    <string name="temperature">Temperature</string>
 
 </resources>
