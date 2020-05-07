@@ -22,7 +22,7 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!--ContentProvide -->
-<!--    <uses-permission android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.certify.snap" />-->
+    <!--<uses-permission android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.certify.snap" />-->
 
 <!--    <permission-->
 <!--        android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.certify.snap"-->
@@ -35,7 +35,6 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme">
         <activity
             android:name="com.certify.snap.activity.NFCCardActivity"
@@ -110,16 +109,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!--<receiver android:name="com.certify.snap.service.MyPushMessageReceiver">
-            <intent-filter>
-
-                &lt;!&ndash; push &ndash;&gt;
-                <action android:name="com.baidu.android.pushservice.action.MESSAGE" />
-                &lt;!&ndash; bind,unbind,fetch,delete &ndash;&gt;
-                <action android:name="com.baidu.android.pushservice.action.RECEIVE" />
-                <action android:name="com.baidu.android.pushservice.action.notification.CLICK" />
-            </intent-filter>
-        </receiver>-->
     </application>
 
 </manifest>

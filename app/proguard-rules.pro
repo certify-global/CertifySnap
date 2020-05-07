@@ -146,6 +146,8 @@
        -keep class com.common.thermalimage.** {*;}
 
        -libraryjars libs/pushservice-6.5.0.75.jar
+            -dontwarn com.baidu.**
+            -keep class com.baidu.**{*; }
 
        -libraryjars libs/poi-3.12-android-a.jar
             -dontwarn org.apache.**

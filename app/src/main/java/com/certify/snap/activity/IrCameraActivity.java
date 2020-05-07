@@ -89,7 +89,6 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.service.GuideService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -337,7 +336,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction() != null && intent.getAction().equals(WALLPAPER_CHANGE)) {
-                showWallpaper();
+            //    showWallpaper();
             }
         }
     }
@@ -436,7 +435,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         GlobalParameters.livenessDetect = sp.getBoolean(GlobalParameters.LivingType, true);
 
         if (sp.getBoolean("wallpaper", false)) {
-            showWallpaper();
+            //showWallpaper();
         }
 
         exit = findViewById(R.id.exit);
@@ -1206,7 +1205,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
                 rgbData = nv21;
-               // processPreviewData();
+                processPreviewData();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1264,7 +1263,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
 
-               // irData = nv21;
+                irData = nv21;
                 if (tackPickIr) {
                     irBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
                     //  Log.d("irBitmap", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
@@ -1913,14 +1912,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showWallpaper() {
-        if (sp.getBoolean("wallpaper", false)) {
-            Glide.with(IrCameraActivity.this)
-                    .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
-                    .error(R.mipmap.telpo)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE);
-            //.into(relativeLayout);
-        }
+//        if (sp.getBoolean("wallpaper", false)) {
+//            Glide.with(IrCameraActivity.this)
+//                    .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
+//                    .error(R.mipmap.telpo)
+//                    .skipMemoryCache(true)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE);
+//            //.into(relativeLayout);
+        //}
     }
 
     public String[] processLimitedTime(String data) {
