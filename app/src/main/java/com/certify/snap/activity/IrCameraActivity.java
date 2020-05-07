@@ -933,10 +933,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if (faceFeature != null) {
-                    tempServiceColes = false;
+
                     countTempError = 0;
-                    Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isIdentified);
+                    Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isIdentified+",tempServiceColes "+tempServiceColes);
                     if (isIdentified) return;
+                    tempServiceColes = false;
                     // isIdentified = false;
                     if (compareResultList != null) {
 //                        for (int i = compareResultList.size() - 1; i >= 0; i--) {
@@ -963,14 +964,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 @Override
                                                 public void run() {
                                                     isIdentified = true;
-                                                    if (tempServiceColes) return;
+                                                   // if (tempServiceColes) return;
                                                     sendMessageToStopAnimation(HIDE_VERIFY_UI);
 
                                                     tvDisplayingCount.setVisibility(View.GONE);//ch
                                                     //   setTimerCount();
                                                     //if(ir!=null)
                                                     Logger.debug(TAG + " onTemperatureCall ->", "getTemperatureBimapData");
-
+                                                    if(tempServiceColes){
+                                                        relative_main.setVisibility(View.VISIBLE);
+                                                        logo.setVisibility(View.VISIBLE);
+                                                        rl_header.setVisibility(View.VISIBLE);
+                                                    }
 //                                                    if(temperatureBitmap!=null)
 //                                                    temperature_image.setVisibility(View.VISIBLE); // if (result)
                                                     // //.playBeepSoundAndVibrate();
@@ -1006,15 +1011,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                                 logo.setVisibility(View.VISIBLE);
                                                                 rl_header.setVisibility(View.VISIBLE);
                                                                 tv_message.setVisibility(View.GONE);
-                                                                new Handler().postDelayed(new Runnable() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        clearLeftFace(null);
-                                                                        isIdentified = false;
-                                                                    }
-                                                                }, delayMilli * 1000);
-                                                            }
-
+//                                                                if (tempServiceColes) {
+//                                                                   // clearLeftFace(null);
+//                                                                    isIdentified = false;
+//                                                                } else {
+                                                                    new Handler().postDelayed(new Runnable() {
+                                                                        @Override
+                                                                        public void run() {
+                                                                            clearLeftFace(null);
+                                                                            isIdentified = false;
+                                                                        }
+                                                                    }, delayMilli * 1000);
+                                                                }
+                                                          // }
                                                             //     clearLeftFace(null);
                                                         }
                                                     }, delayMilli * 1000);
