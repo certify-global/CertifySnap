@@ -59,7 +59,7 @@ public class ConfirmationViewSetting extends Activity {
             confirmation_screen.setTypeface(rubiklight);
             tv_confirm_above.setTypeface(rubiklight);
             tv_confirm_below.setTypeface(rubiklight);
-            if(sp.getBoolean(GlobalParameters.CONFIRM_SCREEN,false))
+            if(sp.getBoolean(GlobalParameters.CONFIRM_SCREEN,true))
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
 

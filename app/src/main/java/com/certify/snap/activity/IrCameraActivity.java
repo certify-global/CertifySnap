@@ -684,7 +684,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             delayMilli = Long.parseLong(longVal);
         }
-        if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, false)) {
+        if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
             Log.i("CONFIRM_SCREEN ",""+ConfirmationBoolean);
             if (ConfirmationBoolean) {
                 isIdentified = true;
@@ -1022,7 +1022,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                             temperature_image.setVisibility(View.GONE);
 
-                                                            if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, false)) {
+                                                            if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
                                                                 Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                                                                 intent.putExtra("tempVal", tempVal);
                                                                 startActivity(intent);
