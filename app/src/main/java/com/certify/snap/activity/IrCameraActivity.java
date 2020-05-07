@@ -330,6 +330,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private final byte[] password1 = new byte[]{(byte) 0x80, (byte) 0x60,
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private AlertDialog nfcDialog;
+    Typeface rubiklight;
 
 
     class WallpaperBroadcastReceiver extends BroadcastReceiver {
@@ -344,6 +345,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        rubiklight = Typeface.createFromAsset(getAssets(),
+                "rubiklight.ttf");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -1011,6 +1014,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     tv_message.setTextColor(getResources().getColor(R.color.white));
                                                     tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                                                     tv_message.setText(temperature);
+                                                    tv_message.setTypeface(rubiklight);
                                                     img_temperature.setVisibility(View.GONE);
                                                     new Handler().postDelayed(new Runnable() {
                                                         @Override

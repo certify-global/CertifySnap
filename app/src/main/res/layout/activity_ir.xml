@@ -109,13 +109,13 @@
     <TextView
         android:id="@+id/tv_message"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:gravity="center"
         android:padding="2dp"
         android:textColor="@color/white"
-        android:textSize="34sp" />
+        android:textSize="34sp"/>
 
     <ImageView
         android:id="@+id/img_temperature"
