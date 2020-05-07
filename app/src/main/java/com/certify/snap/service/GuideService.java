@@ -53,12 +53,6 @@ import okhttp3.ResponseBody;
 import rx.Subscription;
 
 
-/**
- * 作者    ljf
- * 时间    2019/8/22 0022 21:47
- * 文件    Telpo_Face_system
- * 描述
- */
 public class GuideService extends Service {
 
     public static final String TAG = "GuideService";
@@ -166,7 +160,6 @@ public class GuideService extends Service {
 
     public void startTokenTimer() {
         Log.e("TAG", "startTokenTimer() executed");
-        // 执行获取token
         if (tokentimer == null) {
             tokentimer = new Timer();
             tokentimer.schedule(new TimerTask() {
@@ -180,7 +173,6 @@ public class GuideService extends Service {
 
     public void startOnlineTimer() {
         Log.e("TAG", "startOnlineTimer() executed");
-        // 执行上报在线
         if (onlinetimer == null) {
             onlinetimer = new Timer();
             onlinetimer.schedule(new TimerTask() {
@@ -196,7 +188,6 @@ public class GuideService extends Service {
 
     public void startOfflineverifyTimer() {
         Log.e("yw_startOff", "startOfflineverifyTimer() executed");
-        // 执行上报在线
         if (offlineverifytimer == null) {
             offlineverifytimer = new Timer();
             offlineverifytimer.schedule(new TimerTask() {
@@ -239,7 +230,7 @@ public class GuideService extends Service {
         if (s == null)
             return;
         if (s.equals(LIVE_UPDATE_GUEST)) {
-            Log.e("tag","liveGuestTimer start");
+            Log.i("tag","liveGuestTimer start");
             if (liveGuestTimer == null) {
                 liveGuestTimer = new Timer();
                 liveGuestTimer.schedule(new TimerTask() {
@@ -264,7 +255,6 @@ public class GuideService extends Service {
         }
     }
 
-    //上报在线状态
     private void uploadOnline() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("access_token", GlobalParameters.Access_token);
@@ -315,7 +305,6 @@ public class GuideService extends Service {
         s.unsubscribe();
     }
 
-    //上报考勤记录
     private void uploadOfflineverify() {
 
         LitePal.findAllAsync(OfflineVerifyMembers.class).listen(new FindMultiCallback<OfflineVerifyMembers>() {

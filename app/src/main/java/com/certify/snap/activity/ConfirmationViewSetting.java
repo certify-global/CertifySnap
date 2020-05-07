@@ -21,6 +21,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
+
 public class ConfirmationViewSetting extends Activity {
     Typeface rubiklight;
     TextView confirmation_screen,tv_confirm_above,tv_confirm_below;

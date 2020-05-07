@@ -1206,7 +1206,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
                 rgbData = nv21;
-                processPreviewData();
+               // processPreviewData();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1264,7 +1264,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
 
-                irData = nv21;
+               // irData = nv21;
                 if (tackPickIr) {
                     irBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
                     //  Log.d("irBitmap", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
