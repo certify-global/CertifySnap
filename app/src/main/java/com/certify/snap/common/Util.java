@@ -487,7 +487,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit) {
+    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit,Boolean aBoolean) {
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
@@ -501,6 +501,9 @@ public class Util {
             obj.put("irTemplate", irBit == null ? "" : Util.encodeToBase64(irBit));
             obj.put("rgbTemplate", rgbBit == null ? "" : Util.encodeToBase64(rgbBit));
             obj.put("thermalTemplate", therbit == null ? "" : Util.encodeToBase64(therbit));
+            obj.put("deviceData", MobileDetails(context));
+            obj.put("temperatureFormat",sp.getString(GlobalParameters.F_TO_C,"F"));
+            obj.put("exceedThreshold",aBoolean);
             obj.put("deviceData", MobileDetails(context));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();

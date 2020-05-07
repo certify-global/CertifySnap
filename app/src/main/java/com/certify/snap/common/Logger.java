@@ -20,7 +20,7 @@ public class Logger {
         if (EndPoints.deployment == EndPoints.Mode.Demo) {
             if (message == null) message = "null";
             Log.e(classname,message);
-            Analytics.trackEvent(Util.getSNCode()+"Error:"+message);
+            Analytics.trackEvent("Date Time"+Util.getMMDDYYYYDate()+"SN"+Util.getSNCode()+"Error:"+message);
         }else{
             Analytics.trackEvent("Date Time"+Util.getMMDDYYYYDate()+"SN"+Util.getSNCode()+"Error:"+message);
         }

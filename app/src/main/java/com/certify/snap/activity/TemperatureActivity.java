@@ -34,7 +34,7 @@ public class TemperatureActivity extends Activity {
 
         editTextDialogUserInput.setText(sp.getString(GlobalParameters.TEMP_TEST, "99"));
 
-        if(sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+        if(sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
             radio_f.setChecked(true);
         } else radio_c.setChecked(true);
 
@@ -42,9 +42,9 @@ public class TemperatureActivity extends Activity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId==R.id.radio_f) {
-                    Util.writeString(sp, GlobalParameters.F_TO_C, "f");
+                    Util.writeString(sp, GlobalParameters.F_TO_C, "F");
                 }
-                else Util.writeString(sp, GlobalParameters.F_TO_C, "c");
+                else Util.writeString(sp, GlobalParameters.F_TO_C, "C");
 
             }
         });

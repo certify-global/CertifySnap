@@ -836,7 +836,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             String text = "";
                             tackPickIr = false;
                             tackPickRgb = false;
-                            if (sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+                            if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
                                 temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
                             } else {
                                 temperature = temperatureData.getTemperature();
@@ -847,7 +847,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             Float tmpFloat = Float.parseFloat(testing_tempe);
                             Log.e("temperature str-", temperature + " tmpFloat " + tmpFloat);
                             if (temperature > tmpFloat) {
-                                if (sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+                                if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
                                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
                                 } else {
                                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
@@ -860,12 +860,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 tempVal = "high";
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap,true);
                                     else
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null);
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null,true);
                                 }
                             } else {
-                                if (sp.getString(GlobalParameters.F_TO_C, "f").equals("f")) {
+                                if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
                                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
                                 } else {
                                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centi);
@@ -875,9 +875,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Log.d("temperture---", "isUnusualTem-" + temperatureData.isUnusualTem() + "-" + text);
                                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap);
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap,false);
                                     else
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null);
+                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null,false);
                                 }
                             }
 

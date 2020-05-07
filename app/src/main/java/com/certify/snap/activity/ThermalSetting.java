@@ -49,26 +49,18 @@ public class ThermalSetting extends Activity {
             btn_save.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
 
-            if(sp.getString(GlobalParameters.Thermalscan_title,"").equals(""))
-                edittext_title.setText("THERMAL SCAN");
-
-
-            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title,""));
+            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title,"THERMAL SCAN"));
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle,""));
 
 
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
-                    title = edittext_title.getText().toString();
-                    if (title.equals("")) {
-                        Util.writeString(sp, GlobalParameters.Thermalscan_title, "THERMAL SCAN");
-                    } else {
-                        Util.writeString(sp, GlobalParameters.Thermalscan_title, title);
-                    }
+                    if(!edittext_title.getText().toString().isEmpty())
+                    Util.writeString(sp, GlobalParameters.Thermalscan_title, edittext_title.getText().toString());
+                    if(!edittext_subtitle.getText().toString().isEmpty())
                     Util.writeString(sp, GlobalParameters.Thermalscan_subtitle, edittext_subtitle.getText().toString());
-
+                    finish();
                 }
             });
 

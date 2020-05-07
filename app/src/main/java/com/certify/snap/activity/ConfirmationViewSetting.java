@@ -65,11 +65,8 @@ public class ConfirmationViewSetting extends Activity {
 
 
              et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,"3"));
-
-
-                edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,"Thank You"));
-
-                edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,"Thank You"));
+             edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,"Thank You"));
+             edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below,"Thank You"));
 
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
