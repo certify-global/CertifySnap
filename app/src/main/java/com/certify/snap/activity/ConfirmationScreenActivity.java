@@ -47,16 +47,16 @@ public class ConfirmationScreenActivity extends Activity {
             tv_subtitle = findViewById(R.id.tv_subtitle);
 
             if (value.equals("high")) {
-                if (sp.getString(GlobalParameters.Confirm_title_above, "Thank You").isEmpty())
-                    tv_title.setText("Thank You");
+                if (sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work.").isEmpty())
+                    tv_title.setText("Please contact your supervisor before starting any work.");
                 else
-                    tv_title.setText(sp.getString(GlobalParameters.Confirm_title_above, "Thank You"));
+                    tv_title.setText(sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work."));
                 tv_subtitle.setText(sp.getString(GlobalParameters.Confirm_subtitle_above, ""));
             } else {
-                if (sp.getString(GlobalParameters.Confirm_title_below, "Thank You").isEmpty())
-                    tv_title.setText("Thank You");
+                if (sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!").isEmpty())
+                    tv_title.setText("Have a nice day!");
                 else
-                    tv_title.setText(sp.getString(GlobalParameters.Confirm_title_below, "Thank You"));
+                    tv_title.setText(sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!"));
                 tv_subtitle.setText(sp.getString(GlobalParameters.Confirm_subtitle_below, ""));
             }
             tv_title.setTypeface(rubiklight);
