@@ -531,7 +531,29 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     public void onBackPressed() {
-        Application.getInstance().exit();
+        //Application.getInstance().exit();
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(IrCameraActivity.this);
+            builder.setMessage("Are you sure you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+
+                            finishAffinity();
+
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initView() {
