@@ -62,7 +62,9 @@ public class ConfirmationViewSetting extends Activity {
             if(sp.getBoolean(GlobalParameters.CONFIRM_SCREEN,false))
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
-            et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,"3"));
+
+
+             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM,"3"));
 
 
                 edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above,"Thank You"));

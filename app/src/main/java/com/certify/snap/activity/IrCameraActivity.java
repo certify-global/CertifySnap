@@ -987,7 +987,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         tv_message.setVisibility(View.GONE);
                                                     }
                                                     tv_message.setTextColor(getResources().getColor(R.color.white));
-                                                    tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.green));
+                                                    tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                                                     tv_message.setText(temperature);
                                                     img_temperature.setVisibility(View.GONE);
                                                     new Handler().postDelayed(new Runnable() {

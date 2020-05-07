@@ -4,6 +4,33 @@
     android:layout_height="match_parent"
     android:background="@drawable/splash_white">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/bg_green">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/back"
+            android:onClick="onParamterback"/>
+
+        <TextView
+            android:id="@+id/titles"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="28sp"
+            android:onClick="onParamterback"
+            android:layout_gravity="center" />
+
+
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/logo"
         android:layout_width="200dp"

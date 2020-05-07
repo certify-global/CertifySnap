@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.certify.snap.BuildConfig;
+import com.arcsoft.face.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -64,6 +64,10 @@ public class LoginActivity extends Activity {
         }catch (Exception e){
             Logger.error(" LoginActivity onCreate(@Nullable Bundle savedInstanceState)",e.getMessage());
         }
+    }
+    public void onParamterback(View view) {
+        startActivity(new Intent(LoginActivity.this,SettingActivity.class));
+        finish();
     }
 
     @Override

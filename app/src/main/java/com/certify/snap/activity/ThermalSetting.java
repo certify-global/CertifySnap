@@ -48,9 +48,12 @@ public class ThermalSetting extends Activity {
             titles.setTypeface(rubiklight);
             btn_save.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
-                edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title,"THERMAL SCAN"));
+
+            if(sp.getString(GlobalParameters.Thermalscan_title,"").equals(""))
+                edittext_title.setText("THERMAL SCAN");
 
 
+            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title,""));
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle,""));
 
 
