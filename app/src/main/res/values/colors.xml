@@ -21,7 +21,7 @@
     <color name="black">#302726</color>
     <color name="lightgray">#ffcccccc</color>
     <color name="lily_white">#EBEBEB</color>
-    <color name="half_transparent">#80000000</color>
+    <color name="half_transparent">#50000000</color>
     <color name="green">#008B00</color>
     <color name="red">#EE0000</color>
 

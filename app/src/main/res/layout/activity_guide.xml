@@ -56,12 +56,12 @@
                 android:layout_height="wrap_content"
                 android:text="@string/enable_guide"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18"/>
+                android:textSize="@dimen/margin_20"/>
             <RadioGroup
                 android:id="@+id/radio_group_guide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginTop="@dimen/margin_10"
                 android:orientation="horizontal">
 
                 <RadioButton
@@ -90,6 +90,7 @@
             android:id="@+id/text_input_title_below"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_20"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp">
 
@@ -98,6 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:hint="@string/enter_text1"
+                android:textSize="@dimen/font_18"
                 android:background="@drawable/edittextbackground"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"/>
@@ -108,7 +110,7 @@
             android:id="@+id/text_input_subtitle_below"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/margin_20"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp">
 
@@ -117,6 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:hint="@string/enter_text2"
+                android:textSize="@dimen/font_18"
                 android:background="@drawable/edittextbackground"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp" />
@@ -127,6 +130,7 @@
             android:id="@+id/text_input_title_above"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_20"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp">
 
@@ -135,6 +139,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:hint="@string/enter_text3"
+                android:textSize="@dimen/text_18"
                 android:background="@drawable/edittextbackground"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"/>

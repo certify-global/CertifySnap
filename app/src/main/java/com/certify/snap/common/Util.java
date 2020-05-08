@@ -21,6 +21,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
@@ -31,6 +32,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.arcsoft.face.ErrorInfo;
+import com.arcsoft.face.FaceEngine;
 import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
@@ -42,10 +45,12 @@ import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -53,6 +58,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -491,7 +497,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit,Boolean aBoolean) {
+    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit, Boolean aBoolean) {
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
@@ -506,8 +512,8 @@ public class Util {
             obj.put("rgbTemplate", rgbBit == null ? "" : Util.encodeToBase64(rgbBit));
             obj.put("thermalTemplate", therbit == null ? "" : Util.encodeToBase64(therbit));
             obj.put("deviceData", MobileDetails(context));
-            obj.put("temperatureFormat",sp.getString(GlobalParameters.F_TO_C,"F"));
-            obj.put("exceedThreshold",aBoolean);
+            obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
+            obj.put("exceedThreshold", aBoolean);
             obj.put("deviceData", MobileDetails(context));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
@@ -766,4 +772,88 @@ public class Util {
         }
     }
 
+    public static boolean activeEngineOffline(Context context){
+        boolean result=false;
+        String path=Environment.getExternalStorageDirectory() + "/active_result.dat";
+        String path1=Environment.getExternalStorageDirectory() + "/ArcFacePro32.dat";
+        String path2=context.getApplicationContext().getFilesDir() + "/ArcFacePro32.dat";
+        File file=new File(path);
+        if (file.exists()){
+//            int activeCode = FaceEngine.activeOffline(context,
+//                    path);
+//            if (activeCode == ErrorInfo.MOK) {
+//                result=true;
+//                Log.e("active_result","true  1");
+//            } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
+//                result=true;
+//                Log.e("active_result","true  2");
+//            } else {
+//                result=false;
+//                Log.e("active_result","false  1");
+//            }
+        }else {
+            File file1=new File(path1);
+            if (file1.exists()){
+                copyFile(path1,path2);
+                File file2=new File(path2);
+                if (file2.exists()){
+                    result=true;
+                }
+            }else {
+                Log.e("active_result","false  no .dat file");
+            }
+        }
+
+        return result;
+    }
+    public static boolean copyFile(String filePath, String destPath) {
+        File originFile = new File(filePath);
+
+        if (!originFile.exists()) {
+            Log.e("yw_lisence","lisence not exist");
+            return false;
+        }
+        File destFile = new File(destPath);
+        BufferedInputStream reader = null;
+        BufferedOutputStream writer = null;
+        try {
+            if (!destFile.exists()) {
+                destFile.createNewFile();
+            }
+            reader = new BufferedInputStream(new FileInputStream(originFile));
+            writer = new BufferedOutputStream(new FileOutputStream(destFile));
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, length);
+            }
+        } catch (Exception exception) {
+            return false;
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return true;
+    }
+    public static String logHeap() {
+        Double allocated = new Double(Debug.getNativeHeapAllocatedSize()) / new Double((1048576));
+        Double available = new Double(Debug.getNativeHeapSize()) / 1048576.0;
+        Double free = new Double(Debug.getNativeHeapFreeSize()) / 1048576.0;
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+        df.setMinimumFractionDigits(2);
+        return String.format("heap native: allocated %s MB of %s MB(%s MB free)", df.format(allocated), df.format(available), df.format(free));
+        // Log.d("tag", "debug.heap native: allocated " + df.format(allocated) + "MB of " + df.format(available) + "MB (" + df.format(free) + "MB free)");
+        //Log.d("tag", "debug.memory: allocated: " + df.format(new Double(Runtime.getRuntime().totalMemory()/1048576)) + "MB of " + df.format(new Double(Runtime.getRuntime().maxMemory()/1048576))+ "MB (" + df.format(new Double(Runtime.getRuntime().freeMemory()/1048576)) +"MB free)");
+    }
 }
