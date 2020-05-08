@@ -27,7 +27,9 @@ import com.arcsoft.face.VersionInfo;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.GuideService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
@@ -93,6 +95,8 @@ public class GuideActivity extends Activity {
         }
         mActivity = this;
         Application.getInstance().addActivity(this);
+
+
 //        sp = Util.getSharedPreferences(this);
 //        if(sp.getBoolean("activate",false)) {
 //            Log.e("sp---true","activate:"+sp.getBoolean("activate",false));
@@ -221,6 +225,12 @@ public class GuideActivity extends Activity {
         },1000);
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     public void activeEngine(final View view) {
         if (view != null) {
             view.setClickable(false);

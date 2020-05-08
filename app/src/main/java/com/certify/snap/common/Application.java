@@ -1,14 +1,20 @@
 package com.certify.snap.common;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import com.certify.snap.service.AlarmReceiver;
 import com.common.thermalimage.ThermalImageUtil;
 import com.tamic.novate.Novate;
 //import com.tencent.bugly.crashreport.CrashReport;
 
 import org.litepal.LitePal;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -95,6 +101,29 @@ public class Application extends android.app.Application {
             }
         }
         System.exit(0);
+    }
+
+
+    public static void StartService(Context context) {
+
+        Intent myIntent = new Intent(context, AlarmReceiver.class);
+        PendingIntent restartServicePendingIntent = PendingIntent.getBroadcast(context, 0, myIntent, 0);
+        // PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 1, new Intent(this, BackgroundSyncService.class), PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 9);
+        calendar.set(Calendar.MINUTE, 20);
+        calendar.set(Calendar.SECOND, 0);
+
+        if (alarmService != null)
+            alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
+
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(Calendar.HOUR_OF_DAY, 15);
+        calendar2.set(Calendar.MINUTE, 0);
+        calendar2.set(Calendar.SECOND, 0);
+        if (alarmService != null)
+            alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
     }
 
 }

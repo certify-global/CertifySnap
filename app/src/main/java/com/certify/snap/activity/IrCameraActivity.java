@@ -89,6 +89,7 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -212,6 +213,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private List<CompareResult> compareResultList;
     private ShowFaceInfoAdapter adapter;
     SharedPreferences sp;
+    protected static final String LOG = "IRCamera Activity - ";
 
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
@@ -721,6 +723,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Util.error("Onresume", e.getMessage());
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
+
+        try {
+            if (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
+                if (Util.isConnectingToInternet(this)) {
+                    startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
+                    Application.StartService(this);
+                }
+           // finish();
+        }catch (Exception e){
+            e.printStackTrace();
+            Logger.error("onresume",e.getMessage());
+        }
+
     }
 
     @Override

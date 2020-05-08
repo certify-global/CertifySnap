@@ -45,7 +45,7 @@ public class LoginActivity extends Activity {
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String input =Util.getSNCode();     //input string
+                    String input ="1234567";//Util.getSNCode();     //input string
                     String lastsixDigits = "";     //substring containing last 4 characters
 
                     if (input.length() >6) {

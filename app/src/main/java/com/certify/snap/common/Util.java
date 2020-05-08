@@ -56,8 +56,12 @@ import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 //工具类  目前有获取sharedPreferences 方法
@@ -552,8 +556,8 @@ public class Util {
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
 
-            getNumberVersion((Activity) context);
-            getDeviceUUid((Activity) context);
+            getNumberVersion(context);
+            getDeviceUUid(context);
 
             obj.put("osVersion", "Android - " + Build.VERSION.RELEASE);
             obj.put("appVersion", sp.getString(GlobalParameters.MobileAppVersion, ""));
@@ -585,18 +589,18 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"MissingPermission", "HardwareIds"})
-    public static void getDeviceUUid(Activity activity) {
+    public static void getDeviceUUid(Context context) {
         Logger.debug("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", "splash");
-        SharedPreferences sp = Util.getSharedPreferences(activity);
+        SharedPreferences sp = Util.getSharedPreferences(context);
 
         if (!sp.getString(GlobalParameters.UUID, "").isEmpty())
             return;
         String deviceUUid = null;
         try {
             try {
-                if (!Util.PermissionRequest(activity, permission.phone))
+                if (!Util.PermissionRequest(context, permission.phone))
                     //noinspection ConstantConditions
-                    deviceUUid = ((TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+                    deviceUUid = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
                 Util.writeString(sp, GlobalParameters.IMEI, deviceUUid);
 
 
@@ -604,7 +608,7 @@ public class Util {
             }
             try {
                 if (deviceUUid == null)
-                    deviceUUid = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+                    deviceUUid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
             } catch (Exception ignored) {
                 deviceUUid = UUID.randomUUID().toString();
                 Util.writeString(sp, GlobalParameters.UUID, deviceUUid);
@@ -638,16 +642,16 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("MissingPermission")
-    public static void getNumberVersion(Activity activity) {
+    public static void getNumberVersion(Context context) {
         try {
-            SharedPreferences sp = Util.getSharedPreferences(activity);
+            SharedPreferences sp = Util.getSharedPreferences(context);
 
-            TelephonyManager tMgr = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
+            TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (tMgr != null) {
-                if (!Util.PermissionRequest(activity, permission.phone))
+                if (!Util.PermissionRequest(context, permission.phone))
                     Util.writeString(sp, GlobalParameters.MOBILE_NUMBER, tMgr.getLine1Number());
             }
-            PackageInfo packageInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             Util.writeString(sp, GlobalParameters.MobileAppVersion, packageInfo.versionName);
         } catch (Exception e) {
             Logger.error(LOG + "getNumberVersion()", e.getMessage());
@@ -655,7 +659,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static boolean PermissionRequest(android.app.Activity context, String[] permissions) {
+    public static boolean PermissionRequest(Context context, String[] permissions) {
         try {
             if (permissions == null) return false;
             ArrayList<String> requestPermission = new ArrayList<>();
@@ -665,7 +669,7 @@ public class Util {
                     requestPermission.add(permission);
             }
             if (requestPermission.size() <= 0) return false;
-            context.requestPermissions(requestPermission.toArray(new String[0]), 1);
+           // context.requestPermissions(requestPermission.toArray(new String[0]), 1);
         } catch (Exception e) {
             Logger.error(LOG + "PermissionRequest(android.app.Activity context, String[] permissions", e.getMessage());
         }
@@ -708,4 +712,58 @@ public class Util {
             Logger.error(LOG + "KillApp()", e.getMessage());
         }
     }
+
+
+    public static boolean isServiceRunning(Class<?> serviceClass, Context context) {
+        try {
+            ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "isServiceRunning(Class<?> serviceClass)", e.getMessage());
+        }
+        return false;
+    }
+    public static long getCurrentTimeLong() {
+        try {
+            Calendar serverTime = new GregorianCalendar(TimeZone.getTimeZone(getCurrentTimezoneOffset()));
+            serverTime.setTimeInMillis(System.currentTimeMillis());
+            return serverTime.getTimeInMillis() / 1000 * 1000;
+        } catch (Exception e) {
+            Logger.error(LOG + "getCurrentTime()", e.getMessage());
+            return 0;
+        }
+    }
+
+    public static String getCurrentTimezoneOffset() {
+        TimeZone tz = TimeZone.getDefault();
+        Calendar cal = GregorianCalendar.getInstance(tz);
+        int offsetInMillis = tz.getOffset(cal.getTimeInMillis());
+        String offset = String.format(Locale.ENGLISH, "%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
+        offset = "GMT" + (offsetInMillis >= 0 ? "+" : "-") + offset;
+
+        return offset;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public static void getDeviceHealthCheck(JSONObjectCallback callback, Context context) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+              obj.put("lastUpdateDateTime", Util.getMMDDYYYYDate());
+              obj.put("deviceSN", Util.getSNCode());
+              obj.put("deviceInfo",MobileDetails(context));
+
+            new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
+
+        } catch (Exception e) {
+            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+
+        }
+    }
+
 }
