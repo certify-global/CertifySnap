@@ -230,5 +230,10 @@
     <string name="temperature_threshold">Set Temperature Threshold</string>
     <string name="temperature">Temperature</string>
     <string name="app_serial">Serial No:</string>
+    <string name="tv_guide_setting">Guide Settings</string>
+    <string name="enable_guide">Enable Guide</string>
+    <string name="enter_text1">Text1</string>
+    <string name="enter_text2">Text2</string>
+    <string name="enter_text3">Text3</string>
 
 </resources>

@@ -19,7 +19,6 @@ public class AsyncJSONObjectSender extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
     }
 
     public AsyncJSONObjectSender(JSONObject req, JSONObjectCallback myComponent, String url,Context context) {

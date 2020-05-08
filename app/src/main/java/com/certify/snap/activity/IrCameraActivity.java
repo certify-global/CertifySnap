@@ -724,7 +724,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
 
-        try {
+       /* try {
             if (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
                 if (Util.isConnectingToInternet(this)) {
                     startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
@@ -734,7 +734,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }catch (Exception e){
             e.printStackTrace();
             Logger.error("onresume",e.getMessage());
-        }
+        }*/
 
     }
 

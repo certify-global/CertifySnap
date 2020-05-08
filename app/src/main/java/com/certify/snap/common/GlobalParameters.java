@@ -70,6 +70,10 @@ public class GlobalParameters {
     public static final String Confirm_title_above = "Confirm_title_above";
     public static final String Confirm_subtitle_above = "Confirm_subtitle_above";
     public static final String F_TO_C = "f_to_c";
+    public static final String GUIDE_TEXT1 = "guide_text1";
+    public static final String GUIDE_TEXT2 = "guide_text2";
+    public static final String GUIDE_TEXT3 = "guide_text3";
+    public static final String GUIDE_SCREEN = "guide_screen";
 
 
 }

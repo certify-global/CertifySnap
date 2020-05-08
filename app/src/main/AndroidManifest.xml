@@ -75,6 +75,9 @@
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".activity.GuideViewSetting"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.certify.snap.activity.InitializationActivity"
             android:launchMode="singleTask" />
         <activity
