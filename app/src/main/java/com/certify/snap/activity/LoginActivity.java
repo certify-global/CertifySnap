@@ -56,6 +56,7 @@ public class LoginActivity extends Activity {
                     if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                         Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                         startActivity(intent);
+                        finish();
                     } else {
                         Toast.makeText(LoginActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
                     }
@@ -66,11 +67,14 @@ public class LoginActivity extends Activity {
         }
     }
     public void onParamterback(View view) {
-        Util.switchRgbOrIrActivity(LoginActivity.this, true);
+       startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        finish();
     }
 
     @Override
     public void onBackPressed() {
-        Util.switchRgbOrIrActivity(LoginActivity.this, true);
+
+        startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        finish();
     }
 }

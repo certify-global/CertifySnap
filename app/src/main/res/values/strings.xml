@@ -236,9 +236,9 @@
     <string name="enter_text1">Text1</string>
     <string name="enter_text2">Text2</string>
     <string name="enter_text3">Text3</string>
-    <string name="text_value1">Please center your face to the screen</string>
-    <string name="text_value2">Come Closer and Center your face</string>
-    <string name="text_value3">Please wait, preparing to scan</string>
+    <string name="text_value1">Please center your face to the screen.</string>
+    <string name="text_value2">Move closer and center your face.</string>
+    <string name="text_value3">Please wait, preparing to scan.</string>
 
 
 </resources>

@@ -247,7 +247,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
-    public static boolean loginAction = false;
     private int countTempError = 1;
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage;
@@ -391,7 +390,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginAction = true;
                 Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                 startActivity(loginIt);
                 finish();
@@ -829,17 +827,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         String error =obj.getString("err");
                                                      //   Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                                                        // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
-                                                        if(tempServiceClose)tvErrorMessage.setVisibility(View.VISIBLE);
-                                                        if(error.contains("face out of range or for head too low"))
-                                                         tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
-                                                        else  if(error.contains("wrong tem , too cold"))
-                                                            tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
-                                                        else if(error.contains("not enough validData , get tem fail"))
-                                                            tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
+                                                        if (sp.getBoolean(GlobalParameters.GUIDE_SCREEN, true)) {
+                                                            tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
+                                                            if (error.contains("face out of range or for head too low"))
+                                                                tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
+                                                            else if (error.contains("wrong tem , too cold"))
+                                                                tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
+                                                            else if (error.contains("not enough validData , get tem fail"))
+                                                                tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
                                                             else
-                                                            tvErrorMessage.setVisibility(View.GONE);
-                                                     //   }
-
+                                                                tvErrorMessage.setVisibility(View.GONE);
+                                                            //   }
+                                                        }
                                                         if (countTempError < 10) { ++countTempError;
                                                         } else {
                                                             try {
@@ -1028,7 +1027,7 @@ rgbBitmap =null;
                                                     requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                     //  img_temperature.setImageResource(result ? R.drawable.stop : R.drawable.r);
                                                     if (sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true)) {
-                                                        if (!tempServiceClose)  tv_message.setVisibility(View.VISIBLE);
+                                                        tv_message.setVisibility(View.VISIBLE);
                                                     } else {
                                                         tv_message.setVisibility(View.GONE);
                                                     }
