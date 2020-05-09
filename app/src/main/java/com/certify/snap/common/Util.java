@@ -845,14 +845,17 @@ public class Util {
         }
         return true;
     }
-    public static String logHeap() {
-        Double allocated = new Double(Debug.getNativeHeapAllocatedSize()) / new Double((1048576));
-        Double available = new Double(Debug.getNativeHeapSize()) / 1048576.0;
-        Double free = new Double(Debug.getNativeHeapFreeSize()) / 1048576.0;
-        DecimalFormat df = new DecimalFormat();
-        df.setMaximumFractionDigits(2);
-        df.setMinimumFractionDigits(2);
-        return String.format("heap native: allocated %s MB of %s MB(%s MB free)", df.format(allocated), df.format(available), df.format(free));
+    public static String logHeap(Context context) {
+//        Double allocated = new Double(Debug.getNativeHeapAllocatedSize()) / new Double((1048576));
+//        Double available = new Double(Debug.getNativeHeapSize()) / 1048576.0;
+//        Double free = new Double(Debug.getNativeHeapFreeSize()) / 1048576.0;
+//        DecimalFormat df = new DecimalFormat();
+//        df.setMaximumFractionDigits(2);
+//        df.setMinimumFractionDigits(2);
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        return String.format("heap native: availMem %s MB threshold %s totalMem %s MB getMemoryClass) ", memoryInfo.availMem, memoryInfo.threshold, memoryInfo.totalMem,activityManager.getMemoryClass(),activityManager.getLargeMemoryClass());
         // Log.d("tag", "debug.heap native: allocated " + df.format(allocated) + "MB of " + df.format(available) + "MB (" + df.format(free) + "MB free)");
         //Log.d("tag", "debug.memory: allocated: " + df.format(new Double(Runtime.getRuntime().totalMemory()/1048576)) + "MB of " + df.format(new Double(Runtime.getRuntime().maxMemory()/1048576))+ "MB (" + df.format(new Double(Runtime.getRuntime().freeMemory()/1048576)) +"MB free)");
     }

@@ -30,10 +30,10 @@
 
         <ImageView
             android:id="@+id/iv_verify_outer_circle"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="250dp"
+            android:layout_height="300dp"
             android:layout_centerInParent="true"
-            android:background="@mipmap/outer_circle" />
+            android:background="@drawable/border_shape" />
 
         <ImageView
             android:id="@+id/iv_verify_inner_circle"
@@ -41,12 +41,14 @@
             android:layout_height="200dp"
             android:layout_centerInParent="true"
             android:layout_marginBottom="100dp"
+            android:visibility="gone"
             android:background="@mipmap/inner_circle" />
 
         <RelativeLayout
             android:id="@+id/relative_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="visible"
             android:background="@drawable/splashbg2">
 
             <ImageView

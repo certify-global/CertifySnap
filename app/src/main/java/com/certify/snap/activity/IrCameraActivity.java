@@ -143,7 +143,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static final int CARD_ID_ERROR = 335;
     private static final int ENTER = 336;
     private static final int TIME_ERROR = 337;
-    public SQLiteDatabase db;
     OfflineVerifyMembers offlineVerifyMembers;
     List<RegisteredMembers> registeredMemberslist;
     private boolean isIdentified = false;
@@ -683,7 +682,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onResume() {
         super.onResume();
 
-        Log.d("onResume", "" + Util.logHeap());
+        Log.d("onResume", "" + Util.logHeap(IrCameraActivity.this));
         String longVal = sp.getString(GlobalParameters.DELAY_VALUE, "3");
         if (longVal.equals("")) {
             delayMilli = 3;
@@ -806,7 +805,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void runTemperature() {
         isTemperature = false;
         isSearch = false;
-        Logger.debug("runTemperature ", Util.logHeap());
+        Logger.debug("runTemperature ", Util.logHeap(IrCameraActivity.this));
         time1 = time2 = 0;
         time1 = System.currentTimeMillis();
         temperature = 0;
@@ -831,6 +830,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         String error = obj.getString("err");
                                                         //   Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                                                         // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
+                                                        outerCircle.setBackgroundResource(R.drawable.border_shape_read);
                                                         if (sp.getBoolean(GlobalParameters.GUIDE_SCREEN, true)) {
                                                             tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                                             if (error.contains("face out of range or for head too low"))
@@ -878,7 +878,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     public void getTemperatureBimapData(final TemperatureBitmapData data) throws RemoteException {
                                         temperatureBitmap = data.getBitmap();
                                         Logger.debug(TAG + " getTemperatureBimapData ->", "getTemperatureBimapData");
-
+                                        outerCircle.setBackgroundResource(R.drawable.border_shape);
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -986,7 +986,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
-
+                Logger.debug(TAG, "initRgbCamera.faceListener.onFaceFeatureInfoGet");
                 if (faceFeature != null) {
                     countTempError = 0;
                     Log.i(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isIdentified + ",tempServiceColes " + tempServiceClose);
@@ -1221,7 +1221,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
-                Log.d("onPreview", "" + Util.logHeap());
+                Log.d("onPreview", "" + Util.logHeap(IrCameraActivity.this));
                 processPreviewData(nv21);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1279,7 +1279,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
-
+                Logger.debug(TAG, "irCameraListener.onPreview");
                 irData = nv21;
                 if (tackPickIr) {
                     irBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
@@ -1838,67 +1838,63 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
 
         outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-        innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        //innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         relativeLayout.setBackground(getDrawable(id));
-//        outerCircle.setVisibility(View.VISIBLE);
-//        innerCircle.setVisibility(View.VISIBLE);
-        // template_view.setVisibility(isVisible?View.VISIBLE:View.GONE);
-        //     img_temperature.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     private void showAnimation() {
-        if (outerCircleAnimator == null && innerCircleAnimator == null) {
-            outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
-            outerCircleAnimator.setDuration(3000);
-            outerCircleAnimator.setRepeatCount(Animation.INFINITE);
-            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            outerCircleAnimator.setInterpolator(new LinearInterpolator());
-            outerCircleAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    outerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
-                }
-            });
-            innerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            innerCircleAnimator = ObjectAnimator.ofFloat(innerCircle, "rotation", 0.0f, -360.0f);
-            innerCircleAnimator.setDuration(2500);
-            innerCircleAnimator.setRepeatCount(ValueAnimator.INFINITE);
-            innerCircleAnimator.setRepeatMode(ValueAnimator.RESTART);
-            innerCircleAnimator.setInterpolator(new LinearInterpolator());
-            innerCircleAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    innerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
-                }
-            });
-            animatorSet = new AnimatorSet();
-            animatorSet.play(outerCircleAnimator).with(innerCircleAnimator);
-            animatorSet.start();
+//        if (outerCircleAnimator == null && innerCircleAnimator == null) {
+//            outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//            outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
+//            outerCircleAnimator.setDuration(3000);
+//            outerCircleAnimator.setRepeatCount(Animation.INFINITE);
+//            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);
+//            outerCircleAnimator.setInterpolator(new LinearInterpolator());
+//            outerCircleAnimator.addListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationCancel(Animator animation) {
+//                    outerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
+//                }
+//            });
+//            innerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//            innerCircleAnimator = ObjectAnimator.ofFloat(innerCircle, "rotation", 0.0f, -360.0f);
+//            innerCircleAnimator.setDuration(2500);
+//            innerCircleAnimator.setRepeatCount(ValueAnimator.INFINITE);
+//            innerCircleAnimator.setRepeatMode(ValueAnimator.RESTART);
+//            innerCircleAnimator.setInterpolator(new LinearInterpolator());
+//            innerCircleAnimator.addListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationCancel(Animator animation) {
+//                    innerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
+//                }
+//            });
+//            animatorSet = new AnimatorSet();
+//            animatorSet.play(outerCircleAnimator).with(innerCircleAnimator);
+//            animatorSet.start();
 
-            tempretrynum = 0;
-            retrytemp = 0;
-            isTemperature = true;
-            temperature_image.setVisibility(View.GONE);
-            tv_message.setText("");
-            tv_message.setVisibility(View.GONE);
+        tempretrynum = 0;
+        retrytemp = 0;
+        isTemperature = true;
+        temperature_image.setVisibility(View.GONE);
+        tv_message.setText("");
+        tv_message.setVisibility(View.GONE);
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //  Util.enableLedPower(1);
-                }
-            }, 500);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //  Util.enableLedPower(1);
+            }
+        }, 500);
+        //}
     }
 
     private void stopAnimation() {
-        if (animatorSet != null) {
-            animatorSet.cancel();
-            outerCircleAnimator = null;
-            innerCircleAnimator = null;
-            animatorSet = null;
-        }
+//        if (animatorSet != null) {
+//            animatorSet.cancel();
+//            outerCircleAnimator = null;
+//            innerCircleAnimator = null;
+//            animatorSet = null;
+//        }
     }
 
     private void showWallpaper() {
