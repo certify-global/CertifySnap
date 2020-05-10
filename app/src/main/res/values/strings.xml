@@ -162,7 +162,7 @@
     <string name="text_nopermission">No Permission,Please contact the administrator!</string>
     <string name="text_expiredtime">It is beyond the date of expiry,Please contact the administrator!</string>
     <string name="text_passcodeexpired">Passcode has expired</string>
-    <string name="centigrade">&#160;°F</string>
+    <string name="fahrenheit_symbol">&#160;°F</string>
     <string name="centi">&#160;°C</string>
     <string name="temperature_normal">Temperature Normal:&#160;</string>
     <string name="temperature_anormaly">Temperature High:&#160;</string>
