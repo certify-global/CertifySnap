@@ -1818,6 +1818,7 @@ temperature_image.setImageBitmap(rgbBitmap);
 
         @Override
         public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
+            cameraParameters = camera.getParameters();
             previewSizeIr = camera.getParameters().getPreviewSize();
             drawHelperIr = new DrawHelper(previewSizeIr.width, previewSizeIr.height, previewViewIr.getWidth(), previewViewIr.getHeight(), displayOrientation,
                     cameraId, isMirror, false, false);
