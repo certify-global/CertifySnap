@@ -681,11 +681,12 @@ public class Util {
         }
         return true;
     }
-
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
-        Camera.Parameters parameters = camera.getParameters();
-        Camera.Size size = parameters.getPreviewSize();
-        YuvImage image = new YuvImage(data, parameters.getPreviewFormat(), size.width, size.height, null);
+        return convertYuvByteArrayToBitmap(data, camera.getParameters());
+    }
+    public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
+        Camera.Size size = cameraParameters.getPreviewSize();
+        YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, out);
         byte[] imageBytes = out.toByteArray();
@@ -855,7 +856,7 @@ public class Util {
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
-        return String.format("heap native: availMem %s MB threshold %s totalMem %s MB getMemoryClass) ", memoryInfo.availMem, memoryInfo.threshold, memoryInfo.totalMem,activityManager.getMemoryClass(),activityManager.getLargeMemoryClass());
+        return String.format("heap native: availMem %s MB, threshold %s totalMem %s MB, getMemoryClass %s , getLargeMemoryClass %s) ", memoryInfo.availMem/1048576, memoryInfo.threshold/1048576, memoryInfo.totalMem/1048576,activityManager.getMemoryClass()/1048576,activityManager.getLargeMemoryClass()/1048576);
         // Log.d("tag", "debug.heap native: allocated " + df.format(allocated) + "MB of " + df.format(available) + "MB (" + df.format(free) + "MB free)");
         //Log.d("tag", "debug.memory: allocated: " + df.format(new Double(Runtime.getRuntime().totalMemory()/1048576)) + "MB of " + df.format(new Double(Runtime.getRuntime().maxMemory()/1048576))+ "MB (" + df.format(new Double(Runtime.getRuntime().freeMemory()/1048576)) +"MB free)");
     }

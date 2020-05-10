@@ -132,17 +132,7 @@
         android:visibility="gone"
         android:textColor="@color/white"
         android:textSize="28sp"/>
-    <ImageView
-        android:id="@+id/img_temperature"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_above="@+id/tv_message"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        android:scaleType="centerInside"
-        android:visibility="visible"
 
-        />
     <TextView android:id="@+id/tv_displing_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
