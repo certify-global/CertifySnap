@@ -55,6 +55,7 @@ public class GlobalParameters {
     public static final String UUID = "uuid";
     public static final String IMEI = "imei";
     public static final String ONLINE_MODE = "online_mode";
+    public static final String FIRST_RUN = "first_run";
     public static final String URL = "url";
     public static final String Thermalscan_title = "Thermalscan_title";
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";

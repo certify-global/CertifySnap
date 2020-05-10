@@ -42,7 +42,7 @@ public class Requestor {
             httpost.addHeader("Content-type", "application/json");
             httpost.setHeader("DeviceSN", SerialNo);
            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
-            httpost.setHeader("Authorization","bearer"+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
+            httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));

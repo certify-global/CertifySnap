@@ -78,6 +78,7 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -248,13 +249,33 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             } catch (Exception e) {
                 json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
             }
-            if (json1.isNull("access_token")) return;
-            String access_token = json1.getString("access_token");
-            String token_type = json1.getString("token_type");
-            String institutionId = json1.getString("InstitutionID");
-            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
-            Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
-            Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
+
+
+            if(status.contains("ActivateApplication")){
+                if (json1.getString("responseCode").equals("1")) {
+                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Logger.toast(IrCameraActivity.this, "Device Activated");
+
+                } else if (json1.getString("responseSubCode").equals("103")) {
+                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Logger.toast(IrCameraActivity.this, "Already Activated");
+                } else if (json1.getString("responseSubCode").equals("104")) {
+                    Logger.toast(IrCameraActivity.this, "Device Not Register");
+                } else if (json1.getString("responseSubCode").equals("105")) {
+                    Logger.toast(IrCameraActivity.this, "Device Inactive");
+                }
+            }else {
+
+                if (json1.isNull("access_token")) return;
+                String access_token = json1.getString("access_token");
+                String token_type = json1.getString("token_type");
+                String institutionId = json1.getString("InstitutionID");
+                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
+                Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
+                Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, e.getMessage());
@@ -338,15 +359,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Drawable d = new BitmapDrawable(getResources(), bitmap);
             img_logo.setBackground(d);
         }
-            if (Util.isConnectingToInternet(this)) {
-                if (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true")) {
-                    Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
-                }else{
-                    Util.activateApplication(this,this);
-                }
-            } else {
-                Logger.toast(this, getResources().getString(R.string.network_error));
+
+
+        if (Util.isConnectingToInternet(this)) {
+            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
+               Util.activateApplication(this,this);
+                Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
+                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
             }
+        } else {
+            Logger.toast(this, getResources().getString(R.string.network_error));
+        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
@@ -646,8 +669,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
 
-       /* try {
-            if (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
+        try {
+            if (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
                 if (Util.isConnectingToInternet(this)) {
                     startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
                     Application.StartService(this);
@@ -656,7 +679,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }catch (Exception e){
             e.printStackTrace();
             Logger.error("onresume",e.getMessage());
-        }*/
+        }
 
     }
 
