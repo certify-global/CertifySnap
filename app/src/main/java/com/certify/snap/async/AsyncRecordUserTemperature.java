@@ -36,7 +36,8 @@ public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String reportInfo) {
-        if (myComponent == null) return;
-        myComponent.onJSONObjectListenerTemperature(reportInfo, url,req);
+//        TODO:should be fire and forget?
+//        if (myComponent == null) return;
+//        myComponent.onJSONObjectListenerTemperature(reportInfo, url,req);
     }
 }

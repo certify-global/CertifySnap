@@ -189,7 +189,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private FaceHelper faceHelperIr;
     private List<CompareResult> compareResultList;
     private ShowFaceInfoAdapter adapter;
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
     protected static final String LOG = "IRCamera Activity - ";
 
 
@@ -202,7 +202,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private AlertDialog.Builder builder;
 
     private int relaytimenumber = 5;
-    ImageView img_guest, temperature_image,  img_logo;
+    ImageView img_guest, temperature_image, img_logo;
     TextView txt_guest;
     String message;
     private BeepManager mBeepManager, manormalBeep, mBeepManager1, mBeepManager2, malertBeep, mBeepSuccess;
@@ -222,7 +222,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isTemperature = true;
     private boolean isSearch = true;
     private final Object obj = new Object();
-    TemperatureListener mTemperatureListener;
     private float temperature = 0;
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
@@ -236,7 +235,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
 
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
-        Log.v(TAG, String.format("onJSONObjectListener reportInfo: %s, status: %s, req: %s",reportInfo, status, req) );
+        Log.v(TAG, String.format("onJSONObjectListener reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
         try {
             if (reportInfo == null) {
                 return;
@@ -251,7 +250,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
 
 
-            if(status.contains("ActivateApplication")){
+            if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
                     Logger.toast(IrCameraActivity.this, "Device Activated");
@@ -264,7 +263,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Logger.toast(IrCameraActivity.this, "Device Inactive");
                 }
-            }else {
+            } else {
 
                 if (json1.isNull("access_token")) return;
                 String access_token = json1.getString("access_token");
@@ -282,13 +281,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         }
     }
-
+//TODO: remove, don't process record temperature response?
     @Override
     public void onJSONObjectListenerTemperature(String reportInfo, String status, JSONObject req) {
         Log.v(TAG, String.format("onJSONObjectListenertemperature reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
         try {
 
             if (reportInfo == null) {
+                Log.w(TAG, "onJSONObjectListenerTemperature reportInfo == null");
                 return;
             }
             Logger.debug(TAG, "reportInfo = " + reportInfo + " status " + " ,json  " + req.toString());
@@ -309,14 +309,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }
 
-    }
-
-    public interface TemperatureListener {
-        void onTemperatureCall(boolean result, String temperature);
-    }
-
-    public void setonTemperatureListenter(TemperatureListener temperatureListener) {
-        mTemperatureListener = temperatureListener;
     }
 
     private NfcAdapter mNfcAdapter;
@@ -361,7 +353,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
 
 
-        if (Util.isConnectingToInternet(this)) {
+   /*     if (Util.isConnectingToInternet(this)) {
             if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
                Util.activateApplication(this,this);
                 Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
@@ -369,7 +361,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         } else {
             Logger.toast(this, getResources().getString(R.string.network_error));
-        }
+        }*/
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
@@ -401,8 +393,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
 
         scan = findViewById(R.id.scan);
-        Typeface rubiklight = Typeface.createFromAsset(getAssets(),
-                "rubiklight.ttf");
         tv_thermal = findViewById(R.id.tv_thermal);
         tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
         tv_thermal.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN"));
@@ -572,8 +562,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvErrorMessage = findViewById(R.id.tv_error_message);
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
-        Typeface rubiklight = Typeface.createFromAsset(getAssets(),
-                "rubiklight.ttf");
         tv_display_time = findViewById(R.id.tv_display_time);
         tv_display_time.setTypeface(rubiklight);
         tv_message = findViewById(R.id.tv_message);
@@ -613,7 +601,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
 
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -625,6 +612,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     protected void onResume() {
+        Log.v(TAG, "onResume");
         super.onResume();
 
         //Logger.debug(TAG, "" + Util.logHeap(IrCameraActivity.this));
@@ -634,6 +622,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             delayMilli = Long.parseLong(longVal);
         }
+        Log.v(TAG, "onResume delayMilli:" + delayMilli);
         if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
             if (ConfirmationBoolean) {
                 isTemperatureIdentified = true;
@@ -675,10 +664,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
                     Application.StartService(this);
                 }
-           // finish();
-        }catch (Exception e){
+            // finish();
+        } catch (Exception e) {
             e.printStackTrace();
-            Logger.error("onresume",e.getMessage());
+            Logger.error("onresume", e.getMessage());
         }
 
     }
@@ -766,45 +755,42 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             Log.w(TAG, "temperatureData is null");
                             return;
                         }
-                            String text = "";
-                            takePicIr = false;
-                            takePicRgb = false;
-                            String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
-                            String temperatureFormat = temperaturePreference.equals("F")
-                                    ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
-                            String abnormalTemperature = getString(R.string.temperature_anormaly);
-                            temperature = temperatureData.getTemperature();//centigrade
-                            if (temperaturePreference.equals("F")) {
-                                temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                        String text = "";
+                        takePicIr = false;
+                        takePicRgb = false;
+                        String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
+                        String temperatureFormat = temperaturePreference.equals("F")
+                                ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
+                        String abnormalTemperature = getString(R.string.temperature_anormaly);
+                        temperature = temperatureData.getTemperature();//centigrade
+                        if (temperaturePreference.equals("F")) {
+                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                        }
+                        String tempString = String.format("%,.1f", temperature);
+                        String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
+                        Float thresholdTemperature = Float.parseFloat(thresholdTemperaturePreference);
+                        if (temperature > thresholdTemperature) {
+                            text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
+                            TemperatureCallBackUISetup(true, text, tempString);
+                            //  mTemperatureListener.onTemperatureCall(true, text);
+                            if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                                malertBeep.playBeepSoundAndVibrate();
                             }
-                            String tempString = String.format("%,.1f", temperature);
-                            String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
-                            Float thresholdTemperature = Float.parseFloat(thresholdTemperaturePreference);
-                            if (temperature > thresholdTemperature) {
-                                text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
-                                mTemperatureListener.onTemperatureCall(true, text);
-                                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                                    malertBeep.playBeepSoundAndVibrate();
-                                }
-                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, true);
-                                    else
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, true);
-                                }
-                            } else {
-                                text = getString(R.string.temperature_normal) + tempString +temperatureFormat;
-                                mTemperatureListener.onTemperatureCall(false, text);
-                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
-                                    else
-                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
-                                }
-                            }
-                            rgbBitmap = null;
-                            irBitmap = null;
-                            temperatureBitmap = null;
+
+                        } else {
+                            text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
+                            TemperatureCallBackUISetup(false, text, tempString);
+                            //   mTemperatureListener.onTemperatureCall(false, text);
+//                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
+//                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
+//                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
+//                                    else
+//                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
+//                                }
+                        }
+//                            rgbBitmap = null;
+//                            irBitmap = null;
+//                            temperatureBitmap = null;
 
                     } catch (Exception e) {
                         Logger.error(Util.getSNCode() + "getTemperatureBimapData(final TemperatureBitmapData data) throws RemoteException ", e.getMessage());
@@ -818,13 +804,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void retry(int retryNumber) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tv_message.setVisibility(View.GONE);
-
-            }
-        });
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                tv_message.setVisibility(View.GONE);
+//
+//            }
+//        });
         if (retryNumber < 3) {
             Logger.error(Util.getSNCode() + "retry temperature---", retrytemp + "-" + tempretrynum);
             runTemperature();
@@ -875,67 +861,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     rl_header.setVisibility(View.GONE);
                                     logo.setVisibility(View.GONE);
                                     showAnimation();
-
-                                    setonTemperatureListenter(new TemperatureListener() {
-                                        @Override
-                                        public void onTemperatureCall(final boolean result, final String temperature) {
-                                            Logger.debug("TemperatureListenter---", "isnormal=" + result + "-" + temperature + " delayMilli = " + delayMilli);
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    isTemperatureIdentified = true;
-                                                    // if (tempServiceColes) return;
-                                                    sendMessageToStopAnimation(HIDE_VERIFY_UI);
-                                                    //   setTimerCount();
-                                                    //if(ir!=null)
-                                                    tvErrorMessage.setVisibility(View.GONE);
-                                                    if (tempServiceClose) {
-                                                        relative_main.setVisibility(View.GONE);
-                                                        logo.setVisibility(View.GONE);
-                                                        rl_header.setVisibility(View.GONE);
-                                                    }
-temperature_image.setImageBitmap(rgbBitmap);
-                                                    requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true)) {
-                                                        tv_message.setVisibility(View.VISIBLE);
-                                                    } else {
-                                                        tv_message.setVisibility(View.GONE);
-                                                    }
-
-                                                    tv_message.setTextColor(getResources().getColor(R.color.white));
-                                                    tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
-                                                    tv_message.setText(temperature);
-                                                    tv_message.setTypeface(rubiklight);
-                                                    new Handler().postDelayed(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            takePicRgb = true;
-                                                            takePicIr = true;
-
-                                                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                                                            temperature_image.setVisibility(View.GONE);
-
-                                                            if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
-                                                                Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
-                                                                intent.putExtra("tempVal", result ? "high" : "");
-                                                                startActivity(intent);
-                                                                ConfirmationBoolean = true;
-                                                                finish();
-                                                            } else {
-                                                                ShowLauncherView();
-                                                            }
-                                                            // }
-                                                            //     clearLeftFace(null);
-                                                        }
-                                                    }, delayMilli * 1000);
-
-                                                    //requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                                                    //  faceHelper.setName(requestId, getString(R.string.VISITOR) + requestId);
-                                                }
-                                            });
-                                        }
-                                    });
-
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
                                     if (isCalibrating && isSearch) runTemperature();
 
@@ -949,7 +874,8 @@ temperature_image.setImageBitmap(rgbBitmap);
                                                     isSearch = true;
                                                     Logger.debug(TAG + "runTemperature---", "isIdentified=" + isTemperatureIdentified);
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
-                                                    if (isTemperatureIdentified || !takePicRgb) return;
+                                                    if (isTemperatureIdentified || !takePicRgb)
+                                                        return;
 
                                                     stopAnimation();
                                                     tv_message.setText("");
@@ -1419,8 +1345,8 @@ temperature_image.setImageBitmap(rgbBitmap);
                 return;
             switch (msg.what) {
                 case HIDE_VERIFY_UI:
-                    irCameraActivity.stopAnimation();
-                    irCameraActivity.changeVerifyBackground(R.color.transparency, false);
+                    // irCameraActivity.stopAnimation();
+                    //irCameraActivity.changeVerifyBackground(R.color.transparency, false);
                     break;
                 case CARD_ID_ERROR:
 //                    irCameraActivity.mBeepManager2.playBeepSoundAndVibrate();
@@ -1474,7 +1400,7 @@ temperature_image.setImageBitmap(rgbBitmap);
         if (outerCircle == null || innerCircle == null)
             return;
 
-        outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        //outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         //innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         relativeLayout.setBackground(getDrawable(id));
     }
@@ -1483,9 +1409,9 @@ temperature_image.setImageBitmap(rgbBitmap);
         tempretrynum = 0;
         retrytemp = 0;
         isTemperature = true;
-        temperature_image.setVisibility(View.GONE);
-        tv_message.setText("");
-        tv_message.setVisibility(View.GONE);
+//        temperature_image.setVisibility(View.GONE);
+//        tv_message.setText("");
+//        tv_message.setVisibility(View.GONE);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -1775,7 +1701,7 @@ temperature_image.setImageBitmap(rgbBitmap);
                             String error = obj.getString("err");
                             //   Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                             // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
-                            outerCircle.setBackgroundResource(R.drawable.border_shape_red);
+
                             if (sharedPreferences.getBoolean(GlobalParameters.GUIDE_SCREEN, true)) {
                                 tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                 if (error.contains("face out of range or for head too low"))
@@ -1788,6 +1714,8 @@ temperature_image.setImageBitmap(rgbBitmap);
                                     tvErrorMessage.setVisibility(View.GONE);
                                 //   }
                             }
+                            if (error.contains("face out of range or for head too low") || error.contains("wrong tem , too cold") || error.contains("not enough validData , get tem fail"))
+                                outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                             ++countTempError;
                             if (countTempError >= 10) {
                                 RestartAppOnTooManyErrors(error);
@@ -1830,14 +1758,17 @@ temperature_image.setImageBitmap(rgbBitmap);
                     if (data.getBitmap() != null) {
                         temperature_image.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                         temperature_image.setImageBitmap(data.getBitmap());
-                        outerCircle.setBackgroundResource(R.drawable.border_shape);
+
+
                     }
                 }
             });
         }
 
+
     }
-    private class FaceEngineHelper{
+
+    private class FaceEngineHelper {
         private FaceEngine ftEngine;
         private FaceEngine frEngine;
         private FaceEngine flEngine;
@@ -1911,5 +1842,73 @@ temperature_image.setImageBitmap(rgbBitmap);
                 }
             }
         }
+    }
+
+    private void TemperatureCallBackUISetup(final boolean result, final String temperature, final String tempValue) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                isTemperatureIdentified = true;
+                outerCircle.setBackgroundResource(R.drawable.border_shape);
+                tvErrorMessage.setVisibility(View.GONE);
+                //   temperature_image.setImageBitmap(rgbBitmap);
+                if (tempServiceClose) {
+                    relative_main.setVisibility(View.GONE);
+                    logo.setVisibility(View.GONE);
+                    rl_header.setVisibility(View.GONE);
+                }
+                // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                Logger.debug(TAG, "CAPTURE_TEMPERATURE : " + sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true));
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true)) {
+                    tv_message.setVisibility(View.VISIBLE);
+                } else {
+                    tv_message.setVisibility(View.GONE);
+                }
+
+                tv_message.setTextColor(getResources().getColor(R.color.white));
+                tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
+                tv_message.setText(temperature);
+                tv_message.setTypeface(rubiklight);
+                if (lanchTimer != null)
+                    lanchTimer.cancel();
+                lanchTimer = new Timer();
+                lanchTimer.schedule(new TimerTask() {
+                    public void run() {
+                        takePicRgb = true;
+                        takePicIr = true;
+
+                        //  requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                       // temperature_image.setVisibility(View.GONE);
+
+                        if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
+                            Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
+                            intent.putExtra("tempVal", result ? "high" : "");
+                            startActivity(intent);
+                            ConfirmationBoolean = true;
+                            finish();
+                        } else {
+                            ShowLauncherView();
+                        }
+                        // }
+                        //     clearLeftFace(null);
+                    }
+                }, delayMilli * 1000);
+                //   if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
+//                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
+//                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
+//                                    else
+//                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
+//                                }
+                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
+                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, result);
+                    else
+                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempValue, null, null, null, result);
+                }
+                //requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                //  faceHelper.setName(requestId, getString(R.string.VISITOR) + requestId);
+            }
+        });
+
     }
 }

@@ -69,7 +69,6 @@ public class GuideActivity extends Activity {
     private boolean isRunService = false;
     private GuideService.MyBinder myBinder;
     private SharedPreferences sp;
-
     boolean libraryExists = true;
     // Demo
     private static final String[] LIBRARIES = new String[]{
