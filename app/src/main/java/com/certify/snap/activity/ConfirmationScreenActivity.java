@@ -39,7 +39,6 @@ public class ConfirmationScreenActivity extends Activity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_confirmation_screen);
             value = getIntent().getStringExtra("tempVal");
-            Log.d("eeeeeeeeee", value);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);
@@ -72,8 +71,6 @@ public class ConfirmationScreenActivity extends Activity {
                 public void run() {
                     Util.switchRgbOrIrActivity(ConfirmationScreenActivity.this, true);
                     finish();
-//                    Intent intent=new Intent(ConfirmationScreenActivity.this,IrCameraActivity.class);
-//                    startActivity(intent);
 
                 }
             }, delayMilli*900);

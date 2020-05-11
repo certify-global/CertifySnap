@@ -34,11 +34,13 @@ import android.widget.Toast;
 
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
+import com.certify.callback.SettingCallback;
 import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
+import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -51,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -413,6 +416,24 @@ public class Util {
 
     }
 
+    public static String encodeImagePath(String path)
+    {
+        File imagefile = new File(path);
+        FileInputStream fis = null;
+        try{
+            fis = new FileInputStream(imagefile);
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+        Bitmap bm = BitmapFactory.decodeStream(fis);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        byte[] b = baos.toByteArray();
+        String encImage = Base64.encodeToString(b, Base64.DEFAULT);
+        //Base64.de
+        return encImage;
+
+    }
     public static String encodeToBase64(Bitmap image) {
         Bitmap immage = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -442,6 +463,20 @@ public class Util {
 
         }
     }
+    public static void getSettings(SettingCallback callback, Context context) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+              obj.put("deviceSN",Util.getSNCode());//"A040980P02800137"
+
+            new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
+
+        } catch (Exception e) {
+            Logger.error(LOG + "getSettings(JSONObjectCallback callback, Context context)", e.getMessage());
+
+        }
+    }
 
 
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
@@ -458,11 +493,23 @@ public class Util {
         }
         return null;
     }
+    public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals(""))
+                return new JSONObject(responseTemp);
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
 
+        }
+        return null;
+    }
 
     public static String getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req, Util.getSNCode(), context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals(""))
                 return new String(responseTemp);
         } catch (Exception e) {

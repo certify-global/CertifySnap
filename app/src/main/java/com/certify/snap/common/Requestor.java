@@ -121,7 +121,7 @@ public class Requestor {
         }
         return "";
     }
-    public static String postJson(String urlStr, JSONObject reqPing, String SerialNo, Context context) {
+    public static String postJson(String urlStr, JSONObject reqPing, Context context) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
         SharedPreferences  sp = Util.getSharedPreferences(context);
@@ -130,7 +130,7 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             HttpPost httpost = new HttpPost(urlStr);
             httpost.addHeader("Content-type", "application/json");
-            httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
+            httpost.setHeader("Authorization","Bearer qI-Cb73tvjNs_d_kineb9Rhj47FNubFDaI17AFyn_eeumw_zrjeseWM3Mv0J7fLkzDGeCf0tGQEpjUey-vgi4KqFQpT9J6Gv5QbZaIktfzlooSTrHygufn330l-e9MubWaTZfMljhPsCwYMhYDoyhnM3L8fzpyiICT6mmshUmjr74ag4v4zhzGTaZxDS4gqH0GZICEFDHnOcfEzYQSlxzvzMn2me9D8_ZCr_vosQJZ46eMX2_7xPRpdCVxOrSXwi543z4iAiRErWZb_Z-znxDDgd9qo"/*sp.getString(GlobalParameters.ACCESS_TOKEN,"")*/);
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
@@ -166,4 +166,6 @@ public class Requestor {
         }
         return responseStr;
     }
+
+
 }

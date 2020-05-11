@@ -24,6 +24,7 @@ import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
@@ -46,6 +47,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import com.certify.snap.R;
+
+import org.json.JSONObject;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -54,7 +58,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class GuideActivity extends Activity {
+public class GuideActivity extends Activity implements  SettingCallback {
 
     public static final String TAG  = "GuideActivity";
     public static Activity mActivity;
@@ -68,7 +72,8 @@ public class GuideActivity extends Activity {
     Gson gson = new Gson();
     private boolean isRunService = false;
     private GuideService.MyBinder myBinder;
-    private SharedPreferences sp;
+    private SharedPreferences sharedPreferences;
+
     boolean libraryExists = true;
     // Demo
     private static final String[] LIBRARIES = new String[]{
@@ -94,6 +99,18 @@ public class GuideActivity extends Activity {
         }
         mActivity = this;
         Application.getInstance().addActivity(this);
+        sharedPreferences=Util.getSharedPreferences(this);
+
+
+
+            if (Util.isConnectingToInternet(this)) {
+            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
+                Util.getSettings(this,this);
+                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
+            }
+        } else {
+            Logger.toast(this, getResources().getString(R.string.network_error));
+        }
 
 
 //        sp = Util.getSharedPreferences(this);
@@ -110,6 +127,7 @@ public class GuideActivity extends Activity {
                  //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
                 }
             });
+
         }
 
         myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
@@ -253,15 +271,15 @@ public class GuideActivity extends Activity {
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {
                           //  Util.showToast(SettingActivity.this,getString(R.string.active_success));
-                            Util.writeBoolean(sp,"activate",true);
+                            Util.writeBoolean(sharedPreferences,"activate",true);
                          //   show();
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
                           //  Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Util.writeBoolean(sp,"activate",true);
+                            Util.writeBoolean(sharedPreferences,"activate",true);
                            // show();
                         } else {
                           //  Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
-                            Util.writeBoolean(sp,"activate",false);
+                            Util.writeBoolean(sharedPreferences,"activate",false);
                          //   hide();
                         }
 
@@ -285,5 +303,73 @@ public class GuideActivity extends Activity {
 
                     }
                 });
+    }
+
+
+    @Override
+    public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            JSONObject json1 = null;
+            //json1 = new JSONObject(reportInfo);
+
+            if (reportInfo.getString("responseCode").equals("1")) {
+                reportInfo.getString("responseData");
+                //Homeview
+                String settingVersion= reportInfo.getJSONObject("responseData").getString("settingVersion");
+                String deviceMasterCode= reportInfo.getJSONObject("responseData").getString("deviceMasterCode");
+                String temperatureFormat= reportInfo.getJSONObject("responseData").getString("temperatureFormat");
+                String homeLogo= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("HomePageView").getString("logo");
+                String enableThermal= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("HomePageView").getString("enableThermalCheck");
+                String homeLine1= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("HomePageView").getString("line1");
+                String homeLine2= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("HomePageView").getString("line2");
+
+                Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
+                Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
+                Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
+                Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
+                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
+
+                //Scan View
+
+                String displayTemperatureDetail= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ScanView").getString("displayTemperatureDetail");
+                String captureUserImageAboveThreshold= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ScanView").getString("captureUserImageAboveThreshold");
+                String captureAllUsersImage= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ScanView").getString("captureAllUsersImage");
+                String enableSoundOnHighTemperature= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ScanView").getString("enableSoundOnHighTemperature");
+                String viewDelay= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ScanView").getString("viewDelay");
+                String tempval= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ScanView").getString("temperatureThreshold");
+
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnHighTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
+
+                //ConfirmationView
+                String enableConfirmationScreen= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ConfirmationView").getString("enableConfirmationScreen");
+                String normalViewLine1= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ConfirmationView").getString("normalViewLine1");
+                String normalViewLine2= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ConfirmationView").getString("normalViewLine2");
+                String aboveThresholdViewLine1= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ConfirmationView").getString("aboveThresholdViewLine1");
+                String temperatureAboveThreshold2= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ConfirmationView").getString("temperatureAboveThreshold2");
+                String confirmationviewDelay= reportInfo.getJSONObject("responseData").getJSONObject("jsonValue").getJSONObject("ConfirmationView").getString("viewDelay");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN, enableConfirmationScreen.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, normalViewLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, temperatureAboveThreshold2);
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM, confirmationviewDelay);
+
+
+
+            }
+        } catch (Exception e) {
+            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+        }
+
     }
 }

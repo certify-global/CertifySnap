@@ -127,6 +127,7 @@
         </receiver>
 
         <service android:name = ".service.DeviceHealthService"/>
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
     </application>
 
 </manifest>

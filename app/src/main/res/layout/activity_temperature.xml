@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_30"
             android:textColor="@color/black"
-            android:text="@string/fahrenheit_symbol"
+            android:text="@string/fahrenheit"
             android:textSize="@dimen/font_14"
             android:theme="@style/MyCheckBox" />
 

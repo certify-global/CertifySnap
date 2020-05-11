@@ -34,6 +34,7 @@ import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.certify.callback.JSONObjectCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
@@ -42,6 +43,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.R;
+import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
@@ -58,10 +60,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sp;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-            thermal_check_setting, scan_setting,confirmation_setting,guide_setting;
+            thermal_check_setting, scan_setting, confirmation_setting, guide_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting,tv_confirmation_setting,tv_serial_no,tv_guide_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -109,6 +111,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             Log.e("sp---false", "activate:" + sp.getBoolean("activate", false));
         }
 
+
     }
 
 
@@ -155,7 +158,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         tv_confirmation_setting.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_version.setText("Version: " + BuildConfig.VERSION_NAME);
-        tv_serial_no.setText("Serial No: "+Util.getSNCode());
+        tv_serial_no.setText("Serial No: " + Util.getSNCode());
     }
 
     @Override
@@ -253,7 +256,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                 break;
             case R.id.setting_temperature:
                 //temperatureDialog();
-                Intent tempIntent=new Intent(SettingActivity.this,TemperatureActivity.class);
+                Intent tempIntent = new Intent(SettingActivity.this, TemperatureActivity.class);
                 startActivity(tempIntent);
                 break;
             case R.id.setting_upload:
@@ -414,7 +417,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 //            SharedPreferences.Editor editor = myPrefrence.edit();
 //            editor.putString("imagePreferance", picturePath);
 //            editor.commit();
-            Util.writeString(sp, GlobalParameters.IMAGE_ICON, picturePath);
+            Util.writeString(sp, GlobalParameters.IMAGE_ICON, Util.encodeImagePath(picturePath));
 //            bitmap = BitmapFactory.decodeFile(picturePath);
 //            Drawable d = new BitmapDrawable(getResources(),bitmap);
 //            RelativeLayout bg = (RelativeLayout) findViewById(R.id.abc);
@@ -454,6 +457,5 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }
     }
-
 
 }

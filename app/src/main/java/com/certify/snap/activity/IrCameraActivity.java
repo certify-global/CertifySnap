@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,6 +36,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -56,6 +59,7 @@ import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.arcface.util.camera.CameraListener;
@@ -90,6 +94,7 @@ import com.certify.snap.view.MyGridLayoutManager;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -189,7 +194,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private FaceHelper faceHelperIr;
     private List<CompareResult> compareResultList;
     private ShowFaceInfoAdapter adapter;
-    private SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferences;
     protected static final String LOG = "IRCamera Activity - ";
 
 
@@ -292,18 +297,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 return;
             }
             Logger.debug(TAG, "reportInfo = " + reportInfo + " status " + " ,json  " + req.toString());
-            JSONObject json1 = null;
-            try {
-                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-                //      json1 = new JSONObject(formatedString.replace("\\", ""));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
-            }
-//            if (json1.getInt("responseCode") == 1) {
-//
-//            }
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
@@ -344,24 +337,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
-        if (path.equals("")) {
-            img_logo.setBackgroundResource(R.drawable.final_logo);
-        } else {
-            Bitmap bitmap = Util.readBitMap(path);
-            Drawable d = new BitmapDrawable(getResources(), bitmap);
-            img_logo.setBackground(d);
-        }
-
-
-   /*     if (Util.isConnectingToInternet(this)) {
-            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
-               Util.activateApplication(this,this);
-                Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
-                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
-            }
-        } else {
-            Logger.toast(this, getResources().getString(R.string.network_error));
-        }*/
+        homeIcon(path);
+        activateApi();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
@@ -451,6 +428,36 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             new AsyncTime().execute();
         }
+    }
+
+    private void activateApi() {
+
+
+        if (Util.isConnectingToInternet(this)) {
+            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
+                Util.activateApplication(this,this);
+                Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
+                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
+            }
+        } else {
+            Logger.toast(this, getResources().getString(R.string.network_error));
+        }
+    }
+
+    private void homeIcon(String path) {
+
+        if (!path.isEmpty()) {
+            Bitmap bitmap = Util.decodeToBase64(path);
+            img_logo.setImageBitmap(bitmap);
+        } else {
+            img_logo.setBackgroundResource(R.drawable.final_logo);
+
+        }
+
+    }
+
+    private void showBitmap(String path) {
+//
     }
 
     private void showTip(final String msg, final boolean isplaysound) {
@@ -599,6 +606,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         return allGranted;
     }
+
 
 
     @Override
