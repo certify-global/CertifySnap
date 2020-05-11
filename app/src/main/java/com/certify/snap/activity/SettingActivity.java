@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -55,10 +57,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class SettingActivity extends Activity implements JSONObjectCallback {
+public class SettingActivity extends Activity implements JSONObjectCallback,SettingCallback {
 
     private FaceEngine faceEngine = new FaceEngine();
-    private SharedPreferences sp;
+    private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
             thermal_check_setting, scan_setting, confirmation_setting, guide_setting;
     RadioGroup rg_temperature;
@@ -68,6 +70,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
     private String userMail;
     private LinearLayout llSettings;
     private AlertDialog.Builder builder;
+    ImageView img_sync;
+    RelativeLayout relative_layout;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -79,21 +83,23 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         Util.getNumberVersion(SettingActivity.this);
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
-        sp = Util.getSharedPreferences(this);
+        sharedPreferences = Util.getSharedPreferences(this);
         rg_temperature = findViewById(R.id.radio_group_work_flow);
         rb_temp = findViewById(R.id.radio_temp);
         rb_temp_face = findViewById(R.id.face_temp);
-        String FlowType = sp.getString(GlobalParameters.TEMP_ONLY, "temp");
+        img_sync = findViewById(R.id.img_sync);
+        relative_layout = findViewById(R.id.relative_layout);
+        String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
 
         rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.radio_camera_0:
-                        Util.writeString(sp, GlobalParameters.TEMP_ONLY, "temp");
+                        Util.writeString(sharedPreferences, GlobalParameters.TEMP_ONLY, "temp");
                         break;
                     case R.id.radio_camera_1:
-                        Util.writeString(sp, GlobalParameters.FACE_TEMP, "facetemp");
+                        Util.writeString(sharedPreferences, GlobalParameters.FACE_TEMP, "facetemp");
                         break;
 
                 }
@@ -103,17 +109,27 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         initView();
         Application.getInstance().addActivity(this);
 
-        sp = Util.getSharedPreferences(this);
-        if (sp.getBoolean("activate", false)) {
-            Log.e("sp---true", "activate:" + sp.getBoolean("activate", false));
+        sharedPreferences = Util.getSharedPreferences(this);
+        if (sharedPreferences.getBoolean("activate", false)) {
+            Log.e("sp---true", "activate:" + sharedPreferences.getBoolean("activate", false));
         } else {
             activeEngine(null);
-            Log.e("sp---false", "activate:" + sp.getBoolean("activate", false));
+            Log.e("sp---false", "activate:" + sharedPreferences.getBoolean("activate", false));
         }
+
+        img_sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               Util.getSettings(SettingActivity.this,SettingActivity.this);
+                Snackbar snackbar = Snackbar
+                        .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
+                snackbar.show();
+
+            }
+        });
 
 
     }
-
 
     private void initView() {
         llSettings = findViewById(R.id.ll_settings);
@@ -189,11 +205,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                     @Override
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {
-                            Util.writeBoolean(sp, "activate", true);
+                            Util.writeBoolean(sharedPreferences, "activate", true);
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-                            Util.writeBoolean(sp, "activate", true);
+                            Util.writeBoolean(sharedPreferences, "activate", true);
                         } else {
-                            Util.writeBoolean(sp, "activate", false);
+                            Util.writeBoolean(sharedPreferences, "activate", false);
                             //  hide();
                         }
 
@@ -221,7 +237,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void onclick(View view) {
-        boolean isopen = sp.getBoolean("activate", false);
+        boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
                 //activeEngine(null);
@@ -307,7 +323,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 
         final EditText userInput = promptsView
                 .findViewById(R.id.et_endpoint);
-        userInput.setText(sp.getString(GlobalParameters.URL, EndPoints.prod_url));
+        userInput.setText(sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url));
 
 
         // set dialog message
@@ -321,7 +337,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                                 String url = userInput.getText().toString().trim();
                                 if (url.endsWith("/"))
                                     url = url.substring(0, url.length() - 1);
-                                Util.writeString(sp, GlobalParameters.URL, url);
+                                Util.writeString(sharedPreferences, GlobalParameters.URL, url);
 
                             }
                         })
@@ -368,7 +384,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                             acceptUserInput.setError("Password should be minimum six digits");
                         } else {
                             acceptUserInput.setText(acceptUserInput.getText());
-                            Util.writeString(sp, GlobalParameters.DEVICE_PASSWORD, acceptUserInput.getText().toString().trim());
+                            Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, acceptUserInput.getText().toString().trim());
                             alertDialog.dismiss();
                         }
 
@@ -417,7 +433,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
 //            SharedPreferences.Editor editor = myPrefrence.edit();
 //            editor.putString("imagePreferance", picturePath);
 //            editor.commit();
-            Util.writeString(sp, GlobalParameters.IMAGE_ICON, Util.encodeImagePath(picturePath));
+            Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, Util.encodeImagePath(picturePath));
 //            bitmap = BitmapFactory.decodeFile(picturePath);
 //            Drawable d = new BitmapDrawable(getResources(),bitmap);
 //            RelativeLayout bg = (RelativeLayout) findViewById(R.id.abc);
@@ -441,11 +457,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
                 json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
             }
             if (json1.getString("responseCode").equals("1")) {
-                Util.writeString(sp, GlobalParameters.ONLINE_MODE, "true");
+                Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
                 Logger.toast(SettingActivity.this, "Device Activated");
 
             } else if (json1.getString("responseSubCode").equals("103")) {
-                Util.writeString(sp, GlobalParameters.ONLINE_MODE, "true");
+                Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
                 Logger.toast(SettingActivity.this, "Already Activated");
             } else if (json1.getString("responseSubCode").equals("104")) {
                 Logger.toast(SettingActivity.this, "Device Not Register");
@@ -458,4 +474,15 @@ public class SettingActivity extends Activity implements JSONObjectCallback {
         }
     }
 
+    @Override
+    public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            Util.retrieveSetting(reportInfo,SettingActivity.this);
+        } catch (Exception e) {
+            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+        }
+    }
 }

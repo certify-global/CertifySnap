@@ -430,6 +430,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void activateApi() {
 
 

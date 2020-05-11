@@ -25,6 +25,7 @@ public class LoginActivity extends Activity {
     Button btn_confirm;
     TextView textview_name,tv_version,tv_serial_no;
     Typeface rubiklight;
+    int count=0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,20 +46,32 @@ public class LoginActivity extends Activity {
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String input =Util.getSNCode();     //input string
-                    String lastsixDigits = "";     //substring containing last 4 characters
 
-                    if (input.length() >6) {
-                        lastsixDigits = input.substring(input.length() - 6);
-                    } else {
-                        lastsixDigits = input;
-                    }
-                    if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
-                        Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Toast.makeText(LoginActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
+                    if(count<10) {
+                        if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
+                            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else{
+                            count++;
+                            Toast.makeText(LoginActivity.this, getString(R.string.toast_rgbir_pwderror)+""+count, Toast.LENGTH_LONG).show();
+                        }
+                    }else {
+                        String input ="1234567";//Util.getSNCode();     //input string
+                        String lastsixDigits = "";
+
+                        if (input.length() >6) {
+                            lastsixDigits = input.substring(input.length() - 6);
+                        } else {
+                            lastsixDigits = input;
+                        }
+                        if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
+                            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(LoginActivity.this, getString(R.string.toast_rgbir_pwderror), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });

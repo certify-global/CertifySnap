@@ -468,7 +468,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-              obj.put("deviceSN",Util.getSNCode());//"A040980P02800137"
+              obj.put("deviceSN",Util.getSNCode());//Util.getSNCode()
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
@@ -905,5 +905,82 @@ public class Util {
         return String.format("heap native: availMem %s MB, threshold %s totalMem %s MB, getMemoryClass %s , getLargeMemoryClass %s) ", memoryInfo.availMem/1048576, memoryInfo.threshold/1048576, memoryInfo.totalMem/1048576,activityManager.getMemoryClass()/1048576,activityManager.getLargeMemoryClass()/1048576);
         // Log.d("tag", "debug.heap native: allocated " + df.format(allocated) + "MB of " + df.format(available) + "MB (" + df.format(free) + "MB free)");
         //Log.d("tag", "debug.memory: allocated: " + df.format(new Double(Runtime.getRuntime().totalMemory()/1048576)) + "MB of " + df.format(new Double(Runtime.getRuntime().maxMemory()/1048576))+ "MB (" + df.format(new Double(Runtime.getRuntime().freeMemory()/1048576)) +"MB free)");
+    }
+
+    public static void retrieveSetting(JSONObject reportInfo,Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        try {
+            if (reportInfo.getString("responseCode").equals("1")) {
+                JSONObject responseData = reportInfo.getJSONObject("responseData");
+                JSONObject jsonValue = responseData.getJSONObject("jsonValue");
+                JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
+                JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
+                JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
+                JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
+                //Homeview
+                String settingVersion = responseData.getString("settingVersion");
+                String deviceMasterCode = responseData.getString("deviceMasterCode");
+                String temperatureFormat = responseData.getString("temperatureFormat");
+                String homeLogo = jsonValueHome.getString("logo");
+                String enableThermal = jsonValueHome.getString("enableThermalCheck");
+                String homeLine1 = jsonValueHome.getString("line1");
+                String homeLine2 = jsonValueHome.getString("line2");
+
+                Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
+                Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
+                Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
+                Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
+                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
+
+                //Scan View
+
+                String displayTemperatureDetail = jsonValueScan.getString("displayTemperatureDetail");
+                String captureUserImageAboveThreshold = jsonValueScan.getString("captureUserImageAboveThreshold");
+                String captureAllUsersImage = jsonValueScan.getString("captureAllUsersImage");
+                String enableSoundOnHighTemperature = jsonValueScan.getString("enableSoundOnHighTemperature");
+                String viewDelay = jsonValueScan.getString("viewDelay");
+                String tempval = jsonValueScan.getString("temperatureThreshold");
+
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnHighTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
+
+                //ConfirmationView
+                String enableConfirmationScreen = jsonValueConfirm.getString("enableConfirmationScreen");
+                String normalViewLine1 = jsonValueConfirm.getString("normalViewLine1");
+                String normalViewLine2 = jsonValueConfirm.getString("normalViewLine2");
+                String aboveThresholdViewLine1 = jsonValueConfirm.getString("aboveThresholdViewLine1");
+                String temperatureAboveThreshold2 = jsonValueConfirm.getString("temperatureAboveThreshold2");
+                String confirmationviewDelay = jsonValueConfirm.getString("viewDelay");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN, enableConfirmationScreen.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, normalViewLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, temperatureAboveThreshold2);
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM, confirmationviewDelay);
+
+                //GuideMessages
+                String enableGuidMessages = jsonValueGuide.getString("enableGuidMessages");
+                String message1 = jsonValueGuide.getString("message1");
+                String message2 = jsonValueGuide.getString("message2");
+                String message3 = jsonValueGuide.getString("message3");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, enableGuidMessages.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);
+                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, message2);
+                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
+
+
+            }
+        }catch (Exception e){
+            Logger.error("retrieveSetting(JSONObject reportInfo)",e.getMessage());
+        }
+
+
     }
 }
