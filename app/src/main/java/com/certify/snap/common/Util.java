@@ -920,13 +920,11 @@ public class Util {
                 //Homeview
                 String settingVersion = responseData.getString("settingVersion");
                 String deviceMasterCode = responseData.getString("deviceMasterCode");
-                String temperatureFormat = responseData.getString("temperatureFormat");
                 String homeLogo = jsonValueHome.getString("logo");
                 String enableThermal = jsonValueHome.getString("enableThermalCheck");
                 String homeLine1 = jsonValueHome.getString("line1");
                 String homeLine2 = jsonValueHome.getString("line2");
 
-                Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
                 Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
                 Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
                 Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
@@ -941,6 +939,7 @@ public class Util {
                 String enableSoundOnHighTemperature = jsonValueScan.getString("enableSoundOnHighTemperature");
                 String viewDelay = jsonValueScan.getString("viewDelay");
                 String tempval = jsonValueScan.getString("temperatureThreshold");
+                String temperatureFormat = jsonValueScan.getString("temperatureFormat");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -948,6 +947,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnHighTemperature.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
+                Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.getString("enableConfirmationScreen");
