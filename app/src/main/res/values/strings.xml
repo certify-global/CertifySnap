@@ -240,6 +240,7 @@
     <string name="text_value2">Move closer and center your face.</string>
     <string name="text_value3">Please wait, preparing to scan.</string>
     <string name="snack_msg">Retrieving updated settings</string>
+    <string name="invalid_pwd">Invalid Password</string>
 
 
 </resources>

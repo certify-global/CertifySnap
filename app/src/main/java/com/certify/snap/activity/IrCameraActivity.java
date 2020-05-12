@@ -305,8 +305,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         homeIcon(path);
-        activateApi();
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
@@ -395,21 +393,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             new AsyncTime().execute();
         }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private void activateApi() {
-
-
-     /*   if (Util.isConnectingToInternet(this)) {
-            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
-                Util.activateApplication(this,this);
-                Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
-                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
-            }
-        } else {
-            Logger.toast(this, getResources().getString(R.string.network_error));
-        }*/
     }
 
     private void homeIcon(String path) {
