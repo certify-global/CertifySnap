@@ -683,6 +683,7 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
+        if(data == null) return null;
         Camera.Parameters parameters = camera.getParameters();
         Camera.Size size = parameters.getPreviewSize();
         YuvImage image = new YuvImage(data, parameters.getPreviewFormat(), size.width, size.height, null);

@@ -75,7 +75,6 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.service.GuideService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -1497,12 +1496,12 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     private void showWallpaper() {
         if (sp.getBoolean("wallpaper", false)) {
-            Glide.with(RgbCameraActivity.this)
-                    .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
-                    .error(R.mipmap.telpo)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(img_telpo);
+//            Glide.with(RgbCameraActivity.this)
+//                   // .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
+//                    .error(R.mipmap.telpo)
+//                    .skipMemoryCache(true)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .into(img_telpo);
         }
     }
 

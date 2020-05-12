@@ -9,6 +9,7 @@ import com.microsoft.appcenter.analytics.Analytics;
 
 public class Logger {
     public static void debug(String classname, String message) {
+
         Log.d(classname, "" + message);
     }
 
