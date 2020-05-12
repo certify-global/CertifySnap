@@ -24,14 +24,13 @@ import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
-import com.certify.snap.service.DeviceHealthService;
-import com.certify.snap.service.GuideService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -58,7 +57,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class GuideActivity extends Activity implements  SettingCallback {
+public class GuideActivity extends Activity implements  SettingCallback, JSONObjectCallback {
 
     public static final String TAG  = "GuideActivity";
     public static Activity mActivity;
@@ -71,7 +70,6 @@ public class GuideActivity extends Activity implements  SettingCallback {
     HashMap<String, String> map = new HashMap<String, String>();
     Gson gson = new Gson();
     private boolean isRunService = false;
-    private GuideService.MyBinder myBinder;
     private SharedPreferences sharedPreferences;
 
     boolean libraryExists = true;
@@ -103,7 +101,7 @@ public class GuideActivity extends Activity implements  SettingCallback {
 
             if (Util.isConnectingToInternet(this)) {
             if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
-                Util.getSettings(this,this);
+                Util.activateApplication(this,this);
                 Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
             }
         } else {
@@ -313,7 +311,21 @@ public class GuideActivity extends Activity implements  SettingCallback {
             Util.retrieveSetting(reportInfo,GuideActivity.this);
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            Util.getTokenActivate(reportInfo,status,GuideActivity.this);
+
+        } catch (Exception e) {
+            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
 
     }

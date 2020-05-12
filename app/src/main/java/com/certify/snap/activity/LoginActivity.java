@@ -57,7 +57,7 @@ public class LoginActivity extends Activity {
                             Toast.makeText(LoginActivity.this, getString(R.string.toast_rgbir_pwderror)+""+count, Toast.LENGTH_LONG).show();
                         }
                     }else {
-                        String input ="1234567";//Util.getSNCode();     //input string
+                        String input =Util.getSNCode();     //input string
                         String lastsixDigits = "";
 
                         if (input.length() >6) {

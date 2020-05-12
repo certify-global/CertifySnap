@@ -38,6 +38,7 @@ import com.certify.callback.SettingCallback;
 import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
@@ -76,6 +77,8 @@ import java.util.UUID;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = "Utils";
+
+
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -398,6 +401,19 @@ public class Util {
             SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
             Date curDate = new Date(System.currentTimeMillis());//获取当前时间
             return format.format(curDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
+
+        }
+        return "";
+    }
+
+    public static String getUTCDate() {
+        try {
+            final SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.format(new Date());
         } catch (Exception e) {
             e.printStackTrace();
             // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
@@ -807,7 +823,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-              obj.put("lastUpdateDateTime", Util.getMMDDYYYYDate());
+              obj.put("lastUpdateDateTime",Util.getUTCDate());
               obj.put("deviceSN", Util.getSNCode());
               obj.put("deviceInfo",MobileDetails(context));
 
@@ -982,5 +998,51 @@ public class Util {
         }
 
 
+    }
+
+
+    public static void getTokenActivate(String reportInfo,String status,Context context) {
+        try {
+            JSONObject json1 = null;
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            try {
+                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
+                json1 = new JSONObject(formatedString.replace("\\", ""));
+
+            } catch (Exception e) {
+                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
+            }
+
+
+            if (status.contains("ActivateApplication")) {
+                if (json1.getString("responseCode").equals("1")) {
+                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Logger.toast(context, "Device Activated");
+                    Util.getToken((JSONObjectCallback) context, context);
+
+                } else if (json1.getString("responseSubCode").equals("103")) {
+                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Logger.toast(context, "Already Activated");
+                    Util.getToken((JSONObjectCallback) context, context);
+                } else if (json1.getString("responseSubCode").equals("104")) {
+                    Logger.toast(context, "Device Not Register");
+                } else if (json1.getString("responseSubCode").equals("105")) {
+                    Logger.toast(context, "Device Inactive");
+                }
+            } else {
+
+                if (json1.isNull("access_token")) return;
+                String access_token = json1.getString("access_token");
+                String token_type = json1.getString("token_type");
+                String institutionId = json1.getString("InstitutionID");
+                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
+                Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
+                Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
+                Util.getSettings((SettingCallback) context,context);
+
+            }
+        }catch (Exception e){
+            Logger.error("getTokenActivate(String reportInfo,String status,Context context)",e.getMessage());
+        }
     }
 }
