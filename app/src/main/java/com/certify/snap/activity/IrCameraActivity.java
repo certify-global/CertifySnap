@@ -392,6 +392,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onClick(View v) {
                 Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                 startActivity(loginIt);
+                isIdentified =true;
                 finish();
             }
         });
@@ -679,7 +680,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onResume() {
         super.onResume();
 
-        Log.d("onResume", "" + Util.logHeap());
         String longVal = sp.getString(GlobalParameters.DELAY_VALUE, "3");
         if (longVal.equals("")) {
             delayMilli = 3;
@@ -828,14 +828,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         float tmpr = 0f;
                                                         try {
                                                             tmpr = Float.parseFloat(obj.getString("temNoCorrect"));
-                                                            Logger.debug(TAG,"tmpr = "+tmpr);
+                                                            Logger.debug(TAG, "tmpr = " + tmpr);
                                                         } catch (Exception ex) {
                                                             Logger.debug(TAG, "" + ex.getMessage());
                                                             tmpr = 0f;
                                                         }
-                                                          // Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
+                                                        // Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                                                         // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
-                                                        if(tmpr > 30 && error.contains("wrong tem , too cold") && countTempError > 9) {
+                                                        if (tmpr > 26 && error.contains("wrong tem , too cold") && countTempError > 9) {
                                                             tempMessageUi(tmpr);
 //                                                            tvErrorMessage.setVisibility(View.GONE);
                                                             return;
@@ -843,20 +843,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                                         if (sp.getBoolean(GlobalParameters.GUIDE_SCREEN, true)) {
                                                             tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
-                                                            if (error.contains("face out of range or for head too low"))
+                                                            if (error.contains("face out of range or for head too low")) {
                                                                 tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
-                                                            else if (error.contains("wrong tem , too cold") && tmpr < 30){
-
-                                                                 tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
-                                                            }
-
-
-                                                            else if (error.contains("not enough validData , get tem fail"))
+                                                              //  countTempError = 11;
+//                                                                throw new Exception("");
+                                                            } else if (error.contains("wrong tem , too cold") ) {
+                                                                tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
+                                                            } else if (error.contains("not enough validData , get tem fail"))
                                                                 tvErrorMessage.setText(sp.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
                                                             else
                                                                 tvErrorMessage.setVisibility(View.GONE);
-                                                              }
-                                                       // }
+                                                        }
+                                                        // }
 
                                                         if (countTempError < 10) {
                                                             ++countTempError;
@@ -865,18 +863,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             try {
 
                                                                 ShowLauncherView();
-                                                                     ++countTempError;
-                                                                     // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
-                                                                      clearLeftFace(null);
-                                                                     if (obj.getString("err").equals("not enough validData , get tem fail , please get again")) {
-                                                                         Util.KillApp();
-                                                                         Logger.error(Util.getSNCode() + "onTemperatureFail  KillApp ->", "KillApp");
-                                                                         // StopView();
-                                                                         Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.telpo.temperatureservice");
-                                                                         if (launchIntent != null) {
-                                                                             startActivity(launchIntent);
-                                                                         }
-                                                                     }
+//                                                                     ++countTempError;
+                                                                // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
+                                                               // clearLeftFace(null);
+                                                                if (obj.getString("err").equals("not enough validData , get tem fail , please get again")) {
+                                                                    Util.KillApp();
+                                                                    Logger.error(Util.getSNCode() + "onTemperatureFail  KillApp ->", "KillApp");
+                                                                    // StopView();
+                                                                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.telpo.temperatureservice");
+                                                                    if (launchIntent != null) {
+                                                                        startActivity(launchIntent);
+                                                                    }
+                                                                }
 
                                                             } catch (Exception e) {
                                                                 e.printStackTrace();
@@ -888,6 +886,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     }
                                                 }
                                             });
+                                        }else{
+                                            retry(tempretrynum);
                                         }
                                         Logger.error(Util.getSNCode() + "onTemperatureFail(String e) throws RemoteException", "countTempError " + countTempError + ", " + e);
 
@@ -933,7 +933,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 img_temperature.setVisibility(View.GONE);
-              // tv_message.setVisibility(View.GONE);
+                // tv_message.setVisibility(View.GONE);
 
             }
         });
@@ -982,7 +982,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, true);
                 }
             } else {
-                Logger.debug(TAG,"tempMessageUi = ");
+                Logger.debug(TAG, "tempMessageUi = ");
                 if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
                 } else {
@@ -999,7 +999,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //            rgbBitmap = null;
 //            irBitmap = null;
 //            temperatureBitmap = null;
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -1008,17 +1008,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         final FaceListener faceListener = new FaceListener() {
+            private boolean launchViewShown;
+
             @Override
             public void onFail(Exception e) {
-                Logger.error(Util.getSNCode() + "initRgbCamera() onFail(Exception e)", e.getMessage());
-
+                Logger.error(Util.getSNCode() + "initRgbCamera() onFail: launchViewShown:" + launchViewShown, e.getMessage());
+//                if (!launchViewShown) {
+//                    ShowLauncherView();
+//                    launchViewShown = true;
+//                }
             }
 
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
-
+                launchViewShown = false;
                 if (faceFeature != null) {
-                 //   countTempError = 0;
+                    //   countTempError = 0;
                     Log.i(TAG, "onFaceFeatureInfoGet: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isIdentified) return;
                     tempServiceClose = false;
@@ -1043,7 +1048,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     setonTemperatureListenter(new TemperatureListenter() {
                                         @Override
                                         public void onTemperatureCall(final boolean result, final String temperature) {
-                                            Logger.debug("TemperatureListenter---", "isnormal=" + result + "-" + temperature + " delayMilli = " + delayMilli);
+                                            Logger.debug(TAG+" TemperatureListenter---", "isnormal=" + result + "-" + temperature + " delayMilli = " + delayMilli);
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -1068,8 +1073,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         } else {
                                                             tv_message.setVisibility(View.GONE);
                                                         }
-                                                    }catch (Exception e){
-                                                        Logger.error(TAG, "CAPTURE_TEMPERATURE "+e.getMessage());
+                                                    } catch (Exception e) {
+                                                        Logger.error(TAG, "CAPTURE_TEMPERATURE " + e.getMessage());
                                                     }
                                                     tv_message.setTextColor(getResources().getColor(R.color.white));
                                                     tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
@@ -1085,7 +1090,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             img_temperature.setVisibility(View.GONE);
                                                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                             temperature_image.setVisibility(View.GONE);
-                                                            Logger.debug(TAG, "CONFIRM_SCREEN  "+"ConfirmationScreenActivity");
+                                                            Logger.debug(TAG, "CONFIRM_SCREEN  " + "ConfirmationScreenActivity");
                                                             if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
                                                                 Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                                                                 intent.putExtra("tempVal", result ? "high" : "");
@@ -1118,9 +1123,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 @Override
                                                 public void run() {
                                                     isSearch = true;
-                                                    Logger.debug(TAG + "runTemperature---", "isIdentified=" + isIdentified);
+                                                    Logger.debug(TAG + " imageTimer---", "isIdentified=" + isIdentified);
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
-                                                    if (isIdentified || !tackPickRgb) return;
+                                                    if (isIdentified
+//                                                            || !tackPickRgb
+                                                    )
+                                                        return;
 
                                                     stopAnimation();
                                                     tv_message.setText("");
@@ -1148,40 +1156,41 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
-                        //  searchFace(faceFeature, requestId);
+                        Logger.debug(TAG+" livenessDetect---", "livenessDetect.ALIVE---" + isTemperature);
+                        searchFace(faceFeature, requestId);
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                        Log.e("liveness---", "LivenessInfo.ALIVE---" + isTemperature);
-                        //searchFace(faceFeature, requestId);
+                        Logger.debug(TAG+"liveness---", "LivenessInfo.ALIVE---" + isTemperature);
+                    searchFace(faceFeature, requestId);
                     } else {
 
-                        if (requestFeatureStatusMap.containsKey(requestId)) {
-                            Observable.timer(WAIT_LIVENESS_INTERVAL, TimeUnit.MILLISECONDS)
-                                    .subscribe(new Observer<Long>() {
-                                        Disposable disposable;
-
-                                        @Override
-                                        public void onSubscribe(Disposable d) {
-                                            disposable = d;
-                                            getFeatureDelayedDisposables.add(disposable);
-                                        }
-
-                                        @Override
-                                        public void onNext(Long aLong) {
-                                            onFaceFeatureInfoGet(faceFeature, requestId, errorCode);
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            Logger.error(Util.getSNCode() + "onFeatureInfo get", e.getMessage());
-
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                            getFeatureDelayedDisposables.remove(disposable);
-                                        }
-                                    });
-                        }
+//                        if (requestFeatureStatusMap.containsKey(requestId)) {
+//                            Observable.timer(WAIT_LIVENESS_INTERVAL, TimeUnit.MILLISECONDS)
+//                                    .subscribe(new Observer<Long>() {
+//                                        Disposable disposable;
+//
+//                                        @Override
+//                                        public void onSubscribe(Disposable d) {
+//                                            disposable = d;
+//                                            getFeatureDelayedDisposables.add(disposable);
+//                                        }
+//
+//                                        @Override
+//                                        public void onNext(Long aLong) {
+//                                            onFaceFeatureInfoGet(faceFeature, requestId, errorCode);
+//                                        }
+//
+//                                        @Override
+//                                        public void onError(Throwable e) {
+//                                            Logger.error(Util.getSNCode() + "onFeatureInfo get", e.getMessage());
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onComplete() {
+//                                            getFeatureDelayedDisposables.remove(disposable);
+//                                        }
+//                                    });
+//                        }
                     }
 
                 } else {
@@ -1255,7 +1264,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
             @Override
             public void onPreview(final byte[] nv21, final Camera camera) {
-                Log.d("onPreview", "" + Util.logHeap());
+//                Log.d("onPreview", "" + Util.logHeap());
                 processPreviewData(nv21);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1428,8 +1437,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     Log.e("tag", "remove exist face");
                     compareResultList.remove(i);
                     adapter.notifyItemRemoved(i);
-                    tv_message.setText("");
-                    tv_message.setVisibility(View.GONE);
+                   // tv_message.setText("");
+                  //  tv_message.setVisibility(View.GONE);
                     img_temperature.setVisibility(View.GONE);
                     //   tvDisplayingCount.setVisibility(View.GONE);
                     stopAnimation();
@@ -1914,8 +1923,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             retrytemp = 0;
             isTemperature = true;
             temperature_image.setVisibility(View.GONE);
-          //  tv_message.setText("");
-           /// tv_message.setVisibility(View.GONE);
+            //  tv_message.setText("");
+            /// tv_message.setVisibility(View.GONE);
 
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -2072,23 +2081,29 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void ShowLauncherView() {
         try {
-            isIdentified = true;
-            countTempError = 0;
-            sendMessageToStopAnimation(HIDE_VERIFY_UI);
-            requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
-            tv_message.setVisibility(View.GONE);
-            tvErrorMessage.setVisibility(View.GONE);
-            relative_main.setVisibility(View.VISIBLE);
-            logo.setVisibility(View.VISIBLE);
-            rl_header.setVisibility(View.VISIBLE);
-
-            new Handler().postDelayed(new Runnable() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    clearLeftFace(null);
-                    isIdentified = false;
+                    isIdentified = true;
+                    countTempError = 0;
+                    sendMessageToStopAnimation(HIDE_VERIFY_UI);
+                    requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
+                    tv_message.setVisibility(View.GONE);
+                    tvErrorMessage.setVisibility(View.GONE);
+                    relative_main.setVisibility(View.VISIBLE);
+                    logo.setVisibility(View.VISIBLE);
+                    rl_header.setVisibility(View.VISIBLE);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            clearLeftFace(null);
+                            isIdentified = false;
+                        }
+                    }, delayMilli * 1000);
+
                 }
-            }, delayMilli * 1000);
+            });
         } catch (Exception e) {
             Logger.error(TAG, e.getMessage());
         }

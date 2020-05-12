@@ -154,8 +154,8 @@ public class GuideActivity extends Activity {
         ApplicationInfo applicationInfo = getApplicationInfo();
         Log.e(TAG, "onCreate: " + applicationInfo.nativeLibraryDir);
         if (!libraryExists) {
-            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
-            finish();
+//            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
+//            finish();
         }else {
             VersionInfo versionInfo = new VersionInfo();
             int code = FaceEngine.getVersion(versionInfo);
