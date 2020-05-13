@@ -74,11 +74,15 @@ public class LoginActivity extends Activity {
                         } else {
                             lastsixDigits = input;
                         }
-                        if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
+                        if(etPassword.getText().toString().isEmpty()){
+                            text_input_login.setError("Password should not be empty");
+                        }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
+                            text_input_login.setError(null);
                             Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
+                            text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
                             tv_pwd_error.setText("Invalid Password ");
 //

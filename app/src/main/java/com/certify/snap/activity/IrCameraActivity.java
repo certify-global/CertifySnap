@@ -247,6 +247,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             Util.getTokenActivate(reportInfo,status,this);
 
+
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, e.getMessage());
@@ -341,8 +342,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tv_thermal_subtitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, ""));
         tv_thermal.setTypeface(rubiklight);
         tv_thermal_subtitle.setTypeface(rubiklight);
-
-
 
         final PackageManager packageManager = getPackageManager();
         scan.setOnClickListener(new View.OnClickListener() {
@@ -735,14 +734,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             TemperatureCallBackUISetup(true, text, tempString);
                             //  mTemperatureListener.onTemperatureCall(true, text);
                             if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                                Util.beepSound(IrCameraActivity.this,"high");
+                                Util.soundPool(IrCameraActivity.this,"high");
                             }
-
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString);
                             if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                                Util.beepSound(IrCameraActivity.this,"normal");
+                                Util.soundPool(IrCameraActivity.this,"normal");
+
                             }
                             //   mTemperatureListener.onTemperatureCall(false, text);
 //                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {

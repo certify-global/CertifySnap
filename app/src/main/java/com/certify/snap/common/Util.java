@@ -17,6 +17,9 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
@@ -1060,6 +1063,40 @@ public class Util {
             } else {
                 thankyou = new BeepManager((Activity) context, R.raw.thankyou_last);
                 thankyou.playBeepSoundAndVibrate();
+            }
+        }catch (Exception e){
+            Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
+        }
+
+
+    }
+
+    public static void soundPool(Context context,String tempVal) {
+        try {
+            SoundPool soundPool;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes attributes = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_GAME)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build();
+
+                soundPool = new SoundPool.Builder()
+                        .setAudioAttributes(attributes)
+                        .build();
+            }
+            else {
+                soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+            }
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
+            });
+            if(tempVal.equals("high")) {
+                soundPool.load(context, R.raw.failed_last, 1);
+            }else {
+                soundPool.load(context, R.raw.thankyou_last, 1);
             }
         }catch (Exception e){
             Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
