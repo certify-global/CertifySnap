@@ -51,7 +51,7 @@ public class LoginActivity extends Activity {
                 @Override
                 public void onClick(View v) {
 
-                    if(count<=10  && count>1) {
+                    if(count<=10  && count>1 && !sp.getString(GlobalParameters.deviceMasterCode, "").equals("")) {
                         if(etPassword.getText().toString().isEmpty()){
                             text_input_login.setError("Password should not be empty");
                         }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {

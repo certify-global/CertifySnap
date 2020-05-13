@@ -38,12 +38,15 @@ import com.certify.callback.SettingCallback;
 import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.R;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.service.DeviceHealthService;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.zxing.other.BeepManager;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONObject;
@@ -946,6 +949,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
+                Log.d("mastercode",deviceMasterCode);
 
                 //Scan View
 
@@ -1030,7 +1034,6 @@ public class Util {
                     Logger.toast(context, "Device Inactive");
                 }
             } else {
-
                 if (json1.isNull("access_token")) return;
                 String access_token = json1.getString("access_token");
                 String token_type = json1.getString("token_type");
@@ -1039,10 +1042,30 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.getSettings((SettingCallback) context,context);
+                context.startService(new Intent(context, DeviceHealthService.class));
+                Application.StartService(context);
 
             }
         }catch (Exception e){
             Logger.error("getTokenActivate(String reportInfo,String status,Context context)",e.getMessage());
         }
     }
+
+    public static void beepSound(Context context,String tempVal) {
+        try {
+            BeepManager failed, thankyou;
+            if (tempVal.equals("high")) {
+                failed = new BeepManager((Activity) context, R.raw.failed_last);
+                failed.playBeepSoundAndVibrate();
+            } else {
+                thankyou = new BeepManager((Activity) context, R.raw.thankyou_last);
+                thankyou.playBeepSoundAndVibrate();
+            }
+        }catch (Exception e){
+            Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
+        }
+
+
+    }
+
 }

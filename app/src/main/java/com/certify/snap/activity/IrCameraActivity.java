@@ -342,6 +342,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tv_thermal.setTypeface(rubiklight);
         tv_thermal_subtitle.setTypeface(rubiklight);
 
+
+
         final PackageManager packageManager = getPackageManager();
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -733,12 +735,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             TemperatureCallBackUISetup(true, text, tempString);
                             //  mTemperatureListener.onTemperatureCall(true, text);
                             if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                                malertBeep.playBeepSoundAndVibrate();
+                                Util.beepSound(IrCameraActivity.this,"high");
                             }
 
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString);
+                            if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                                Util.beepSound(IrCameraActivity.this,"normal");
+                            }
                             //   mTemperatureListener.onTemperatureCall(false, text);
 //                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
 //                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))

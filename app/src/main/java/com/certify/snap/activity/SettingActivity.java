@@ -447,27 +447,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             if (reportInfo == null) {
                 return;
             }
-            JSONObject json1 = null;
-            try {
-                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-                json1 = new JSONObject(formatedString.replace("\\", ""));
+            Util.getTokenActivate(reportInfo,status,SettingActivity.this);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
-            }
-            if (json1.getString("responseCode").equals("1")) {
-                Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
-                Logger.toast(SettingActivity.this, "Device Activated");
-
-            } else if (json1.getString("responseSubCode").equals("103")) {
-                Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
-                Logger.toast(SettingActivity.this, "Already Activated");
-            } else if (json1.getString("responseSubCode").equals("104")) {
-                Logger.toast(SettingActivity.this, "Device Not Register");
-            } else if (json1.getString("responseSubCode").equals("105")) {
-                Logger.toast(SettingActivity.this, "Device Inactive");
-            }
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());

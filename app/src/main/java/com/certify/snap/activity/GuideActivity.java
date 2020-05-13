@@ -102,10 +102,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         sharedPreferences=Util.getSharedPreferences(this);
 
             if (Util.isConnectingToInternet(this)) {
-            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
                 Util.activateApplication(this,this);
-                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
-            }
         } else {
             Logger.toast(this, getResources().getString(R.string.network_error));
         }
