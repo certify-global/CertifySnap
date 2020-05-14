@@ -327,19 +327,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         sp = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sp.getString(GlobalParameters.IMAGE_ICON, "");
-        if (path.equals("")) {
-            img_logo.setBackgroundResource(R.drawable.final_logo);
-        } else {
-            Bitmap bitmap = Util.readBitMap(path);
-            Drawable d = new BitmapDrawable(getResources(), bitmap);
-            img_logo.setBackground(d);
-        }
-        if (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
-            if (Util.isConnectingToInternet(this)) {
-                Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
-            } else {
-                Logger.toast(this, getResources().getString(R.string.network_error));
-            }
+        homeIcon(path);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
