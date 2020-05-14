@@ -845,15 +845,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                                                     ++countTempError;
                                                                 // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
                                                                 // clearLeftFace(null);
-                                                                if (obj.getString("err").equals("not enough validData , get tem fail , please get again")) {
-                                                                    Util.KillApp();
-                                                                    Logger.error(Util.getSNCode() + "onTemperatureFail  KillApp ->", "KillApp");
-                                                                    // StopView();
-                                                                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.telpo.temperatureservice");
-                                                                    if (launchIntent != null) {
-                                                                        startActivity(launchIntent);
-                                                                    }
-                                                                }
+//                                                                if (obj.getString("err").equals("not enough validData , get tem fail , please get again")) {
+//                                                                    Util.KillApp();
+//                                                                    Logger.error(Util.getSNCode() + "onTemperatureFail  KillApp ->", "KillApp");
+//                                                                    // StopView();
+//                                                                    Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.telpo.temperatureservice");
+//                                                                    if (launchIntent != null) {
+//                                                                        startActivity(launchIntent);
+//                                                                    }
+//                                                                }
 
                                                             } catch (Exception e) {
                                                                 e.printStackTrace();
