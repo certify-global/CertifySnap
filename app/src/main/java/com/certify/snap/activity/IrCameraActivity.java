@@ -23,6 +23,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -222,7 +225,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private AlertDialog.Builder builder;
 
     private int relaytimenumber = 5;
-    ImageView img_guest, temperature_image, img_temperature, img_logo;
+    ImageView img_guest, temperature_image,  img_logo;
     TextView txt_guest;
     String message;
     //    private BeepManager mBeepManager, manormalBeep, mBeepManager1, mBeepManager2, malertBeep, mBeepSuccess;
@@ -250,6 +253,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int countTempError = 1;
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage;
+    private SoundPool soundPool;
 
 
 //TODO: remove, don't process record temperature response?
@@ -399,7 +403,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
-        img_temperature = findViewById(R.id.img_temperature);
         if (sp.getBoolean("activate", false)) {
             Log.e("sp---true", "activate:" + sp.getBoolean("activate", false));
         } else {
@@ -560,6 +563,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(attributes)
+                    .build();
+        }
+        else {
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        }
     }
 
     private boolean checkPermissions(String[] neededPermissions) {
@@ -707,6 +723,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cameraHelperIr != null) {
             cameraHelperIr.stop();
         }
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
         super.onPause();
     }
 
@@ -796,7 +816,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         }
                                                         // Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                                                         // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
-                                                        if (tmpr > 26 && error.contains("wrong tem , too cold") && countTempError > 9) {
+                                                        if (tmpr > 0 && error.contains("wrong tem , too cold")) {
                                                             tempMessageUi(tmpr);
 //                                                            tvErrorMessage.setVisibility(View.GONE);
                                                             return;
@@ -893,7 +913,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                img_temperature.setVisibility(View.GONE);
+               // img_temperature.setVisibility(View.GONE);
                 // tv_message.setVisibility(View.GONE);
 
             }
@@ -948,7 +968,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centi);
                 }
                 mTemperatureListenter.onTemperatureCall(false, text);
-                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
+                // removed Internet
+                if ((sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
                     else
@@ -1039,12 +1060,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                                                     tv_message.setText(temperature);
                                                     tv_message.setTypeface(rubiklight);
-                                                    img_temperature.setVisibility(View.GONE);
+                                                    //img_temperature.setVisibility(View.GONE);
                                                     if (sp.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
                                                         if(result){
-                                                            Util.soundPool(IrCameraActivity.this,"high");
+                                                            Util.soundPool(IrCameraActivity.this,"high",soundPool);
                                                         }else{
-                                                            Util.soundPool(IrCameraActivity.this,"normal");
+                                                            Util.soundPool(IrCameraActivity.this,"normal",soundPool);
                                                         }
                                                     }
 
@@ -1055,7 +1076,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                             tackPickRgb = true;
                                                             tackPickIr = true;
 
-                                                            img_temperature.setVisibility(View.GONE);
+                                                         //   img_temperature.setVisibility(View.GONE);
                                                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                                                             temperature_image.setVisibility(View.GONE);
                                                             Logger.debug(TAG, "CONFIRM_SCREEN  " + "ConfirmationScreenActivity");
@@ -1101,7 +1122,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     stopAnimation();
                                                     tv_message.setText("");
                                                     tv_message.setVisibility(View.GONE);
-                                                    img_temperature.setVisibility(View.GONE);
                                                     tvErrorMessage.setVisibility(View.GONE);
                                                     temperature_image.setVisibility(View.GONE);
                                                     relative_main.setVisibility(View.VISIBLE);
@@ -1407,7 +1427,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     adapter.notifyItemRemoved(i);
                    // tv_message.setText("");
                   //  tv_message.setVisibility(View.GONE);
-                    img_temperature.setVisibility(View.GONE);
                     //   tvDisplayingCount.setVisibility(View.GONE);
                     stopAnimation();
 
@@ -1849,7 +1868,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
 
         outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-        innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        //innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         relativeLayout.setBackground(getDrawable(id));
 //        outerCircle.setVisibility(View.VISIBLE);
 //        innerCircle.setVisibility(View.VISIBLE);
@@ -1858,34 +1877,34 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showAnimation() {
-        if (outerCircleAnimator == null && innerCircleAnimator == null) {
-            outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
-            outerCircleAnimator.setDuration(3000);
-            outerCircleAnimator.setRepeatCount(Animation.INFINITE);
-            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);
-            outerCircleAnimator.setInterpolator(new LinearInterpolator());
-            outerCircleAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    outerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
-                }
-            });
-            innerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            innerCircleAnimator = ObjectAnimator.ofFloat(innerCircle, "rotation", 0.0f, -360.0f);
-            innerCircleAnimator.setDuration(2500);
-            innerCircleAnimator.setRepeatCount(ValueAnimator.INFINITE);
-            innerCircleAnimator.setRepeatMode(ValueAnimator.RESTART);
-            innerCircleAnimator.setInterpolator(new LinearInterpolator());
-            innerCircleAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    innerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
-                }
-            });
-            animatorSet = new AnimatorSet();
-            animatorSet.play(outerCircleAnimator).with(innerCircleAnimator);
-            animatorSet.start();
+//        if (outerCircleAnimator == null && innerCircleAnimator == null) {
+//            outerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//            outerCircleAnimator = ObjectAnimator.ofFloat(outerCircle, "rotation", 0.0f, 360.0f);
+//            outerCircleAnimator.setDuration(3000);
+//            outerCircleAnimator.setRepeatCount(Animation.INFINITE);
+//            outerCircleAnimator.setRepeatMode(ObjectAnimator.RESTART);
+//            outerCircleAnimator.setInterpolator(new LinearInterpolator());
+//            outerCircleAnimator.addListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationCancel(Animator animation) {
+//                    outerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
+//                }
+//            });
+//            innerCircle.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//            innerCircleAnimator = ObjectAnimator.ofFloat(innerCircle, "rotation", 0.0f, -360.0f);
+//            innerCircleAnimator.setDuration(2500);
+//            innerCircleAnimator.setRepeatCount(ValueAnimator.INFINITE);
+//            innerCircleAnimator.setRepeatMode(ValueAnimator.RESTART);
+//            innerCircleAnimator.setInterpolator(new LinearInterpolator());
+//            innerCircleAnimator.addListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationCancel(Animator animation) {
+//                    innerCircle.setLayerType(View.LAYER_TYPE_NONE, null);
+//                }
+//            });
+//            animatorSet = new AnimatorSet();
+//            animatorSet.play(outerCircleAnimator).with(innerCircleAnimator);
+//            animatorSet.start();
 
             tempretrynum = 0;
             retrytemp = 0;
@@ -1900,16 +1919,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     //  Util.enableLedPower(1);
                 }
             }, 500);
-        }
+       // }
     }
 
     private void stopAnimation() {
-        if (animatorSet != null) {
-            animatorSet.cancel();
-            outerCircleAnimator = null;
-            innerCircleAnimator = null;
-            animatorSet = null;
-        }
+//        if (animatorSet != null) {
+//            animatorSet.cancel();
+//            outerCircleAnimator = null;
+//            innerCircleAnimator = null;
+//            animatorSet = null;
+//        }
     }
 
     private void showWallpaper() {

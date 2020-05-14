@@ -55,6 +55,7 @@
             android:layout_height="50dp"
             android:hint="@string/temperature_threshold"
             android:background="@drawable/edittextbackground"
+            android:inputType="number"
             android:paddingLeft="05dp"/>
 
     </android.support.design.widget.TextInputLayout>

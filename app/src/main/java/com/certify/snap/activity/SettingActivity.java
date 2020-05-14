@@ -241,7 +241,9 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         switch (view.getId()) {
             case R.id.setting_activate:
                 //activeEngine(null);
-                Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                if(Util.isConnectingToInternet(SettingActivity.this)) {
+                    Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                }else Logger.toast(this, getResources().getString(R.string.network_error));
                 break;
             case R.id.setting_init:
                 if (isopen)

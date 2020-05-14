@@ -1076,33 +1076,23 @@ public class Util {
 
     }
 
-    public static void soundPool(Context context,String tempVal) {
+    public static void soundPool(Context context,String tempVal, SoundPool soundPool) {
         try {
-            SoundPool soundPool;
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                AudioAttributes attributes = new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_GAME)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build();
 
-                soundPool = new SoundPool.Builder()
-                        .setAudioAttributes(attributes)
-                        .build();
-            }
-            else {
-                soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-            }
-            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                    soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
-                }
-            });
             if(tempVal.equals("high")) {
                 soundPool.load(context, R.raw.failed_last, 1);
             }else {
                 soundPool.load(context, R.raw.thankyou_last, 1);
             }
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                 int lastStreamId = -1;
+
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    //soundPool.release();
+                    lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
+            });
         }catch (Exception e){
             Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
         }

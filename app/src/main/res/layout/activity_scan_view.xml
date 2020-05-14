@@ -218,7 +218,9 @@
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/et_screen_delay"
+            android:paddingStart="@dimen/margin_5"
             android:layout_width="match_parent"
+            android:inputType="number"
             android:layout_height="50dp"
             android:hint="@string/screen_delay"
             android:background="@drawable/edittextbackground"
