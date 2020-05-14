@@ -531,7 +531,7 @@ public class Util {
 
     public static String getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req, Util.getSNCode(), context);
+            String responseTemp = Requestor.postJson(url, req,context);
             if (responseTemp != null && !responseTemp.equals(""))
                 return new String(responseTemp);
         } catch (Exception e) {

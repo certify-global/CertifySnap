@@ -957,7 +957,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Float tmpFloat = Float.parseFloat(testing_tempe);
             if (temperature > tmpFloat) {
                 if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
-                    text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
+                    text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.fahrenheit_symbol);
                 } else {
                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
                 }
@@ -974,7 +974,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             } else {
                 Logger.debug(TAG, "tempMessageUi = ");
                 if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
-                    text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
+                    text = getString(R.string.temperature_normal) + tempString + getString(R.string.fahrenheit_symbol);
                 } else {
                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centi);
                 }
@@ -1071,6 +1071,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     tv_message.setText(temperature);
                                                     tv_message.setTypeface(rubiklight);
                                                     img_temperature.setVisibility(View.GONE);
+                                                    if(result){
+                                                        Util.soundPool(IrCameraActivity.this,"high");
+                                                    }else{
+                                                        Util.soundPool(IrCameraActivity.this,"normal");
+                                                    }
+
                                                     new Handler().postDelayed(new Runnable() {
                                                         @Override
                                                         public void run() {
