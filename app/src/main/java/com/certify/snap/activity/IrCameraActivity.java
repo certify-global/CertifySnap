@@ -818,7 +818,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                         // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
                                                         if (tmpr > 0 && error.contains("wrong tem , too cold")) {
                                                             tempMessageUi(tmpr);
-//                                                            tvErrorMessage.setVisibility(View.GONE);
                                                             return;
                                                         }
 
@@ -839,11 +838,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                                         if (countTempError < 10) {
                                                             ++countTempError;
-                                                            retry(tempretrynum);
+                                                           // retry(tempretrynum);
                                                         } else {
                                                             try {
 
-                                                                ShowLauncherView();
+                                                               // ShowLauncherView();
 //                                                                     ++countTempError;
                                                                 // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
                                                                // clearLeftFace(null);
@@ -1145,10 +1144,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
                         Logger.debug(TAG+" livenessDetect---", "livenessDetect.ALIVE---" + isTemperature);
-                        searchFace(faceFeature, requestId);
+                     //   searchFace(faceFeature, requestId);
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Logger.debug(TAG+"liveness---", "LivenessInfo.ALIVE---" + isTemperature);
-                    searchFace(faceFeature, requestId);
+                  //  searchFace(faceFeature, requestId);
                     } else {
 
 //                        if (requestFeatureStatusMap.containsKey(requestId)) {
