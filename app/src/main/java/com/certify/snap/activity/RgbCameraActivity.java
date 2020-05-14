@@ -595,11 +595,11 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
                             Log.e("temperature str-",temperature+"");
                             if (temperatureData.isUnusualTem()) {
-                                text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centigrade);
+                                text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.fahrenheit_symbol);
                                 Log.e("temperatureBitmap",""+(temperatureBitmap==null));
                                 mTemperatureListenter.onTemperatureCall(true, text);
                             } else {
-                                text = getString(R.string.temperature_normal) + tempString + getString(R.string.centigrade);
+                                text = getString(R.string.temperature_normal) + tempString + getString(R.string.fahrenheit_symbol);
                                 mTemperatureListenter.onTemperatureCall(false, text);
                                 Log.e("temperture---", "isUnusualTem-" + temperatureData.isUnusualTem() + "-" + text);
                             }

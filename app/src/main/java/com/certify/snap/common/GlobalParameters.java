@@ -46,6 +46,7 @@ public class GlobalParameters {
     public static final String TEMP_ONLY = "temp";
     public static final String TEMP_TEST = "test";
     public static final String IMAGE_ICON = "image";
+    public static final String IMAGE_ICON_API = "image_api";
     public static final String ACCESS_TOKEN = "access_token";
     public static final String TOKEN_TYPE = "token_type";
     public static final String INSTITUTION_ID = "institutionID";
@@ -55,6 +56,7 @@ public class GlobalParameters {
     public static final String UUID = "uuid";
     public static final String IMEI = "imei";
     public static final String ONLINE_MODE = "online_mode";
+    public static final String FIRST_RUN = "first_run";
     public static final String URL = "url";
     public static final String Thermalscan_title = "Thermalscan_title";
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";
@@ -70,6 +72,8 @@ public class GlobalParameters {
     public static final String Confirm_title_above = "Confirm_title_above";
     public static final String Confirm_subtitle_above = "Confirm_subtitle_above";
     public static final String F_TO_C = "f_to_c";
+    public static final String settingVersion = "settingVersion";
+    public static final String deviceMasterCode = "deviceMasterCode";
     public static final String GUIDE_TEXT1 = "guide_text1";
     public static final String GUIDE_TEXT2 = "guide_text2";
     public static final String GUIDE_TEXT3 = "guide_text3";

@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -24,13 +25,13 @@ import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
+import com.certify.callback.JSONObjectCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
-import com.certify.snap.service.DeviceHealthService;
-import com.certify.snap.service.GuideService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -46,6 +47,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import com.certify.snap.R;
+
+import org.json.JSONObject;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -54,7 +58,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class GuideActivity extends Activity {
+public class GuideActivity extends Activity implements  SettingCallback, JSONObjectCallback {
 
     public static final String TAG  = "GuideActivity";
     public static Activity mActivity;
@@ -67,8 +71,7 @@ public class GuideActivity extends Activity {
     HashMap<String, String> map = new HashMap<String, String>();
     Gson gson = new Gson();
     private boolean isRunService = false;
-    private GuideService.MyBinder myBinder;
-    private SharedPreferences sp;
+    private SharedPreferences sharedPreferences;
 
     boolean libraryExists = true;
     // Demo
@@ -78,6 +81,7 @@ public class GuideActivity extends Activity {
             "libarcsoft_image_util.so",
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +99,13 @@ public class GuideActivity extends Activity {
         }
         mActivity = this;
         Application.getInstance().addActivity(this);
+        sharedPreferences=Util.getSharedPreferences(this);
+
+            if (Util.isConnectingToInternet(this)) {
+                Util.activateApplication(this,this);
+        } else {
+            Logger.toast(this, getResources().getString(R.string.network_error));
+        }
 
 
 //        sp = Util.getSharedPreferences(this);
@@ -111,6 +122,7 @@ public class GuideActivity extends Activity {
                  //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
                 }
             });
+
         }
 
         myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
@@ -254,15 +266,15 @@ public class GuideActivity extends Activity {
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {
                           //  Util.showToast(SettingActivity.this,getString(R.string.active_success));
-                            Util.writeBoolean(sp,"activate",true);
+                            Util.writeBoolean(sharedPreferences,"activate",true);
                          //   show();
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
                           //  Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Util.writeBoolean(sp,"activate",true);
+                            Util.writeBoolean(sharedPreferences,"activate",true);
                            // show();
                         } else {
                           //  Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
-                            Util.writeBoolean(sp,"activate",false);
+                            Util.writeBoolean(sharedPreferences,"activate",false);
                          //   hide();
                         }
 
@@ -286,5 +298,34 @@ public class GuideActivity extends Activity {
 
                     }
                 });
+    }
+
+
+    @Override
+    public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            Util.retrieveSetting(reportInfo,GuideActivity.this);
+
+        } catch (Exception e) {
+            Logger.error("onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            Util.getTokenActivate(reportInfo,status,GuideActivity.this);
+
+        } catch (Exception e) {
+            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+        }
+
     }
 }

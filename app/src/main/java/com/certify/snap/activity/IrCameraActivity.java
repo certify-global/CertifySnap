@@ -255,57 +255,31 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
 
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
+        Log.v(TAG, String.format("onJSONObjectListener reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
         try {
             if (reportInfo == null) {
                 return;
             }
-            JSONObject json1 = null;
-            try {
-                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-                json1 = new JSONObject(formatedString.replace("\\", ""));
+            Util.getTokenActivate(reportInfo,status,this);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
-            }
-//            int responseSubCode =0;
-//            if(json1.isNull("responseSubCode"))
-//                responseSubCode = json1.getInt("responseSubCode");
-//            if(responseSubCode )
-            if (json1.isNull("access_token")) return;
-            String access_token = json1.getString("access_token");
-            String token_type = json1.getString("token_type");
-            String institutionId = json1.getString("InstitutionID");
-            Util.writeString(sp, GlobalParameters.ACCESS_TOKEN, access_token);
-            Util.writeString(sp, GlobalParameters.TOKEN_TYPE, token_type);
-            Util.writeString(sp, GlobalParameters.INSTITUTION_ID, institutionId);
+
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, e.getMessage());
 
         }
     }
-
+//TODO: remove, don't process record temperature response?
     @Override
-    public void onJSONObjectListenertemperature(String reportInfo, String status, JSONObject req) {
+    public void onJSONObjectListenerTemperature(String reportInfo, String status, JSONObject req) {
+        Log.v(TAG, String.format("onJSONObjectListenertemperature reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
         try {
 
             if (reportInfo == null) {
+                Log.w(TAG, "onJSONObjectListenerTemperature reportInfo == null");
                 return;
             }
-            Log.d("JSL", "reportInfo = " + reportInfo + " status " + " ,json  " + req.toString());
-            JSONObject json1 = null;
-            try {
-                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-                //      json1 = new JSONObject(formatedString.replace("\\", ""));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
-            }
-//            if (json1.getInt("responseCode") == 1) {
-//
-//            }
+            Logger.debug(TAG, "reportInfo = " + reportInfo + " status " + " ,json  " + req.toString());
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
@@ -461,6 +435,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             new AsyncTime().execute();
             Log.e("sp---false", "activate:" + sp.getBoolean("activate", false));
         }
+    }
+
+    private void homeIcon(String path) {
+
+        if (!path.isEmpty()) {
+            Bitmap bitmap = Util.decodeToBase64(path);
+            img_logo.setImageBitmap(bitmap);
+        } else {
+            img_logo.setBackgroundResource(R.drawable.final_logo);
+
+        }
+
+    }
+
+    private void showBitmap(String path) {
+//
     }
 
     private void showTip(final String msg, final boolean isplaysound) {

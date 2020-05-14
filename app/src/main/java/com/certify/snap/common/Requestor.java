@@ -8,6 +8,8 @@ import android.util.Log;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -42,15 +44,32 @@ public class Requestor {
             httpost.addHeader("Content-type", "application/json");
             httpost.setHeader("DeviceSN", SerialNo);
            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
-            httpost.setHeader("Authorization","bearer"+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
+            httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             Log.d("responseHttp",""+ responseHttp.getStatusLine().getStatusCode());
+            StatusLine status = responseHttp.getStatusLine();
+            if(status.getStatusCode()== HttpStatus.SC_OK) {
+                responseStr = EntityUtils
+                        .toString(responseHttp.getEntity());
+            }else{
+                JSONObject objMessage = new JSONObject();
+                objMessage.put("Message", "token expired");
+                responseStr=objMessage.toString();
 
-            responseStr = EntityUtils
-                    .toString(responseHttp.getEntity());
+                Map<String, String> properties = new HashMap<>();
+                for(Iterator<String> iter = reqPing.keys(); iter.hasNext();) {
+                    String key = iter.next();
+                    String value = reqPing.optString(key);
+                    properties.put(key,value);
+                }
+                properties.put("URL:",urlStr);
+                properties.put("Response:",responseStr);
+                Analytics.trackEvent(endPoint[1], properties);
+
+            }
             if (EndPoints.deployment == EndPoints.Mode.Demo)
                 Logger.debug("responseStr ", responseStr);
 
@@ -121,7 +140,7 @@ public class Requestor {
         }
         return "";
     }
-    public static String postJson(String urlStr, JSONObject reqPing, String SerialNo, Context context) {
+    public static String postJson(String urlStr, JSONObject reqPing, Context context) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
         SharedPreferences  sp = Util.getSharedPreferences(context);
@@ -135,8 +154,25 @@ public class Requestor {
                     .getNewHttpClient();
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
-            responseStr = EntityUtils
-                    .toString(responseHttp.getEntity());
+            StatusLine status = responseHttp.getStatusLine();
+            if(status.getStatusCode()== HttpStatus.SC_OK) {
+                responseStr = EntityUtils
+                        .toString(responseHttp.getEntity());
+            }else{
+                JSONObject objMessage = new JSONObject();
+                objMessage.put("Message", "token expired");
+                responseStr=objMessage.toString();
+
+                Map<String, String> properties = new HashMap<>();
+                for(Iterator<String> iter = reqPing.keys(); iter.hasNext();) {
+                    String key = iter.next();
+                    String value = reqPing.optString(key);
+                    properties.put(key,value);
+                }
+                properties.put("URL:",urlStr);
+                properties.put("Response:",responseStr);
+                Analytics.trackEvent(endPoint[1], properties);
+            }
 
 
         } catch (ClientProtocolException e) {
@@ -166,4 +202,6 @@ public class Requestor {
         }
         return responseStr;
     }
+
+
 }

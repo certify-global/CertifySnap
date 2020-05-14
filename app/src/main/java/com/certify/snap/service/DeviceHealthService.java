@@ -24,7 +24,7 @@ import static android.os.SystemClock.elapsedRealtime;
 
 public class DeviceHealthService extends Service implements JSONObjectCallback {
    protected static final String LOG = "BackgroundSyncService - ";
-   private final static int BACKGROUND_INTERVAL_15_MINUTES = 1;
+   private final static int BACKGROUND_INTERVAL_10_MINUTES = 1;
 
 
    @Override
@@ -35,14 +35,14 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
    @RequiresApi(api = Build.VERSION_CODES.M)
    @Override
    public int onStartCommand(Intent intent, int flags, int startId) {
-      Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
+     // Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
       try {
          //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
          PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, DeviceHealthService.class), PendingIntent.FLAG_ONE_SHOT);
          AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
          Calendar cal = Calendar.getInstance();
          long sysTime = elapsedRealtime();
-         cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_15_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_15_MINUTES)));
+         cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_10_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_10_MINUTES)));
          cal.set(Calendar.SECOND, 0);
          cal.set(Calendar.MILLISECOND, 0);
          long currTime = Util.getCurrentTimeLong();

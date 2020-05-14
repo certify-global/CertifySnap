@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.certify.snap.activity.SettingActivity">
@@ -11,30 +11,35 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="visible">
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:gravity="center"
+            android:layout_centerInParent="true"
             android:paddingLeft="5sp"
             android:text="Settings"
             android:textColor="@color/dark_text_color"
             android:textSize="30sp"
             android:layout_marginTop="10dp"/>
 
+    <ImageView
+        android:id="@+id/img_sync"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/sync"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/margin_10"
+        android:layout_centerInParent="true"></ImageView>
+
+</RelativeLayout>
         <VideoView
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="10dp"
             android:background="@color/gray"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/work_flow"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -17,6 +17,9 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
@@ -34,13 +37,19 @@ import android.widget.Toast;
 
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
+import com.certify.callback.SettingCallback;
 import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.R;
+import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
+import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.service.DeviceHealthService;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.zxing.other.BeepManager;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONObject;
@@ -51,6 +60,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -73,6 +83,8 @@ import java.util.UUID;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = "Utils";
+
+
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -403,6 +415,19 @@ public class Util {
         return "";
     }
 
+    public static String getUTCDate() {
+        try {
+            final SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.format(new Date());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
+
+        }
+        return "";
+    }
+
     public static float FahrenheitToCelcius(float celcius) {
 
         return ((celcius * 9) / 5) + 32;
@@ -413,6 +438,24 @@ public class Util {
 
     }
 
+    public static String encodeImagePath(String path)
+    {
+        File imagefile = new File(path);
+        FileInputStream fis = null;
+        try{
+            fis = new FileInputStream(imagefile);
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+        Bitmap bm = BitmapFactory.decodeStream(fis);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        byte[] b = baos.toByteArray();
+        String encImage = Base64.encodeToString(b, Base64.DEFAULT);
+        //Base64.de
+        return encImage;
+
+    }
     public static String encodeToBase64(Bitmap image) {
         Bitmap immage = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -442,6 +485,20 @@ public class Util {
 
         }
     }
+    public static void getSettings(SettingCallback callback, Context context) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+              obj.put("deviceSN",Util.getSNCode());//Util.getSNCode()
+
+            new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
+
+        } catch (Exception e) {
+            Logger.error(LOG + "getSettings(JSONObjectCallback callback, Context context)", e.getMessage());
+
+        }
+    }
 
 
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
@@ -458,7 +515,19 @@ public class Util {
         }
         return null;
     }
+    public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals(""))
+                return new JSONObject(responseTemp);
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
 
+        }
+        return null;
+    }
 
     public static String getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
@@ -683,7 +752,6 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
-        if(data == null) return null;
         Camera.Parameters parameters = camera.getParameters();
         Camera.Size size = parameters.getPreviewSize();
         YuvImage image = new YuvImage(data, parameters.getPreviewFormat(), size.width, size.height, null);
@@ -761,7 +829,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-              obj.put("lastUpdateDateTime", Util.getMMDDYYYYDate());
+              obj.put("lastUpdateDateTime",Util.getUTCDate());
               obj.put("deviceSN", Util.getSNCode());
               obj.put("deviceInfo",MobileDetails(context));
 
@@ -857,4 +925,181 @@ public class Util {
         // Log.d("tag", "debug.heap native: allocated " + df.format(allocated) + "MB of " + df.format(available) + "MB (" + df.format(free) + "MB free)");
         //Log.d("tag", "debug.memory: allocated: " + df.format(new Double(Runtime.getRuntime().totalMemory()/1048576)) + "MB of " + df.format(new Double(Runtime.getRuntime().maxMemory()/1048576))+ "MB (" + df.format(new Double(Runtime.getRuntime().freeMemory()/1048576)) +"MB free)");
     }
+
+    public static void retrieveSetting(JSONObject reportInfo,Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        try {
+            if (reportInfo.getString("responseCode").equals("1")) {
+                JSONObject responseData = reportInfo.getJSONObject("responseData");
+                JSONObject jsonValue = responseData.getJSONObject("jsonValue");
+                JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
+                JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
+                JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
+                JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
+                //Homeview
+                String settingVersion = responseData.getString("settingVersion");
+                String deviceMasterCode = responseData.getString("deviceMasterCode");
+                String homeLogo = jsonValueHome.getString("logo");
+                String enableThermal = jsonValueHome.getString("enableThermalCheck");
+                String homeLine1 = jsonValueHome.getString("line1");
+                String homeLine2 = jsonValueHome.getString("line2");
+
+                Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
+                Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
+                Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
+                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
+                Log.d("mastercode",deviceMasterCode);
+
+                //Scan View
+
+                String displayTemperatureDetail = jsonValueScan.getString("displayTemperatureDetail");
+                String captureUserImageAboveThreshold = jsonValueScan.getString("captureUserImageAboveThreshold");
+                String captureAllUsersImage = jsonValueScan.getString("captureAllUsersImage");
+                String enableSoundOnHighTemperature = jsonValueScan.getString("enableSoundOnHighTemperature");
+                String viewDelay = jsonValueScan.getString("viewDelay");
+                String tempval = jsonValueScan.getString("temperatureThreshold");
+                String temperatureFormat = jsonValueScan.getString("temperatureFormat");
+
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnHighTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
+                Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
+
+                //ConfirmationView
+                String enableConfirmationScreen = jsonValueConfirm.getString("enableConfirmationScreen");
+                String normalViewLine1 = jsonValueConfirm.getString("normalViewLine1");
+                String normalViewLine2 = jsonValueConfirm.getString("normalViewLine2");
+                String aboveThresholdViewLine1 = jsonValueConfirm.getString("aboveThresholdViewLine1");
+                String temperatureAboveThreshold2 = jsonValueConfirm.getString("temperatureAboveThreshold2");
+                String confirmationviewDelay = jsonValueConfirm.getString("viewDelay");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN, enableConfirmationScreen.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, normalViewLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
+                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, temperatureAboveThreshold2);
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM, confirmationviewDelay);
+
+                //GuideMessages
+                String enableGuidMessages = jsonValueGuide.getString("enableGuidMessages");
+                String message1 = jsonValueGuide.getString("message1");
+                String message2 = jsonValueGuide.getString("message2");
+                String message3 = jsonValueGuide.getString("message3");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, enableGuidMessages.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);
+                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, message2);
+                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
+
+
+            }
+        }catch (Exception e){
+            Logger.error("retrieveSetting(JSONObject reportInfo)",e.getMessage());
+        }
+
+
+    }
+
+
+    public static void getTokenActivate(String reportInfo,String status,Context context) {
+        try {
+            JSONObject json1 = null;
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            try {
+                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
+                json1 = new JSONObject(formatedString.replace("\\", ""));
+
+            } catch (Exception e) {
+                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
+            }
+
+
+            if (status.contains("ActivateApplication")) {
+                if (json1.getString("responseCode").equals("1")) {
+                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Logger.toast(context, "Device Activated");
+                    Util.getToken((JSONObjectCallback) context, context);
+
+                } else if (json1.getString("responseSubCode").equals("103")) {
+                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Logger.toast(context, "Already Activated");
+                    Util.getToken((JSONObjectCallback) context, context);
+                } else if (json1.getString("responseSubCode").equals("104")) {
+                    Logger.toast(context, "Device Not Register");
+                } else if (json1.getString("responseSubCode").equals("105")) {
+                    Logger.toast(context, "Device Inactive");
+                }
+            } else {
+                if (json1.isNull("access_token")) return;
+                String access_token = json1.getString("access_token");
+                String token_type = json1.getString("token_type");
+                String institutionId = json1.getString("InstitutionID");
+                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
+                Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
+                Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
+                Util.getSettings((SettingCallback) context,context);
+                context.startService(new Intent(context, DeviceHealthService.class));
+                Application.StartService(context);
+
+            }
+        }catch (Exception e){
+            Logger.error("getTokenActivate(String reportInfo,String status,Context context)",e.getMessage());
+        }
+    }
+
+    public static void beepSound(Context context,String tempVal) {
+        try {
+            BeepManager failed, thankyou;
+            if (tempVal.equals("high")) {
+                failed = new BeepManager((Activity) context, R.raw.failed_last);
+                failed.playBeepSoundAndVibrate();
+            } else {
+                thankyou = new BeepManager((Activity) context, R.raw.thankyou_last);
+                thankyou.playBeepSoundAndVibrate();
+            }
+        }catch (Exception e){
+            Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
+        }
+
+
+    }
+
+    public static void soundPool(Context context,String tempVal) {
+        try {
+            SoundPool soundPool;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                AudioAttributes attributes = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_GAME)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build();
+
+                soundPool = new SoundPool.Builder()
+                        .setAudioAttributes(attributes)
+                        .build();
+            }
+            else {
+                soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+            }
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
+            });
+            if(tempVal.equals("high")) {
+                soundPool.load(context, R.raw.failed_last, 1);
+            }else {
+                soundPool.load(context, R.raw.thankyou_last, 1);
+            }
+        }catch (Exception e){
+            Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
+        }
+
+
+    }
+
 }
