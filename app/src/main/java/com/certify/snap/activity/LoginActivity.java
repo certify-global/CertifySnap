@@ -63,7 +63,8 @@ public class LoginActivity extends Activity {
                             count--;
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
-                            tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
+                            tv_pwd_error.setText("Invalid Password.Enter your access code");
+                            //tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
                         }
                     }else{
                         String input =Util.getSNCode();     //input string

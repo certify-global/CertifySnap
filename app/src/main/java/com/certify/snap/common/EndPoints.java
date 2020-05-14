@@ -5,7 +5,7 @@ public class EndPoints {
 
     public enum Mode {Prod, Demo}
     public static final Mode deployment = Mode.Demo;
-    public static String prod_url ="https://api.certify.me";//
+    public static String prod_url = "https://apidev.certify.me";//https://api.certify.me";//
     public static String dev_url = "https://onlinedev.certifyglobal.net/";
 
 

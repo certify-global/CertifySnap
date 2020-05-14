@@ -241,5 +241,6 @@
     <string name="text_value3">Please wait, preparing to scan.</string>
     <string name="snack_msg">Retrieving updated settings</string>
     <string name="invalid_pwd">Invalid Password</string>
+    <string name="allow_low">Allow low temperature scanning (Temperature below 96.26*C/35.7*C)</string>
 
 </resources>

@@ -130,15 +130,16 @@
         android:layout_marginTop="@dimen/margin_15"
         android:text="@string/capture_images"
         android:textColor="@color/black"
+        android:layout_marginEnd="@dimen/margin_20"
         android:textSize="@dimen/font_18"
-        android:layout_marginLeft="@dimen/margin_20"  />
+        android:layout_marginStart="@dimen/margin_20"  />
     <RadioGroup
         android:id="@+id/radio_group_capture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_5"
         android:orientation="horizontal"
-        android:layout_marginLeft="@dimen/margin_20">
+        android:layout_marginStart="@dimen/margin_20">
 
         <RadioButton
             android:id="@+id/radio_yes_capture"
@@ -190,6 +191,44 @@
 
         <RadioButton
             android:id="@+id/radio_no_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:text="@string/living_type_0"
+            android:theme="@style/MyCheckBox" />
+
+    </RadioGroup>
+    <TextView
+        android:id="@+id/tv_reg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/allow_low"
+        android:layout_marginTop="@dimen/margin_15"
+        android:textColor="@color/black"
+        android:textSize="@dimen/font_18"
+        android:layout_marginRight="@dimen/margin_20"
+        android:layout_marginLeft="@dimen/margin_20"/>
+    <RadioGroup
+        android:id="@+id/radio_group_reg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/margin_20">
+
+        <RadioButton
+            android:id="@+id/radio_yes_reg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_30"
+            android:textColor="@color/black"
+            android:text="@string/living_type_1"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+        <RadioButton
+            android:id="@+id/radio_no_reg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"

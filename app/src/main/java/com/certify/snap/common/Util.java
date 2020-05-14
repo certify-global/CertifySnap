@@ -41,6 +41,7 @@ import com.certify.callback.SettingCallback;
 import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
@@ -635,7 +636,7 @@ public class Util {
             getDeviceUUid(context);
 
             obj.put("osVersion", "Android - " + Build.VERSION.RELEASE);
-            obj.put("appVersion", sp.getString(GlobalParameters.MobileAppVersion, ""));
+            obj.put("appVersion", String.format("%s (%s)",BuildConfig.VERSION_NAME,BuildConfig.VERSION_CODE)); //sp.getString(GlobalParameters.MobileAppVersion, "")
             obj.put("mobileIp", Util.getLocalIpAddress());
             obj.put("mobileNumber", sp.getString(GlobalParameters.MOBILE_NUMBER, "+1"));
             obj.put("uniqueDeviceId", sp.getString(GlobalParameters.UUID, ""));
@@ -726,8 +727,6 @@ public class Util {
                 if (!Util.PermissionRequest(context, permission.phone))
                     Util.writeString(sp, GlobalParameters.MOBILE_NUMBER, tMgr.getLine1Number());
             }
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            Util.writeString(sp, GlobalParameters.MobileAppVersion, packageInfo.versionName);
         } catch (Exception e) {
             Logger.error(LOG + "getNumberVersion()", e.getMessage());
         }

@@ -113,6 +113,7 @@
             android:hint="@string/enter_title_main"
             android:background="@drawable/edittextbackground"
             android:paddingLeft="10dp"
+            android:inputType="text"
             android:paddingRight="10dp"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -132,6 +133,7 @@
             android:hint="@string/enter_subtitle_sub"
             android:background="@drawable/edittextbackground"
             android:paddingLeft="10dp"
+            android:inputType="text"
             android:paddingRight="10dp" />
 
     </android.support.design.widget.TextInputLayout>
@@ -158,6 +160,7 @@
             android:hint="@string/enter_title_main"
             android:background="@drawable/edittextbackground"
             android:paddingLeft="10dp"
+            android:inputType="text"
             android:paddingRight="10dp"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -195,6 +198,7 @@
             android:layout_height="50dp"
             android:hint="@string/screen_delay"
             android:background="@drawable/edittextbackground"
+            android:inputType="number"
             android:paddingLeft="05dp"/>
 
     </android.support.design.widget.TextInputLayout>

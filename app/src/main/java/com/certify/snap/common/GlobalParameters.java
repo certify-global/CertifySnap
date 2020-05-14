@@ -52,7 +52,6 @@ public class GlobalParameters {
     public static final String INSTITUTION_ID = "institutionID";
     public static final String DEVICE_PASSWORD = "device_password";
     public static final String MOBILE_NUMBER = "mobile_number";
-    public static final String MobileAppVersion = "MobileAppVersion";
     public static final String UUID = "uuid";
     public static final String IMEI = "imei";
     public static final String ONLINE_MODE = "online_mode";
@@ -64,6 +63,7 @@ public class GlobalParameters {
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
     public static final String CAPTURE_SOUND = "c_m_sound";
+    public static final String ALLOW_ALL = "allow_all";
     public static final String DELAY_VALUE="delay_value";
     public static final String DELAY_VALUE_CONFIRM="delay_value_confirm";
     public static final String CONFIRM_SCREEN="confirm_screen";
