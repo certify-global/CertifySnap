@@ -104,7 +104,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             if (Util.isConnectingToInternet(this)) {
                 Util.activateApplication(this,this);
         } else {
-            Logger.toast(this, getResources().getString(R.string.network_error));
+          //  Logger.toast(this, getResources().getString(R.string.network_error));
         }
 
 
@@ -321,7 +321,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo,status,GuideActivity.this);
+            Util.getTokenActivate(reportInfo,status,GuideActivity.this,"guide");
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());

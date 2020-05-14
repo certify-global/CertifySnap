@@ -127,7 +127,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.certify.snap.R;
 
-public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, JSONObjectCallback, RecordTemperatureCallback {
+public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener,  RecordTemperatureCallback {
 
     private static final String TAG = "IrCameraActivity";
     ImageView logo, loaddialog, scan, outerCircle, innerCircle, exit;
@@ -252,23 +252,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private TextView tvErrorMessage;
 
 
-    @Override
-
-    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
-        Log.v(TAG, String.format("onJSONObjectListener reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            Util.getTokenActivate(reportInfo,status,this);
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(TAG, e.getMessage());
-
-        }
-    }
 //TODO: remove, don't process record temperature response?
     @Override
     public void onJSONObjectListenerTemperature(String reportInfo, String status, JSONObject req) {
@@ -699,7 +682,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
 
-       /* try {
+        try {
             if (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
                 if (Util.isConnectingToInternet(this)) {
                     startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
@@ -709,7 +692,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }catch (Exception e){
             e.printStackTrace();
             Logger.error("onresume",e.getMessage());
-        }*/
+        }
 
     }
 
@@ -950,9 +933,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
                 }
                 mTemperatureListenter.onTemperatureCall(true, text);
-                if (sp.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                    //             malertBeep.playBeepSoundAndVibrate();
-                }
+
                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sp.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                     if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, true);
@@ -1059,11 +1040,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     tv_message.setText(temperature);
                                                     tv_message.setTypeface(rubiklight);
                                                     img_temperature.setVisibility(View.GONE);
-                                                    if(result){
-                                                        Util.soundPool(IrCameraActivity.this,"high");
-                                                    }else{
-                                                        Util.soundPool(IrCameraActivity.this,"normal");
+                                                    if (sp.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                                                        if(result){
+                                                            Util.soundPool(IrCameraActivity.this,"high");
+                                                        }else{
+                                                            Util.soundPool(IrCameraActivity.this,"normal");
+                                                        }
                                                     }
+
 
                                                     new Handler().postDelayed(new Runnable() {
                                                         @Override

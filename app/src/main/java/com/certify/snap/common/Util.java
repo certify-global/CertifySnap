@@ -985,7 +985,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM, confirmationviewDelay);
 
                 //GuideMessages
-                String enableGuidMessages = jsonValueGuide.getString("enableGuidMessages");
+                String enableGuidMessages = jsonValueGuide.getString("enableGuideMessages");
                 String message1 = jsonValueGuide.getString("message1");
                 String message2 = jsonValueGuide.getString("message2");
                 String message3 = jsonValueGuide.getString("message3");
@@ -1005,7 +1005,7 @@ public class Util {
     }
 
 
-    public static void getTokenActivate(String reportInfo,String status,Context context) {
+    public static void getTokenActivate(String reportInfo,String status,Context context,String toast) {
         try {
             JSONObject json1 = null;
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
@@ -1021,17 +1021,25 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
-                    Logger.toast(context, "Device Activated");
+                    if(!toast.equals("guide")) {
+                        Logger.toast(context, "Device Activated");
+                    }
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
-                    Logger.toast(context, "Already Activated");
+                    if(!toast.equals("guide")) {
+                        Logger.toast(context, "Already Activated");
+                    }
                     Util.getToken((JSONObjectCallback) context, context);
                 } else if (json1.getString("responseSubCode").equals("104")) {
-                    Logger.toast(context, "Device Not Register");
+                    if(!toast.equals("guide")) {
+                        Logger.toast(context, "Device Not Register");
+                    }
                 } else if (json1.getString("responseSubCode").equals("105")) {
-                    Logger.toast(context, "Device Inactive");
+                    if(!toast.equals("guide")) {
+                        Logger.toast(context, "Device Inactive");
+                    }
                 }
             } else {
                 if (json1.isNull("access_token")) return;

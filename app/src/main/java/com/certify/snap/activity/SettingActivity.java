@@ -447,7 +447,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo,status,SettingActivity.this);
+            Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
 
 
         } catch (Exception e) {
