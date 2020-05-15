@@ -226,6 +226,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isSearch = true;
     private final Object obj = new Object();
     private float temperature = 0;
+    private float lowTempValue = 0;
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
@@ -699,9 +700,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(true, text, tempString);
                             //  mTemperatureListener.onTemperatureCall(true, text);
-                            if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-//                                malertBeep.playBeepSoundAndVibrate();
-                            }
 
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
@@ -1612,20 +1610,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 tmpr = 0f;
                             }
                             countTempError++;
-                            // Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                             // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
                             if (sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false) && tmpr > 0 && error.contains("wrong tem , too cold")) {
 //                                isTemperatureIdentified = true;
 //                                if(countTempError > 10){
 //                                    tvErrorMessage.setVisibility( View.GONE );
-//
-                                if(tmpr > 34.0 ){
-                                    tempMessageUi(tmpr);//TODO: add this method
+                                String lowTemperature = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
+                                Float lowThresholdTemperature = Float.parseFloat(lowTemperature);
+                                String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
+                                if (temperaturePreference.equals("F")) {
+                                    lowTempValue = Util.FahrenheitToCelcius(tmpr);
+                                }else{
+                                    lowTempValue=lowThresholdTemperature;
                                 }
-                                else{
+                                Log.d("low temp",""+lowTempValue  +"tempcelcius"+tmpr+""+lowTemperature);
+//
+                                if(lowTempValue > lowThresholdTemperature ){
+                                    tempMessageUi(tmpr);//TODO: add this method
+                                }else{
                                     tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
-
                                 }
                                 return;
                             }
