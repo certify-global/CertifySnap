@@ -749,11 +749,14 @@ public class Util {
         }
         return true;
     }
-
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
         Camera.Parameters parameters = camera.getParameters();
-        Camera.Size size = parameters.getPreviewSize();
-        YuvImage image = new YuvImage(data, parameters.getPreviewFormat(), size.width, size.height, null);
+        return convertYuvByteArrayToBitmap(data, parameters);
+
+    }
+        public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters){
+        Camera.Size size = cameraParameters.getPreviewSize();
+        YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, out);
         byte[] imageBytes = out.toByteArray();
