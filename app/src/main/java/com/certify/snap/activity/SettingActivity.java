@@ -38,6 +38,7 @@ import com.arcsoft.face.FaceEngine;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
+import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
@@ -110,12 +111,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         Application.getInstance().addActivity(this);
 
         sharedPreferences = Util.getSharedPreferences(this);
-        if (sharedPreferences.getBoolean("activate", false)) {
-            Log.e("sp---true", "activate:" + sharedPreferences.getBoolean("activate", false));
-        } else {
-            activeEngine(null);
-            Log.e("sp---false", "activate:" + sharedPreferences.getBoolean("activate", false));
-        }
+        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
+        Logger.debug("sp---true", "activate:" + activateStatus);
+        if (!activateStatus)
+            new AsyncActiveEngine(SettingActivity.this, sharedPreferences).execute();
 
         img_sync.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,64 +182,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
 
     }
 
-    public void activeEngine(final View view) {
-        if (view != null) {
-            view.setClickable(false);
-        }
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = FaceEngine.activeOnline(SettingActivity.this, Constants.APP_ID, Constants.SDK_KEY);
-                emitter.onNext(activeCode);
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Integer activeCode) {
-                        if (activeCode == ErrorInfo.MOK) {
-                            Util.writeBoolean(sharedPreferences, "activate", true);
-                        } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-                            Util.writeBoolean(sharedPreferences, "activate", true);
-                        } else {
-                            Util.writeBoolean(sharedPreferences, "activate", false);
-                            //  hide();
-                        }
-
-                        if (view != null) {
-                            view.setClickable(true);
-                        }
-                        ActiveFileInfo activeFileInfo = new ActiveFileInfo();
-                        int res = FaceEngine.getActiveFileInfo(SettingActivity.this, activeFileInfo);
-                        if (res == ErrorInfo.MOK) {
-                            Log.e("activate---", activeFileInfo.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void onclick(View view) {
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                //activeEngine(null);
                 if(Util.isConnectingToInternet(SettingActivity.this)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
                 }else Logger.toast(this, getResources().getString(R.string.network_error));

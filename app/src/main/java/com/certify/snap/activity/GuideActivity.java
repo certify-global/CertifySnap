@@ -27,6 +27,7 @@ import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
+import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
@@ -228,6 +229,10 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
     }
 
     private void start() {
+        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
+        Logger.debug("sp---true", "activate:" + activateStatus);
+        if (!activateStatus)
+            new AsyncActiveEngine(GuideActivity.this, sharedPreferences).execute();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

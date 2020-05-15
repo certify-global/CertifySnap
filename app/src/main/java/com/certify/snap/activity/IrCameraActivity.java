@@ -127,7 +127,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private RelativeLayout relativeLayout;
     private long exitTime = 0;
     private int pressTimes = 0;
-    private FaceEngine faceEngine = new FaceEngine();
+    private FaceEngine faceEngine ;
 
     private static final int GUEST_QR_CODE = 333;
     public static final int HIDE_VERIFY_UI = 334;
@@ -267,6 +267,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         setContentView(R.layout.activity_ir);
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
+        faceEngine = new FaceEngine();
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         homeIcon(path);
 
@@ -348,11 +349,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
-        if (sharedPreferences.getBoolean("activate", false)) {
-            Logger.debug("sp---true", "activate:" + sharedPreferences.getBoolean("activate", false));
-        } else {
-            new AsyncTime().execute();
-        }
     }
 
     private void homeIcon(String path) {
@@ -1417,84 +1413,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         guestToast.show();
     }
 
-    public void activeEngine() {
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = faceEngine.activeOnline(IrCameraActivity.this, Constants.APP_ID, Constants.SDK_KEY);
-                emitter.onNext(activeCode);
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Integer activeCode) {
-                        if (activeCode == ErrorInfo.MOK) {
-//                            Util.showToast(SettingActivity.this,getString(R.string.active_success));
-//                            Util.writeBoolean(sp,"activate",true);
-//                            show();
-                        } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-//                            Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Util.writeBoolean(sharedPreferences, "activate", true);
-//                            show();
-                        } else {
-//                            Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
-                            Util.writeBoolean(sharedPreferences, "activate", false);
-//                            hide();
-                        }
-
-
-                        ActiveFileInfo activeFileInfo = new ActiveFileInfo();
-                        int res = faceEngine.getActiveFileInfo(IrCameraActivity.this, activeFileInfo);
-                        if (res == ErrorInfo.MOK) {
-                            Logger.debug("activate---", activeFileInfo.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Logger.error(Util.getSNCode() + "onerror engine not activated", e.getMessage());
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
-    public class AsyncTime extends AsyncTask<Void, Void, String> {
-        private ProgressDialog progress;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progress = new ProgressDialog(IrCameraActivity.this);
-            progress.setMessage("Application Initializing...");
-            progress.show();
-
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            activeEngine();
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String reportInfo) {
-            progress.dismiss();
-
-        }
-    }
-
     public void ShowLauncherView() {
         try {
             isTemperatureIdentified = true;
@@ -1855,7 +1773,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void TemperatureCallBackUISetup(final boolean result, final String temperature, final String tempValue) {
+    private void TemperatureCallBackUISetup(final boolean aboveThreshold, final String temperature, final String tempValue) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1877,11 +1795,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
 
                 tv_message.setTextColor(getResources().getColor(R.color.white));
-                tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
+                tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
                 if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                    if(result){
+                    if(aboveThreshold){
                         Util.soundPool(IrCameraActivity.this,"high",soundPool);
                     }else{
                         Util.soundPool(IrCameraActivity.this,"normal",soundPool);
@@ -1900,7 +1818,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                         if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
-                            intent.putExtra("tempVal", result ? "high" : "");
+                            intent.putExtra("tempVal", aboveThreshold ? "high" : "");
                             startActivity(intent);
                             ConfirmationBoolean = true;
                             finish();
@@ -1918,10 +1836,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
 //                                }
                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-                        Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, result);
+                    boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
+                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold)
+                        Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, aboveThreshold);
                     else
-                        Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, null, null, null, result);
+                        Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, null, null, null, aboveThreshold);
                 }
                 //requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 //  faceHelper.setName(requestId, getString(R.string.VISITOR) + requestId);
