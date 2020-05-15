@@ -19,6 +19,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -115,7 +118,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.certify.snap.R;
 
-public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, JSONObjectCallback, RecordTemperatureCallback {
+public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener {
 
     private static final String TAG = "IrCameraActivity";
     ImageView logo, loaddialog, scan, outerCircle, innerCircle, exit;
@@ -229,87 +232,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int countTempError = 1;
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage;
-
+    private SoundPool soundPool;
     private FaceEngineHelper faceEngineHelper = new FaceEngineHelper();
-
-    @Override
-
-    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
-        Log.v(TAG, String.format("onJSONObjectListener reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            JSONObject json1 = null;
-            try {
-                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-                json1 = new JSONObject(formatedString.replace("\\", ""));
-
-            } catch (Exception e) {
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
-            }
-
-
-            if (status.contains("ActivateApplication")) {
-                if (json1.getString("responseCode").equals("1")) {
-                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
-                    Logger.toast(IrCameraActivity.this, "Device Activated");
-
-                } else if (json1.getString("responseSubCode").equals("103")) {
-                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
-                    Logger.toast(IrCameraActivity.this, "Already Activated");
-                } else if (json1.getString("responseSubCode").equals("104")) {
-                    Logger.toast(IrCameraActivity.this, "Device Not Register");
-                } else if (json1.getString("responseSubCode").equals("105")) {
-                    Logger.toast(IrCameraActivity.this, "Device Inactive");
-                }
-            } else {
-
-                if (json1.isNull("access_token")) return;
-                String access_token = json1.getString("access_token");
-                String token_type = json1.getString("token_type");
-                String institutionId = json1.getString("InstitutionID");
-                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
-                Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
-                Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(TAG, e.getMessage());
-
-        }
-    }
-    //TODO: remove, don't process record temperature response?
-    @Override
-    public void onJSONObjectListenerTemperature(String reportInfo, String status, JSONObject req) {
-        Log.v(TAG, String.format("onJSONObjectListenertemperature reportInfo: %s, status: %s, req: %s", reportInfo, status, req));
-        try {
-
-            if (reportInfo == null) {
-                Log.w(TAG, "onJSONObjectListenerTemperature reportInfo == null");
-                return;
-            }
-            Logger.debug(TAG, "reportInfo = " + reportInfo + " status " + " ,json  " + req.toString());
-            JSONObject json1 = null;
-            try {
-                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
-                //      json1 = new JSONObject(formatedString.replace("\\", ""));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
-            }
-//            if (json1.getInt("responseCode") == 1) {
-//
-//            }
-
-        } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
-        }
-
-    }
 
     private NfcAdapter mNfcAdapter;
     private Tag mTag;
@@ -344,35 +268,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
-        if (path.equals("")) {
-            img_logo.setBackgroundResource(R.drawable.final_logo);
-        } else {
-            Bitmap bitmap = Util.readBitMap(path);
-            Drawable d = new BitmapDrawable(getResources(), bitmap);
-            img_logo.setBackground(d);
-        }
-
-
-   /*     if (Util.isConnectingToInternet(this)) {
-            if (!sharedPreferences.getString(GlobalParameters.FIRST_RUN, "").equals("true")) {
-               Util.activateApplication(this,this);
-                Util.getToken(IrCameraActivity.this, IrCameraActivity.this);
-                Util.writeString(sharedPreferences,GlobalParameters.FIRST_RUN,"true");
-            }
-        } else {
-            Logger.toast(this, getResources().getString(R.string.network_error));
-        }*/
+        homeIcon(path);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
         try {
-//            mBeepManager = new BeepManager(this, R.raw.welcome);
-//            mBeepManager1 = new BeepManager(this, R.raw.beep);
-//            mBeepManager2 = new BeepManager(this, R.raw.error);
-//            manormalBeep = new BeepManager(this, R.raw.anormaly);
-//            malertBeep = new BeepManager(this, R.raw.alert);
-//            mBeepSuccess = new BeepManager(this, R.raw.success);
+
             processHandler = new ProcessHandler(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -451,6 +353,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             new AsyncTime().execute();
         }
+    }
+
+    private void homeIcon(String path) {
+
+        if (!path.isEmpty()) {
+            Bitmap bitmap = Util.decodeToBase64(path);
+            img_logo.setImageBitmap(bitmap);
+        } else {
+            img_logo.setBackgroundResource(R.drawable.final_logo);
+
+        }
+
     }
 
     private void showTip(final String msg, final boolean isplaysound) {
@@ -587,6 +501,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(attributes)
+                    .build();
+        } else {
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        }
     }
 
     private boolean checkPermissions(String[] neededPermissions) {
@@ -682,6 +608,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         if (cameraHelperIr != null) {
             cameraHelperIr.stop();
+        }
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
         }
         super.onPause();
     }
@@ -1711,13 +1641,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
 //                mTemperatureListenter.onTemperatureCall(true, text);
                 TemperatureCallBackUISetup(true, text, tempString);
-
-                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, true);
-                    else
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, true);
-                }
+//                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
+//                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
+//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, true);
+//                    else
+//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, null, null, null, true);
+//                }
             } else {
                 Logger.debug(TAG, "tempMessageUi = ");
                 if (sharedPreferences.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
@@ -1728,12 +1657,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                mTemperatureListenter.onTemperatureCall(false, text);
                 TemperatureCallBackUISetup(false, text, tempString);
                 // removed Internet
-                if ((sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
-                    else
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
-                }
+//                if ((sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
+//                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
+//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
+//                    else
+//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, null, null, null, false);
+//                }
             }
 //            rgbBitmap = null;
 //            irBitmap = null;
@@ -1951,6 +1880,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_message.setBackgroundColor(result ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                    if(result){
+                        Util.soundPool(IrCameraActivity.this,"high",soundPool);
+                    }else{
+                        Util.soundPool(IrCameraActivity.this,"normal",soundPool);
+                    }
+                }
                 if (lanchTimer != null)
                     lanchTimer.cancel();
                 lanchTimer = new Timer();
@@ -1983,9 +1919,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                }
                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                     if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, result);
+                        Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, result);
                     else
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempValue, null, null, null, result);
+                        Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, null, null, null, result);
                 }
                 //requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 //  faceHelper.setName(requestId, getString(R.string.VISITOR) + requestId);
