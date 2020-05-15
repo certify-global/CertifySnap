@@ -894,7 +894,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                             this.cancel();
                                         }
-                                    }, delayMilli * 1000);//20
+                                    }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
                                 }
                             });
                         }
@@ -1710,9 +1710,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
                 }
 //                mTemperatureListenter.onTemperatureCall(true, text);
-                TemperatureCallBackUISetup(true, tempString, temperature+"");
+                TemperatureCallBackUISetup(true, text, tempString);
+
                 if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-                    if (sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
+                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, true);
                     else
                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, true);
@@ -1725,7 +1726,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centi);
                 }
 //                mTemperatureListenter.onTemperatureCall(false, text);
-                TemperatureCallBackUISetup(false, tempString, temperature+"");
+                TemperatureCallBackUISetup(false, text, tempString);
                 // removed Internet
                 if ((sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
                     if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
@@ -1763,10 +1764,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Logger.debug(TAG, "" + ex.getMessage());
                                 tmpr = 0f;
                             }
+                            countTempError++;
                             // Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                             // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
                             if (sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false) && tmpr > 0 && error.contains("wrong tem , too cold")) {
-//                                tempMessageUi(tmpr);//TODO: add this method
+//                                isTemperatureIdentified = true;
+//                                if(countTempError > 10){
+//                                    tvErrorMessage.setVisibility( View.GONE );
+//
+                                if(tmpr > 34.0 ){
+                                    tempMessageUi(tmpr);//TODO: add this method
+                                }
+                                else{
+                                    tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
+                                    tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
+
+                                }
                                 return;
                             }
 
@@ -1784,9 +1797,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                             if (error.contains("face out of range or for head too low") || error.contains("wrong tem , too cold") || error.contains("not enough validData , get tem fail"))
                                 outerCircle.setBackgroundResource(R.drawable.border_shape_red);
-                            ++countTempError;
+//                            ++countTempError;
                             if (countTempError >= 10) {
-                                RestartAppOnTooManyErrors(error);
+//                                RestartAppOnTooManyErrors(error);
                             }
                         } catch (Exception ee) {
 
@@ -1794,6 +1807,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
 
                     private void RestartAppOnTooManyErrors(String error) {
+                        Log.v(TAG, "RestartAppOnTooManyErrors");
                         try {
                             // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
                             clearLeftFace(null);
