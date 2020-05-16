@@ -98,6 +98,7 @@ public class ParameterActivity extends AppCompatActivity {
         title_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Util.showToast(ParameterActivity.this, getString(R.string.save_success));
                 finish();
             }
         });

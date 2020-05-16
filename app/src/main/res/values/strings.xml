@@ -16,7 +16,7 @@
     <string name="active_engine">active engine</string>
     <string name="active_success">active success</string>
     <string name="already_activated">already activated</string>
-    <string name="active_failed">active failed,Please contact Admin.</string>
+    <string name="active_failed">Active failed,Please contact Admin.</string>
     <string name="library_not_found">library not found, please check if you put .so files into the project directory app\\src\\main\\jniLibs</string>
     <string name="ft_op_0">only detect 0 degree in video mode</string>
     <string name="ft_op_90">only detect 90 degree in video mode</string>

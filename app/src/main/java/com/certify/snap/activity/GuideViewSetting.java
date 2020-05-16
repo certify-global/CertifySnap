@@ -74,6 +74,7 @@ public class GuideViewSetting extends Activity {
                     if (!edittext_text3.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT3, edittext_text3.getText().toString());
                     startActivity(new Intent(GuideViewSetting.this,SettingActivity.class));
+                    Util.showToast(GuideViewSetting.this, getString(R.string.save_success));
                     finish();
                 }
             });
