@@ -45,7 +45,7 @@ public class LoginActivity extends Activity {
                     "rubiklight.ttf");
             textview_name.setTypeface(rubiklight);
             tv_pwd_error.setTypeface(rubiklight);
-            tv_version.setText("Version: " + BuildConfig.VERSION_NAME);
+            tv_version.setText(Util.getVersionBuild());
             tv_serial_no.setText("Serial No: "+Util.getSNCode());
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override

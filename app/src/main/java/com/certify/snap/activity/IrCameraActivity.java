@@ -474,6 +474,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
         tv_display_time = findViewById(R.id.tv_display_time);
+       TextView tvVersionIr = findViewById(R.id.tv_version_ir);
+       tvVersionIr.setText(Util.getVersionBuild());
         tv_display_time.setTypeface(rubiklight);
         tv_message = findViewById(R.id.tv_message);
         tTimer = new Timer();

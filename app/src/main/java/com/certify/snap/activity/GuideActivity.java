@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arcsoft.face.ActiveFileInfo;
@@ -103,6 +104,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         mActivity = this;
         Application.getInstance().addActivity(this);
         sharedPreferences = Util.getSharedPreferences(this);
+        TextView tvVersion = findViewById(R.id.tv_version_guide);
+        tvVersion.setText(Util.getVersionBuild());
 
         if (Util.isConnectingToInternet(this)) {
             Util.activateApplication(this, this);
