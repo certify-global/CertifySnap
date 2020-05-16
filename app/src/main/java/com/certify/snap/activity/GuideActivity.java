@@ -48,6 +48,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import com.certify.snap.R;
 
 import org.json.JSONObject;
@@ -60,9 +61,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class GuideActivity extends Activity implements  SettingCallback, JSONObjectCallback, ActiveEngineCallback {
+public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback, ActiveEngineCallback {
 
-    public static final String TAG  = "GuideActivity";
+    public static final String TAG = "GuideActivity";
     public static Activity mActivity;
     private ImageView imgPic;
     private Animation myAnimation;
@@ -101,27 +102,17 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         }
         mActivity = this;
         Application.getInstance().addActivity(this);
-        sharedPreferences=Util.getSharedPreferences(this);
+        sharedPreferences = Util.getSharedPreferences(this);
 
-            if (Util.isConnectingToInternet(this)) {
-                Util.activateApplication(this,this);
-        } else {
-          //  Logger.toast(this, getResources().getString(R.string.network_error));
+        if (Util.isConnectingToInternet(this)) {
+            Util.activateApplication(this, this);
         }
 
-
-//        sp = Util.getSharedPreferences(this);
-//        if(sp.getBoolean("activate",false)) {
-//            Log.e("sp---true","activate:"+sp.getBoolean("activate",false));
-//        }else{
-//            activeEngine(null);
-//            Log.e("sp---false","activate:"+sp.getBoolean("activate",false));
-//        }
-        if(!isInstalled(GuideActivity.this,"com.telpo.temperatureservice")){
+        if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                 //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
+                    //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
                 }
             });
 
@@ -133,8 +124,8 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
 
         checkStatus();
 
-        boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar,true);
-        boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar,true);
+        boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
+        boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
 
         sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
@@ -162,7 +153,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         return false;
     }
 
-    private void checkStatus(){
+    private void checkStatus() {
         checkPermission();
         libraryExists = checkSoFile(LIBRARIES);
         ApplicationInfo applicationInfo = getApplicationInfo();
@@ -170,7 +161,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         if (!libraryExists) {
 //            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
 //            finish();
-        }else {
+        } else {
             VersionInfo versionInfo = new VersionInfo();
             int code = FaceEngine.getVersion(versionInfo);
             Log.e(TAG, "onCreate: getVersion, code is: " + code + ", versionInfo is: " + versionInfo);
@@ -178,7 +169,6 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
     }
 
     /**
-     *
      * @param libraries
      * @return
      */
@@ -210,8 +200,8 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             }
         }
     }
+
     /**
-     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -232,16 +222,17 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
     private void start() {
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
         Logger.debug("sp---true", "activate:" + activateStatus);
-        if (!activateStatus)
-            new AsyncActiveEngine(GuideActivity.this, sharedPreferences,GuideActivity.this).execute();
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                //FaceServer.getInstance().init(GuideActivity.this);
-//                Util.switchRgbOrIrActivity(GuideActivity.this,true);
-//            }
-//        },1000);
-
+        if (!activateStatus) //offline Active Engine
+            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this).execute();
+        else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //FaceServer.getInstance().init(GuideActivity.this);
+                    Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                }
+            }, 1000);
+        }
     }
 
     @Override
@@ -256,7 +247,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             if (reportInfo == null) {
                 return;
             }
-            Util.retrieveSetting(reportInfo,GuideActivity.this);
+            Util.retrieveSetting(reportInfo, GuideActivity.this);
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
@@ -270,7 +261,7 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo,status,GuideActivity.this,"guide");
+            Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
@@ -280,9 +271,9 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
 
     @Override
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        if(activeStatus)
-            Util.switchRgbOrIrActivity(GuideActivity.this,true);
+        if (activeStatus)
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
         else
-            Toast.makeText(GuideActivity.this,getResources().getString(R.string.active_failed),Toast.LENGTH_LONG).show();
+            Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
     }
 }
