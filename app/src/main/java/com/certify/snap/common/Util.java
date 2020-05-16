@@ -978,13 +978,16 @@ public class Util {
                 String aboveThresholdViewLine1 = jsonValueConfirm.getString("aboveThresholdViewLine1");
                 String temperatureAboveThreshold2 = jsonValueConfirm.getString("temperatureAboveThreshold2");
                 String confirmationviewDelay = jsonValueConfirm.getString("viewDelay");
-
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN, enableConfirmationScreen.equals("1"));
+//todo in api
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, enableConfirmationScreen.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, enableConfirmationScreen.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, confirmationviewDelay);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, normalViewLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, temperatureAboveThreshold2);
-                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM, confirmationviewDelay);
+               // Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
 
                 //GuideMessages
                 String enableGuidMessages = jsonValueGuide.getString("enableGuideMessages");

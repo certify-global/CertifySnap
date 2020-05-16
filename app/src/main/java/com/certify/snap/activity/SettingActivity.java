@@ -171,7 +171,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
-        tv_version.setText("Version: " + BuildConfig.VERSION_NAME);
+        tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
     }
 

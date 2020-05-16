@@ -213,13 +213,13 @@
     <string name="tv_scan_setting">Scan View Settings</string>
     <string name="capture_images">Capture images of Users with Temperature above Threshold</string>
     <string name="Capture_all">Capture images of all Users</string>
-    <string name="enable_sound">Enable sound on High temperature</string>
+    <string name="enable_sound">Enable sound</string>
     <string name="screen_delay">Screen display time (seconds)</string>
     <string name="tv_confirmation_setting">Confirmation View Settings</string>
     <string name="confirmation_view">Confirmation View</string>
-    <string name="enable_temperature">Enable Confirmation Screen</string>
-    <string name="confirmation_text_below">Confirmation text for temperature below threshold</string>
-    <string name="confirmation_text_above">Confirmation text for temperature above threshold</string>
+    <string name="enable_temperature">Enable</string>
+    <string name="confirmation_text_below">Confirmation for temperature below threshold</string>
+    <string name="confirmation_text_above">Confirmation for temperature above threshold</string>
     <string name="scan_view">Scan View</string>
     <string name="thermal_view">Home View</string>
     <string name="enter_title_main">Enter Main Text</string>
@@ -243,5 +243,6 @@
     <string name="snack_msg">Retrieving updated settings</string>
     <string name="invalid_pwd">Invalid Password</string>
     <string name="allow_low">Allow low temperature scanning</string>
+    <string name="save_success">Settings Saved</string>
 
 </resources>
