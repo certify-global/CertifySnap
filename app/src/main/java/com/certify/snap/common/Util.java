@@ -1106,7 +1106,7 @@ public class Util {
     }
 
     public static String getVersionBuild(){
-        return String.format("Version: %s (%s)",BuildConfig.VERSION_NAME,BuildConfig.VERSION_CODE);
+        return String.format("v%s",BuildConfig.VERSION_NAME);
     }
 
 }
