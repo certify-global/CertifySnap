@@ -4,30 +4,42 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
+import com.certify.callback.ActiveEngineCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.common.ActiveEngine;
+import com.certify.snap.common.Util;
 
-public class AsyncActiveEngine extends AsyncTask<Void, Void, String> {
-       Context context;
-       SharedPreferences sharedPreferences;
+import static com.certify.snap.common.ActiveEngine.activeEngineOffline;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-    public AsyncActiveEngine(Context context, SharedPreferences sharedPreferences) {
+public class AsyncActiveEngine extends AsyncTask<Void, Void, Boolean> {
+    private Context context;
+    private SharedPreferences sharedPreferences;
+    private ActiveEngineCallback activeEngineCallback;
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    public AsyncActiveEngine(Context context, SharedPreferences sharedPreferences, ActiveEngineCallback activeEngineCallback) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
+        this.activeEngineCallback = activeEngineCallback;
     }
-        @Override
-        protected String doInBackground(Void... params) {
-            ActiveEngine.activeEngine(context,sharedPreferences);
-            //ActiveEngine.activeEngineOffline(context);
-            return "";
+
+    @Override
+    protected Boolean doInBackground(Void... params) {
+        //  ActiveEngine.activeEngine(context,sharedPreferences);
+        boolean activate = ActiveEngine.activeEngineOffline(context);
+        Util.writeBoolean(sharedPreferences, "activate", activate);
+        return activate;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean activate) {
+        if (activeEngineCallback != null) {
+            activeEngineCallback.onActiveEngineCallback(activate, "", null);
         }
 
-        @Override
-        protected void onPostExecute(String reportInfo) {
-
-
-        }
     }
+}

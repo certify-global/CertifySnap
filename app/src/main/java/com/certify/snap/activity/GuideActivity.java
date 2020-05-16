@@ -25,6 +25,7 @@ import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
+import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.async.AsyncActiveEngine;
@@ -59,7 +60,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class GuideActivity extends Activity implements  SettingCallback, JSONObjectCallback {
+public class GuideActivity extends Activity implements  SettingCallback, JSONObjectCallback, ActiveEngineCallback {
 
     public static final String TAG  = "GuideActivity";
     public static Activity mActivity;
@@ -232,14 +233,14 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
         Logger.debug("sp---true", "activate:" + activateStatus);
         if (!activateStatus)
-            new AsyncActiveEngine(GuideActivity.this, sharedPreferences).execute();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //FaceServer.getInstance().init(GuideActivity.this);
-                Util.switchRgbOrIrActivity(GuideActivity.this,true);
-            }
-        },1000);
+            new AsyncActiveEngine(GuideActivity.this, sharedPreferences,GuideActivity.this).execute();
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                //FaceServer.getInstance().init(GuideActivity.this);
+//                Util.switchRgbOrIrActivity(GuideActivity.this,true);
+//            }
+//        },1000);
 
     }
 
@@ -275,5 +276,13 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
 
+    }
+
+    @Override
+    public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
+        if(activeStatus)
+            Util.switchRgbOrIrActivity(GuideActivity.this,true);
+        else
+            Toast.makeText(GuideActivity.this,getResources().getString(R.string.active_failed),Toast.LENGTH_LONG).show();
     }
 }

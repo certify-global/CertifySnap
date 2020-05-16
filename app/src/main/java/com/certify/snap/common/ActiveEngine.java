@@ -31,7 +31,7 @@ public class ActiveEngine {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = FaceEngine.activeOnline(context, Constants.APP_ID, Constants.SDK_KEY);
+                int activeCode = FaceEngine.activeOnline(context,"", Constants.APP_ID, Constants.SDK_KEY);
                 emitter.onNext(activeCode);
             }
         })
@@ -81,7 +81,7 @@ public class ActiveEngine {
                 });
     }
     public static boolean activeEngineOffline(Context context){
-        boolean result=false;
+        boolean result = false;
         String path= Environment.getExternalStorageDirectory() + "/active_result.dat";
         String path1=Environment.getExternalStorageDirectory() + "/ArcFacePro32.dat";
         String path2=context.getApplicationContext().getFilesDir() + "/ArcFacePro32.dat";
@@ -89,18 +89,18 @@ public class ActiveEngine {
         Logger.debug(TAG, "path2 : "+path2);
         File file=new File(path);
         if (file.exists()){
-//            int activeCode = FaceEngine.activeOffline(context,
-//                    path);
-//            if (activeCode == ErrorInfo.MOK) {
-//                result=true;
-//                Log.e("active_result","true  1");
-//            } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-//                result=true;
-//                Log.e("active_result","true  2");
-//            } else {
-//                result=false;
-//                Log.e("active_result","false  1");
-//            }
+            int activeCode = FaceEngine.activeOffline(context,
+                    path);
+            if (activeCode == ErrorInfo.MOK) {
+                result=true;
+                Log.e("active_result","true  1");
+            } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
+                result=true;
+                Log.e("active_result","true  2");
+            } else {
+                result=false;
+                Log.e("active_result","false  1");
+            }
         }else {
             File file1=new File(path1);
             if (file1.exists()){
