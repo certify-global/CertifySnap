@@ -21,6 +21,7 @@ public class AsyncActiveEngine extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... params) {
             ActiveEngine.activeEngine(context,sharedPreferences);
+            //ActiveEngine.activeEngineOffline(context);
             return "";
         }
 

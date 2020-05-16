@@ -248,63 +248,6 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         super.onResume();
     }
 
-    public void activeEngine(final View view) {
-        if (view != null) {
-            view.setClickable(false);
-        }
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = faceEngine.activeOnline(GuideActivity.this, Constants.APP_ID, Constants.SDK_KEY);
-                emitter.onNext(activeCode);
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Integer activeCode) {
-                        if (activeCode == ErrorInfo.MOK) {
-                          //  Util.showToast(SettingActivity.this,getString(R.string.active_success));
-                            Util.writeBoolean(sharedPreferences,"activate",true);
-                         //   show();
-                        } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-                          //  Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Util.writeBoolean(sharedPreferences,"activate",true);
-                           // show();
-                        } else {
-                          //  Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
-                            Util.writeBoolean(sharedPreferences,"activate",false);
-                         //   hide();
-                        }
-
-                        if (view != null) {
-                            view.setClickable(true);
-                        }
-                        ActiveFileInfo activeFileInfo = new ActiveFileInfo();
-                        int res = faceEngine.getActiveFileInfo(GuideActivity.this, activeFileInfo);
-                        if (res == ErrorInfo.MOK) {
-                            Log.e("activate---", activeFileInfo.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
 
     @Override
     public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {

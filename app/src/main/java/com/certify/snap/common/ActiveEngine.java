@@ -26,6 +26,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class ActiveEngine {
+    public static String TAG = "ActiveEngine -> ";
     public static void activeEngine(final Context context,final SharedPreferences sharedPreferences) {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -84,6 +85,8 @@ public class ActiveEngine {
         String path= Environment.getExternalStorageDirectory() + "/active_result.dat";
         String path1=Environment.getExternalStorageDirectory() + "/ArcFacePro32.dat";
         String path2=context.getApplicationContext().getFilesDir() + "/ArcFacePro32.dat";
+        Logger.debug(TAG, "path : "+path);
+        Logger.debug(TAG, "path2 : "+path2);
         File file=new File(path);
         if (file.exists()){
 //            int activeCode = FaceEngine.activeOffline(context,
