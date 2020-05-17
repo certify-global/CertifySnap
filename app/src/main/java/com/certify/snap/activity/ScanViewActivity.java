@@ -143,9 +143,11 @@ public class ScanViewActivity extends Activity {
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
+
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
+                    Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
+                    finish();
                 }
             });
         }catch (Exception e){

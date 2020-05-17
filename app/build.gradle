@@ -6,19 +6,19 @@ android {
         applicationId "com.certify.snap"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 15
-        versionName "3.1 (15)"
+        versionCode 16
+        versionName "3.1 (16)"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-//    flavorDimensions "version"
-//    productFlavors {
-//        snap {
-//            applicationIdSuffix ".snap"
-//        }
-//        snapupmc {
-//            applicationIdSuffix ".upmc"
-//        }
-//    }
+    flavorDimensions "version"
+    productFlavors {
+        snap {
+            applicationIdSuffix ""
+        }
+        snapEnt {
+            applicationIdSuffix ".ent"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false

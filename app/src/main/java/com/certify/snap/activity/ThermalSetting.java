@@ -60,6 +60,7 @@ public class ThermalSetting extends Activity {
                     Util.writeString(sp, GlobalParameters.Thermalscan_title, edittext_title.getText().toString());
                     if(!edittext_subtitle.getText().toString().isEmpty())
                     Util.writeString(sp, GlobalParameters.Thermalscan_subtitle, edittext_subtitle.getText().toString());
+                    Util.showToast(ThermalSetting.this, getString(R.string.save_success));
                     finish();
                 }
             });
