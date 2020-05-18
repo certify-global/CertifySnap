@@ -68,14 +68,14 @@ public class ActiveEngine {
                             Logger.debug("sp---true", "activate:" + true);
                             Util.writeBoolean(sharedPreferences, "activate", true);
                             if (activeEngineCallback != null)
-                                activeEngineCallback.onActiveEngineCallback(true,"",null);
+                                activeEngineCallback.onActiveEngineCallback(true, "", null);
 //                            show();
                         } else {
 //                            Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
                             Util.writeBoolean(sharedPreferences, "activate", false);
 //                            hide();
                             if (activeEngineCallback != null)
-                                activeEngineCallback.onActiveEngineCallback(false,"",null);
+                                activeEngineCallback.onActiveEngineCallback(false, "", null);
                         }
 
 
@@ -211,6 +211,7 @@ public class ActiveEngine {
 
                     }
                     if (serialNumber.equals(deviceSno)) {
+                        Logger.debug(TAG, "serialNumber" + serialNumber + " deviceSno " + deviceSno);
                         return ActivationCode;
 
                     }
