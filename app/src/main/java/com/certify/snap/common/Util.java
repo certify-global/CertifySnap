@@ -666,7 +666,6 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"MissingPermission", "HardwareIds"})
     public static void getDeviceUUid(Context context) {
-        Logger.debug("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", "splash");
         SharedPreferences sp = Util.getSharedPreferences(context);
 
         if (!sp.getString(GlobalParameters.UUID, "").isEmpty())
