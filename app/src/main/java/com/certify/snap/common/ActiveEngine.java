@@ -41,11 +41,11 @@ import io.reactivex.schedulers.Schedulers;
 public class ActiveEngine {
     public static String TAG = "ActiveEngine -> ";
 
-    public static void activeEngine(final Context context, final SharedPreferences sharedPreferences, final String deviceSno, final ActiveEngineCallback activeEngineCallback) {
+    public static void activeEngine(final Context context, final SharedPreferences sharedPreferences, final String activityKey, final ActiveEngineCallback activeEngineCallback) {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = FaceEngine.activeOnline(context, readExcelFileFromAssets(context, deviceSno), Constants.APP_ID, Constants.SDK_KEY);
+                int activeCode = FaceEngine.activeOnline(context, activityKey, Constants.APP_ID, Constants.SDK_KEY);
                 emitter.onNext(activeCode);
             }
         })
@@ -60,29 +60,39 @@ public class ActiveEngine {
                     @Override
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {
+                            if (activeEngineCallback != null)
+                                activeEngineCallback.onActiveEngineCallback(true, "online", null);
 //                            Util.showToast(SettingActivity.this,getString(R.string.active_success));
 //                            Util.writeBoolean(sp,"activate",true);
 //                            show();
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
 //                            Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Logger.debug("sp---true", "activate:" + true);
+                            Logger.debug("active engine", "activate:" + true);
                             Util.writeBoolean(sharedPreferences, "activate", true);
                             if (activeEngineCallback != null)
-                                activeEngineCallback.onActiveEngineCallback(true, "", null);
+                                activeEngineCallback.onActiveEngineCallback(true, "online", null);
 //                            show();
                         } else {
 //                            Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
                             Util.writeBoolean(sharedPreferences, "activate", false);
+                            Logger.debug("active engine", "activate:" + false);
 //                            hide();
                             if (activeEngineCallback != null)
-                                activeEngineCallback.onActiveEngineCallback(false, "", null);
+                                activeEngineCallback.onActiveEngineCallback(false, "online", null);
                         }
 
 
                         ActiveFileInfo activeFileInfo = new ActiveFileInfo();
                         int res = FaceEngine.getActiveFileInfo(context, activeFileInfo);
                         if (res == ErrorInfo.MOK) {
+                            if (activeEngineCallback != null)
+                                activeEngineCallback.onActiveEngineCallback(true, "online", null);
+
                             Logger.debug("activate---", activeFileInfo.toString());
+                        }
+                        else {
+                            if (activeEngineCallback != null)
+                                activeEngineCallback.onActiveEngineCallback(false, "online", null);
                         }
                     }
 

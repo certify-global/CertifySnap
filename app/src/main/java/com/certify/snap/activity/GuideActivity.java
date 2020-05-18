@@ -272,9 +272,14 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     @Override
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
+        Logger.debug(TAG, status+ "activeStatus "+activeStatus) ;
         if (activeStatus)
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
         else
-            Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
+            if (status.equals("Offline")) {
+               String activityKey =ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
+                ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
+            }   else
+             Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
     }
 }

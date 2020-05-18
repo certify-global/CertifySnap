@@ -33,8 +33,7 @@ public class AsyncActiveEngine extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         //  ActiveEngine.activeEngine(context,sharedPreferences);
         boolean activate = ActiveEngine.activeEngineOffline(context);
-        if (!activate)
-            ActiveEngine.activeEngine(context, sharedPreferences, deviceSno, activeEngineCallback);
+
         Util.writeBoolean(sharedPreferences, "activate", activate);
         return activate;
     }
@@ -42,7 +41,7 @@ public class AsyncActiveEngine extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean activate) {
         if (activeEngineCallback != null) {
-            activeEngineCallback.onActiveEngineCallback(activate, "", null);
+            activeEngineCallback.onActiveEngineCallback(activate, "Offline", null);
         }
 
     }
