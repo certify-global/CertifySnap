@@ -30,6 +30,7 @@ import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.async.AsyncActiveEngine;
+import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
@@ -106,7 +107,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
-
         if (Util.isConnectingToInternet(this)) {
             Util.activateApplication(this, this);
         }
@@ -124,9 +124,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
         imgPic = findViewById(R.id.img_telpo);
         imgPic.startAnimation(myAnimation);
-
         checkStatus();
-
         boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
         boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
 
@@ -226,7 +224,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
         Logger.debug("sp---true", "activate:" + activateStatus);
         if (!activateStatus) //offline Active Engine
-            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this).execute();
+            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
         else {
             new Handler().postDelayed(new Runnable() {
                 @Override

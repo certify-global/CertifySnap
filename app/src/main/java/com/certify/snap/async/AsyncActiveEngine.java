@@ -15,22 +15,26 @@ public class AsyncActiveEngine extends AsyncTask<Void, Void, Boolean> {
     private Context context;
     private SharedPreferences sharedPreferences;
     private ActiveEngineCallback activeEngineCallback;
+    private String deviceSno;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
     }
 
-    public AsyncActiveEngine(Context context, SharedPreferences sharedPreferences, ActiveEngineCallback activeEngineCallback) {
+    public AsyncActiveEngine(Context context, SharedPreferences sharedPreferences, ActiveEngineCallback activeEngineCallback,String deviceSno) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
         this.activeEngineCallback = activeEngineCallback;
+        this.deviceSno = deviceSno;
     }
 
     @Override
     protected Boolean doInBackground(Void... params) {
         //  ActiveEngine.activeEngine(context,sharedPreferences);
         boolean activate = ActiveEngine.activeEngineOffline(context);
+        if (!activate)
+            ActiveEngine.activeEngine(context, sharedPreferences, deviceSno, activeEngineCallback);
         Util.writeBoolean(sharedPreferences, "activate", activate);
         return activate;
     }
