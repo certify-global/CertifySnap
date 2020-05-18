@@ -129,7 +129,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
         Logger.debug("sp---true", "activate:" + activateStatus);
         if (!activateStatus)
-            new AsyncActiveEngine(SettingActivity.this, sharedPreferences,null).execute();
+            new AsyncActiveEngine(SettingActivity.this, sharedPreferences,null,Util.getSNCode()).execute();
         img_sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
