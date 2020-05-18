@@ -268,7 +268,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         setContentView(R.layout.activity_ir);
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
-        faceEngine = new FaceEngine();
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         homeIcon(path);
 
@@ -584,7 +583,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
 
         try {
-            if (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))
                 if (Util.isConnectingToInternet(this)) {
                     startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
                     Application.StartService(this);

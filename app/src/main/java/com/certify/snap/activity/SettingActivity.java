@@ -23,12 +23,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,24 +75,27 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     private AlertDialog.Builder builder;
     ImageView img_sync;
     RelativeLayout relative_layout;
+    Switch switch_activate;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_setting);
-        Util.getNumberVersion(SettingActivity.this);
-        rubiklight = Typeface.createFromAsset(getAssets(),
-                "rubiklight.ttf");
-        sharedPreferences = Util.getSharedPreferences(this);
-        rg_temperature = findViewById(R.id.radio_group_work_flow);
-        rb_temp = findViewById(R.id.radio_temp);
-        rb_temp_face = findViewById(R.id.face_temp);
-        img_sync = findViewById(R.id.img_sync);
-        relative_layout = findViewById(R.id.relative_layout);
-        String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
+        try {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setContentView(R.layout.activity_setting);
+            Util.getNumberVersion(SettingActivity.this);
+            rubiklight = Typeface.createFromAsset(getAssets(),
+                    "rubiklight.ttf");
+            sharedPreferences = Util.getSharedPreferences(this);
+            rg_temperature = findViewById(R.id.radio_group_work_flow);
+            rb_temp = findViewById(R.id.radio_temp);
+            rb_temp_face = findViewById(R.id.face_temp);
+            img_sync = findViewById(R.id.img_sync);
+            relative_layout = findViewById(R.id.relative_layout);
+            switch_activate = findViewById(R.id.switch_activate);
+            String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
 
         rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -103,9 +108,19 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                         Util.writeString(sharedPreferences, GlobalParameters.FACE_TEMP, "facetemp");
                         break;
 
+                    }
                 }
-            }
-        });
+            });
+            switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                    } else {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    }
+                }
+            });
 
         initView();
         Application.getInstance().addActivity(this);
@@ -123,9 +138,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                         .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
                 snackbar.show();
 
+                }
+            });
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
+                switch_activate.setChecked(true);
+            } else {
+                switch_activate.setChecked(false);
             }
-        });
-
+        }catch (Exception e){
+            Logger.error("Setting  onCreate(Bundle savedInstanceState) ",e.getMessage());
+        }
 
     }
 
@@ -188,28 +210,28 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             case R.id.setting_activate:
                 if(Util.isConnectingToInternet(SettingActivity.this)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
-                }else Logger.toast(this, getResources().getString(R.string.network_error));
+                }
+                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
+                    switch_activate.setChecked(true);
+                } else {
+                    switch_activate.setChecked(false);
+                }
                 break;
             case R.id.setting_init:
                 if (isopen)
                     startActivity(new Intent(SettingActivity.this, InitializationActivity.class));
                 break;
-//            case R.id.setting_updatelist:
-//                if(isopen) startActivity(new Intent(SettingActivity.this,UpdateActivity.class));
-//                break;
             case R.id.setting_managment:
                 if (isopen)
                     startActivity(new Intent(SettingActivity.this, ManagementActivity.class));
                 break;
             case R.id.setting_register:
-
                 break;
             case R.id.setting_parameter:
                 if (isopen)
                     startActivity(new Intent(SettingActivity.this, ParameterActivity.class));
                 break;
             case R.id.setting_led:
-
                 break;
             case R.id.setting_activate_card:
                 if (isopen) startActivity(new Intent(SettingActivity.this, NFCCardActivity.class));
@@ -395,8 +417,6 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 return;
             }
             Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
-
-
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }

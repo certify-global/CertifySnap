@@ -948,7 +948,7 @@ public class Util {
 
                 Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
                 Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
-                Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
+                    Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
                 Log.d("mastercode",deviceMasterCode);
@@ -962,6 +962,8 @@ public class Util {
                 String viewDelay = jsonValueScan.getString("viewDelay");
                 String tempval = jsonValueScan.getString("temperatureThreshold");
                 String temperatureFormat = jsonValueScan.getString("temperatureFormat");
+                String allowlowtemperaturescanning = jsonValueScan.getString("allowlowtemperaturescanning");
+                String lowtemperatureThreshold = jsonValueScan.getString("lowtemperatureThreshold");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -970,6 +972,8 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
                 Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
+                Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST_LOW, lowtemperatureThreshold);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, allowlowtemperaturescanning.equals("1"));
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.getString("enableConfirmationScreen");
