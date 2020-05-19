@@ -1,4 +1,4 @@
-package com.certify.pos.api.util;
+package com.common.pos.api.util;
 
 public class PosUtil {
 

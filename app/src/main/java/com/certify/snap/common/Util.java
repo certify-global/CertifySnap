@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,8 +16,6 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -35,20 +32,17 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.arcsoft.face.ErrorInfo;
-import com.arcsoft.face.FaceEngine;
 import com.certify.callback.SettingCallback;
-import com.certify.pos.api.util.PosUtil;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
-import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.service.DeviceHealthService;
+import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.google.zxing.other.BeepManager;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -347,11 +341,11 @@ public class Util {
 
     //led TODOMe
     public static void setLedPower(int status) {
-//        if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
-//            new SDKUtil().camera_led(status);
-//        } else {
-//            PosUtil.setLedPower(status);
-//        }
+        if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
+            new SDKUtil().camera_led(status);
+        } else {
+            PosUtil.setLedPower(status);
+        }
     }
 
     //led2

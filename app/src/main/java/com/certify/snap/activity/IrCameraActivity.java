@@ -811,7 +811,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     logo.setVisibility(View.VISIBLE);
                                                     rl_header.setVisibility(View.VISIBLE);
                                                     tempServiceClose = true;
-//                                                    Util.enableLedPower(0);
+                                                    Util.enableLedPower(0);
                                                 }
                                             });
 
@@ -1027,7 +1027,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     logo.setVisibility(View.VISIBLE);
                     relative_main.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
-//                    Util.enableLedPower(0);
+                    Util.enableLedPower(0);
                 }
             }
         }
@@ -1339,7 +1339,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                //  Util.enableLedPower(1);
+                Util.enableLedPower(1);
             }
         }, 500);
     }
@@ -1428,7 +1428,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                           // clearLeftFace(null);
+                            clearLeftFace(null);
                             isTemperatureIdentified = false;
                             Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
                         }
@@ -1789,6 +1789,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
                 isTemperatureIdentified = true;
                 outerCircle.setBackgroundResource(R.drawable.border_shape);
                 tvErrorMessage.setVisibility(View.GONE);
@@ -1827,7 +1828,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void run() {
                         takePicRgb = true;
                         takePicIr = true;
-
+                        Util.enableLedPower(0);
                         //  requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                         // temperature_image.setVisibility(View.GONE);
                         boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
