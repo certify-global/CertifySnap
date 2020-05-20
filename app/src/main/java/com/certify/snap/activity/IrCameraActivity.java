@@ -1412,12 +1412,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void ShowLauncherView() {
         try {
+            startActivity(new Intent(IrCameraActivity.this,IrCameraActivity.class));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
+
                     tv_message.setVisibility(View.GONE);
                     tvErrorMessage.setVisibility(View.GONE);
                     temperature_image.setVisibility(View.GONE);
@@ -1428,8 +1430,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            clearLeftFace(null);
-                            isTemperatureIdentified = false;
+                           // clearLeftFace(null);
+                            finish();
+                            startActivity(new Intent(IrCameraActivity.this,IrCameraActivity.class));
                             Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
                         }
                     }, delayMilli * 1000);
