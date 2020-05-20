@@ -222,7 +222,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     private void start() {
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-        Logger.debug("sp---true", "activate:" + activateStatus);
+        Logger.debug(TAG, " checkPermission -> start : sharedPreference license activated: " + activateStatus);
         if (!activateStatus) //offline Active Engine
             new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
         else {
@@ -276,7 +276,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         if (activeStatus)
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
         else
-            if (status.equals("Offline")) {
+            if ("Offline".equals(status)) {
                String activityKey =ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
                 ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
             }   else

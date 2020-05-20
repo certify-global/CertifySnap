@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
+import com.arcsoft.face.ErrorInfo;
+import com.arcsoft.face.FaceEngine;
 import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.common.ActiveEngine;
+import com.certify.snap.common.Constants;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 import static com.certify.snap.common.ActiveEngine.activeEngineOffline;
@@ -32,16 +36,26 @@ public class AsyncActiveEngine extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Void... params) {
         //  ActiveEngine.activeEngine(context,sharedPreferences);
-        boolean activate = ActiveEngine.activeEngineOffline(context);
+        boolean activated = ActiveEngine.activeEngineOffline(context);
 
-        Util.writeBoolean(sharedPreferences, "activate", activate);
-        return activate;
+        if(!activated){
+            String serialNumber = Util.getSNCode();
+            String activationKey = ActiveEngine.getDeviceList().get(serialNumber);
+            Logger.debug("AsyncActiveEngine",
+                    String.format("doInBackground activeEngineOffline failed, serialNumber: %s, activationKey: %s",
+                            serialNumber, activationKey));
+            int activationResult = FaceEngine.activeOnline(context, activationKey, Constants.APP_ID, Constants.SDK_KEY);
+            activated = activationResult == ErrorInfo.MOK || activationResult == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED;
+            Logger.debug("AsyncActiveEngine", String.format("doInBackground FaceEngine.activeOnline activationResult: %d", activationResult));
+        }
+        Util.writeBoolean(sharedPreferences, "activate", activated);
+        return activated;
     }
 
     @Override
     protected void onPostExecute(Boolean activate) {
         if (activeEngineCallback != null) {
-            activeEngineCallback.onActiveEngineCallback(activate, "Offline", null);
+            activeEngineCallback.onActiveEngineCallback(activate, null, null);
         }
 
     }
