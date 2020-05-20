@@ -133,10 +133,17 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         img_sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Util.getSettings(SettingActivity.this,SettingActivity.this);
-                Snackbar snackbar = Snackbar
-                        .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
-                snackbar.show();
+                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+                    Util.getSettings(SettingActivity.this, SettingActivity.this);
+                    Snackbar snackbar = Snackbar
+                            .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+
 
                 }
             });
@@ -208,13 +215,12 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                if(Util.isConnectingToInternet(SettingActivity.this)) {
+                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
-                }
-                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
-                    switch_activate.setChecked(true);
-                } else {
-                    switch_activate.setChecked(false);
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
                 break;
             case R.id.setting_init:
@@ -428,7 +434,13 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             if (reportInfo == null) {
                 return;
             }
-            Util.retrieveSetting(reportInfo,SettingActivity.this);
+            if(reportInfo.getString("responseCode").equals("1")){
+                Util.retrieveSetting(reportInfo,SettingActivity.this);
+            }else{
+                Logger.toast(this,"Something went wrong please try again");
+            }
+
+
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }

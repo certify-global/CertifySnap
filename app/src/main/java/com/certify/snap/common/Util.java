@@ -38,6 +38,7 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
@@ -499,8 +500,11 @@ public class Util {
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context);
-            if (responseTemp != null && !responseTemp.equals(""))
+            if (responseTemp != null && !responseTemp.equals("") && !responseTemp.contains("token expired")) {
                 return new String(responseTemp);
+            }else  if(responseTemp.contains("token expired")){
+                Util.getToken((JSONObjectCallback) context,context);
+            }
         } catch (Exception e) {
 
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
@@ -513,8 +517,11 @@ public class Util {
     public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
-            if (responseTemp != null && !responseTemp.equals(""))
+            if (responseTemp != null && !responseTemp.equals("") && !responseTemp.contains("token expired")) {
                 return new JSONObject(responseTemp);
+            }else if(responseTemp.contains("token expired")){
+                Util.getToken((JSONObjectCallback) context,context);
+            }
         } catch (Exception e) {
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
                     + ", url = " + url, e.getMessage());
@@ -527,8 +534,11 @@ public class Util {
     public static String getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req,context);
-            if (responseTemp != null && !responseTemp.equals(""))
+            if (responseTemp != null && !responseTemp.equals("") && !responseTemp.contains("token expired")) {
                 return new String(responseTemp);
+            }else if(responseTemp.contains("token expired")){
+                Util.getToken((JSONObjectCallback) context,context);
+            }
         } catch (Exception e) {
 
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
@@ -924,6 +934,8 @@ public class Util {
     public static void retrieveSetting(JSONObject reportInfo,Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         try {
+//            if(reportInfo.getString("Message").equals("token expired"))
+//                Util.getToken((JSONObjectCallback) context,context);
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONObject responseData = reportInfo.getJSONObject("responseData");
                 JSONObject jsonValue = responseData.getJSONObject("jsonValue");
@@ -955,8 +967,8 @@ public class Util {
                 String viewDelay = jsonValueScan.getString("viewDelay");
                 String tempval = jsonValueScan.getString("temperatureThreshold");
                 String temperatureFormat = jsonValueScan.getString("temperatureFormat");
-                String allowlowtemperaturescanning = jsonValueScan.getString("allowlowtemperaturescanning");
-                String lowtemperatureThreshold = jsonValueScan.getString("lowtemperatureThreshold");
+                String allowlowtemperaturescanning = jsonValueScan.getString("allowLowTemperatureScanning");
+                String lowtemperatureThreshold = jsonValueScan.getString("lowTemperatureThreshold");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -997,10 +1009,14 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, message2);
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
 
+            }else{
+                Logger.toast(context,"Something went wrong please try again");
+
 
             }
         }catch (Exception e){
             Logger.error("retrieveSetting(JSONObject reportInfo)",e.getMessage());
+            Logger.toast(context,"Something went wrong please try again");
         }
 
 
@@ -1022,23 +1038,25 @@ public class Util {
 
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
-                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if(!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
                     }
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
-                    Util.writeString(sharedPreferences, GlobalParameters.ONLINE_MODE, "true");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if(!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
                     }
                     Util.getToken((JSONObjectCallback) context, context);
                 } else if (json1.getString("responseSubCode").equals("104")) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                     if(!toast.equals("guide")) {
                         Logger.toast(context, "Device Not Register");
                     }
                 } else if (json1.getString("responseSubCode").equals("105")) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                     if(!toast.equals("guide")) {
                         Logger.toast(context, "Device Inactive");
                     }
@@ -1059,23 +1077,6 @@ public class Util {
         }catch (Exception e){
             Logger.error("getTokenActivate(String reportInfo,String status,Context context)",e.getMessage());
         }
-    }
-
-    public static void beepSound(Context context,String tempVal) {
-        try {
-            BeepManager failed, thankyou;
-            if (tempVal.equals("high")) {
-                failed = new BeepManager((Activity) context, R.raw.failed_last);
-                failed.playBeepSoundAndVibrate();
-            } else {
-                thankyou = new BeepManager((Activity) context, R.raw.thankyou_last);
-                thankyou.playBeepSoundAndVibrate();
-            }
-        }catch (Exception e){
-            Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
-        }
-
-
     }
 
     public static void soundPool(Context context,String tempVal, SoundPool soundPool) {

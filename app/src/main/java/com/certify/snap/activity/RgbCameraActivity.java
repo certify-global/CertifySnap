@@ -245,12 +245,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         FaceServer.getInstance().init(this);//init FaceServer;
         initView();
 
-        mBeepManager = new BeepManager(this, R.raw.welcome);
-        manormalBeep = new BeepManager(this,R.raw.anormaly);
-        malertBeep = new BeepManager(this, R.raw.alert);
-        mBeepManager1 = new BeepManager(this, R.raw.beep);
-        mBeepManager2 = new BeepManager(this, R.raw.error);
-        mBeepSuccess = new BeepManager(this, R.raw.success);
         processHandler = new ProcessHandler(this);
 
         mNfcAdapter = M1CardUtils.isNfcAble(this);

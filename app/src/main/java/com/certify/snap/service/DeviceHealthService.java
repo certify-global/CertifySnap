@@ -24,7 +24,7 @@ import static android.os.SystemClock.elapsedRealtime;
 
 public class DeviceHealthService extends Service implements JSONObjectCallback {
    protected static final String LOG = "BackgroundSyncService - ";
-   private final static int BACKGROUND_INTERVAL_10_MINUTES = 1;
+   private final static int BACKGROUND_INTERVAL_10_MINUTES = 5;
 
 
    @Override

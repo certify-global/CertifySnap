@@ -244,5 +244,7 @@
     <string name="invalid_pwd">Invalid Password</string>
     <string name="allow_low">Allow low temperature scanning</string>
     <string name="save_success">Settings Saved</string>
+    <string name="error_message">Something went wrong  please try again!</string>
+    <string name="offline_msg">Offline mode</string>
 
 </resources>

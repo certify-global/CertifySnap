@@ -48,8 +48,6 @@ public class NFCCardActivity extends AppCompatActivity {
 
         Application.getInstance().addActivity(this);
 
-        mBeepManager = new BeepManager(this, R.raw.beep);
-        mBeepManager1 = new BeepManager(this, R.raw.error);
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
