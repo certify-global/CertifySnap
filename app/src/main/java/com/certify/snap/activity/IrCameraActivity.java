@@ -659,6 +659,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         FaceServer.getInstance().unInit();
         stopAnimation();
         cancelImageTimer();
+//        irBitmap =null;
+//        rgbBitmap = null;
         super.onDestroy();
     }
 
@@ -1412,7 +1414,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void ShowLauncherView() {
         try {
-            startActivity(new Intent(IrCameraActivity.this,IrCameraActivity.class));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -1431,6 +1432,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         @Override
                         public void run() {
                            // clearLeftFace(null);
+                            isTemperatureIdentified = false;
                             finish();
                             startActivity(new Intent(IrCameraActivity.this,IrCameraActivity.class));
                             Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
