@@ -127,7 +127,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private RelativeLayout relativeLayout;
     private long exitTime = 0;
     private int pressTimes = 0;
-    private FaceEngine faceEngine ;
+    private FaceEngine faceEngine;
 
     private static final int GUEST_QR_CODE = 333;
     public static final int HIDE_VERIFY_UI = 334;
@@ -208,7 +208,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     ImageView img_guest, temperature_image, img_logo;
     TextView txt_guest;
     String message;
-//    private BeepManager mBeepManager, manormalBeep, mBeepManager1, mBeepManager2, malertBeep, mBeepSuccess;
+    //    private BeepManager mBeepManager, manormalBeep, mBeepManager1, mBeepManager2, malertBeep, mBeepSuccess;
     private WallpaperBroadcastReceiver wallpaperBroadcastReceiver;
     public static final String WALLPAPER_CHANGE = "com.telpo.telpo_face_system_wallpaper";
 
@@ -546,24 +546,24 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             delayMilli = Long.parseLong(longVal);
         }
         Log.v(TAG, "onResume delayMilli:" + delayMilli);
-        if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
-            if (ConfirmationBoolean) {
-                isTemperatureIdentified = true;
-                relative_main.setVisibility(View.VISIBLE);
-                logo.setVisibility(View.VISIBLE);
-                rl_header.setVisibility(View.VISIBLE);
-                tv_message.setVisibility(View.GONE);
-                temperature_image.setVisibility(View.GONE);
-            }
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    ConfirmationBoolean = false;
-                    clearLeftFace(null);
-                    isTemperatureIdentified = false;
-                }
-            }, 3000);
+        //  if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
+        if (ConfirmationBoolean) {
+            isTemperatureIdentified = true;
+            relative_main.setVisibility(View.VISIBLE);
+            logo.setVisibility(View.VISIBLE);
+            rl_header.setVisibility(View.VISIBLE);
+            tv_message.setVisibility(View.GONE);
+            temperature_image.setVisibility(View.GONE);
         }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ConfirmationBoolean = false;
+                clearLeftFace(null);
+                isTemperatureIdentified = false;
+            }
+        }, 3000);
+        //}
 
 
         if (mNfcAdapter != null) {
@@ -952,37 +952,41 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 
     private synchronized void processPreviewData(byte[] rgbData) {
-        if (rgbData != null && irData != null) {
-            final byte[] cloneNv21Rgb = rgbData.clone();
-            List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
-            clearLeftFace(facePreviewInfoList);
-            if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
-                for (int i = 0; i < facePreviewInfoList.size(); i++) {
-                    Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
-                    if (GlobalParameters.livenessDetect && (status == null || status != RequestFeatureStatus.SUCCEED)) {
-                        Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
-                        if (liveness == null
-                                || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
-                            livenessMap.put(facePreviewInfoList.get(i).getTrackId(), RequestLivenessStatus.ANALYZING);
-                            // IR
-                            FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
-                            faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
-                            faceHelperIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
-                                    FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId(), LivenessType.IR);
+        try {
+            if (rgbData != null && irData != null) {
+                final byte[] cloneNv21Rgb = rgbData.clone();
+                List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
+                clearLeftFace(facePreviewInfoList);
+                if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
+                    for (int i = 0; i < facePreviewInfoList.size(); i++) {
+                        Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
+                        if (GlobalParameters.livenessDetect && (status == null || status != RequestFeatureStatus.SUCCEED)) {
+                            Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
+                            if (liveness == null
+                                    || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
+                                livenessMap.put(facePreviewInfoList.get(i).getTrackId(), RequestLivenessStatus.ANALYZING);
+                                // IR
+                                FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
+                                faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
+                                faceHelperIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
+                                        FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId(), LivenessType.IR);
+                            }
+                        }
+
+
+                        if (status == null
+                                || status == RequestFeatureStatus.TO_RETRY) {
+                            requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
+                            faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
+                                    previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
+                                    facePreviewInfoList.get(i).getTrackId());
                         }
                     }
-
-
-                    if (status == null
-                            || status == RequestFeatureStatus.TO_RETRY) {
-                        requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
-                        faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
-                                previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
-                                facePreviewInfoList.get(i).getTrackId());
-                    }
                 }
+                irData = null;
             }
-            irData = null;
+        } catch (Exception e) {
+            Logger.error(TAG + "processPreviewData", e.getMessage());
         }
 
     }
@@ -1414,21 +1418,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void ShowLauncherView() {
         try {
             isTemperatureIdentified = true;
-            sendMessageToStopAnimation(HIDE_VERIFY_UI);
-            requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
-            tv_message.setVisibility(View.GONE);
-            tvErrorMessage.setVisibility(View.GONE);
-            relative_main.setVisibility(View.VISIBLE);
-            logo.setVisibility(View.VISIBLE);
-            rl_header.setVisibility(View.VISIBLE);
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    clearLeftFace(null);
-                    isTemperatureIdentified = false;
-                }
-            }, delayMilli * 1000);
+            ConfirmationBoolean = true;
+            finish();
+            startActivity(new Intent(IrCameraActivity.this, IrCameraActivity.class));
+//            sendMessageToStopAnimation(HIDE_VERIFY_UI);
+//            requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
+//            tv_message.setVisibility(View.GONE);
+//            tvErrorMessage.setVisibility(View.GONE);
+//            relative_main.setVisibility(View.VISIBLE);
+//            logo.setVisibility(View.VISIBLE);
+//            rl_header.setVisibility(View.VISIBLE);
+//
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    //clearLeftFace(null);
+//                    //isTemperatureIdentified = false;
+//
+//
+//                }
+//            }, delayMilli * 1000);
         } catch (Exception e) {
             Logger.error(TAG, e.getMessage());
         }
@@ -1504,14 +1513,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
-            processPreviewData(nv21);
-            if (takePicRgb) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
-                    }
-                });
+            try {
+                processPreviewData(nv21);
+                if (takePicRgb) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                Logger.error(TAG + " onPreview", e.getMessage());
             }
         }
 
@@ -1533,6 +1546,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.debug(TAG, "onCameraConfigurationChanged: " + cameraID + "  " + displayOrientation);
         }
     }
+
     private void tempMessageUi(float temperatureInput) {
         try {
             tvErrorMessage.setVisibility(View.GONE);
@@ -1620,14 +1634,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
                                 if (temperaturePreference.equals("F")) {
                                     lowTempValue = Util.FahrenheitToCelcius(tmpr);
-                                }else{
-                                    lowTempValue=lowThresholdTemperature;
+                                } else {
+                                    lowTempValue = lowThresholdTemperature;
                                 }
-                                Log.d("low temp",""+lowTempValue  +"tempcelcius"+tmpr+""+lowTemperature);
+                                Log.d("low temp", "" + lowTempValue + "tempcelcius" + tmpr + "" + lowTemperature);
 //
-                                if(lowTempValue > lowThresholdTemperature ){
+                                if (lowTempValue > lowThresholdTemperature) {
                                     tempMessageUi(tmpr);//TODO: add this method
-                                }else{
+                                } else {
                                     tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
                                 }
@@ -1803,10 +1817,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
                 if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
-                    if(aboveThreshold){
-                        Util.soundPool(IrCameraActivity.this,"high",soundPool);
-                    }else{
-                        Util.soundPool(IrCameraActivity.this,"normal",soundPool);
+                    if (aboveThreshold) {
+                        Util.soundPool(IrCameraActivity.this, "high", soundPool);
+                    } else {
+                        Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
                 }
                 if (lanchTimer != null)
