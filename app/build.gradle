@@ -5,7 +5,6 @@ import com.android.build.OutputFile
 ext {
     git = gitVersion()
     gitSplit = git.tokenize('.')
-    println gitSplit
     gitVersionCode = gitSplit.get(2).tokenize('-').get(0).toInteger()
     gitVersionName = "${gitSplit.get(0)}.${gitSplit.get(1)}"
 }
@@ -52,7 +51,6 @@ android {
         SnapEnt {
             dimension = 'version'
             applicationIdSuffix ".ent"
-            baseFileName += "-ent"
             signingConfig signingConfigs.SnapEnt
         }
     }
@@ -67,7 +65,10 @@ android {
 android.applicationVariants.all{ variant ->
 def buildType = variant.buildType.buildType.name
     variant.outputs.all{output ->
-        output.outputFileName = "$baseFileName-${buildType}-${output.apkData.versionName}.${output.versionCode}.apk"
+
+        def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
+        println "$buildType $output.apkData.fullName $suffix"
+        output.outputFileName = "$baseFileName$suffix-${buildType}-${output.apkData.versionName}.${output.versionCode}.apk"
     }
 }
 dependencies {
