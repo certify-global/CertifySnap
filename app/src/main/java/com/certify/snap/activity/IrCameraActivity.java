@@ -121,7 +121,7 @@ import com.certify.snap.R;
 public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener {
 
     private static final String TAG = "IrCameraActivity";
-    ImageView logo, loaddialog, scan, outerCircle, innerCircle, exit;
+    ImageView logo, scan, outerCircle, innerCircle, exit;
     private ObjectAnimator outerCircleAnimator, innerCircleAnimator;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
@@ -234,7 +234,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage;
     private SoundPool soundPool;
-    private FaceEngineHelper faceEngineHelper = new FaceEngineHelper();
+    private FaceEngineHelper faceEngineHelper ;
 
     private NfcAdapter mNfcAdapter;
     private Tag mTag;
@@ -246,7 +246,52 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private AlertDialog nfcDialog;
     Typeface rubiklight;
 
+private void intanseStart()
+{
+    try{
+        faceEngineHelper = new FaceEngineHelper();
+    }catch (Exception e){
+        Logger.error(TAG,"intanseStart -> "+e.getMessage());
+    }
+}
+    private void intanseSotp()
+    {
+        try{
+            faceEngineHelper = null;
+            irData = null;
+            rubiklight =null;
+            temperature_image = null;
+            rl_header = null;
+            temperatureBitmap = null;
+            img_guest =null;
+            logo = null;
+            nfcDialog = null;
+            soundPool = null;
+            tvErrorMessage= null;
+            tv_thermal= null;
+            tv_thermal_subtitle = null;
 
+           // relative_main = null;
+            relativeLayout = null;
+            tv_message = null;
+            tv_display_time= null;
+            outerCircle= null;
+            img_logo = null;
+            scan =null;
+            exit= null;
+            innerCircle = null;
+            scan =null;
+
+            previewViewIr = null;
+            previewViewRgb =null;
+            exit= null;
+            irBitmap =null;
+            rgbBitmap = null;
+
+        }catch (Exception e){
+            Logger.error(TAG,"intanseStart -> "+e.getMessage());
+        }
+    }
     class WallpaperBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -266,6 +311,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ir);
+        intanseStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
@@ -486,6 +532,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if(tv_display_time !=null)//todo null value
                         tv_display_time.setText(str);
                     }
                 });
@@ -611,6 +658,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             soundPool.release();
             soundPool = null;
         }
+        Logger.debug(LOG,"onDestroy" +" onPause");
         super.onPause();
     }
 
@@ -659,8 +707,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         FaceServer.getInstance().unInit();
         stopAnimation();
         cancelImageTimer();
-//        irBitmap =null;
-//        rgbBitmap = null;
+        intanseSotp();
+        temperatureBitmap =null;
+        Logger.debug(LOG,"onDestroy");
         super.onDestroy();
     }
 
