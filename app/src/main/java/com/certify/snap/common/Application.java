@@ -89,7 +89,7 @@ public class Application extends android.app.Application {
 
     // Activity
     public void addActivity(Activity activity) {
-        activityList.add(activity);
+//        activityList.add(activity);
     }
 
     // Activity finish

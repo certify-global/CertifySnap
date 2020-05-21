@@ -259,6 +259,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG, "init onCreate "+this.hashCode());
         super.onCreate(savedInstanceState);
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -578,7 +579,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 cameraHelperIr.start();
             }
         } catch (RuntimeException e) {
-            Util.error("Onresume", e.getMessage());
+            Util.error("init Onresume", e.getMessage());
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
 
@@ -595,9 +596,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
 
     }
-
+private void onPauseCleanup(){
+    irData = null;
+}
     @Override
     protected void onPause() {
+        Log.v(TAG, "init onPause:"+this.hashCode());
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
@@ -611,11 +615,57 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             soundPool.release();
             soundPool = null;
         }
+        onPauseCleanup();
         super.onPause();
     }
+private void cleanup(){
+        try{
+            irData = null;
+            img_logo = null;//TODO CLEAR DRAWING
+            temperatureBitmap = null;
+            irBitmap = null;
+            rgbBitmap = null;
+            sharedPreferences = null;
+            relative_main = null;
+            rl_header = null;
+            relativeLayout = null;
+            tv_message = null;
+            tvErrorMessage = null;
+            tv_display_time = null;
+            tv_thermal = null;
+            tv_thermal_subtitle = null;
+            outerCircle = null;
+            temperature_image = null;
+            if(faceEngineHelper!=null){
+                faceEngineHelper.unInitEngine();
+                faceEngineHelper = null;
+            }
+            scan = null;
+            exit = null;
+            innerCircle = null;
+            logo = null;
+            previewViewIr = null;
+            previewViewRgb = null;
+            imageTimer =null;//cancel?
+            tTimer = null;
+            livenessMap = null;
+//            requestFeatureStatusMap = null;
+            previewSize = null;
+            previewSizeIr = null;
+            adapter = null;
+            drawHelperIr = null;
+            drawHelperRgb = null;
+            lanchTimer = null;
+            rubiklight = null;
+            delayFaceTaskCompositeDisposable = null;
 
+        }catch(Exception ex){
+            ex.printStackTrace();//TODO: log
+        }
+}
     @Override
     protected void onDestroy() {
+        Log.v(TAG, "init onDestroy "+this.hashCode());
         if (mSwipeCardThread != null) {
             mSwipeCardThread.interrupt();
             mSwipeCardThread = null;
@@ -661,6 +711,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelImageTimer();
 //        irBitmap =null;
 //        rgbBitmap = null;
+        cleanup();
         super.onDestroy();
     }
 
