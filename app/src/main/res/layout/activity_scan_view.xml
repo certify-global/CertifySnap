@@ -264,7 +264,7 @@
                 android:layout_marginRight="20dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/temperature_threshold"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
 
         </android.support.design.widget.TextInputLayout>
 
