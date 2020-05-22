@@ -107,7 +107,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
-        if (Util.isConnectingToInternet(this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+        boolean onlineMode = true;
+        try{
+            onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true);
+        }catch(Exception ex){
+            Logger.debug(TAG, ex.getMessage());
+        }
+        if (Util.isConnectingToInternet(this) && onlineMode) {
             Util.activateApplication(this, this);
         }
 
