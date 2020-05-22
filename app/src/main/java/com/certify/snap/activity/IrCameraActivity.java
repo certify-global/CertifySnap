@@ -1452,6 +1452,7 @@ private void instanceStart()
     }
 
     public void ShowLauncherView() {
+        if(isDestroyed()|| tv_message == null) return;
         try {
             runOnUiThread(new Runnable() {
                 @Override
