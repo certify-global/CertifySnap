@@ -1647,6 +1647,7 @@ private void instanceStart()
         @Override
         public void onTemperatureFail(final String e) throws RemoteException {
             Log.e(TAG, String.format("onTemperatureFail(String) countTempError: %d, error: %s ", countTempError, e));
+            if(isDestroyed()) return;
             if (e != null) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1682,7 +1683,7 @@ private void instanceStart()
 //
                                 if (lowTempValue > lowThresholdTemperature && !isTemperatureIdentified) {
                                     tempMessageUi(tmpr);//TODO: add this method
-                                } else {
+                                } else if(tvErrorMessage != null){
                                     tvErrorMessage.setVisibility(tempServiceClose && isTemperatureIdentified ? View.GONE : View.VISIBLE);
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
                                 }
