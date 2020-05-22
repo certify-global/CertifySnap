@@ -633,6 +633,7 @@ private void instanceStart()
 
     @Override
     protected void onPause() {
+        super.onPause();
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
@@ -647,11 +648,12 @@ private void instanceStart()
             soundPool = null;
         }
         Logger.debug(LOG,"onDestroy" +" onPause");
-        super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+        Logger.debug(LOG,"onDestroy");
         if (mSwipeCardThread != null) {
             mSwipeCardThread.interrupt();
             mSwipeCardThread = null;
@@ -697,8 +699,6 @@ private void instanceStart()
         cancelImageTimer();
         instanceStop();
         temperatureBitmap =null;
-        Logger.debug(LOG,"onDestroy");
-        super.onDestroy();
     }
 
     long time1, time2;
