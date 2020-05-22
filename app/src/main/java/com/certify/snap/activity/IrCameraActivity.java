@@ -222,7 +222,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage;
     private SoundPool soundPool;
-    private FaceEngineHelper faceEngineHelper ;
+    private FaceEngineHelper faceEngineHelper;
 
     private NfcAdapter mNfcAdapter;
     private Tag mTag;
@@ -234,52 +234,52 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private AlertDialog nfcDialog;
     Typeface rubiklight;
 
-private void instanceStart()
-{
-    try{
-        faceEngineHelper = new FaceEngineHelper();
-    }catch (Exception e){
-        Logger.error(TAG,"intanseStart -> "+e.getMessage());
+    private void instanceStart() {
+        try {
+            faceEngineHelper = new FaceEngineHelper();
+        } catch (Exception e) {
+            Logger.error(TAG, "intanseStart -> " + e.getMessage());
+        }
     }
-}
-    private void instanceStop()
-    {
-        try{
+
+    private void instanceStop() {
+        try {
             faceEngineHelper = null;
             irData = null;
-            rubiklight =null;
+            rubiklight = null;
             temperature_image = null;
             rl_header = null;
             temperatureBitmap = null;
-            img_guest =null;
+            img_guest = null;
             logo = null;
             nfcDialog = null;
             soundPool = null;
-            tvErrorMessage= null;
-            tv_thermal= null;
+            tvErrorMessage = null;
+            tv_thermal = null;
             tv_thermal_subtitle = null;
 
-           // relative_main = null;
+            // relative_main = null;
             relativeLayout = null;
             tv_message = null;
-            tv_display_time= null;
-            outerCircle= null;
+            tv_display_time = null;
+            outerCircle = null;
             img_logo = null;
-            scan =null;
-            exit= null;
+            scan = null;
+            exit = null;
             innerCircle = null;
-            scan =null;
+            scan = null;
 
             previewViewIr = null;
-            previewViewRgb =null;
-            exit= null;
-            irBitmap =null;
+            previewViewRgb = null;
+            exit = null;
+            irBitmap = null;
             rgbBitmap = null;
 
-        }catch (Exception e){
-            Logger.error(TAG,"intanseStart -> "+e.getMessage());
+        } catch (Exception e) {
+            Logger.error(TAG, "intanseStart -> " + e.getMessage());
         }
     }
+
     class WallpaperBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -520,8 +520,8 @@ private void instanceStart()
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if(tv_display_time !=null)//todo null value
-                        tv_display_time.setText(str);
+                        if (tv_display_time != null)//todo null value
+                            tv_display_time.setText(str);
                     }
                 });
             }
@@ -647,13 +647,13 @@ private void instanceStart()
             soundPool.release();
             soundPool = null;
         }
-        Logger.debug(LOG,"onDestroy" +" onPause");
+        Logger.debug(LOG, "onDestroy" + " onPause");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Logger.debug(LOG,"onDestroy");
+        Logger.debug(LOG, "onDestroy");
         if (mSwipeCardThread != null) {
             mSwipeCardThread.interrupt();
             mSwipeCardThread = null;
@@ -678,8 +678,8 @@ private void instanceStart()
             cameraHelperIr.release();
             cameraHelperIr = null;
         }
-
-        faceEngineHelper.unInitEngine();
+        if (faceEngineHelper != null)
+            faceEngineHelper.unInitEngine();
 
         if (getFeatureDelayedDisposables != null) {
             getFeatureDelayedDisposables.clear();
@@ -698,7 +698,7 @@ private void instanceStart()
         stopAnimation();
         cancelImageTimer();
         instanceStop();
-        temperatureBitmap =null;
+        temperatureBitmap = null;
     }
 
     long time1, time2;
@@ -802,7 +802,7 @@ private void instanceStart()
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 Logger.debug(TAG, "initRgbCamera.faceListener.onFaceFeatureInfoGet");
-                if((that != null && that.isDestroyed()) ) return;
+                if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
                     countTempError = 0;
                     Logger.debug(TAG, "onFaceFeatureInfoGet: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
@@ -822,7 +822,7 @@ private void instanceStart()
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(rl_header == null) return;//TODO: post destroy calls
+                                    if (rl_header == null) return;//TODO: post destroy calls
                                     changeVerifyBackground(R.color.transparency, true);
                                     relative_main.setVisibility(View.GONE);
                                     rl_header.setVisibility(View.GONE);
@@ -838,6 +838,7 @@ private void instanceStart()
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    if (that != null && that.isDestroyed()) return;
                                                     isSearch = true;
                                                     Logger.debug(TAG + "runTemperature---", "isIdentified=" + isTemperatureIdentified);
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
@@ -1381,7 +1382,7 @@ private void instanceStart()
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(that != null && !that.isDestroyed()){
+                if (that != null && !that.isDestroyed()) {
                     Util.enableLedPower(1);
                 }
             }
@@ -1455,7 +1456,7 @@ private void instanceStart()
     }
 
     public void ShowLauncherView() {
-        if(isDestroyed()|| tv_message == null) return;
+        if (isDestroyed() || tv_message == null) return;
         try {
             runOnUiThread(new Runnable() {
                 @Override
@@ -1474,11 +1475,11 @@ private void instanceStart()
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                           // clearLeftFace(null);
-                            if(that != null && !that.isDestroyed()){
+                            // clearLeftFace(null);
+                            if (that != null && !that.isDestroyed()) {
                                 isTemperatureIdentified = false;
                                 finish();
-                                startActivity(new Intent(that,IrCameraActivity.class));
+                                startActivity(new Intent(that, IrCameraActivity.class));
                                 Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
                             }
                         }
@@ -1650,7 +1651,7 @@ private void instanceStart()
         @Override
         public void onTemperatureFail(final String e) throws RemoteException {
             Log.e(TAG, String.format("onTemperatureFail(String) countTempError: %d, error: %s ", countTempError, e));
-            if(isDestroyed()) return;
+            if (isDestroyed()) return;
             if (e != null) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1686,7 +1687,7 @@ private void instanceStart()
 //
                                 if (lowTempValue > lowThresholdTemperature && !isTemperatureIdentified) {
                                     tempMessageUi(tmpr);//TODO: add this method
-                                } else if(tvErrorMessage != null){
+                                } else if (tvErrorMessage != null) {
                                     tvErrorMessage.setVisibility(tempServiceClose && isTemperatureIdentified ? View.GONE : View.VISIBLE);
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
                                 }
@@ -1835,7 +1836,7 @@ private void instanceStart()
     }
 
     private void TemperatureCallBackUISetup(final boolean aboveThreshold, final String temperature, final String tempValue, final boolean lowTemp) {
-        if(isDestroyed()) return;
+        if (isDestroyed()) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

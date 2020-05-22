@@ -442,6 +442,7 @@ public class Util {
             fis = new FileInputStream(imagefile);
         }catch(FileNotFoundException e){
             e.printStackTrace();
+            return "";//appcenter:285232885u
         }
         Bitmap bm = BitmapFactory.decodeStream(fis);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
