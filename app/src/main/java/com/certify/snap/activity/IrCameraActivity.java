@@ -802,7 +802,7 @@ private void instanceStart()
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 Logger.debug(TAG, "initRgbCamera.faceListener.onFaceFeatureInfoGet");
-                if(that != null && that.isDestroyed()) return;
+                if((that != null && that.isDestroyed()) ) return;
                 if (faceFeature != null) {
                     countTempError = 0;
                     Logger.debug(TAG, "onFaceFeatureInfoGet: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
@@ -822,6 +822,7 @@ private void instanceStart()
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    if(rl_header == null) return;//TODO: post destroy calls
                                     changeVerifyBackground(R.color.transparency, true);
                                     relative_main.setVisibility(View.GONE);
                                     rl_header.setVisibility(View.GONE);
