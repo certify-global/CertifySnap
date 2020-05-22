@@ -1080,6 +1080,7 @@ public class Util {
     }
 
     public static void soundPool(Context context,String tempVal, SoundPool soundPool) {
+        if(soundPool == null) return;
         try {
 
             if(tempVal.equals("high")) {
