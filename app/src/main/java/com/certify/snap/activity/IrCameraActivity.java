@@ -789,6 +789,7 @@ private void instanceStart()
 
 
     private void initRgbCamera() {
+        final Activity that = this;
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         final FaceListener faceListener = new FaceListener() {
@@ -801,6 +802,7 @@ private void instanceStart()
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 Logger.debug(TAG, "initRgbCamera.faceListener.onFaceFeatureInfoGet");
+                if(that != null && that.isDestroyed()) return;
                 if (faceFeature != null) {
                     countTempError = 0;
                     Logger.debug(TAG, "onFaceFeatureInfoGet: fr end = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
