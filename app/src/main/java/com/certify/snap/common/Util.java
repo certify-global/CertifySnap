@@ -589,7 +589,6 @@ public class Util {
             obj.put("deviceData", MobileDetails(context));
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", aBoolean);
-            obj.put("deviceData", MobileDetails(context));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
@@ -641,7 +640,7 @@ public class Util {
             getDeviceUUid(context);
 
             obj.put("osVersion", "Android - " + Build.VERSION.RELEASE);
-            obj.put("appVersion", String.format("%s (%s)",BuildConfig.VERSION_NAME,BuildConfig.VERSION_CODE)); //sp.getString(GlobalParameters.MobileAppVersion, "")
+            obj.put("appVersion",getVersionBuild());
             obj.put("mobileIp", Util.getLocalIpAddress());
             obj.put("mobileNumber", sp.getString(GlobalParameters.MOBILE_NUMBER, "+1"));
             obj.put("uniqueDeviceId", sp.getString(GlobalParameters.UUID, ""));
