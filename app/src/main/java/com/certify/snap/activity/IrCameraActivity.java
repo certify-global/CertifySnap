@@ -1830,6 +1830,7 @@ private void instanceStart()
     }
 
     private void TemperatureCallBackUISetup(final boolean aboveThreshold, final String temperature, final String tempValue, final boolean lowTemp) {
+        if(isDestroyed()) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
