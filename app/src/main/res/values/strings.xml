@@ -201,7 +201,7 @@
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
     <string name="endpoint">Endpoint URL</string>
-    <string name="add_cloud">Add device to CERTIFY.me Cloud</string>
+    <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Home View Settings</string>
     <string name="welcome_thermal">Welcome Text For Home View</string>
