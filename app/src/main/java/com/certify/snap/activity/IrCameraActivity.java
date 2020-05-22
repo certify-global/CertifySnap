@@ -15,16 +15,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -49,7 +46,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
@@ -57,8 +53,6 @@ import com.arcsoft.face.FaceInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
-import com.certify.callback.JSONObjectCallback;
-import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.arcface.util.camera.CameraListener;
@@ -68,7 +62,6 @@ import com.certify.snap.arcface.util.face.FaceListener;
 import com.certify.snap.arcface.util.face.LivenessType;
 import com.certify.snap.arcface.util.face.RequestFeatureStatus;
 import com.certify.snap.arcface.util.face.RequestLivenessStatus;
-import com.certify.snap.arcface.widget.ProgressDialog;
 import com.certify.snap.arcface.widget.ShowFaceInfoAdapter;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
@@ -85,7 +78,6 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.google.zxing.other.BeepManager;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.view.MyGridLayoutManager;
@@ -108,13 +100,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import com.certify.snap.R;
 
@@ -246,7 +234,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private AlertDialog nfcDialog;
     Typeface rubiklight;
 
-private void intanseStart()
+private void instanceStart()
 {
     try{
         faceEngineHelper = new FaceEngineHelper();
@@ -254,7 +242,7 @@ private void intanseStart()
         Logger.error(TAG,"intanseStart -> "+e.getMessage());
     }
 }
-    private void intanseSotp()
+    private void instanceStop()
     {
         try{
             faceEngineHelper = null;
@@ -311,7 +299,7 @@ private void intanseStart()
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ir);
-        intanseStart();
+        instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
@@ -707,7 +695,7 @@ private void intanseStart()
         FaceServer.getInstance().unInit();
         stopAnimation();
         cancelImageTimer();
-        intanseSotp();
+        instanceStop();
         temperatureBitmap =null;
         Logger.debug(LOG,"onDestroy");
         super.onDestroy();
@@ -1750,7 +1738,7 @@ private void intanseStart()
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (data.getBitmap() != null) {
+                    if (data.getBitmap() != null && temperature_image != null) {
                         temperature_image.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                         temperature_image.setImageBitmap(data.getBitmap());
 
