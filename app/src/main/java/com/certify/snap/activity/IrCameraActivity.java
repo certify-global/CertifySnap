@@ -1374,11 +1374,13 @@ private void instanceStart()
 //        temperature_image.setVisibility(View.GONE);
 //        tv_message.setText("");
 //        tv_message.setVisibility(View.GONE);
-
+        final Activity that = this;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Util.enableLedPower(1);
+                if(that != null && !that.isDestroyed()){
+                    Util.enableLedPower(1);
+                }
             }
         }, 500);
     }
@@ -1464,15 +1466,17 @@ private void instanceStart()
                     relative_main.setVisibility(View.VISIBLE);
                     logo.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
-
+                    final Activity that = IrCameraActivity.this;
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                            // clearLeftFace(null);
-                            isTemperatureIdentified = false;
-                            finish();
-                            startActivity(new Intent(IrCameraActivity.this,IrCameraActivity.class));
-                            Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
+                            if(that != null && !that.isDestroyed()){
+                                isTemperatureIdentified = false;
+                                finish();
+                                startActivity(new Intent(that,IrCameraActivity.class));
+                                Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
+                            }
                         }
                     }, delayMilli * 1000);
                 }
@@ -1738,11 +1742,9 @@ private void instanceStart()
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (data.getBitmap() != null && temperature_image != null) {
+                    if (data.getBitmap() != null && temperature_image != null) {//TODO: check view destroyed
                         temperature_image.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                         temperature_image.setImageBitmap(data.getBitmap());
-
-
                     }
                 }
             });
