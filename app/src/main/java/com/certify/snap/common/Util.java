@@ -574,6 +574,8 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit, Boolean aBoolean) {
         try {
+            if(temperature.isEmpty()||temperature.equals(""))
+                return;
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
             obj.put("certifyId", 0);
