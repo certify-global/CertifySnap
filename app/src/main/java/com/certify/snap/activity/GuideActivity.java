@@ -111,9 +111,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         try{
             onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true);
         }catch(Exception ex){
-            Logger.debug(TAG, ex.getMessage());
+            Logger.error(TAG, ex.getMessage());
         }
-        Logger.debug(TAG, String.format("onCreate onlineMode: %b",onlineMode));
+        Logger.error(TAG, String.format("onCreate onlineMode: %b",onlineMode));
         if (Util.isConnectingToInternet(this) && onlineMode) {
             Util.activateApplication(this, this);
         }
@@ -229,7 +229,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     private void start() {
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-        Logger.debug(TAG, " checkPermission -> start : sharedPreference license activated: " + activateStatus);
+        Logger.error(TAG, " checkPermission -> start : sharedPreference license activated: " + activateStatus);
         if (!activateStatus) //offline Active Engine
             new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
         else {
@@ -279,7 +279,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     @Override
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        Logger.debug(TAG, status+ "activeStatus "+activeStatus) ;
+        Logger.error(TAG, status+ "activeStatus "+activeStatus); ;
         if (activeStatus)
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
         else
