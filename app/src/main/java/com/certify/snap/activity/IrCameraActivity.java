@@ -570,7 +570,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     protected void onResume() {
-        Log.v(TAG, "onResume");
+        Logger.debug(TAG, "onResume");
         super.onResume();
 
         //Logger.debug(TAG, "" + Util.logHeap(IrCameraActivity.this));
@@ -580,7 +580,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             delayMilli = Long.parseLong(longVal);
         }
-        Log.v(TAG, "onResume delayMilli:" + delayMilli);
+        Logger.debug(TAG, "onResume");
         //   if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
         if (ConfirmationBoolean) {
             isTemperatureIdentified = true;
@@ -1718,7 +1718,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
 
                     private void RestartAppOnTooManyErrors(String error) {
-                        Log.v(TAG, "RestartAppOnTooManyErrors");
+                        Logger.debug(TAG, "onResume");
                         try {
                             // Toast.makeText(IrCameraActivity.this,""+countTempError,Toast.LENGTH_SHORT).show();
                             clearLeftFace(null);
