@@ -1562,15 +1562,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
+            if(nv21 == null) return;
             processPreviewData(nv21);
-            if (takePicRgb) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
                     }
                 });
-            }
         }
 
         @Override
