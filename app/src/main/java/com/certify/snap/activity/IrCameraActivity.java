@@ -1470,8 +1470,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             // clearLeftFace(null);
                             if (that != null && !that.isDestroyed()) {
                                 isTemperatureIdentified = false;
-                                finish();
-                                startActivity(new Intent(that, IrCameraActivity.class));
+                                recreate();
                                 Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
                             }
                         }
