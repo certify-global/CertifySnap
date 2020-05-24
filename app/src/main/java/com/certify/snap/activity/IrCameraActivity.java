@@ -819,6 +819,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                            }
 //                        }
                         if (!isTemperatureIdentified) {
+                            enableLedPower();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -1378,15 +1379,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //        temperature_image.setVisibility(View.GONE);
 //        tv_message.setText("");
 //        tv_message.setVisibility(View.GONE);
-        final Activity that = this;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (that != null && !that.isDestroyed()) {
-                    Util.enableLedPower(1);
-                }
-            }
-        }, 500);
     }
 
     private void stopAnimation() {
@@ -1478,8 +1470,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             // clearLeftFace(null);
                             if (that != null && !that.isDestroyed()) {
                                 isTemperatureIdentified = false;
-                                finish();
-                                startActivity(new Intent(that, IrCameraActivity.class));
+                                recreate();
                                 Logger.debug(TAG, "ShowLauncherView  isTemperatureIdentified :" + isTemperatureIdentified);
                             }
                         }
@@ -1914,5 +1905,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         });
 
+    }
+
+    public void enableLedPower() {
+        Util.enableLedPower(1);
     }
 }
