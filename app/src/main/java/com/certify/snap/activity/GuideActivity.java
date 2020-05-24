@@ -108,12 +108,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
         boolean onlineMode = true;
-        try{
-            onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true);
-        }catch(Exception ex){
+        try {
+            onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
+        } catch (Exception ex) {
             Logger.error(TAG, ex.getMessage());
         }
-        Logger.error(TAG, String.format("onCreate onlineMode: %b",onlineMode));
+        Logger.debug(TAG, String.format("onCreate onlineMode: %b", onlineMode));
         if (Util.isConnectingToInternet(this) && onlineMode) {
             Util.activateApplication(this, this);
         }
@@ -240,6 +240,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                     Util.switchRgbOrIrActivity(GuideActivity.this, true);
                 }
             }, 1000);
+
         }
     }
 
@@ -279,14 +280,14 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     @Override
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        Logger.error(TAG, status+ "activeStatus "+activeStatus); ;
-        if (activeStatus)
+        Logger.error(TAG, status + "activeStatus " + activeStatus);
+        if (activeStatus) {
+            Util.copyLicense(getApplicationContext());
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
-        else
-            if ("Offline".equals(status)) {
-               String activityKey =ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
-                ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
-            }   else
-             Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
+        } else if ("Offline".equals(status)) {
+            String activityKey = ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
+            ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
+        } else
+            Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
     }
 }

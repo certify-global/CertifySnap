@@ -80,6 +80,30 @@ import java.util.UUID;
 public class Util {
     private static final String LOG = "Utils";
 
+    public static void copyLicense(Context context){
+        String licenseFileName = "ArcFacePro32.dat";
+
+        File externalStorageLicense = new File(Environment.getExternalStorageDirectory(), licenseFileName);
+        File applicationLicense = new File(context.getFilesDir(), licenseFileName);
+        boolean shouldCopy = !externalStorageLicense.exists() && applicationLicense.exists();
+        Logger.debug("Util", String.format("copyLicense shouldCopy: %b, folders externalStorage: %s, application: %s",
+                externalStorageLicense.getPath(), applicationLicense.getPath()));
+
+        if(shouldCopy){
+            try(
+                    FileInputStream fin = new FileInputStream(applicationLicense);
+                    FileOutputStream fout = new FileOutputStream(externalStorageLicense);
+            ) {
+                byte[] buffer = new byte[(int) applicationLicense.length()];
+                fin.read(buffer);
+                fout.write(buffer);
+                fout.flush();
+            } catch (Exception e) {
+                Logger.error("Util", String.format("copyLicense failed: %s", e.getMessage()));
+            }
+        }
+
+    }
 
 
     public static final class permission {
