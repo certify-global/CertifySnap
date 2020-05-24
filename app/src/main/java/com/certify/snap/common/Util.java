@@ -87,7 +87,7 @@ public class Util {
         File applicationLicense = new File(context.getFilesDir(), licenseFileName);
         boolean shouldCopy = !externalStorageLicense.exists() && applicationLicense.exists();
         Logger.debug("Util", String.format("copyLicense shouldCopy: %b, folders externalStorage: %s, application: %s",
-                externalStorageLicense.getPath(), applicationLicense.getPath()));
+                shouldCopy, externalStorageLicense.getPath(), applicationLicense.getPath()));
 
         if(shouldCopy){
             try(

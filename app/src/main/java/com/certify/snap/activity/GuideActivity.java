@@ -38,6 +38,7 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.CustomProperties;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
 import com.romainpiel.titanic.library.Titanic;
@@ -94,6 +95,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 Analytics.class, Crashes.class);
         AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
                 Analytics.class, Crashes.class);
+        AppCenter.setUserId(Util.getSerialNumber());
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
@@ -113,6 +115,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception ex) {
             Logger.error(TAG, ex.getMessage());
         }
+        AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, String.format("onCreate onlineMode: %b", onlineMode));
         if (Util.isConnectingToInternet(this) && onlineMode) {
             Util.activateApplication(this, this);
