@@ -34,4 +34,14 @@ public class Logger {
         Log.w(tag, message);
         Analytics.trackEvent(message, properties);
     }
+
+    public static void debug(String classname, String methodName, String message) {
+        Log.d(classname, methodName + "-" + message);
+        Analytics.trackEvent(classname+" "+methodName+" "+message, properties);
+    }
+
+    public static void error(String classname, String methodName, String message) {
+        Log.e(classname, methodName + "-" + message);
+        Analytics.trackEvent(classname+" "+methodName+" "+message, properties);
+    }
 }

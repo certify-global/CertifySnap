@@ -66,7 +66,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback, ActiveEngineCallback {
 
-    public static final String TAG = "GuideActivity";
+    public static final String TAG = GuideActivity.class.getSimpleName();
     public static Activity mActivity;
     private ImageView imgPic;
     private Animation myAnimation;
@@ -113,10 +113,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         try {
             onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
         } catch (Exception ex) {
-            Logger.error(TAG, ex.getMessage());
+            Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
         }
         AppCenter.setEnabled(onlineMode);
-        Logger.debug(TAG, String.format("onCreate onlineMode: %b", onlineMode));
+        Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
+
         if (Util.isConnectingToInternet(this) && onlineMode) {
             Util.activateApplication(this, this);
         }
@@ -232,7 +233,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     private void start() {
         boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-        Logger.error(TAG, " checkPermission -> start : sharedPreference license activated: " + activateStatus);
+        Logger.debug(TAG, "start()", "Check permission start, SharedPref License activate with status:" +activateStatus);
         if (!activateStatus) //offline Active Engine
             new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
         else {
@@ -262,7 +263,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Util.retrieveSetting(reportInfo, GuideActivity.this);
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" +e.getMessage());
         }
 
     }
@@ -276,14 +277,14 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" +e.getMessage());
         }
 
     }
 
     @Override
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        Logger.error(TAG, status + "activeStatus " + activeStatus);
+        Logger.debug(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
         if (activeStatus) {
             Util.copyLicense(getApplicationContext());
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
