@@ -613,19 +613,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
-
-        try {
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))
-                if (Util.isConnectingToInternet(this)) {
-                    startService(new Intent(IrCameraActivity.this, DeviceHealthService.class));
-                    Application.StartService(this);
-                }
-            // finish();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(TAG, "onResume()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
-        }
-
     }
 
     @Override

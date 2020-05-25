@@ -48,6 +48,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.R;
+import com.certify.snap.service.DeviceHealthService;
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
@@ -116,6 +117,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                        initHealthCheckService();
                     } else {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                     }
@@ -443,6 +445,23 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+        }
+    }
+
+    /**
+     * Method that initiates the HealthCheck service
+     * TODO1: Optimize if there are request for multiple request on toggling the setting frequently
+     */
+    public void initHealthCheckService() {
+        try {
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))
+                if (Util.isConnectingToInternet(this)) {
+                    startService(new Intent(this, DeviceHealthService.class));
+                    Application.StartService(this);
+                }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.error("SettingActivity", "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
 }
