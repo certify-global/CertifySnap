@@ -110,6 +110,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="2dp"
                 android:src="@mipmap/enter"
+                android:checked="true"
                android:theme="@style/SwitchTheme"/>
 
         </RelativeLayout>

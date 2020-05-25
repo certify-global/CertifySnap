@@ -126,7 +126,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name = ".service.DeviceHealthService"/>
+        <service android:name = ".service.DeviceHealthService" android:stopWithTask="false" />
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
     </application>
 

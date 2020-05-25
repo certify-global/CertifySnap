@@ -37,6 +37,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.service.DeviceHealthService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.CustomProperties;
@@ -285,7 +286,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
-
+            startHealthCheckService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" +e.getMessage());
         }
@@ -303,5 +304,20 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
         } else
             Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Method that initiates the HealthCheck service if not started
+     */
+    private void startHealthCheckService() {
+        try {
+            if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
+                startService(new Intent(this, DeviceHealthService.class));
+                Application.StartService(this);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+        }
     }
 }

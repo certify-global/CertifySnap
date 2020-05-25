@@ -1053,12 +1053,12 @@ public class Util {
                     }
                     Util.getToken((JSONObjectCallback) context, context);
                 } else if (json1.getString("responseSubCode").equals("104")) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if(!toast.equals("guide")) {
                         Logger.toast(context, "Device Not Register");
                     }
                 } else if (json1.getString("responseSubCode").equals("105")) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if(!toast.equals("guide")) {
                         Logger.toast(context, "Device Inactive");
                     }
@@ -1072,9 +1072,6 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.getSettings((SettingCallback) context,context);
-                context.startService(new Intent(context, DeviceHealthService.class));
-                Application.StartService(context);
-
             }
         }catch (Exception e){
             Logger.error("getTokenActivate(String reportInfo,String status,Context context)",e.getMessage());

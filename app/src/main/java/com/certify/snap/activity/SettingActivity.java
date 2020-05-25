@@ -117,14 +117,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                        initHealthCheckService();
+                        Util.activateApplication(SettingActivity.this, SettingActivity.this);
                     } else {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        stopHealthCheckService();
                     }
                 }
             });
 
         initView();
+        initOnlineModeSetting();
         Application.getInstance().addActivity(this);
 
         sharedPreferences = Util.getSharedPreferences(this);
@@ -135,7 +137,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         img_sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
                     Util.getSettings(SettingActivity.this, SettingActivity.this);
                     Snackbar snackbar = Snackbar
                             .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
@@ -149,7 +151,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
 
                 }
             });
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
             } else {
                 switch_activate.setChecked(false);
@@ -217,7 +219,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
                 }else{
                     Snackbar snackbar = Snackbar
@@ -425,6 +427,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 return;
             }
             Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
+            startHealthCheckService();
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }
@@ -448,20 +451,31 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         }
     }
 
+    private void initOnlineModeSetting() {
+        switch_activate.setChecked(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true));
+    }
+
     /**
-     * Method that initiates the HealthCheck service
-     * TODO1: Optimize if there are request for multiple request on toggling the setting frequently
+     * Method that initiates the HealthCheck service if not started
      */
-    public void initHealthCheckService() {
+    private void startHealthCheckService() {
         try {
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))
-                if (Util.isConnectingToInternet(this)) {
-                    startService(new Intent(this, DeviceHealthService.class));
-                    Application.StartService(this);
-                }
+            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this)) {
+                startService(new Intent(this, DeviceHealthService.class));
+                Application.StartService(this);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error("SettingActivity", "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
+    }
+
+    /**
+     * Method that stop the HealthCheck service
+     * //TODO1: Create BaseActivity for the common code
+     */
+    private void stopHealthCheckService() {
+        Intent intent = new Intent(this, DeviceHealthService.class);
+        stopService(intent);
     }
 }

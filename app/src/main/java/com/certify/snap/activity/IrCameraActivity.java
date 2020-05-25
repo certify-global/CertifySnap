@@ -476,6 +476,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 
                             finishAffinity();
+                            stopHealthCheckService();
 
                         }
                     })
@@ -1872,7 +1873,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                    else
 //                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
 //                                }
-                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))) {
+                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))) {
                     boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
                     if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold)
                         Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, aboveThreshold);
@@ -1888,5 +1889,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void enableLedPower() {
         Util.enableLedPower(1);
+    }
+
+    /**
+     * Method that stop the HealthCheck service
+     */
+    private void stopHealthCheckService() {
+        Intent intent = new Intent(this, DeviceHealthService.class);
+        stopService(intent);
     }
 }
