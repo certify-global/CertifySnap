@@ -34,6 +34,7 @@ import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.google.gson.Gson;
@@ -97,7 +98,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
 
-        Util.copyLicense(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
@@ -234,10 +234,18 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-        Logger.debug(TAG, "start()", "Check permission start, SharedPref License activate with status:" +activateStatus);
-        if (!activateStatus) //offline Active Engine
-            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
+//        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
+//        Logger.debug(TAG, "start()", "Check permission start, SharedPref License activate with status:" +activateStatus);
+        if(!License.activateLicense(this)){
+            String message = getResources().getString(R.string.active_failed);
+            Logger.error(TAG, message);
+            Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+//        if (!activateStatus) //offline Active Engine
+//            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
         else {
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -288,7 +296,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
         Logger.debug(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
         if (activeStatus) {
-            Util.copyLicense(getApplicationContext());
+            License.copyLicense(getApplicationContext());
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
         } else if ("Offline".equals(status)) {
             String activityKey = ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());

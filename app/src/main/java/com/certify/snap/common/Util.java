@@ -32,20 +32,20 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.arcsoft.face.ErrorInfo;
+import com.arcsoft.face.FaceEngine;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
-import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.service.DeviceHealthService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
-import com.google.zxing.other.BeepManager;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONObject;
@@ -79,39 +79,6 @@ import java.util.UUID;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = "Utils";
-
-    public static void copyLicense(Context context){
-        String licenseFileName = "ArcFacePro32.dat";
-
-        File externalStorageLicense = new File(Environment.getExternalStorageDirectory(), licenseFileName);
-        File applicationLicense = new File(context.getFilesDir(), licenseFileName);
-        boolean shouldCopyToApplication = !externalStorageLicense.exists() && applicationLicense.exists();
-        boolean shouldCopyToExternalStorage = externalStorageLicense.exists() && !applicationLicense.exists();
-        Logger.debug("Util", String.format("copyLicense shouldCopy: %b, folders externalStorage: %s, application: %s",
-                shouldCopyToApplication, externalStorageLicense.getPath(), applicationLicense.getPath()));
-
-        if(shouldCopyToApplication){
-            copyFiles(applicationLicense, externalStorageLicense);
-        }else if(shouldCopyToExternalStorage){
-            copyFiles(externalStorageLicense, applicationLicense);
-        }
-
-    }
-    private static void copyFiles(File in, File out){
-        if(in == null || !in.exists()) return;
-        try(
-                FileInputStream fin = new FileInputStream(in);
-                FileOutputStream fout = new FileOutputStream(out);
-        ) {
-            byte[] buffer = new byte[(int) in.length()];
-            fin.read(buffer);
-            fout.write(buffer);
-            fout.flush();
-        } catch (Exception e) {
-            Logger.error("Util", String.format("copyLicense failed: %s", e.getMessage()));
-        }
-
-    }
 
 
     public static final class permission {
