@@ -85,22 +85,30 @@ public class Util {
 
         File externalStorageLicense = new File(Environment.getExternalStorageDirectory(), licenseFileName);
         File applicationLicense = new File(context.getFilesDir(), licenseFileName);
-        boolean shouldCopy = !externalStorageLicense.exists() && applicationLicense.exists();
+        boolean shouldCopyToApplication = !externalStorageLicense.exists() && applicationLicense.exists();
+        boolean shouldCopyToExternalStorage = externalStorageLicense.exists() && !applicationLicense.exists();
         Logger.debug("Util", String.format("copyLicense shouldCopy: %b, folders externalStorage: %s, application: %s",
-                shouldCopy, externalStorageLicense.getPath(), applicationLicense.getPath()));
+                shouldCopyToApplication, externalStorageLicense.getPath(), applicationLicense.getPath()));
 
-        if(shouldCopy){
-            try(
-                    FileInputStream fin = new FileInputStream(applicationLicense);
-                    FileOutputStream fout = new FileOutputStream(externalStorageLicense);
-            ) {
-                byte[] buffer = new byte[(int) applicationLicense.length()];
-                fin.read(buffer);
-                fout.write(buffer);
-                fout.flush();
-            } catch (Exception e) {
-                Logger.error("Util", String.format("copyLicense failed: %s", e.getMessage()));
-            }
+        if(shouldCopyToApplication){
+            copyFiles(applicationLicense, externalStorageLicense);
+        }else if(shouldCopyToExternalStorage){
+            copyFiles(externalStorageLicense, applicationLicense);
+        }
+
+    }
+    private static void copyFiles(File in, File out){
+        if(in == null || !in.exists()) return;
+        try(
+                FileInputStream fin = new FileInputStream(in);
+                FileOutputStream fout = new FileOutputStream(out);
+        ) {
+            byte[] buffer = new byte[(int) in.length()];
+            fin.read(buffer);
+            fout.write(buffer);
+            fout.flush();
+        } catch (Exception e) {
+            Logger.error("Util", String.format("copyLicense failed: %s", e.getMessage()));
         }
 
     }

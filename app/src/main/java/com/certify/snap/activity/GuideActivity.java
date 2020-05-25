@@ -96,6 +96,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
                 Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
+
+        Util.copyLicense(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
