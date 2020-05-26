@@ -32,6 +32,7 @@ public class GlobalParameters {
     public static final String StatusBar = "statusbar";
     public static final String NavigationBar = "navigationbar";
     public static final String RelayTime = "relaytime";
+    public static final String LogFilePath = "logfilepath";
 
     public static String Access_token = "";
     public static String channelID = "";
