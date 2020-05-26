@@ -337,22 +337,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tv_thermal.setTypeface(rubiklight);
         tv_thermal_subtitle.setTypeface(rubiklight);
 
-        final PackageManager packageManager = getPackageManager();
-        scan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClassName("com.telpo.tps550.api", "com.telpo.tps550.api.barcode.Capture");
-                try {
-                    if (intent.resolveActivityInfo(packageManager, PackageManager.MATCH_DEFAULT_ONLY) != null) {
-                        startActivityForResult(intent, GUEST_QR_CODE);
-                    } else
-                        Toast.makeText(IrCameraActivity.this, getString(R.string.toast_ocrnotinstall), Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
 //        try {
 //            db = LitePal.getDatabase();
 //        }catch (Exception e){
