@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -41,6 +42,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -54,7 +56,10 @@ import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
 import com.certify.callback.JSONObjectCallback;
+import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.callback.BarcodeSendData;
+import com.certify.snap.R;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.arcface.util.camera.CameraListener;
@@ -65,17 +70,26 @@ import com.certify.snap.arcface.util.face.LivenessType;
 import com.certify.snap.arcface.util.face.RequestFeatureStatus;
 import com.certify.snap.arcface.util.face.RequestLivenessStatus;
 import com.certify.snap.arcface.widget.ShowFaceInfoAdapter;
+import com.certify.snap.async.AsyncJSONObjectQRCode;
+import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.Constants;
+import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
+import com.certify.snap.faceserver.CompareResult;
+import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.certify.snap.qrscan.BarcodeScanningProcessor;
+import com.certify.snap.qrscan.CameraSource;
+import com.certify.snap.qrscan.CameraSourcePreview;
+import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
@@ -87,6 +101,7 @@ import com.certify.snap.view.MyGridLayoutManager;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -108,7 +123,7 @@ import io.reactivex.disposables.Disposable;
 
 import com.certify.snap.R;
 
-public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, JSONObjectCallback, RecordTemperatureCallback {
+public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener,BarcodeSendData,JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView logo, scan, outerCircle, innerCircle, exit;
@@ -235,6 +250,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private AlertDialog nfcDialog;
     Typeface rubiklight;
+    private CameraSource cameraSource = null;
+    public static CameraSourcePreview preview;
+    public static GraphicOverlay graphicOverlay;
+    private String selectedModel = BARCODE_DETECTION;
+    public static IrCameraActivity livePreviewActivity;
+    private static final int PERMISSION_REQUESTS = 1;
+    private static final String BARCODE_DETECTION = "Barcode Detection";
+    FrameLayout frameLayout;
 
     private void instanceStart() {
         try {
@@ -281,6 +304,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
         }
     }
+
+
     class WallpaperBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -345,6 +370,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //        }
 
         initView();
+        initQRCode();
+
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
         GlobalParameters.livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
 
@@ -367,6 +394,34 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
+    }
+
+    private void initQRCode() {
+        try {
+            frameLayout = findViewById(R.id.barcode_scanner);
+            preview = (CameraSourcePreview) findViewById(R.id.firePreview);
+            if (preview == null) {
+                Log.d(TAG, "Preview is null");
+
+            }
+            graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
+            if (graphicOverlay == null) {
+                Log.d(TAG, "graphicOverlay is null");
+
+            }
+            livePreviewActivity = this;
+            preview.getDrawingCache(true);
+            createCameraSource(BARCODE_DETECTION);
+
+           /* if (allPermissionsGranted()) {
+                createCameraSource(BARCODE_DETECTION);
+            } else {
+                getRuntimePermissions();
+            }*/
+        }catch (Exception e){
+            Logger.debug("initQRCode()",e.getMessage());
+        }
+
     }
 
     private void homeIcon(String path) {
@@ -557,6 +612,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onResume() {
         super.onResume();
+        startCameraSource();
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "3");
         if (longVal.equals("")) {
             delayMilli = 3;
@@ -604,6 +660,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onPause() {
         super.onPause();
+        preview.stop();
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
@@ -666,6 +723,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelImageTimer();
         instanceStop();
         temperatureBitmap = null;
+        if (cameraSource != null) {
+            cameraSource.release();
+        }
     }
 
     long time1, time2;
@@ -1912,6 +1972,154 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         } catch (Exception e) {
             Logger.debug(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+
+        }
+    }
+
+
+    private boolean allPermissionsGranted() {
+        for (String permission : getRequiredPermissions()) {
+            if (!isPermissionGranted(this, permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isPermissionGranted(Context context, String permission) {
+        if (ContextCompat.checkSelfPermission(context, permission)
+                == PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission granted: " + permission);
+            return true;
+        }
+        Log.i(TAG, "Permission NOT granted: " + permission);
+        return false;
+    }
+
+    private void getRuntimePermissions() {
+        List<String> allNeededPermissions = new ArrayList<>();
+        for (String permission : getRequiredPermissions()) {
+            if (!isPermissionGranted(this, permission)) {
+                allNeededPermissions.add(permission);
+            }else{
+                Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+
+            }
+        }
+
+        if (!allNeededPermissions.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                    this, allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
+        }
+    }
+    private String[] getRequiredPermissions() {
+        try {
+            PackageInfo info =
+                    this.getPackageManager()
+                            .getPackageInfo(this.getPackageName(), PackageManager.GET_PERMISSIONS);
+            String[] ps = info.requestedPermissions;
+            if (ps != null && ps.length > 0) {
+                return ps;
+            } else {
+                return new String[0];
+            }
+        } catch (Exception e) {
+            return new String[0];
+        }
+    }
+    private void createCameraSource(String model) {
+        // If there's no existing cameraSource, create one.
+        if (cameraSource == null) {
+            cameraSource = new CameraSource(this, graphicOverlay);
+        }
+        cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+        try {
+            switch (model) {
+                case BARCODE_DETECTION:
+                    Log.i(TAG, "Using Custom Image Classifier Processor");
+                    cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor((BarcodeSendData) this));
+                    break;
+                default:
+                    Log.e(TAG, "Unknown model: " + model);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "can not create camera source: " + model);
+        }
+    }
+
+    private void startCameraSource() {
+        if (cameraSource != null) {
+            try {
+                if (preview == null) {
+                    Log.d(TAG, "resume: Preview is null");
+                }
+                if (graphicOverlay == null) {
+                    Log.d(TAG, "resume: graphOverlay is null");
+                }
+                preview.start(cameraSource, graphicOverlay);
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to start camera source.", e);
+                cameraSource.release();
+                cameraSource = null;
+            }
+        }
+    }
+
+    @Override
+    public void onBarcodeData(String guid) {
+        try {
+
+            //   countDownTimer.start();
+            preview.stop();
+            //  preview.release();
+
+            // Utils.saveToPreferences(ScanQrActivity.this, PreferencesKeys.RabbitId, rabbitid);
+            for (int i = 0; i < guid.length(); i++) {
+                try {
+                    if (Util.isConnectingToInternet(this)) {
+                        JSONObject obj = new JSONObject();
+                        obj.put("qrCodeID", "123");
+
+                        new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                    } else {
+                        startCameraSource();
+                    }
+                } catch (Exception e) {
+                    Logger.error(LOG + "Message", e.getMessage());
+                }
+                if (i == 0) {
+                    break;
+                }
+            }
+
+
+        } catch (Exception e) {
+            Logger.error(LOG + "Message", e.getMessage());
+        }
+    }
+    @Override
+    public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+
+            if (!reportInfo.isNull("Message")) {
+                if (reportInfo.getString("Message").contains("token expired"))
+                    Util.getToken(this, this);
+
+            }else{
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    Util.getQRCode(reportInfo, status,IrCameraActivity.this,"QRCode");
+                } else {
+                    Logger.toast(this, "Something went wrong please try again");
+                }
+            }
+
+
+        } catch (Exception e) {
+            Logger.error(" onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
 
         }
     }

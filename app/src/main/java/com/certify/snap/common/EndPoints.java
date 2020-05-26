@@ -5,7 +5,7 @@ public class EndPoints {
 
     public enum Mode {Prod, Demo}
     public static final Mode deployment = Mode.Demo;
-    public static String prod_url = "https://api.certify.me";//https://api.certify.me";//
+    public static String prod_url = "https://apidev.certify.me";//https://api.certify.me";//
     public static String dev_url = "https://apidev.certify.me";
 
 
@@ -25,6 +25,7 @@ public class EndPoints {
     public static final String ActivateApplication = domainUrl + "ActivateApplication";
     public static final String DEVICEHEALTHCHECK = domainUrl + "DeviceHealthCheck";
     public static final String DEVICESETTING = domainUrl + "GetDeviceConfiguration";
+    public static final String ValidateQRCode = domainUrl + "ValidateQRCode";
 
 
 }

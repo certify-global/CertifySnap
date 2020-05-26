@@ -433,25 +433,25 @@ public class Util {
 
     }
 
-    public static String encodeImagePath(String path)
-    {
+    public static String encodeImagePath(String path) {
         File imagefile = new File(path);
         FileInputStream fis = null;
-        try{
+        try {
             fis = new FileInputStream(imagefile);
-        }catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             return "";//appcenter:285232885u
         }
         Bitmap bm = BitmapFactory.decodeStream(fis);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
         String encImage = Base64.encodeToString(b, Base64.DEFAULT);
         //Base64.de
         return encImage;
 
     }
+
     public static String encodeToBase64(Bitmap image) {
         Bitmap immage = image;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -481,12 +481,13 @@ public class Util {
 
         }
     }
+
     public static void getSettings(SettingCallback callback, Context context) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-              obj.put("deviceSN",Util.getSNCode());//Util.getSNCode()
+            obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
@@ -512,7 +513,23 @@ public class Util {
         }
         return null;
     }
+
     public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static JSONObject getJSONObjectQRCode(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
@@ -529,7 +546,7 @@ public class Util {
 
     public static JSONObject getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req,context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -567,7 +584,7 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit, Boolean aBoolean) {
         try {
-            if(temperature.isEmpty()||temperature.equals(""))
+            if (temperature.isEmpty() || temperature.equals(""))
                 return;
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
@@ -635,7 +652,7 @@ public class Util {
             getDeviceUUid(context);
 
             obj.put("osVersion", "Android - " + Build.VERSION.RELEASE);
-            obj.put("appVersion",getVersionBuild());
+            obj.put("appVersion", getVersionBuild());
             obj.put("mobileIp", Util.getLocalIpAddress());
             obj.put("mobileNumber", sp.getString(GlobalParameters.MOBILE_NUMBER, "+1"));
             obj.put("uniqueDeviceId", sp.getString(GlobalParameters.UUID, ""));
@@ -741,19 +758,21 @@ public class Util {
                     requestPermission.add(permission);
             }
             if (requestPermission.size() <= 0) return false;
-           // context.requestPermissions(requestPermission.toArray(new String[0]), 1);
+            // context.requestPermissions(requestPermission.toArray(new String[0]), 1);
         } catch (Exception e) {
             Logger.error(LOG + "PermissionRequest(android.app.Activity context, String[] permissions", e.getMessage());
         }
         return true;
     }
+
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
         Camera.Parameters parameters = camera.getParameters();
         return convertYuvByteArrayToBitmap(data, parameters);
 
     }
-        public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters){
-        if(data == null) return null;
+
+    public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
+        if (data == null) return null;
         Camera.Size size = cameraParameters.getPreviewSize();
         YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -803,6 +822,7 @@ public class Util {
         }
         return false;
     }
+
     public static long getCurrentTimeLong() {
         try {
             Calendar serverTime = new GregorianCalendar(TimeZone.getTimeZone(getCurrentTimezoneOffset()));
@@ -830,9 +850,9 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-              obj.put("lastUpdateDateTime",Util.getUTCDate());
-              obj.put("deviceSN", Util.getSNCode());
-              obj.put("deviceInfo",MobileDetails(context));
+            obj.put("lastUpdateDateTime", Util.getUTCDate());
+            obj.put("deviceSN", Util.getSNCode());
+            obj.put("deviceInfo", MobileDetails(context));
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -842,13 +862,13 @@ public class Util {
         }
     }
 
-    public static boolean activeEngineOffline(Context context){
-        boolean result=false;
-        String path=Environment.getExternalStorageDirectory() + "/active_result.dat";
-        String path1=Environment.getExternalStorageDirectory() + "/ArcFacePro32.dat";
-        String path2=context.getApplicationContext().getFilesDir() + "/ArcFacePro32.dat";
-        File file=new File(path);
-        if (file.exists()){
+    public static boolean activeEngineOffline(Context context) {
+        boolean result = false;
+        String path = Environment.getExternalStorageDirectory() + "/active_result.dat";
+        String path1 = Environment.getExternalStorageDirectory() + "/ArcFacePro32.dat";
+        String path2 = context.getApplicationContext().getFilesDir() + "/ArcFacePro32.dat";
+        File file = new File(path);
+        if (file.exists()) {
 //            int activeCode = FaceEngine.activeOffline(context,
 //                    path);
 //            if (activeCode == ErrorInfo.MOK) {
@@ -861,26 +881,27 @@ public class Util {
 //                result=false;
 //                Log.e("active_result","false  1");
 //            }
-        }else {
-            File file1=new File(path1);
-            if (file1.exists()){
-                copyFile(path1,path2);
-                File file2=new File(path2);
-                if (file2.exists()){
-                    result=true;
+        } else {
+            File file1 = new File(path1);
+            if (file1.exists()) {
+                copyFile(path1, path2);
+                File file2 = new File(path2);
+                if (file2.exists()) {
+                    result = true;
                 }
-            }else {
-                Log.e("active_result","false  no .dat file");
+            } else {
+                Log.e("active_result", "false  no .dat file");
             }
         }
 
         return result;
     }
+
     public static boolean copyFile(String filePath, String destPath) {
         File originFile = new File(filePath);
 
         if (!originFile.exists()) {
-            Log.e("yw_lisence","lisence not exist");
+            Log.e("yw_lisence", "lisence not exist");
             return false;
         }
         File destFile = new File(destPath);
@@ -915,6 +936,7 @@ public class Util {
         }
         return true;
     }
+
     public static String logHeap() {
         Double allocated = new Double(Debug.getNativeHeapAllocatedSize()) / new Double((1048576));
         Double available = new Double(Debug.getNativeHeapSize()) / 1048576.0;
@@ -927,7 +949,7 @@ public class Util {
         //Log.d("tag", "debug.memory: allocated: " + df.format(new Double(Runtime.getRuntime().totalMemory()/1048576)) + "MB of " + df.format(new Double(Runtime.getRuntime().maxMemory()/1048576))+ "MB (" + df.format(new Double(Runtime.getRuntime().freeMemory()/1048576)) +"MB free)");
     }
 
-    public static void retrieveSetting(JSONObject reportInfo,Context context) {
+    public static void retrieveSetting(JSONObject reportInfo, Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         try {
 //            if(reportInfo.getString("Message").equals("token expired"))
@@ -949,10 +971,10 @@ public class Util {
 
                 Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
                 Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
-                    Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
+                Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
-                Log.d("mastercode",deviceMasterCode);
+                Log.d("mastercode", deviceMasterCode);
 
                 //Scan View
 
@@ -992,7 +1014,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, temperatureAboveThreshold2);
-               // Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
+                // Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
 
                 //GuideMessages
                 String enableGuidMessages = jsonValueGuide.getString("enableGuideMessages");
@@ -1005,21 +1027,21 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, message2);
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
 
-            }else{
-                Logger.toast(context,"Something went wrong please try again");
+            } else {
+                Logger.toast(context, "Something went wrong please try again");
 
 
             }
-        }catch (Exception e){
-            Logger.error("retrieveSetting(JSONObject reportInfo)",e.getMessage());
-            Logger.toast(context,"Something went wrong please try again");
+        } catch (Exception e) {
+            Logger.error("retrieveSetting(JSONObject reportInfo)", e.getMessage());
+            Logger.toast(context, "Something went wrong please try again");
         }
 
 
     }
 
 
-    public static void getTokenActivate(String reportInfo,String status,Context context,String toast) {
+    public static void getTokenActivate(String reportInfo, String status, Context context, String toast) {
         try {
             JSONObject json1 = null;
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
@@ -1034,25 +1056,25 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if(!toast.equals("guide")) {
+                    if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
                     }
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if(!toast.equals("guide")) {
+                    if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
                     }
                     Util.getToken((JSONObjectCallback) context, context);
                 } else if (json1.getString("responseSubCode").equals("104")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if(!toast.equals("guide")) {
+                    if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Not Register");
                     }
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if(!toast.equals("guide")) {
+                    if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Inactive");
                     }
                 }
@@ -1064,24 +1086,36 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
-                Util.getSettings((SettingCallback) context,context);
+                Util.getSettings((SettingCallback) context, context);
             }
-        }catch (Exception e){
-            Logger.error("getTokenActivate(String reportInfo,String status,Context context)",e.getMessage());
+        } catch (Exception e) {
+            Logger.error("getTokenActivate(String reportInfo,String status,Context context)", e.getMessage());
         }
     }
 
-    public static void soundPool(Context context,String tempVal, SoundPool soundPool) {
-        if(soundPool == null) return;
+    public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            String snapID = reportInfo.getJSONObject("responseData").getString("snapID");
+            Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, snapID);
+
+
+        } catch (Exception e) {
+            Logger.error("getQRCode(JSONObject reportInfo, String status, Context context, String toast) ", e.getMessage());
+        }
+    }
+
+    public static void soundPool(Context context, String tempVal, SoundPool soundPool) {
+        if (soundPool == null) return;
         try {
 
-            if(tempVal.equals("high")) {
+            if (tempVal.equals("high")) {
                 soundPool.load(context, R.raw.failed_last, 1);
-            }else {
+            } else {
                 soundPool.load(context, R.raw.thankyou_last, 1);
             }
             soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                 int lastStreamId = -1;
+                int lastStreamId = -1;
 
                 @Override
                 public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
@@ -1089,15 +1123,15 @@ public class Util {
                     lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
                 }
             });
-        }catch (Exception e){
-            Logger.error(" beepSound(Context context,String tempVal) ",e.getMessage());
+        } catch (Exception e) {
+            Logger.error(" beepSound(Context context,String tempVal) ", e.getMessage());
         }
 
 
     }
 
-    public static String getVersionBuild(){
-        return String.format("v%s.%s",BuildConfig.VERSION_NAME,BuildConfig.VERSION_CODE);
+    public static String getVersionBuild() {
+        return String.format("v%s.%s", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
 }
