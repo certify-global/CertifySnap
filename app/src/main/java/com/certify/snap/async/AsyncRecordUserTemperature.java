@@ -9,7 +9,7 @@ import com.certify.snap.common.Util;
 
 import org.json.JSONObject;
 
-public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, String> {
+public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, JSONObject> {
     private RecordTemperatureCallback myComponent;
     private JSONObject req;
     private String url;
@@ -30,14 +30,14 @@ public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... params) {
+    protected JSONObject doInBackground(Void... params) {
         return Util.getJSONObjectTemp(req, url,"",mcontext);
     }
 
     @Override
-    protected void onPostExecute(String reportInfo) {
+    protected void onPostExecute(JSONObject reportInfo) {
 //        TODO:should be fire and forget?
-//        if (myComponent == null) return;
-//        myComponent.onJSONObjectListenerTemperature(reportInfo, url,req);
+        if (myComponent == null) return;
+        myComponent.onJSONObjectListenerTemperature(reportInfo, url,req);
     }
 }

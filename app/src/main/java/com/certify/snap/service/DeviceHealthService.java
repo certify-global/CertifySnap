@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.snap.R;
+import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -65,8 +66,19 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
    }
 
    @Override
-   public void onJSONObjectListener(String report, String status, JSONObject req) {
+   public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
       //do noop
+      try {
+         if (reportInfo == null) {
+            return;
+         }
+
+         if(reportInfo.contains("token expired"))
+            Util.getToken(this,this);
+
+      } catch (Exception e) {
+         Logger.error("onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+      }
    }
 
    @Override

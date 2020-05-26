@@ -441,6 +441,12 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             if (reportInfo == null) {
                 return;
             }
+
+            if(reportInfo.isNull("Message"))return;
+            if(reportInfo.getString("Message").contains("token expired"))
+                Util.getToken(this,this);
+
+            if (reportInfo.isNull("responseCode"))return;
             if(reportInfo.getString("responseCode").equals("1")){
                 Util.retrieveSetting(reportInfo,SettingActivity.this);
             }else{

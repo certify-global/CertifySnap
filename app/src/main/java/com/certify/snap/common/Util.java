@@ -500,10 +500,8 @@ public class Util {
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context);
-            if (responseTemp != null && !responseTemp.equals("") && !responseTemp.contains("token expired")) {
+            if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
-            }else  if(responseTemp.contains("token expired")){
-                Util.getToken((JSONObjectCallback) context,context);
             }
         } catch (Exception e) {
 
@@ -517,10 +515,8 @@ public class Util {
     public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
-            if (responseTemp != null && !responseTemp.equals("") && !responseTemp.contains("token expired")) {
+            if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
-            }else if(responseTemp.contains("token expired")){
-                Util.getToken((JSONObjectCallback) context,context);
             }
         } catch (Exception e) {
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
@@ -531,13 +527,11 @@ public class Util {
         return null;
     }
 
-    public static String getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
+    public static JSONObject getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req,context);
-            if (responseTemp != null && !responseTemp.equals("") && !responseTemp.contains("token expired")) {
-                return new String(responseTemp);
-            }else if(responseTemp.contains("token expired")){
-                Util.getToken((JSONObjectCallback) context,context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
 
@@ -1034,9 +1028,8 @@ public class Util {
                 json1 = new JSONObject(formatedString.replace("\\", ""));
 
             } catch (Exception e) {
-                json1 = new JSONObject(reportInfo/*.replace("\\", "")*/);
+                json1 = new JSONObject(reportInfo.replace("\\", ""));
             }
-
 
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
