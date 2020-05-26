@@ -28,7 +28,6 @@ public class LoggerUtil {
             file.delete();
         }
 
-        int pid = android.os.Process.myPid();
         try {
             String command = String.format("logcat -d -v threadtime *:*");
             Process process = Runtime.getRuntime().exec(command);
@@ -38,10 +37,8 @@ public class LoggerUtil {
             String currentLine = null;
 
             while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.contains(String.valueOf(pid))) {
-                    result.append(currentLine);
-                    result.append("\n");
-                }
+                result.append(currentLine);
+                result.append("\n");
             }
 
             FileWriter out = new FileWriter(file);
