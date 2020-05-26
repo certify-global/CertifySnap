@@ -246,5 +246,6 @@
     <string name="save_success">Settings Saved</string>
     <string name="error_message">Something went wrong  please try again!</string>
     <string name="offline_msg">Offline mode</string>
+    <string name="online_msg">Online mode</string>
 
 </resources>

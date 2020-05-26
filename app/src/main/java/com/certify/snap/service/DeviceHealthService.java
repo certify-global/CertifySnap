@@ -61,7 +61,6 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
       super.onDestroy();
       if (alarmService != null && restartServicePendingIntent != null) {
          alarmService.cancel(restartServicePendingIntent);
-         Toast.makeText(this, "Service destroyed by user.", Toast.LENGTH_LONG).show();
       }
    }
 
