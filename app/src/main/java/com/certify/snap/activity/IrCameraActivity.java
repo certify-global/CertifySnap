@@ -53,6 +53,8 @@ import com.arcsoft.face.FaceInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
+import com.certify.callback.JSONObjectCallback;
+import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.arcface.util.camera.CameraListener;
@@ -106,7 +108,7 @@ import io.reactivex.disposables.Disposable;
 
 import com.certify.snap.R;
 
-public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener {
+public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, JSONObjectCallback, RecordTemperatureCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView logo, scan, outerCircle, innerCircle, exit;
@@ -279,7 +281,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
         }
     }
-
     class WallpaperBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -1882,4 +1883,37 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Intent intent = new Intent(this, DeviceHealthService.class);
         stopService(intent);
     }
+
+
+    @Override
+    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if(reportInfo.contains("token expired"))
+                Util.getToken(this,this);
+
+        } catch (Exception e) {
+            Logger.debug(TAG, "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if(reportInfo.isNull("Message"))return;
+            if(reportInfo.getString("Message").contains("token expired"))
+                Util.getToken(this,this);
+
+        } catch (Exception e) {
+            Logger.debug(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+
+        }
+    }
+
 }
