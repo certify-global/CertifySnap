@@ -398,7 +398,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void initQRCode() {
         try {
-            frameLayout = findViewById(R.id.barcode_scanner);
+           // frameLayout = findViewById(R.id.barcode_scanner);
             preview = (CameraSourcePreview) findViewById(R.id.firePreview);
             if (preview == null) {
                 Log.d(TAG, "Preview is null");

@@ -249,7 +249,7 @@
     <string name="online_msg">Online mode</string>
     <string name="desc_camera_source_activity">Vision detectors demo with live camera preview</string>
     <string name="desc_still_image_activity">Vision detectors demo with a still image</string>
-    <string name="tv_qr_setting">QRCode Settings</string>
+    <string name="tv_qr_setting">QRCode Scan Settings</string>
     <string name="enable_qr">Enable QRCode Scanner</string>
 
 </resources>
