@@ -2021,19 +2021,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             preview.stop();
             //  preview.release();
 
-            // Utils.saveToPreferences(ScanQrActivity.this, PreferencesKeys.RabbitId, rabbitid);
+            Util.writeString(sharedPreferences,GlobalParameters.QRCODE_ID,guid);
             for (int i = 0; i < guid.length(); i++) {
                 try {
                     if (Util.isConnectingToInternet(this)) {
                         JSONObject obj = new JSONObject();
-                        obj.put("qrCodeID", "123");
+                        obj.put("qrCodeID", guid);
 
                         new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
                     } else {
                         startCameraSource();
                     }
                 } catch (Exception e) {
-                    Logger.error(LOG + "Message", e.getMessage());
+                    Logger.error(LOG + " onBarcodeData(String guid)", e.getMessage());
                 }
                 if (i == 0) {
                     break;
