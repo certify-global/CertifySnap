@@ -385,13 +385,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void homeIcon(String path) {
+        try {
+            if (!path.isEmpty()) {
+                Bitmap bitmap = Util.decodeToBase64(path);
+                img_logo.setImageBitmap(bitmap);
+            } else {
+                img_logo.setBackgroundResource(R.drawable.final_logo);
 
-        if (!path.isEmpty()) {
-            Bitmap bitmap = Util.decodeToBase64(path);
-            img_logo.setImageBitmap(bitmap);
-        } else {
-            img_logo.setBackgroundResource(R.drawable.final_logo);
+            }
 
+        } catch (Exception ex) {
+            Logger.warn(TAG, String.format("homeIcone path: %s, message: %s", path, ex.getMessage()));
         }
 
     }
@@ -821,7 +825,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 public void run() {
                                                     if (that != null && that.isDestroyed()) return;
                                                     isSearch = true;
-                                                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "ImageTimer execute, Is Temperature identified:" +isTemperatureIdentified);
+                                                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "ImageTimer execute, Is Temperature identified:" + isTemperatureIdentified);
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
                                                     if (isTemperatureIdentified || !takePicRgb)
                                                         return;
@@ -851,7 +855,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (!GlobalParameters.livenessDetect) {
                         //  searchFace(faceFeature, requestId);
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                        Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " +isTemperature);
+                        Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
                         //searchFace(faceFeature, requestId);
                     } else {
 
@@ -873,7 +877,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                         @Override
                                         public void onError(Throwable e) {
-                                            Logger.error(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Wait Liveness Interval observable error" +e.getMessage());
+                                            Logger.error(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Wait Liveness Interval observable error" + e.getMessage());
                                         }
 
                                         @Override
@@ -1491,7 +1495,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onCameraError(Exception e) {
-            Logger.debug(TAG, "IrCameraListener.onCameraError()", "Error occurred, exception = " +e.getMessage());
+            Logger.debug(TAG, "IrCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage());
         }
 
         @Override
@@ -1499,7 +1503,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (drawHelperIr != null) {
                 drawHelperIr.setCameraDisplayOrientation(displayOrientation);
             }
-            Logger.debug(TAG, "IrCameraListener.onCameraConfigurationChanged()", "CameraId:" + cameraID + "DisplayOrientation:" +displayOrientation);
+            Logger.debug(TAG, "IrCameraListener.onCameraConfigurationChanged()", "CameraId:" + cameraID + "DisplayOrientation:" + displayOrientation);
         }
     }
 
@@ -1531,14 +1535,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
-            if(nv21 == null) return;
+            if (nv21 == null) return;
             processPreviewData(nv21);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
-                    }
-                });
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
+                }
+            });
         }
 
         @Override
@@ -1549,7 +1553,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onCameraError(Exception e) {
             Logger.debug(TAG, "onCameraError: " + e.getMessage());
-            Logger.debug(TAG, "RgbCameraListener.onCameraError()", "Error occurred, exception = " +e.getMessage());
+            Logger.debug(TAG, "RgbCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage());
         }
 
         @Override
@@ -1557,7 +1561,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (drawHelperRgb != null) {
                 drawHelperRgb.setCameraDisplayOrientation(displayOrientation);
             }
-            Logger.debug(TAG, "RgbCameraListener.onCameraConfigurationChanged()", "CameraId:" + cameraID + "DisplayOrientation:" +displayOrientation);
+            Logger.debug(TAG, "RgbCameraListener.onCameraConfigurationChanged()", "CameraId:" + cameraID + "DisplayOrientation:" + displayOrientation);
         }
     }
 
@@ -1574,7 +1578,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 temperature = temperatureInput;
             }
             String tempString = String.format("%,.1f", temperature);
-            Logger.debug(TAG, "tempMessageUi()", "Temperature is" +tempString);
+            Logger.debug(TAG, "tempMessageUi()", "Temperature is" + tempString);
 
             String testing_tempe = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
             Float tmpFloat = Float.parseFloat(testing_tempe);
@@ -1653,7 +1657,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 } else {
                                     lowTempValue = lowThresholdTemperature;
                                 }
-                                Logger.debug(TAG, "HotImageCallbackImpl.onTemperatureFail()", "Low Temperature threshold value:" + lowTempValue + " Temperature: " +tmpr);
+                                Logger.debug(TAG, "HotImageCallbackImpl.onTemperatureFail()", "Low Temperature threshold value:" + lowTempValue + " Temperature: " + tmpr);
 
 //
                                 if (lowTempValue > lowThresholdTemperature && !isTemperatureIdentified) {
