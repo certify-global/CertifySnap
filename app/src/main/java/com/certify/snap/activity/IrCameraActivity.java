@@ -1173,9 +1173,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            faceEngineHelper.initEngine(this);
-            initRgbCamera();
-            initIrCamera();
+            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN,false)) {
+                faceEngineHelper.initEngine(this);
+                initRgbCamera();
+                initIrCamera();
+            }
         }
     }
 
@@ -1975,58 +1977,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         }
     }
-
-
-    private boolean allPermissionsGranted() {
-        for (String permission : getRequiredPermissions()) {
-            if (!isPermissionGranted(this, permission)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isPermissionGranted(Context context, String permission) {
-        if (ContextCompat.checkSelfPermission(context, permission)
-                == PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "Permission granted: " + permission);
-            return true;
-        }
-        Log.i(TAG, "Permission NOT granted: " + permission);
-        return false;
-    }
-
-    private void getRuntimePermissions() {
-        List<String> allNeededPermissions = new ArrayList<>();
-        for (String permission : getRequiredPermissions()) {
-            if (!isPermissionGranted(this, permission)) {
-                allNeededPermissions.add(permission);
-            }else{
-                Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
-
-            }
-        }
-
-        if (!allNeededPermissions.isEmpty()) {
-            ActivityCompat.requestPermissions(
-                    this, allNeededPermissions.toArray(new String[0]), PERMISSION_REQUESTS);
-        }
-    }
-    private String[] getRequiredPermissions() {
-        try {
-            PackageInfo info =
-                    this.getPackageManager()
-                            .getPackageInfo(this.getPackageName(), PackageManager.GET_PERMISSIONS);
-            String[] ps = info.requestedPermissions;
-            if (ps != null && ps.length > 0) {
-                return ps;
-            } else {
-                return new String[0];
-            }
-        } catch (Exception e) {
-            return new String[0];
-        }
-    }
     private void createCameraSource(String model) {
         // If there's no existing cameraSource, create one.
         if (cameraSource == null) {
@@ -2068,8 +2018,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     public void onBarcodeData(String guid) {
         try {
-
-            //   countDownTimer.start();
             preview.stop();
             //  preview.release();
 
@@ -2112,8 +2060,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
                     Util.getQRCode(reportInfo, status,IrCameraActivity.this,"QRCode");
+                    preview.stop();
+                    startCameraSource();
+                    initCameraPreview();
                 } else {
-                    Logger.toast(this, "Something went wrong please try again");
+                    Logger.toast(this, "Invalid QRCode");
                 }
             }
 
@@ -2123,5 +2074,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         }
     }
-
+    private void initCameraPreview() {
+        faceEngineHelper.initEngine(this);
+        initRgbCamera();
+        initIrCamera();
+    }
 }
