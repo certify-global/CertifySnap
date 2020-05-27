@@ -57,7 +57,7 @@
                 android:layout_height="150dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="90dp"
+                android:layout_marginTop="20dp"
                 android:background="@color/white"
                 android:scaleType="fitCenter" />
 
@@ -78,13 +78,16 @@
                     <FrameLayout
                         android:id="@+id/barcode_scanner"
                         android:layout_width="match_parent"
-                        android:layout_height="420dp"
+                        android:layout_height="300dp"
                         android:layout_centerInParent="true"
-                        android:layout_marginTop="@dimen/margin05"
+                        android:layout_marginTop="10dp"
                         android:visibility="visible"
                         android:background="#000"
                         android:layout_marginLeft="@dimen/margin_20"
-                        android:layout_marginRight="@dimen/margin_20">
+                        android:layout_marginRight="@dimen/margin_20"
+                        android:layout_marginBottom="@dimen/margin_30"
+                        android:layout_above="@+id/tv_thermal"
+                        android:layout_below="@+id/img_logo">
 
                     <com.certify.snap.qrscan.CameraSourcePreview
                         android:id="@+id/firePreview"
@@ -97,7 +100,7 @@
 
                         <com.certify.snap.qrscan.GraphicOverlay
                             android:id="@+id/fireFaceOverlay"
-                            android:layout_width="600dp"
+                            android:layout_width="500dp"
                             android:layout_height="420dp"
                             android:layout_centerInParent="true"
                             android:layout_gravity="center" />

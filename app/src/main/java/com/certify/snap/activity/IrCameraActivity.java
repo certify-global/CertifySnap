@@ -1173,7 +1173,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN,false)) {
+            if (!sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN,false)) {
                 faceEngineHelper.initEngine(this);
                 initRgbCamera();
                 initIrCamera();
@@ -1982,7 +1982,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cameraSource == null) {
             cameraSource = new CameraSource(this, graphicOverlay);
         }
-        cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+        cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
         try {
             switch (model) {
                 case BARCODE_DETECTION:
