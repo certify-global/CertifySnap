@@ -258,6 +258,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static final int PERMISSION_REQUESTS = 1;
     private static final String BARCODE_DETECTION = "Barcode Detection";
     FrameLayout frameLayout;
+    RelativeLayout relative_qrcode;
 
     private void instanceStart() {
         try {
@@ -398,11 +399,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void initQRCode() {
         try {
-           // frameLayout = findViewById(R.id.barcode_scanner);
+            frameLayout = findViewById(R.id.barcode_scanner);
             preview = (CameraSourcePreview) findViewById(R.id.firePreview);
+           // relative_qrcode =findViewById(R.id.relative_qrcode);
             if (preview == null) {
                 Log.d(TAG, "Preview is null");
-
             }
             graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
             if (graphicOverlay == null) {
@@ -412,12 +413,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             livePreviewActivity = this;
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
-
-           /* if (allPermissionsGranted()) {
-                createCameraSource(BARCODE_DETECTION);
-            } else {
-                getRuntimePermissions();
-            }*/
+            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN,false)==true) {
+                frameLayout.setVisibility(View.VISIBLE);
+            }else{
+                frameLayout.setVisibility(View.GONE);
+            }
         }catch (Exception e){
             Logger.debug("initQRCode()",e.getMessage());
         }
@@ -2061,7 +2061,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (reportInfo.getString("responseCode").equals("1")) {
                     Util.getQRCode(reportInfo, status,IrCameraActivity.this,"QRCode");
                     preview.stop();
-                    startCameraSource();
                     initCameraPreview();
                 } else {
                     Logger.toast(this, "Invalid QRCode");

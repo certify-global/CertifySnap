@@ -62,16 +62,29 @@
                 android:scaleType="fitCenter" />
 
 
-            <RelativeLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:background="#000"
-                android:keepScreenOn="true"
-                android:layout_below="@id/img_logo"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginRight="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_20">
+
+               <!-- <RelativeLayout
+                    android:id="@+id/relative_qrcode"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_20"
+                    android:layout_marginRight="@dimen/margin_20"
+                    android:background="#000"
+                    android:orientation="horizontal"
+                    android:visibility="visible"
+                    android:layout_below="@id/img_logo">-->
+
+                    <FrameLayout
+                        android:id="@+id/barcode_scanner"
+                        android:layout_width="match_parent"
+                        android:layout_height="420dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="@dimen/margin05"
+                        android:visibility="visible"
+                        android:background="#000"
+                        android:layout_marginLeft="@dimen/margin_20"
+                        android:layout_marginRight="@dimen/margin_20">
 
                     <com.certify.snap.qrscan.CameraSourcePreview
                         android:id="@+id/firePreview"
@@ -84,16 +97,14 @@
 
                         <com.certify.snap.qrscan.GraphicOverlay
                             android:id="@+id/fireFaceOverlay"
-                            android:layout_width="500dp"
+                            android:layout_width="600dp"
                             android:layout_height="420dp"
                             android:layout_centerInParent="true"
                             android:layout_gravity="center" />
-
-
                     </com.certify.snap.qrscan.CameraSourcePreview>
-            </RelativeLayout>
-
-
+                    </FrameLayout>
+              <!--  </RelativeLayout>
+-->
 
             <TextView
                 android:id="@+id/tv_thermal"
