@@ -601,6 +601,7 @@ public class Util {
             obj.put("deviceData", MobileDetails(context));
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", aBoolean);
+            obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID,""));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
