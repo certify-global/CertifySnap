@@ -42,7 +42,7 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             HttpPost httpost = new HttpPost(urlStr);
             httpost.addHeader("Content-type", "application/json");
-            httpost.setHeader("DeviceSN", SerialNo);//A040980P02800140
+            httpost.setHeader("DeviceSN", "A040980P02800140");//A040980P02800140
            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
             httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper

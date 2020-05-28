@@ -84,6 +84,7 @@ public class GlobalParameters {
     public static final String SNAP_ID = "snap_id";
     public static final String QR_SCREEN = "qr_screen";
     public static final String QRCODE_ID = "qrcode_id";
+    public static final String QRCODE_Valid = "qrcode_valid";
 
 
 

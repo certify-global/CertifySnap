@@ -83,6 +83,9 @@
             android:name=".activity.QRViewSetting"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".activity.QRCodeActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.certify.snap.activity.InitializationActivity"
             android:launchMode="singleTask" />
         <activity

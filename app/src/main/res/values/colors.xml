@@ -42,6 +42,9 @@
     <color name="navajowhite">#FFDEAD</color><!--纳瓦白 -->
     <color name="dark_text_color">#2C2C2C</color>
     <color name="light_text_color">#666669</color>
+    <color name="qr_code_reader_square">#FFFFFF</color>
+    <color name="translucent_black">#80000000</color>
+
 
 
 
