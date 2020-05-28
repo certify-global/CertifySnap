@@ -67,7 +67,7 @@ public class LoginActivity extends Activity {
                             //tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
                         }
                     }else{
-                        String input ="123456";//Util.getSNCode();     //input string
+                        String input =Util.getSNCode();     //input string
                         String lastsixDigits = "";
 
                         if (input.length() >6) {
