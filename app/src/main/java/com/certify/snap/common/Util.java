@@ -19,6 +19,7 @@ import android.hardware.Camera;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -554,9 +555,8 @@ public class Util {
     public static boolean isConnectingToInternet(Context context) {
         Socket socket = null;
         try {
-            String hostName = Util.getSharedPreferences(context).getString(GlobalParameters.URL, "");
-            if (hostName == null || hostName.isEmpty())
-                return false;//TODO: throw exception(hostname not configured)
+            String url = Util.getSharedPreferences(context).getString(GlobalParameters.URL, EndPoints.prod_url);
+            String hostName = Uri.parse(url).getHost();
             InetSocketAddress addr = new InetSocketAddress(hostName, 443);
             socket = new Socket();
             socket.connect(addr, 500);
@@ -577,6 +577,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit, Boolean aBoolean) {
+        Log.v("Util", "recordUserTemperature");
         try {
             if(temperature.isEmpty()||temperature.equals(""))
                 return;
@@ -599,7 +600,7 @@ public class Util {
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+            Logger.error(LOG,  "getToken(JSONObjectCallback callback, Context context) "+ e.getMessage());
 
         }
     }
