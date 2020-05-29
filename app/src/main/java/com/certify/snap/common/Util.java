@@ -553,26 +553,27 @@ public class Util {
     }
 
     public static boolean isConnectingToInternet(Context context) {
-        Socket socket = null;
-        try {
-            String url = Util.getSharedPreferences(context).getString(GlobalParameters.URL, EndPoints.prod_url);
-            String hostName = Uri.parse(url).getHost();
-            InetSocketAddress addr = new InetSocketAddress(hostName, 443);
-            socket = new Socket();
-            socket.connect(addr, 500);
-            return true;
-
-        } catch (Exception e) {
-            Log.w(LOG, "isConnectingToInternet: ", e);
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        return false;
+        return true;
+//        Socket socket = null;
+//        try {
+//            String url = Util.getSharedPreferences(context).getString(GlobalParameters.URL, EndPoints.prod_url);
+//            String hostName = Uri.parse(url).getHost();
+//            InetSocketAddress addr = new InetSocketAddress(hostName, 443);
+//            socket = new Socket();
+//            socket.connect(addr, 500);
+//            return true;
+//
+//        } catch (Exception e) {
+//            Log.w(LOG, "isConnectingToInternet: ", e);
+//        } finally {
+//            if (socket != null) {
+//                try {
+//                    socket.close();
+//                } catch (IOException e) {
+//                }
+//            }
+//        }
+//        return false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -631,8 +632,9 @@ public class Util {
             new AsyncJSONObjectSender(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ActivateApplication, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
-
+            Logger.error(LOG , "getToken "+ e.getMessage());
+            //TODO:warn failed to activate
+            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
     }
 

@@ -122,7 +122,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
-        if (Util.isConnectingToInternet(this) && onlineMode) {
+        if (onlineMode) {
             Util.activateApplication(this, this);
         }
 
