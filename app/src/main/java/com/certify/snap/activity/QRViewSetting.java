@@ -81,7 +81,7 @@ public class QRViewSetting extends Activity {
     }
 
     private void setRfidDefault() {
-        if (sp.getBoolean(GlobalParameters.RFID_ENABLE, true)) {
+        if (sp.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
             rfidYesRb.setChecked(true);
             rfidNoRb.setChecked(false);
         } else {

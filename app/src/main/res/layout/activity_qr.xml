@@ -113,7 +113,7 @@
                 android:textColor="@color/black"
                 android:text="@string/living_type_1"
                 android:textSize="@dimen/font_14"
-                android:checked="true"
+                android:checked="false"
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton

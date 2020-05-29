@@ -2117,7 +2117,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void getAppSettings() {
-        rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, true);
+        rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
     }
 
