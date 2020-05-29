@@ -695,7 +695,7 @@
                 android:layout_margin="4dp"
                 android:drawablePadding="5dp"
                 android:gravity="center"
-                android:text="@string/tv_qr_setting"
+                android:text="@string/identification_setting"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:paddingLeft="6dp"

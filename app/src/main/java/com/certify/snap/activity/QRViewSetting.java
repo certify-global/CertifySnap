@@ -22,7 +22,9 @@ public class QRViewSetting extends Activity {
     Typeface rubiklight;
     SharedPreferences sp;
     TextView btn_save,titles,qr_screen;
-
+    private RadioGroup rfidRg;
+    private RadioButton rfidYesRb;
+    private RadioButton rfidNoRb;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,10 +43,16 @@ public class QRViewSetting extends Activity {
             btn_save.setTypeface(rubiklight);
             titles.setTypeface(rubiklight);
             qr_screen.setTypeface(rubiklight);
+            rfidRg = findViewById(R.id.radio_group_rfid);
+            rfidYesRb = findViewById(R.id.radio_yes_rfid);
+            rfidNoRb = findViewById(R.id.radio_no_rfid);
 
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);
+
+            setRfidDefault();
+            setRfidClickListener();
 
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -59,6 +67,7 @@ public class QRViewSetting extends Activity {
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    saveRfidSettings();
                     startActivity(new Intent(QRViewSetting.this,SettingActivity.class));
                     Util.showToast(QRViewSetting.this, getString(R.string.save_success));
                     finish();
@@ -67,6 +76,35 @@ public class QRViewSetting extends Activity {
         }catch (Exception e){
             Logger.error(TAG,e.toString());
         }
+    }
+
+    private void setRfidDefault() {
+        if (sp.getBoolean(GlobalParameters.RFID_ENABLE, true)) {
+            rfidYesRb.setChecked(true);
+            rfidNoRb.setChecked(false);
+        } else {
+            rfidNoRb.setChecked(true);
+            rfidYesRb.setChecked(false);
+        }
+    }
+
+    private void setRfidClickListener() {
+        rfidRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                if (id == R.id.radio_yes_rfid) {
+                    rfidYesRb.setChecked(true);
+                    rfidNoRb.setChecked(false);
+                } else if (id == R.id.radio_no_rfid) {
+                    rfidNoRb.setChecked(true);
+                    rfidYesRb.setChecked(false);
+                }
+            }
+        });
+    }
+
+    private void saveRfidSettings() {
+        Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, rfidYesRb.isChecked());
     }
 
     public void onParamterback(View view) {

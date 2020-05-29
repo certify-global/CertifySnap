@@ -86,4 +86,48 @@
         </RadioGroup>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:layout_marginLeft="10dp">
+        <TextView
+            android:id="@+id/rfid_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enable_rfid"
+            android:textColor="@color/black"
+            android:textSize="@dimen/margin_20"/>
+
+        <RadioGroup
+            android:id="@+id/radio_group_rfid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_10"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_yes_rfid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:textColor="@color/black"
+                android:text="@string/living_type_1"
+                android:textSize="@dimen/font_14"
+                android:checked="true"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/radio_no_rfid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:text="@string/living_type_0"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+    </LinearLayout>
+
 </LinearLayout>

@@ -250,8 +250,10 @@
     <string name="desc_camera_source_activity">Vision detectors demo with live camera preview</string>
     <string name="desc_still_image_activity">Vision detectors demo with a still image</string>
     <string name="tv_qr_setting">QRCode Scan Settings</string>
+    <string name="identification_setting">Identification Settings</string>
     <string name="enable_qr">Enable QRCode Scanner</string>
     <string name="tv_qr_scan">Scan Your QR Code</string>
     <string name="tv_qr_validating">Validating QR Code</string>
+    <string name="enable_rfid">Enable RFID Scanner</string>
 
 </resources>

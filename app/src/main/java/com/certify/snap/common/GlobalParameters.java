@@ -85,7 +85,7 @@ public class GlobalParameters {
     public static final String QR_SCREEN = "qr_screen";
     public static final String QRCODE_ID = "qrcode_id";
     public static final String QRCODE_Valid = "qrcode_valid";
-
+    public static final String RFID_ENABLE = "rfid_enable";
 
 
 
