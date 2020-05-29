@@ -618,7 +618,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (intent != null)
             mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        hideQrCodeView();
         byte[] ID = new byte[20];
         ID = mTag.getId();
         String UID = Util.bytesToHexString(ID);
@@ -626,7 +625,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
         Util.setAccessId(mNfcIdString);
         Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG).show();
-        initCameraPreview();
+        hideQrCodeAndStartIrCamera();
     }
 
     @Override
@@ -2141,17 +2140,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void hideQrCodeView() {
+    private void hideQrCodeAndStartIrCamera() {
         if (frameLayout != null) {
             frameLayout.setVisibility(View.GONE);
         }
-        if (preview != null) {
-            preview.stop();
-            /*if (cameraSource != null) {
-                Log.d(TAG, "cameraSource stop");
-                cameraSource.stop();
-                cameraSource.release();
-            }*/
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (preview != null) {
+                    preview.stop();
+                    preview.release();
+                }
+                if (cameraSource != null) {
+                    cameraSource.stop();
+                    cameraSource.release();
+                }
+                initCameraPreview();
+            }
+        }, 100);
     }
 }
