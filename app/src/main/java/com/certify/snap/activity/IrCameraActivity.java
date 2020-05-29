@@ -245,6 +245,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int DATA_BLOCK = 8;
     private final byte[] password1 = new byte[]{(byte) 0x80, (byte) 0x60,
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
+    private boolean rfIdEnable = false;
+    private String mNfcIdString = "";
+
     private AlertDialog nfcDialog;
     Typeface rubiklight;
     private CameraSource cameraSource = null;
@@ -335,15 +338,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
+        getRfidSetting();
+        initRfidControl();
         try {
 
             processHandler = new ProcessHandler(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mNfcAdapter = M1CardUtils.isNfcAble(this);
-        mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         logo = findViewById(R.id.logo);
         rl_header = findViewById(R.id.rl_header);
@@ -615,9 +617,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         super.onNewIntent(intent);
         if (intent != null)
             mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        //startDetectCard();
-    }
 
+        hideQrCodeView();
+        byte[] ID = new byte[20];
+        ID = mTag.getId();
+        String UID = Util.bytesToHexString(ID);
+        if(UID == null) return;
+        mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
+        Util.setAccessId(mNfcIdString);
+        Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG).show();
+        initCameraPreview();
+    }
 
     @Override
     protected void onResume() {
@@ -649,11 +659,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }, 3000);
             //  }
         }
-
-
-        if (mNfcAdapter != null) {
-            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-        }
+        enableNfc();
         try {
             if (cameraHelper != null) {
                 cameraHelper.start();
@@ -671,9 +677,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onPause() {
         super.onPause();
         preview.stop();
-        if (mNfcAdapter != null) {
-            mNfcAdapter.disableForegroundDispatch(this);
-        }
+        disableNfc();
         if (cameraHelper != null) {
             cameraHelper.stop();
         }
@@ -1183,16 +1187,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            if (!sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
+            if (!sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) &&
+                !rfIdEnable) {
                 faceEngineHelper.initEngine(this);
                 initRgbCamera();
                 initIrCamera();
             }
-            if (sharedPreferences.getBoolean(GlobalParameters.QRCODE_Valid, false)) {
+           /* if (sharedPreferences.getBoolean(GlobalParameters.QRCODE_Valid, false)) {
                 faceEngineHelper.initEngine(this);
                 initRgbCamera();
                 initIrCamera();
-            }
+            }*/
         }
     }
 
@@ -2111,5 +2116,42 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         faceEngineHelper.initEngine(this);
         initRgbCamera();
         initIrCamera();
+    }
+
+    private void getRfidSetting() {
+        rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, true);
+    }
+
+    private void initRfidControl() {
+        if(!rfIdEnable) return;
+        mNfcAdapter = M1CardUtils.isNfcAble(this);
+        mPendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+    }
+
+    private void enableNfc() {
+        if (rfIdEnable && mNfcAdapter != null) {
+            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        }
+    }
+
+    private void disableNfc() {
+        if (mNfcAdapter != null) {
+            mNfcAdapter.disableForegroundDispatch(this);
+        }
+    }
+
+    private void hideQrCodeView() {
+        if (frameLayout != null) {
+            frameLayout.setVisibility(View.GONE);
+        }
+        if (preview != null) {
+            preview.stop();
+            /*if (cameraSource != null) {
+                Log.d(TAG, "cameraSource stop");
+                cameraSource.stop();
+                cameraSource.release();
+            }*/
+        }
     }
 }
