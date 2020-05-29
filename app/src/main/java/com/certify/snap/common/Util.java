@@ -550,22 +550,25 @@ public class Util {
     }
 
     public static boolean isConnectingToInternet(Context context) {
+        Socket socket = null;
         try {
-            ConnectivityManager cm = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-            if (cm != null)
-                for (NetworkInfo ni : cm.getAllNetworkInfo()) {
-                    switch (ni.getTypeName().trim().toUpperCase()) {
-                        case "WIFI":
-                        case "MOBILE":
-                            if (ni.isConnected() && !(ni.getSubtypeName() != null && ni.getSubtypeName().trim().toUpperCase().equals("LTE") && ni.getExtraInfo() != null && ni.getExtraInfo().trim().toUpperCase().equals("IMS"))) {
-                                // MyApplication.noInternet = 0;
-                                return true;
-                            }
-                            break;
-                    }
-                }
+            String hostName = Util.getSharedPreferences(context).getString(GlobalParameters.URL, "");
+            if (hostName == null || hostName.isEmpty())
+                return false;//TODO: throw exception(hostname not configured)
+            InetSocketAddress addr = new InetSocketAddress(hostName, 443);
+            socket = new Socket();
+            socket.connect(addr, 500);
+            return true;
+
         } catch (Exception e) {
-            Logger.error(LOG + "isConnectingToInternet()", e.getMessage());
+            Log.w(LOG, "isConnectingToInternet: ", e);
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                }
+            }
         }
         return false;
     }
