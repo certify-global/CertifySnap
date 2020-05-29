@@ -43,6 +43,8 @@ public class QRViewSetting extends Activity {
             btn_save.setTypeface(rubiklight);
             titles.setTypeface(rubiklight);
             qr_screen.setTypeface(rubiklight);
+            TextView rfId = findViewById(R.id.rfid_tv);
+            rfId.setTypeface(rubiklight);
             rfidRg = findViewById(R.id.radio_group_rfid);
             rfidYesRb = findViewById(R.id.radio_yes_rfid);
             rfidNoRb = findViewById(R.id.radio_no_rfid);

@@ -259,6 +259,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     ImageView img_qr;
     View imageqr;
     RelativeLayout qr_main;
+    private boolean qrCodeEnable = false;
 
     private void instanceStart() {
         try {
@@ -338,7 +339,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
-        getRfidSetting();
+        getAppSettings();
         initRfidControl();
         try {
 
@@ -622,10 +623,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         ID = mTag.getId();
         String UID = Util.bytesToHexString(ID);
         if(UID == null) return;
+        if (qrCodeEnable) {
+            hideQrCodeAndStartIrCamera();
+        } else {
+            initCameraPreview();
+        }
         mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
         Util.setAccessId(mNfcIdString);
         Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG).show();
-        hideQrCodeAndStartIrCamera();
     }
 
     @Override
@@ -1192,14 +1197,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 initRgbCamera();
                 initIrCamera();
             }
-           /* if (sharedPreferences.getBoolean(GlobalParameters.QRCODE_Valid, false)) {
-                faceEngineHelper.initEngine(this);
-                initRgbCamera();
-                initIrCamera();
-            }*/
         }
     }
-
 
     public int increaseAndGetValue(Map<Integer, Integer> countMap, int key) {
         if (countMap == null) {
@@ -2002,7 +2001,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cameraSource == null) {
             cameraSource = new CameraSource(this, graphicOverlay);
         }
-        cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+        cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
         try {
             switch (model) {
                 case BARCODE_DETECTION:
@@ -2117,8 +2116,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initIrCamera();
     }
 
-    private void getRfidSetting() {
+    private void getAppSettings() {
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, true);
+        qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
     }
 
     private void initRfidControl() {

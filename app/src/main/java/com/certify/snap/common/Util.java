@@ -78,7 +78,7 @@ import java.util.UUID;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
-    private static final String LOG = "Utils";
+    private static final String LOG = Util.class.getSimpleName();
     private static String accessId = "";
 
     public static final class permission {
@@ -1183,5 +1183,19 @@ public class Util {
 
     private static byte charToByte(char c) {
         return (byte) "0123456789ABCDEF".indexOf(c);
+    }
+
+    public static byte[] getBytesFromFile(String filePath) {
+        File file = new File(filePath);
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (IOException e) {
+            Logger.error(LOG, "getBytesFromFile()", "Reading bytes from file failed");
+        }
+        return bytes;
     }
 }
