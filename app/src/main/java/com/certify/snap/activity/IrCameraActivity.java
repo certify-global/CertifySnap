@@ -265,6 +265,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout qr_main;
     private boolean qrCodeEnable = false;
     private String institutionId = "";
+    private int ledSettingEnabled = 0;
 
     private void instanceStart() {
         try {
@@ -905,7 +906,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     logo.setVisibility(View.VISIBLE);
                                                     rl_header.setVisibility(View.VISIBLE);
                                                     tempServiceClose = true;
-                                                    Util.enableLedPower(0);
+                                                    disableLedPower();
                                                     enableNfc();
                                                 }
                                             });
@@ -1121,7 +1122,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     logo.setVisibility(View.VISIBLE);
                     relative_main.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
-                    Util.enableLedPower(0);
+                    disableLedPower();
                 }
             }
         }
@@ -1915,7 +1916,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void run() {
                         takePicRgb = true;
                         takePicIr = true;
-                        Util.enableLedPower(0);
+                        disableLedPower();
                         //  requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                         // temperature_image.setVisibility(View.GONE);
                         boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
@@ -1954,8 +1955,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     }
 
+    //Optimize this can move to Utils
     public void enableLedPower() {
-        Util.enableLedPower(1);
+        if (ledSettingEnabled == 0) {
+            Util.enableLedPower(1);
+        }
+    }
+
+    //Optimize this can move to Utils
+    public void disableLedPower() {
+        if (ledSettingEnabled == 0) {
+            Util.enableLedPower(0);
+        }
     }
 
     /**
@@ -2147,6 +2158,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,"");
         delayMilliTimeOut = sharedPreferences.getString(GlobalParameters.Timeout, "5");
+        ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
         getAccessControlSettings();
     }
 
@@ -2199,15 +2211,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         enableLedPower();
         disableNfc();
         isFaceCameraOn = true;
-        runOnUiThread(new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                changeVerifyBackground(R.color.transparency, true);
-                relative_main.setVisibility(View.GONE);
                 rl_header.setVisibility(View.GONE);
                 logo.setVisibility(View.GONE);
+                relative_main.setVisibility(View.GONE);
+                changeVerifyBackground(R.color.transparency, true);
             }
-        });
+        }, 400); //Add delay for white screen
         setCameraPreviewTimer();
     }
 
@@ -2223,11 +2235,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         imageTimer = new Timer();
         imageTimer.schedule(new TimerTask() {
             public void run() {
+                disableLedPower();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         recreate();
-                        Util.enableLedPower(0);
                     }
                 });
                 this.cancel();
