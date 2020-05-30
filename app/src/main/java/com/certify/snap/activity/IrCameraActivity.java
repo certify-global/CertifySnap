@@ -2050,6 +2050,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 try {
                     JSONObject obj = new JSONObject();
                     obj.put("qrCodeID", guid);
+                    obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
                     new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
                 } catch (Exception e) {
                     Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
@@ -2075,6 +2076,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (!reportInfo.isNull("Message")) {
                 if (reportInfo.getString("Message").contains("token expired"))
                     Util.getToken(this, this);
+                JSONObject obj = new JSONObject();
+                obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID,""));
+                obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
+                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
 
             } else {
                 if (reportInfo.isNull("responseCode")) return;
@@ -2105,6 +2110,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error(" onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
             preview.stop();
             startCameraSource();
+            Logger.toast(this,"QRCode something went wrong.Please try again");
 
         }
     }
