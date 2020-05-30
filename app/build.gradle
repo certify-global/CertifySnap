@@ -27,12 +27,6 @@ android {
             keyAlias = 'snapent'
             keyPassword = keyStore['snapEnt.passwd']
         }
-        SnapMask {
-            storeFile file("$userHome/certifysnap/CertifySnapEnt.jks")
-            storePassword = keyStore['snapEnt.passwd']
-            keyAlias = 'snapent'
-            keyPassword = keyStore['snapEnt.passwd']
-        }
     }
     compileSdkVersion 28
     defaultConfig {
@@ -59,13 +53,6 @@ android {
             applicationIdSuffix ".ent"
             signingConfig signingConfigs.SnapEnt
         }
-
-        SnapMask {
-            dimension = 'version'
-            applicationIdSuffix ".mask"
-            signingConfig signingConfigs.SnapMask
-        }
-
     }
     buildTypes {
         release {
@@ -76,13 +63,12 @@ android {
 
 }
 android.applicationVariants.all{ variant ->
-def buildType = variant.buildType.buildType.name
-    def buildFacial = "facial-recognition"
+    def buildType = variant.buildType.buildType.name
     variant.outputs.all{output ->
 
         def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
         println "$buildType $output.apkData.fullName $suffix"
-        output.outputFileName = "$baseFileName$suffix-${buildFacial}.apk"
+        output.outputFileName = "$baseFileName$suffix-${buildType}-${output.apkData.versionName}.${output.versionCode}.apk"
     }
 }
 dependencies {
