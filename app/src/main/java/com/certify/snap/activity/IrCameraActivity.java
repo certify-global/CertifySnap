@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -24,6 +23,7 @@ import android.media.SoundPool;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -32,7 +32,6 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -58,10 +57,10 @@ import com.arcsoft.face.FaceInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
+import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
-import com.certify.callback.BarcodeSendData;
 import com.certify.snap.R;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -94,10 +93,10 @@ import com.certify.snap.qrscan.CameraSource;
 import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.view.MyGridLayoutManager;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.certify.snap.view.MyGridLayoutManager;
 
 import org.json.JSONObject;
 import org.litepal.LitePal;
@@ -234,7 +233,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
-    private long delayMilliTimeOut = 0;
+    private String delayMilliTimeOut = "";
     private int countTempError = 1;
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage, tv_scan;
@@ -251,6 +250,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean rfIdEnable = false;
     private String mNfcIdString = "";
     private boolean isFaceCameraOn = false;
+    private Snackbar accessGrantSnackbar;
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
@@ -629,9 +629,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if(UID == null) return;
         mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
         Util.setAccessId(mNfcIdString);
-        Snackbar snackbar = Snackbar
-                .make(relativeLayout, R.string.grant_access, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        accessGrantSnackbar = Snackbar.make(relativeLayout, R.string.grant_access, Snackbar.LENGTH_LONG);
+        accessGrantSnackbar.show();
 
         hideQrCodeAndStartIrCamera();
     }
@@ -1876,7 +1875,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                dismissSnackBar();
                 isTemperatureIdentified = true;
                 outerCircle.setBackgroundResource(R.drawable.border_shape);
                 tvErrorMessage.setVisibility(View.GONE);
@@ -1899,6 +1898,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     tv_message.setBackgroundColor(getResources().getColor(R.color.bg_blue));
                 else
                     tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
+
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
                 if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
@@ -2146,6 +2146,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,"");
+        delayMilliTimeOut = sharedPreferences.getString(GlobalParameters.Timeout, "5");
         getAccessControlSettings();
     }
 
@@ -2210,31 +2211,28 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         setCameraPreviewTimer();
     }
 
-    private void setCameraPreviewTimer() {
-        try {
-            String longVal = sharedPreferences.getString(GlobalParameters.Timeout, "5");
-            if (longVal.equals("")) {
-                delayMilliTimeOut = 5;
-            } else {
-                delayMilliTimeOut = Long.parseLong(longVal);
-            }
-            cancelImageTimer();
-            imageTimer = new Timer();
-            imageTimer.schedule(new TimerTask() {
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            recreate();
-                            Util.enableLedPower(0);
-                        }
-                    });
-
-                    this.cancel();
-                }
-            }, delayMilliTimeOut * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
-        }catch (Exception e){
-            Logger.error(TAG," setCameraPreviewTimer()",e.getMessage());
+    private void dismissSnackBar() {
+        if (accessGrantSnackbar != null) {
+            accessGrantSnackbar.dismiss();
+            accessGrantSnackbar = null;
         }
+    }
+
+    private void setCameraPreviewTimer() {
+        cancelImageTimer();
+        imageTimer = new Timer();
+        imageTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recreate();
+                        Util.enableLedPower(0);
+                    }
+                });
+                this.cancel();
+            }
+        }, Long.parseLong(delayMilliTimeOut) * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
+
     }
 }

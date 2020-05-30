@@ -258,7 +258,7 @@
     <string name="grant_access">Access granted</string>
     <string name="device_not_register">Device is not registered</string>
     <string name="invalid_qr">Invalid QRCode</string>
-    <string name="timeout">TimeOut</string>
+    <string name="timeout">Timeout in seconds</string>
 
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
