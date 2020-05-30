@@ -102,9 +102,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.certify.snap.R;
 
@@ -129,6 +133,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isTemperatureIdentified = false;
     RelativeLayout rl_header;
 
+    private CompareResult compareResult;
     private View previewViewRgb;
     private View previewViewIr;
     private static boolean ConfirmationBoolean = false;
@@ -137,7 +142,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
 
-    private static final float SIMILAR_THRESHOLD = 0.8F;
+    private static final float SIMILAR_THRESHOLD = 0.7F;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
 
@@ -197,7 +202,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int relaytimenumber = 5;
     ImageView img_guest, temperature_image, img_logo;
     TextView txt_guest;
-    String message;
+    String fullName, memberId;
     //    private BeepManager mBeepManager, manormalBeep, mBeepManager1, mBeepManager2, malertBeep, mBeepSuccess;
     private WallpaperBroadcastReceiver wallpaperBroadcastReceiver;
     public static final String WALLPAPER_CHANGE = "com.telpo.telpo_face_system_wallpaper";
@@ -835,10 +840,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
-                        //  searchFace(faceFeature, requestId);
+                        searchFace(faceFeature, requestId);
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " +isTemperature);
-                        //searchFace(faceFeature, requestId);
+                        searchFace(faceFeature, requestId);
                     } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
@@ -1072,12 +1077,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
 
-    private void showResult(CompareResult compareResult, int requestId, String message, final boolean isdoor) {
+    private void showResult(CompareResult compareResult, int requestId, String name,  String id, final boolean isdoor) {
         //When adding display personnel, save their trackId
         compareResult.setTrackId(requestId);
-        compareResult.setMessage(message);
+        compareResult.setMessage(name);
+        compareResult.setMemberId(id);
         compareResultList.add(compareResult);
-        processHandler.postDelayed(new Runnable() {
+        this.compareResult = compareResult;
+/*        processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (isdoor) {
@@ -1093,7 +1100,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }
-        }, 100);
+        }, 100);*/
     }
 
     private void addOfflineMember(String name, String mobile, String image, Date verify_time, float temperature) {
@@ -1842,6 +1849,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
+                            if(compareResult != null) {
+                                intent.putExtra("compareResult", compareResult);
+                            }
                             startActivity(intent);
                             ConfirmationBoolean = true;
                             finish();
@@ -1915,5 +1925,110 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         }
     }
+
+    private void searchFace(final FaceFeature frFace, final Integer requestId) {
+        Observable
+                .create(new ObservableOnSubscribe<CompareResult>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<CompareResult> emitter) {
+                        CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
+                        emitter.onNext(compareResult);
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<CompareResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(final CompareResult compareResult) {
+                        if (compareResult == null || compareResult.getUserName() == null) {
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                            faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
+                            return;
+                        }
+                        if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
+                            boolean isAdded = false;
+                            if (compareResultList == null) {
+                                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                                faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
+                                return;
+                            }
+                            for (CompareResult compareResult1 : compareResultList) {
+                                if (compareResult1.getTrackId() == requestId) {
+                                    isAdded = true;
+                                    break;
+                                }
+                            }
+                            Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
+                            if (!isAdded) {
+                                if (compareResultList.size() >= MAX_DETECT_NUM) {
+                                    compareResultList.remove(0);
+                                    adapter.notifyItemRemoved(0);
+                                }
+                                isSearch = true;
+
+                                String[] split = compareResult.getUserName().split("-");
+                                String mobile = "";
+                                if (split != null) mobile = split[1];
+
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date curDate = new Date(System.currentTimeMillis());
+                                String verify_time = formatter.format(curDate);
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                                String cpmpareTime = simpleDateFormat.format(curDate);
+
+                                registeredMemberslist = LitePal.where("mobile = ?", split[1]).find(RegisteredMembers.class);
+                                if (registeredMemberslist.size() > 0) {
+                                    RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                                    String status = registeredMembers.getStatus();
+                                    String name = registeredMembers.getFirstname();
+                                    String memberId = registeredMembers.getMobile();
+                                    String image = registeredMembers.getImage();
+                                    if (status.equals("1")) {
+                                        if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
+                                                || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
+                                            fullName = getString(R.string.name) + name;
+                                            memberId = getString(R.string.id)+ memberId;
+                                            addOfflineMember(name, mobile, image, new Date(), temperature);
+                                            time2 = System.currentTimeMillis();
+                                            showResult(compareResult, requestId, fullName, memberId,false);
+                                        }
+                                    } else if (!status.equals("1")) {
+                                        fullName = getString(R.string.text_nopermission);
+                                        showResult(compareResult, requestId, fullName, memberId, false);
+                                    }
+                                }
+
+                            }
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
+                            if (!isTemperature) {
+                                Log.e("retry----", "istemperature=" + isTemperature);
+                                faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                                retryRecognizeDelayed(requestId);
+                            }
+                        } else {
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                            retryRecognizeDelayed(requestId);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        retryRecognizeDelayed(requestId);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
 
 }

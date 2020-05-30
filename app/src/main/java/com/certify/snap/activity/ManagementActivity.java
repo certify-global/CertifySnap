@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -48,6 +51,7 @@ import com.certify.snap.R;
 import com.certify.snap.adapter.MemberAdapter;
 import com.certify.snap.adapter.MemberFailedAdapter;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
@@ -63,7 +67,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import static com.certify.snap.common.Util.getnumberString;
-import static com.certify.snap.common.Util.isValidDate;
 
 public class ManagementActivity extends AppCompatActivity {
 
@@ -84,12 +87,16 @@ public class ManagementActivity extends AppCompatActivity {
     private Uri updateUri;
     private ProgressDialog mprogressDialog, mdeleteprogressDialog;
     public SQLiteDatabase db;
-       public final static int UPDATE = 1;
+    public final static int UPDATE = 1;
     public final static int TOAST = 2;
     public final static int REGISTER = 3;
     public final static int REGISTER_PHOTO = 1;
     public final static int UPDATE_PHOTO = 2;
     private String ROOT_PATH_STRING = "";
+
+    private NfcAdapter mNfcAdapter; //Optimize
+    private PendingIntent mPendingIntent;
+    private RegisteredMembers updateMember = null;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -144,7 +151,35 @@ public class ManagementActivity extends AppCompatActivity {
         });
 
         initData(true);
+        initNfc();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        enableNfc();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        disableNfc();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        byte[] ID = new byte[20];
+        ID = tag.getId();
+        String UID = Util.bytesToHexString(ID);
+        if(UID == null) return;
+        String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
+        updateMember.setAccessid(id);
+        //Update UI
+        maccessid.setText(id);
+        enrollBtn.setVisibility(View.GONE);
     }
 
     public void onmemberclick(View v) {
@@ -176,7 +211,7 @@ public class ManagementActivity extends AppCompatActivity {
                 LitePal.findAllAsync(RegisteredMembers.class).listen(new FindMultiCallback<RegisteredMembers>() {
                     @Override
                     public void onFinish(List<RegisteredMembers> list) {
-                       Log.e("list---", list.size() +"");
+                        Log.e("list---", list.size() +"");
                         if(list!=null) {
                             datalist = list;
                             if (isNeedInit) {
@@ -295,18 +330,28 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
     ImageView mfaceimg;
-    TextView mnametext;
+    TextView mfirstnametext;
+    TextView mlastnametext;
+    TextView mIdtext;
+    TextView mEmailAddress;
     TextView mmobiletext;
-    TextView mtimetext;
-    EditText mname;
+    //TextView mtimetext;
+    EditText mfirstname;
+    EditText mlasttname;
     EditText mmobile;
-    EditText mtime;
+    EditText mmemberid;
+    EditText mmemberemail;
+    EditText maccessid;
+    EditText muniqueid;
+    //EditText mtime;
     Button mupdate;
     ImageView medit;
     LinearLayout textbody;
     LinearLayout editbody;
+    private Button enrollBtn;
 
     private void showUpdateDialog(final RegisteredMembers member) {
+        updateMember = member;
         updateimagePath = "";
 
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_update, null);
@@ -315,18 +360,31 @@ public class ManagementActivity extends AppCompatActivity {
         if (mUpdateDialog == null) mUpdateDialog = builder.create();
 
         final TextView muserid = view.findViewById(R.id.dialog_edit_userid);
-        mnametext = view.findViewById(R.id.dialog_text_name);
+        mfirstnametext = view.findViewById(R.id.dialog_text_first_name);
+        mlastnametext = view.findViewById(R.id.dialog_text_last_name);
+        mIdtext = view.findViewById(R.id.dialog_text_member_id);
+        mEmailAddress = view.findViewById(R.id.dialog_text_email);
         mmobiletext = view.findViewById(R.id.dialog_text_mobile);
-        mtimetext = view.findViewById(R.id.dialog_text_time);
-        mname = view.findViewById(R.id.dialog_edit_name);
+        //mtimetext = view.findViewById(R.id.dialog_text_time);
+        mfirstname = view.findViewById(R.id.dialog_edit_first_name);
+        mlasttname = view.findViewById(R.id.dialog_edit_last_name);
         mmobile = view.findViewById(R.id.dialog_edit_mobile);
-        mtime = view.findViewById(R.id.dialog_edit_time);
+        mmemberid = view.findViewById(R.id.dialog_edit_member_id);
+        mmemberemail = view.findViewById(R.id.dialog_edit_email);
+        maccessid = view.findViewById(R.id.dialog_edit_accessid);
+        muniqueid = view.findViewById(R.id.dialog_edit_uniqueid);
+
+        //mtime = view.findViewById(R.id.dialog_edit_time);
         textbody = view.findViewById(R.id.linear_body);
         editbody = view.findViewById(R.id.linear_edit_body);
 
-        mnametext.setText(member.getName());
+        mfirstnametext.setText(member.getFirstname());
+        mlastnametext.setText(member.getLastname());
         mmobiletext.setText(member.getMobile());
-        mtimetext.setText(member.getExpire_time());
+        mIdtext.setText(member.getMemberid());
+        mEmailAddress.setText(member.getEmail());
+        maccessid.setText(member.getAccessid());
+        //mtimetext.setText(member.getExpire_time());
 
         mfaceimg = view.findViewById(R.id.dialog_faceimg);
         setViewclick(mfaceimg, false);
@@ -338,16 +396,16 @@ public class ManagementActivity extends AppCompatActivity {
             }
         });
 
-        mtime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showUpdateDatePicker(mtime);
-                } else {
-                    Log.e("hasfocus-----", "false");
-                }
-            }
-        });
+//        mtime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) {
+//                    showUpdateDatePicker(mtime);
+//                } else {
+//                    Log.e("hasfocus-----", "false");
+//                }
+//            }
+//        });
 
         medit = view.findViewById(R.id.dialog_edit);
         medit.setOnClickListener(new View.OnClickListener() {
@@ -355,13 +413,20 @@ public class ManagementActivity extends AppCompatActivity {
             public void onClick(View v) {
                 medit.setVisibility(View.INVISIBLE);
                 mupdate.setVisibility(View.VISIBLE);
+                enrollBtn.setVisibility(View.VISIBLE);
                 setViewclick(mfaceimg, true);
                 setViewVisible(textbody, 0);
                 setViewVisible(editbody, 1);
 
-                mname.setText(member.getName());
+                mfirstname.setText(member.getFirstname());
+                mlasttname.setText(member.getLastname());
                 mmobile.setText(member.getMobile());
-                mtime.setText(member.getExpire_time());
+                mmemberid.setText(member.getMemberid());
+                mmemberemail.setText(member.getEmail());
+                maccessid.setText(member.getAccessid());
+                muniqueid.setText(member.getUniqueid());
+
+                //mtime.setText(member.getExpire_time());
             }
         });
         ImageView mexit = view.findViewById(R.id.dialog_exit);
@@ -379,12 +444,18 @@ public class ManagementActivity extends AppCompatActivity {
         mupdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String namestr = mname.getText().toString();
+                String firstnamestr = mfirstname.getText().toString();
+                String lastnamestr = mlasttname.getText().toString();
                 String mobilestr = mmobile.getText().toString();
-                String timestr = mtime.getText().toString();
-                Log.e("updateinfo---", namestr + "-" + mobilestr + "-" + timestr);
-                if (!TextUtils.isEmpty(namestr) && !TextUtils.isEmpty(mobilestr)
-                        && !TextUtils.isEmpty(timestr)) {
+                String idstr = mmemberid.getText().toString();
+                String emailstr = mmemberemail.getText().toString();
+                String accessstr = maccessid.getText().toString();
+                String uniquestr = muniqueid.getText().toString();
+
+                //String timestr = mtime.getText().toString();
+                Log.e("updateinfo---", firstnamestr + "-"+ lastnamestr + "-"  + mobilestr + "-" + idstr+ "-" + emailstr+ accessstr+ "-" + uniquestr);
+                if (!TextUtils.isEmpty(firstnamestr) && !TextUtils.isEmpty(mobilestr)
+                        && !TextUtils.isEmpty(lastnamestr) && !TextUtils.isEmpty(emailstr)) {
                     if ("".equalsIgnoreCase(updateimagePath)) {
                         updateimagePath = member.getImage();
                         Log.e("updateimgpath---", updateimagePath);
@@ -392,16 +463,27 @@ public class ManagementActivity extends AppCompatActivity {
 
                     File file = new File(updateimagePath);
                     if (file.exists()) {
-                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
-                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
-                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
-                        }else{
-                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
-                        }
+                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+                        localUpdate(member.getMobile(), firstnamestr, lastnamestr, mobilestr, idstr,emailstr, accessstr, uniquestr, updateimagePath);
+//                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
+//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+//                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
+//                        }else{
+//                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
+//                        }
                     }
                 } else {
                     Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_notfullinfo));
                 }
+            }
+        });
+
+        enrollBtn = view.findViewById(R.id.btn_enroll);
+        enrollBtn.setVisibility(View.GONE);
+        enrollBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Please scan the card to enroll", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -559,19 +641,24 @@ public class ManagementActivity extends AppCompatActivity {
         mpopupwindow.setBackgroundDrawable(new ColorDrawable(R.color.backwhite));
 
         registerpath = "";
-        final EditText mname = view.findViewById(R.id.popup_name);
+        final EditText mfirstname = view.findViewById(R.id.popup_first_name);
+        final EditText mlastname = view.findViewById(R.id.popup_last_name);
         final EditText mmobile = view.findViewById(R.id.popup_mobile);
-        final EditText mregistertime = view.findViewById(R.id.popup_time);
-        mregistertime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    showUpdateDatePicker(mregistertime);
-                } else {
-                    Log.e("hasfocus---", "false");
-                }
-            }
-        });
+        final EditText mmemberid = view.findViewById(R.id.popup_member_id);
+        final EditText memail = view.findViewById(R.id.popup_email);
+        final EditText maccessid = view.findViewById(R.id.popup_access_id);
+        final EditText muniqueid = view.findViewById(R.id.popup_unique_id);
+        //final EditText mregistertime = view.findViewById(R.id.popup_time);
+//        mregistertime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) {
+//                    showUpdateDatePicker(mregistertime);
+//                } else {
+//                    Log.e("hasfocus---", "false");
+//                }
+//            }
+//        });
 
         mregisterfaceimg = view.findViewById(R.id.popup_faceimg);
         mregisterfaceimg.setOnClickListener(new View.OnClickListener() {
@@ -595,19 +682,27 @@ public class ManagementActivity extends AppCompatActivity {
         mregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String namestr = mname.getText().toString();
+                String firstnamestr = mfirstname.getText().toString();
+                String lastnamestr = mlastname.getText().toString();
                 String mobilestr = mmobile.getText().toString();
-                String timestr = mregistertime.getText().toString();
-                Log.e("info---", namestr + "-" + mobilestr + "-" + timestr);
-                if (!TextUtils.isEmpty(namestr) && !TextUtils.isEmpty(mobilestr) && !TextUtils.isEmpty(timestr)) {
+                String memberidstr = mmemberid.getText().toString();
+                String emailstr = memail.getText().toString();
+                String accessstr = maccessid.getText().toString();
+                String uniquestr = muniqueid.getText().toString();
+                //String timestr = mregistertime.getText().toString();
+
+                Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr+ "-"+ emailstr + accessstr+ "-"+ uniquestr);
+                if (!TextUtils.isEmpty(firstnamestr) && !TextUtils.isEmpty(mobilestr) && !TextUtils.isEmpty(lastnamestr) && !TextUtils.isEmpty(emailstr)) {
                     File file = new File(registerpath);
                     if (file.exists()) {
-                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
-                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-                            localRegister(namestr, mobilestr, timestr, registerpath);
-                        }else{
-                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
-                        }
+                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+                        localRegister(firstnamestr, lastnamestr, mobilestr,memberidstr, emailstr, accessstr, uniquestr , registerpath);
+//                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
+//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+//                            localRegister(namestr, mobilestr, timestr, registerpath);
+//                        }else{
+//                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
+//                        }
                     } else {
                         Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
                     }
@@ -644,27 +739,32 @@ public class ManagementActivity extends AppCompatActivity {
         return success;
     }
 
-    public boolean registerDatabase(String name,String mobile,String time) {
-        String username = name +"-"+mobile;
+    public boolean registerDatabase(String firstname, String lastname, String mobile,String id, String email, String accessid, String uniqueid) {
+        String username = firstname +"-"+mobile;
         String image =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username+FaceServer.IMG_SUFFIX;
         String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
         Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
         RegisteredMembers registeredMembers = new RegisteredMembers();
-        registeredMembers.setName(name);
+        registeredMembers.setFirstname(firstname);
+        registeredMembers.setLastname(lastname);
         registeredMembers.setMobile(mobile);
         registeredMembers.setStatus("1");
-        registeredMembers.setExpire_time(time);
+        registeredMembers.setMemberid(id);
+        registeredMembers.setEmail(email);
+        registeredMembers.setAccessid(accessid);
+        registeredMembers.setUniqueid(uniqueid);
+//      registeredMembers.setExpire_time(time);
         registeredMembers.setImage(image);
         registeredMembers.setFeatures(feature);
         boolean result = registeredMembers.save();
         return result;
     }
 
-    private void localRegister(String name,String mobile,String time,String imgpath) {
+    private void localRegister(String firstname,String lastname, String mobile,String id, String email, String accessid, String uniqueid, String imgpath) {
         String data = "";
-        if (processImg(name+"-"+mobile,imgpath,mobile)) {
-            if(registerDatabase(name,mobile,time)){
+        if (processImg(firstname+"-"+mobile,imgpath,mobile)) {
+            if(registerDatabase(firstname,lastname, mobile,id,email, accessid, uniqueid)){
                 Log.e("tag", "Register Success");
                 showResult( getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -685,7 +785,7 @@ public class ManagementActivity extends AppCompatActivity {
 
     }
 
-    public void localUpdate(String oldmobile,String name,String mobile,String time,String imagePath){
+    public void localUpdate(String oldmobile,String fistname,String lastname,String mobile,String id, String email, String accessid, String  uniqueid, String imagePath){
         String data = "";
         List<RegisteredMembers> list  = LitePal.where("mobile = ?", oldmobile).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
@@ -694,11 +794,16 @@ public class ManagementActivity extends AppCompatActivity {
             File file = new File(imagePath);
             String filepath = Environment.getExternalStorageDirectory() + "/pic/update.jpg";
             if (file.exists() && filepath.equalsIgnoreCase(imagePath)) {
-                if(processImg(name+"-"+mobile,imagePath,oldmobile)){
+                if(processImg(fistname+"-"+mobile,imagePath,oldmobile)){
                     RegisteredMembers Members = list.get(0);
-                    Members.setName(name);
+                    Members.setFirstname(fistname);
+                    Members.setLastname(lastname);
                     Members.setMobile(mobile);
-                    Members.setExpire_time(time);
+                    Members.setMemberid(id);
+                    Members.setEmail(email);
+                    Members.setAccessid(accessid);
+                    Members.setUniqueid(uniqueid);
+                    //Members.setExpire_time(time);
                     Members.setStatus(Members.getStatus());
                     Members.setImage(Members.getImage());
                     Members.setFeatures(Members.getFeatures());
@@ -717,19 +822,24 @@ public class ManagementActivity extends AppCompatActivity {
                 String newimage ="";
                 String newfeature = "";
                 //if(!oldmobile.equals(mobile)){
-                    String oldimage =  Members.getImage();
-                    String oldfeature = Members.getFeatures();
-                     newimage =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + name +"-"+mobile+FaceServer.IMG_SUFFIX;
-                     newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + name +"-"+mobile;
-                    renameFile(oldimage,newimage);
-                    renameFile(oldfeature,newfeature);
+                String oldimage =  Members.getImage();
+                String oldfeature = Members.getFeatures();
+                newimage =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname +"-"+mobile+FaceServer.IMG_SUFFIX;
+                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname +"-"+mobile;
+                renameFile(oldimage,newimage);
+                renameFile(oldfeature,newfeature);
 //                }else{
 //                    newimage = Members.getImage();
 //                    newfeature = Members.getFeatures();
 //                }
-                Members.setName(name);
+                Members.setFirstname(fistname);
+                Members.setLastname(lastname);
                 Members.setMobile(mobile);
-                Members.setExpire_time(time);
+                Members.setEmail(email);
+                Members.setMemberid(id);
+                Members.setAccessid(accessid);
+                Members.setUniqueid(uniqueid);
+                //Members.setExpire_time(time);
                 Members.setStatus(Members.getStatus());
                 Members.setImage(newimage);
                 Members.setFeatures(newfeature);
@@ -775,7 +885,7 @@ public class ManagementActivity extends AppCompatActivity {
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);
             if (featureFile.exists() && featureFile.isFile()) {
-               boolean featureDeleteResult = featureFile.delete();
+                boolean featureDeleteResult = featureFile.delete();
                 if (featureDeleteResult) {
                     FaceServer.getInstance().deleteInfo(featureFile.getName());
                     Log.e("tag", "feature delete success---" + featurePath);
@@ -795,7 +905,7 @@ public class ManagementActivity extends AppCompatActivity {
     private void localDelete(RegisteredMembers members) {
         String data = "";
         DismissProgressDialog(mdeleteprogressDialog);
-        if (deleteDatabase(members.getName(),members.getMobile())) {
+        if (deleteDatabase(members.getFirstname(),members.getMobile())) {
             DismissDialog(mDeleteDialog);
             data = getString(R.string.Delete_success);
             refresh();
@@ -939,10 +1049,58 @@ public class ManagementActivity extends AppCompatActivity {
         return success;
     }
 
+    private void initNfc() {
+        mNfcAdapter = M1CardUtils.isNfcAble(this);
+        mPendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+    }
+
+    private void enableNfc() {
+        if (mNfcAdapter != null) {
+            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        }
+    }
+
+    private void disableNfc() {
+        if (mNfcAdapter != null) {
+            mNfcAdapter.disableForegroundDispatch(this);
+        }
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         FaceServer.getInstance().unInit();
+    }
+
+    private static String bytearray2Str(byte[] data, int start, int length, int targetLength) {
+        long number = 0;
+        if (data.length < start + length) {
+            return "";
+        }
+        for (int i = 1; i <= length; i++) {
+            number *= 0x100;
+            number += (data[start + length - i] & 0xFF);
+        }
+        return String.format("%0" + targetLength + "d", number);
+    }
+
+    private static byte[] hexStringToBytes(String hexString) {
+        if (hexString == null || hexString.equals("")) {
+            return null;
+        }
+        hexString = hexString.toUpperCase();
+        int length = hexString.length() / 2;
+        char[] hexChars = hexString.toCharArray();
+        byte[] d = new byte[length];
+        for (int i = 0; i < length; i++) {
+            int pos = i * 2;
+            d[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
+        }
+        return d;
+    }
+
+    private static byte charToByte(char c) {
+        return (byte) "0123456789ABCDEF".indexOf(c);
     }
 }

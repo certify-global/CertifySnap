@@ -285,6 +285,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 Intent guideIntent = new Intent(SettingActivity.this, GuideViewSetting.class);
                 startActivity(guideIntent);
                 break;
+            case R.id.management_setting:
+                Intent memberIntent = new Intent(SettingActivity.this, ManagementActivity.class);
+                startActivity(memberIntent);
+                break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);
                 finish();
