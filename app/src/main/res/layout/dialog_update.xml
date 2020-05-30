@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/heavyblue">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_margin="10dp"
-            android:background="@mipmap/edit" />
+            android:background="@mipmap/edit_black" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -26,8 +26,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Update"
-            android:textColor="@color/white"
+            android:text="UPDATE"
+            android:textStyle="bold"
+            android:textColor="@color/black"
             android:textSize="26sp" />
 
         <LinearLayout
@@ -56,7 +57,7 @@
             android:layout_height="150dp"
             android:layout_margin="5dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/face" />
+            android:src="@mipmap/face_black" />
 
     </LinearLayout>
 
@@ -97,21 +98,17 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/name2"
-                android:visibility="gone"/>
-
-            <TextView android:id="@+id/dialog_text_first_name"
+            <TextView
+                android:id="@+id/dialog_text_first_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
                 android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:text="Full Name" />
+                android:background="@drawable/edit_shape"
+                android:paddingLeft="10dp"
+                android:text="Full Name"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -133,8 +130,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
                 android:gravity="center_vertical"
+                android:background="@drawable/edit_shape"
+                android:paddingLeft="10dp"
                 android:textSize="20sp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:text="Last Name" />
 
         </LinearLayout>
@@ -150,8 +149,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
                 android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:background="@drawable/edit_shape"
                 android:textSize="20sp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:text="Member Id" />
 
         </LinearLayout>
@@ -168,7 +169,9 @@
                 android:layout_margin="3dp"
                 android:gravity="center_vertical"
                 android:textSize="20sp"
-                android:textColor="@color/white"
+                android:paddingLeft="10dp"
+                android:background="@drawable/edit_shape"
+                android:textColor="@color/black"
                 android:text="Phone Number" />
 
         </LinearLayout>
@@ -184,8 +187,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
                 android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:background="@drawable/edit_shape"
                 android:text="Email Address"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
         </LinearLayout>
@@ -201,8 +206,10 @@
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
                 android:gravity="center_vertical"
+                android:paddingLeft="10dp"
+                android:background="@drawable/edit_shape"
                 android:text="Access Id"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
         </LinearLayout>
@@ -211,6 +218,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/dialog_text_unique_id"
@@ -308,8 +316,8 @@
                 android:padding="5dp"
                 android:gravity="center_vertical"
                 android:background="@drawable/edit_shape"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:hint="First Name" />
 
         </LinearLayout>
@@ -327,8 +335,8 @@
                 android:padding="5dp"
                 android:gravity="center_vertical"
                 android:background="@drawable/edit_shape"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:hint="Last Name" />
 
         </LinearLayout>
@@ -345,12 +353,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="3dp"
-                android:hint="Member Id"
-                android:padding="5dp"
                 android:background="@drawable/edit_shape"
+                android:hint="Member Id"
                 android:inputType="number"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
+                android:padding="5dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black" />
 
         </LinearLayout>
 
@@ -376,8 +384,8 @@
                 android:background="@drawable/edit_shape"
                 android:inputType="number"
                 android:maxLength="11"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:hint="Phone Number" />
 
         </LinearLayout>
@@ -398,8 +406,8 @@
                 android:padding="5dp"
                 android:background="@drawable/edit_shape"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
+                android:textColor="@color/black"
+                android:textColorHint="@color/black" />
 
         </LinearLayout>
 
@@ -420,13 +428,14 @@
                 android:padding="5dp"
                 android:background="@drawable/edit_shape"
                 android:inputType="textEmailAddress"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
+                android:textColor="@color/black"
+                android:textColorHint="@color/black" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linear_unique_id"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_below="@+id/linear_first_name"
@@ -492,9 +501,9 @@
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
             android:layout_margin="10dp"
+            android:background="@drawable/btn_shape"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/btn_selector"
-            android:textColor="@color/skyblue"
+            android:textColor="@color/black"
             android:textSize="18sp"
             android:text="Update"/>
 
@@ -505,8 +514,8 @@
             android:layout_marginTop="10dp"
             android:layout_margin="10dp"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/btn_selector"
-            android:textColor="@color/skyblue"
+            android:background="@drawable/btn_shape"
+            android:textColor="@color/black"
             android:textSize="18sp"
             android:text="@string/access_control_enroll"/>
 

@@ -82,6 +82,7 @@ public class ManagementActivity extends AppCompatActivity {
     private String updateimagePath = "";
     private PopupWindow mpopupwindow;
     private Uri registerUri;
+    private Uri imageUri;
     private String registerpath = "";
     private String model = Build.MODEL;
     private Uri updateUri;
@@ -91,6 +92,7 @@ public class ManagementActivity extends AppCompatActivity {
     public final static int TOAST = 2;
     public final static int REGISTER = 3;
     public final static int REGISTER_PHOTO = 1;
+    private final static int PICK_IMAGE =3;
     public final static int UPDATE_PHOTO = 2;
     private String ROOT_PATH_STRING = "";
 
@@ -349,6 +351,9 @@ public class ManagementActivity extends AppCompatActivity {
     LinearLayout textbody;
     LinearLayout editbody;
     private Button enrollBtn;
+    ImageView mregisterfaceimg = null;
+    Button mtakephoto;
+    Button musephoto;
 
     private void showUpdateDialog(final RegisteredMembers member) {
         updateMember = member;
@@ -629,7 +634,7 @@ public class ManagementActivity extends AppCompatActivity {
         }
     }
 
-    ImageView mregisterfaceimg = null;
+
 
     @SuppressLint("ResourceAsColor")
     private void showRegisterPopupwindow() {
@@ -661,10 +666,27 @@ public class ManagementActivity extends AppCompatActivity {
 //        });
 
         mregisterfaceimg = view.findViewById(R.id.popup_faceimg);
-        mregisterfaceimg.setOnClickListener(new View.OnClickListener() {
+        musephoto = view.findViewById(R.id.popup_use_photo);
+        mtakephoto =view.findViewById(R.id.popup_take_photo);
+
+/*        mregisterfaceimg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 takephoto();
+            }
+        });*/
+
+        mtakephoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takephoto();
+            }
+        });
+
+        musephoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gallaryPhoto();
             }
         });
 
@@ -934,6 +956,22 @@ public class ManagementActivity extends AppCompatActivity {
         startActivityForResult(intent, REGISTER_PHOTO);
     }
 
+    private  void gallaryPhoto(){
+        File outputImage = new File(getExternalCacheDir(), "register.jpg");
+        if (outputImage.exists()) outputImage.delete();
+        try {
+            outputImage.createNewFile();
+            Log.e("gallaypath----", outputImage.getPath() + "-" + registerpath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Intent gallery = new Intent();
+        gallery.setType("image/*");
+        gallery.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(Intent.createChooser(gallery, "Sellect Picture"), PICK_IMAGE);
+    }
 
     private void takefacephoto() {
         File outputImage = new File(getExternalCacheDir(), "update.jpg");
@@ -981,6 +1019,20 @@ public class ManagementActivity extends AppCompatActivity {
                         mfaceimg.setImageBitmap(bitmap);
                         Log.e("onactivityresult----", "set update bitmap");
                     } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case PICK_IMAGE:
+                if (resultCode == RESULT_OK && data != null) {
+                    imageUri = data.getData();
+
+                    try {
+                        Bitmap bitmap1;
+                        bitmap1 = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                        registerpath = Util.saveBitmapFile(bitmap1, "register.jpg");
+                        mregisterfaceimg.setImageBitmap(bitmap1);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
