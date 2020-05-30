@@ -247,6 +247,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private boolean rfIdEnable = false;
     private String mNfcIdString = "";
+    private Timer nfcCardTimer;
+    private boolean isFaceCameraOn = false;
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
@@ -623,19 +625,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         ID = mTag.getId();
         String UID = Util.bytesToHexString(ID);
         if(UID == null) return;
-        if (qrCodeEnable) {
-            hideQrCodeAndStartIrCamera();
-        } else {
-            initCameraPreview();
-        }
         mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
         Util.setAccessId(mNfcIdString);
         Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG).show();
+
+        hideQrCodeAndStartIrCamera();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        enableNfc();
         startCameraSource();
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "3");
         if (longVal.equals("")) {
@@ -663,7 +663,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }, 3000);
             //  }
         }
-        enableNfc();
         try {
             if (cameraHelper != null) {
                 cameraHelper.start();
@@ -743,6 +742,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         temperatureBitmap = null;
         if (cameraSource != null) {
             cameraSource.release();
+        }
+        if (nfcCardTimer != null) {
+            nfcCardTimer.cancel();
+            nfcCardTimer = null;
         }
     }
 
@@ -848,6 +851,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
+                    isFaceCameraOn = true;
+                    disableNfc();
                     countTempError = 0;
                     Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Face recognition values = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
@@ -900,6 +905,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     rl_header.setVisibility(View.VISIBLE);
                                                     tempServiceClose = true;
                                                     Util.enableLedPower(0);
+                                                    enableNfc();
                                                 }
                                             });
 
@@ -1510,16 +1516,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     logo.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
                     final Activity that = IrCameraActivity.this;
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // clearLeftFace(null);
-                            if (that != null && !that.isDestroyed()) {
-                                isTemperatureIdentified = false;
-                                recreate();
-                            }
-                        }
-                    }, delayMilli * 1000);
+                    isTemperatureIdentified = false;
+                    recreate();
                 }
             });
             Logger.debug(TAG, "ShowLauncherView()", "isTemperatureIdentified :" + isTemperatureIdentified);
@@ -1926,6 +1924,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             ConfirmationBoolean = true;
                             finish();
                         } else {
+
                             ShowLauncherView();
                         }
                         // }
@@ -2138,25 +2137,41 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
+        cancelNfcCardTimer();
+    }
+
+    private void startNfcCardTimer() {
+        cancelNfcCardTimer();
+        nfcCardTimer = new Timer();
+        nfcCardTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recreate();
+                    }
+                });
+                nfcCardTimer.cancel();
+            }
+        }, 3*1000);
+    }
+
+    private void cancelNfcCardTimer() {
+        Log.d(TAG, "Deep Cancel timer");
+        if (nfcCardTimer != null) {
+            nfcCardTimer.cancel();
+            nfcCardTimer = null;
+        }
     }
 
     private void hideQrCodeAndStartIrCamera() {
-        if (frameLayout != null) {
-            frameLayout.setVisibility(View.GONE);
-        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (preview != null) {
-                    preview.stop();
-                    preview.release();
-                }
-                if (cameraSource != null) {
-                    cameraSource.stop();
-                    cameraSource.release();
-                }
                 initCameraPreview();
             }
-        }, 100);
+        }, 50);
+        startNfcCardTimer();
     }
 }
