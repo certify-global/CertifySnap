@@ -29,6 +29,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
@@ -233,6 +234,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout relative_main;
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
+    private long delayMilliTimeOut = 0;
     private int countTempError = 1;
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage, tv_scan;
@@ -627,7 +629,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if(UID == null) return;
         mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
         Util.setAccessId(mNfcIdString);
-        Toast.makeText(this, getString(R.string.grant_access), Toast.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar
+                .make(relativeLayout, R.string.grant_access, Snackbar.LENGTH_LONG);
+        snackbar.show();
 
         hideQrCodeAndStartIrCamera();
     }
@@ -2047,7 +2051,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             if (institutionId.isEmpty()) {
                 Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
-                Toast.makeText(this, "Error! Device is not registered, Please register it", Toast.LENGTH_LONG).show();
+                Snackbar snackbar = Snackbar
+                        .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
+                snackbar.show();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -2104,7 +2110,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     img_qr.setVisibility(View.VISIBLE);
                     img_qr.setBackgroundResource(R.drawable.invalid_qr);
                     imageqr.setBackgroundColor(getResources().getColor(R.color.red));
-                    Logger.toast(this, "Invalid QRCode");
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, R.string.invalid_qr, Snackbar.LENGTH_LONG);
+                    snackbar.show();
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -2203,20 +2211,30 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void setCameraPreviewTimer() {
-        cancelImageTimer();
-        imageTimer = new Timer();
-        imageTimer.schedule(new TimerTask() {
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        recreate();
-                        Util.enableLedPower(0);
-                    }
-                });
-
-                this.cancel();
+        try {
+            String longVal = sharedPreferences.getString(GlobalParameters.Timeout, "5");
+            if (longVal.equals("")) {
+                delayMilliTimeOut = 5;
+            } else {
+                delayMilliTimeOut = Long.parseLong(longVal);
             }
-        }, 5 * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
+            cancelImageTimer();
+            imageTimer = new Timer();
+            imageTimer.schedule(new TimerTask() {
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            recreate();
+                            Util.enableLedPower(0);
+                        }
+                    });
+
+                    this.cancel();
+                }
+            }, delayMilliTimeOut * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
+        }catch (Exception e){
+            Logger.error(TAG," setCameraPreviewTimer()",e.getMessage());
+        }
     }
 }
