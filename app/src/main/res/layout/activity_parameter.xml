@@ -231,8 +231,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -412,8 +411,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:text="Brightness: "
-                android:visibility="gone"/>
+                android:text="Brightness: " />
 
             <SeekBar
                 android:layout_margin="20dp"
@@ -421,8 +419,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:max="255"
-                android:progress="70"
-               android:visibility="gone" />
+                android:progress="70" />
 
         </LinearLayout>
 
