@@ -247,7 +247,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private boolean rfIdEnable = false;
     private String mNfcIdString = "";
-    private Timer nfcCardTimer;
     private boolean isFaceCameraOn = false;
 
     private AlertDialog nfcDialog;
@@ -742,10 +741,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         temperatureBitmap = null;
         if (cameraSource != null) {
             cameraSource.release();
-        }
-        if (nfcCardTimer != null) {
-            nfcCardTimer.cancel();
-            nfcCardTimer = null;
         }
     }
 
@@ -2133,6 +2128,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         faceEngineHelper.initEngine(this);
         initRgbCamera();
         initIrCamera();
+        setCameraPreview();
     }
 
     private void getAppSettings() {
@@ -2158,31 +2154,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
-        cancelNfcCardTimer();
-    }
-
-    private void startNfcCardTimer() {
-        cancelNfcCardTimer();
-        nfcCardTimer = new Timer();
-        nfcCardTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        recreate();
-                    }
-                });
-                nfcCardTimer.cancel();
-            }
-        }, 3*1000);
-    }
-
-    private void cancelNfcCardTimer() {
-        if (nfcCardTimer != null) {
-            nfcCardTimer.cancel();
-            nfcCardTimer = null;
-        }
     }
 
     private void hideQrCodeAndStartIrCamera() {
@@ -2192,6 +2163,39 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 initCameraPreview();
             }
         }, 50);
-        startNfcCardTimer();
+    }
+
+    private void setCameraPreview() {
+        enableLedPower();
+        disableNfc();
+        isFaceCameraOn = true;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                changeVerifyBackground(R.color.transparency, true);
+                relative_main.setVisibility(View.GONE);
+                rl_header.setVisibility(View.GONE);
+                logo.setVisibility(View.GONE);
+            }
+        });
+        setCameraPreviewTimer();
+    }
+
+    private void setCameraPreviewTimer() {
+        cancelImageTimer();
+        imageTimer = new Timer();
+        imageTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        recreate();
+                        Util.enableLedPower(0);
+                    }
+                });
+
+                this.cancel();
+            }
+        }, 5 * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
     }
 }
