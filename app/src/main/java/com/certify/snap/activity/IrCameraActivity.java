@@ -412,8 +412,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan.setTypeface(rubiklight);
             Animation animation =
                     AnimationUtils.loadAnimation(getApplicationContext(), R.anim.qr_line_anim);
-
-            // relative_qrcode =findViewById(R.id.relative_qrcode);
             if (preview == null) {
                 Log.d(TAG, "Preview is null");
             }
@@ -430,6 +428,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 imageqr.startAnimation(animation);
             } else {
                 frameLayout.setVisibility(View.GONE);
+
             }
         } catch (Exception e) {
             Logger.debug("initQRCode()", e.getMessage());
@@ -2084,6 +2083,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     preview.stop();
                     initCameraPreview();
                 } else {
+                    preview.stop();
                     img_qr.setVisibility(View.VISIBLE);
                     img_qr.setBackgroundResource(R.drawable.invalid_qr);
                     imageqr.setBackgroundColor(getResources().getColor(R.color.red));
@@ -2092,7 +2092,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         @Override
                         public void run() {
                             img_qr.setVisibility(View.GONE);
-                            preview.stop();
                             startCameraSource();
                             tv_scan.setText(R.string.tv_qr_scan);
                             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
