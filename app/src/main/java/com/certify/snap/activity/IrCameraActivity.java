@@ -262,6 +262,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     View imageqr;
     RelativeLayout qr_main;
     private boolean qrCodeEnable = false;
+    private String institutionId = "";
 
     private void instanceStart() {
         try {
@@ -2046,6 +2047,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             //  preview.release();
 
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+            if (institutionId.isEmpty()) {
+                Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
+                Toast.makeText(this, "Error! Device is not registered, Please register it", Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        img_qr.setVisibility(View.GONE);
+                        startCameraSource();
+                    }
+                }, 3*1000);
+                preview.stop();
+                return;
+            }
             for (int i = 0; i < guid.length(); i++) {
                 try {
                     JSONObject obj = new JSONObject();
@@ -2124,6 +2138,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void getAppSettings() {
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
+        institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,"");
     }
 
     private void initRfidControl() {

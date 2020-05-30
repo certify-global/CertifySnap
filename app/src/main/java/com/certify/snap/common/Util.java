@@ -773,9 +773,13 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
-        Camera.Parameters parameters = camera.getParameters();
-        return convertYuvByteArrayToBitmap(data, parameters);
-
+        try {
+            Camera.Parameters parameters = camera.getParameters();
+            return convertYuvByteArrayToBitmap(data, parameters);
+        } catch (Exception e) {
+            Logger.error(LOG, "convertYuvByteArrayToBitmap", "Conversion from byte to bitmap failed");
+            return null;
+        }
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
