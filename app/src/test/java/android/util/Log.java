@@ -25,4 +25,13 @@ public class Log {
         System.out.println(t+" "+m);
         return 0;
     }
+    public static int e(String s, String m, Throwable t) {
+        System.out.println(t+" "+m);
+        return 0;
+    }
+
+    public static int v(String t, String m) {
+        System.out.println(t+" "+m);
+        return 0;
+    }
 }

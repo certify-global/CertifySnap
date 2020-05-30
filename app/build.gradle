@@ -113,6 +113,7 @@ dependencies {
     implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     testImplementation 'commons-logging:commons-logging:1.2'
     testImplementation "org.mockito:mockito-core:3.3.3"
+    androidTestImplementation "org.mockito:mockito-core:3.3.3"
     testImplementation "org.robolectric:robolectric:4.3.1"
 
 }
