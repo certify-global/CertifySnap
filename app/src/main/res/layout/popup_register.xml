@@ -34,7 +34,7 @@
             android:id="@+id/popup_faceimg"
             android:layout_width="120dp"
             android:layout_height="150dp"
-            android:layout_margin="5dp"
+            android:layout_margin="6dp"
             android:src="@mipmap/face" />
 
     </LinearLayout>
