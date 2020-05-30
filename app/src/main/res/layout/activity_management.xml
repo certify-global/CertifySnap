@@ -9,7 +9,7 @@
     <LinearLayout android:id="@+id/managetitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/skyblue"
+        android:background="@color/bg_green"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="left|center"
             android:text="Member Management"
             android:textColor="#ffffff"
             android:textSize="22sp" />

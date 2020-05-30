@@ -1950,7 +1950,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
                             return;
                         }
-                        if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
+                        String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
+                        int thresholdvalue = Integer.parseInt(thresholdFacialPreference);Float thresholdFacial = (float)(thresholdvalue/100);
+                        Logger.debug("Naga", "thresholdValue", thresholdFacialPreference);
+
+                        if (compareResult.getSimilar() > thresholdFacial) {
+
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);

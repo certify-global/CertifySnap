@@ -82,6 +82,7 @@ public class GlobalParameters {
     public static final String GUIDE_TEXT3 = "guide_text3";
     public static final String GUIDE_SCREEN = "guide_screen";
     public static final String TEMP_TEST_LOW = "temp_test_low";
+    public static final String FACIAL_THRESHOLD = "facial_similarity_range";
 
 
 

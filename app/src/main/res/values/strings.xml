@@ -174,7 +174,6 @@
     <string name="VISITOR">VISITOR </string>
 
 
-
     <string name="toast_manage_photoerror">This photo have some error,pls check the photo!</string>
     <string name="toast_manage_dateerror">Date format or length is wrong, please check!</string>
     <string name="toast_manage_notfullinfo">pls input full information!</string>
@@ -272,5 +271,6 @@
 
     <string name="name">NAME:</string>
     <string name="id">User ID:</string>
+    <string name="facial_threshold">Set Facial Threshold</string>
 
 </resources>

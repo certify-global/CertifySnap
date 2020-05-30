@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/bg_green">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/back"
+            android:onClick="onParamterback"
+            />
+
+        <TextView
+            android:id="@+id/titles"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="left|center"
+            android:text="Facial Recognition"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginLeft="10dp"
+            android:onClick="onParamterback" />
+        <TextView
+            android:id="@+id/btn_save"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="right|center"
+            android:text="@string/save"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            android:layout_marginRight="10dp"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_delay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/editTextDialogUserInput"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/facial_threshold"
+            android:background="@drawable/edittextbackground"
+            android:inputType="numberDecimal"
+            android:paddingLeft="05dp"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>
