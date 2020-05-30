@@ -1597,6 +1597,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null) return;
+            if(camera==null)return;
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override

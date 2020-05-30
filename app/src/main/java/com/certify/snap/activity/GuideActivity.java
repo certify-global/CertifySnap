@@ -219,7 +219,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             String message = getResources().getString(R.string.active_failed);
             Logger.error(TAG, message);
             Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
-            //Util.switchRgbOrIrActivity(GuideActivity.this, true);
             finish();
             return;
         }
