@@ -256,5 +256,8 @@
     <string name="tv_qr_validating">Validating QR Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="grant_access">Access granted</string>
+    <string name="device_not_register">Device is not registered</string>
+    <string name="invalid_qr">Invalid QRCode</string>
+    <string name="timeout">TimeOut</string>
 
 </resources>

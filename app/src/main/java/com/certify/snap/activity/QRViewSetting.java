@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -25,6 +26,8 @@ public class QRViewSetting extends Activity {
     private RadioGroup rfidRg;
     private RadioButton rfidYesRb;
     private RadioButton rfidNoRb;
+    EditText editTextDialogTimeout;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class QRViewSetting extends Activity {
             RadioGroup radio_group_qr = findViewById(R.id.radio_group_qr);
             RadioButton rbguideyes = findViewById(R.id.radio_yes_qr);
             RadioButton rbguideno = findViewById(R.id.radio_no_qr);
+            editTextDialogTimeout = findViewById(R.id.editTextDialogTimeout);
             btn_save = findViewById(R.id.btn_exit);
             qr_screen = findViewById(R.id.qr_screen);
             titles = findViewById(R.id.titles);
@@ -48,6 +52,8 @@ public class QRViewSetting extends Activity {
             rfidRg = findViewById(R.id.radio_group_rfid);
             rfidYesRb = findViewById(R.id.radio_yes_rfid);
             rfidNoRb = findViewById(R.id.radio_no_rfid);
+
+            editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
 
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
                 rbguideyes.setChecked(true);
@@ -72,6 +78,7 @@ public class QRViewSetting extends Activity {
                     saveRfidSettings();
                     startActivity(new Intent(QRViewSetting.this,SettingActivity.class));
                     Util.showToast(QRViewSetting.this, getString(R.string.save_success));
+                    Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     finish();
                 }
             });
