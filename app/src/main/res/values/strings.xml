@@ -257,4 +257,18 @@
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="grant_access">Access granted</string>
 
+    <!-- Access control related strings start -->
+    <string name="access_control">Access Control</string>
+    <string name="access_control_parameter">sec</string>
+    <string name="enable_access_control">Enable Access Control (require ID)</string>
+    <string name="block_high_temperature">Block access on High Temperature Scan</string>
+    <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
+    <string name="access_control_card_format">Access Controller Card Format</string>
+    <string name="access_control_enroll">Enroll</string>
+    <string name="access_grant">Access granted</string>
+    <string name="access_failed">User cannot be identified. Please enroll</string>
+    <string name="automatic_door_access">Automatic Doors (does not require ID)</string>
+
+    <!-- Access control related strings end -->
+
 </resources>

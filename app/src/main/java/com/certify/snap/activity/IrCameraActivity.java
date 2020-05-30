@@ -81,6 +81,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.GuestMembers;
@@ -342,7 +343,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
         getAppSettings();
-        initRfidControl();
+        initAccessControl();
         try {
 
             processHandler = new ProcessHandler(this);
@@ -782,11 +783,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (temperature > thresholdTemperature) {
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(true, text, tempString, false);
+                            AccessCardController.getInstance().unlockDoorOnHighTemp();
                             //  mTemperatureListener.onTemperatureCall(true, text);
 
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false);
+                            AccessCardController.getInstance().unlockDoor();
                             //   mTemperatureListener.onTemperatureCall(false, text);
 //                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
 //                                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
@@ -2135,10 +2138,28 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,"");
+        getAccessControlSettings();
     }
 
-    private void initRfidControl() {
+    /**
+     * Method that fetches settings from the SharedPref
+     */
+    private void getAccessControlSettings() {
+        AccessCardController.getInstance().setAutomaticDoorEnabled(Util.getSharedPreferences(this).getBoolean(GlobalParameters.AutomaticDoorAccess, false));
+        AccessCardController.getInstance().setAccessControlEnabled(Util.getSharedPreferences(this).getBoolean(GlobalParameters.AccessControlEnable, false));
+        AccessCardController.getInstance().setBlockAccessOnHighTemp(Util.getSharedPreferences(this).getBoolean(GlobalParameters.BlockAccessHighTemp, true));
+        AccessCardController.getInstance().setRelayTime(Util.getSharedPreferences(this).getInt(GlobalParameters.RelayTime, Constants.DEFAULT_RELAY_TIME));
+        AccessCardController.getInstance().setWeiganControllerFormat(Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlCardFormat, Constants.DEFAULT_WEIGAN_CONTROLLER_FORMAT));
+    }
+
+    /**
+     * Method that initializes the access control & Nfc related members
+     */
+    private void initAccessControl() {
         if(!rfIdEnable) return;
+        if (AccessCardController.getInstance().isAutomaticDoorEnabled()) {
+            AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
+        }
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);

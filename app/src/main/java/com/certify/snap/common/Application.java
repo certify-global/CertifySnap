@@ -74,7 +74,7 @@ public class Application extends android.app.Application {
 
         temperatureUtil = new ThermalImageUtil(this);
 
-        initAppCenter();
+        //initAppCenter();
 
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(this);

@@ -716,6 +716,42 @@
             android:layout_height="1dp"
             android:background="@color/blue" />
 
+        <RelativeLayout
+            android:id="@+id/access_control"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:onClick="onclick"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/access_control_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_margin="4dp"
+                android:drawablePadding="5dp"
+                android:gravity="center"
+                android:text="@string/access_control"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:paddingStart="6dp"
+                android:layout_centerInParent="true"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="2dp"
+                android:src="@mipmap/enter"
+                android:contentDescription="@string/access_control"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue" />
 
         <Button
             android:id="@+id/btn_exit"

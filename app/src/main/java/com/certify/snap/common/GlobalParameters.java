@@ -33,6 +33,10 @@ public class GlobalParameters {
     public static final String NavigationBar = "navigationbar";
     public static final String RelayTime = "relaytime";
     public static final String LogFilePath = "logfilepath";
+    public static final String AccessControlEnable = "accessControlEnable";
+    public static final String BlockAccessHighTemp = "blockAccessHighTemp";
+    public static final String AccessControlCardFormat = "accessControlCardFormat";
+    public static final String AutomaticDoorAccess = "automaticDoorAccess";
 
     public static String Access_token = "";
     public static String channelID = "";

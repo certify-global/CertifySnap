@@ -77,6 +77,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     ImageView img_sync;
     RelativeLayout relative_layout;
     Switch switch_activate;
+    private RelativeLayout accessControl;
+    private TextView accessControlTv;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -196,6 +198,9 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
         tv_guide_setting = findViewById(R.id.tv_guide_setting);
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
+        accessControl = findViewById(R.id.access_control);
+        accessControlTv = findViewById(R.id.access_control_tv);
+
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -211,6 +216,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_qr_setting.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
+        accessControlTv.setTypeface(rubiklight);
     }
 
     @Override
@@ -291,6 +297,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             case R.id.qr_setting:
                 Intent qrintent = new Intent(SettingActivity.this, QRViewSetting.class);
                 startActivity(qrintent);
+                break;
+            case R.id.access_control:
+                Intent acIntent = new Intent(SettingActivity.this, AccessControlActivity.class);
+                startActivity(acIntent);
                 break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);
