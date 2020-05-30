@@ -430,6 +430,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
             if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) {
+                //Move the logo to the top
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)img_logo.getLayoutParams();
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
             } else {
