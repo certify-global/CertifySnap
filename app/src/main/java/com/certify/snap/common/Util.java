@@ -488,6 +488,7 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
+            obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
@@ -588,7 +589,7 @@ public class Util {
                 return;
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
-            obj.put("certifyId", 0);
+            obj.put("id", sp.getString(GlobalParameters.SNAP_ID,""));
             obj.put("deviceId", Util.getSerialNumber());
             obj.put("temperature", temperature);
             obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
@@ -603,6 +604,10 @@ public class Util {
             obj.put("exceedThreshold", aBoolean);
             obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID,""));
             obj.put("accessId", accessId);
+            obj.put("firstName", sp.getString(GlobalParameters.FIRST_NAME,""));
+            obj.put("lastName",  sp.getString(GlobalParameters.LAST_NAME,""));
+            obj.put("memberId",  sp.getString(GlobalParameters.MEMBER_ID,""));
+            obj.put("trqStatus",  sp.getString(GlobalParameters.TRQ_STATUS,""));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
@@ -774,7 +779,7 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
-        if (data == null) return null;
+        if (data == null || cameraParameters==null) return null;
         Camera.Size size = cameraParameters.getPreviewSize();
         YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -855,6 +860,7 @@ public class Util {
             obj.put("lastUpdateDateTime", Util.getUTCDate());
             obj.put("deviceSN", Util.getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
+            obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -1098,8 +1104,16 @@ public class Util {
     public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            String snapID = reportInfo.getJSONObject("responseData").getString("snapID");
-            Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, snapID);
+            String id = reportInfo.getJSONObject("responseData").getString("id");
+            String firstName = reportInfo.getJSONObject("responseData").getString("firstName");
+            String lastName = reportInfo.getJSONObject("responseData").getString("lastName");
+            String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
+            String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
+            Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, id);
+            Util.writeString(sharedPreferences, GlobalParameters.FIRST_NAME, firstName);
+            Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
+            Util.writeString(sharedPreferences, GlobalParameters.TRQ_STATUS, trqStatus);
+            Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
 
 
         } catch (Exception e) {

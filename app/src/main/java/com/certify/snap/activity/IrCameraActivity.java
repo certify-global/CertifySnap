@@ -414,8 +414,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan.setTypeface(rubiklight);
             Animation animation =
                     AnimationUtils.loadAnimation(getApplicationContext(), R.anim.qr_line_anim);
-
-            // relative_qrcode =findViewById(R.id.relative_qrcode);
             if (preview == null) {
                 Log.d(TAG, "Preview is null");
             }
@@ -432,6 +430,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 imageqr.startAnimation(animation);
             } else {
                 frameLayout.setVisibility(View.GONE);
+
             }
         } catch (Exception e) {
             Logger.debug("initQRCode()", e.getMessage());
@@ -1596,6 +1595,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null) return;
+            if(camera==null)return;
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -2050,6 +2050,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 try {
                     JSONObject obj = new JSONObject();
                     obj.put("qrCodeID", guid);
+                    obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
                     new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
                 } catch (Exception e) {
                     Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
@@ -2075,6 +2076,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (!reportInfo.isNull("Message")) {
                 if (reportInfo.getString("Message").contains("token expired"))
                     Util.getToken(this, this);
+                JSONObject obj = new JSONObject();
+                obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID,""));
+                obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
+                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
 
             } else {
                 if (reportInfo.isNull("responseCode")) return;
@@ -2083,6 +2088,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     preview.stop();
                     initCameraPreview();
                 } else {
+                    preview.stop();
                     img_qr.setVisibility(View.VISIBLE);
                     img_qr.setBackgroundResource(R.drawable.invalid_qr);
                     imageqr.setBackgroundColor(getResources().getColor(R.color.red));
@@ -2091,7 +2097,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         @Override
                         public void run() {
                             img_qr.setVisibility(View.GONE);
-                            preview.stop();
                             startCameraSource();
                             tv_scan.setText(R.string.tv_qr_scan);
                             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
@@ -2105,6 +2110,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error(" onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
             preview.stop();
             startCameraSource();
+            Logger.toast(this,"QRCode something went wrong.Please try again");
 
         }
     }

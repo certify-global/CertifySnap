@@ -87,6 +87,10 @@ public class GlobalParameters {
     public static final String QRCODE_ID = "qrcode_id";
     public static final String QRCODE_Valid = "qrcode_valid";
     public static final String RFID_ENABLE = "rfid_enable";
+    public static final String FIRST_NAME = "first_name";
+    public static final String LAST_NAME = "last_name";
+    public static final String MEMBER_ID = "member_id";
+    public static final String TRQ_STATUS = "trq_status";
 
 
 
