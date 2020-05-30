@@ -2158,7 +2158,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void cancelNfcCardTimer() {
-        Log.d(TAG, "Deep Cancel timer");
         if (nfcCardTimer != null) {
             nfcCardTimer.cancel();
             nfcCardTimer = null;
