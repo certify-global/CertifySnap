@@ -441,7 +441,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                 params.addRule(RelativeLayout.CENTER_IN_PARENT);
-                params.setMargins(0,200,0,0);
+                params.setMargins(0,230,0,0);
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.GONE);
 

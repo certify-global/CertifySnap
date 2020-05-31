@@ -58,7 +58,7 @@ public class LoginActivity extends Activity {
                             text_input_login.setError(null);
                             if(sp.getBoolean(GlobalParameters.Cloud_Activated,false)){
                                 Util.openDialogSetting(LoginActivity.this);
-                                finish();
+                               // finish();
                             }else {
                                 Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                                 startActivity(intent);
@@ -86,7 +86,7 @@ public class LoginActivity extends Activity {
                             text_input_login.setError(null);
                             if(sp.getBoolean(GlobalParameters.Cloud_Activated,false)){
                                 Util.openDialogSetting(LoginActivity.this);
-                                finish();
+                               // finish();
                             }else {
                                 Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                                 startActivity(intent);
