@@ -628,16 +628,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (intent != null)
             mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
-        byte[] ID = new byte[20];
-        ID = mTag.getId();
-        String UID = Util.bytesToHexString(ID);
-        if(UID == null) return;
-        mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
-        Util.setAccessId(mNfcIdString);
-        accessGrantSnackbar = Snackbar.make(relativeLayout, R.string.grant_access, Snackbar.LENGTH_LONG);
-        accessGrantSnackbar.show();
+        if (mTag != null) {
+            byte[] ID = new byte[20];
+            ID = mTag.getId();
+            String UID = Util.bytesToHexString(ID);
+            if (UID == null) {
+                Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
+                return;
+            }
+            mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
+            Util.setAccessId(mNfcIdString);
+            accessGrantSnackbar = Snackbar.make(relativeLayout, R.string.grant_access, Snackbar.LENGTH_LONG);
+            accessGrantSnackbar.show();
 
-        hideQrCodeAndStartIrCamera();
+            hideQrCodeAndStartIrCamera();
+            return;
+        }
+        Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
     }
 
     @Override
