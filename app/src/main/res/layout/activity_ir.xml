@@ -48,14 +48,13 @@
             android:id="@+id/relative_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/splashbg2"
+            android:background="@color/white"
             android:visibility="visible">
 
             <ImageView
                 android:id="@+id/img_logo"
                 android:layout_width="300dp"
                 android:layout_height="150dp"
-                android:layout_centerInParent="true"
                 android:layout_marginTop="20dp"
                 android:background="@color/white"
                 android:scaleType="fitCenter" />
