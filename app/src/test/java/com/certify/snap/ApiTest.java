@@ -6,6 +6,7 @@ import android.os.Build;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.certify.snap.common.Application;
 import com.certify.snap.common.Util;
 import com.common.thermalimage.ThermalImageUtil;
 
@@ -37,15 +38,18 @@ public class ApiTest {
     @Mock
     ThermalImageUtil thermalImageUtil;
     @Mock
+    Application appContext;
+    @Mock
     Intent temperatureServiceIntent;
 
     @Test
     public void testRecordUserTemperature() throws IOException {
         HttpClient defaultHttpClient = Mockito.mock(HttpClient.class);
-
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getTemperatureUtil()).thenReturn(thermalImageUtil);
         when(defaultHttpClient.execute(Mockito.isA(HttpUriRequest.class))).thenThrow(new java.net.SocketException("invalid address"));
         Util.recordUserTemperature(null, context, "37.0", null, null, null, false);
-        Assert.assertTrue();
+        Assert.assertTrue(true);
 
     }
 }
