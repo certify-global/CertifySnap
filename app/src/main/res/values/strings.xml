@@ -271,6 +271,9 @@
     <string name="access_grant">Access granted</string>
     <string name="access_failed">User cannot be identified. Please enroll</string>
     <string name="automatic_door_access">Automatic Doors (does not require ID)</string>
+    <string name="tv_ok">OK</string>
+    <string name="setting_message">This device is Activated with your Cloud account.Any changes to the settings locally will be overwritten upon next restart or sync.Please modify the appropriate settings online and sync the settings on the device.</string>
+    <string name="setting_note">Note: You can modify locally to finalize what settings to apply for the device via online settings.</string>
 
     <!-- Access control related strings end -->
 

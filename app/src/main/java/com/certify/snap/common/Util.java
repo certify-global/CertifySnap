@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,7 +15,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.YuvImage;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
@@ -29,7 +32,9 @@ import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arcsoft.face.ErrorInfo;
@@ -40,6 +45,7 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
@@ -1071,6 +1077,7 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.Cloud_Activated, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
                     }
@@ -1078,6 +1085,7 @@ public class Util {
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.Cloud_Activated, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
                     }
@@ -1221,4 +1229,34 @@ public class Util {
         }
         return bytes;
     }
+
+    public static void openDialogSetting(final Context context) {
+      Typeface rubiklight = Typeface.createFromAsset(context.getAssets(),
+                "rubiklight.ttf");
+        final Dialog d = new Dialog(context);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //  d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        d.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        d.setCancelable(false);
+        d.setContentView(R.layout.activate_dialog);
+        TextView tv_setting_message = d.findViewById(R.id.tv_setting_message);
+        TextView tv_note_message = d.findViewById(R.id.tv_note_message);
+        TextView btn_continue = d.findViewById(R.id.btn_continue);
+        tv_setting_message.setTypeface(rubiklight);
+        tv_note_message.setTypeface(rubiklight);
+        btn_continue.setTypeface(rubiklight);
+
+
+
+        btn_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                d.dismiss();
+                Intent intent = new Intent(context, SettingActivity.class);
+                context.startActivity(intent);
+            }
+        });
+        d.show();
+    }
+
 }
