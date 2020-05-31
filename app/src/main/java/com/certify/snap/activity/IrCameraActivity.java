@@ -761,7 +761,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelImageTimer();
         instanceStop();
         temperatureBitmap = null;
+        if (preview != null) {
+            preview.stop();
+            preview.release();
+        }
         if (cameraSource != null) {
+            cameraSource.stop();
             cameraSource.release();
         }
     }
@@ -2235,11 +2240,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 logo.setVisibility(View.GONE);
                 relative_main.setVisibility(View.GONE);
                 changeVerifyBackground(R.color.transparency, true);
-                //hide qr image after scanning back temperature
-                img_qr.setVisibility(View.GONE);
-                startCameraSource();
-                tv_scan.setText(R.string.tv_qr_scan);
-                imageqr.setBackgroundColor(getResources().getColor(R.color.white));
             }
         }, 400); //Add delay for white screen
         setCameraPreviewTimer();
