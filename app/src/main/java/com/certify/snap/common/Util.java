@@ -603,7 +603,10 @@ public class Util {
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", aBoolean);
             obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID,""));
+            if(accessId.isEmpty()){
             obj.put("accessId", accessId);
+            }
+            obj.put("accessId", sp.getString(GlobalParameters.ACCESS_ID,""));
             obj.put("firstName", sp.getString(GlobalParameters.FIRST_NAME,""));
             obj.put("lastName",  sp.getString(GlobalParameters.LAST_NAME,""));
             obj.put("memberId",  sp.getString(GlobalParameters.MEMBER_ID,""));
@@ -1113,11 +1116,13 @@ public class Util {
             String lastName = reportInfo.getJSONObject("responseData").getString("lastName");
             String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
             String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
+            String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
             Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, id);
             Util.writeString(sharedPreferences, GlobalParameters.FIRST_NAME, firstName);
             Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
             Util.writeString(sharedPreferences, GlobalParameters.TRQ_STATUS, trqStatus);
             Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
+            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, qrAccessid);
 
 
         } catch (Exception e) {

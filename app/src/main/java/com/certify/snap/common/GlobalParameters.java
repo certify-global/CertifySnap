@@ -96,6 +96,7 @@ public class GlobalParameters {
     public static final String MEMBER_ID = "member_id";
     public static final String TRQ_STATUS = "trq_status";
     public static final String Timeout = "timeout";
+    public static final String ACCESS_ID = "access_id";
 
 
 
