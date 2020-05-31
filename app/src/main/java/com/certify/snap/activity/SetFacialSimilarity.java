@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
@@ -19,6 +21,9 @@ public class SetFacialSimilarity extends AppCompatActivity {
     EditText editTextDialogUserInput;
     SharedPreferences sp;
     TextView btn_save;
+    RadioGroup radio_group_sound;
+    RadioButton radio_yes_sound;
+    RadioButton radio_no_sound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +35,36 @@ public class SetFacialSimilarity extends AppCompatActivity {
         btn_save = findViewById(R.id.btn_save);
         sp = Util.getSharedPreferences(this);
 
-
         editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70"));
+
+        radio_group_sound = findViewById(R.id.radio_group_mask);
+        radio_yes_sound = findViewById(R.id.radio_yes_mask);
+        radio_no_sound = findViewById(R.id.radio_no_mask);
+
+        if(sp.getBoolean(GlobalParameters.MASK_DETECT,false)){
+            radio_yes_sound.setChecked(true);
+        }
+        else {
+            radio_no_sound.setChecked(true);
+        }
+        radio_group_sound.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                System.out.println("Test CheckId"+checkedId);
+                if(checkedId==R.id.radio_yes_mask){
+                    radio_yes_sound.setChecked(true);
+                    //radio_no_sound.setChecked(false);
+
+                    Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, true);
+                }
+                else{
+                    //radio_no_sound.setChecked(true);
+                    //radio_yes_sound.setChecked(false);
+
+                    Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, false);
+                }
+            }
+        });
 
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,8 +74,6 @@ public class SetFacialSimilarity extends AppCompatActivity {
                 finish();
             }
         });
-
-
     }
 
     public void onParamterback(View view) {

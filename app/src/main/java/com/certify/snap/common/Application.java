@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.snap.BuildConfig;
 import com.certify.snap.service.AlarmReceiver;
 import com.common.thermalimage.ThermalImageUtil;
 import com.microsoft.appcenter.AppCenter;
@@ -74,7 +75,9 @@ public class Application extends android.app.Application {
 
         temperatureUtil = new ThermalImageUtil(this);
 
-        initAppCenter();
+        if (BuildConfig.BUILD_TYPE != "debug") {
+            initAppCenter();
+        }
 
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(this);
