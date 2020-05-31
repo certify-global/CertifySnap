@@ -270,7 +270,7 @@
     <string name="success"><b>Success!</b></string>
     <string name="register_successful">Your Registration is Successfully\n completed. For Checking your\ntemperature please go to Home Screen</string>
 
-    <string name="name">NAME:</string>
+    <string name="name">Name:</string>
     <string name="id">User ID:</string>
     <string name="facial_threshold">Set Facial Threshold</string>
 
