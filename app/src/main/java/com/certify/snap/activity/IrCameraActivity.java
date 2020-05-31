@@ -761,14 +761,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelImageTimer();
         instanceStop();
         temperatureBitmap = null;
-        if (preview != null) {
-            preview.stop();
-            preview.release();
-        }
-        if (cameraSource != null) {
-            cameraSource.stop();
-            cameraSource.release();
-        }
+
+        clearQrCodePreview();
     }
 
     long time1, time2;
@@ -2087,6 +2081,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Snackbar snackbar = Snackbar
                         .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
                 snackbar.show();
+                preview.stop();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -2094,7 +2089,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         startCameraSource();
                     }
                 }, 3*1000);
-                preview.stop();
                 return;
             }
             for (int i = 0; i < guid.length(); i++) {
@@ -2240,6 +2234,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 logo.setVisibility(View.GONE);
                 relative_main.setVisibility(View.GONE);
                 changeVerifyBackground(R.color.transparency, true);
+                clearQrCodePreview();
             }
         }, 400); //Add delay for white screen
         setCameraPreviewTimer();
@@ -2268,5 +2263,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }, Long.parseLong(delayMilliTimeOut) * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
 
+    }
+
+    private void clearQrCodePreview() {
+        if (graphicOverlay != null) {
+            graphicOverlay.clear();
+        }
+        if (preview != null) {
+            preview.stop();
+            preview.release();
+        }
+        if (cameraSource != null) {
+            cameraSource.stop();
+            cameraSource.release();
+        }
     }
 }
