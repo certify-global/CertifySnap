@@ -787,6 +787,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
+                    processImage();
                     countTempError = 0;
                     Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Face recognition values = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
@@ -1836,7 +1837,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                processImage();
                 isTemperatureIdentified = true;
                 outerCircle.setBackgroundResource(R.drawable.border_shape);
                 tvErrorMessage.setVisibility(View.GONE);
@@ -1859,9 +1859,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } else {
                     tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                 }
-
-                //processImage();
-               // updateMaskDetection();
 
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
@@ -1967,26 +1964,29 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private String registerpath = "";
     private String model = Build.MODEL;
-   // static int inc;
+    //static int inc;
 
     public boolean processImage() {
-        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(irBitmap, true);
+
+        Logger.debug(TAG, "Mask  Value =  ", "Bitmap" + rgbBitmap);
+
+        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(rgbBitmap, true);
 
         if (bitmap == null) {
             Logger.debug(TAG, "Mask Value ", "Bitmap is null");
             return false;
         }
 
-       /* try {
-            inc++;
-            if (model.contains("950") || "TPS980Q".equals(Build.MODEL))
-                bitmap = Util.rotateToDegrees(bitmap, 90);
-            registerpath = Util.saveBitmapFile(bitmap, "register" + inc + ".jpg");
-            // mregisterfaceimg.setImageBitmap(bitmap);
-            Log.e("onactivityresult---", "set register bitmap-" + registerpath);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+//       try {
+//            inc++;
+//            if (model.contains("950") || "TPS980Q".equals(Build.MODEL))
+//                bitmap = Util.rotateToDegrees(bitmap, 90);
+//            registerpath = Util.saveBitmapFile(bitmap, "register" + inc + ".jpg");
+//            // mregisterfaceimg.setImageBitmap(bitmap);
+//            Log.e("onactivityresult---", "set register bitmap-" + registerpath);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -2004,8 +2004,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         //long processStartTime = System.currentTimeMillis();
         int faceProcessCode = fmEngine.process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
 
+        // Need to work on condition
+        if (relative_main.getVisibility() == View.GONE) {
+            findMaskDetection();
+        }
 
-        findMaskDetection();
         if (faceProcessCode == ErrorInfo.MOK) {
             Logger.debug(TAG, " Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
             return true;
@@ -2016,51 +2019,60 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void findMaskDetection() {
-        if (sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false)) {
-            List<MaskInfo> maskInfoList = new ArrayList<>();
-            fmEngine.getMask(maskInfoList);
 
-            Logger.debug(TAG, "Mask Value --- List size ", "Size = " + maskInfoList.size());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false)) {
+                    List<MaskInfo> maskInfoList = new ArrayList<>();
+                    fmEngine.getMask(maskInfoList);
 
-            if (maskInfoList.size() < 0) {
-                mask_message.setVisibility(View.GONE);
-                return;
-            } else {
-                mask_message.setVisibility(View.VISIBLE);
-                mask_message.setTextColor(getResources().getColor(R.color.white));
-            }
-            String maskText = "";
+                    Logger.debug(TAG, "Mask Value --- List size ", "Size = " + maskInfoList.size());
 
-            for (int i = 0; i < maskInfoList.size(); i++) {
-                int value = maskInfoList.get(i).getMask();
-                Logger.debug("tag", "maskInfoList----" + value);
-                if (value == 1) {
-                    mask_message.setTextColor(getResources().getColor(R.color.white));
-                    maskText = "Mask Detected ";
-                } else if (value == 0) {
-                    mask_message.setTextColor(getResources().getColor(R.color.red));
-                    maskText = "Without Mask ";
-                } else if (value == -1) {
-                    mask_message.setTextColor(getResources().getColor(R.color.white));
-                    maskText = "Unable to detect Mask ";
+                    if (maskInfoList.size() < 0) {
+                        mask_message.setVisibility(View.GONE);
+                        return;
+                    } else {
+                        mask_message.setVisibility(View.VISIBLE);
+                        mask_message.setTextColor(getResources().getColor(R.color.white));
+                    }
+                    String maskText = "";
+
+                    for (int i = 0; i < maskInfoList.size(); i++) {
+                        int value = maskInfoList.get(i).getMask();
+                        Logger.debug("tag", "maskInfoList----" + value);
+                        if (value == 1) {
+                            Logger.debug(TAG, "Mask  Value =  ", "Mask Detected");
+                            mask_message.setTextColor(getResources().getColor(R.color.white));
+                            maskText = "Mask Detected ";
+                        } else if (value == 0) {
+                            Logger.debug(TAG, "Mask  Value =  ", "Without Mask");
+                            mask_message.setTextColor(getResources().getColor(R.color.red));
+                            maskText = "Without Mask ";
+                        } else if (value == -1) {
+                            Logger.debug(TAG, "Mask  Value =  ", "Unable to detect Mask");
+                            mask_message.setTextColor(getResources().getColor(R.color.white));
+                            maskText = "Unable to detect Mask ";
+                        } else {
+                            mask_message.setVisibility(View.GONE);
+                        }
+                    }
+
+                    mask_message.setText(maskText);
+                    mask_message.setTypeface(rubiklight);
+                    if (mask_message.getText().toString().equals("")) {
+                        mask_message.setVisibility(View.GONE);
+                    }
                 } else {
                     mask_message.setVisibility(View.GONE);
+                    mask_message.setBackgroundColor(getResources().getColor(R.color.white));
                 }
             }
-
-            mask_message.setText(maskText);
-            mask_message.setTypeface(rubiklight);
-            if (mask_message.getText().toString().equals("")) {
-                mask_message.setVisibility(View.GONE);
-            }
-        }else {
-            mask_message.setVisibility(View.GONE);
-            mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-        }
+        });
     }
 
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
-        //processImage();
+
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
