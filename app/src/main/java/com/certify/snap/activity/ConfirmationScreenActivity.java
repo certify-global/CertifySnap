@@ -29,6 +29,7 @@ public class ConfirmationScreenActivity extends Activity {
     private SharedPreferences sp;
     String value;
     private long delayMilli = 0;
+    String longVal ;
 
 
     @Override
@@ -46,12 +47,14 @@ public class ConfirmationScreenActivity extends Activity {
             tv_subtitle = findViewById(R.id.tv_subtitle);
 
             if (value.equals("high")) {
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "3");
                 if (sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work.").isEmpty())
                     tv_title.setText("Please contact your supervisor before starting any work.");
                 else
                     tv_title.setText(sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work."));
                 tv_subtitle.setText(sp.getString(GlobalParameters.Confirm_subtitle_above, ""));
             } else {
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "3");
                 if (sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!").isEmpty())
                     tv_title.setText("Have a nice day!");
                 else
@@ -60,7 +63,7 @@ public class ConfirmationScreenActivity extends Activity {
             }
             tv_title.setTypeface(rubiklight);
             tv_subtitle.setTypeface(rubiklight);
-            String longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM, "3");
+
             if (longVal.equals("")) {
                 delayMilli = 3;
             } else {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,9 +23,10 @@ import com.certify.snap.common.Util;
 public class ScanViewActivity extends Activity {
 
     private SharedPreferences sp;
-    EditText et_screen_delay;
+    EditText et_screen_delay,editTextDialogUserInput_low;
     Typeface rubiklight;
-    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save;
+    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg;
+    TextInputLayout text_input_low_temp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,12 +49,18 @@ public class ScanViewActivity extends Activity {
             RadioGroup radio_group_sound = findViewById(R.id.radio_group_sound);
             RadioButton radio_yes_sound = findViewById(R.id.radio_yes_sound);
             RadioButton radio_no_sound = findViewById(R.id.radio_no_sound);
+            RadioGroup radio_group_reg = findViewById(R.id.radio_group_reg);
+            RadioButton radio_yes_reg = findViewById(R.id.radio_yes_reg);
+            RadioButton radio_no_reg = findViewById(R.id.radio_no_reg);
             et_screen_delay = findViewById(R.id.et_screen_delay);
+            text_input_low_temp = findViewById(R.id.text_input_low_temp);
+            editTextDialogUserInput_low = findViewById(R.id.editTextDialogUserInput_low);
             btn_save = findViewById(R.id.btn_exit);
             tv_delay = findViewById(R.id.tv_delay);
             tv_sound = findViewById(R.id.tv_sound);
             tv_temp_all = findViewById(R.id.tv_temp_all);
             tv_capture_image = findViewById(R.id.tv_capture_image);
+            tv_reg = findViewById(R.id.tv_reg);
             tv_scan = findViewById(R.id.titles);
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_delay.setTypeface(rubiklight);
@@ -61,6 +69,7 @@ public class ScanViewActivity extends Activity {
             tv_capture_image.setTypeface(rubiklight);
             tv_temp_details.setTypeface(rubiklight);
             tv_scan.setTypeface(rubiklight);
+            tv_reg.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
@@ -74,8 +83,15 @@ public class ScanViewActivity extends Activity {
             if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false))
                 radio_yes_sound.setChecked(true);
             else radio_no_sound.setChecked(true);
-
+            if(sp.getBoolean(GlobalParameters.ALLOW_ALL,false)) {
+                radio_yes_reg.setChecked(true);
+                text_input_low_temp.setVisibility(View.VISIBLE);
+            }else{
+                radio_no_reg.setChecked(true);
+                text_input_low_temp.setVisibility(View.GONE);
+            }
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
+            editTextDialogUserInput_low.setText(sp.getString(GlobalParameters.TEMP_TEST_LOW, "93.2"));
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -112,12 +128,26 @@ public class ScanViewActivity extends Activity {
                     else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, false);
                 }
             });
-
+            radio_group_reg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if(checkedId==R.id.radio_yes_reg){
+                        Util.writeBoolean(sp, GlobalParameters.ALLOW_ALL, true);
+                        text_input_low_temp.setVisibility(View.VISIBLE);
+                        }else{
+                            Util.writeBoolean(sp, GlobalParameters.ALLOW_ALL, false);
+                         text_input_low_temp.setVisibility(View.GONE);
+                    }
+                }
+            });
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
+
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
+                    Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
+                    finish();
                 }
             });
         }catch (Exception e){

@@ -32,6 +32,11 @@ public class GlobalParameters {
     public static final String StatusBar = "statusbar";
     public static final String NavigationBar = "navigationbar";
     public static final String RelayTime = "relaytime";
+    public static final String LogFilePath = "logfilepath";
+    public static final String AccessControlEnable = "accessControlEnable";
+    public static final String BlockAccessHighTemp = "blockAccessHighTemp";
+    public static final String AccessControlCardFormat = "accessControlCardFormat";
+    public static final String AutomaticDoorAccess = "automaticDoorAccess";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -52,7 +57,6 @@ public class GlobalParameters {
     public static final String INSTITUTION_ID = "institutionID";
     public static final String DEVICE_PASSWORD = "device_password";
     public static final String MOBILE_NUMBER = "mobile_number";
-    public static final String MobileAppVersion = "MobileAppVersion";
     public static final String UUID = "uuid";
     public static final String IMEI = "imei";
     public static final String ONLINE_MODE = "online_mode";
@@ -64,9 +68,12 @@ public class GlobalParameters {
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
     public static final String CAPTURE_SOUND = "c_m_sound";
+    public static final String ALLOW_ALL = "allow_all";
     public static final String DELAY_VALUE="delay_value";
-    public static final String DELAY_VALUE_CONFIRM="delay_value_confirm";
-    public static final String CONFIRM_SCREEN="confirm_screen";
+    public static final String DELAY_VALUE_CONFIRM_BELOW="delay_value_confirm";
+    public static final String CONFIRM_SCREEN_BELOW="confirm_screen";
+    public static final String CONFIRM_SCREEN_ABOVE="confirm_screen_above";
+    public static final String DELAY_VALUE_CONFIRM_ABOVE = "delay_value_confirm_above";
     public static final String Confirm_title_below = "Confirm_title_below";
     public static final String Confirm_subtitle_below = "Confirm_subtitle_below";
     public static final String Confirm_title_above = "Confirm_title_above";
@@ -78,6 +85,20 @@ public class GlobalParameters {
     public static final String GUIDE_TEXT2 = "guide_text2";
     public static final String GUIDE_TEXT3 = "guide_text3";
     public static final String GUIDE_SCREEN = "guide_screen";
+    public static final String TEMP_TEST_LOW = "temp_test_low";
+    public static final String SNAP_ID = "snap_id";
+    public static final String QR_SCREEN = "qr_screen";
+    public static final String QRCODE_ID = "qrcode_id";
+    public static final String QRCODE_Valid = "qrcode_valid";
+    public static final String RFID_ENABLE = "rfid_enable";
+    public static final String FIRST_NAME = "first_name";
+    public static final String LAST_NAME = "last_name";
+    public static final String MEMBER_ID = "member_id";
+    public static final String TRQ_STATUS = "trq_status";
+    public static final String Timeout = "timeout";
+    public static final String ACCESS_ID = "access_id";
+    public static final String Cloud_Activated = "cloud_activated";
+
 
 
 }

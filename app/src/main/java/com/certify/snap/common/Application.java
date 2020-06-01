@@ -5,16 +5,23 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.certify.snap.service.AlarmReceiver;
 import com.common.thermalimage.ThermalImageUtil;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.AbstractCrashesListener;
+import com.microsoft.appcenter.crashes.Crashes;
+import com.microsoft.appcenter.crashes.ingestion.models.ErrorAttachmentLog;
+import com.microsoft.appcenter.crashes.model.ErrorReport;
 import com.tamic.novate.Novate;
-//import com.tencent.bugly.crashreport.CrashReport;
 
 import org.litepal.LitePal;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +32,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 
 public class Application extends android.app.Application {
-
+    private static final String TAG = Application.class.getSimpleName();
     private static Application mInstance;
     private Novate novate;
 //    private MyOkHttp mMyOkHttp;
@@ -63,12 +70,14 @@ public class Application extends android.app.Application {
 //                .build();
 //        mMyOkHttp = new MyOkHttp(okHttpClient);
 
-//        MyCrashHandler.getInstance().init(this);
-//        CrashReport.initCrashReport(getApplicationContext(), "467db9b3cc", false);
-
         BlockDetectByPrinter.start(false);//检测卡顿
 
         temperatureUtil = new ThermalImageUtil(this);
+
+        initAppCenter();
+
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        crashHandler.init(this);
     }
 
     public static synchronized Application getInstance() {
@@ -89,7 +98,7 @@ public class Application extends android.app.Application {
 
     // Activity
     public void addActivity(Activity activity) {
-        activityList.add(activity);
+//        activityList.add(activity);
     }
 
     // Activity finish
@@ -126,4 +135,41 @@ public class Application extends android.app.Application {
             alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
     }
 
+    private void initAppCenter() {
+        setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
+        AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",
+                Analytics.class, Crashes.class);
+        AppCenter.setUserId(Util.getSerialNumber());
+        Crashes.setEnabled(true);
+    }
+
+    private void setAppCenterCrashListener() {
+        AbstractCrashesListener crashesListener = new AbstractCrashesListener() {
+            @Override
+            public boolean shouldProcess(ErrorReport report) {
+                Log.i(TAG, "Should process");
+                return true;
+            }
+
+            @Override
+            public Iterable<ErrorAttachmentLog> getErrorAttachments(ErrorReport report) {
+                Log.d(TAG, "Initiate crash report sending");
+                SharedPreferences sp = Util.getSharedPreferences(getApplicationContext());
+                byte[] binaryData = Util.getBytesFromFile(sp.getString(GlobalParameters.LogFilePath, ""));
+                ErrorAttachmentLog binaryLog = ErrorAttachmentLog.attachmentWithBinary(binaryData, "Crashlog.log", "text/plain");
+                return Collections.singletonList(binaryLog);
+            }
+
+            @Override
+            public void onSendingFailed(ErrorReport report, Exception e) {
+                Log.e(TAG, "Crash report sending failed");
+            }
+
+            @Override
+            public void onSendingSucceeded(ErrorReport report) {
+                Log.d(TAG, "Success: Crash report sent");
+            }
+        };
+        Crashes.setListener(crashesListener);
+    }
 }

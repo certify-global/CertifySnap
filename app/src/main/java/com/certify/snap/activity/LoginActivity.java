@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.BuildConfig;
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -45,7 +45,7 @@ public class LoginActivity extends Activity {
                     "rubiklight.ttf");
             textview_name.setTypeface(rubiklight);
             tv_pwd_error.setTypeface(rubiklight);
-            tv_version.setText("Version: " + BuildConfig.VERSION_NAME);
+            tv_version.setText(Util.getVersionBuild());
             tv_serial_no.setText("Serial No: "+Util.getSNCode());
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -56,14 +56,20 @@ public class LoginActivity extends Activity {
                             text_input_login.setError("Password should not be empty");
                         }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
                             text_input_login.setError(null);
-                            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(sp.getBoolean(GlobalParameters.Cloud_Activated,false)){
+                                Util.openDialogSetting(LoginActivity.this);
+                               // finish();
+                            }else {
+                                Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         }else{
                             count--;
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
-                            tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
+                            tv_pwd_error.setText("Invalid Password, Try Again");
+                            //tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
                         }
                     }else{
                         String input =Util.getSNCode();     //input string
@@ -78,13 +84,18 @@ public class LoginActivity extends Activity {
                             text_input_login.setError("Password should not be empty");
                         }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
-                            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(sp.getBoolean(GlobalParameters.Cloud_Activated,false)){
+                                Util.openDialogSetting(LoginActivity.this);
+                               // finish();
+                            }else {
+                                Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else {
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
-                            tv_pwd_error.setText("Invalid Password ");
+                            tv_pwd_error.setText("Invalid Password, Try Again");
 //
                         }
 

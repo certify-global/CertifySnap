@@ -75,7 +75,6 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.service.GuideService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -246,12 +245,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         FaceServer.getInstance().init(this);//init FaceServer;
         initView();
 
-        mBeepManager = new BeepManager(this, R.raw.welcome);
-        manormalBeep = new BeepManager(this,R.raw.anormaly);
-        malertBeep = new BeepManager(this, R.raw.alert);
-        mBeepManager1 = new BeepManager(this, R.raw.beep);
-        mBeepManager2 = new BeepManager(this, R.raw.error);
-        mBeepSuccess = new BeepManager(this, R.raw.success);
         processHandler = new ProcessHandler(this);
 
         mNfcAdapter = M1CardUtils.isNfcAble(this);
@@ -1497,12 +1490,12 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     private void showWallpaper() {
         if (sp.getBoolean("wallpaper", false)) {
-            Glide.with(RgbCameraActivity.this)
-                    .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
-                    .error(R.mipmap.telpo)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(img_telpo);
+//            Glide.with(RgbCameraActivity.this)
+//                   // .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
+//                    .error(R.mipmap.telpo)
+//                    .skipMemoryCache(true)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .into(img_telpo);
         }
     }
 

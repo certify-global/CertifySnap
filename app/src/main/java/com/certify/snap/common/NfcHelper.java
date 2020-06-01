@@ -66,8 +66,6 @@ public class NfcHelper {
         myHandler = new MyHandler(mActivity);
         sp = Util.getSharedPreferences(mActivity);
         relaytimenumber = sp.getInt(GlobalParameters.RelayTime,5);
-        mBeepManager = new BeepManager(mActivity, R.raw.beep);
-        mBeepManager1 = new BeepManager(mActivity, R.raw.error);
     }
 
     public void initCard() {

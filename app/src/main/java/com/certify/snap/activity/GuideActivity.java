@@ -19,48 +19,40 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ActiveFileInfo;
-import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
+import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
+import com.certify.snap.R;
+import com.certify.snap.async.AsyncActiveEngine;
+import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.service.DeviceHealthService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 import com.romainpiel.titanic.library.Titanic;
 import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;
-import com.certify.snap.faceserver.FaceServer;
 
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import com.certify.snap.R;
 
-import org.json.JSONObject;
+public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback, ActiveEngineCallback {
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-
-public class GuideActivity extends Activity implements  SettingCallback, JSONObjectCallback {
-
-    public static final String TAG  = "GuideActivity";
+    public static final String TAG = GuideActivity.class.getSimpleName();
     public static Activity mActivity;
     private ImageView imgPic;
     private Animation myAnimation;
@@ -85,10 +77,6 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
-                Analytics.class, Crashes.class);
-        AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
-                Analytics.class, Crashes.class);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
@@ -99,27 +87,27 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         }
         mActivity = this;
         Application.getInstance().addActivity(this);
-        sharedPreferences=Util.getSharedPreferences(this);
+        sharedPreferences = Util.getSharedPreferences(this);
+        TextView tvVersion = findViewById(R.id.tv_version_guide);
+        tvVersion.setText(Util.getVersionBuild());
+        boolean onlineMode = true;
+        try {
+            onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
+        } catch (Exception ex) {
+            Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
+        }
+        AppCenter.setEnabled(onlineMode);
+        Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
-            if (Util.isConnectingToInternet(this)) {
-                Util.activateApplication(this,this);
-        } else {
-            Logger.toast(this, getResources().getString(R.string.network_error));
+        if (onlineMode) {
+            Util.activateApplication(this, this);
         }
 
-
-//        sp = Util.getSharedPreferences(this);
-//        if(sp.getBoolean("activate",false)) {
-//            Log.e("sp---true","activate:"+sp.getBoolean("activate",false));
-//        }else{
-//            activeEngine(null);
-//            Log.e("sp---false","activate:"+sp.getBoolean("activate",false));
-//        }
-        if(!isInstalled(GuideActivity.this,"com.telpo.temperatureservice")){
+        if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                 //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
+                    //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
                 }
             });
 
@@ -128,11 +116,9 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
         imgPic = findViewById(R.id.img_telpo);
         imgPic.startAnimation(myAnimation);
-
         checkStatus();
-
-        boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar,true);
-        boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar,true);
+        boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
+        boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
 
         sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
@@ -160,15 +146,15 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
         return false;
     }
 
-    private void checkStatus(){
+    private void checkStatus() {
         checkPermission();
         libraryExists = checkSoFile(LIBRARIES);
         ApplicationInfo applicationInfo = getApplicationInfo();
         Log.e(TAG, "onCreate: " + applicationInfo.nativeLibraryDir);
         if (!libraryExists) {
-            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
-            finish();
-        }else {
+//            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
+//            finish();
+        } else {
             VersionInfo versionInfo = new VersionInfo();
             int code = FaceEngine.getVersion(versionInfo);
             Log.e(TAG, "onCreate: getVersion, code is: " + code + ", versionInfo is: " + versionInfo);
@@ -176,7 +162,6 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
     }
 
     /**
-     *
      * @param libraries
      * @return
      */
@@ -208,8 +193,8 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             }
         }
     }
+
     /**
-     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -228,76 +213,34 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
     }
 
     private void start() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //FaceServer.getInstance().init(GuideActivity.this);
-                Util.switchRgbOrIrActivity(GuideActivity.this,true);
-            }
-        },1000);
+//        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
+//        Logger.debug(TAG, "start()", "Check permission start, SharedPref License activate with status:" +activateStatus);
+        if(!License.activateLicense(this)){
+            String message = getResources().getString(R.string.active_failed);
+            Logger.error(TAG, message);
+            Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
+          //  Util.switchRgbOrIrActivity(GuideActivity.this, true);
+            finish();
+            return;
+        }
 
+//        if (!activateStatus) //offline Active Engine
+//            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
+        else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //FaceServer.getInstance().init(GuideActivity.this);
+                    Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                }
+            }, 1000);
+
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    public void activeEngine(final View view) {
-        if (view != null) {
-            view.setClickable(false);
-        }
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                int activeCode = faceEngine.activeOnline(GuideActivity.this, Constants.APP_ID, Constants.SDK_KEY);
-                emitter.onNext(activeCode);
-            }
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Integer activeCode) {
-                        if (activeCode == ErrorInfo.MOK) {
-                          //  Util.showToast(SettingActivity.this,getString(R.string.active_success));
-                            Util.writeBoolean(sharedPreferences,"activate",true);
-                         //   show();
-                        } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-                          //  Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Util.writeBoolean(sharedPreferences,"activate",true);
-                           // show();
-                        } else {
-                          //  Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
-                            Util.writeBoolean(sharedPreferences,"activate",false);
-                         //   hide();
-                        }
-
-                        if (view != null) {
-                            view.setClickable(true);
-                        }
-                        ActiveFileInfo activeFileInfo = new ActiveFileInfo();
-                        int res = faceEngine.getActiveFileInfo(GuideActivity.this, activeFileInfo);
-                        if (res == ErrorInfo.MOK) {
-                            Log.e("activate---", activeFileInfo.toString());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
     }
 
 
@@ -307,10 +250,10 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             if (reportInfo == null) {
                 return;
             }
-            Util.retrieveSetting(reportInfo,GuideActivity.this);
+            Util.retrieveSetting(reportInfo, GuideActivity.this);
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" +e.getMessage());
         }
 
     }
@@ -321,11 +264,39 @@ public class GuideActivity extends Activity implements  SettingCallback, JSONObj
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo,status,GuideActivity.this);
-
+            Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            startHealthCheckService();
         } catch (Exception e) {
-            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" +e.getMessage());
         }
 
+    }
+
+    @Override
+    public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
+        Logger.debug(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
+        if (activeStatus) {
+            License.copyLicense(getApplicationContext());
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
+        } else if ("Offline".equals(status)) {
+            String activityKey = ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
+            ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
+        } else
+            Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Method that initiates the HealthCheck service if not started
+     */
+    private void startHealthCheckService() {
+        try {
+            if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
+                startService(new Intent(this, DeviceHealthService.class));
+                Application.StartService(this);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+        }
     }
 }
