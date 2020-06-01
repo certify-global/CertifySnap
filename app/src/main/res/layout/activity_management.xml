@@ -48,17 +48,15 @@
         android:layout_margin="5dp"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:layout_below="@+id/managetitle"
-        android:visibility="gone">
+        android:layout_below="@+id/managetitle">
 
 
         <EditText android:id="@+id/edit_search"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:paddingLeft="45dp"
-            android:hint="pls input name or mobile"
-            android:background="@drawable/search_shape"
-            android:visibility="gone"/>
+            android:hint="Please Input Name or User ID"
+            android:background="@drawable/search_shape" />
 
         <ImageView
             android:layout_width="25dp"
@@ -80,10 +78,36 @@
             android:background="@mipmap/clear"/>
 
     </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/member_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchtitle"
+        android:orientation="vertical">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightwhite" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:text="Member:"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightwhite" />
+
+    </LinearLayout>
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/main_content"
-        android:layout_below="@+id/searchtitle"
+        android:layout_below="@+id/member_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

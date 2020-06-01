@@ -282,8 +282,8 @@ public class ManagementActivity extends AppCompatActivity {
 
     private void searchData(String searchstr) {
         try {
-            List<RegisteredMembers> resultlist = LitePal.where("name like ? or mobile like ?", searchstr + "%", searchstr + "%")
-                    .order("name asc").find(RegisteredMembers.class);
+            List<RegisteredMembers> resultlist = LitePal.where("firstname like ? or memberid like ?", searchstr + "%", searchstr + "%")
+                    .order("firstname asc").find(RegisteredMembers.class);
             if (resultlist != null && resultlist.size()>0) {
                 Log.e("search result----", resultlist.toString());
                 refreshMemberList(resultlist);
