@@ -40,6 +40,8 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 import com.romainpiel.titanic.library.Titanic;
 import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;

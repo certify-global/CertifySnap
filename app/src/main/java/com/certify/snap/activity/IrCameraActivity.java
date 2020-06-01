@@ -50,6 +50,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arcsoft.face.MaskInfo;
+import com.arcsoft.face.enums.DetectModel;
+import com.arcsoft.imageutil.ArcSoftImageFormat;
+import com.arcsoft.imageutil.ArcSoftImageUtil;
+import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
@@ -62,6 +67,9 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.R;
+import com.certify.snap.faceserver.CompareResult;
+import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.arcface.util.camera.CameraListener;
@@ -97,12 +105,17 @@ import com.certify.snap.view.MyGridLayoutManager;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -132,6 +145,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int pressTimes = 0;
     private FaceEngine faceEngine;
 
+    private CompareResult compareResult;
     private static final int GUEST_QR_CODE = 333;
     public static final int HIDE_VERIFY_UI = 334;
     private static final int CARD_ID_ERROR = 335;
@@ -146,7 +160,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private View previewViewIr;
     private static boolean ConfirmationBoolean = false;
 
-    private TextView tv_display_time, tv_message, template_view;
+    private TextView tv_display_time, tv_message, template_view, mask_message;
 
     Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
 
@@ -266,6 +280,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean qrCodeEnable = false;
     private String institutionId = "";
     private int ledSettingEnabled = 0;
+    String fullName, memberId;
+    private int processMask = FaceEngine.ASF_MASK_DETECT;
 
     private void instanceStart() {
         try {
@@ -579,6 +595,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         innerCircle = findViewById(R.id.iv_verify_inner_circle);
         tvErrorMessage = findViewById(R.id.tv_error_message);
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        mask_message = findViewById(R.id.mask_message);
 
         tv_display_time = findViewById(R.id.tv_display_time);
         TextView tvVersionIr = findViewById(R.id.tv_version_ir);
@@ -679,6 +696,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             rl_header.setVisibility(View.VISIBLE);
             tv_message.setVisibility(View.GONE);
             temperature_image.setVisibility(View.GONE);
+            mask_message.setVisibility(View.GONE);
 
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -875,6 +893,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
+                    //processImage();
                     isFaceCameraOn = true;
                     disableNfc();
                     countTempError = 0;
@@ -926,6 +945,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     temperature_image.setVisibility(View.GONE);
                                                     relative_main.setVisibility(View.VISIBLE);
                                                     logo.setVisibility(View.VISIBLE);
+                                                    mask_message.setText("");
+                                                    mask_message.setVisibility(View.GONE);
                                                     rl_header.setVisibility(View.VISIBLE);
                                                     tempServiceClose = true;
                                                     disableLedPower();
@@ -943,10 +964,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
-                        //  searchFace(faceFeature, requestId);
+                        if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
+                            Logger.debug(TAG, " Facial Score ---  not liveness Defect ");
+                            searchFace(faceFeature, requestId);
+                        }
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
-                        //searchFace(faceFeature, requestId);
+                        if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)) {
+                            Logger.debug(TAG, " Facial Score ---  check facial defect");
+                            searchFace(faceFeature, requestId);
+                        }
                     } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
@@ -1144,6 +1171,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     logo.setVisibility(View.VISIBLE);
                     relative_main.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
+                    mask_message.setText("");
+                    mask_message.setVisibility(View.GONE);
                     disableLedPower();
                 }
             }
@@ -1180,12 +1209,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
 
-    private void showResult(CompareResult compareResult, int requestId, String message, final boolean isdoor) {
+    private void showResult(CompareResult compareResult, int requestId, String name, String id, final boolean isdoor) {
         //When adding display personnel, save their trackId
         compareResult.setTrackId(requestId);
-        compareResult.setMessage(message);
+        compareResult.setMessage(name);
+        compareResult.setMemberId(id);
         compareResultList.add(compareResult);
-        processHandler.postDelayed(new Runnable() {
+        this.compareResult = compareResult;
+/*        processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (isdoor) {
@@ -1201,7 +1232,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }
-        }, 100);
+        }, 100);*/
     }
 
     private void addOfflineMember(String name, String mobile, String image, Date verify_time, float temperature) {
@@ -1222,7 +1253,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
             if (!sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) &&
-                !rfIdEnable) {
+                    !rfIdEnable) {
                 faceEngineHelper.initEngine(this);
                 initRgbCamera();
                 initIrCamera();
@@ -1539,6 +1570,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     relative_main.setVisibility(View.VISIBLE);
                     logo.setVisibility(View.VISIBLE);
                     rl_header.setVisibility(View.VISIBLE);
+                    mask_message.setVisibility(View.GONE);
                     final Activity that = IrCameraActivity.this;
                     isTemperatureIdentified = false;
                     recreate();
@@ -1820,10 +1852,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         private FaceEngine ftEngine;
         private FaceEngine frEngine;
         private FaceEngine flEngine;
+        private FaceEngine fmEngine;
 
         private int ftInitCode = -1;
         private int frInitCode = -1;
         private int flInitCode = -1;
+        private int fmInitCode = -1;
 
         public FaceEngine getFtEngine() {
             return ftEngine;
@@ -1850,6 +1884,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             flInitCode = flEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY,
                     16, MAX_DETECT_NUM, FaceEngine.ASF_IR_LIVENESS);
 
+            fmEngine = new FaceEngine();
+            fmInitCode = fmEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT,
+                    16, 10, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT | processMask);
+
+            if (fmInitCode != ErrorInfo.MOK) {
+                String error = getString(R.string.specific_engine_init_failed, "faceEngine", fmInitCode);
+                Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face Mask init code is not Error MOK, Error: " + error);
+            }
+
             Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face EngineHelper init with code: " + flInitCode);
 
             if (ftInitCode != ErrorInfo.MOK) {
@@ -1866,6 +1909,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 String error = getString(R.string.specific_engine_init_failed, "flEngine", ftInitCode);
                 Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face IrLiveness init code is not Error MOK, Error: " + error);
                 // Toast.makeText(this,error,Toast.LENGTH_SHORT).show();
+            }
+
+            if (fmInitCode == ErrorInfo.MOK && faceEngine != null) {
+                synchronized (faceEngine) {
+                    int fmUnInitCode = flEngine.unInit();
+                    Logger.debug(TAG, "FaceEngineHelper.unInitEngine()", "Face mask UnInitEngine with code:" + fmUnInitCode);
+                }
             }
         }
 
@@ -1945,6 +1995,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
+                            if (compareResult != null) {
+                                intent.putExtra("compareResult", compareResult);
+                            }
                             startActivity(intent);
                             ConfirmationBoolean = true;
                             finish();
@@ -2300,5 +2353,233 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             cameraSource.stop();
             cameraSource.release();
         }
+    }
+
+    private String registerpath = "";
+    private String model = Build.MODEL;
+    //static int inc;
+
+    public boolean processImage() {
+
+        Logger.debug(TAG, "Mask  Value =  ", "Bitmap" + rgbBitmap);
+
+        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(rgbBitmap, true);
+
+        if (bitmap == null) {
+            Logger.debug(TAG, "Mask Value ", "Bitmap is null");
+            return false;
+        }
+
+//       try {
+//            inc++;
+//            if (model.contains("950") || "TPS980Q".equals(Build.MODEL))
+//                bitmap = Util.rotateToDegrees(bitmap, 90);
+//            registerpath = Util.saveBitmapFile(bitmap, "register" + inc + ".jpg");
+//            // mregisterfaceimg.setImageBitmap(bitmap);
+//            Log.e("onactivityresult---", "set register bitmap-" + registerpath);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
+        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
+        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+            Logger.debug(TAG, " Mask Value --- transform failed, code is " + transformCode);
+            return false;
+        }
+        List<FaceInfo> faceInfoList = new ArrayList<>();
+
+        //faceEngine.detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
+
+        //long processStartTime = System.currentTimeMillis();
+        int faceProcessCode = faceEngine.process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
+
+        // Need to work on condition
+        if (relative_main.getVisibility() == View.GONE) {
+            findMaskDetection();
+        }
+
+        if (faceProcessCode == ErrorInfo.MOK) {
+            Logger.debug(TAG, " Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
+            return true;
+        } else {
+            Logger.debug(TAG, " Mask Value --- faceProcessCode failed, code is " + faceProcessCode);
+            return false;
+        }
+    }
+
+    private void findMaskDetection() {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false)) {
+                    List<MaskInfo> maskInfoList = new ArrayList<>();
+                    faceEngine.getMask(maskInfoList);
+
+                    Logger.debug(TAG, "Mask Value --- List size ", "Size = " + maskInfoList.size());
+
+                    if (maskInfoList.size() < 0) {
+                        mask_message.setVisibility(View.GONE);
+                        return;
+                    } else {
+                        mask_message.setVisibility(View.VISIBLE);
+                        mask_message.setTextColor(getResources().getColor(R.color.white));
+                    }
+                    String maskText = "";
+
+                    for (int i = 0; i < maskInfoList.size(); i++) {
+                        int value = maskInfoList.get(i).getMask();
+                        Logger.debug("tag", "maskInfoList----" + value);
+                        if (value == 1) {
+                            Logger.debug(TAG, "Mask  Value =  ", "Mask Detected");
+                            mask_message.setTextColor(getResources().getColor(R.color.white));
+                            mask_message.setBackgroundColor(getResources().getColor(R.color.green));
+                            maskText = "Mask Detected ";
+                        } else if (value == 0) {
+                            Logger.debug(TAG, "Mask  Value =  ", "Without Mask");
+                            mask_message.setTextColor(getResources().getColor(R.color.white));
+                            mask_message.setBackgroundColor(getResources().getColor(R.color.red));
+                            maskText = "Without Mask ";
+                        } else if (value == -1) {
+                            Logger.debug(TAG, "Mask  Value =  ", "Unable to detect Mask");
+                            mask_message.setTextColor(getResources().getColor(R.color.white));
+                            mask_message.setBackgroundColor(getResources().getColor(R.color.dark_orange));
+                            maskText = "Unable to detect Mask ";
+                        } else {
+                            mask_message.setVisibility(View.GONE);
+                        }
+                    }
+
+                    mask_message.setText(maskText);
+                    mask_message.setTypeface(rubiklight);
+                    if (mask_message.getText().toString().equals("")) {
+                        mask_message.setVisibility(View.GONE);
+                    }
+                } else {
+                    mask_message.setVisibility(View.GONE);
+                    mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                }
+            }
+        });
+    }
+
+    String faceSimilarScore;
+    private static DecimalFormat df = new DecimalFormat("0.00");
+
+    private void searchFace(final FaceFeature frFace, final Integer requestId) {
+        Observable
+                .create(new ObservableOnSubscribe<CompareResult>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<CompareResult> emitter) {
+                        CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
+                        emitter.onNext(compareResult);
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<CompareResult>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(final CompareResult compareResult) {
+                        faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
+                        Logger.debug(TAG, " Facial Score ---  " + faceSimilarScore);
+
+                        if (compareResult == null || compareResult.getUserName() == null) {
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                            faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
+                            return;
+                        }
+                        String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
+                        int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
+                        Float thresholdFacial = (float) (thresholdvalue / 100);
+                        Logger.debug("Naga", "thresholdValue", thresholdFacialPreference);
+
+                        if (compareResult.getSimilar() > thresholdFacial) {
+
+                            boolean isAdded = false;
+                            if (compareResultList == null) {
+                                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                                faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
+                                return;
+                            }
+                            for (CompareResult compareResult1 : compareResultList) {
+                                if (compareResult1.getTrackId() == requestId) {
+                                    isAdded = true;
+                                    break;
+                                }
+                            }
+                            Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
+                            if (!isAdded) {
+                                if (compareResultList.size() >= MAX_DETECT_NUM) {
+                                    compareResultList.remove(0);
+                                    //adapter.notifyItemRemoved(0);
+                                }
+                                isSearch = true;
+
+                                String[] split = compareResult.getUserName().split("-");
+                                String mobile = "";
+                                if (split != null) mobile = split[1];
+
+                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date curDate = new Date(System.currentTimeMillis());
+                                String verify_time = formatter.format(curDate);
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                                String cpmpareTime = simpleDateFormat.format(curDate);
+
+                                registeredMemberslist = LitePal.where("mobile = ?", split[1]).find(RegisteredMembers.class);
+                                if (registeredMemberslist.size() > 0) {
+                                    RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                                    String status = registeredMembers.getStatus();
+                                    String name = registeredMembers.getFirstname();
+                                    String memberId = registeredMembers.getMemberid();
+                                    String image = registeredMembers.getImage();
+                                    if (status.equals("1")) {
+                                        if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
+                                                || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
+                                            fullName = getString(R.string.name) + name;
+                                            memberId = getString(R.string.id) + memberId;
+                                            addOfflineMember(name, mobile, image, new Date(), temperature);
+                                            time2 = System.currentTimeMillis();
+                                            showResult(compareResult, requestId, fullName, memberId, false);
+                                        }
+                                    } else if (!status.equals("1")) {
+                                        fullName = getString(R.string.text_nopermission);
+                                        showResult(compareResult, requestId, fullName, memberId, false);
+                                    }
+                                }
+
+                            }
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
+                            if (!isTemperature) {
+                                Log.e("retry----", "istemperature=" + isTemperature);
+                                faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                                retryRecognizeDelayed(requestId);
+                            }
+                        } else {
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                            retryRecognizeDelayed(requestId);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        retryRecognizeDelayed(requestId);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

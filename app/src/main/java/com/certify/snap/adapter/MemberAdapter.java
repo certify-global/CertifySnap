@@ -64,11 +64,14 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         try {
-        holder.name.setText(mlist.get(position).getName());
-        holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
-        holder.time.setText("ExpireTime: " + mlist.get(position).getExpire_time());
-        String path = mlist.get(position).getImage();
-        InputStream inputStream;
+            holder.name.setText(mlist.get(position).getFirstname());
+            holder.lastname.setText(mlist.get(position).getLastname());
+            holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
+            holder.id.setText("User Id: " + mlist.get(position).getMemberid());
+            holder.email.setText("Email: " + mlist.get(position).getEmail());
+            //holder.time.setText("ExpireTime: " + mlist.get(position).getExpire_time());
+            String path = mlist.get(position).getImage();
+            InputStream inputStream;
 
             Glide.with(mcontext)
                     .load(path)
@@ -126,14 +129,21 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
         ImageView image;
         TextView name;
         TextView mobile;
-        TextView time;
+        TextView id;
+        TextView email;
+        TextView lastname;
+        //TextView time;
 
         public MyViewHolder(View view) {
             super(view);
             image = view.findViewById(R.id.member_image);
-            name = view.findViewById(R.id.member_name);
+            name = view.findViewById(R.id.member_first_name);
+            lastname = view.findViewById(R.id.member_last_name);
+            id = view.findViewById(R.id.member_id);
             mobile = view.findViewById(R.id.member_mobile);
-            time = view.findViewById(R.id.member_time);
+            email = view.findViewById(R.id.member_email);
+
+            //time = view.findViewById(R.id.member_time);
         }
     }
 

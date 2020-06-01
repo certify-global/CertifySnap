@@ -764,7 +764,7 @@ public class Util {
             if (requestPermission.size() <= 0) return false;
             // context.requestPermissions(requestPermission.toArray(new String[0]), 1);
         } catch (Exception e) {
-            Logger.error(LOG + "PermissionRequest(android.app.Activity context, String[] permissions", e.getMessage());
+            Logger.error(LOG ,"PermissionRequest(android.app.Activity context, String[] permissions"+ e.getMessage());
         }
         return true;
     }
@@ -1246,5 +1246,4 @@ public class Util {
         });
         d.show();
     }
-
 }

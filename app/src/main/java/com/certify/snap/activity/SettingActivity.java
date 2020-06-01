@@ -2,7 +2,6 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,9 +14,6 @@ import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -34,32 +30,19 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ActiveFileInfo;
-import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
-import com.certify.snap.BuildConfig;
+import com.certify.snap.R;
 import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.Application;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
-import com.certify.snap.R;
 import com.certify.snap.service.DeviceHealthService;
-import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class SettingActivity extends Activity implements JSONObjectCallback,SettingCallback {
 
@@ -69,7 +52,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             thermal_check_setting, scan_setting, confirmation_setting, guide_setting,qr_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting,tv_qr_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting,tv_qr_setting, tv_facaial_settings, tv_member_management;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -196,6 +179,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_thermal_setting = findViewById(R.id.tv_thermal_setting);
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
+        tv_member_management = findViewById(R.id.member_management_setting);
+        tv_facaial_settings=findViewById(R.id.tv_facial_setting);
         tv_guide_setting = findViewById(R.id.tv_guide_setting);
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
         accessControl = findViewById(R.id.access_control);
@@ -212,6 +197,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
+        tv_member_management.setTypeface(rubiklight);
+        tv_facaial_settings.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_qr_setting.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
@@ -301,6 +288,14 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             case R.id.access_control:
                 Intent acIntent = new Intent(SettingActivity.this, AccessControlActivity.class);
                 startActivity(acIntent);
+                break;
+            case R.id.facial_setting:
+                Intent facialIntent = new Intent(SettingActivity.this, SetFacialSimilarity.class);
+                startActivity(facialIntent);
+                break;
+            case R.id.management_setting:
+                Intent memberIntent = new Intent(SettingActivity.this, ManagementActivity.class);
+                startActivity(memberIntent);
                 break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);

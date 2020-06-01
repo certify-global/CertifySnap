@@ -747,11 +747,11 @@ public class UpdateService extends Service {
                         for (Members member : list) {
                             if (member.getUserId().equals(userId)) {
                                 registeredMembers = new RegisteredMembers();
-                                registeredMembers.setName(member.getName());
+                                registeredMembers.setFirstname(member.getName());
                                 //registeredMembers.setUserId(member.getUserId());
                                 registeredMembers.setMobile(member.getMobile());
                                 registeredMembers.setStatus(member.getStatus());
-                                registeredMembers.setExpire_time(member.getExpire_time());
+                                registeredMembers.setExpiretime(member.getExpire_time());
                                 registeredMembers.setImage(image);
                                 registeredMembers.setFeatures(feature);
                                 result = registeredMembers.save();
@@ -862,8 +862,8 @@ public class UpdateService extends Service {
                                     registeredMembers = registeredMembersList.get(0);
                                     registeredMembers.setMobile(member.getMobile());
                                     registeredMembers.setStatus(member.getStatus());
-                                    registeredMembers.setName(member.getName());
-                                    registeredMembers.setExpire_time(member.getExpire_time());
+                                    registeredMembers.setFirstname(member.getName());
+                                    registeredMembers.setExpiretime(member.getExpire_time());
                                     registeredMembers.setImage(image);
                                     registeredMembers.setFeatures(feature);
                                     result = registeredMembers.save();
@@ -1096,8 +1096,8 @@ public class UpdateService extends Service {
     }
 
     private boolean compareMember(Members members, RegisteredMembers registeredMembers) {
-        boolean result = members.getName().equals(registeredMembers.getName())
-                && members.getExpire_time().equals(registeredMembers.getExpire_time())
+        boolean result = members.getName().equals(registeredMembers.getFirstname())
+                && members.getExpire_time().equals(registeredMembers.getExpiretime())
                 && members.getImage().equals(registeredMembers.getImage())
                 && members.getMobile().equals(registeredMembers.getMobile())
                 && members.getStatus().equals(registeredMembers.getStatus());

@@ -25,7 +25,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/member_name"
+                android:id="@+id/member_first_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -36,13 +36,26 @@
                 android:textColor="@color/black"
                 android:textSize="28sp" />
 
+            <TextView
+                android:id="@+id/member_last_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/member_image"
+                android:gravity="center_vertical"
+                android:text="Member"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                android:visibility="gone"/>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
             <TextView
-                android:id="@+id/member_mobile"
+                android:id="@+id/member_id"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -51,10 +64,23 @@
                 android:gravity="center_vertical"
                 android:text="Member"
                 android:textColor="@color/black"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/member_mobile"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="8dp"
+                android:layout_toRightOf="@+id/member_image"
+                android:gravity="center_vertical"
+                android:text="Member"
+                android:visibility="gone"
+                android:textColor="@color/black"
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/member_time"
+                android:id="@+id/member_email"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="5dp"

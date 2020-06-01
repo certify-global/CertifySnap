@@ -22,41 +22,38 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" /> <!--ContentProvide -->
-    <!--<uses-permission android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.certify.snap" />-->
-
-<!--    <permission-->
-<!--        android:name="baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.certify.snap"-->
-<!--        android:protectionLevel="signature" />-->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
-        android:name="com.certify.snap.common.Application"
+        android:name=".common.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.SetFacialSimilarity"
+            android:launchMode="singleTask"/>
         <activity
-            android:name="com.certify.snap.activity.NFCCardActivity"
+            android:name=".activity.NFCCardActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.certify.snap.activity.RecordActivity"
+            android:name=".activity.RecordActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name="com.certify.snap.activity.RgbCameraActivity"
+            android:name=".activity.RgbCameraActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name="com.certify.snap.activity.IrCameraActivity"
+            android:name=".activity.IrCameraActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name="com.certify.snap.activity.ParameterActivity"
+            android:name=".activity.ParameterActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name="com.certify.snap.activity.SettingActivity"
+            android:name=".activity.SettingActivity"
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.ThermalSetting"
@@ -87,12 +84,12 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="com.certify.snap.activity.InitializationActivity"
+            android:name=".activity.InitializationActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name="com.certify.snap.activity.ManagementActivity"
+            android:name=".activity.ManagementActivity"
             android:launchMode="singleTask" />
-        <activity android:name="com.certify.snap.activity.GuideActivity">
+        <activity android:name=".activity.GuideActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -100,8 +97,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.certify.snap.service.GuideService" />
-        <service android:name="com.certify.snap.service.UpdateService" />
+        <service android:name=".service.GuideService" />
+        <service android:name=".service.UpdateService" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -114,7 +111,7 @@
         </provider>
 
         <receiver
-            android:name="com.certify.snap.service.BootBroadcastReceiver"
+            android:name=".service.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="2147483647">
@@ -142,6 +139,14 @@
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="barcode,face,ocr,ica" />
+        <service
+            android:name=".service.DeviceHealthService"
+            android:stopWithTask="false" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
     </application>
 
 </manifest>
