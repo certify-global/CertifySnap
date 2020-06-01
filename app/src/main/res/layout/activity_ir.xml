@@ -74,8 +74,8 @@
 
             <FrameLayout
                 android:id="@+id/barcode_scanner"
-                android:layout_width="320dp"
-                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_above="@+id/tv_thermal"
                 android:layout_below="@+id/img_logo"
                 android:layout_centerInParent="true"
@@ -87,24 +87,25 @@
 
                 <com.certify.snap.qrscan.CameraSourcePreview
                     android:id="@+id/firePreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="320dp"
+                    android:layout_height="300dp"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center">
 
                     <com.certify.snap.qrscan.GraphicOverlay
                         android:id="@+id/fireFaceOverlay"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="320dp"
+                        android:layout_height="300dp"
                         android:layout_centerInParent="true"
                         android:layout_gravity="center" />
                 </com.certify.snap.qrscan.CameraSourcePreview>
 
                 <RelativeLayout
                     android:id="@+id/qr_main"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_width="320dp"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center">
                     <TextView
                         android:id="@+id/tv_scan"
                         android:layout_width="match_parent"
