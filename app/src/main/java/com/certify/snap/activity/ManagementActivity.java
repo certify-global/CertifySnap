@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +52,7 @@ import com.certify.snap.R;
 import com.certify.snap.adapter.MemberAdapter;
 import com.certify.snap.adapter.MemberFailedAdapter;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
@@ -59,6 +61,7 @@ import com.certify.snap.model.RegisteredMembers;
 
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,7 +83,7 @@ public class ManagementActivity extends AppCompatActivity {
     private String searchtext = "";
     private AlertDialog mUpdateDialog, mDeleteDialog;
     private String updateimagePath = "";
-    private PopupWindow mpopupwindow;
+    private PopupWindow mpopupwindow,mpopupwindowUpdate;
     private Uri registerUri;
     private Uri imageUri;
     private String registerpath = "";
@@ -332,11 +335,11 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
     ImageView mfaceimg;
-    TextView mfirstnametext;
-    TextView mlastnametext;
-    TextView mIdtext;
-    TextView mEmailAddress;
-    TextView mmobiletext;
+    EditText mfirstnametext;
+    EditText mlastnametext;
+    EditText mIdtext;
+    EditText mEmailAddress;
+    EditText mmobiletext;
     //TextView mtimetext;
     EditText mfirstname;
     EditText mlasttname;
@@ -354,52 +357,62 @@ public class ManagementActivity extends AppCompatActivity {
     ImageView mregisterfaceimg = null;
     Button mtakephoto;
     Button musephoto;
+    TextInputLayout text_input_access_id,text_input_member_id;
 
     private void showUpdateDialog(final RegisteredMembers member) {
-        updateMember = member;
-        updateimagePath = "";
+        try {
+            updateMember = member;
+            updateimagePath = "";
+            View view = LayoutInflater.from(this).inflate(R.layout.dialog_update, null);
+            mpopupwindowUpdate = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            mpopupwindowUpdate.setOutsideTouchable(false);
+            mpopupwindowUpdate.setFocusable(true);
+            mpopupwindowUpdate.setAnimationStyle(R.style.animTranslate);
 
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_update, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(view).setCancelable(false);
-        if (mUpdateDialog == null) mUpdateDialog = builder.create();
+            final TextView muserid = view.findViewById(R.id.dialog_edit_userid);
+            mfirstnametext = view.findViewById(R.id.dialog_text_first_name);
+            mlastnametext = view.findViewById(R.id.dialog_text_last_name);
+            mIdtext = view.findViewById(R.id.dialog_text_member_id);
+            mEmailAddress = view.findViewById(R.id.dialog_text_email);
+            mmobiletext = view.findViewById(R.id.dialog_text_mobile);
+            //mtimetext = view.findViewById(R.id.dialog_text_time);
+            mfirstname = view.findViewById(R.id.dialog_edit_first_name);
+            mlasttname = view.findViewById(R.id.dialog_edit_last_name);
+            mmobile = view.findViewById(R.id.dialog_edit_mobile);
+            mmemberid = view.findViewById(R.id.dialog_edit_member_id);
+            mmemberemail = view.findViewById(R.id.dialog_edit_email);
+            maccessid = view.findViewById(R.id.dialog_edit_accessid);
+            muniqueid = view.findViewById(R.id.dialog_edit_uniqueid);
+            text_input_access_id = view.findViewById(R.id.text_input_access_id);
+            text_input_member_id = view.findViewById(R.id.text_input_member_id);
+            mfirstnametext.setEnabled(false);
+            mlastnametext.setEnabled(false);
+            mIdtext.setEnabled(false);
+            mEmailAddress.setEnabled(false);
+            mmobiletext.setEnabled(false);
 
-        final TextView muserid = view.findViewById(R.id.dialog_edit_userid);
-        mfirstnametext = view.findViewById(R.id.dialog_text_first_name);
-        mlastnametext = view.findViewById(R.id.dialog_text_last_name);
-        mIdtext = view.findViewById(R.id.dialog_text_member_id);
-        mEmailAddress = view.findViewById(R.id.dialog_text_email);
-        mmobiletext = view.findViewById(R.id.dialog_text_mobile);
-        //mtimetext = view.findViewById(R.id.dialog_text_time);
-        mfirstname = view.findViewById(R.id.dialog_edit_first_name);
-        mlasttname = view.findViewById(R.id.dialog_edit_last_name);
-        mmobile = view.findViewById(R.id.dialog_edit_mobile);
-        mmemberid = view.findViewById(R.id.dialog_edit_member_id);
-        mmemberemail = view.findViewById(R.id.dialog_edit_email);
-        maccessid = view.findViewById(R.id.dialog_edit_accessid);
-        muniqueid = view.findViewById(R.id.dialog_edit_uniqueid);
 
-        //mtime = view.findViewById(R.id.dialog_edit_time);
-        textbody = view.findViewById(R.id.linear_body);
-        editbody = view.findViewById(R.id.linear_edit_body);
+            //mtime = view.findViewById(R.id.dialog_edit_time);
+            textbody = view.findViewById(R.id.linear_body);
+            editbody = view.findViewById(R.id.linear_edit_body);
 
-        mfirstnametext.setText(member.getFirstname());
-        mlastnametext.setText(member.getLastname());
-        mmobiletext.setText(member.getMobile());
-        mIdtext.setText(member.getMemberid());
-        mEmailAddress.setText(member.getEmail());
-        maccessid.setText(member.getAccessid());
-        //mtimetext.setText(member.getExpire_time());
+            mfirstnametext.setText(member.getFirstname());
+            mlastnametext.setText(member.getLastname());
+            mmobiletext.setText(member.getMobile());
+            mIdtext.setText(member.getMemberid());
+            mEmailAddress.setText(member.getEmail());
+            maccessid.setText(member.getAccessid());
+            //mtimetext.setText(member.getExpire_time());
 
-        mfaceimg = view.findViewById(R.id.dialog_faceimg);
-        setViewclick(mfaceimg, false);
-        mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
-        mfaceimg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                takefacephoto();
-            }
-        });
+            mfaceimg = view.findViewById(R.id.dialog_faceimg);
+            setViewclick(mfaceimg, false);
+            mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
+            mfaceimg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    takefacephoto();
+                }
+            });
 
 //        mtime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
@@ -412,88 +425,93 @@ public class ManagementActivity extends AppCompatActivity {
 //            }
 //        });
 
-        medit = view.findViewById(R.id.dialog_edit);
-        medit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                medit.setVisibility(View.INVISIBLE);
-                mupdate.setVisibility(View.VISIBLE);
-                enrollBtn.setVisibility(View.VISIBLE);
-                setViewclick(mfaceimg, true);
-                setViewVisible(textbody, 0);
-                setViewVisible(editbody, 1);
+            medit = view.findViewById(R.id.dialog_edit);
+            medit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    medit.setVisibility(View.INVISIBLE);
+                    mupdate.setVisibility(View.VISIBLE);
+                    enrollBtn.setVisibility(View.VISIBLE);
+                    setViewclick(mfaceimg, true);
+                    setViewVisible(textbody, 0);
+                    setViewVisible(editbody, 1);
 
-                mfirstname.setText(member.getFirstname());
-                mlasttname.setText(member.getLastname());
-                mmobile.setText(member.getMobile());
-                mmemberid.setText(member.getMemberid());
-                mmemberemail.setText(member.getEmail());
-                maccessid.setText(member.getAccessid());
-                muniqueid.setText(member.getUniqueid());
+                    mfirstname.setText(member.getFirstname());
+                    mlasttname.setText(member.getLastname());
+                    mmobile.setText(member.getMobile());
+                    mmemberid.setText(member.getMemberid());
+                    mmemberemail.setText(member.getEmail());
+                    maccessid.setText(member.getAccessid());
+                    muniqueid.setText(member.getUniqueid());
 
-                //mtime.setText(member.getExpire_time());
-            }
-        });
-        ImageView mexit = view.findViewById(R.id.dialog_exit);
-        mexit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mUpdateDialog != null && mUpdateDialog.isShowing()) {
-                    mUpdateDialog.dismiss();
-                    mUpdateDialog = null;
+                    //mtime.setText(member.getExpire_time());
                 }
-            }
-        });
-        mupdate = view.findViewById(R.id.btn_update);
-        mupdate.setVisibility(View.GONE);
-        mupdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String firstnamestr = mfirstname.getText().toString();
-                String lastnamestr = mlasttname.getText().toString();
-                String mobilestr = mmobile.getText().toString();
-                String idstr = mmemberid.getText().toString();
-                String emailstr = mmemberemail.getText().toString();
-                String accessstr = maccessid.getText().toString();
-                String uniquestr = muniqueid.getText().toString();
-
-                //String timestr = mtime.getText().toString();
-                Log.e("updateinfo---", firstnamestr + "-"+ lastnamestr + "-"  + mobilestr + "-" + idstr+ "-" + emailstr+ accessstr+ "-" + uniquestr);
-                if (!TextUtils.isEmpty(firstnamestr) && !TextUtils.isEmpty(mobilestr)
-                        && !TextUtils.isEmpty(lastnamestr) && !TextUtils.isEmpty(emailstr)) {
-                    if ("".equalsIgnoreCase(updateimagePath)) {
-                        updateimagePath = member.getImage();
-                        Log.e("updateimgpath---", updateimagePath);
+            });
+            ImageView mexit = view.findViewById(R.id.dialog_exit);
+            mexit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mpopupwindowUpdate != null && mpopupwindowUpdate.isShowing()) {
+                        mpopupwindowUpdate.dismiss();
                     }
+                }
+            });
+            mupdate = view.findViewById(R.id.btn_update);
+            mupdate.setVisibility(View.GONE);
+            mupdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String firstnamestr = mfirstname.getText().toString();
+                    String lastnamestr = mlasttname.getText().toString();
+                    String mobilestr = mmobile.getText().toString();
+                    String idstr = mmemberid.getText().toString();
+                    String emailstr = mmemberemail.getText().toString();
+                    String accessstr = maccessid.getText().toString();
+                    String uniquestr = muniqueid.getText().toString();
 
-                    File file = new File(updateimagePath);
-                    if (file.exists()) {
-                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
-                        localUpdate(member.getMobile(), firstnamestr, lastnamestr, mobilestr, idstr,emailstr, accessstr, uniquestr, updateimagePath);
+                    //String timestr = mtime.getText().toString();
+                    Log.e("updateinfo---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + idstr + "-" + emailstr + accessstr + "-" + uniquestr);
+                    if (!TextUtils.isEmpty(idstr) || !TextUtils.isEmpty(accessstr)
+                            && !TextUtils.isEmpty(lastnamestr) && !TextUtils.isEmpty(emailstr)) {
+                        if ("".equalsIgnoreCase(updateimagePath)) {
+                            updateimagePath = member.getImage();
+                            Log.e("updateimgpath---", updateimagePath);
+                        }
+
+                        File file = new File(updateimagePath);
+                        if (file.exists()) {
+                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+                            localUpdate(member.getMobile(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
 //                        }else{
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
 //                        }
+                        }
+                    }else if(TextUtils.isEmpty(idstr)) {
+                        text_input_member_id.setError("Member Id should not be empty");
+                    }else if(TextUtils.isEmpty(accessstr)){
+                        text_input_access_id.setError("Access Id should not be empty");
                     }
-                } else {
-                    Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_notfullinfo));
                 }
-            }
-        });
+            });
 
-        enrollBtn = view.findViewById(R.id.btn_enroll);
-        enrollBtn.setVisibility(View.GONE);
-        enrollBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Please scan the card to enroll", Toast.LENGTH_LONG).show();
-            }
-        });
+            enrollBtn = view.findViewById(R.id.btn_enroll);
+            enrollBtn.setVisibility(View.GONE);
+            enrollBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getApplicationContext(), "Please scan the card to enroll", Toast.LENGTH_LONG).show();
+                }
+            });
 
-        if (mUpdateDialog != null && !mUpdateDialog.isShowing()) {
-            mUpdateDialog.show();
+            View parent = LayoutInflater.from(ManagementActivity.this).inflate(R.layout.activity_management, null);
+            if (mpopupwindowUpdate != null && !mpopupwindowUpdate.isShowing()) {
+                mpopupwindowUpdate.showAtLocation(parent, Gravity.CENTER, 0, 0);
+            }
+        }catch (Exception e){
+            Logger.error(TAG,"showUpdateDialog(final RegisteredMembers member)",e.getMessage());
         }
     }
 
@@ -653,6 +671,8 @@ public class ManagementActivity extends AppCompatActivity {
         final EditText memail = view.findViewById(R.id.popup_email);
         final EditText maccessid = view.findViewById(R.id.popup_access_id);
         final EditText muniqueid = view.findViewById(R.id.popup_unique_id);
+        final TextInputLayout text_input_member_id = view.findViewById(R.id.text_input_member_id);
+        final TextInputLayout text_input_access_id = view.findViewById(R.id.text_input_access_id);
         //final EditText mregistertime = view.findViewById(R.id.popup_time);
 //        mregistertime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
@@ -714,7 +734,7 @@ public class ManagementActivity extends AppCompatActivity {
                 //String timestr = mregistertime.getText().toString();
 
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr+ "-"+ emailstr + accessstr+ "-"+ uniquestr);
-                if (!TextUtils.isEmpty(firstnamestr) && !TextUtils.isEmpty(mobilestr) && !TextUtils.isEmpty(memberidstr)) {
+                if (!TextUtils.isEmpty(memberidstr)||!TextUtils.isEmpty(accessstr)) {
                     File file = new File(registerpath);
                     if (file.exists()) {
                         mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -728,8 +748,10 @@ public class ManagementActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_notfullinfo), Toast.LENGTH_SHORT).show();
+                } else if(TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
+                       text_input_member_id.setError("Member Id should not be empty");
+                }else if(TextUtils.isEmpty(accessstr)){
+                       text_input_access_id.setError("Access Id should not be empty");
                 }
             }
         });

@@ -76,225 +76,121 @@
         android:background="@drawable/shape"
         android:orientation="vertical">
 
-
-        <LinearLayout
-            android:id="@+id/linear_first_name"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <EditText
-                android:id="@+id/popup_first_name"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_input_firstname"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:hint="First Name"
-                android:background="@drawable/edit_shape"
-                android:textColor="@color/black"
-                android:textColorHint="@color/skyblue" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
 
-        </LinearLayout>
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/popup_first_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="@string/first_name"
+                    android:background="@drawable/edittextbackground"
+                    android:paddingLeft="05dp"/>
 
-        <LinearLayout
-            android:id="@+id/linear_last_name"
+            </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_lName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/popup_last_name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-            <EditText
-                android:id="@+id/popup_last_name"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:hint="Last Name"
-                android:background="@drawable/edit_shape"
-                android:textColor="@color/black"
-                android:textColorHint="@color/skyblue" />
+            android:hint="@string/last_name"
+            android:background="@drawable/edittextbackground"
+            android:paddingLeft="05dp"/>
+        </android.support.design.widget.TextInputLayout>
 
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear_email"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_email"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_mobile"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/id3"
-                android:visibility="gone"/>
-
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/popup_email"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Email Address"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/black"
-                android:textColorHint="@color/skyblue" />
+                android:layout_height="50dp"
+                android:hint="@string/email_address"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
+                android:inputType="textEmailAddress"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_pno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_mobile"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/popup_mobile"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/linear_member_id"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:hint="@string/phone_number"
+            android:background="@drawable/edittextbackground"
+            android:paddingLeft="05dp"
+            android:inputType="number"
+            android:maxLength="11"/>
+    </android.support.design.widget.TextInputLayout>  <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_member_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/id3"
-                android:visibility="gone"/>
-
-            <EditText
-                android:id="@+id/popup_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Phone Number"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="number"
-                android:maxLength="11"
-                android:textColor="@color/black"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_member_id"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/popup_member_id"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:hint="@string/member_id"
+            android:background="@drawable/edittextbackground"
+            android:paddingLeft="05dp"
+            android:inputType="number"/>
+    </android.support.design.widget.TextInputLayout>  <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_access_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
-            <EditText
-                android:id="@+id/popup_member_id"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Member Id"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="number"
-                android:textColor="@color/black"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_access_id"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/popup_access_id"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:hint="@string/access_id"
+            android:background="@drawable/edittextbackground"
+            android:paddingLeft="05dp"
+            android:inputType="number"/>
+    </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/popup_access_id"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Access Id"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="number"
-                android:textColor="@color/black"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear_unique_id"
+        <EditText
+            android:id="@+id/popup_unique_id"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:visibility="gone"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/popup_unique_id"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="unique Id"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="number"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/linear_status"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_mobile"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <EditText
-                android:id="@+id/popup_status"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="status(0/1)"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_expiretime"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_mobile"
-            android:focusableInTouchMode="true"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/time1" />
-
-            <EditText
-                android:id="@+id/popup_time"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:hint="expiretime(2018-11-11 11:11:11)"
-                android:background="@drawable/edit_shape"
-                android:inputType="datetime"
-                android:maxLength="19"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:hint="unique Id"
+            android:padding="5dp"
+            android:background="@drawable/edit_shape"
+            android:inputType="number"
+            android:textColor="@color/skyblue"
+            android:textColorHint="@color/skyblue"
+            android:visibility="gone"/>
     </LinearLayout>
 
 
