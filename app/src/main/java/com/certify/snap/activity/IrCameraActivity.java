@@ -2115,6 +2115,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
+                preview.stop();
+                img_qr.setVisibility(View.GONE);
+                startCameraSource();
+                tv_scan.setText(R.string.tv_qr_scan);
+                imageqr.setBackgroundColor(getResources().getColor(R.color.white));
                 return;
             }
 
@@ -2156,7 +2161,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } catch (Exception e) {
             Logger.error(" onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
             preview.stop();
+            img_qr.setVisibility(View.GONE);
             startCameraSource();
+            tv_scan.setText(R.string.tv_qr_scan);
+            imageqr.setBackgroundColor(getResources().getColor(R.color.white));
             Logger.toast(this,"QRCode something went wrong.Please try again");
 
         }
