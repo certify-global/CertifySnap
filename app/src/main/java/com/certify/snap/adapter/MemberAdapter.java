@@ -64,10 +64,14 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         try {
-            holder.name.setText(mlist.get(position).getFirstname());
+            holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
             holder.lastname.setText(mlist.get(position).getLastname());
             holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
-            holder.id.setText("User Id: " + mlist.get(position).getMemberid());
+            if(!mlist.get(position).getMemberid().isEmpty()) {
+                holder.id.setText("Id: " + mlist.get(position).getMemberid());
+            }else{
+                holder.id.setText("Id: "+mlist.get(position).getAccessid());
+            }
             holder.email.setText("Email: " + mlist.get(position).getEmail());
             //holder.time.setText("ExpireTime: " + mlist.get(position).getExpire_time());
             String path = mlist.get(position).getImage();

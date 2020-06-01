@@ -92,145 +92,116 @@
                 android:text="userid" />
         </LinearLayout>
 
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_firstname"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <TextView
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/dialog_text_first_name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:background="@drawable/edit_shape"
-                android:paddingLeft="10dp"
-                android:text="Full Name"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:layout_height="50dp"
+                android:hint="@string/first_name"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"/>
 
-        </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_lName"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/name2"
-                android:visibility="gone"/>
-
-            <TextView android:id="@+id/dialog_text_last_name"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/dialog_text_last_name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:background="@drawable/edit_shape"
-                android:paddingLeft="10dp"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                android:text="Last Name" />
-
-        </LinearLayout>
-
-        <LinearLayout
+                android:layout_height="50dp"
+                android:hint="@string/last_name"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_member_id"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <TextView android:id="@+id/dialog_text_member_id"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/dialog_text_member_id"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:background="@drawable/edit_shape"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                android:text="Member Id" />
+                android:layout_height="50dp"
+                android:hint="@string/member_id"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
+                android:inputType="number"/>
+        </android.support.design.widget.TextInputLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_pno"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <TextView android:id="@+id/dialog_text_mobile"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/dialog_text_mobile"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:textSize="20sp"
-                android:paddingLeft="10dp"
-                android:background="@drawable/edit_shape"
-                android:textColor="@color/black"
-                android:text="Phone Number" />
-
-        </LinearLayout>
-
-        <LinearLayout
+                android:layout_height="50dp"
+                android:hint="@string/phone_number"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
+                android:inputType="number"
+                android:maxLength="11"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_email"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/dialog_text_email"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:background="@drawable/edit_shape"
-                android:text="Email Address"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:layout_height="50dp"
+                android:hint="@string/email_address"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
+                android:inputType="textEmailAddress"/>
+        </android.support.design.widget.TextInputLayout>
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/dialog_text_accessid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="10dp"
-                android:background="@drawable/edit_shape"
-                android:text="Access Id"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
+        <!--  <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="50dp"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
 
-        </LinearLayout>
+              <TextView
+                  android:id="@+id/dialog_text_first_name"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:layout_margin="3dp"
+                  android:gravity="center_vertical"
+                  android:background="@drawable/edit_shape"
+                  android:paddingLeft="10dp"
+                  android:text="Full Name"
+                  android:textColor="@color/black"
+                  android:textSize="20sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:visibility="gone"
-            android:orientation="horizontal">
-            <TextView
-                android:id="@+id/dialog_text_unique_id"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:gravity="center_vertical"
-                android:text="Unique Id"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+          </LinearLayout>-->
 
-        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -294,232 +265,153 @@
                 android:textSize="17sp"
                 android:text="userid" />
         </LinearLayout>
-
-        <LinearLayout
+         <!--  edittext-->
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_firstname"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/name1"
-                android:visibility="gone"/>
-
-
-            <EditText android:id="@+id/dialog_edit_first_name"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/dialog_edit_first_name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:background="@drawable/edit_shape"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black"
-                android:hint="First Name" />
+                android:layout_height="50dp"
+                android:hint="@string/first_name"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"/>
 
-        </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_lName"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <EditText android:id="@+id/dialog_edit_last_name"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/dialog_edit_last_name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:background="@drawable/edit_shape"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black"
-                android:hint="Last Name" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear_member_id"
+                android:layout_height="50dp"
+                android:hint="@string/last_name"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_member_id"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/dialog_edit_member_id"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:background="@drawable/edit_shape"
-                android:hint="Member Id"
-                android:inputType="number"
-                android:padding="5dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black" />
+                android:layout_height="50dp"
+                android:hint="@string/member_id"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
+                android:inputType="number"/>
+        </android.support.design.widget.TextInputLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_pno"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/id3"
-                android:visibility="gone"/>
-
-            <EditText android:id="@+id/dialog_edit_mobile"
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/dialog_edit_mobile"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:background="@drawable/edit_shape"
+                android:layout_height="50dp"
+                android:hint="@string/phone_number"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
                 android:inputType="number"
-                android:maxLength="11"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black"
-                android:hint="Phone Number" />
-
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear_email"
+                android:maxLength="11"/>
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_email"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/dialog_edit_email"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Email Address"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black" />
+                android:layout_height="50dp"
+                android:hint="@string/email_address"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="05dp"
+                android:inputType="textEmailAddress"/>
+        </android.support.design.widget.TextInputLayout>
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linear_access_id"
+        <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_access_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/dialog_edit_accessid"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:hint="@string/access_id"
+            android:background="@drawable/edittextbackground"
+            android:paddingLeft="05dp"
+            android:inputType="number"/>
+    </android.support.design.widget.TextInputLayout>
 
-            <EditText
-                android:id="@+id/dialog_edit_accessid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Access Id"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/black"
-                android:textColorHint="@color/black" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linear_unique_id"
-            android:visibility="gone"
+        <EditText
+            android:id="@+id/dialog_edit_uniqueid"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_first_name"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/dialog_edit_uniqueid"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:hint="Unique Id"
-                android:padding="5dp"
-                android:background="@drawable/edit_shape"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue" />
-
-        </LinearLayout>
-
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/linear_image"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="5dp"
-                android:src="@mipmap/time1" />
-
-            <EditText android:id="@+id/dialog_edit_time"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="3dp"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:background="@drawable/edit_shape"
-                android:inputType="datetime"
-                android:maxLength="19"
-                android:textColor="@color/skyblue"
-                android:textColorHint="@color/skyblue"
-                android:hint="expiretime(2018-11-11 11:11:11)" />
-
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:hint="unique Id"
+            android:padding="5dp"
+            android:background="@drawable/edit_shape"
+            android:inputType="number"
+            android:textColor="@color/skyblue"
+            android:textColorHint="@color/skyblue"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
 
         <Button android:id="@+id/btn_update"
-            android:layout_width="120dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:layout_margin="10dp"
             android:background="@drawable/btn_shape"
-            android:layout_gravity="center_horizontal"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:text="Update"/>
+            android:text="Update"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginRight="@dimen/margin_20"/>
 
         <Button
             android:id="@+id/btn_enroll"
-            android:layout_width="120dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:layout_margin="10dp"
-            android:layout_gravity="center_horizontal"
             android:background="@drawable/btn_shape"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:text="@string/access_control_enroll"/>
+            android:text="@string/access_control_enroll"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginRight="@dimen/margin_20"/>
 
-    </LinearLayout>
 
 
 </LinearLayout>

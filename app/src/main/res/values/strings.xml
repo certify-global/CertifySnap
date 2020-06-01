@@ -290,5 +290,11 @@
     <string name="name">Name:</string>
     <string name="id">User ID:</string>
     <string name="facial_threshold">Set Facial Threshold</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email_address">Email Address</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="member_id">Member Id</string>
+    <string name="access_id">Access Id</string>
 
 </resources>
