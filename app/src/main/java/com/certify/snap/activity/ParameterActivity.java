@@ -235,17 +235,15 @@ public class ParameterActivity extends AppCompatActivity {
         radio_led_lamp=findViewById(R.id.radio_led_lamp);
         seekBar=findViewById(R.id.seekbar);
 
-        int led = sp.getInt(GlobalParameters.LedType,1);
+        int led = sp.getInt(GlobalParameters.LedType,0);
         switch (led) {
             case 0:
                 radio_led_on.setChecked(true);
-               // PosUtil.setLedPower(1);
-                Util.setLedPower(1);
                 break;
             case 1:
                 radio_led_off.setChecked(true);
                // PosUtil.setLedPower(0);
-  //              Util.setLedPower(0);
+                Util.setLedPower(0);
                 break;
             case 2:
                 radio_led_lamp.setChecked(true);
@@ -265,8 +263,6 @@ public class ParameterActivity extends AppCompatActivity {
                 switch (checkedId) {
                     case R.id.radio_led_on:
                         Util.writeInt(sp, GlobalParameters.LedType,0);
-                        //PosUtil.setLedPower(1);
-                        Util.setLedPower(1);
                         break;
                     case R.id.radio_led_off:
                         Util.writeInt(sp, GlobalParameters.LedType,1);

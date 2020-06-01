@@ -4,13 +4,14 @@ package com.certify.snap.async;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.certify.callback.RecordTemperatureCallback;
+import com.certify.callback.QRCodeCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.common.Util;
 
 import org.json.JSONObject;
 
-public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, JSONObject> {
-    private RecordTemperatureCallback myComponent;
+public class AsyncJSONObjectQRCode extends AsyncTask<Void, Void, JSONObject> {
+    private QRCodeCallback myComponent;
     private JSONObject req;
     private String url;
     Context mcontext;
@@ -19,10 +20,9 @@ public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, JSONObject
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
     }
 
-    public AsyncRecordUserTemperature(JSONObject req, RecordTemperatureCallback myComponent, String url, Context context) {
+    public AsyncJSONObjectQRCode(JSONObject req, QRCodeCallback myComponent, String url, Context context) {
         this.req = req;
         this.myComponent = myComponent;
         this.url = url;
@@ -31,13 +31,12 @@ public class AsyncRecordUserTemperature extends AsyncTask<Void, Void, JSONObject
 
     @Override
     protected JSONObject doInBackground(Void... params) {
-        return Util.getJSONObjectTemp(req, url,"",mcontext);
+        return Util.getJSONObjectQRCode(req, url,"",mcontext);
     }
 
     @Override
     protected void onPostExecute(JSONObject reportInfo) {
-//        TODO:should be fire and forget?
         if (myComponent == null) return;
-        myComponent.onJSONObjectListenerTemperature(reportInfo, url,req);
+        myComponent.onJSONObjectListenerQRCode(reportInfo, url,req);
     }
 }

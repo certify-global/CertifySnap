@@ -56,9 +56,14 @@ public class LoginActivity extends Activity {
                             text_input_login.setError("Password should not be empty");
                         }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
                             text_input_login.setError(null);
-                            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(sp.getBoolean(GlobalParameters.Cloud_Activated,false)){
+                                Util.openDialogSetting(LoginActivity.this);
+                               // finish();
+                            }else {
+                                Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         }else{
                             count--;
                             text_input_login.setError(null);
@@ -79,9 +84,14 @@ public class LoginActivity extends Activity {
                             text_input_login.setError("Password should not be empty");
                         }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
-                            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(sp.getBoolean(GlobalParameters.Cloud_Activated,false)){
+                                Util.openDialogSetting(LoginActivity.this);
+                               // finish();
+                            }else {
+                                Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else {
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);

@@ -42,7 +42,7 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             HttpPost httpost = new HttpPost(urlStr);
             httpost.addHeader("Content-type", "application/json");
-            httpost.setHeader("DeviceSN", SerialNo);//A040980P02800140
+            httpost.setHeader("DeviceSN",SerialNo);//A040980P02800140
            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
             httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
@@ -54,7 +54,7 @@ public class Requestor {
             if(status.getStatusCode()== HttpStatus.SC_OK) {
                 responseStr = EntityUtils
                         .toString(responseHttp.getEntity());
-            }else{
+            }else if(status.getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
                 JSONObject objMessage = new JSONObject();
                 objMessage.put("Message", "token expired");
                 responseStr=objMessage.toString();
@@ -69,6 +69,9 @@ public class Requestor {
                 properties.put("Response:",responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
 
+            }else{
+                responseStr = EntityUtils
+                        .toString(responseHttp.getEntity());
             }
             if (EndPoints.deployment == EndPoints.Mode.Demo)
                 Logger.debug("responseStr ", responseStr);
@@ -158,7 +161,7 @@ public class Requestor {
             if(status.getStatusCode()== HttpStatus.SC_OK) {
                 responseStr = EntityUtils
                         .toString(responseHttp.getEntity());
-            }else{
+            }else if(status.getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
                 JSONObject objMessage = new JSONObject();
                 objMessage.put("Message", "token expired");
                 responseStr=objMessage.toString();
@@ -172,6 +175,9 @@ public class Requestor {
                 properties.put("URL:",urlStr);
                 properties.put("Response:",responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
+            }else{
+                responseStr = EntityUtils
+                        .toString(responseHttp.getEntity());
             }
 
 
