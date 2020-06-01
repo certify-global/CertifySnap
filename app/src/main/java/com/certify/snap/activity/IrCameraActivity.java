@@ -415,6 +415,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             img_qr = findViewById(R.id.img_qr);
             qr_main = findViewById(R.id.qr_main);
             tv_scan.setText(R.string.tv_qr_scan);
+            tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+            tv_scan.setTextColor(getResources().getColor(R.color.black));
             tv_scan.setTypeface(rubiklight);
             Animation animation =
                     AnimationUtils.loadAnimation(getApplicationContext(), R.anim.qr_line_anim);
@@ -2069,6 +2071,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setText(R.string.tv_qr_validating);
+            tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
+            tv_scan.setTextColor(getResources().getColor(R.color.black));
             img_qr.setVisibility(View.VISIBLE);
             img_qr.setBackgroundResource(R.drawable.qrimage);
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
@@ -2119,7 +2123,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 img_qr.setVisibility(View.GONE);
                 startCameraSource();
                 tv_scan.setText(R.string.tv_qr_scan);
+                tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+                tv_scan.setTextColor(getResources().getColor(R.color.black));
                 imageqr.setBackgroundColor(getResources().getColor(R.color.white));
+                Logger.debug("deep",reportInfo.toString());
                 return;
             }
 
@@ -2130,6 +2137,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID,""));
                 obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
                 new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                Logger.debug("deep expired",reportInfo.toString());
 
             } else {
                 if (reportInfo.isNull("responseCode")) return;
@@ -2151,6 +2159,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             img_qr.setVisibility(View.GONE);
                             startCameraSource();
                             tv_scan.setText(R.string.tv_qr_scan);
+                            tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+                            tv_scan.setTextColor(getResources().getColor(R.color.black));
                             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
                         }
                     }, 2000);
@@ -2164,6 +2174,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             img_qr.setVisibility(View.GONE);
             startCameraSource();
             tv_scan.setText(R.string.tv_qr_scan);
+            tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+            tv_scan.setTextColor(getResources().getColor(R.color.black));
             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
             Logger.toast(this,"QRCode something went wrong.Please try again");
 
