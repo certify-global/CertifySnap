@@ -32,6 +32,11 @@ public class GlobalParameters {
     public static final String StatusBar = "statusbar";
     public static final String NavigationBar = "navigationbar";
     public static final String RelayTime = "relaytime";
+    public static final String LogFilePath = "logfilepath";
+    public static final String AccessControlEnable = "accessControlEnable";
+    public static final String BlockAccessHighTemp = "blockAccessHighTemp";
+    public static final String AccessControlCardFormat = "accessControlCardFormat";
+    public static final String AutomaticDoorAccess = "automaticDoorAccess";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -81,6 +86,18 @@ public class GlobalParameters {
     public static final String GUIDE_TEXT3 = "guide_text3";
     public static final String GUIDE_SCREEN = "guide_screen";
     public static final String TEMP_TEST_LOW = "temp_test_low";
+    public static final String SNAP_ID = "snap_id";
+    public static final String QR_SCREEN = "qr_screen";
+    public static final String QRCODE_ID = "qrcode_id";
+    public static final String QRCODE_Valid = "qrcode_valid";
+    public static final String RFID_ENABLE = "rfid_enable";
+    public static final String FIRST_NAME = "first_name";
+    public static final String LAST_NAME = "last_name";
+    public static final String MEMBER_ID = "member_id";
+    public static final String TRQ_STATUS = "trq_status";
+    public static final String Timeout = "timeout";
+    public static final String ACCESS_ID = "access_id";
+    public static final String Cloud_Activated = "cloud_activated";
 
 
 

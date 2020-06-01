@@ -66,10 +66,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-            thermal_check_setting, scan_setting, confirmation_setting, guide_setting;
+            thermal_check_setting, scan_setting, confirmation_setting, guide_setting,qr_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting,tv_qr_setting;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -77,6 +77,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     ImageView img_sync;
     RelativeLayout relative_layout;
     Switch switch_activate;
+    private RelativeLayout accessControl;
+    private TextView accessControlTv;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -116,15 +118,19 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                        initHealthCheckService();
+                        Util.activateApplication(SettingActivity.this, SettingActivity.this);
                     } else {
+                        Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        stopHealthCheckService();
                     }
                 }
             });
 
         initView();
+        initOnlineModeSetting();
         Application.getInstance().addActivity(this);
 
         sharedPreferences = Util.getSharedPreferences(this);
@@ -135,7 +141,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         img_sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
                     Util.getSettings(SettingActivity.this, SettingActivity.this);
                     Snackbar snackbar = Snackbar
                             .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
@@ -149,7 +155,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
 
                 }
             });
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
             } else {
                 switch_activate.setChecked(false);
@@ -183,6 +189,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         parameter_setting = findViewById(R.id.parameter_setting);
         activate_tv = findViewById(R.id.activate_tv);
         guide_setting = findViewById(R.id.guide_setting);
+        qr_setting = findViewById(R.id.qr_setting);
         endpoint = findViewById(R.id.endpoint);
         tv_version = findViewById(R.id.tv_version);
         tv_serial_no = findViewById(R.id.tv_serial_no);
@@ -190,6 +197,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
         tv_guide_setting = findViewById(R.id.tv_guide_setting);
+        tv_qr_setting = findViewById(R.id.tv_qr_setting);
+        accessControl = findViewById(R.id.access_control);
+        accessControlTv = findViewById(R.id.access_control_tv);
+
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -202,8 +213,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
+        tv_qr_setting.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
+        accessControlTv.setTypeface(rubiklight);
     }
 
     @Override
@@ -217,7 +230,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
                 }else{
                     Snackbar snackbar = Snackbar
@@ -280,6 +293,14 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             case R.id.guide_setting:
                 Intent guideIntent = new Intent(SettingActivity.this, GuideViewSetting.class);
                 startActivity(guideIntent);
+                break;
+            case R.id.qr_setting:
+                Intent qrintent = new Intent(SettingActivity.this, QRViewSetting.class);
+                startActivity(qrintent);
+                break;
+            case R.id.access_control:
+                Intent acIntent = new Intent(SettingActivity.this, AccessControlActivity.class);
+                startActivity(acIntent);
                 break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);
@@ -425,6 +446,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 return;
             }
             Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
+            startHealthCheckService();
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }
@@ -436,32 +458,49 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             if (reportInfo == null) {
                 return;
             }
-            if(reportInfo.getString("responseCode").equals("1")){
-                Util.retrieveSetting(reportInfo,SettingActivity.this);
-            }else{
-                Logger.toast(this,"Something went wrong please try again");
-            }
+            if (!reportInfo.isNull("Message")) {
+                if (reportInfo.getString("Message").contains("token expired"))
+                    Util.getToken(this, this);
 
+            }else{
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    Util.retrieveSetting(reportInfo,SettingActivity.this);
+                } else {
+                    Logger.toast(this, "Something went wrong please try again");
+                }
+            }
 
         } catch (Exception e) {
             Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
+    private void initOnlineModeSetting() {
+        switch_activate.setChecked(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true));
+    }
+
     /**
-     * Method that initiates the HealthCheck service
-     * TODO1: Optimize if there are request for multiple request on toggling the setting frequently
+     * Method that initiates the HealthCheck service if not started
      */
-    public void initHealthCheckService() {
+    private void startHealthCheckService() {
         try {
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))
-                if (Util.isConnectingToInternet(this)) {
-                    startService(new Intent(this, DeviceHealthService.class));
-                    Application.StartService(this);
-                }
+            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this)) {
+                startService(new Intent(this, DeviceHealthService.class));
+                Application.StartService(this);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error("SettingActivity", "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
+    }
+
+    /**
+     * Method that stop the HealthCheck service
+     * //TODO1: Create BaseActivity for the common code
+     */
+    private void stopHealthCheckService() {
+        Intent intent = new Intent(this, DeviceHealthService.class);
+        stopService(intent);
     }
 }

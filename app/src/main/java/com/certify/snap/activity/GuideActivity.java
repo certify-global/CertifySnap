@@ -22,49 +22,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ActiveFileInfo;
-import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
 import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
+import com.certify.snap.R;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.service.DeviceHealthService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.CustomProperties;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 import com.romainpiel.titanic.library.Titanic;
 import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;
-import com.certify.snap.faceserver.FaceServer;
 
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import com.certify.snap.R;
-
-import org.json.JSONObject;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback, ActiveEngineCallback {
 
@@ -93,13 +78,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!BuildConfig.DEBUG)
-        AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
-                Analytics.class, Crashes.class);
+        if(!BuildConfig.DEBUG){
         AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
                 Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
-
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
@@ -242,6 +225,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             String message = getResources().getString(R.string.active_failed);
             Logger.error(TAG, message);
             Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
+          //  Util.switchRgbOrIrActivity(GuideActivity.this, true);
             finish();
             return;
         }
@@ -287,7 +271,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
-
+            startHealthCheckService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" +e.getMessage());
         }
@@ -305,5 +289,20 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
         } else
             Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * Method that initiates the HealthCheck service if not started
+     */
+    private void startHealthCheckService() {
+        try {
+            if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
+                startService(new Intent(this, DeviceHealthService.class));
+                Application.StartService(this);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+        }
     }
 }
