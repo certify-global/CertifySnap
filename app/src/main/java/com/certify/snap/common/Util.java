@@ -748,30 +748,24 @@ public class Util {
         return true;
     }
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
-        try {
-            if (camera == null)
-                return null;
-            Camera.Parameters parameters = camera.getParameters();
-            return convertYuvByteArrayToBitmap(data, parameters);
-        } catch (RuntimeException e) {
-            Logger.warn(LOG ,"convertYuvByteArrayToBitmap(android.app.Activity context, String[] permissions"+ e.getMessage());
-        }
-        return null;
+        Camera.Parameters parameters = camera.getParameters();
+        return convertYuvByteArrayToBitmap(data, parameters);
+
     }
-        public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
-            if (data == null) return null;
-            Camera.Size size = cameraParameters.getPreviewSize();
-            YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, out);
-            byte[] imageBytes = out.toByteArray();
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = false;
-            options.inSampleSize = 3;
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters){
+        if(data == null) return null;
+        Camera.Size size = cameraParameters.getPreviewSize();
+        YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        image.compressToJpeg(new Rect(0, 0, size.width, size.height), 80, out);
+        byte[] imageBytes = out.toByteArray();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = 3;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         }
 
     public static void KillApp() {
