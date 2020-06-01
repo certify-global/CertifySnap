@@ -176,7 +176,7 @@
 
     <string name="toast_manage_photoerror">This photo have some error,pls check the photo!</string>
     <string name="toast_manage_dateerror">Date format or length is wrong, please check!</string>
-    <string name="toast_manage_notfullinfo">pls input full information!</string>
+    <string name="toast_manage_notfullinfo">Please Enter Name, Mobile, Member ID</string>
     <string name="toast_manage_no_memberid">Please Enter The MemberId !</string>
     <string name="SetDate">Set Date</string>
     <string name="SetTime">Set Time</string>

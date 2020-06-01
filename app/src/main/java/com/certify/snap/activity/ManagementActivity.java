@@ -714,7 +714,7 @@ public class ManagementActivity extends AppCompatActivity {
                 //String timestr = mregistertime.getText().toString();
 
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr+ "-"+ emailstr + accessstr+ "-"+ uniquestr);
-                if (!TextUtils.isEmpty(firstnamestr) && !TextUtils.isEmpty(mobilestr) && !TextUtils.isEmpty(lastnamestr) && !TextUtils.isEmpty(emailstr)) {
+                if (!TextUtils.isEmpty(firstnamestr) && !TextUtils.isEmpty(mobilestr) && !TextUtils.isEmpty(memberidstr)) {
                     File file = new File(registerpath);
                     if (file.exists()) {
                         mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));

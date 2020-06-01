@@ -94,6 +94,7 @@ import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -850,13 +851,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
 
                     Integer liveness = livenessMap.get(requestId);
+                    Logger.debug(TAG, " Facial Score ---  Checking Liveness" );
                     if (!GlobalParameters.livenessDetect) {
                         if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
+                            Logger.debug(TAG, " Facial Score ---  not liveness Defect ");
                             searchFace(faceFeature, requestId);
                         }
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
                         if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)) {
+                            Logger.debug(TAG, " Facial Score ---  check facial defect");
                             searchFace(faceFeature, requestId);
                         }
                     } else {
@@ -2074,6 +2078,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
+    String faceSimilarScore;
+    private static DecimalFormat df = new DecimalFormat("0.00");
+
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
@@ -2093,6 +2100,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(final CompareResult compareResult) {
+                        faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
+                        Logger.debug(TAG, " Facial Score ---  " + faceSimilarScore);
+
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                             faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
@@ -2121,7 +2131,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             if (!isAdded) {
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
                                     compareResultList.remove(0);
-                                    adapter.notifyItemRemoved(0);
+                                    //adapter.notifyItemRemoved(0);
                                 }
                                 isSearch = true;
 
