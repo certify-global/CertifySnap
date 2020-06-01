@@ -568,7 +568,7 @@ public class Util {
     }
 
     public static boolean isConnectingToInternet(Context context) {
-        try {
+        /*try {
             ConnectivityManager cm = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
             if (cm != null)
                 for (NetworkInfo ni : cm.getAllNetworkInfo()) {
@@ -585,7 +585,8 @@ public class Util {
         } catch (Exception e) {
             Logger.error(LOG + "isConnectingToInternet()", e.getMessage());
         }
-        return false;
+        return false;*/
+        return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
