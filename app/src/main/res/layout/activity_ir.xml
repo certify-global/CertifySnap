@@ -74,8 +74,8 @@
 
             <FrameLayout
                 android:id="@+id/barcode_scanner"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="320dp"
+                android:layout_height="50dp"
                 android:layout_above="@+id/tv_thermal"
                 android:layout_below="@+id/img_logo"
                 android:layout_centerInParent="true"
