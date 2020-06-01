@@ -600,6 +600,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvErrorMessage = findViewById(R.id.tv_error_message);
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
         mask_message = findViewById(R.id.mask_message);
+        mask_message.setTypeface(rubiklight);
 
         tv_display_time = findViewById(R.id.tv_display_time);
         TextView tvVersionIr = findViewById(R.id.tv_version_ir);
@@ -831,12 +832,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (temperature > thresholdTemperature) {
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(true, text, tempString, false);
+                            showMaskStatus();
                             AccessCardController.getInstance().unlockDoorOnHighTemp();
                             //  mTemperatureListener.onTemperatureCall(true, text);
 
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false);
+                            showMaskStatus();
                             AccessCardController.getInstance().unlockDoor();
                             //   mTemperatureListener.onTemperatureCall(false, text);
 //                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
@@ -928,7 +931,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     rl_header.setVisibility(View.GONE);
                                     logo.setVisibility(View.GONE);
                                     showAnimation();
-                                    showMaskStatus();
 
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
                                     if (isCalibrating && isSearch) runTemperature();
@@ -2391,29 +2393,34 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void showMaskStatus() {
         if(!maskEnabled) return;
 
-        switch (maskStatus) {
-            case 0: {
-                mask_message.setTextColor(getResources().getColor(R.color.red));
-                mask_message.setText("Without Mask");
-                mask_message.setVisibility(View.VISIBLE);
-                mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (maskStatus) {
+                    case 0: {
+                        mask_message.setTextColor(getResources().getColor(R.color.red));
+                        mask_message.setText("Without Mask");
+                        mask_message.setVisibility(View.VISIBLE);
+                        mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                    }
+                    break;
+                    case 1: {
+                        mask_message.setTextColor(getResources().getColor(R.color.green));
+                        mask_message.setText("Mask Detected");
+                        mask_message.setVisibility(View.VISIBLE);
+                        mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                    }
+                    break;
+                    case -1: {
+                        mask_message.setTextColor(getResources().getColor(R.color.dark_orange));
+                        mask_message.setText("Unable to detect Mask");
+                        mask_message.setVisibility(View.VISIBLE);
+                        mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                    }
+                    break;
+                }
             }
-            break;
-            case 1: {
-                mask_message.setTextColor(getResources().getColor(R.color.green));
-                mask_message.setText("Mask Detected");
-                mask_message.setVisibility(View.VISIBLE);
-                mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-            }
-            break;
-            case -1: {
-                mask_message.setTextColor(getResources().getColor(R.color.dark_orange));
-                mask_message.setText("Unable to detect Mask");
-                mask_message.setVisibility(View.VISIBLE);
-                mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-            }
-            break;
-        }
+        });
     }
 
     String faceSimilarScore;
