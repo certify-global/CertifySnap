@@ -851,10 +851,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
-                        searchFace(faceFeature, requestId);
+                        if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
+                            searchFace(faceFeature, requestId);
+                        }
                     } else if (liveness != null || liveness == LivenessInfo.ALIVE) {
                         Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
-                        searchFace(faceFeature, requestId);
+                        if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)) {
+                            searchFace(faceFeature, requestId);
+                        }
                     } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {

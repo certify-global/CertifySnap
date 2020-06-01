@@ -21,9 +21,12 @@ public class SetFacialSimilarity extends AppCompatActivity {
     EditText editTextDialogUserInput;
     SharedPreferences sp;
     TextView btn_save;
-    RadioGroup radio_group_sound;
-    RadioButton radio_yes_sound;
-    RadioButton radio_no_sound;
+    RadioGroup radio_group_mask;
+    RadioButton radio_yes_mask;
+    RadioButton radio_no_mask;
+    RadioGroup radio_group_facial;
+    RadioButton radio_yes_facial;
+    RadioButton radio_no_facial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,35 +40,58 @@ public class SetFacialSimilarity extends AppCompatActivity {
 
         editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70"));
 
-        radio_group_sound = findViewById(R.id.radio_group_mask);
-        radio_yes_sound = findViewById(R.id.radio_yes_mask);
-        radio_no_sound = findViewById(R.id.radio_no_mask);
+        radio_group_mask = findViewById(R.id.radio_group_mask);
+        radio_yes_mask = findViewById(R.id.radio_yes_mask);
+        radio_no_mask = findViewById(R.id.radio_no_mask);
+        radio_group_facial = findViewById(R.id.radio_group_facial);
+        radio_yes_facial = findViewById(R.id.radio_yes_facial);
+        radio_no_facial = findViewById(R.id.radio_no_facial);
 
+        // Mask
         if(sp.getBoolean(GlobalParameters.MASK_DETECT,false)){
-            radio_yes_sound.setChecked(true);
+            radio_yes_mask.setChecked(true);
         }
         else {
-            radio_no_sound.setChecked(true);
+            radio_no_mask.setChecked(true);
         }
-        radio_group_sound.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        radio_group_mask.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 System.out.println("Test CheckId"+checkedId);
                 if(checkedId==R.id.radio_yes_mask){
-                    radio_yes_sound.setChecked(true);
-                    //radio_no_sound.setChecked(false);
-
+                    radio_yes_mask.setChecked(true);
                     Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, true);
                 }
                 else{
-                    //radio_no_sound.setChecked(true);
-                    //radio_yes_sound.setChecked(false);
-
                     Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, false);
                 }
             }
         });
 
+
+        // Facial
+        if(sp.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
+            radio_yes_facial.setChecked(true);
+        }
+        else {
+            radio_no_facial.setChecked(true);
+        }
+        radio_group_facial.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                System.out.println("Test CheckId"+checkedId);
+                if(checkedId==R.id.radio_yes_facial){
+                    radio_yes_facial.setChecked(true);
+                    Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
+                }
+                else{
+                    Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
+                }
+            }
+        });
+
+
+        // Save
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

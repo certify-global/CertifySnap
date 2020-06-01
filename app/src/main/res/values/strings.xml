@@ -214,6 +214,7 @@
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound</string>
     <string name="enable_mask">Enable Mask</string>
+    <string name="enable_facial">Enable Facial Recognition</string>
     <string name="screen_delay">Screen display time (seconds)</string>
     <string name="tv_confirmation_setting">Confirmation View Settings</string>
     <string name="member_management_setting">Member Management</string>
