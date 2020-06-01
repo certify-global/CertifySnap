@@ -282,6 +282,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int ledSettingEnabled = 0;
     String fullName, memberId;
     private int processMask = FaceEngine.ASF_MASK_DETECT;
+    private Bitmap maskDetectBitmap;
+    private int maskStatus = 100;
+    private boolean maskEnabled = false;
 
     private void instanceStart() {
         try {
@@ -399,6 +402,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initQRCode();
 
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
+        maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         GlobalParameters.livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
 
         if (sharedPreferences.getBoolean("wallpaper", false)) {
@@ -785,8 +789,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelImageTimer();
         instanceStop();
         temperatureBitmap = null;
-
         clearQrCodePreview();
+        resetMaskStatus();
     }
 
     long time1, time2;
@@ -893,7 +897,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
-                    //processImage();
+                    if (maskDetectBitmap == null && maskEnabled) {
+                        maskDetectBitmap = rgbBitmap;
+                        processImageAndGetMaskStatus(maskDetectBitmap);
+                    }
                     isFaceCameraOn = true;
                     disableNfc();
                     countTempError = 0;
@@ -921,6 +928,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     rl_header.setVisibility(View.GONE);
                                     logo.setVisibility(View.GONE);
                                     showAnimation();
+                                    showMaskStatus();
+
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
                                     if (isCalibrating && isSearch) runTemperature();
 
@@ -1852,12 +1861,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         private FaceEngine ftEngine;
         private FaceEngine frEngine;
         private FaceEngine flEngine;
-        private FaceEngine fmEngine;
 
         private int ftInitCode = -1;
         private int frInitCode = -1;
         private int flInitCode = -1;
-        private int fmInitCode = -1;
 
         public FaceEngine getFtEngine() {
             return ftEngine;
@@ -1877,21 +1884,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT);
 
             frEngine = new FaceEngine();
-            frInitCode = frEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY,
-                    16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_RECOGNITION);
+            frInitCode = frEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT,
+                    16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT | processMask);
 
             flEngine = new FaceEngine();
-            flInitCode = flEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY,
-                    16, MAX_DETECT_NUM, FaceEngine.ASF_IR_LIVENESS);
-
-            fmEngine = new FaceEngine();
-            fmInitCode = fmEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT,
-                    16, 10, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT | processMask);
-
-            if (fmInitCode != ErrorInfo.MOK) {
-                String error = getString(R.string.specific_engine_init_failed, "faceEngine", fmInitCode);
-                Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face Mask init code is not Error MOK, Error: " + error);
-            }
+            flInitCode = flEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT,
+                    16, MAX_DETECT_NUM, FaceEngine.ASF_IR_LIVENESS | FaceEngine.ASF_FACE_DETECT | processMask);
 
             Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face EngineHelper init with code: " + flInitCode);
 
@@ -1909,13 +1907,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 String error = getString(R.string.specific_engine_init_failed, "flEngine", ftInitCode);
                 Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face IrLiveness init code is not Error MOK, Error: " + error);
                 // Toast.makeText(this,error,Toast.LENGTH_SHORT).show();
-            }
-
-            if (fmInitCode == ErrorInfo.MOK && faceEngine != null) {
-                synchronized (faceEngine) {
-                    int fmUnInitCode = flEngine.unInit();
-                    Logger.debug(TAG, "FaceEngineHelper.unInitEngine()", "Face mask UnInitEngine with code:" + fmUnInitCode);
-                }
             }
         }
 
@@ -2359,27 +2350,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private String model = Build.MODEL;
     //static int inc;
 
-    public boolean processImage() {
-
-        Logger.debug(TAG, "Mask  Value =  ", "Bitmap" + rgbBitmap);
-
-        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(rgbBitmap, true);
-
+    public boolean processImageAndGetMaskStatus(Bitmap maskDetectBitmap) {
+        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(maskDetectBitmap, true);
         if (bitmap == null) {
-            Logger.debug(TAG, "Mask Value ", "Bitmap is null");
+            Logger.debug(TAG, "Bitmap is null");
             return false;
         }
-
-//       try {
-//            inc++;
-//            if (model.contains("950") || "TPS980Q".equals(Build.MODEL))
-//                bitmap = Util.rotateToDegrees(bitmap, 90);
-//            registerpath = Util.saveBitmapFile(bitmap, "register" + inc + ".jpg");
-//            // mregisterfaceimg.setImageBitmap(bitmap);
-//            Log.e("onactivityresult---", "set register bitmap-" + registerpath);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -2387,84 +2363,57 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
         int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
         if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-            Logger.debug(TAG, " Mask Value --- transform failed, code is " + transformCode);
+            Log.d(TAG, "Mask Value --- transform failed, code is " + transformCode);
             return false;
         }
         List<FaceInfo> faceInfoList = new ArrayList<>();
+        int result = faceEngineHelper.getFrEngine().detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
+        Log.d(TAG, "Mask Result = " + result);
 
-        //faceEngine.detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
-
-        //long processStartTime = System.currentTimeMillis();
-        int faceProcessCode = faceEngine.process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
-
-        // Need to work on condition
-        if (relative_main.getVisibility() == View.GONE) {
-            findMaskDetection();
-        }
-
-        if (faceProcessCode == ErrorInfo.MOK) {
-            Logger.debug(TAG, " Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
-            return true;
-        } else {
-            Logger.debug(TAG, " Mask Value --- faceProcessCode failed, code is " + faceProcessCode);
+        if (result != ErrorInfo.MOK) {
             return false;
         }
+        int faceProcessCode = faceEngineHelper.getFrEngine().process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
+        // Need to work on condition
+        if (faceProcessCode == ErrorInfo.MOK) {
+            Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
+            List<MaskInfo> maskInfoList = new ArrayList<>();
+            faceEngineHelper.getFrEngine().getMask(maskInfoList);
+            if (maskInfoList.size() > 0) {
+                maskStatus = maskInfoList.get(0).getMask();
+                Log.d(TAG, "Call Mask Status " +maskStatus);
+            }
+            return true;
+        }
+        return false;
     }
 
-    private void findMaskDetection() {
+    private void showMaskStatus() {
+        if(!maskEnabled) return;
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false)) {
-                    List<MaskInfo> maskInfoList = new ArrayList<>();
-                    faceEngine.getMask(maskInfoList);
-
-                    Logger.debug(TAG, "Mask Value --- List size ", "Size = " + maskInfoList.size());
-
-                    if (maskInfoList.size() < 0) {
-                        mask_message.setVisibility(View.GONE);
-                        return;
-                    } else {
-                        mask_message.setVisibility(View.VISIBLE);
-                        mask_message.setTextColor(getResources().getColor(R.color.white));
-                    }
-                    String maskText = "";
-
-                    for (int i = 0; i < maskInfoList.size(); i++) {
-                        int value = maskInfoList.get(i).getMask();
-                        Logger.debug("tag", "maskInfoList----" + value);
-                        if (value == 1) {
-                            Logger.debug(TAG, "Mask  Value =  ", "Mask Detected");
-                            mask_message.setTextColor(getResources().getColor(R.color.white));
-                            mask_message.setBackgroundColor(getResources().getColor(R.color.green));
-                            maskText = "Mask Detected ";
-                        } else if (value == 0) {
-                            Logger.debug(TAG, "Mask  Value =  ", "Without Mask");
-                            mask_message.setTextColor(getResources().getColor(R.color.white));
-                            mask_message.setBackgroundColor(getResources().getColor(R.color.red));
-                            maskText = "Without Mask ";
-                        } else if (value == -1) {
-                            Logger.debug(TAG, "Mask  Value =  ", "Unable to detect Mask");
-                            mask_message.setTextColor(getResources().getColor(R.color.white));
-                            mask_message.setBackgroundColor(getResources().getColor(R.color.dark_orange));
-                            maskText = "Unable to detect Mask ";
-                        } else {
-                            mask_message.setVisibility(View.GONE);
-                        }
-                    }
-
-                    mask_message.setText(maskText);
-                    mask_message.setTypeface(rubiklight);
-                    if (mask_message.getText().toString().equals("")) {
-                        mask_message.setVisibility(View.GONE);
-                    }
-                } else {
-                    mask_message.setVisibility(View.GONE);
-                    mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-                }
+        switch (maskStatus) {
+            case 0: {
+                mask_message.setTextColor(getResources().getColor(R.color.red));
+                mask_message.setText("Without Mask");
+                mask_message.setVisibility(View.VISIBLE);
+                mask_message.setBackgroundColor(getResources().getColor(R.color.white));
             }
-        });
+            break;
+            case 1: {
+                mask_message.setTextColor(getResources().getColor(R.color.green));
+                mask_message.setText("Mask Detected");
+                mask_message.setVisibility(View.VISIBLE);
+                mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+            }
+            break;
+            case -1: {
+                mask_message.setTextColor(getResources().getColor(R.color.dark_orange));
+                mask_message.setText("Unable to detect Mask");
+                mask_message.setVisibility(View.VISIBLE);
+                mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+            }
+            break;
+        }
     }
 
     String faceSimilarScore;
@@ -2581,5 +2530,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     }
                 });
+    }
+
+    private void resetMaskStatus() {
+        maskDetectBitmap = null;
+        maskStatus = 100;
     }
 }
