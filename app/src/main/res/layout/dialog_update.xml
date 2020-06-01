@@ -41,7 +41,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/exit" />
+            android:background="@mipmap/exit_black" />
 
     </LinearLayout>
 

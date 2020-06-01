@@ -783,7 +783,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
-                    //processImage();
+                    processImage();
                     countTempError = 0;
                     Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Face recognition values = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
@@ -854,7 +854,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
                             searchFace(faceFeature, requestId);
                         }
-                    } else if (liveness != null || liveness == LivenessInfo.ALIVE) {
+                    } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
                         if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)) {
                             searchFace(faceFeature, requestId);
@@ -2044,14 +2044,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (value == 1) {
                             Logger.debug(TAG, "Mask  Value =  ", "Mask Detected");
                             mask_message.setTextColor(getResources().getColor(R.color.white));
+                            mask_message.setBackgroundColor(getResources().getColor(R.color.green));
                             maskText = "Mask Detected ";
                         } else if (value == 0) {
                             Logger.debug(TAG, "Mask  Value =  ", "Without Mask");
-                            mask_message.setTextColor(getResources().getColor(R.color.red));
+                            mask_message.setTextColor(getResources().getColor(R.color.white));
+                            mask_message.setBackgroundColor(getResources().getColor(R.color.red));
                             maskText = "Without Mask ";
                         } else if (value == -1) {
                             Logger.debug(TAG, "Mask  Value =  ", "Unable to detect Mask");
                             mask_message.setTextColor(getResources().getColor(R.color.white));
+                            mask_message.setBackgroundColor(getResources().getColor(R.color.dark_orange));
                             maskText = "Unable to detect Mask ";
                         } else {
                             mask_message.setVisibility(View.GONE);
