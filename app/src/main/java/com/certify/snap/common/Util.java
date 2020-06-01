@@ -22,6 +22,7 @@ import android.hardware.Camera;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -68,7 +69,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
 import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -568,29 +571,12 @@ public class Util {
     }
 
     public static boolean isConnectingToInternet(Context context) {
-        /*try {
-            ConnectivityManager cm = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
-            if (cm != null)
-                for (NetworkInfo ni : cm.getAllNetworkInfo()) {
-                    switch (ni.getTypeName().trim().toUpperCase()) {
-                        case "WIFI":
-                        case "MOBILE":
-                            if (ni.isConnected() && !(ni.getSubtypeName() != null && ni.getSubtypeName().trim().toUpperCase().equals("LTE") && ni.getExtraInfo() != null && ni.getExtraInfo().trim().toUpperCase().equals("IMS"))) {
-                                // MyApplication.noInternet = 0;
-                                return true;
-                            }
-                            break;
-                    }
-                }
-        } catch (Exception e) {
-            Logger.error(LOG + "isConnectingToInternet()", e.getMessage());
-        }
-        return false;*/
         return true;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit, Boolean aBoolean) {
+        Log.v("Util", "recordUserTemperature");
         try {
             if (temperature.isEmpty() || temperature.equals(""))
                 return;
@@ -622,7 +608,7 @@ public class Util {
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+            Logger.error(LOG,  "getToken(JSONObjectCallback callback, Context context) "+ e.getMessage());
 
         }
     }
@@ -653,8 +639,9 @@ public class Util {
             new AsyncJSONObjectSender(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ActivateApplication, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
-
+            Logger.error(LOG , "getToken "+ e.getMessage());
+            //TODO:warn failed to activate
+            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
     }
 

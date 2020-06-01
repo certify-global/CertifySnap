@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.palantir.git-version'
 import com.android.build.OutputFile
+
 //TODO:need version only for release, literal for debug.
 ext {
     git = gitVersion()
@@ -16,13 +17,13 @@ android {
 
     signingConfigs {
         Snap {
-            storeFile  new File("$userHome/certifysnap/CertifySnap.jks"  )
+            storeFile new File("$userHome/certifysnap/CertifySnap.jks")
             storePassword = keyStore['snap.passwd']
             keyAlias = 'certifysnap'
             keyPassword = keyStore['snap.passwd']
         }
         SnapEnt {
-            storeFile  file("$userHome/certifysnap/CertifySnapEnt.jks"  )
+            storeFile file("$userHome/certifysnap/CertifySnapEnt.jks")
             storePassword = keyStore['snapEnt.passwd']
             keyAlias = 'snapent'
             keyPassword = keyStore['snapEnt.passwd']
@@ -39,7 +40,8 @@ android {
         versionNameSuffix ""
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        ndk{
+        testOptions.unitTests.includeAndroidResources = true
+        ndk {
             abiFilters 'arm64-v8a'
         }
     }
@@ -61,11 +63,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests.all {
+            systemProperty 'robolectric.enabledSdks', '25'
+        }
+    }
 
 }
-android.applicationVariants.all{ variant ->
-def buildType = variant.buildType.buildType.name
-    variant.outputs.all{output ->
+android.applicationVariants.all { variant ->
+    def buildType = variant.buildType.buildType.name
+    variant.outputs.all { output ->
 
         def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
         println "$buildType $output.apkData.fullName $suffix"
@@ -113,5 +120,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-ml-vision:17.0.0'
     implementation 'com.google.firebase:firebase-ml-vision-image-label-model:15.0.0'
     implementation 'com.google.firebase:firebase-ml-model-interpreter:16.2.0'
+    testImplementation 'commons-logging:commons-logging:1.2'
+    testImplementation "org.mockito:mockito-core:3.3.3"
+    androidTestImplementation "org.mockito:mockito-core:3.3.3"
+    testImplementation "org.robolectric:robolectric:4.3.1"
+
 }
 apply plugin: 'com.google.gms.google-services'

@@ -455,13 +455,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void homeIcon(String path) {
+        try {
+            if (!path.isEmpty()) {
+                Bitmap bitmap = Util.decodeToBase64(path);
+                img_logo.setImageBitmap(bitmap);
+            } else {
+                img_logo.setBackgroundResource(R.drawable.final_logo);
 
-        if (!path.isEmpty()) {
-            Bitmap bitmap = Util.decodeToBase64(path);
-            img_logo.setImageBitmap(bitmap);
-        } else {
-            img_logo.setBackgroundResource(R.drawable.final_logo);
+            }
 
+        } catch (Exception ex) {
+            Logger.warn(TAG, String.format("homeIcone path: %s, message: %s", path, ex.getMessage()));
         }
 
     }
@@ -1615,8 +1619,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
-            if (nv21 == null) return;
-            if(camera==null)return;
+            if (nv21 == null || camera==null) return;
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -1959,7 +1962,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                    else
 //                                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, tempString, null, null, null, false);
 //                                }
-                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))) {
+                if ((sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))) {
                     boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
                     if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold)
                         Util.recordUserTemperature(null, IrCameraActivity.this, tempValue, irBitmap, rgbBitmap, temperatureBitmap, aboveThreshold);
