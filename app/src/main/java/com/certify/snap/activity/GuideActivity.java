@@ -28,7 +28,6 @@ import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.BuildConfig;
 import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
@@ -78,11 +77,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(!BuildConfig.DEBUG){
-        AppCenter.start(getApplication(), "bb348a98-dbeb-407f-862d-3337632c4e0e",
-                Analytics.class, Crashes.class);
-        AppCenter.setUserId(Util.getSerialNumber());
-        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
