@@ -157,7 +157,6 @@ public class ScanViewActivity extends Activity {
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     System.out.println("Test CheckId" + checkedId);
                     if (checkedId == R.id.radio_yes_mask) {
-                        radio_yes_mask.setChecked(true);
                         Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, true);
                     } else {
                         Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, false);
