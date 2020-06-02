@@ -1173,6 +1173,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 
     private void clearLeftFace(List<FacePreviewInfo> facePreviewInfoList) {
+        if (faceDetectEnabled) return; //For now this processing is not required
         if (compareResultList != null) {
             for (int i = compareResultList.size() - 1; i >= 0; i--) {
                 if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId())) {
@@ -2486,7 +2487,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     compareResultList.remove(0);
                                     //adapter.notifyItemRemoved(0);
                                 }
-                                isSearch = true;
 
                                 String[] split = compareResult.getUserName().split("-");
                                 String id = "";
