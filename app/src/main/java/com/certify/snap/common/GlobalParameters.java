@@ -102,6 +102,8 @@ public class GlobalParameters {
     public static final String Cloud_Activated = "cloud_activated";
     public static final String FACIAL_THRESHOLD = "facial_similarity_range";
     public static final String DISPLAY_IMAGE_CONFIRMATION = "display_image_confirmation";
+    public static final String MASK_VALUE = "mask_value";
+    public static final String FACE_SCORE = "face_score";
 
 
 }

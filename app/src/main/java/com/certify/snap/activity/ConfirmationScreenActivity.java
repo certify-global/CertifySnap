@@ -62,7 +62,7 @@ public class ConfirmationScreenActivity extends Activity {
 
             user_img = findViewById(R.id.iv_item_head_img);
             user_name = findViewById(R.id.tv_item_name);
-            if(compareResultValues!= null && !sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false)){
+            if(compareResultValues!= null && !sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
                 compareResult();
             }
 

@@ -2411,6 +2411,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Without Mask");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                        Util.writeString(sharedPreferences,GlobalParameters.MASK_VALUE,"0");
                     }
                     break;
                     case 1: {
@@ -2418,6 +2419,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Mask Detected");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                        Util.writeString(sharedPreferences,GlobalParameters.MASK_VALUE,"1");
+
                     }
                     break;
                     case -1: {
@@ -2425,6 +2428,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Unable to detect Mask");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                        Util.writeString(sharedPreferences,GlobalParameters.MASK_VALUE,"-1");
+
                     }
                     break;
                 }
@@ -2432,7 +2437,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
-    String faceSimilarScore;
+    String faceSimilarScore,faceScore;
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
@@ -2455,6 +2460,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onNext(final CompareResult compareResult) {
                         faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
+                        faceScore = df.format (compareResult.getSimilar()*100);
 
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2503,6 +2509,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String name = registeredMembers.getFirstname();
                                     String memberId = registeredMembers.getMemberid();
                                     String image = registeredMembers.getImage();
+                                    String accessID = registeredMembers.getAccessid();
+                                    String lastName = registeredMembers.getLastname();
+                                    Util.writeString(sharedPreferences, GlobalParameters.FIRST_NAME, name);
+                                    Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
+                                    Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
+                                    Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, accessID);
+                                    Util.writeString(sharedPreferences, GlobalParameters.FACE_SCORE,faceScore);
                                     if (status.equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {

@@ -604,6 +604,8 @@ public class Util {
             obj.put("lastName",  sp.getString(GlobalParameters.LAST_NAME,""));
             obj.put("memberId",  sp.getString(GlobalParameters.MEMBER_ID,""));
             obj.put("trqStatus",  sp.getString(GlobalParameters.TRQ_STATUS,""));
+            obj.put("maskStatus",  sp.getString(GlobalParameters.MASK_VALUE,""));
+            obj.put("faceScore",  sp.getString(GlobalParameters.FACE_SCORE,""));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
