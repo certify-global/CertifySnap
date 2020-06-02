@@ -9,10 +9,10 @@ public class RegisteredMembers extends LitePalSupport {
     String lastname;
     String expiretime;
     String status;
-    @Column(unique = true)
     String mobile;
     String image;
     String features;
+    @Column(unique = true)
     String memberid;
     String email;
     String accessid;

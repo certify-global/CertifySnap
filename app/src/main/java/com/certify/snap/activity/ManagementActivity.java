@@ -481,7 +481,7 @@ public class ManagementActivity extends AppCompatActivity {
                         File file = new File(updateimagePath);
                         if (file.exists()) {
                             mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
-                            localUpdate(member.getMobile(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
+                            localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
@@ -784,7 +784,7 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
     public boolean registerDatabase(String firstname, String lastname, String mobile,String id, String email, String accessid, String uniqueid) {
-        String username = firstname +"-"+mobile;
+        String username = firstname +"-"+id;
         String image =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username+FaceServer.IMG_SUFFIX;
         String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
         Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
@@ -807,8 +807,8 @@ public class ManagementActivity extends AppCompatActivity {
 
     private void localRegister(String firstname,String lastname, String mobile,String id, String email, String accessid, String uniqueid, String imgpath) {
         String data = "";
-        if (processImg(firstname+"-"+mobile,imgpath,mobile)) {
-            if(registerDatabase(firstname,lastname, mobile,id,email, accessid, uniqueid)){
+        if(registerDatabase(firstname,lastname, mobile,id,email, accessid, uniqueid)){
+            if (processImg(firstname+"-"+id,imgpath,id)) {
                 Log.e("tag", "Register Success");
                 showResult( getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -818,27 +818,26 @@ public class ManagementActivity extends AppCompatActivity {
                     file.delete();
                     registerpath = "";
                 }
-            }else{
-                Log.e("tag", "Register failed");
-                showResult( getString(R.string.register_failed));
+            } else {
+                Log.e("tag", "fail to process bitmap");
+                showResult(getString(R.string.register_failprocess));
             }
         } else {
-            Log.e("tag", "fail to process bitmap");
-            showResult(getString(R.string.register_failprocess));
+            Log.e("tag", "Register failed");
+            showResult( getString(R.string.register_failed));
         }
-
     }
 
-    public void localUpdate(String oldmobile,String fistname,String lastname,String mobile,String id, String email, String accessid, String  uniqueid, String imagePath){
+    public void localUpdate(String oldId,String fistname,String lastname,String mobile,String id, String email, String accessid, String  uniqueid, String imagePath){
         String data = "";
-        List<RegisteredMembers> list  = LitePal.where("mobile = ?", oldmobile).find(RegisteredMembers.class);
+        List<RegisteredMembers> list  = LitePal.where("memberid = ?", oldId).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
 
             DismissProgressDialog(mprogressDialog);
             File file = new File(imagePath);
             String filepath = Environment.getExternalStorageDirectory() + "/pic/update.jpg";
             if (file.exists() && filepath.equalsIgnoreCase(imagePath)) {
-                if(processImg(fistname+"-"+mobile,imagePath,oldmobile)){
+                if(processImg(fistname+"-"+id,imagePath,oldId)){
                     RegisteredMembers Members = list.get(0);
                     Members.setFirstname(fistname);
                     Members.setLastname(lastname);
@@ -868,8 +867,8 @@ public class ManagementActivity extends AppCompatActivity {
                 //if(!oldmobile.equals(mobile)){
                 String oldimage =  Members.getImage();
                 String oldfeature = Members.getFeatures();
-                newimage =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname +"-"+mobile+FaceServer.IMG_SUFFIX;
-                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname +"-"+mobile;
+                newimage =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname +"-"+id+FaceServer.IMG_SUFFIX;
+                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname +"-"+id;
                 renameFile(oldimage,newimage);
                 renameFile(oldfeature,newfeature);
 //                }else{
@@ -918,13 +917,13 @@ public class ManagementActivity extends AppCompatActivity {
         handler.obtainMessage(UPDATE).sendToTarget();
     }
 
-    public boolean deleteDatabase(String name,String mobile){
-        List<RegisteredMembers> list = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
+    public boolean deleteDatabase(String name,String id){
+        List<RegisteredMembers> list = LitePal.where("memberid = ?", id).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
-            FaceServer.getInstance().deleteInfo(name + "-" + mobile);
+            FaceServer.getInstance().deleteInfo(name + "-" + id);
             String featurePath = list.get(0).getFeatures();
             String imgPath = list.get(0).getImage();
-            int line = LitePal.deleteAll(RegisteredMembers.class, "mobile = ?", mobile);
+            int line = LitePal.deleteAll(RegisteredMembers.class, "memberid = ?", id);
             Log.e("tag", "line---" + line);
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);
@@ -949,7 +948,7 @@ public class ManagementActivity extends AppCompatActivity {
     private void localDelete(RegisteredMembers members) {
         String data = "";
         DismissProgressDialog(mdeleteprogressDialog);
-        if (deleteDatabase(members.getFirstname(),members.getMobile())) {
+        if (deleteDatabase(members.getFirstname(),members.getMemberid())) {
             DismissDialog(mDeleteDialog);
             data = getString(R.string.Delete_success);
             refresh();

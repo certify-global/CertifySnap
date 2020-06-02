@@ -164,7 +164,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
 
-    private static final float SIMILAR_THRESHOLD = 0.8F;
+    private static final float SIMILAR_THRESHOLD = 0.7F;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
 
@@ -2481,8 +2481,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 isSearch = true;
 
                                 String[] split = compareResult.getUserName().split("-");
-                                String mobile = "";
-                                if (split != null) mobile = split[1];
+                                String id = "";
+                                if (split != null) id = split[1];
 
                                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date curDate = new Date(System.currentTimeMillis());
@@ -2490,7 +2490,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
-                                registeredMemberslist = LitePal.where("mobile = ?", split[1]).find(RegisteredMembers.class);
+                                registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     String status = registeredMembers.getStatus();
@@ -2502,7 +2502,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
                                             fullName = getString(R.string.name) + name;
                                             memberId = getString(R.string.id) + memberId;
-                                            addOfflineMember(name, mobile, image, new Date(), temperature);
+                                            addOfflineMember(name, id, image, new Date(), temperature);
                                             time2 = System.currentTimeMillis();
                                             showResult(compareResult, requestId, fullName, memberId, false);
                                         }
