@@ -11,9 +11,9 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:text="REGISTER"
-        android:textStyle="bold"
         android:textColor="@color/black"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/popup_exit"
@@ -37,31 +37,33 @@
             android:layout_height="150dp"
             android:layout_margin="6dp"
             android:src="@mipmap/face_register" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
 
-            <Button android:id="@+id/popup_take_photo"
+            <Button
+                android:id="@+id/popup_take_photo"
                 android:layout_width="120dp"
                 android:layout_height="40dp"
-                android:background="@drawable/btn_shape"
                 android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_shape"
+                android:text="CAPTURE"
                 android:textColor="@color/black"
-                android:textSize="18sp"
-                android:text="CAPTURE"/>
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/popup_use_photo"
                 android:layout_width="120dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="25dp"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="25dp"
                 android:background="@drawable/btn_shape"
+                android:text="USE PHOTO"
                 android:textColor="@color/black"
-                android:textSize="18sp"
-                android:text="USE PHOTO"/>
+                android:textSize="18sp" />
 
         </LinearLayout>
     </LinearLayout>
@@ -72,125 +74,148 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/linear_image"
         android:layout_margin="15dp"
-        android:padding="10dp"
         android:background="@drawable/shape"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/text_input_firstname"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_firstname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/popup_first_name"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp">
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/first_name"
+                android:paddingLeft="05dp" />
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/popup_first_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:hint="@string/first_name"
-                    android:background="@drawable/edittextbackground"
-                    android:paddingLeft="05dp"/>
-
-            </android.support.design.widget.TextInputLayout>
+        </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/text_input_lName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="10dp">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/popup_last_name"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/last_name"
-            android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"/>
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/popup_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/last_name"
+                android:paddingLeft="05dp" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/text_input_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="10dp">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/popup_email"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="@string/email_address"
                 android:background="@drawable/edittextbackground"
-                android:paddingLeft="05dp"
-                android:inputType="textEmailAddress"/>
+                android:hint="@string/email_address"
+                android:inputType="textEmailAddress"
+                android:paddingLeft="05dp" />
         </android.support.design.widget.TextInputLayout>
+
         <android.support.design.widget.TextInputLayout
-        android:id="@+id/text_input_pno"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/popup_mobile"
+            android:id="@+id/text_input_pno"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/phone_number"
-            android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"
-            android:inputType="number"
-            android:maxLength="11"/>
-    </android.support.design.widget.TextInputLayout>  <android.support.design.widget.TextInputLayout
-        android:id="@+id/text_input_member_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/popup_member_id"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/member_id"
-            android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"
-            android:inputType="number"/>
-    </android.support.design.widget.TextInputLayout>  <android.support.design.widget.TextInputLayout
-        android:id="@+id/text_input_access_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/popup_mobile"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/phone_number"
+                android:inputType="number"
+                android:maxLength="11"
+                android:paddingLeft="05dp" />
+        </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/popup_access_id"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_member_id"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/access_id"
-            android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"
-            android:inputType="number"/>
-    </android.support.design.widget.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/popup_member_id"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/member_id"
+                android:inputType="number"
+                android:paddingLeft="05dp" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/text_input_access_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/popup_access_id"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/access_id"
+                android:inputType="number"
+                android:paddingLeft="05dp"
+                android:layout_weight=".75"/>
+                <Button
+                    android:id="@+id/btn_enroll"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:background="@drawable/btn_shape"
+                    android:text="@string/access_control_enroll"
+                    android:textColor="@color/black"
+                    android:layout_weight=".25"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </android.support.design.widget.TextInputLayout>
 
         <EditText
             android:id="@+id/popup_unique_id"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="3dp"
-            android:hint="unique Id"
-            android:padding="5dp"
             android:background="@drawable/edit_shape"
+            android:hint="unique Id"
             android:inputType="number"
+            android:padding="5dp"
             android:textColor="@color/skyblue"
             android:textColorHint="@color/skyblue"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
 

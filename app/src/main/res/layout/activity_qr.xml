@@ -194,7 +194,8 @@
         android:layout_marginTop="@dimen/margin_15"
         android:text="@string/enable_mask"
         android:textColor="@color/black"
-        android:textSize="@dimen/margin_20" />
+        android:textSize="@dimen/margin_20"
+        android:visibility="gone"/>
 
     <RadioGroup
         android:id="@+id/radio_group_mask"
@@ -202,7 +203,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_20"
         android:layout_marginTop="@dimen/margin_5"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <RadioButton
             android:id="@+id/radio_yes_mask"
