@@ -1173,10 +1173,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 
     private void clearLeftFace(List<FacePreviewInfo> facePreviewInfoList) {
-        if (faceDetectEnabled) return; //For now this processing is not required
         if (compareResultList != null) {
             for (int i = compareResultList.size() - 1; i >= 0; i--) {
-                if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId())) {
+                if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId()) && !faceDetectEnabled) {
                     Logger.debug(TAG, "clearLeftFace()", "CompareResultList failed, Remove and exit face. TrackId = " + compareResultList.get(i).getTrackId());
                     compareResultList.remove(i);
                     adapter.notifyItemRemoved(i);
@@ -2455,7 +2454,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onNext(final CompareResult compareResult) {
                         faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
-                        Logger.debug(TAG, " Facial Score ---  " + faceSimilarScore);
 
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2465,7 +2463,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
                         Float thresholdFacial = (float) (thresholdvalue / 100);
-                        Logger.debug("Naga", "thresholdValue", thresholdFacialPreference);
 
                         if (compareResult.getSimilar() > thresholdFacial) {
 
