@@ -80,7 +80,7 @@ public class QRViewSetting extends Activity {
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if (checkedId == R.id.radio_yes_qr && (!sp.getBoolean(GlobalParameters.FACIAL_DETECT, false) == true))
+                    if (checkedId == R.id.radio_yes_qr)
                         Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, true);
                     else
                         Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
@@ -99,7 +99,6 @@ public class QRViewSetting extends Activity {
                     System.out.println("Test CheckId" + checkedId);
                     if (checkedId == R.id.radio_yes_facial) {
                         radio_yes_facial.setChecked(true);
-                        rbguideno.setChecked(true);
                         Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
                     } else {
                         Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
