@@ -32,7 +32,7 @@ import java.io.File;
 
 public class ConfirmationScreenActivity extends Activity {
     Typeface rubiklight;
-    TextView tv_title, tv_subtitle, user_name, user_id;
+    TextView tv_title, tv_subtitle, user_name;
     private SharedPreferences sp;
     String value;
     private long delayMilli = 0;
@@ -62,7 +62,6 @@ public class ConfirmationScreenActivity extends Activity {
 
             user_img = findViewById(R.id.iv_item_head_img);
             user_name = findViewById(R.id.tv_item_name);
-            user_id = findViewById(R.id.tv_item_id);
             if(compareResultValues!= null){
                 compareResult();
             }
@@ -118,7 +117,6 @@ public class ConfirmationScreenActivity extends Activity {
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .into(user_img);
                     user_name.setText(compareResultValues.getMessage());
-                    user_id.setText(compareResultValues.getMemberId());
                 }
             });
 

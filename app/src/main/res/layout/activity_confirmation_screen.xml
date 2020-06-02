@@ -11,12 +11,13 @@
 
     <com.certify.snap.view.OvalImageView
         android:id="@+id/iv_item_head_img"
-        android:layout_width="170dp"
-        android:layout_height="170dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_gravity="center"
-        android:layout_marginStart="56dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="72dp"
         android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,23 +25,13 @@
         android:id="@+id/tv_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="176dp"
+        android:layout_marginTop="16dp"
         android:textColor="@color/black"
         android:textSize="20dp"
-        app:layout_constraintStart_toEndOf="@+id/iv_item_head_img"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tv_item_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="36dp"
-        app:layout_constraintStart_toEndOf="@+id/iv_item_head_img"
-        app:layout_constraintTop_toBottomOf="@+id/tv_item_name" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_item_head_img" />
 
     <TextView
         android:id="@+id/tv_title"

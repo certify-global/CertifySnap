@@ -2505,7 +2505,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     if (status.equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                            fullName = getString(R.string.name) + name;
+                                            fullName = name;
                                             memberId = getString(R.string.id) + memberId;
                                             addOfflineMember(name, id, image, new Date(), temperature);
                                             time2 = System.currentTimeMillis();
