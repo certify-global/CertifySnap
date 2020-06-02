@@ -72,8 +72,8 @@ public class ConfirmationViewSetting extends Activity {
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
 
-            et_screen_delay_above.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "3"));
-            et_screen_below.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "3"));
+            et_screen_delay_above.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1"));
+            et_screen_below.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1"));
             edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work."));
             edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!"));
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

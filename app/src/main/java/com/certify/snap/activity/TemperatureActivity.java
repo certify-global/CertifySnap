@@ -32,7 +32,7 @@ public class TemperatureActivity extends Activity {
         final RadioButton radio_f = findViewById(R.id.radio_f);
         RadioButton radio_c = findViewById(R.id.radio_c);
 
-        editTextDialogUserInput.setText(sp.getString(GlobalParameters.TEMP_TEST, "99"));
+        editTextDialogUserInput.setText(sp.getString(GlobalParameters.TEMP_TEST, "100.4"));
 
         if (sp.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
             radio_f.setChecked(true);

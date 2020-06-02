@@ -828,7 +828,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
                         }
                         String tempString = String.format("%,.1f", temperature);
-                        String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
+                        String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
                         Float thresholdTemperature = Float.parseFloat(thresholdTemperaturePreference);
                         if (temperature > thresholdTemperature) {
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
@@ -1715,7 +1715,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             String tempString = String.format("%,.1f", temperature);
             Logger.debug(TAG, "tempMessageUi()", "Temperature is" + tempString);
 
-            String testing_tempe = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
+            String testing_tempe = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
             Float tmpFloat = Float.parseFloat(testing_tempe);
             if (temperature > tmpFloat) {
                 if (sharedPreferences.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
