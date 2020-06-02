@@ -277,7 +277,7 @@
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
-    <string name="setting_message">This device is Activated with your Cloud account.Any changes to the settings locally will be overwritten upon next restart or sync.Please modify the appropriate settings online and sync the settings on the device.</string>
+    <string name="setting_message">This device is Activated with your Cloud account.Any changes to the settings locally will be overwritten upon next restart or sync. Please modify the appropriate settings online and sync the settings on the device.</string>
     <string name="setting_note">Note: You can modify locally to finalize what settings to apply for the device via online settings.</string>
 
     <!--Scan not Recognized page-->
@@ -296,5 +296,6 @@
     <string name="phone_number">Phone Number</string>
     <string name="member_id">Member Id</string>
     <string name="access_id">Access Id</string>
+    <string name="display">"Do not display Image and name on the confirmation screen "</string>
 
 </resources>

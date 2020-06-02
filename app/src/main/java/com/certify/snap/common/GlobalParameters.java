@@ -101,5 +101,7 @@ public class GlobalParameters {
     public static final String ACCESS_ID = "access_id";
     public static final String Cloud_Activated = "cloud_activated";
     public static final String FACIAL_THRESHOLD = "facial_similarity_range";
+    public static final String DISPLAY_IMAGE_CONFIRMATION = "display_image_confirmation";
+
 
 }

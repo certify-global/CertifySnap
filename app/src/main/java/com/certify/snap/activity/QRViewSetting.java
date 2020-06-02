@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -34,6 +36,8 @@ public class QRViewSetting extends Activity {
     RadioButton rbguideyes;
     RadioButton rbguideno;
     EditText editTextDialogUserInput;
+    CheckBox checkbox_display;
+    TextView tv_display;
 
 
     @Override
@@ -64,7 +68,10 @@ public class QRViewSetting extends Activity {
             radio_yes_facial = findViewById(R.id.radio_yes_facial);
             radio_no_facial = findViewById(R.id.radio_no_facial);
             tv_facial = findViewById(R.id.tv_facial);
+            checkbox_display = findViewById(R.id.checkbox_display);
+            tv_display = findViewById(R.id.tv_display);
             tv_facial.setTypeface(rubiklight);
+            tv_display.setTypeface(rubiklight);
 
 
 
@@ -102,6 +109,22 @@ public class QRViewSetting extends Activity {
                         Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
                     } else {
                         Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
+                    }
+                }
+            });
+
+            if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
+                checkbox_display.setChecked(true);
+            } else {
+                checkbox_display.setChecked(false);
+            }
+            checkbox_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        Util.writeBoolean(sp, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, true);
+                    }else{
+                        Util.writeBoolean(sp, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
                     }
                 }
             });
