@@ -186,47 +186,6 @@
 
     </RadioGroup>
 
-    <TextView
-        android:id="@+id/tv_mask"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_10"
-        android:layout_marginTop="@dimen/margin_15"
-        android:text="@string/enable_mask"
-        android:textColor="@color/black"
-        android:textSize="@dimen/margin_20"
-        android:visibility="gone"/>
-
-    <RadioGroup
-        android:id="@+id/radio_group_mask"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_5"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <RadioButton
-            android:id="@+id/radio_yes_mask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_30"
-            android:text="@string/living_type_1"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_14"
-            android:theme="@style/MyCheckBox" />
-
-        <RadioButton
-            android:id="@+id/radio_no_mask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/living_type_0"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_14"
-            android:theme="@style/MyCheckBox" />
-
-    </RadioGroup>
-
     <android.support.design.widget.TextInputLayout
         android:id="@+id/text_input_delay"
         android:layout_width="match_parent"

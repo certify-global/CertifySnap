@@ -27,6 +27,9 @@ public class ScanViewActivity extends Activity {
     Typeface rubiklight;
     TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg;
     TextInputLayout text_input_low_temp;
+    RadioGroup radio_group_mask;
+    RadioButton radio_yes_mask;
+    RadioButton radio_no_mask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,9 @@ public class ScanViewActivity extends Activity {
             et_screen_delay = findViewById(R.id.et_screen_delay);
             text_input_low_temp = findViewById(R.id.text_input_low_temp);
             editTextDialogUserInput_low = findViewById(R.id.editTextDialogUserInput_low);
+            radio_group_mask = findViewById(R.id.radio_group_mask);
+            radio_yes_mask = findViewById(R.id.radio_yes_mask);
+            radio_no_mask = findViewById(R.id.radio_no_mask);
             btn_save = findViewById(R.id.btn_exit);
             tv_delay = findViewById(R.id.tv_delay);
             tv_sound = findViewById(R.id.tv_sound);
@@ -89,6 +95,12 @@ public class ScanViewActivity extends Activity {
             }else{
                 radio_no_reg.setChecked(true);
                 text_input_low_temp.setVisibility(View.GONE);
+            }
+
+            if (sp.getBoolean(GlobalParameters.MASK_DETECT, false)) {
+                radio_yes_mask.setChecked(true);
+            } else {
+                radio_no_mask.setChecked(true);
             }
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
             editTextDialogUserInput_low.setText(sp.getString(GlobalParameters.TEMP_TEST_LOW, "93.2"));
@@ -137,6 +149,18 @@ public class ScanViewActivity extends Activity {
                         }else{
                             Util.writeBoolean(sp, GlobalParameters.ALLOW_ALL, false);
                          text_input_low_temp.setVisibility(View.GONE);
+                    }
+                }
+            });
+            radio_group_mask.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    System.out.println("Test CheckId" + checkedId);
+                    if (checkedId == R.id.radio_yes_mask) {
+                        radio_yes_mask.setChecked(true);
+                        Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, true);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.MASK_DETECT, false);
                     }
                 }
             });

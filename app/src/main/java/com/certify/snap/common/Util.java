@@ -970,6 +970,7 @@ public class Util {
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
                 JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
+                JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
                 //Homeview
                 String settingVersion = responseData.getString("settingVersion");
                 String deviceMasterCode = responseData.getString("deviceMasterCode");
@@ -996,6 +997,7 @@ public class Util {
                 String temperatureFormat = jsonValueScan.getString("temperatureFormat");
                 String allowlowtemperaturescanning = jsonValueScan.getString("allowLowTemperatureScanning");
                 String lowtemperatureThreshold = jsonValueScan.getString("lowTemperatureThreshold");
+                String enableMaskDetection = jsonValueScan.getString("enableMaskDetection");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -1006,6 +1008,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
                 Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST_LOW, lowtemperatureThreshold);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, allowlowtemperaturescanning.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.getString("enableConfirmationScreen");
@@ -1035,6 +1038,16 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, message2);
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
+
+                //Identification setting
+                String enableQRCodeScanner = jsonValueIdentification.getString("enableQRCodeScanner");
+                String enableRFIDScanner = jsonValueIdentification.getString("enableRFIDScanner");
+                String identificationTimeout = jsonValueIdentification.getString("identificationTimeout");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.Timeout,identificationTimeout);
+
 
             } else {
                 Logger.toast(context, "Something went wrong please try again");
