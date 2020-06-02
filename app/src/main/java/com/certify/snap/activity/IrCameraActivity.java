@@ -974,13 +974,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
 
-                    if (faceDetectEnabled && (LitePal.findAll(RegisteredMembers.class).size() > 0) && isSearchFace) {
+                    Integer liveness = livenessMap.get(requestId);
+                    if (faceDetectEnabled && (LitePal.findAll(RegisteredMembers.class).size() > 0) && isSearchFace
+                       && liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.i(TAG, "Call face search");
                         isSearchFace = false;
                         searchFace(faceFeature, requestId);
                     }
 
-                    Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
                         /*if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
                             Logger.debug(TAG, " Facial Score ---  not liveness Defect ");
