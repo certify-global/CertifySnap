@@ -285,6 +285,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private Bitmap maskDetectBitmap;
     private int maskStatus = 100;
     private boolean maskEnabled = false;
+    private boolean faceDetectEnabled = false;
+    private boolean isSearchFace = true;
 
     private void instanceStart() {
         try {
@@ -402,7 +404,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initQRCode();
 
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
-        maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         GlobalParameters.livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
 
         if (sharedPreferences.getBoolean("wallpaper", false)) {
@@ -973,18 +974,24 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
 
+                    if (faceDetectEnabled && (LitePal.findAll(RegisteredMembers.class).size() > 0) && isSearchFace) {
+                        Log.i(TAG, "Call face search");
+                        isSearchFace = false;
+                        searchFace(faceFeature, requestId);
+                    }
+
                     Integer liveness = livenessMap.get(requestId);
                     if (!GlobalParameters.livenessDetect) {
-                        if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
+                        /*if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
                             Logger.debug(TAG, " Facial Score ---  not liveness Defect ");
                             searchFace(faceFeature, requestId);
-                        }
+                        }*/
                     } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                        Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
+                        /*Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Liveness info Alive, isTemperature " + isTemperature);
                         if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)) {
                             Logger.debug(TAG, " Facial Score ---  check facial defect");
                             searchFace(faceFeature, requestId);
-                        }
+                        }*/
                     } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
@@ -2227,7 +2234,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
             Logger.toast(this,"QRCode something went wrong.Please try again");
-
         }
     }
 
@@ -2244,6 +2250,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,"");
         delayMilliTimeOut = sharedPreferences.getString(GlobalParameters.Timeout, "5");
         ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
+        maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
+        faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         getAccessControlSettings();
     }
 
