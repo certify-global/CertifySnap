@@ -102,6 +102,7 @@ public class ManagementActivity extends AppCompatActivity {
     private NfcAdapter mNfcAdapter; //Optimize
     private PendingIntent mPendingIntent;
     private RegisteredMembers updateMember = null;
+    private EditText registerAccessid;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -181,10 +182,15 @@ public class ManagementActivity extends AppCompatActivity {
         String UID = Util.bytesToHexString(ID);
         if(UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
-        updateMember.setAccessid(id);
-        //Update UI
-        maccessid.setText(id);
-        enrollBtn.setVisibility(View.GONE);
+        if(updateMember!=null) {
+            updateMember.setAccessid(id);
+            //Update UI
+            maccessid.setText(id);
+            enrollBtn.setVisibility(View.GONE);
+            return;
+        }
+        registerAccessid.setText(id);
+        popupEnrollBtn.setVisibility(View.GONE);
     }
 
     public void onmemberclick(View v) {
@@ -354,6 +360,7 @@ public class ManagementActivity extends AppCompatActivity {
     LinearLayout textbody;
     LinearLayout editbody;
     private Button enrollBtn;
+    private Button popupEnrollBtn;
     ImageView mregisterfaceimg = null;
     Button mtakephoto;
     Button musephoto;
@@ -669,7 +676,7 @@ public class ManagementActivity extends AppCompatActivity {
         final EditText mmobile = view.findViewById(R.id.popup_mobile);
         final EditText mmemberid = view.findViewById(R.id.popup_member_id);
         final EditText memail = view.findViewById(R.id.popup_email);
-        final EditText maccessid = view.findViewById(R.id.popup_access_id);
+        registerAccessid = view.findViewById(R.id.popup_access_id);
         final EditText muniqueid = view.findViewById(R.id.popup_unique_id);
         final TextInputLayout text_input_member_id = view.findViewById(R.id.text_input_member_id);
         final TextInputLayout text_input_access_id = view.findViewById(R.id.text_input_access_id);
@@ -687,7 +694,8 @@ public class ManagementActivity extends AppCompatActivity {
 
         mregisterfaceimg = view.findViewById(R.id.popup_faceimg);
         musephoto = view.findViewById(R.id.popup_use_photo);
-        mtakephoto =view.findViewById(R.id.popup_take_photo);
+        mtakephoto = view.findViewById(R.id.popup_take_photo);
+        popupEnrollBtn = view.findViewById(R.id.popup_btn_enroll);
 
 /*        mregisterfaceimg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -720,6 +728,14 @@ public class ManagementActivity extends AppCompatActivity {
                 }
             }
         });
+
+        popupEnrollBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Please scan the card to enroll", Toast.LENGTH_LONG).show();
+            }
+        });
+
         Button mregister = view.findViewById(R.id.btn_register);
         mregister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -729,16 +745,22 @@ public class ManagementActivity extends AppCompatActivity {
                 String mobilestr = mmobile.getText().toString();
                 String memberidstr = mmemberid.getText().toString();
                 String emailstr = memail.getText().toString();
-                String accessstr = maccessid.getText().toString();
+                String accessstr = registerAccessid.getText().toString();
                 String uniquestr = muniqueid.getText().toString();
+
                 //String timestr = mregistertime.getText().toString();
 
-                Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr+ "-"+ emailstr + accessstr+ "-"+ uniquestr);
-                if (!TextUtils.isEmpty(memberidstr)||!TextUtils.isEmpty(accessstr)) {
+                Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
+                if (!TextUtils.isEmpty(memberidstr) || !TextUtils.isEmpty(accessstr)) {
+                    if (isMemberExist(memberidstr)) {
+                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exit), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     File file = new File(registerpath);
                     if (file.exists()) {
                         mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-                        localRegister(firstnamestr, lastnamestr, mobilestr,memberidstr, emailstr, accessstr, uniquestr , registerpath);
+
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                            localRegister(namestr, mobilestr, timestr, registerpath);
@@ -748,10 +770,10 @@ public class ManagementActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
                     }
-                } else if(TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
-                       text_input_member_id.setError("Member Id should not be empty");
-                }else if(TextUtils.isEmpty(accessstr)){
-                       text_input_access_id.setError("Access Id should not be empty");
+                } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
+                    text_input_member_id.setError("Member Id should not be empty");
+                } else if (TextUtils.isEmpty(accessstr)) {
+                    text_input_access_id.setError("Access Id should not be empty");
                 }
             }
         });
@@ -805,12 +827,20 @@ public class ManagementActivity extends AppCompatActivity {
         return result;
     }
 
+    private boolean isMemberExist(String memberId){
+        List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
+        if(membersList!= null && membersList.size()>0){
+            return true;
+        }
+        return false;
+    }
+
     private void localRegister(String firstname,String lastname, String mobile,String id, String email, String accessid, String uniqueid, String imgpath) {
         String data = "";
-        if(registerDatabase(firstname,lastname, mobile,id,email, accessid, uniqueid)){
-            if (processImg(firstname+"-"+id,imgpath,id)) {
+        if (processImg(firstname + "-" + id, imgpath, id) ) {
+            if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
                 Log.e("tag", "Register Success");
-                showResult( getString(R.string.Register_success));
+                showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
                 refresh();
                 File file = new File(registerpath);
@@ -819,12 +849,12 @@ public class ManagementActivity extends AppCompatActivity {
                     registerpath = "";
                 }
             } else {
-                Log.e("tag", "fail to process bitmap");
-                showResult(getString(R.string.register_failprocess));
+                Log.e("tag", "Register failed");
+                showResult(getString(R.string.register_failed));
             }
         } else {
-            Log.e("tag", "Register failed");
-            showResult( getString(R.string.register_failed));
+            Log.e("tag", "fail to process bitmap");
+            showResult(getString(R.string.register_failprocess));
         }
     }
 

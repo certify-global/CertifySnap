@@ -190,7 +190,7 @@
                     android:paddingLeft="05dp" />
 
                 <Button
-                    android:id="@+id/btn_enroll"
+                    android:id="@+id/popup_btn_enroll"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_alignParentRight="true"

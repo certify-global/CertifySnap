@@ -15,6 +15,7 @@ public class RegisteredMembers extends LitePalSupport {
     @Column(unique = true)
     String memberid;
     String email;
+    @Column(unique = true)
     String accessid;
     String uniqueid;
 
