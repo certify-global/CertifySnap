@@ -934,7 +934,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     showAnimation();
 
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
-                                    if (isCalibrating && isSearch) runTemperature();
+                                    if (isFindTemperature()) {
+                                        if (isCalibrating) runTemperature();
+                                    }
 
                                     cancelImageTimer();
                                     imageTimer = new Timer();
@@ -2469,10 +2471,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                         String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-                        Float thresholdFacial = (float) (thresholdvalue / 100);
-
-                        if (compareResult.getSimilar() > thresholdFacial) {
-
+                        //Float thresholdFacial = (float) (thresholdvalue / 100);
+                        float similarValue = compareResult.getSimilar() * 100;
+                        if (similarValue > thresholdvalue) {
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2504,6 +2505,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
+                                    runTemperature();   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
@@ -2540,6 +2542,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 retryRecognizeDelayed(requestId);
                             }
                         } else {
+                            runTemperature(); //Check for temperature if the face is not recognizedSSS
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
@@ -2547,6 +2550,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onError(Throwable e) {
+                        Log.e(TAG, "Error in processing face search " + e.getMessage());
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
                     }
@@ -2561,5 +2565,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void resetMaskStatus() {
         maskDetectBitmap = null;
         maskStatus = 100;
+    }
+
+    private boolean isFindTemperature() {
+        return (!faceDetectEnabled || (LitePal.findAll(RegisteredMembers.class).isEmpty()));
     }
 }
