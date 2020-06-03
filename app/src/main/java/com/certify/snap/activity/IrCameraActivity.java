@@ -264,7 +264,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean rfIdEnable = false;
     private String mNfcIdString = "";
     private boolean isFaceCameraOn = false;
-    private Snackbar accessGrantSnackbar;
+    private Snackbar mSnackbar;
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
@@ -672,14 +672,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 return;
             }
             mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
-            Util.setAccessId(mNfcIdString);
-            accessGrantSnackbar = Snackbar.make(relativeLayout, R.string.grant_access, Snackbar.LENGTH_LONG);
-            accessGrantSnackbar.show();
 
-            hideQrCodeAndStartIrCamera();
+            onRfidScan(mNfcIdString);
             return;
         }
-        Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
+        showSnackBarMessage(getString(R.string.rfid_card_error));
     }
 
     @Override
@@ -1117,7 +1114,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private synchronized void processPreviewData(byte[] rgbData) {
         if (rgbData != null && irData != null) {
-            final byte[] cloneNv21Rgb = rgbData.clone();
+            final byte[] cloneNv21Rgb = irData.clone();
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
             clearLeftFace(facePreviewInfoList);
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
@@ -2274,9 +2271,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      */
     private void initAccessControl() {
         if(!rfIdEnable) return;
-        if (AccessCardController.getInstance().isAutomaticDoorEnabled()) {
-            AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
-        }
+        AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -2294,7 +2289,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void hideQrCodeAndStartIrCamera() {
+    private void startIrCamera() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -2318,13 +2313,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }, 400); //Add delay for white screen
         setCameraPreviewTimer();
-    }
-
-    private void dismissSnackBar() {
-        if (accessGrantSnackbar != null) {
-            accessGrantSnackbar.dismiss();
-            accessGrantSnackbar = null;
-        }
     }
 
     private void setCameraPreviewTimer() {
@@ -2569,5 +2557,37 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private boolean isFindTemperature() {
         return (!faceDetectEnabled || (LitePal.findAll(RegisteredMembers.class).isEmpty()));
+    }
+
+    private void onRfidScan(String cardId) {
+        if (AccessCardController.getInstance().isAccessControlEnabled()) {
+            AccessCardController.getInstance().setAccessCardId(cardId);
+            List<RegisteredMembers> membersList = LitePal.where("accessid = ?", cardId).find(RegisteredMembers.class);
+            if (membersList != null && membersList.size() > 0) {
+                showSnackBarMessage(getString(R.string.access_granted));
+                startIrCamera();
+                return;
+            }
+            showSnackBarMessage(getString(R.string.access_denied));
+            return;
+        }
+        Util.setAccessId(mNfcIdString);
+        showSnackBarMessage(getString(R.string.access_granted));
+        startIrCamera();
+    }
+
+    private void showSnackBarMessage(String message) {
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+        }
+        mSnackbar = Snackbar.make(relativeLayout, message, Snackbar.LENGTH_LONG);
+        mSnackbar.show();
+    }
+
+    private void dismissSnackBar() {
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+            mSnackbar = null;
+        }
     }
 }

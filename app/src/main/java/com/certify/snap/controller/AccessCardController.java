@@ -34,7 +34,7 @@ public class AccessCardController  {
     }
 
     public boolean isAccessControlEnabled() {
-        return isAccessControlEnabled && !isAutomaticDoorAccess;
+        return isAccessControlEnabled;
     }
 
     public void setBlockAccessOnHighTemp(boolean value) {
@@ -52,7 +52,7 @@ public class AccessCardController  {
     public void unlockDoor() {
         if(!isAutomaticDoorAccess) return;
         unLockStandAloneDoor();
-        //unLockWeiganDoorController();
+        unLockWeiganDoorController();
     }
 
     public void unlockDoorOnHighTemp() {
@@ -83,6 +83,7 @@ public class AccessCardController  {
     }
 
     private void unLockStandAloneDoor() {
+        if (!isAutomaticDoorAccess) return;
         int result = PosUtil.setRelayPower(1);
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
@@ -101,6 +102,7 @@ public class AccessCardController  {
     }
 
     public void lockStandAloneDoor() {
+        if (!isAutomaticDoorAccess) return;
         if (mRelayTimer != null) mRelayTimer.cancel();
         int result = PosUtil.setRelayPower(0);
         if (result != 0) {
