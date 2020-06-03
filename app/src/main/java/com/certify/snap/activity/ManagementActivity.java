@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,10 +49,15 @@ import android.widget.Toast;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.callback.ManageMemberCallback;
 import com.certify.snap.R;
 import com.certify.snap.adapter.MemberAdapter;
 import com.certify.snap.adapter.MemberFailedAdapter;
+import com.certify.snap.async.AsyncJSONObjectManageMember;
+import com.certify.snap.async.AsyncJSONObjectQRCode;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.EndPoints;
+import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
@@ -59,6 +65,7 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
+import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
 import org.w3c.dom.Text;
@@ -71,8 +78,9 @@ import java.util.List;
 
 import static com.certify.snap.common.Util.getnumberString;
 
-public class ManagementActivity extends AppCompatActivity {
+public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback {
 
+    protected static final String LOG = "Management Activity ";
     private EditText msearch;
     private RecyclerView recyclerView, failed_recyclerView;
     private MemberAdapter memberAdapter;
@@ -83,7 +91,7 @@ public class ManagementActivity extends AppCompatActivity {
     private String searchtext = "";
     private AlertDialog mUpdateDialog, mDeleteDialog;
     private String updateimagePath = "";
-    private PopupWindow mpopupwindow,mpopupwindowUpdate;
+    private PopupWindow mpopupwindow, mpopupwindowUpdate;
     private Uri registerUri;
     private Uri imageUri;
     private String registerpath = "";
@@ -95,7 +103,7 @@ public class ManagementActivity extends AppCompatActivity {
     public final static int TOAST = 2;
     public final static int REGISTER = 3;
     public final static int REGISTER_PHOTO = 1;
-    private final static int PICK_IMAGE =3;
+    private final static int PICK_IMAGE = 3;
     public final static int UPDATE_PHOTO = 2;
     private String ROOT_PATH_STRING = "";
 
@@ -103,6 +111,7 @@ public class ManagementActivity extends AppCompatActivity {
     private PendingIntent mPendingIntent;
     private RegisteredMembers updateMember = null;
     private EditText registerAccessid;
+    private SharedPreferences sharedPreferences;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -124,9 +133,10 @@ public class ManagementActivity extends AppCompatActivity {
         setContentView(R.layout.activity_management);
 
         Application.getInstance().addActivity(this);
+        sharedPreferences = Util.getSharedPreferences(this);
         try {
             db = LitePal.getDatabase();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         ROOT_PATH_STRING = this.getFilesDir().getAbsolutePath();
@@ -180,7 +190,7 @@ public class ManagementActivity extends AppCompatActivity {
         byte[] ID = new byte[20];
         ID = tag.getId();
         String UID = Util.bytesToHexString(ID);
-        if(UID == null) return;
+        if (UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
         if(updateMember!=null) {
             updateMember.setAccessid(id);
@@ -222,8 +232,8 @@ public class ManagementActivity extends AppCompatActivity {
                 LitePal.findAllAsync(RegisteredMembers.class).listen(new FindMultiCallback<RegisteredMembers>() {
                     @Override
                     public void onFinish(List<RegisteredMembers> list) {
-                        Log.e("list---", list.size() +"");
-                        if(list!=null) {
+                        Log.e("list---", list.size() + "");
+                        if (list != null) {
                             datalist = list;
                             if (isNeedInit) {
                                 initMember();
@@ -236,7 +246,7 @@ public class ManagementActivity extends AppCompatActivity {
                 });
 
                 List<RegisteredFailedMembers> list = getFailedList();
-                if(list!=null) {
+                if (list != null) {
                     Log.e("faillist---", list.size() + "-" + list.toString());
                     faillist = list;
                     if (isNeedInit) {
@@ -293,25 +303,25 @@ public class ManagementActivity extends AppCompatActivity {
         try {
             List<RegisteredMembers> resultlist = LitePal.where("firstname like ? or memberid like ?", searchstr + "%", searchstr + "%")
                     .order("firstname asc").find(RegisteredMembers.class);
-            if (resultlist != null && resultlist.size()>0) {
+            if (resultlist != null && resultlist.size() > 0) {
                 Log.e("search result----", resultlist.toString());
                 refreshMemberList(resultlist);
             }
 
-            List<RegisteredFailedMembers> memberfaillist =  getFailedList();
-            if (memberfaillist != null && memberfaillist.size()>0) {
+            List<RegisteredFailedMembers> memberfaillist = getFailedList();
+            if (memberfaillist != null && memberfaillist.size() > 0) {
                 Log.e("search fail result----", memberfaillist.toString());
                 refresMemberFailList(memberfaillist);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
     private void refreshMemberList(List<RegisteredMembers> memberlist) {
-        Log.e("refreshMemberList---", "start-"+memberlist.toString());
+        Log.e("refreshMemberList---", "start-" + memberlist.toString());
         datalist = memberlist;
         memberAdapter.refresh(datalist);
     }
@@ -322,15 +332,15 @@ public class ManagementActivity extends AppCompatActivity {
         memberfailedAdapter.refresh(faillist);
     }
 
-    private List<RegisteredFailedMembers> getFailedList(){
+    private List<RegisteredFailedMembers> getFailedList() {
         List<RegisteredFailedMembers> list = new ArrayList<>();
         File faildir = new File(OFFLINE_FAILED_DIR);
         if (!faildir.exists()) faildir.mkdirs();
 
         File[] filelist = faildir.listFiles();
         if (filelist != null && filelist.length > 0) {
-            Log.e(TAG,"fail file length >0");
-            for(File file : filelist){
+            Log.e(TAG, "fail file length >0");
+            for (File file : filelist) {
                 RegisteredFailedMembers fail = new RegisteredFailedMembers();
                 fail.setName(file.getName());
                 fail.setImage(file.getAbsolutePath());
@@ -364,7 +374,7 @@ public class ManagementActivity extends AppCompatActivity {
     ImageView mregisterfaceimg = null;
     Button mtakephoto;
     Button musephoto;
-    TextInputLayout text_input_access_id,text_input_member_id;
+    TextInputLayout text_input_access_id, text_input_member_id;
 
     private void showUpdateDialog(final RegisteredMembers member) {
         try {
@@ -496,9 +506,9 @@ public class ManagementActivity extends AppCompatActivity {
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
 //                        }
                         }
-                    }else if(TextUtils.isEmpty(idstr)) {
+                    } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
-                    }else if(TextUtils.isEmpty(accessstr)){
+                    } else if (TextUtils.isEmpty(accessstr)) {
                         text_input_access_id.setError("Access Id should not be empty");
                     }
                 }
@@ -517,8 +527,8 @@ public class ManagementActivity extends AppCompatActivity {
             if (mpopupwindowUpdate != null && !mpopupwindowUpdate.isShowing()) {
                 mpopupwindowUpdate.showAtLocation(parent, Gravity.CENTER, 0, 0);
             }
-        }catch (Exception e){
-            Logger.error(TAG,"showUpdateDialog(final RegisteredMembers member)",e.getMessage());
+        } catch (Exception e) {
+            Logger.error(TAG, "showUpdateDialog(final RegisteredMembers member)", e.getMessage());
         }
     }
 
@@ -660,7 +670,6 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
 
-
     @SuppressLint("ResourceAsColor")
     private void showRegisterPopupwindow() {
         View view = LayoutInflater.from(this).inflate(R.layout.popup_register, null);
@@ -767,6 +776,22 @@ public class ManagementActivity extends AppCompatActivity {
 //                        }else{
 //                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
 //                        }
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("id", "");
+                            obj.put("firstName", firstnamestr);
+                            obj.put("lastname", lastnamestr);
+                            obj.put("email", emailstr);
+                            obj.put("phoneNumber", mobilestr);
+                            obj.put("memberId", memberidstr);
+                            obj.put("accessId", accessstr);
+                            obj.put("faceTemplate", registerpath);
+                            obj.put("status", true);
+                            obj.put("memberType", 1);
+                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                        } catch (Exception e) {
+                            Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                        }
                     } else {
                         Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
                     }
@@ -784,12 +809,12 @@ public class ManagementActivity extends AppCompatActivity {
         }
     }
 
-    private void showResult(String data){
+    private void showResult(String data) {
         DismissProgressDialog(mprogressDialog);
         Util.showToast(ManagementActivity.this, data);
     }
 
-    private boolean processImg(String name,String imgpath,String id){
+    private boolean processImg(String name, String imgpath, String id) {
         Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
         bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
         if (bitmap == null) {
@@ -799,15 +824,16 @@ public class ManagementActivity extends AppCompatActivity {
         }
         byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
         int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) { }
+        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+        }
         boolean success = FaceServer.getInstance().registerBgr24(ManagementActivity.this, bgr24, bitmap.getWidth(),
-                bitmap.getHeight(), name,id);
+                bitmap.getHeight(), name, id);
         return success;
     }
 
-    public boolean registerDatabase(String firstname, String lastname, String mobile,String id, String email, String accessid, String uniqueid) {
-        String username = firstname +"-"+id;
-        String image =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username+FaceServer.IMG_SUFFIX;
+    public boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {
+        String username = firstname + "-" + id;
+        String image = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username + FaceServer.IMG_SUFFIX;
         String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
         Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
@@ -835,9 +861,9 @@ public class ManagementActivity extends AppCompatActivity {
         return false;
     }
 
-    private void localRegister(String firstname,String lastname, String mobile,String id, String email, String accessid, String uniqueid, String imgpath) {
+    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath) {
         String data = "";
-        if (processImg(firstname + "-" + id, imgpath, id) ) {
+        if (processImg(firstname + "-" + id, imgpath, id)) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
                 Log.e("tag", "Register Success");
                 showResult(getString(R.string.Register_success));
@@ -858,16 +884,16 @@ public class ManagementActivity extends AppCompatActivity {
         }
     }
 
-    public void localUpdate(String oldId,String fistname,String lastname,String mobile,String id, String email, String accessid, String  uniqueid, String imagePath){
+    public void localUpdate(String oldId, String fistname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imagePath) {
         String data = "";
-        List<RegisteredMembers> list  = LitePal.where("memberid = ?", oldId).find(RegisteredMembers.class);
+        List<RegisteredMembers> list = LitePal.where("memberid = ?", oldId).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
 
             DismissProgressDialog(mprogressDialog);
             File file = new File(imagePath);
             String filepath = Environment.getExternalStorageDirectory() + "/pic/update.jpg";
             if (file.exists() && filepath.equalsIgnoreCase(imagePath)) {
-                if(processImg(fistname+"-"+id,imagePath,oldId)){
+                if (processImg(fistname + "-" + id, imagePath, oldId)) {
                     RegisteredMembers Members = list.get(0);
                     Members.setFirstname(fistname);
                     Members.setLastname(lastname);
@@ -886,21 +912,21 @@ public class ManagementActivity extends AppCompatActivity {
                     updateimagePath = "";
                     dismissUpdateDialog();
                     data = getString(R.string.Update_success);
-                }else{
+                } else {
                     data = getString(R.string.Update_failed);
                 }
-            } else{
+            } else {
                 RegisteredMembers Members = list.get(0);
 
-                String newimage ="";
+                String newimage = "";
                 String newfeature = "";
                 //if(!oldmobile.equals(mobile)){
-                String oldimage =  Members.getImage();
+                String oldimage = Members.getImage();
                 String oldfeature = Members.getFeatures();
-                newimage =  ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname +"-"+id+FaceServer.IMG_SUFFIX;
-                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname +"-"+id;
-                renameFile(oldimage,newimage);
-                renameFile(oldfeature,newfeature);
+                newimage = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname + "-" + id + FaceServer.IMG_SUFFIX;
+                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname + "-" + id;
+                renameFile(oldimage, newimage);
+                renameFile(oldfeature, newfeature);
 //                }else{
 //                    newimage = Members.getImage();
 //                    newfeature = Members.getFeatures();
@@ -927,8 +953,6 @@ public class ManagementActivity extends AppCompatActivity {
     }
 
     /**
-     *
-     *
      * @param oldPath
      * @param newPath
      */
@@ -938,7 +962,7 @@ public class ManagementActivity extends AppCompatActivity {
         oleFile.renameTo(newFile);
     }
 
-    private void dismissUpdateDialog(){
+    private void dismissUpdateDialog() {
         if (mUpdateDialog != null && mUpdateDialog.isShowing()) {
             mUpdateDialog.dismiss();
             mUpdateDialog = null;
@@ -947,7 +971,7 @@ public class ManagementActivity extends AppCompatActivity {
         handler.obtainMessage(UPDATE).sendToTarget();
     }
 
-    public boolean deleteDatabase(String name,String id){
+    public boolean deleteDatabase(String name, String id) {
         List<RegisteredMembers> list = LitePal.where("memberid = ?", id).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
             FaceServer.getInstance().deleteInfo(name + "-" + id);
@@ -970,7 +994,7 @@ public class ManagementActivity extends AppCompatActivity {
                     Log.e("tag", "image delete success---" + featurePath);
                 }
             }
-            return line>0;
+            return line > 0;
         }
         return false;
     }
@@ -978,7 +1002,7 @@ public class ManagementActivity extends AppCompatActivity {
     private void localDelete(RegisteredMembers members) {
         String data = "";
         DismissProgressDialog(mdeleteprogressDialog);
-        if (deleteDatabase(members.getFirstname(),members.getMemberid())) {
+        if (deleteDatabase(members.getFirstname(), members.getMemberid())) {
             DismissDialog(mDeleteDialog);
             data = getString(R.string.Delete_success);
             refresh();
@@ -1007,7 +1031,7 @@ public class ManagementActivity extends AppCompatActivity {
         startActivityForResult(intent, REGISTER_PHOTO);
     }
 
-    private  void gallaryPhoto(){
+    private void gallaryPhoto() {
         File outputImage = new File(getExternalCacheDir(), "register.jpg");
         if (outputImage.exists()) outputImage.delete();
         try {
@@ -1054,7 +1078,7 @@ public class ManagementActivity extends AppCompatActivity {
                             bitmap = Util.rotateToDegrees(bitmap, 90);
                         registerpath = Util.saveBitmapFile(bitmap, "register.jpg");
                         mregisterfaceimg.setImageBitmap(bitmap);
-                        Log.e("onactivityresult---", "set register bitmap-"+registerpath);
+                        Log.e("onactivityresult---", "set register bitmap-" + registerpath);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1090,8 +1114,6 @@ public class ManagementActivity extends AppCompatActivity {
                 break;
         }
     }
-
-
 
 
     private void DismissDialog(AlertDialog dialog) {
@@ -1147,7 +1169,8 @@ public class ManagementActivity extends AppCompatActivity {
         }
         byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
         int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) { }
+        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+        }
         boolean success = FaceServer.getInstance().registerBgr24Test(ManagementActivity.this, bgr24, bitmap.getWidth(), bitmap.getHeight());
         return success;
     }
@@ -1205,5 +1228,40 @@ public class ManagementActivity extends AppCompatActivity {
 
     private static byte charToByte(char c) {
         return (byte) "0123456789ABCDEF".indexOf(c);
+    }
+
+    @Override
+    public void onJSONObjectListenerManageMember(String reportInfo, String status, JSONObject responseData) {
+
+        if (reportInfo == null || responseData == null) {
+            return;
+        } else {
+            try {
+                JSONObject json = new JSONObject(reportInfo);
+                String firstnamestr = responseData.getString("firstName");
+                String lastnamestr = responseData.getString("lastname");
+                String mobilestr = responseData.getString("email");
+                String memberidstr = responseData.getString("phoneNumber");
+                String emailstr = responseData.getString("memberId");
+                String accessstr = responseData.getString("accessId");
+                String uniquestr = json.getString("id");
+                File file = new File(registerpath);
+                if (file.exists()) {
+                    mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
+//                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
+//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+//                            localRegister(namestr, mobilestr, timestr, registerpath);
+//                        }else{
+//                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
+//                        }
+                } else {
+                    Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
     }
 }
