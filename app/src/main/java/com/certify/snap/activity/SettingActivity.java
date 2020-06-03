@@ -456,13 +456,12 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 switch_activate.setChecked(true);
             }else if(json1.getString("responseSubCode").equals("103")){
                 switch_activate.setChecked(true);
-
             }
 
 
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -486,7 +485,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             }
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
