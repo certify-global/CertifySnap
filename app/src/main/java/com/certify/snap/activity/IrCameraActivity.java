@@ -2551,6 +2551,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Error in processing face search " + e.getMessage());
+                        runTemperature(); // Register member photo is not there, Still find temperature
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
                     }

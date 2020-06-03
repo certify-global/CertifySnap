@@ -765,35 +765,30 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exit), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    File file = new File(registerpath);
-                    if (file.exists()) {
-                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+                    mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
+                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                            localRegister(namestr, mobilestr, timestr, registerpath);
 //                        }else{
 //                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
 //                        }
-                        try {
-                            JSONObject obj = new JSONObject();
-                            obj.put("id", "");
-                            obj.put("firstName", firstnamestr);
-                            obj.put("lastname", lastnamestr);
-                            obj.put("email", emailstr);
-                            obj.put("phoneNumber", mobilestr);
-                            obj.put("memberId", memberidstr);
-                            obj.put("accessId", accessstr);
-                            obj.put("faceTemplate", registerpath);
-                            obj.put("status", true);
-                            obj.put("memberType", 1);
-                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
-                        } catch (Exception e) {
-                            Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
-                        }
-                    } else {
-                        Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
+                    try {
+                        JSONObject obj = new JSONObject();
+                        obj.put("id", "");
+                        obj.put("firstName", firstnamestr);
+                        obj.put("lastname", lastnamestr);
+                        obj.put("email", emailstr);
+                        obj.put("phoneNumber", mobilestr);
+                        obj.put("memberId", memberidstr);
+                        obj.put("accessId", accessstr);
+                        obj.put("faceTemplate", registerpath);
+                        obj.put("status", true);
+                        obj.put("memberType", 1);
+                        new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                    } catch (Exception e) {
+                        Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
                     }
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
                     text_input_member_id.setError("Member Id should not be empty");
@@ -863,7 +858,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath) {
         String data = "";
-        if (processImg(firstname + "-" + id, imgpath, id)) {
+        File imageFile = new File(imgpath);
+        if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
                 Log.e("tag", "Register Success");
                 showResult(getString(R.string.Register_success));
