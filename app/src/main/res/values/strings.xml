@@ -259,7 +259,9 @@
     <string name="tv_qr_validating">Validating QR Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
-    <string name="device_not_register">Device is not registered</string>
+    <string name="grant_access">Access granted</string>
+    <string name="device_not_register"> is not activated on the your certify.me account. Please make sure the device is connected to Internet and device is added to your account under Devices.\n
+   \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="invalid_qr">Invalid QRCode</string>
     <string name="timeout">Timeout in seconds</string>
 
@@ -278,7 +280,7 @@
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
-    <string name="setting_message">This device is Activated with your Cloud account.Any changes to the settings locally will be overwritten upon next restart or sync. Please modify the appropriate settings online and sync the settings on the device.</string>
+    <string name="setting_message">This device is Activated with your Cloud account. Any changes to the settings locally will be overwritten upon next restart or sync. Please modify the appropriate settings online and sync the settings on the device.</string>
     <string name="setting_note">Note: You can modify locally to finalize what settings to apply for the device via online settings.</string>
 
     <!--Scan not Recognized page-->

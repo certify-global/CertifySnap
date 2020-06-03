@@ -10,6 +10,8 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -102,8 +104,9 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                         Util.activateApplication(SettingActivity.this, SettingActivity.this);
+
                     } else {
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
@@ -113,7 +116,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             });
 
         initView();
-        initOnlineModeSetting();
+        //initOnlineModeSetting();
         Application.getInstance().addActivity(this);
 
         sharedPreferences = Util.getSharedPreferences(this);
@@ -431,13 +434,34 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
+            JSONObject json1 = null;
             if (reportInfo == null) {
                 return;
             }
+            try {
+                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
+                json1 = new JSONObject(formatedString.replace("\\", ""));
+
+            } catch (Exception e) {
+                json1 = new JSONObject(reportInfo.replace("\\", ""));
+            }
+
             Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
             startHealthCheckService();
+            if (json1.getString("responseSubCode").equals("104")) {
+                switch_activate.setChecked(false);
+            } else if (json1.getString("responseSubCode").equals("105")) {
+                switch_activate.setChecked(false);
+            }else if(json1.getString("responseCode").equals("1")){
+                switch_activate.setChecked(true);
+            }else if(json1.getString("responseSubCode").equals("103")){
+                switch_activate.setChecked(true);
+            }
+
+
+
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -461,7 +485,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             }
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -474,7 +498,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
      */
     private void startHealthCheckService() {
         try {
-            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this)) {
+            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
                 startService(new Intent(this, DeviceHealthService.class));
                 Application.StartService(this);
             }

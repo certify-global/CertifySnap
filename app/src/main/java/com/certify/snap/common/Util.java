@@ -1080,29 +1080,28 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.Cloud_Activated, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
+                    }else{
+                        Util.switchRgbOrIrActivity(context, true);
                     }
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.Cloud_Activated, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
+                    }else{
+                        Util.switchRgbOrIrActivity(context, true);
                     }
                     Util.getToken((JSONObjectCallback) context, context);
+
                 } else if (json1.getString("responseSubCode").equals("104")) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Device Not Register");
-                    }
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
                 } else if (json1.getString("responseSubCode").equals("105")) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Device Inactive");
-                    }
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
                 }
             } else {
                 if (json1.isNull("access_token")) return;
@@ -1115,6 +1114,7 @@ public class Util {
                 Util.getSettings((SettingCallback) context, context);
             }
         } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
             Logger.error("getTokenActivate(String reportInfo,String status,Context context)", e.getMessage());
         }
     }
@@ -1257,6 +1257,38 @@ public class Util {
                 d.dismiss();
                 Intent intent = new Intent(context, SettingActivity.class);
                 context.startActivity(intent);
+            }
+        });
+        d.show();
+    }
+
+    public static void openDialogactivate(final Context context, String message, final String toast) {
+        Typeface rubiklight = Typeface.createFromAsset(context.getAssets(),
+                "rubiklight.ttf");
+        final Dialog d = new Dialog(context);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //  d.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        d.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        d.setCancelable(false);
+        d.setContentView(R.layout.activate_dialog_activate);
+        TextView tv_setting_message = d.findViewById(R.id.tv_setting_message);
+        TextView btn_continue = d.findViewById(R.id.btn_continue);
+        tv_setting_message.setText(message);
+        tv_setting_message.setTypeface(rubiklight);
+        btn_continue.setTypeface(rubiklight);
+
+
+
+        btn_continue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (toast.equals("guide")) {
+                    d.dismiss();
+                    Util.switchRgbOrIrActivity(context, true);
+                } else {
+                    d.dismiss();
+                }
             }
         });
         d.show();

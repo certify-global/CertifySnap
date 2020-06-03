@@ -107,9 +107,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
-        if (onlineMode) {
+        Util.activateApplication(this, this);
+
+     /*   if (onlineMode) {
             Util.activateApplication(this, this);
-        }
+        }*/
 
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
@@ -227,7 +229,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             String message = getResources().getString(R.string.active_failed);
             Logger.error(TAG, message);
             Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
-          //  Util.switchRgbOrIrActivity(GuideActivity.this, true);
             finish();
             return;
         }
@@ -235,13 +236,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 //        if (!activateStatus) //offline Active Engine
 //            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
         else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //FaceServer.getInstance().init(GuideActivity.this);
-                    Util.switchRgbOrIrActivity(GuideActivity.this, true);
-                }
-            }, 1000);
+
 
         }
     }
@@ -298,6 +293,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      */
     private void startHealthCheckService() {
         try {
+            if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true))
             if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
                 startService(new Intent(this, DeviceHealthService.class));
                 Application.StartService(this);

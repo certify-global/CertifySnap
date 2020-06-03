@@ -2153,10 +2153,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             for (int i = 0; i < guid.length(); i++) {
                 try {
-                    JSONObject obj = new JSONObject();
-                    obj.put("qrCodeID", guid);
-                    obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
-                    new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+                        JSONObject obj = new JSONObject();
+                        obj.put("qrCodeID", guid);
+                        obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                        new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                    }
                 } catch (Exception e) {
                     Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
                 }
@@ -2187,7 +2189,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
 
             if (!reportInfo.isNull("Message")) {
-                if (reportInfo.getString("Message").contains("token expired"))
+                if (reportInfo.getString("Message").contains("token expired") &&   sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true))
                     Util.getToken(this, this);
                 JSONObject obj = new JSONObject();
                 obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID,""));
