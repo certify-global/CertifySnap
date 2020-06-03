@@ -2,6 +2,7 @@ package com.certify.snap.controller;
 
 import android.util.Log;
 
+import com.certify.snap.model.AccessControlModel;
 import com.common.pos.api.util.PosUtil;
 
 import java.util.Timer;
@@ -25,9 +26,10 @@ public class AccessCardController  {
         return mInstance;
     }
 
-    /*public void init(Activity context) {
-        mNfcAdapter = M1CardUtils.isNfcAble(context);
-    }*/
+    public void init() {
+        //mNfcAdapter = M1CardUtils.isNfcAble(context);
+        AccessControlModel.getInstance().clearData();
+    }
 
     public void setAccessControlEnabled(boolean value) {
         isAccessControlEnabled = value;

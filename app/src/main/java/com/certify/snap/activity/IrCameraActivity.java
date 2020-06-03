@@ -69,6 +69,7 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.R;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -1270,12 +1271,20 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            if (!sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) &&
-                    !rfIdEnable) {
-                faceEngineHelper.initEngine(this);
-                initRgbCamera();
-                initIrCamera();
+            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
+                return;
             }
+            if (rfIdEnable) {
+                if (faceDetectEnabled) {
+                    faceEngineHelper.initEngine(this);
+                    initRgbCamera();
+                    initIrCamera();
+                }
+                return;
+            }
+            faceEngineHelper.initEngine(this);
+            initRgbCamera();
+            initIrCamera();
         }
     }
 
@@ -2273,6 +2282,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      */
     private void initAccessControl() {
         if(!rfIdEnable) return;
+        AccessCardController.getInstance().init();
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
@@ -2564,8 +2574,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void onRfidScan(String cardId) {
         if (AccessCardController.getInstance().isAccessControlEnabled()) {
             AccessCardController.getInstance().setAccessCardId(cardId);
-            List<RegisteredMembers> membersList = LitePal.where("accessid = ?", cardId).find(RegisteredMembers.class);
-            if (membersList != null && membersList.size() > 0) {
+            if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
                 startIrCamera();
                 return;

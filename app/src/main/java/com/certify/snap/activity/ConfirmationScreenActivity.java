@@ -7,16 +7,10 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +21,8 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.RegisteredMembers;
 
 import java.io.File;
 
@@ -62,8 +58,10 @@ public class ConfirmationScreenActivity extends Activity {
 
             user_img = findViewById(R.id.iv_item_head_img);
             user_name = findViewById(R.id.tv_item_name);
-            if(compareResultValues!= null && !sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
+            if (compareResultValues!= null && !sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
                 compareResult();
+            } else {
+                onAccessCardMatch();
             }
 
             if (value.equals("high")) {
@@ -127,4 +125,16 @@ public class ConfirmationScreenActivity extends Activity {
 
     }
 
+    private void onAccessCardMatch() {
+        Log.d("ConfirmationScreen", "Deep Access card match");
+        RegisteredMembers matchedMember = AccessControlModel.getInstance().getScannedMatchedMember();
+        if (matchedMember != null) {
+            Glide.with(ConfirmationScreenActivity.this)
+                    .load(matchedMember.getImage())
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .into(user_img);
+            user_name.setText(matchedMember.getFirstname());
+        }
+    }
 }
