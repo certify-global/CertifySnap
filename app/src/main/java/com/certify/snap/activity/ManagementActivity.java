@@ -107,12 +107,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private final static int UPDATE_PICK_IMAGE = 4;
     public final static int UPDATE_PHOTO = 2;
     private String ROOT_PATH_STRING = "";
+    private Boolean isUpdate = false;
 
     private NfcAdapter mNfcAdapter; //Optimize
     private PendingIntent mPendingIntent;
     private RegisteredMembers updateMember = null;
     private EditText registerAccessid;
     private SharedPreferences sharedPreferences;
+    int listPosition;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -273,6 +275,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             @Override
             public void onItemClick(View view, int position) {
                 showUpdateDialog(datalist.get(position));
+                listPosition = position;
             }
         });
         memberAdapter.setOnItemLongClickListener(new MemberAdapter.OnItemLongClickListener() {
@@ -485,28 +488,32 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             return;
                         }
                         mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
-                        localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
 //                        }else{
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
 //                        }
-                        try {
-                            JSONObject obj = new JSONObject();
-                            obj.put("id", uniquestr);
-                            obj.put("firstName", firstnamestr);
-                            obj.put("lastname", lastnamestr);
-                            obj.put("email", emailstr);
-                            obj.put("phoneNumber", mobilestr);
-                            obj.put("memberId", idstr);
-                            obj.put("accessId", accessstr);
-                            obj.put("faceTemplate", updateimagePath);
-                            obj.put("status", true);
-                            obj.put("memberType", 1);
-                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
-                        } catch (Exception e) {
-                            Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                        if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                            try {
+                                isUpdate = true;
+                                JSONObject obj = new JSONObject();
+                                obj.put("id", uniquestr);
+                                obj.put("firstName", firstnamestr);
+                                obj.put("lastname", lastnamestr);
+                                obj.put("email", emailstr);
+                                obj.put("phoneNumber", mobilestr);
+                                obj.put("memberId", idstr);
+                                obj.put("accessId", accessstr);
+                                obj.put("faceTemplate", updateimagePath);
+                                obj.put("status", true);
+                                obj.put("memberType", 1);
+                                new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                            } catch (Exception e) {
+                                Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                            }
+                        } else {
+                            localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
@@ -753,6 +760,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 String emailstr = memail.getText().toString();
                 String accessstr = registerAccessid.getText().toString();
                 String uniquestr = muniqueid.getText().toString();
+                isUpdate = false;
 
                 //String timestr = mregistertime.getText().toString();
 
@@ -1265,7 +1273,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 String uniquestr = json.getString("id");
                 String image = responseData.getString("faceTemplate");
                 //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-                localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, image);
+                if (isUpdate){
+                    localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath);
+                } else {
+                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, image);
+                }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                            localRegister(namestr, mobilestr, timestr, registerpath);
