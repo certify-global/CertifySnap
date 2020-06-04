@@ -104,6 +104,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     public final static int REGISTER = 3;
     public final static int REGISTER_PHOTO = 1;
     private final static int PICK_IMAGE = 3;
+    private final static int UPDATE_PICK_IMAGE = 4;
     public final static int UPDATE_PHOTO = 2;
     private String ROOT_PATH_STRING = "";
 
@@ -196,7 +197,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             updateMember.setAccessid(id);
             //Update UI
             maccessid.setText(id);
-            enrollBtn.setVisibility(View.GONE);
             return;
         }
         registerAccessid.setText(id);
@@ -351,11 +351,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     ImageView mfaceimg;
-    EditText mfirstnametext;
-    EditText mlastnametext;
-    EditText mIdtext;
-    EditText mEmailAddress;
-    EditText mmobiletext;
+
     //TextView mtimetext;
     EditText mfirstname;
     EditText mlasttname;
@@ -374,6 +370,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     ImageView mregisterfaceimg = null;
     Button mtakephoto;
     Button musephoto;
+    Button mupdatetakephoto;
+    Button mupdateusephoto;
+
     TextInputLayout text_input_access_id, text_input_member_id;
 
     private void showUpdateDialog(final RegisteredMembers member) {
@@ -387,11 +386,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             mpopupwindowUpdate.setAnimationStyle(R.style.animTranslate);
 
             final TextView muserid = view.findViewById(R.id.dialog_edit_userid);
-            mfirstnametext = view.findViewById(R.id.dialog_text_first_name);
-            mlastnametext = view.findViewById(R.id.dialog_text_last_name);
-            mIdtext = view.findViewById(R.id.dialog_text_member_id);
-            mEmailAddress = view.findViewById(R.id.dialog_text_email);
-            mmobiletext = view.findViewById(R.id.dialog_text_mobile);
             //mtimetext = view.findViewById(R.id.dialog_text_time);
             mfirstname = view.findViewById(R.id.dialog_edit_first_name);
             mlasttname = view.findViewById(R.id.dialog_edit_last_name);
@@ -402,34 +396,36 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             muniqueid = view.findViewById(R.id.dialog_edit_uniqueid);
             text_input_access_id = view.findViewById(R.id.text_input_access_id);
             text_input_member_id = view.findViewById(R.id.text_input_member_id);
-            mfirstnametext.setEnabled(false);
-            mlastnametext.setEnabled(false);
-            mIdtext.setEnabled(false);
-            mEmailAddress.setEnabled(false);
-            mmobiletext.setEnabled(false);
+
 
 
             //mtime = view.findViewById(R.id.dialog_edit_time);
             textbody = view.findViewById(R.id.linear_body);
             editbody = view.findViewById(R.id.linear_edit_body);
 
-            mfirstnametext.setText(member.getFirstname());
-            mlastnametext.setText(member.getLastname());
-            mmobiletext.setText(member.getMobile());
-            mIdtext.setText(member.getMemberid());
-            mEmailAddress.setText(member.getEmail());
             maccessid.setText(member.getAccessid());
-            //mtimetext.setText(member.getExpire_time());
-
-            mfaceimg = view.findViewById(R.id.dialog_faceimg);
-            setViewclick(mfaceimg, false);
-            mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
-            mfaceimg.setOnClickListener(new View.OnClickListener() {
+            mupdatetakephoto = view.findViewById(R.id.dialog_take_photo);
+            mupdatetakephoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     takefacephoto();
                 }
             });
+            mupdateusephoto = view.findViewById(R.id.dialog_use_photo);
+            mupdateusephoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gallaryPhoto("update.jpg",updateimagePath, UPDATE_PICK_IMAGE);
+                }
+            });
+            //mtimetext.setText(member.getExpire_time());
+
+            mfaceimg = view.findViewById(R.id.dialog_faceimg);
+            Bitmap bitmap =  BitmapFactory.decodeFile(member.getImage());
+            if(bitmap!= null) {
+                mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
+            }
+
 
 //        mtime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
@@ -442,39 +438,25 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 //            }
 //        });
 
-            medit = view.findViewById(R.id.dialog_edit);
-            medit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    medit.setVisibility(View.INVISIBLE);
-                    mupdate.setVisibility(View.VISIBLE);
-                    enrollBtn.setVisibility(View.VISIBLE);
-                    setViewclick(mfaceimg, true);
-                    setViewVisible(textbody, 0);
-                    setViewVisible(editbody, 1);
 
-                    mfirstname.setText(member.getFirstname());
-                    mlasttname.setText(member.getLastname());
-                    mmobile.setText(member.getMobile());
-                    mmemberid.setText(member.getMemberid());
-                    mmemberemail.setText(member.getEmail());
-                    maccessid.setText(member.getAccessid());
-                    muniqueid.setText(member.getUniqueid());
+            mfirstname.setText(member.getFirstname());
+            mlasttname.setText(member.getLastname());
+            mmobile.setText(member.getMobile());
+            mmemberid.setText(member.getMemberid());
+            mmemberemail.setText(member.getEmail());
+            maccessid.setText(member.getAccessid());
+            muniqueid.setText(member.getUniqueid());
 
-                    //mtime.setText(member.getExpire_time());
-                }
-            });
             ImageView mexit = view.findViewById(R.id.dialog_exit);
             mexit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mpopupwindowUpdate != null && mpopupwindowUpdate.isShowing()) {
+                    if (mpopupwindowUpdate != null) {
                         mpopupwindowUpdate.dismiss();
                     }
                 }
             });
             mupdate = view.findViewById(R.id.btn_update);
-            mupdate.setVisibility(View.GONE);
             mupdate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -495,17 +477,22 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             Log.e("updateimgpath---", updateimagePath);
                         }
 
-                        File file = new File(updateimagePath);
-                        if (file.exists()) {
-                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
-                            localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
+                        if (!idstr.equals(updateMember.getMemberid())&&isMemberExist(idstr)) {
+                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (!accessstr.equals(updateMember.getAccessid())&&isAccessIdExist(accessstr)) {
+                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+                        localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
 //                        }else{
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
 //                        }
-                        }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
                     } else if (TextUtils.isEmpty(accessstr)) {
@@ -515,7 +502,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             });
 
             enrollBtn = view.findViewById(R.id.btn_enroll);
-            enrollBtn.setVisibility(View.GONE);
             enrollBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -524,7 +510,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             });
 
             View parent = LayoutInflater.from(ManagementActivity.this).inflate(R.layout.activity_management, null);
-            if (mpopupwindowUpdate != null && !mpopupwindowUpdate.isShowing()) {
+            if (mpopupwindowUpdate != null ) {
                 mpopupwindowUpdate.showAtLocation(parent, Gravity.CENTER, 0, 0);
             }
         } catch (Exception e) {
@@ -532,12 +518,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         }
     }
 
-    private void setViewVisible(View v1, int status) {
-        if (status == 1) {
-            v1.setVisibility(View.VISIBLE);
-        } else {
-            v1.setVisibility(View.GONE);
-        }
+    private void setViewVisible(View v1) {
+        v1.setVisibility(View.VISIBLE);
     }
 
     private void setViewclick(View view, boolean status) {
@@ -723,7 +705,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         musephoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gallaryPhoto();
+                gallaryPhoto("register.jpg",registerpath, PICK_IMAGE);
             }
         });
 
@@ -762,11 +744,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
                 if (!TextUtils.isEmpty(memberidstr) || !TextUtils.isEmpty(accessstr)) {
                     if (isMemberExist(memberidstr)) {
-                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exit), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (isAccessIdExist(accessstr)) {
+                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-
                     localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -849,6 +834,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private boolean isMemberExist(String memberId){
+        List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
+        if(membersList!= null && membersList.size()>0){
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isAccessIdExist(String memberId){
         List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
         if(membersList!= null && membersList.size()>0){
             return true;
@@ -1027,12 +1020,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         startActivityForResult(intent, REGISTER_PHOTO);
     }
 
-    private void gallaryPhoto() {
-        File outputImage = new File(getExternalCacheDir(), "register.jpg");
+    private void gallaryPhoto(String imageName, String imagePath, int resultCode) {
+        File outputImage = new File(getExternalCacheDir(), imageName);
         if (outputImage.exists()) outputImage.delete();
         try {
             outputImage.createNewFile();
-            Log.e("gallaypath----", outputImage.getPath() + "-" + registerpath);
+            Log.e("gallaypath----", outputImage.getPath() + "-" + imagePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1041,7 +1034,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         gallery.setType("image/*");
         gallery.setAction(Intent.ACTION_GET_CONTENT);
 
-        startActivityForResult(Intent.createChooser(gallery, "Sellect Picture"), PICK_IMAGE);
+        startActivityForResult(Intent.createChooser(gallery, "Sellect Picture"), resultCode);
     }
 
     private void takefacephoto() {
@@ -1108,6 +1101,20 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
                 }
                 break;
+            case UPDATE_PICK_IMAGE:
+                if (resultCode == RESULT_OK && data != null) {
+                    imageUri = data.getData();
+
+                    try {
+                        Bitmap bitmap1;
+                        bitmap1 = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                        updateimagePath = Util.saveBitmapFile(bitmap1, "update.jpg");
+                        mfaceimg.setImageBitmap(bitmap1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
         }
     }
 
@@ -1133,11 +1140,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             String info = (String) msg.obj;
             switch (msg.what) {
                 case UPDATE:
-                    medit.setVisibility(View.VISIBLE);
-                    mupdate.setVisibility(View.GONE);
                     setViewclick(mfaceimg, false);
-                    setViewVisible(textbody, 1);
-                    setViewVisible(editbody, 0);
                     break;
                 case TOAST:
                     Util.showToast(ManagementActivity.this, info);
