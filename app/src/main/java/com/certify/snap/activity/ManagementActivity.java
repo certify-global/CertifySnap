@@ -441,7 +441,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             mfaceimg = view.findViewById(R.id.dialog_faceimg);
             Bitmap bitmap = BitmapFactory.decodeFile(member.getImage());
             if (bitmap != null) {
-                mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
+                mfaceimg.setImageBitmap(bitmap);
             }
 
 
