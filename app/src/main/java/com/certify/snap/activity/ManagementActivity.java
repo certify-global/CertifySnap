@@ -213,6 +213,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 }
                 break;
             case R.id.register:
+                resetUpdateMember();
                 showRegisterPopupwindow();
                 Log.e("register---", "showRegisterPopupwindow");
                 break;
@@ -868,8 +869,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         return false;
     }
 
-    private boolean isAccessIdExist(String memberId) {
-        List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
+    private boolean isAccessIdExist(String accessId) {
+        List<RegisteredMembers> membersList = LitePal.where("accessid = ?", accessId).find(RegisteredMembers.class);
         if (membersList != null && membersList.size() > 0) {
             return true;
         }
@@ -896,7 +897,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             }
         } else {
             Log.e("tag", "fail to process bitmap");
-            showResult(getString(R.string.register_failprocess));
+            showResult(getString(R.string.register_face_not_recognized));
         }
     }
 
@@ -929,7 +930,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     dismissUpdateDialog();
                     data = getString(R.string.Update_success);
                 } else {
-                    data = getString(R.string.Update_failed);
+                    data = getString(R.string.update_face_not_recognized);
                 }
             } else {
                 RegisteredMembers Members = list.get(0);
@@ -1290,5 +1291,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             }
         }
 
+    }
+
+    private void resetUpdateMember() {
+        updateMember = null;
     }
 }
