@@ -27,6 +27,8 @@ public class EndPoints {
     public static final String DEVICESETTING = domainUrl + "GetDeviceConfiguration";
     public static final String ValidateQRCode = domainUrl + "ValidateQRCode";
     public static final String ManageMember = domainUrl + "ManageMember";
+    public static final String GetMemberList = domainUrl + "GetMemberList";
+    public static final String GetMemberById = domainUrl + "GetMemberById";
 
 
 }

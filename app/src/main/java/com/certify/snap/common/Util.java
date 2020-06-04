@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
+import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
@@ -47,6 +48,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
@@ -472,8 +474,13 @@ public class Util {
     }
 
     public static Bitmap decodeToBase64(String input) {
-        byte[] decodedByte = Base64.decode(input, 0);
-        return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+        try {
+            byte[] decodedByte = Base64.decode(input, 0);
+            return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+        }catch (Exception e){
+            Logger.debug("Bitmap decodeToBase64(String input) ",e.getMessage());
+        }
+        return null;
     }
 
     public static void getToken(JSONObjectCallback callback, Context context) {
@@ -497,7 +504,7 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
-            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
@@ -531,9 +538,11 @@ public class Util {
                 return new String(responseTemp);
             }
         } catch (Exception e) {
+
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
                     + ", url = " + url, e.getMessage());
             return null;
+
         }
         return null;
     }
@@ -597,7 +606,7 @@ public class Util {
                 return;
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
-            obj.put("id", sp.getString(GlobalParameters.SNAP_ID, ""));
+            obj.put("id", sp.getString(GlobalParameters.SNAP_ID,""));
             obj.put("deviceId", Util.getSerialNumber());
             obj.put("temperature", temperature);
             obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
@@ -610,22 +619,22 @@ public class Util {
             obj.put("deviceData", MobileDetails(context));
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", aBoolean);
-            obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID, ""));
-            if (accessId.isEmpty()) {
-                obj.put("accessId", accessId);
+            obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID,""));
+            if(accessId.isEmpty()){
+            obj.put("accessId", accessId);
             }
-            obj.put("accessId", sp.getString(GlobalParameters.ACCESS_ID, ""));
-            obj.put("firstName", sp.getString(GlobalParameters.FIRST_NAME, ""));
-            obj.put("lastName", sp.getString(GlobalParameters.LAST_NAME, ""));
-            obj.put("memberId", sp.getString(GlobalParameters.MEMBER_ID, ""));
-            obj.put("trqStatus", sp.getString(GlobalParameters.TRQ_STATUS, ""));
-            obj.put("maskStatus", sp.getString(GlobalParameters.MASK_VALUE, ""));
-            obj.put("faceScore", sp.getString(GlobalParameters.FACE_SCORE, ""));
+            obj.put("accessId", sp.getString(GlobalParameters.ACCESS_ID,""));
+            obj.put("firstName", sp.getString(GlobalParameters.FIRST_NAME,""));
+            obj.put("lastName",  sp.getString(GlobalParameters.LAST_NAME,""));
+            obj.put("memberId",  sp.getString(GlobalParameters.MEMBER_ID,""));
+            obj.put("trqStatus",  sp.getString(GlobalParameters.TRQ_STATUS,""));
+            obj.put("maskStatus",  sp.getString(GlobalParameters.MASK_VALUE,""));
+            obj.put("faceScore",  sp.getString(GlobalParameters.FACE_SCORE,""));
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
+            Logger.error(LOG,  "getToken(JSONObjectCallback callback, Context context) "+ e.getMessage());
 
         }
     }
@@ -656,7 +665,7 @@ public class Util {
             new AsyncJSONObjectSender(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ActivateApplication, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG, "getToken " + e.getMessage());
+            Logger.error(LOG , "getToken "+ e.getMessage());
             //TODO:warn failed to activate
             Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
@@ -781,7 +790,7 @@ public class Util {
             if (requestPermission.size() <= 0) return false;
             // context.requestPermissions(requestPermission.toArray(new String[0]), 1);
         } catch (Exception e) {
-            Logger.error(LOG, "PermissionRequest(android.app.Activity context, String[] permissions" + e.getMessage());
+            Logger.error(LOG ,"PermissionRequest(android.app.Activity context, String[] permissions"+ e.getMessage());
         }
         return true;
     }
@@ -797,7 +806,7 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
-        if (data == null || cameraParameters == null) return null;
+        if (data == null || cameraParameters==null) return null;
         Camera.Size size = cameraParameters.getPreviewSize();
         YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -878,7 +887,7 @@ public class Util {
             obj.put("lastUpdateDateTime", Util.getUTCDate());
             obj.put("deviceSN", Util.getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
-            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -1063,7 +1072,7 @@ public class Util {
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationTimeout);
+                Util.writeString(sharedPreferences, GlobalParameters.Timeout,identificationTimeout);
 
 
             } else {
@@ -1097,7 +1106,7 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
-                    } else {
+                    }else{
                         Util.switchRgbOrIrActivity(context, true);
                     }
                     Util.getToken((JSONObjectCallback) context, context);
@@ -1106,17 +1115,17 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
-                    } else {
+                    }else{
                         Util.switchRgbOrIrActivity(context, true);
                     }
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
                 }
             } else {
                 if (json1.isNull("access_token")) return;
@@ -1249,7 +1258,7 @@ public class Util {
     }
 
     public static void openDialogSetting(final Context context) {
-        Typeface rubiklight = Typeface.createFromAsset(context.getAssets(),
+      Typeface rubiklight = Typeface.createFromAsset(context.getAssets(),
                 "rubiklight.ttf");
         final Dialog d = new Dialog(context);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1263,6 +1272,7 @@ public class Util {
         tv_setting_message.setTypeface(rubiklight);
         tv_note_message.setTypeface(rubiklight);
         btn_continue.setTypeface(rubiklight);
+
 
 
         btn_continue.setOnClickListener(new View.OnClickListener() {
@@ -1292,6 +1302,7 @@ public class Util {
         btn_continue.setTypeface(rubiklight);
 
 
+
         btn_continue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1306,4 +1317,46 @@ public class Util {
         });
         d.show();
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public static void getmemberList(MemberListCallback callback, Context context) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+            new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
+
+        } catch (Exception e) {
+            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+
+        }
+    }
+
+    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context,String device_sn) {
+        try {
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+        }
+        return null;
+    }
+    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context,String device_sn) {
+        try {
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+        }
+        return null;
+    }
+
 }
