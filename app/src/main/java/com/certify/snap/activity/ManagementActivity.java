@@ -13,12 +13,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
@@ -42,6 +44,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -49,10 +52,15 @@ import android.widget.Toast;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.ManageMemberCallback;
+import com.certify.callback.MemberIDCallback;
+import com.certify.callback.MemberListCallback;
 import com.certify.snap.R;
 import com.certify.snap.adapter.MemberAdapter;
 import com.certify.snap.adapter.MemberFailedAdapter;
+import com.certify.snap.async.AsyncGetMemberData;
+import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectManageMember;
 import com.certify.snap.async.AsyncJSONObjectQRCode;
 import com.certify.snap.common.Application;
@@ -65,6 +73,7 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -78,7 +87,7 @@ import java.util.List;
 
 import static com.certify.snap.common.Util.getnumberString;
 
-public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback {
+public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback, MemberListCallback, MemberIDCallback {
 
     protected static final String LOG = "Management Activity ";
     private EditText msearch;
@@ -97,7 +106,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private String registerpath = "";
     private String model = Build.MODEL;
     private Uri updateUri;
-    private ProgressDialog mprogressDialog, mdeleteprogressDialog;
+    private ProgressDialog mprogressDialog, mdeleteprogressDialog, mloadingprogress;
     public SQLiteDatabase db;
     public final static int UPDATE = 1;
     public final static int TOAST = 2;
@@ -114,6 +123,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private RegisteredMembers updateMember = null;
     private EditText registerAccessid;
     private SharedPreferences sharedPreferences;
+    private RelativeLayout relative_management;
+    Snackbar snackbar;
     int listPosition;
 
     private Runnable searchRun = new Runnable() {
@@ -134,6 +145,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_management);
+        relative_management = findViewById(R.id.relative_management);
 
         Application.getInstance().addActivity(this);
         sharedPreferences = Util.getSharedPreferences(this);
@@ -209,7 +221,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         switch (v.getId()) {
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
-                    refresh();
+                    //refresh();
+                    Util.getmemberList(this, this);
+                    mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+
                 }
                 break;
             case R.id.register:
@@ -799,7 +814,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath,"");
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -876,12 +891,20 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         return false;
     }
 
-    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath) {
+    private boolean isCertifyIdExist(String uniqueID) {
+        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
+        if (membersList != null && membersList.size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath,String sync) {
         String data = "";
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
-                Log.e("tag", "Register Success");
+                if(!sync.equals("sync"))
                 showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
                 refresh();
@@ -892,11 +915,13 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 }
             } else {
                 Log.e("tag", "Register failed");
-                showResult(getString(R.string.register_failed));
+                if(!sync.equals("sync"))
+                    showResult(getString(R.string.register_failed));
             }
         } else {
             Log.e("tag", "fail to process bitmap");
-            showResult(getString(R.string.register_failprocess));
+            if(!sync.equals("sync"))
+                showResult(getString(R.string.register_failprocess));
         }
     }
 
@@ -1273,10 +1298,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 String uniquestr = json.getString("id");
                 String image = responseData.getString("faceTemplate");
                 //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-                if (isUpdate) {
+                if (isUpdate){
                     localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath);
                 } else {
-                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
+                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath,"");
                 }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -1288,6 +1313,95 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             } catch (Exception e) {
 
             }
+        }
+
+    }
+
+    @Override
+    public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
+
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if (!reportInfo.isNull("Message")) {
+//                if (reportInfo.getString("Message").contains("token expired"))
+//                    Util.getToken(ManagementActivity.this, this);
+            } else {
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    JSONArray memberList = reportInfo.getJSONArray("responseData");
+                    for (int i = 0; i < memberList.length(); i++) {
+                        JSONObject c = memberList.getJSONObject(i);
+
+                        String certifyId = c.getString("id");
+                        String memberId = c.getString("memberId");
+                        String accessId = c.getString("accessId");
+
+                        JSONObject obj = new JSONObject();
+                        obj.put("id", certifyId);
+                        new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                    }
+                } else {
+                    Logger.toast(this, "Something went wrong please try again");
+                }
+            }
+
+        } catch (Exception e) {
+            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if (!reportInfo.isNull("Message")) {
+//                if (reportInfo.getString("Message").contains("token expired"))
+//                    Util.getToken(ManagementActivity.this, this);
+            } else {
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    JSONArray memberList = reportInfo.getJSONArray("responseData");
+                    for (int i = 0; i < memberList.length(); i++) {
+                        JSONObject c = memberList.getJSONObject(i);
+
+                        String certifyId = c.getString("id");
+                        String memberId = c.getString("memberId");
+                        String accessId = c.getString("accessId");
+                        String firstName = c.getString("firstName");
+                        String lastName = c.getString("lastName");
+                        String email = c.getString("email");
+                        String phoneNumber = c.getString("phoneNumber");
+                        String faceTemplate = c.getString("faceTemplate");
+                        Boolean statusVal = c.getBoolean("status");
+                        String accountId = c.getString("accountId");
+                        String memberType = c.getString("memberType");
+                        if (statusVal)
+                            if (isCertifyIdExist(certifyId)) {
+                                deleteDatabase(firstName, memberId);
+                                  localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, faceTemplate,"sync");
+                            } else {
+                                 deleteDatabase(firstName, memberId);
+                                 localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, faceTemplate,"sync");
+                            }
+                    }
+                    DismissProgressDialog(mloadingprogress);
+                    initData(true);
+                } else {
+                    DismissProgressDialog(mloadingprogress);
+                    Logger.toast(this, "Something went wrong please try again");
+                }
+            }
+
+
+        } catch (Exception e) {
+            DismissProgressDialog(mloadingprogress);
+            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
 
     }

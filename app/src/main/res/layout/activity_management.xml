@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:skin="http://schemas.android.com/tools"
+    android:id="@+id/relative_management"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -39,7 +40,7 @@
             android:layout_margin="5dp"
             android:onClick="onmemberclick"
             android:src="@mipmap/refresh"
-            android:visibility="gone"/>
+            android:visibility="visible"/>
     </LinearLayout>
 
     <RelativeLayout android:id="@+id/searchtitle"

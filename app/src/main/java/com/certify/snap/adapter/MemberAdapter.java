@@ -1,6 +1,7 @@
 package com.certify.snap.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
+import com.certify.snap.common.Util;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.InputStream;
@@ -77,12 +79,20 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             String path = mlist.get(position).getImage();
             InputStream inputStream;
 
-            Glide.with(mcontext)
-                    .load(path)
+            Bitmap bitmap=Util.decodeToBase64(path);
+
+             if(bitmap!=null){
+                 holder.image.setImageBitmap(bitmap);
+             }else{
+                 holder.image.setBackgroundResource(R.drawable.face_title);
+            }
+/*
+            Glide.with(mcontext).asBitmap()
+                    .load(bitmap)
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .error(R.mipmap.face_title)
-                    .into(holder.image);
+                    .into(holder.image);*/
 //            inputStream = new FileInputStream(new File(path));
 //            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 //            if(bitmap!=null) {
