@@ -33,7 +33,7 @@ public class Requestor {
 
     ;
 
-    public static String requestJson(String urlStr, JSONObject reqPing, String SerialNo, Context context) {
+    public static String requestJson(String urlStr, JSONObject reqPing, String SerialNo, Context context, String device_sn) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
         SharedPreferences  sp = Util.getSharedPreferences(context);
@@ -42,7 +42,12 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             HttpPost httpost = new HttpPost(urlStr);
             httpost.addHeader("Content-type", "application/json");
-            httpost.setHeader("DeviceSN",SerialNo);//A040980P02800140
+            if (device_sn.equals("device_sn"))
+                httpost.setHeader("device_sn",SerialNo);
+            else{
+                httpost.setHeader("DeviceSN",SerialNo);//A040980P02800140
+            }
+            //httpost.setHeader("device_sn",SerialNo);
            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
             httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper

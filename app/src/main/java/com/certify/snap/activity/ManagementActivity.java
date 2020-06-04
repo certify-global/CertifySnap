@@ -193,7 +193,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         String UID = Util.bytesToHexString(ID);
         if (UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
-        if(updateMember!=null) {
+        if (updateMember != null) {
             updateMember.setAccessid(id);
             //Update UI
             maccessid.setText(id);
@@ -398,7 +398,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             text_input_member_id = view.findViewById(R.id.text_input_member_id);
 
 
-
             //mtime = view.findViewById(R.id.dialog_edit_time);
             textbody = view.findViewById(R.id.linear_body);
             editbody = view.findViewById(R.id.linear_edit_body);
@@ -415,14 +414,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             mupdateusephoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    gallaryPhoto("update.jpg",updateimagePath, UPDATE_PICK_IMAGE);
+                    gallaryPhoto("update.jpg", updateimagePath, UPDATE_PICK_IMAGE);
                 }
             });
             //mtimetext.setText(member.getExpire_time());
 
             mfaceimg = view.findViewById(R.id.dialog_faceimg);
-            Bitmap bitmap =  BitmapFactory.decodeFile(member.getImage());
-            if(bitmap!= null) {
+            Bitmap bitmap = BitmapFactory.decodeFile(member.getImage());
+            if (bitmap != null) {
                 mfaceimg.setImageBitmap(BitmapFactory.decodeFile(member.getImage()));
             }
 
@@ -477,11 +476,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             Log.e("updateimgpath---", updateimagePath);
                         }
 
-                        if (!idstr.equals(updateMember.getMemberid())&&isMemberExist(idstr)) {
+                        if (!idstr.equals(updateMember.getMemberid()) && isMemberExist(idstr)) {
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (!accessstr.equals(updateMember.getAccessid())&&isAccessIdExist(accessstr)) {
+                        if (!accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -493,6 +492,22 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 //                        }else{
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
 //                        }
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("id", uniquestr);
+                            obj.put("firstName", firstnamestr);
+                            obj.put("lastname", lastnamestr);
+                            obj.put("email", emailstr);
+                            obj.put("phoneNumber", mobilestr);
+                            obj.put("memberId", idstr);
+                            obj.put("accessId", accessstr);
+                            obj.put("faceTemplate", updateimagePath);
+                            obj.put("status", true);
+                            obj.put("memberType", 1);
+                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                        } catch (Exception e) {
+                            Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                        }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
                     } else if (TextUtils.isEmpty(accessstr)) {
@@ -510,7 +525,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             });
 
             View parent = LayoutInflater.from(ManagementActivity.this).inflate(R.layout.activity_management, null);
-            if (mpopupwindowUpdate != null ) {
+            if (mpopupwindowUpdate != null) {
                 mpopupwindowUpdate.showAtLocation(parent, Gravity.CENTER, 0, 0);
             }
         } catch (Exception e) {
@@ -705,7 +720,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         musephoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gallaryPhoto("register.jpg",registerpath, PICK_IMAGE);
+                gallaryPhoto("register.jpg", registerpath, PICK_IMAGE);
             }
         });
 
@@ -773,7 +788,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         obj.put("memberType", 1);
                         new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                     } catch (Exception e) {
-                        Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                        Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
                     }
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
                     text_input_member_id.setError("Member Id should not be empty");
@@ -833,17 +848,17 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         return result;
     }
 
-    private boolean isMemberExist(String memberId){
+    private boolean isMemberExist(String memberId) {
         List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
-        if(membersList!= null && membersList.size()>0){
+        if (membersList != null && membersList.size() > 0) {
             return true;
         }
         return false;
     }
 
-    private boolean isAccessIdExist(String memberId){
+    private boolean isAccessIdExist(String memberId) {
         List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
-        if(membersList!= null && membersList.size()>0){
+        if (membersList != null && membersList.size() > 0) {
             return true;
         }
         return false;
@@ -1239,24 +1254,21 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 JSONObject json = new JSONObject(reportInfo);
                 String firstnamestr = responseData.getString("firstName");
                 String lastnamestr = responseData.getString("lastname");
-                String mobilestr = responseData.getString("email");
-                String memberidstr = responseData.getString("phoneNumber");
-                String emailstr = responseData.getString("memberId");
+                String emailstr = responseData.getString("email");
+                String mobilestr = responseData.getString("phoneNumber");
+                String memberidstr = responseData.getString("memberId");
                 String accessstr = responseData.getString("accessId");
                 String uniquestr = json.getString("id");
-                File file = new File(registerpath);
-                if (file.exists()) {
-                    mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
+                String image = responseData.getString("faceTemplate");
+                //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+                localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath);
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                            localRegister(namestr, mobilestr, timestr, registerpath);
 //                        }else{
 //                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
 //                        }
-                } else {
-                    Toast.makeText(ManagementActivity.this, getString(R.string.register_takephoto), Toast.LENGTH_SHORT).show();
-                }
+
             } catch (Exception e) {
 
             }

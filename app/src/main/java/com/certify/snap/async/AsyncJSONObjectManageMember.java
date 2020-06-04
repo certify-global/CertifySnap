@@ -28,7 +28,7 @@ public class AsyncJSONObjectManageMember extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... params) {
-        return Util.getJSONObject(req, url,"",mcontext);
+        return Util.getJSONObjectAddmember(req, url,"",mcontext);
     }
 
     @Override
