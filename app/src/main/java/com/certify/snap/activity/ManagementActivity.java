@@ -117,6 +117,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     public final static int UPDATE_PHOTO = 2;
     private String ROOT_PATH_STRING = "";
     private Boolean isUpdate = false;
+    private Boolean isDeleted = false;
 
     private NfcAdapter mNfcAdapter; //Optimize
     private PendingIntent mPendingIntent;
@@ -671,9 +672,45 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
+                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                    if (members.getUniqueid() != null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ManagementActivity.this);
+                        builder.setMessage("Delete the record online");
+                        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
+                                try {
+                                    isDeleted = true;
+                                    JSONObject obj = new JSONObject();
+                                    obj.put("id", members.getUniqueid());
+                                    obj.put("firstName", members.getFirstname());
+                                    obj.put("lastname", members.getLastname());
+                                    obj.put("email", members.getEmail());
+                                    obj.put("phoneNumber", members.getMobile());
+                                    obj.put("memberId", members.getMemberid());
+                                    obj.put("accessId", members.getAccessid());
+                                    obj.put("faceTemplate", Util.encodeImagePath(members.getImage()));
+                                    obj.put("status", false);
+                                    obj.put("memberType", 1);
+                                    new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                                } catch (Exception e) {
+                                    Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                                }
+                            }
+                        })
+                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                });
+                        builder.create();
+                        builder.show();
+                    }
 
-                localDelete(members);
+                } else {
+                    localDelete(members);
+                }
             }
         });
         Button cancel = view.findViewById(R.id.delete_cancel);
@@ -1284,31 +1321,42 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     @Override
     public void onJSONObjectListenerManageMember(String reportInfo, String status, JSONObject responseData) {
-        if (reportInfo == null || responseData == null) {
-            return;
-        } else {
+        if (reportInfo != null || responseData != null) {
             try {
                 JSONObject json = new JSONObject(reportInfo);
-                String firstnamestr = responseData.getString("firstName");
-                String lastnamestr = responseData.getString("lastname");
-                String emailstr = responseData.getString("email");
-                String mobilestr = responseData.getString("phoneNumber");
-                String memberidstr = responseData.getString("memberId");
-                String accessstr = responseData.getString("accessId");
-                String uniquestr = json.getString("id");
-                String image = responseData.getString("faceTemplate");
-                //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
-                if (isUpdate){
-                    localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath);
-                } else {
-                    localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath,"");
-                }
+                if (json.getInt("responseCode") == 1) {
+                    String firstnamestr = responseData.getString("firstName");
+                    String lastnamestr = responseData.getString("lastname");
+                    String emailstr = responseData.getString("email");
+                    String mobilestr = responseData.getString("phoneNumber");
+                    String memberidstr = responseData.getString("memberId");
+                    String accessstr = responseData.getString("accessId");
+                    String uniquestr = json.getString("id");
+                    String image = responseData.getString("faceTemplate");
+                    //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+                    if (isUpdate) {
+                        localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath);
+                    } else if (isDeleted){
+                        DismissProgressDialog(mdeleteprogressDialog);
+                        isDeleted = false;
+                    }
+
+                    else {
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, image, "");
+                    }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                            localRegister(namestr, mobilestr, timestr, registerpath);
 //                        }else{
 //                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
 //                        }
+                } else {
+                    showResult(getString(R.string.register_failed));
+                    if (isDeleted){
+                        DismissProgressDialog(mdeleteprogressDialog);
+                        isDeleted = false;
+                    }
+                }
 
             } catch (Exception e) {
 

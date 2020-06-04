@@ -45,7 +45,7 @@ public class ApiTest {
 
         when(defaultHttpClient.execute(Mockito.isA(HttpUriRequest.class))).thenThrow(new java.net.SocketException("invalid address"));
         Util.recordUserTemperature(null, context, "37.0", null, null, null, false);
-        Assert.assertTrue();
+        //Assert.assertTrue();
 
     }
 }
