@@ -60,7 +60,7 @@ public class ConfirmationScreenActivity extends Activity {
             user_name = findViewById(R.id.tv_item_name);
             face_score = findViewById(R.id.facial_score);
 
-            if (compareResultValues!= null && !sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
+            if (compareResultValues!= null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
                 compareResult();
             } else {
                 onAccessCardMatch();

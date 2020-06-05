@@ -104,10 +104,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
-                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
                         Util.activateApplication(SettingActivity.this, SettingActivity.this);
 
                     } else {
+                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                         stopHealthCheckService();

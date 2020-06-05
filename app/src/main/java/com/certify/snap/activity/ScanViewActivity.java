@@ -25,7 +25,7 @@ public class ScanViewActivity extends Activity {
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low;
     Typeface rubiklight;
-    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg;
+    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask;
     TextInputLayout text_input_low_temp;
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
@@ -69,6 +69,7 @@ public class ScanViewActivity extends Activity {
             tv_reg = findViewById(R.id.tv_reg);
             tv_scan = findViewById(R.id.titles);
             tv_temp_details = findViewById(R.id.tv_temp_details);
+            tv_mask = findViewById(R.id.tv_mask);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
@@ -76,6 +77,7 @@ public class ScanViewActivity extends Activity {
             tv_temp_details.setTypeface(rubiklight);
             tv_scan.setTypeface(rubiklight);
             tv_reg.setTypeface(rubiklight);
+            tv_mask.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
