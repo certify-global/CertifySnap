@@ -81,9 +81,11 @@ import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import static com.certify.snap.common.Util.getnumberString;
 
@@ -1480,6 +1482,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
                         String certifyId = c.getString("id");
                         String memberId = c.getString("memberId");
+                        if (memberId.isEmpty()) {
+                            memberId = getMemberUniqueId();
+                        }
                         String accessId = c.getString("accessId");
                         String firstName = c.getString("firstName");
                         String lastName = c.getString("lastName");
@@ -1527,5 +1532,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             }
         }
         return imagePath;
+    }
+
+    private String getMemberUniqueId() {
+        String uuid = String.format("%040d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
+        return uuid.substring(uuid.length() - 16);
     }
 }
