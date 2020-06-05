@@ -56,7 +56,10 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public void setOnItemLongClickListener(OnItemLongClickListener OnItemLongClickListener) {
         this.mOnItemLongClickListener = OnItemLongClickListener;
     }
-
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemview = LayoutInflater.from(mcontext).inflate(R.layout.member_item, parent, false);
