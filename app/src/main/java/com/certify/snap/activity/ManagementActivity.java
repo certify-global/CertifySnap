@@ -1487,6 +1487,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
                         String certifyId = c.getString("id");
                         String memberId = c.getString("memberId");
+                        if (memberId.isEmpty()) {
+                            memberId = certifyId;
+                        }
                         String accessId = c.getString("accessId");
                         String firstName = c.getString("firstName");
                         String lastName = c.getString("lastName");
