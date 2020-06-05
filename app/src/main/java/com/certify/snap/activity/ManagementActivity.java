@@ -1342,7 +1342,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
 
                     else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, image, "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
                     }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
