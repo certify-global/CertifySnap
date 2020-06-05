@@ -899,25 +899,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if ((that != null && that.isDestroyed())) return;
                 if (faceFeature != null) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (maskDetectBitmap == null && maskEnabled) {
-                                maskDetectBitmap = rgbBitmap;
-                                processImageAndGetMaskStatus(maskDetectBitmap);
-                            }
-                        }
-                    }).start();
+                    if (maskDetectBitmap == null && maskEnabled) {
+                        maskDetectBitmap = rgbBitmap;
+                        processImageAndGetMaskStatus(maskDetectBitmap);
+                    }
                     isFaceCameraOn = true;
                     disableNfc();
                     countTempError = 0;
-                    Integer liveness = livenessMap.get(requestId);
-
-                    Log.v(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()" +
-                            "liveness = " + liveness +
-                            " trackId = " + requestId +
-                            " isIdentified = " + isTemperatureIdentified +
-                            ",tempServiceColes " + tempServiceClose);
+                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Face recognition values = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
                     tempServiceClose = false;
                     takePicRgb = true;
@@ -985,9 +974,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
 
+                    Integer liveness = livenessMap.get(requestId);
                     if (faceDetectEnabled && (LitePal.findAll(RegisteredMembers.class).size() > 0) && isSearchFace
-//                       && liveness != null && liveness == LivenessInfo.ALIVE
-                    ) {
+                            && liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.i(TAG, "Call face search");
                         isSearchFace = false;
                         searchFace(faceFeature, requestId);
@@ -1124,10 +1113,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
 
-    private synchronized void processPreviewData(byte[] data) {
-        if (data != null) {
-//            final byte[] cloneNv21Rgb = rgbData.clone();
-            List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(data);
+    private synchronized void processPreviewData(byte[] rgbData) {
+        if (rgbData != null && irData != null) {
+            final byte[] cloneNv21Rgb = rgbData.clone();
+            List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
             clearLeftFace(facePreviewInfoList);
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
                 for (int i = 0; i < facePreviewInfoList.size(); i++) {
@@ -1140,7 +1129,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             // IR
                             FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
                             faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
-                            faceHelperIr.requestFaceLiveness(data.clone(), faceInfo, previewSize.width, previewSize.height,
+                            faceHelperIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
                                     FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId(), LivenessType.IR);
                         }
                     }
@@ -1149,13 +1138,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (status == null
                             || status == RequestFeatureStatus.TO_RETRY) {
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
-                        faceHelperIr.requestFaceFeature(data, facePreviewInfoList.get(i).getFaceInfo(),
+                        faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
                                 facePreviewInfoList.get(i).getTrackId());
                     }
                 }
             }
-//            irData = null;
+            irData = null;
         }
 
     }
@@ -1634,8 +1623,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
-//            irData = nv21;
-            processPreviewData(nv21);
+            irData = nv21;
             if (takePicIr) {
                 irBitmap = Util.convertYuvByteArrayToBitmap(nv21, cameraParameters);
                 //  Log.d("irBitmap", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
@@ -1691,7 +1679,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera==null) return;
-//            processPreviewData(nv21);
+            processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
