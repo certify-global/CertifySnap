@@ -500,10 +500,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                            if (!accessstr.equals(null)&&!accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
-                                Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                        if (!accessstr.equals(null) && !accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
+                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
                         mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
@@ -825,10 +825,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                        if (isAccessIdExist(accessstr) && !accessstr.equals(null) ) {
-                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                    if (isAccessIdExist(accessstr) && !accessstr.equals(null)) {
+                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
                     mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
@@ -855,7 +855,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath,"");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -927,7 +927,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     private boolean isAccessIdExist(String accessId) {
         List<RegisteredMembers> membersList = LitePal.where("accessid = ?", accessId).find(RegisteredMembers.class);
-        if (membersList == null &&membersList.size() > 0) {
+        if (membersList == null && membersList.size() > 0) {
             return true;
         }
         return false;
@@ -941,13 +941,13 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         return false;
     }
 
-    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath,String sync) {
+    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath, String sync) {
         String data = "";
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
-                if(!sync.equals("sync"))
-                showResult(getString(R.string.Register_success));
+                if (!sync.equals("sync"))
+                    showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
                 refresh();
                 File file = new File(registerpath);
@@ -957,12 +957,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 }
             } else {
                 Log.e("tag", "Register failed");
-                if(!sync.equals("sync"))
+                if (!sync.equals("sync"))
                     showResult(getString(R.string.register_failed));
             }
         } else {
             Log.e("tag", "fail to process bitmap");
-            if(!sync.equals("sync"))
+            if (!sync.equals("sync"))
                 showResult(getString(R.string.register_face_not_recognized));
         }
     }
@@ -1337,15 +1337,25 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     String accessstr = responseData.getString("accessId");
                     String uniquestr = json.getString("id");
                     String image = responseData.getString("faceTemplate");
+                    String statusStr = responseData.getString("status");
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
                         localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath);
-                    } else if (isDeleted){
-                        DismissProgressDialog(mdeleteprogressDialog);
-                        isDeleted = false;
-                    }
+                    } else if (isDeleted) {
+                        RegisteredMembers members = new RegisteredMembers();
+                        members.setFirstname(firstnamestr);
+                        members.setLastname(lastnamestr);
+                        members.setEmail(emailstr);
+                        members.setMobile(mobilestr);
+                        members.setMemberid(memberidstr);
+                        members.setAccessid(accessstr);
+                        members.setUniqueid(uniquestr);
+                        members.setImage(image);
+                        members.setStatus(statusStr);
 
-                    else {
+                        localDelete(members);
+                        isDeleted = false;
+                    } else {
                         localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
                     }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
@@ -1355,18 +1365,28 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 //                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_dateerror), Toast.LENGTH_SHORT).show();
 //                        }
                 } else {
-                    showResult(getString(R.string.register_failed));
-                    if (isDeleted){
-                        DismissProgressDialog(mdeleteprogressDialog);
-                        isDeleted = false;
+                    if (isDeleted) {
+                        deletionFailed();
+                    } else {
+                        showResult(getString(R.string.register_failed));
                     }
                 }
 
             } catch (Exception e) {
-
+                deletionFailed();
             }
+        } else {
+            deletionFailed();
         }
 
+    }
+
+    private void deletionFailed() {
+        if (isDeleted) {
+            showResult(getString(R.string.deletion_failed));
+            DismissProgressDialog(mdeleteprogressDialog);
+            isDeleted = false;
+        }
     }
 
     private void resetUpdateMember() {
@@ -1442,10 +1462,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         if (statusVal)
                             if (isCertifyIdExist(certifyId)) {
                                 deleteDatabase(firstName, memberId);
-                                  localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath,"sync");
+                                localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                             } else {
-                                 deleteDatabase(firstName, memberId);
-                                 localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath,"sync");
+                                deleteDatabase(firstName, memberId);
+                                localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                             }
                     }
                     DismissProgressDialog(mloadingprogress);
