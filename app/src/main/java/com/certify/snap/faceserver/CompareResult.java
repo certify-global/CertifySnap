@@ -9,6 +9,16 @@ public class CompareResult implements Serializable {
     private int trackId;
     private String memberId;
 
+    public String getFacialScore() {
+        return facialScore;
+    }
+
+    public void setFacialScore(String facialScore) {
+        this.facialScore = facialScore;
+    }
+
+    private String facialScore;
+
     public String getMessage() {
         return message;
     }

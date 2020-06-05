@@ -9,6 +9,16 @@
     android:background="@color/white">
 
 
+    <TextView
+        android:id="@+id/facial_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="@color/lightergray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.certify.snap.view.OvalImageView
         android:id="@+id/iv_item_head_img"
         android:layout_width="200dp"

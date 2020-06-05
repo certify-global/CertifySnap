@@ -250,6 +250,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
     private String delayMilliTimeOut = "";
+    public String facescore;
     private int countTempError = 1;
     private boolean tempServiceClose = false;
     private TextView tvErrorMessage, tv_scan;
@@ -282,7 +283,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean qrCodeEnable = false;
     private String institutionId = "";
     private int ledSettingEnabled = 0;
-    String fullName, memberId;
+    String fullName, facialScore;
     private int processMask = FaceEngine.ASF_MASK_DETECT;
     private Bitmap maskDetectBitmap;
     private int maskStatus = 100;
@@ -1223,11 +1224,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
 
-    private void showResult(CompareResult compareResult, int requestId, String name, String id, final boolean isdoor) {
+    private void showResult(CompareResult compareResult, int requestId, String name, String id, String facescore, final boolean isdoor) {
         //When adding display personnel, save their trackId
         compareResult.setTrackId(requestId);
         compareResult.setMessage(name);
         compareResult.setMemberId(id);
+        compareResult.setFacialScore(facescore);
         compareResultList.add(compareResult);
         this.compareResult = compareResult;
 /*        processHandler.postDelayed(new Runnable() {
@@ -2438,7 +2440,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
-    String faceSimilarScore,faceScore;
+    String faceSimilarScore;
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
@@ -2461,7 +2463,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onNext(final CompareResult compareResult) {
                         faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
-                        faceScore = df.format (compareResult.getSimilar()*100);
+                        facescore = df.format (compareResult.getSimilar()*100);
 
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2516,7 +2518,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
                                     Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
                                     Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, accessID);
-                                    Util.writeString(sharedPreferences, GlobalParameters.FACE_SCORE,faceScore);
+                                    Util.writeString(sharedPreferences, GlobalParameters.FACE_SCORE,facescore);
                                     if (status.equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
@@ -2524,11 +2526,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                             memberId = getString(R.string.id) + memberId;
                                             addOfflineMember(name, id, image, new Date(), temperature);
                                             time2 = System.currentTimeMillis();
-                                            showResult(compareResult, requestId, fullName, memberId, false);
+                                            showResult(compareResult, requestId, fullName, memberId, facescore,false);
                                         }
                                     } else if (!status.equals("1")) {
                                         fullName = getString(R.string.text_nopermission);
-                                        showResult(compareResult, requestId, fullName, memberId, false);
+                                        showResult(compareResult, requestId, fullName, memberId, facescore,false);
                                     }
                                 }
 

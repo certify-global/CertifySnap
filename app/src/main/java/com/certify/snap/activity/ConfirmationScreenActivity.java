@@ -28,7 +28,7 @@ import java.io.File;
 
 public class ConfirmationScreenActivity extends Activity {
     Typeface rubiklight;
-    TextView tv_title, tv_subtitle, user_name;
+    TextView tv_title, tv_subtitle, user_name, face_score;
     private SharedPreferences sp;
     String value;
     private long delayMilli = 0;
@@ -58,6 +58,8 @@ public class ConfirmationScreenActivity extends Activity {
 
             user_img = findViewById(R.id.iv_item_head_img);
             user_name = findViewById(R.id.tv_item_name);
+            face_score = findViewById(R.id.facial_score);
+
             if (compareResultValues!= null && !sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
                 compareResult();
             } else {
@@ -115,6 +117,7 @@ public class ConfirmationScreenActivity extends Activity {
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .into(user_img);
                     user_name.setText(compareResultValues.getMessage());
+                    face_score.setText(compareResultValues.getFacialScore());
                 }
             });
 

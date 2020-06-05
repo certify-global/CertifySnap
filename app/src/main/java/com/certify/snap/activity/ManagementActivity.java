@@ -500,10 +500,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (!accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
-                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                            if (!accessstr.equals(null)&&!accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
+                                Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                         mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
@@ -819,15 +820,16 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 //String timestr = mregistertime.getText().toString();
 
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
-                if (!TextUtils.isEmpty(memberidstr) || !TextUtils.isEmpty(accessstr)) {
+                if (!TextUtils.isEmpty(memberidstr)) {
                     if (isMemberExist(memberidstr)) {
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (isAccessIdExist(accessstr)) {
-                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                        if (isAccessIdExist(accessstr) && !accessstr.equals(null) ) {
+                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                     mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -925,7 +927,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     private boolean isAccessIdExist(String accessId) {
         List<RegisteredMembers> membersList = LitePal.where("accessid = ?", accessId).find(RegisteredMembers.class);
-        if (membersList != null && membersList.size() > 0) {
+        if (membersList == null &&membersList.size() > 0) {
             return true;
         }
         return false;
