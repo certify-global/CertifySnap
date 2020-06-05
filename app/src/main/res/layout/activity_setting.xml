@@ -93,7 +93,7 @@
             <RelativeLayout
                 android:id="@+id/setting_activate"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick">
 
                 <TextView
@@ -132,7 +132,7 @@
             <RelativeLayout
                 android:id="@+id/setting_activate_card"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -166,7 +166,7 @@
             <RelativeLayout
                 android:id="@+id/setting_init"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -201,7 +201,7 @@
             <RelativeLayout
                 android:id="@+id/setting_updatelist"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -231,7 +231,7 @@
             <RelativeLayout
                 android:id="@+id/setting_managment"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -265,7 +265,7 @@
             <RelativeLayout
                 android:id="@+id/setting_register"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -300,7 +300,7 @@
             <RelativeLayout
                 android:id="@+id/setting_parameter"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick">
 
                 <TextView
@@ -336,7 +336,7 @@
             <RelativeLayout
                 android:id="@+id/setting_led"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -371,7 +371,7 @@
             <RelativeLayout
                 android:id="@+id/setting_record"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="gone">
 
@@ -400,7 +400,7 @@
             <RelativeLayout
                 android:id="@+id/setting_temperature"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -437,7 +437,7 @@
             <RelativeLayout
                 android:id="@+id/setting_upload"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -474,7 +474,7 @@
             <RelativeLayout
                 android:id="@+id/setting_access_password"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -510,7 +510,7 @@
             <RelativeLayout
                 android:id="@+id/setting_endpoint"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -546,7 +546,7 @@
             <RelativeLayout
                 android:id="@+id/thermal_check_setting"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -583,7 +583,7 @@
             <RelativeLayout
                 android:id="@+id/scan_setting"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -619,7 +619,7 @@
             <RelativeLayout
                 android:id="@+id/confirmation_setting"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -655,7 +655,7 @@
             <RelativeLayout
                 android:id="@+id/guide_setting"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -691,7 +691,7 @@
             <RelativeLayout
                 android:id="@+id/management_setting"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -727,7 +727,7 @@
             <RelativeLayout
                 android:id="@+id/qr_setting"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
@@ -763,7 +763,7 @@
             <RelativeLayout
                 android:id="@+id/access_control"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:onClick="onclick"
                 android:visibility="visible">
 
