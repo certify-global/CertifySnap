@@ -405,7 +405,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initQRCode();
 
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
-        GlobalParameters.livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
+        GlobalParameters.livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, false);
 
         if (sharedPreferences.getBoolean("wallpaper", false)) {
             //showWallpaper();
@@ -913,12 +913,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     takePicIr = true;
                     // isIdentified = false;
                     if (compareResultList != null) {
-//                        for (int i = compareResultList.size() - 1; i >= 0; i--) {
-//                            if (compareResultList.get(i).getTrackId() == requestId) {
-//                                isIdentified = true;
-//                                break;
-//                            }
-//                        }
+                        for (int i = compareResultList.size() - 1; i >= 0; i--) {
+                            if (compareResultList.get(i).getTrackId() == requestId) {
+                                isTemperatureIdentified = true;
+                                break;
+                            }
+                        }
                         if (!isTemperatureIdentified) {
                             enableLedPower();
                             runOnUiThread(new Runnable() {
@@ -975,13 +975,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
 
                     Integer liveness = livenessMap.get(requestId);
-                    if (faceDetectEnabled && (LitePal.findAll(RegisteredMembers.class).size() > 0) && isSearchFace
-                            && liveness != null && liveness == LivenessInfo.ALIVE) {
-                        Log.i(TAG, "Call face search");
-                        isSearchFace = false;
-                        searchFace(faceFeature, requestId);
-                    }
-
+                    initiateFaceSearch(faceFeature, requestId, liveness);
                     if (!GlobalParameters.livenessDetect) {
                         /*if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
                             Logger.debug(TAG, " Facial Score ---  not liveness Defect ");
@@ -2487,7 +2481,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 }
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
-                            if (!isAdded) {
+                            if (!isAdded && isTemperature) {
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
                                     compareResultList.remove(0);
                                     //adapter.notifyItemRemoved(0);
@@ -2600,6 +2594,20 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mSnackbar != null) {
             mSnackbar.dismiss();
             mSnackbar = null;
+        }
+    }
+
+    private void initiateFaceSearch(FaceFeature faceFeature, int requestId, Integer liveness) {
+        if (faceDetectEnabled && isSearchFace) {
+            if (GlobalParameters.livenessDetect) {
+                if (liveness != null && liveness == LivenessInfo.ALIVE) {
+                    isSearchFace = false;
+                    searchFace(faceFeature, requestId);
+                }
+            } else {
+                isSearchFace = false;
+                searchFace(faceFeature, requestId);
+            }
         }
     }
 }
