@@ -189,6 +189,7 @@
     <string name="register_takephoto">pls click image and take a face photo!</string>
     <string name="Register_success">Register Success!</string>
     <string name="register_failed">Register failed! Pls try again!</string>
+    <string name="update_failed">Update failed! Pls try again!</string>
     <string name="deletion_failed">Due to some network problem. Data can not be deleted online.</string>
     <string name="register_failprocess">Register failed! Fail to process bitmap!</string>
     <string name="Update_success">Update Success!</string>

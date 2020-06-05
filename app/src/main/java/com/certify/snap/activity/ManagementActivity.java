@@ -1368,12 +1368,21 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     if (isDeleted) {
                         deletionFailed();
                     } else {
-                        showResult(getString(R.string.register_failed));
+                        if (isUpdate){
+                            showResult(getString(R.string.update_failed));
+                            isUpdate = false;
+                        }else {
+                            showResult(getString(R.string.register_failed));
+                        }
                     }
                 }
 
             } catch (Exception e) {
-                deletionFailed();
+                if (isDeleted){
+                    deletionFailed();
+                } else {
+                    DismissProgressDialog(mprogressDialog);
+                }
             }
         } else {
             deletionFailed();
