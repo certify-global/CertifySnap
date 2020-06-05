@@ -997,6 +997,7 @@ public class Util {
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
                 JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
                 JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
+                JSONObject jsonValueAccessControl = jsonValue.getJSONObject("AccessControl");
                 //Homeview
                 String settingVersion = responseData.getString("settingVersion");
                 String deviceMasterCode = responseData.getString("deviceMasterCode");
@@ -1043,11 +1044,13 @@ public class Util {
                 String aboveThresholdViewLine1 = jsonValueConfirm.getString("aboveThresholdViewLine1");
                 String temperatureAboveThreshold2 = jsonValueConfirm.getString("temperatureAboveThreshold2");
                 String confirmationviewDelay = jsonValueConfirm.getString("viewDelay");
+                String enableConfirmationScreenAboveThreshold = jsonValueConfirm.getString("enableConfirmationScreenAboveThreshold");
+                String viewDelayAboveThreshold = jsonValueConfirm.getString("viewDelayAboveThreshold");
 //todo in api
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, enableConfirmationScreen.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, enableConfirmationScreen.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, enableConfirmationScreenAboveThreshold.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
-                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, confirmationviewDelay);
+                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, viewDelayAboveThreshold);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, normalViewLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
                 Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
@@ -1069,10 +1072,30 @@ public class Util {
                 String enableQRCodeScanner = jsonValueIdentification.getString("enableQRCodeScanner");
                 String enableRFIDScanner = jsonValueIdentification.getString("enableRFIDScanner");
                 String identificationTimeout = jsonValueIdentification.getString("identificationTimeout");
+                String enableFacialRecognition = jsonValueIdentification.getString("enableFacialRecognition");
+                String facialThreshold = jsonValueIdentification.getString("facialThreshold");
+                String enableConfirmationNameAndImage = jsonValueIdentification.getString("enableConfirmationNameAndImage");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.Timeout,identificationTimeout);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT,enableFacialRecognition.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD,facialThreshold);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,enableConfirmationNameAndImage.equals("1"));
+
+                //access control setting
+                String enableAutomaticDoors = jsonValueAccessControl.getString("enableAutomaticDoors");
+                String blockAccessHighTemperature = jsonValueAccessControl.getString("blockAccessHighTemperature");
+                int doorControlTimeWired = jsonValueAccessControl.getInt("doorControlTimeWired");
+                String enableAccessControl = jsonValueAccessControl.getString("enableAccessControl");
+                int accessControllerCardFormat = jsonValueAccessControl.getInt("accessControllerCardFormat");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.AutomaticDoorAccess,enableAutomaticDoors.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.AccessControlEnable,enableAccessControl.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.BlockAccessHighTemp,blockAccessHighTemperature.equals("1"));
+                Util.writeInt(sharedPreferences, GlobalParameters.AccessControlCardFormat,accessControllerCardFormat);
+                Util.writeInt(sharedPreferences, GlobalParameters.RelayTime,doorControlTimeWired);
+
 
             } else {
                 Logger.toast(context, "Something went wrong please try again");
