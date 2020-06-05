@@ -676,10 +676,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             public void onClick(View v) {
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     if (members.getUniqueid() != null) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ManagementActivity.this);
-                        builder.setMessage("Delete the record online");
-                        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+
                                 mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
                                 try {
                                     isDeleted = true;
@@ -698,17 +695,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 } catch (Exception e) {
                                     Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
                                 }
-                            }
-                        })
-                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                        builder.create();
-                        builder.show();
-                    }
+                                }
 
                 } else {
                     localDelete(members);
