@@ -50,6 +50,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arcsoft.face.LivenessParam;
 import com.arcsoft.face.MaskInfo;
 import com.arcsoft.face.enums.DetectModel;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
@@ -1900,6 +1901,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT | processMask);
 
             flEngine = new FaceEngine();
+            if (GlobalParameters.livenessDetect) {
+                LivenessParam livenessParam = new LivenessParam(0.5f, 0.7f);
+                flEngine.setLivenessParam(livenessParam);
+            }
             flInitCode = flEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT,
                     16, MAX_DETECT_NUM, FaceEngine.ASF_IR_LIVENESS | FaceEngine.ASF_FACE_DETECT | processMask);
 
@@ -2602,10 +2607,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (GlobalParameters.livenessDetect) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
                     isSearchFace = false;
+                    Log.d(TAG, "Search face using liveness");
                     searchFace(faceFeature, requestId);
                 }
             } else {
                 isSearchFace = false;
+                Log.d(TAG, "Search face using RGB Image");
                 searchFace(faceFeature, requestId);
             }
         }
