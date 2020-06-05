@@ -1455,7 +1455,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         obj.put("id", certifyId);
                         new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-                        Toast.makeText(this, "Loading: "+count++ +"out of"+memberList.length(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Loading: "+count++ +" out of "+memberList.length(), Toast.LENGTH_SHORT).show();
 
                     }
                 } else {
