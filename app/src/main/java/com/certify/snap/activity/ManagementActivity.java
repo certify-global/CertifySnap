@@ -84,6 +84,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import static com.certify.snap.common.Util.getnumberString;
 
@@ -1452,7 +1454,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         obj.put("id", certifyId);
                         new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-                        Toast.makeText(this, "Loading: "+count++ +"out of"+memberList.length(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Loading: "+count++ +" out of "+memberList.length(), Toast.LENGTH_SHORT).show();
 
                     }
                 } else {
@@ -1484,6 +1486,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
                         String certifyId = c.getString("id");
                         String memberId = c.getString("memberId");
+                        if (memberId.isEmpty()) {
+                            memberId = certifyId;
+                        }
                         String accessId = c.getString("accessId");
                         String firstName = c.getString("firstName");
                         String lastName = c.getString("lastName");
