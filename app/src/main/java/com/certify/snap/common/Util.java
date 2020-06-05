@@ -1378,4 +1378,15 @@ public class Util {
         return null;
     }
 
+    public static void resetData(Context context) {
+        SharedPreferences sp = getSharedPreferences(context);
+        Util.writeString(sp, GlobalParameters.FIRST_NAME,"");
+        Util.writeString(sp, GlobalParameters.LAST_NAME,"");
+        Util.writeString(sp, GlobalParameters.MEMBER_ID,"");
+        Util.writeString(sp, GlobalParameters.TRQ_STATUS,"");
+        Util.writeString(sp, GlobalParameters.MASK_VALUE,"");
+        Util.writeString(sp, GlobalParameters.FACE_SCORE,"");
+        Util.writeString(sp, GlobalParameters.ACCESS_ID,"");
+        Util.writeString(sp, GlobalParameters.QRCODE_ID, "");
+    }
 }

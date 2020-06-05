@@ -793,6 +793,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         temperatureBitmap = null;
         clearQrCodePreview();
         resetMaskStatus();
+        compareResult = null;
     }
 
     long time1, time2;
@@ -2088,9 +2089,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Util.getToken(this, this);
 
         } catch (Exception e) {
+            Util.resetData(this);
             Logger.debug(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
-
         }
+        Util.resetData(this);
     }
 
     private void createCameraSource(String model) {
