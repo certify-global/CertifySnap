@@ -126,7 +126,6 @@ public class ConfirmationScreenActivity extends Activity {
     }
 
     private void onAccessCardMatch() {
-        Log.d("ConfirmationScreen", "Deep Access card match");
         RegisteredMembers matchedMember = AccessControlModel.getInstance().getScannedMatchedMember();
         if (matchedMember != null) {
             Glide.with(ConfirmationScreenActivity.this)

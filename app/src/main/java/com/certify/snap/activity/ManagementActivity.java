@@ -513,6 +513,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 //                        }
                         if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                             try {
+                                Bitmap bitmap1 = BitmapFactory.decodeFile(updateimagePath);
                                 isUpdate = true;
                                 JSONObject obj = new JSONObject();
                                 obj.put("id", uniquestr);
@@ -522,7 +523,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 obj.put("phoneNumber", mobilestr);
                                 obj.put("memberId", idstr);
                                 obj.put("accessId", accessstr);
-                                obj.put("faceTemplate", updateimagePath);
+                                obj.put("faceTemplate", bitmap1 == null ? "" : Util.encodeToBase64(bitmap1));
                                 obj.put("status", true);
                                 obj.put("memberType", 1);
                                 new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
@@ -875,6 +876,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private boolean processImg(String name, String imgpath, String id) {
+        if (imgpath.isEmpty()) return false;
         Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
         bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
         if (bitmap == null) {
@@ -1432,13 +1434,16 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         Boolean statusVal = c.getBoolean("status");
                         String accountId = c.getString("accountId");
                         String memberType = c.getString("memberType");
+
+                        String imagePath = getImagePath(faceTemplate);
+
                         if (statusVal)
                             if (isCertifyIdExist(certifyId)) {
                                 deleteDatabase(firstName, memberId);
-                                  localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, faceTemplate,"sync");
+                                  localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath,"sync");
                             } else {
                                  deleteDatabase(firstName, memberId);
-                                 localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, faceTemplate,"sync");
+                                 localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath,"sync");
                             }
                     }
                     DismissProgressDialog(mloadingprogress);
@@ -1454,5 +1459,18 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             DismissProgressDialog(mloadingprogress);
             Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
+    }
+
+    private String getImagePath(String encodedImage) {
+        String imagePath = "";
+        Bitmap bitmap = Util.decodeToBase64(encodedImage);
+        if (bitmap != null) {
+            try {
+                imagePath = Util.saveBitmapFile(bitmap, "register.jpg");
+            } catch (IOException e) {
+                Log.e(TAG, "Error in saving the bitmap in File");
+            }
+        }
+        return imagePath;
     }
 }
