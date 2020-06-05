@@ -128,6 +128,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private RelativeLayout relative_management;
     Snackbar snackbar;
     int listPosition;
+    int count=0;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -226,6 +227,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
                     Util.getmemberList(this, this);
+                    count=0;
                     mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
 
                 }
@@ -1449,6 +1451,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         JSONObject obj = new JSONObject();
                         obj.put("id", certifyId);
                         new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                        Toast.makeText(this, "Loading: "+count++ +"out of"+memberList.length(), Toast.LENGTH_SHORT).show();
 
                     }
                 } else {
