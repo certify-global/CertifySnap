@@ -41,7 +41,7 @@ public class GlobalParameters {
     public static String Access_token = "";
     public static String channelID = "";
 
-    public static boolean livenessDetect=true;
+    public static boolean livenessDetect=false;
 
     public static final String ACTION_SHOW_NAVIGATIONBAR = "com.android.internal.policy.impl.showNavigationBar";
     public static final String ACTION_HIDE_NAVIGATIONBAR = "com.android.internal.policy.impl.hideNavigationBar";

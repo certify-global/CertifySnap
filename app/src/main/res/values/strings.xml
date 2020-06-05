@@ -75,7 +75,7 @@
     <string name="camera_type_0">Single Camera</string>
     <string name="camera_type_1">Binocular Camera</string>
     <string name="face_Angle">Face Angle: </string>
-    <string name="living_type">Living Type: </string>
+    <string name="living_type">Liveness: </string>
     <string name="living_type_0">No</string>
     <string name="living_type_1">Yes</string>
     <string name="orientation">Orientation: </string>
