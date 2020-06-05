@@ -102,12 +102,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
-        Util.activateApplication(this, this);
+      //  Util.activateApplication(this, this);
 
-     /*   if (onlineMode) {
+        if (onlineMode) {
             Util.activateApplication(this, this);
-        }*/
-
+        }
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
                 @Override

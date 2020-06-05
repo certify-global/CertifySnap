@@ -36,45 +36,45 @@ public class Requestor {
     public static String requestJson(String urlStr, JSONObject reqPing, String SerialNo, Context context, String device_sn) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
-        SharedPreferences  sp = Util.getSharedPreferences(context);
+        SharedPreferences sp = Util.getSharedPreferences(context);
         try {
             if (EndPoints.deployment == EndPoints.Mode.Demo)
                 Logger.debug("urlStr", urlStr);
             HttpPost httpost = new HttpPost(urlStr);
-            httpost.addHeader("Content-type", "application/json");
+             httpost.addHeader("Content-type", "application/json");
             if (device_sn.equals("device_sn"))
-                httpost.setHeader("device_sn",SerialNo);
-            else{
-                httpost.setHeader("DeviceSN",SerialNo);//A040980P02800140
+                httpost.setHeader("device_sn", SerialNo);
+            else {
+                httpost.setHeader("DeviceSN", SerialNo);//A040980P02800140
             }
             //httpost.setHeader("device_sn",SerialNo);
-           // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
-            httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
+            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
+            httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
-            Log.d("responseHttp",""+ responseHttp.getStatusLine().getStatusCode());
+            Log.d("responseHttp", "" + responseHttp.getStatusLine().getStatusCode());
             StatusLine status = responseHttp.getStatusLine();
-            if(status.getStatusCode()== HttpStatus.SC_OK) {
+            if (status.getStatusCode() == HttpStatus.SC_OK) {
                 responseStr = EntityUtils
                         .toString(responseHttp.getEntity());
-            }else if(status.getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
+            } else if (status.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 JSONObject objMessage = new JSONObject();
                 objMessage.put("Message", "token expired");
-                responseStr=objMessage.toString();
+                responseStr = objMessage.toString();
 
                 Map<String, String> properties = new HashMap<>();
-                for(Iterator<String> iter = reqPing.keys(); iter.hasNext();) {
+                for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
                     String key = iter.next();
                     String value = reqPing.optString(key);
-                    properties.put(key,value);
+                    properties.put(key, value);
                 }
-                properties.put("URL:",urlStr);
-                properties.put("Response:",responseStr);
+                properties.put("URL:", urlStr);
+                properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
 
-            }else{
+            } else {
                 responseStr = EntityUtils
                         .toString(responseHttp.getEntity());
             }
@@ -148,39 +148,40 @@ public class Requestor {
         }
         return "";
     }
+
     public static String postJson(String urlStr, JSONObject reqPing, Context context) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
-        SharedPreferences  sp = Util.getSharedPreferences(context);
+        SharedPreferences sp = Util.getSharedPreferences(context);
         try {
             if (EndPoints.deployment == EndPoints.Mode.Demo)
                 Logger.debug("urlStr", urlStr);
             HttpPost httpost = new HttpPost(urlStr);
             httpost.addHeader("Content-type", "application/json");
-            httpost.setHeader("Authorization","bearer "+ sp.getString(GlobalParameters.ACCESS_TOKEN,""));
+            httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             StatusLine status = responseHttp.getStatusLine();
-            if(status.getStatusCode()== HttpStatus.SC_OK) {
+            if (status.getStatusCode() == HttpStatus.SC_OK) {
                 responseStr = EntityUtils
                         .toString(responseHttp.getEntity());
-            }else if(status.getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
+            } else if (status.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                 JSONObject objMessage = new JSONObject();
                 objMessage.put("Message", "token expired");
-                responseStr=objMessage.toString();
+                responseStr = objMessage.toString();
 
                 Map<String, String> properties = new HashMap<>();
-                for(Iterator<String> iter = reqPing.keys(); iter.hasNext();) {
+                for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
                     String key = iter.next();
                     String value = reqPing.optString(key);
-                    properties.put(key,value);
+                    properties.put(key, value);
                 }
-                properties.put("URL:",urlStr);
-                properties.put("Response:",responseStr);
+                properties.put("URL:", urlStr);
+                properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
-            }else{
+            } else {
                 responseStr = EntityUtils
                         .toString(responseHttp.getEntity());
             }

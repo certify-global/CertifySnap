@@ -448,6 +448,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
 
             Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
             startHealthCheckService();
+            if(json1.isNull("responseSubCode"))return;
             if (json1.getString("responseSubCode").equals("104")) {
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseSubCode").equals("105")) {

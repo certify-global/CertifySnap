@@ -10,7 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
+import com.certify.snap.common.Util;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.InputStream;

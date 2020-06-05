@@ -204,31 +204,43 @@
             android:paddingLeft="05dp"/>
 
     </android.support.design.widget.TextInputLayout>
-    <RelativeLayout
+    <TextView
+        android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_20">
-    <CheckBox
-        android:id="@+id/checkbox_display"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_10"
-        android:layout_gravity="center"
-        android:button="@drawable/check_box_selector"
-        android:layout_centerInParent="true"
-        android:layout_alignParentLeft="true">
-    </CheckBox>
-        <TextView
-            android:id="@+id/tv_display"
+        android:layout_marginTop="@dimen/margin_15"
+        android:text="@string/display"
+        android:textColor="@color/black"
+        android:textSize="@dimen/margin_20"/>
+
+    <RadioGroup
+        android:id="@+id/radio_group_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_5"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_yes_display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/display"
-            android:layout_alignLeft="@+id/checkbox_display"
-            android:layout_centerInParent="true"
+            android:layout_marginEnd="@dimen/margin_30"
+            android:text="@string/living_type_1"
             android:textColor="@color/black"
-            android:textSize="@dimen/margin_20"
-            android:paddingLeft="@dimen/margin_10"
-            android:layout_marginLeft="@dimen/margin_50"></TextView>
-    </RelativeLayout>
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+        <RadioButton
+            android:id="@+id/radio_no_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/living_type_0"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+    </RadioGroup>
 
 </LinearLayout>

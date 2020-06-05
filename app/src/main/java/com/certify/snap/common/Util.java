@@ -1074,10 +1074,8 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.Timeout,identificationTimeout);
 
-
             } else {
                 Logger.toast(context, "Something went wrong please try again");
-
 
             }
         } catch (Exception e) {
@@ -1085,9 +1083,7 @@ public class Util {
             Logger.toast(context, "Something went wrong please try again");
         }
 
-
     }
-
 
     public static void getTokenActivate(String reportInfo, String status, Context context, String toast) {
         try {
@@ -1125,7 +1121,7 @@ public class Util {
                     openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
+                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_inactive),toast);
                 }
             } else {
                 if (json1.isNull("access_token")) return;

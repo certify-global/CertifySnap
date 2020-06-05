@@ -264,7 +264,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
                 });
 
-                List<RegisteredFailedMembers> list = getFailedList();
+             /*   List<RegisteredFailedMembers> list = getFailedList();
                 if (list != null) {
                     Log.e("faillist---", list.size() + "-" + list.toString());
                     faillist = list;
@@ -274,7 +274,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         refresMemberFailList(list);
                         failed_recyclerView.scrollToPosition(0);
                     }
-                }
+                }*/
 
             }
         } catch (Exception e) {
@@ -896,10 +896,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     public boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {
-        String username = firstname + "-" + id;
-        String image = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username + FaceServer.IMG_SUFFIX;
-        String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
-        Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
+        try {
+            String username = firstname + "-" + id;
+            String image = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username + FaceServer.IMG_SUFFIX;
+            String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
+            Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
         RegisteredMembers registeredMembers = new RegisteredMembers();
         registeredMembers.setFirstname(firstname);
@@ -915,7 +916,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         registeredMembers.setFeatures(feature);
         boolean result = registeredMembers.save();
         return result;
+        }catch (Exception e){
+            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
+        }
+        return false;
     }
+
 
     private boolean isMemberExist(String memberId) {
         List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
@@ -1075,6 +1081,34 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 boolean imgDeleteResult = imgFile.delete();
                 if (imgDeleteResult) {
                     Log.e("tag", "image delete success---" + featurePath);
+                }
+            }
+            return line > 0;
+        }
+        return false;
+    }
+
+    public boolean deleteDatabaseCertifyId(String name, String certifyId) {
+        List<RegisteredMembers> list = LitePal.where("uniqueid = ?", certifyId).find(RegisteredMembers.class);
+        if (list != null && list.size() > 0) {
+            FaceServer.getInstance().deleteInfo(name + "-" + certifyId);
+            String featurePath = list.get(0).getFeatures();
+            String imgPath = list.get(0).getImage();
+            int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
+            Log.e("tag", "line---" + line);
+            File featureFile = new File(featurePath);
+            File imgFile = new File(imgPath);
+            if (featureFile.exists() && featureFile.isFile()) {
+                boolean featureDeleteResult = featureFile.delete();
+                if (featureDeleteResult) {
+                    FaceServer.getInstance().deleteInfo(featureFile.getName());
+                    Log.e("feature delete", "feature delete success---" + featurePath);
+                }
+            }
+            if (imgFile.exists() && imgFile.isFile()) {
+                boolean imgDeleteResult = imgFile.delete();
+                if (imgDeleteResult) {
+                    Log.e("image delete ", "image delete success---" + featurePath);
                 }
             }
             return line > 0;
@@ -1470,10 +1504,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
                         if (statusVal)
                             if (isCertifyIdExist(certifyId)) {
-                                deleteDatabase(firstName, memberId);
+                                deleteDatabaseCertifyId(firstName,certifyId);
                                 localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                             } else {
-                                deleteDatabase(firstName, memberId);
+                                deleteDatabaseCertifyId(firstName,certifyId);
                                 localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                             }
                     }

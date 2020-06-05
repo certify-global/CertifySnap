@@ -264,10 +264,12 @@
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
     <string name="grant_access">Access granted</string>
-    <string name="device_not_register"> is not activated on the your certify.me account. Please make sure the device is connected to Internet and device is added to your account under Devices.\n
+    <string name="device_not_register">  is not registered on your certify.me account. Please make sure the device is connected to Internet and device is added to your cloud account under Devices.\n
    \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="invalid_qr">Invalid QRCode</string>
     <string name="timeout">Timeout in seconds</string>
+    <string name="device_inactive">is not active on the your certify.me account. Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
+    \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
 
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
@@ -303,7 +305,7 @@
     <string name="phone_number">Phone Number</string>
     <string name="member_id">Member Id</string>
     <string name="access_id">Access Id</string>
-    <string name="display">"Do not display Image and name on the confirmation screen "</string>
+    <string name="display">"Display Image and name on the confirmation screen "</string>
     <string name="update_face_not_recognized">Update Failed! Face cannot be recognized</string>
     <string name="register_face_not_recognized">Register Failed! Face cannot be recognized</string>
 

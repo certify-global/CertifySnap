@@ -30,13 +30,12 @@ public class QRViewSetting extends Activity {
     private RadioButton rfidYesRb;
     private RadioButton rfidNoRb;
     EditText editTextDialogTimeout;
-    RadioGroup radio_group_facial;
+    RadioGroup radio_group_facial,radio_group_display;
     RadioButton radio_yes_facial;
     RadioButton radio_no_facial;
-    RadioButton rbguideyes;
+    RadioButton rbguideyes,radio_yes_display,radio_no_display;
     RadioButton rbguideno;
     EditText editTextDialogUserInput;
-    CheckBox checkbox_display;
     TextView tv_display;
 
 
@@ -68,11 +67,12 @@ public class QRViewSetting extends Activity {
             radio_yes_facial = findViewById(R.id.radio_yes_facial);
             radio_no_facial = findViewById(R.id.radio_no_facial);
             tv_facial = findViewById(R.id.tv_facial);
-            checkbox_display = findViewById(R.id.checkbox_display);
             tv_display = findViewById(R.id.tv_display);
+            radio_group_display = findViewById(R.id.radio_group_display);
+            radio_yes_display = findViewById(R.id.radio_yes_display);
+            radio_no_display = findViewById(R.id.radio_no_display);
             tv_facial.setTypeface(rubiklight);
             tv_display.setTypeface(rubiklight);
-
 
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
@@ -114,17 +114,30 @@ public class QRViewSetting extends Activity {
             });
 
             if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
-                checkbox_display.setChecked(true);
+                radio_yes_display.setChecked(true);
             } else {
-                checkbox_display.setChecked(false);
+                radio_no_display.setChecked(true);
             }
-            checkbox_display.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            radio_group_display.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked){
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.radio_yes_display) {
                         Util.writeBoolean(sp, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, true);
-                    }else{
+                    } else {
                         Util.writeBoolean(sp, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
+                    }
+                }
+            });
+            radio_group_facial.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    System.out.println("Test CheckId" + checkedId);
+                    if (checkedId == R.id.radio_yes_facial) {
+                        radio_yes_facial.setChecked(true);
+                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
                     }
                 }
             });
