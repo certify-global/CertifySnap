@@ -703,7 +703,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        finish();
+                                        dialog.dismiss();
                                     }
                                 });
                         builder.create();
