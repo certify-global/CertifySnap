@@ -265,7 +265,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 initMember();
                             } else {
                                 refreshMemberList(list);
-                                recyclerView.scrollToPosition(0);
+                               // recyclerView.scrollToPosition(0);
                             }
                         }
                     }
