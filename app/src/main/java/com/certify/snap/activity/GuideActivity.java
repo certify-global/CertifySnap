@@ -67,7 +67,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     Gson gson = new Gson();
     private boolean isRunService = false;
     private SharedPreferences sharedPreferences;
-
+    private boolean onlineMode = true;
     boolean libraryExists = true;
     // Demo
     private static final String[] LIBRARIES = new String[]{
@@ -93,7 +93,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
-        boolean onlineMode = true;
         try {
             onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
         } catch (Exception ex) {
@@ -102,7 +101,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
-      //  Util.activateApplication(this, this);
+        //  Util.activateApplication(this, this);
 
         if (onlineMode) {
             Util.activateApplication(this, this);
@@ -217,21 +216,16 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-//        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-//        Logger.debug(TAG, "start()", "Check permission start, SharedPref License activate with status:" +activateStatus);
-        if(!License.activateLicense(this)){
+        if (!License.activateLicense(this)) {
             String message = getResources().getString(R.string.active_failed);
             Logger.error(TAG, message);
-            Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
+            //TODO: alternate license activation
+            Util.openDialogactivate(this, message, "");
+        }else if (!onlineMode) {
+            startActivity(new Intent(this, IrCameraActivity.class));
 
-//        if (!activateStatus) //offline Active Engine
-//            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
-        else {
-
-
+        } else {
+            Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
         }
     }
 
@@ -250,7 +244,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Util.retrieveSetting(reportInfo, GuideActivity.this);
 
         } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" +e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
         }
 
     }
@@ -264,7 +258,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             startHealthCheckService();
         } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" +e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
     }
@@ -287,11 +281,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      */
     private void startHealthCheckService() {
         try {
-            if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true))
-            if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
-                startService(new Intent(this, DeviceHealthService.class));
-                Application.StartService(this);
-            }
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
+                if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
+                    startService(new Intent(this, DeviceHealthService.class));
+                    Application.StartService(this);
+                }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
