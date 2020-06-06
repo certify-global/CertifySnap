@@ -1024,7 +1024,10 @@ public class Util {
                 String temperatureFormat = jsonValueScan.getString("temperatureFormat");
                 String allowlowtemperaturescanning = jsonValueScan.getString("allowLowTemperatureScanning");
                 String lowtemperatureThreshold = jsonValueScan.getString("lowTemperatureThreshold");
-                String enableMaskDetection = jsonValueScan.getString("enableMaskDetection");
+                String enableMaskDetection = "";
+                if (jsonValueScan.has("enableMaskDetection")) {
+                    enableMaskDetection = jsonValueScan.getString("enableMaskDetection");
+                }
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));

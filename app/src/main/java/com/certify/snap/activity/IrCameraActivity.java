@@ -2207,7 +2207,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID,""));
                 obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
                 new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                Logger.debug("deep expired",reportInfo.toString());
+                Logger.debug("expired",reportInfo.toString());
 
             } else {
                 if (reportInfo.isNull("responseCode")) return;
@@ -2223,6 +2223,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     Snackbar snackbar = Snackbar
                             .make(relativeLayout, R.string.invalid_qr, Snackbar.LENGTH_LONG);
                     snackbar.show();
+                    Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -2247,6 +2248,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
+            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
             Logger.toast(this,"QRCode something went wrong.Please try again");
         }
     }
@@ -2464,18 +2466,20 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(final CompareResult compareResult) {
-                        faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
-                        facescore = df.format (compareResult.getSimilar()*100);
-
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                             faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
                             return;
                         }
+
+                        faceSimilarScore = "Face Score  similarity =" +df.format (compareResult.getSimilar()*100);
+                        facescore = df.format (compareResult.getSimilar()*100);
+
                         String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
                         //Float thresholdFacial = (float) (thresholdvalue / 100);
                         float similarValue = compareResult.getSimilar() * 100;
+                        int faceScoreInt = (int) similarValue;
                         if (similarValue > thresholdvalue) {
                             boolean isAdded = false;
                             if (compareResultList == null) {
@@ -2520,7 +2524,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
                                     Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
                                     Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, accessID);
-                                    Util.writeString(sharedPreferences, GlobalParameters.FACE_SCORE,facescore);
+                                    Util.writeString(sharedPreferences, GlobalParameters.FACE_SCORE, String.valueOf(faceScoreInt));
                                     if (status.equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
