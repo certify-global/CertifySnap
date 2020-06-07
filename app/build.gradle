@@ -75,8 +75,8 @@ android.applicationVariants.all { variant ->
     variant.outputs.all { output ->
 
         def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
-        println "$buildType $output.apkData.fullName $suffix"
-        output.outputFileName = "$baseFileName$suffix-${buildType}-${output.apkData.versionName}.${output.versionCode}.apk"
+        version = buildType == "release" ? "${output.apkData.versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
+        output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
 dependencies {
