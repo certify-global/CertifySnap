@@ -833,15 +833,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         Float thresholdTemperature = Float.parseFloat(thresholdTemperaturePreference);
                         if (temperature > thresholdTemperature) {
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
-                            TemperatureCallBackUISetup(true, text, tempString, false);
                             showMaskStatus();
+                            TemperatureCallBackUISetup(true, text, tempString, false);
                             AccessCardController.getInstance().unlockDoorOnHighTemp();
                             //  mTemperatureListener.onTemperatureCall(true, text);
 
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
-                            TemperatureCallBackUISetup(false, text, tempString, false);
                             showMaskStatus();
+                            TemperatureCallBackUISetup(false, text, tempString, false);
                             AccessCardController.getInstance().unlockDoor();
                             //   mTemperatureListener.onTemperatureCall(false, text);
 //                                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
