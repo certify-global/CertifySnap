@@ -1165,7 +1165,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.getSettings((SettingCallback) context, context);
 
-                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
+//                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);
