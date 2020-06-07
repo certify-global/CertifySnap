@@ -1469,60 +1469,66 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     @Override
-    public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            if (!reportInfo.isNull("Message")) {
+    public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(300);
+                    if (reportInfo == null) {
+                        return;
+                    }
+                    if (!reportInfo.isNull("Message")) {
 //                if (reportInfo.getString("Message").contains("token expired"))
 //                    Util.getToken(ManagementActivity.this, this);
-            } else {
-                if (reportInfo.isNull("responseCode")) return;
-                if (reportInfo.getString("responseCode").equals("1")) {
-                    JSONArray memberList = reportInfo.getJSONArray("responseData");
-                    for (int i = 0; i < memberList.length(); i++) {
-                        JSONObject c = memberList.getJSONObject(i);
+                    } else {
+                        if (reportInfo.isNull("responseCode")) return;
+                        if (reportInfo.getString("responseCode").equals("1")) {
+                            JSONArray memberList = reportInfo.getJSONArray("responseData");
+                            for (int i = 0; i < memberList.length(); i++) {
+                                JSONObject c = memberList.getJSONObject(i);
 
-                        String certifyId = c.getString("id");
-                        String memberId = c.getString("memberId");
-                        if (memberId.isEmpty()) {
-                            memberId = certifyId;
-                        }
-                        String accessId = c.getString("accessId");
-                        String firstName = c.getString("firstName");
-                        String lastName = c.getString("lastName");
-                        String email = c.getString("email");
-                        String phoneNumber = c.getString("phoneNumber");
-                        String faceTemplate = c.getString("faceTemplate");
-                        Boolean statusVal = c.getBoolean("status");
-                        String accountId = c.getString("accountId");
-                        String memberType = c.getString("memberType");
+                                String certifyId = c.getString("id");
+                                String memberId = c.getString("memberId");
+                                if (memberId.isEmpty()) {
+                                    memberId = certifyId;
+                                }
+                                String accessId = c.getString("accessId");
+                                String firstName = c.getString("firstName");
+                                String lastName = c.getString("lastName");
+                                String email = c.getString("email");
+                                String phoneNumber = c.getString("phoneNumber");
+                                String faceTemplate = c.getString("faceTemplate");
+                                Boolean statusVal = c.getBoolean("status");
+                                String accountId = c.getString("accountId");
+                                String memberType = c.getString("memberType");
 
-                        String imagePath = getImagePath(faceTemplate);
+                                String imagePath = getImagePath(faceTemplate);
 
-                        if (statusVal)
-                            if (isCertifyIdExist(certifyId)) {
-                                deleteDatabaseCertifyId(firstName,certifyId);
-                                localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                            } else {
-                                deleteDatabaseCertifyId(firstName,certifyId);
-                                localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
+                                if (statusVal)
+                                    if (isCertifyIdExist(certifyId)) {
+                                        deleteDatabaseCertifyId(firstName, certifyId);
+                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
+                                    } else {
+                                        deleteDatabaseCertifyId(firstName, certifyId);
+                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
+                                    }
                             }
+                            DismissProgressDialog(mloadingprogress);
+                            initData(true);
+                        } else {
+                            DismissProgressDialog(mloadingprogress);
+                            Logger.toast(ManagementActivity.this, "Something went wrong please try again");
+                        }
                     }
+
+
+                } catch (Exception e) {
                     DismissProgressDialog(mloadingprogress);
-                    initData(true);
-                } else {
-                    DismissProgressDialog(mloadingprogress);
-                    Logger.toast(this, "Something went wrong please try again");
+                    Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
                 }
             }
-
-
-        } catch (Exception e) {
-            DismissProgressDialog(mloadingprogress);
-            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
-        }
+        });
     }
 
     private String getImagePath(String encodedImage) {

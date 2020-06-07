@@ -1105,7 +1105,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
         compareResultList.add(compareResult);
-        processHandler.postDelayed(new Runnable() {
+        /*processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(isdoor){
@@ -1121,7 +1121,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }
-        }, 20*100);
+        }, 20*100);*/
     }
 
     private void addOfflineMember(String name,String mobile,String image,Date verify_time,float temperature){
