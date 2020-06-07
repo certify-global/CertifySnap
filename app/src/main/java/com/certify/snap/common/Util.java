@@ -23,6 +23,7 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
+import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
@@ -48,6 +50,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
@@ -58,6 +61,7 @@ import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -84,6 +88,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -1111,6 +1116,7 @@ public class Util {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void getTokenActivate(String reportInfo, String status, Context context, String toast) {
         try {
             JSONObject json1 = null;
@@ -1158,6 +1164,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.getSettings((SettingCallback) context, context);
+
+                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);
@@ -1352,9 +1360,9 @@ public class Util {
         }
     }
 
-    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
+    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context,String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1365,10 +1373,9 @@ public class Util {
         }
         return null;
     }
-
-    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context, String device_sn) {
+    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context,String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1378,17 +1385,5 @@ public class Util {
             return null;
         }
         return null;
-    }
-
-    public static void resetData(Context context) {
-        SharedPreferences sp = getSharedPreferences(context);
-        Util.writeString(sp, GlobalParameters.FIRST_NAME, "");
-        Util.writeString(sp, GlobalParameters.LAST_NAME, "");
-        Util.writeString(sp, GlobalParameters.MEMBER_ID, "");
-        Util.writeString(sp, GlobalParameters.TRQ_STATUS, "");
-        Util.writeString(sp, GlobalParameters.MASK_VALUE, "");
-        Util.writeString(sp, GlobalParameters.FACE_SCORE, "");
-        Util.writeString(sp, GlobalParameters.ACCESS_ID, "");
-        Util.writeString(sp, GlobalParameters.QRCODE_ID, "");
     }
 }

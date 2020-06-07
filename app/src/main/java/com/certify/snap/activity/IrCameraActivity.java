@@ -1718,6 +1718,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public void onTemperatureFail(final String e) throws RemoteException {
             Logger.error(TAG, "HotImageCallbackImpl.onTemperatureFail()", "onTemperatureFail callback, Count temp error" + countTempError + " Error message:" + e);
             if (isDestroyed()) return;
+            isTemperatureIdentified = false;
             if (e != null) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -2052,10 +2053,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Util.getToken(this, this);
 
         } catch (Exception e) {
-            Util.resetData(this);
             Logger.debug(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
-        Util.resetData(this);
     }
 
     private void createCameraSource(String model) {

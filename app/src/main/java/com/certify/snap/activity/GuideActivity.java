@@ -35,6 +35,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.ManageMemberHelper;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
@@ -76,7 +77,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             "libarcsoft_image_util.so",
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,10 +102,22 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
         //  Util.activateApplication(this, this);
+        String accessToken = "Ka_cQJO5h-fRgnueW1WU-0qibUAyeyMPIR8AgporfWl4jX2CArhUKMrSgMAGB5g_jJdhrxesUglpPK2iRg4QP1SqHuHixccHrZvA_pI4AvHaAfOl_DO4DCNIpC4toCvfvHXO2rbto9TYxtZRmlo5SlsG8rJ6YotBMmvRooKj19ID9bf4rlO35AFFZrJV4U50OB4isN4fhD8Fxbg0aOpdet1y31b9GkiDXaloRmX2OqXQIXPP1AnOxHRUV15-w4cw9jvt8w";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+//                    ManageMemberHelper.loadMembers(accessToken, "A040980P02800254", getFilesDir().getAbsolutePath());
+                }
+            }).start();
+
+        }
 
         if (onlineMode) {
             Util.activateApplication(this, this);
         }
+
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -255,7 +267,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            }
             startHealthCheckService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
