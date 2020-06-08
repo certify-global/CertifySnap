@@ -594,9 +594,9 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
                                              IrCameraActivity.UserExportedData data) {
-        Log.v("Util", String.format("recordUserTemperature data: %s", data));
+        Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
-            if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")){
+            if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
                 Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
                 return;
             }
@@ -632,8 +632,8 @@ public class Util {
             obj.put("trqStatus", sp.getString(GlobalParameters.TRQ_STATUS, ""));//TODO: replace
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
-            if(BuildConfig.DEBUG){
-                Log.v(LOG,  "recordUserTemperature: "+obj.toString());
+            if (BuildConfig.DEBUG) {
+                Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
@@ -803,6 +803,7 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
+        Log.v(LOG, String.format("convertYuvByteArrayToBitmap data: %s, cameraParameters: %s", data == null, cameraParameters == null));
         if (data == null || cameraParameters == null) return null;
         Camera.Size size = cameraParameters.getPreviewSize();
         YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
@@ -1353,9 +1354,9 @@ public class Util {
         }
     }
 
-    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context,String device_sn) {
+    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1366,9 +1367,10 @@ public class Util {
         }
         return null;
     }
-    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context,String device_sn) {
+
+    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }

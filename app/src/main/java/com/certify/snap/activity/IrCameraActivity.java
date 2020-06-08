@@ -853,7 +853,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 //TODO: clone
                 final Bitmap rgbBitmapClone = rgbBitmap == null ? null : rgbBitmap.copy(rgbBitmap.getConfig(), false);
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
-
+                Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
                 if (faceFeature != null) {
                     isFaceIdentified = false;
 
@@ -1579,11 +1579,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             irData = nv21;
-            if (takePicIr) {
-                irBitmap = Util.convertYuvByteArrayToBitmap(nv21, cameraParameters);
-                //  Log.d("irBitmap", "" + irBitmap.getByteCount() + "  byte = " + nv21.length);
-                //  tackPickIr = false;
-            }
+            irBitmap = Util.convertYuvByteArrayToBitmap(nv21, cameraParameters);
         }
 
         @Override
@@ -1962,11 +1958,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
                 }, delayMilli * 1000);
 
-                if ((sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))) {
+                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
                     boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
                     data.exceedsThreshold = aboveThreshold;
                     data.temperature = tempValue;
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
+                    data.thermal = temperatureBitmap;
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
             }
@@ -1980,10 +1977,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public Bitmap thermal;
         public RegisteredMembers member;
         public int faceScore;
-        public  String temperature;
+        public String temperature;
         public boolean sendImages;
         public boolean exceedsThreshold;
         public String maskStatus;
+
         public UserExportedData() {
             this.member = new RegisteredMembers();
         }
@@ -2488,7 +2486,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
-                                    UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int)similarValue);
+                                    UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     String status = registeredMembers.getStatus();
