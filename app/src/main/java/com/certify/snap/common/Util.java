@@ -20,10 +20,6 @@ import android.graphics.YuvImage;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -39,9 +35,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ErrorInfo;
-import com.arcsoft.face.FaceEngine;
-import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
@@ -50,18 +43,15 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
-import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.service.DeviceHealthService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -76,9 +66,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.net.Socket;
 import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -88,7 +76,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -607,10 +594,13 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
                                              IrCameraActivity.UserExportedData data) {
-        Log.v("Util", "recordUserTemperature");
+        Log.v("Util", String.format("recordUserTemperature data: %s", data));
         try {
-            if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals(""))
+            if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")){
+                Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
                 return;
+            }
+
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
             obj.put("id", sp.getString(GlobalParameters.SNAP_ID, ""));
@@ -639,9 +629,9 @@ public class Util {
             obj.put("firstName", data.member.getFirstname());
             obj.put("lastName", data.member.getLastname());
             obj.put("memberId", data.member.getMemberid());
-            obj.put("trqStatus", sp.getString(GlobalParameters.TRQ_STATUS, ""));
-            obj.put("maskStatus", sp.getString(GlobalParameters.MASK_VALUE, ""));
-            obj.put("faceScore", sp.getString(GlobalParameters.FACE_SCORE, ""));
+            obj.put("trqStatus", sp.getString(GlobalParameters.TRQ_STATUS, ""));//TODO: replace
+            obj.put("maskStatus", data.maskStatus);
+            obj.put("faceScore", data.faceScore);
 
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
@@ -1182,6 +1172,7 @@ public class Util {
             String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
             String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
             String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
+            //TODO:
             Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, id);
             Util.writeString(sharedPreferences, GlobalParameters.FIRST_NAME, firstName);
             Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);

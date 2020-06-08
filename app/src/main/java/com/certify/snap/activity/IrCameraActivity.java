@@ -1,12 +1,9 @@
 package com.certify.snap.activity;
 
 import android.Manifest;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -94,8 +91,6 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.AccessCardController;
-import com.certify.snap.faceserver.CompareResult;
-import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
@@ -105,7 +100,6 @@ import com.certify.snap.qrscan.CameraSource;
 import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.DeviceHealthService;
-import com.certify.snap.view.MyGridLayoutManager;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -122,7 +116,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.security.PrivateKey;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1693,14 +1686,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } else {
                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
                 }
-//                mTemperatureListenter.onTemperatureCall(true, text);
                 TemperatureCallBackUISetup(true, text, tempString, true, new UserExportedData());
-//                if (Util.isConnectingToInternet(IrCameraActivity.this) && (sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-//                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true))
-//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, true);
-//                    else
-//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, null, null, null, true);
-//                }
                 Logger.debug(TAG, "tempMessageUi()", "Temperature is above Threshold");
             } else {
                 if (sharedPreferences.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
@@ -1708,15 +1694,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } else {
                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.centi);
                 }
-//                mTemperatureListenter.onTemperatureCall(false, text);
                 TemperatureCallBackUISetup(false, text, tempString, true, new UserExportedData());
-                // removed Internet
-//                if ((sharedPreferences.getString(GlobalParameters.ONLINE_MODE, "").equals("true"))) {
-//                    if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false))
-//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, irBitmap, rgbBitmap, temperatureBitmap, false);
-//                    else
-//                        Util.recordUserTemperature(null, IrCameraActivity.this, tempString, null, null, null, false);
-//                }
             }
 //            rgbBitmap = null;
 //            irBitmap = null;
@@ -1983,6 +1961,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
                 }, delayMilli * 1000);
+
                 if ((sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false))) {
                     boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
                     data.exceedsThreshold = aboveThreshold;
@@ -2000,20 +1979,32 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public Bitmap ir;
         public Bitmap thermal;
         public RegisteredMembers member;
-        public int matchScore;
+        public int faceScore;
         public  String temperature;
         public boolean sendImages;
         public boolean exceedsThreshold;
-
+        public String maskStatus;
         public UserExportedData() {
             this.member = new RegisteredMembers();
         }
 
-        public UserExportedData(Bitmap rgb, Bitmap ir, RegisteredMembers member, int matchScore) {
+        public UserExportedData(Bitmap rgb, Bitmap ir, RegisteredMembers member, int faceScore) {
             this.rgb = rgb;
             this.ir = ir;
             this.member = member;
-            this.matchScore = matchScore;
+            this.faceScore = faceScore;
+        }
+
+        @Override
+        public String toString() {
+            return "UserExportedData{" +
+                    "member=" + member +
+                    ", faceScore=" + faceScore +
+                    ", temperature='" + temperature + '\'' +
+                    ", sendImages=" + sendImages +
+                    ", exceedsThreshold=" + exceedsThreshold +
+                    ", maskStatus='" + maskStatus + '\'' +
+                    '}';
         }
     }
 
@@ -2393,7 +2384,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Without Mask");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "0");
+//                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "0");
                     }
                     break;
                     case 1: {
@@ -2401,7 +2392,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Mask Detected");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "1");
+//                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "1");
 
                     }
                     break;
@@ -2410,7 +2401,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Unable to detect Mask");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "-1");
+//                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "-1");
 
                     }
                     break;
@@ -2452,8 +2443,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             long timestamp = System.currentTimeMillis();
                             if (ir != null && rgb != null) {
                                 try {
-                                    ir.compress(Bitmap.CompressFormat.JPEG, 1, new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + timestamp + compareResult.getMemberId() + "-ir.jpg"));
-                                    rgb.compress(Bitmap.CompressFormat.JPEG, 1, new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + timestamp + compareResult.getMemberId() + "-rgb.jpg"));
+                                    ir.compress(Bitmap.CompressFormat.JPEG, 85, new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + timestamp + compareResult.getMemberId() + "-ir.jpg"));
+                                    rgb.compress(Bitmap.CompressFormat.JPEG, 85, new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + timestamp + compareResult.getMemberId() + "-rgb.jpg"));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
                                 }
