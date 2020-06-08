@@ -187,9 +187,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (!TextUtils.isEmpty(searchtext)) mhandler.postDelayed(searchRun, 1000);
             }
         });
-
         initData(true);
         initNfc();
+
     }
 
     @Override
@@ -260,13 +260,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     @Override
                     public void onFinish(List<RegisteredMembers> list) {
                         Log.e("NagaTest list---", list.size() + "");
-                        //mCountTv.setText(String.valueOf( 0 + " / " + list.size()));
                         if (list != null) {
                             datalist = list;
-                            if(list.size() == 34){
-                                Toast.makeText(ManagementActivity.this, getString(R.string.records_sync_completed), Toast.LENGTH_LONG).show();
-
-                            }
+//                            if(list.size() == 34){
+//                                Toast.makeText(ManagementActivity.this, getString(R.string.records_sync_completed), Toast.LENGTH_LONG).show();
+//
+//                            }
                             if (isNeedInit) {
                                 initMember();
                             } else {
@@ -276,9 +275,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             }
 
                         }
+
                     }
                 });
-
              /*   List<RegisteredFailedMembers> list = getFailedList();
                 if (list != null) {
                     Log.e("faillist---", list.size() + "-" + list.toString());
@@ -298,7 +297,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private void initMember() {
-        //mCountTv.setText(String.valueOf(datalist.size()));
+        if(totalMemberCount==totalMemberLastcount){
+            mCountTv.setText(String.valueOf(datalist.size()));
+        }else{
+            mCountTv.setText(testCount++ + " / " + totalMemberCount);
+        }
         if(memberAdapter == null)
             memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -957,6 +960,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
+
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -1441,7 +1445,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         updateMember = null;
     }
 
-    private int totalMemberCount;
+    private int totalMemberCount,totalMemberLastcount;
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
         try {
@@ -1456,6 +1460,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (reportInfo.getString("responseCode").equals("1")) {
                     JSONArray memberList = reportInfo.getJSONArray("responseData");
                     totalMemberCount = memberList.length();
+                    totalMemberLastcount = memberList.length()-1;
                    // System.out.println("NagaTest onJSONObjectListenerMemberList memberList.size: " + memberList.length() );
                     for (int i = 0; i < memberList.length(); i++) {
                         JSONObject c = memberList.getJSONObject(i);
@@ -1525,7 +1530,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 String memberType = c.getString("memberType");
 
                                 String imagePath = getImagePath(faceTemplate);
-                                initData(true);
 
                                 if (statusVal){
                                    // Thread.sleep(200);
@@ -1537,7 +1541,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                         deleteDatabaseCertifyId(firstName, certifyId);
                                         localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                                     }
-                                    mCountTv.setText(testCount++ + " / " + totalMemberCount);
+                                    initData(true);
+                                }else {
+                                    totalMemberCount--;
+                                    totalMemberLastcount--;
+
                                 }
                             }
                             DismissProgressDialog(mloadingprogress);
