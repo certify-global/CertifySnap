@@ -1946,8 +1946,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
-                            if (compareResult != null) {
-                                intent.putExtra("compareResult", compareResult);
+                            if (data.compareResult != null) {
+                                intent.putExtra("compareResult", data.compareResult);
                             }
                             startActivity(intent);
                             ConfirmationBoolean = true;
@@ -1982,6 +1982,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public boolean sendImages;
         public boolean exceedsThreshold;
         public String maskStatus;
+        public CompareResult compareResult;
 
         public UserExportedData() {
             this.member = new RegisteredMembers();
@@ -2498,6 +2499,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
+                                    data.compareResult = compareResult;
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
