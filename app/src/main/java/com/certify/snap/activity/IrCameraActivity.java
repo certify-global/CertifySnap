@@ -2102,47 +2102,52 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         try {
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
-            tv_scan.setText(R.string.tv_qr_validating);
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
-            img_qr.setVisibility(View.VISIBLE);
-            img_qr.setBackgroundResource(R.drawable.qrimage);
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
+            if (Util.isNumeric(guid)) {
+                tv_scan.setText(R.string.tv_bar_validating);
+                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                initCameraPreview();
+            } else {
+                tv_scan.setText(R.string.tv_qr_validating);
+                img_qr.setVisibility(View.VISIBLE);
+                img_qr.setBackgroundResource(R.drawable.qrimage);
 
-            //  preview.release();
+                //  preview.release();
 
-            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
-            if (institutionId.isEmpty()) {
-                Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
-                Snackbar snackbar = Snackbar
-                        .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
-                snackbar.show();
-                preview.stop();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        img_qr.setVisibility(View.GONE);
-                        startCameraSource();
-                    }
-                }, 3 * 1000);
-                return;
-            }
-            for (int i = 0; i < guid.length(); i++) {
-                try {
-                    if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                        JSONObject obj = new JSONObject();
-                        obj.put("qrCodeID", guid);
-                        obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                        new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                    }
-                } catch (Exception e) {
-                    Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+                if (institutionId.isEmpty()) {
+                    Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                    preview.stop();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            img_qr.setVisibility(View.GONE);
+                            startCameraSource();
+                        }
+                    }, 3 * 1000);
+                    return;
                 }
-                if (i == 0) {
-                    break;
+                for (int i = 0; i < guid.length(); i++) {
+                    try {
+                        if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                            JSONObject obj = new JSONObject();
+                            obj.put("qrCodeID", guid);
+                            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                            new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                        }
+                    } catch (Exception e) {
+                        Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                    }
+                    if (i == 0) {
+                        break;
+                    }
                 }
             }
-
 
         } catch (Exception e) {
             Logger.error(LOG + "onBarcodeData(String guid)", e.getMessage());
