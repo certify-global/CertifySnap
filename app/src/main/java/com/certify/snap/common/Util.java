@@ -104,6 +104,11 @@ public class Util {
         return sharedPreferences;
     }
 
+    public static  void clearAllSharedPreferences(SharedPreferences sp){
+        SharedPreferences.Editor edit = sp.edit();
+        edit.clear().commit();
+    }
+
     //sp写入string
     public static void writeString(SharedPreferences sp, String key, String value) {
         SharedPreferences.Editor edit = sp.edit();
