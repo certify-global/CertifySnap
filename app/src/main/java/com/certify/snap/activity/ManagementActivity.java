@@ -961,6 +961,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath, String sync) {
         String data = "";
+        Log.d(TAG, "Snap Member id : " + id);
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
@@ -1490,7 +1491,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 JSONObject c = memberList.getJSONObject(i);
 
                                 String certifyId = c.getString("id");
-                                String memberId = c.getString("memberId");
+                                String memberId = c.getString("memberId").replaceAll("[-+.^:,]","");
                                 if (memberId.isEmpty()) {
                                     memberId = certifyId;
                                 }

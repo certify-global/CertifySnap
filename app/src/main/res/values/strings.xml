@@ -261,6 +261,7 @@
     <string name="enable_qr">Enable QRCode Scanner</string>
     <string name="tv_qr_scan">Scan Your QR Code</string>
     <string name="tv_qr_validating">Validating QR Code</string>
+    <string name="tv_bar_validating">Validating Bar Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
     <string name="grant_access">Access granted</string>

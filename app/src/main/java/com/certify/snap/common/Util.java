@@ -20,9 +20,6 @@ import android.graphics.YuvImage;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.media.SoundPool;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -38,8 +35,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ErrorInfo;
-import com.arcsoft.face.FaceEngine;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
@@ -52,16 +47,14 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
-import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.controller.CameraController;
+import com.certify.snap.model.QrCodeData;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.litepal.LitePal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -75,9 +68,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.net.Socket;
 import java.net.SocketException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -107,6 +98,11 @@ public class Util {
     public static SharedPreferences getSharedPreferences(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
         return sharedPreferences;
+    }
+
+    public static  void clearAllSharedPreferences(SharedPreferences sp){
+        SharedPreferences.Editor edit = sp.edit();
+        edit.clear().commit();
     }
 
     //sp写入string
@@ -482,8 +478,8 @@ public class Util {
         try {
             byte[] decodedByte = Base64.decode(input, 0);
             return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
-        }catch (Exception e){
-            Logger.debug("Bitmap decodeToBase64(String input) ",e.getMessage());
+        } catch (Exception e) {
+            Logger.debug("Bitmap decodeToBase64(String input) ", e.getMessage());
         }
         return null;
     }
@@ -509,7 +505,7 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
-            obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
+            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
@@ -604,43 +600,63 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context, String temperature, Bitmap irBit, Bitmap rgbBit, Bitmap therbit, Boolean aBoolean) {
-        Log.v("Util", "recordUserTemperature");
+    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
+                                             IrCameraActivity.UserExportedData data) {
+        Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
-            if (temperature.isEmpty() || temperature.equals(""))
+            if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
+                Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
                 return;
+            }
+
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
-            obj.put("id", sp.getString(GlobalParameters.SNAP_ID,""));
             obj.put("deviceId", Util.getSerialNumber());
-            obj.put("temperature", temperature);
+            obj.put("temperature", data.temperature);
             obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("facilityId", 0);
             obj.put("locationId", 0);
             obj.put("deviceTime", Util.getMMDDYYYYDate());
-            obj.put("irTemplate", irBit == null ? "" : Util.encodeToBase64(irBit));
-            obj.put("rgbTemplate", rgbBit == null ? "" : Util.encodeToBase64(rgbBit));
-            obj.put("thermalTemplate", therbit == null ? "" : Util.encodeToBase64(therbit));
+            if (data.sendImages) {
+                obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
+                obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
+                obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
+            }
             obj.put("deviceData", MobileDetails(context));
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
-            obj.put("exceedThreshold", aBoolean);
-            obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID,""));
-            if(accessId.isEmpty()){
-            obj.put("accessId", accessId);
+            obj.put("exceedThreshold", data.exceedsThreshold);
+            if (accessId.isEmpty()) {
+                obj.put("accessId", accessId);
             }
-            obj.put("accessId", sp.getString(GlobalParameters.ACCESS_ID,""));
-            obj.put("firstName", sp.getString(GlobalParameters.FIRST_NAME,""));
-            obj.put("lastName",  sp.getString(GlobalParameters.LAST_NAME,""));
-            obj.put("memberId",  sp.getString(GlobalParameters.MEMBER_ID,""));
-            obj.put("trqStatus",  sp.getString(GlobalParameters.TRQ_STATUS,""));
-            obj.put("maskStatus",  sp.getString(GlobalParameters.MASK_VALUE,""));
-            obj.put("faceScore",  sp.getString(GlobalParameters.FACE_SCORE,""));
 
+            QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+            if (qrCodeData != null) {
+                obj.put("id", qrCodeData.getUniqueId());
+                obj.put("accessId", qrCodeData.getAccessId());
+                obj.put("firstName", qrCodeData.getFirstName());
+                obj.put("lastName", qrCodeData.getLastName());
+                obj.put("memberId", qrCodeData.getMemberId());
+                obj.put("trqStatus", qrCodeData.getTrqStatus());
+            } else {
+                if (data.member == null) data.member = new RegisteredMembers();
+                obj.put("id", data.member.getUniqueid());
+                obj.put("accessId", data.member.getAccessid());
+                obj.put("firstName", data.member.getFirstname());
+                obj.put("lastName", data.member.getLastname());
+                obj.put("memberId", data.member.getMemberid());
+                obj.put("trqStatus", ""); //Send this empty if not Qr
+            }
+            obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
+            obj.put("maskStatus", data.maskStatus);
+            obj.put("faceScore", data.faceScore);
+
+            if (BuildConfig.DEBUG) {
+                Log.v(LOG, "recordUserTemperature body: " + obj.toString());
+            }
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG,  "getToken(JSONObjectCallback callback, Context context) "+ e.getMessage());
-
+            Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
     }
 
@@ -666,11 +682,10 @@ public class Util {
             JSONObject obj = new JSONObject();
             obj.put("deviceInfo", MobileDetails(context));
 
-
             new AsyncJSONObjectSender(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ActivateApplication, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG , "getToken "+ e.getMessage());
+            Logger.error(LOG, "getToken " + e.getMessage());
             //TODO:warn failed to activate
             Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
@@ -706,11 +721,6 @@ public class Util {
     }
 
     public static Bitmap faceValidation(byte[] oldImage) {
-//       ByteArrayOutputStream oldByte = new ByteArrayOutputStream();
-//       ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(oldImage);
-//       Bitmap oldBitmap = BitmapFactory.decodeStream(arrayInputStream);
-//       oldBitmap.compress(Bitmap.CompressFormat.JPEG, 100, oldByte);
-        // String bbj= encodeToBase64(BitmapFactory.decodeByteArray(oldImage, 0, oldImage.length));
         return BitmapFactory.decodeByteArray(oldImage, 0, oldImage.length);
     }
 
@@ -795,7 +805,7 @@ public class Util {
             if (requestPermission.size() <= 0) return false;
             // context.requestPermissions(requestPermission.toArray(new String[0]), 1);
         } catch (Exception e) {
-            Logger.error(LOG ,"PermissionRequest(android.app.Activity context, String[] permissions"+ e.getMessage());
+            Logger.error(LOG, "PermissionRequest(android.app.Activity context, String[] permissions" + e.getMessage());
         }
         return true;
     }
@@ -811,7 +821,8 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
-        if (data == null || cameraParameters==null) return null;
+        Log.v(LOG, String.format("convertYuvByteArrayToBitmap data: %s, cameraParameters: %s", data == null, cameraParameters == null));
+        if (data == null || cameraParameters == null) return null;
         Camera.Size size = cameraParameters.getPreviewSize();
         YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -892,7 +903,7 @@ public class Util {
             obj.put("lastUpdateDateTime", Util.getUTCDate());
             obj.put("deviceSN", Util.getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
-            obj.put("institutionId",sharedPreferences.getString(GlobalParameters.INSTITUTION_ID,""));
+            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -1086,10 +1097,10 @@ public class Util {
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.Timeout,identificationTimeout);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT,enableFacialRecognition.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD,facialThreshold);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,enableConfirmationNameAndImage.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationTimeout);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, enableFacialRecognition.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD, facialThreshold);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
 
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.getString("enableAutomaticDoors");
@@ -1098,11 +1109,11 @@ public class Util {
                 String enableAccessControl = jsonValueAccessControl.getString("enableAccessControl");
                 int accessControllerCardFormat = jsonValueAccessControl.getInt("accessControllerCardFormat");
 
-                Util.writeBoolean(sharedPreferences, GlobalParameters.AutomaticDoorAccess,enableAutomaticDoors.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.AccessControlEnable,enableAccessControl.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.BlockAccessHighTemp,blockAccessHighTemperature.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.AccessControlCardFormat,accessControllerCardFormat);
-                Util.writeInt(sharedPreferences, GlobalParameters.RelayTime,doorControlTimeWired);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.AutomaticDoorAccess, enableAutomaticDoors.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.AccessControlEnable, enableAccessControl.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.BlockAccessHighTemp, blockAccessHighTemperature.equals("1"));
+                Util.writeInt(sharedPreferences, GlobalParameters.AccessControlCardFormat, accessControllerCardFormat);
+                Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
 
 
             } else {
@@ -1116,6 +1127,7 @@ public class Util {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void getTokenActivate(String reportInfo, String status, Context context, String toast) {
         try {
             JSONObject json1 = null;
@@ -1133,7 +1145,7 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
-                    }else{
+                    } else {
                         Util.switchRgbOrIrActivity(context, true);
                     }
                     Util.getToken((JSONObjectCallback) context, context);
@@ -1142,17 +1154,17 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
-                    }else{
+                    } else {
                         Util.switchRgbOrIrActivity(context, true);
                     }
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_not_register),toast);
+                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context,"This device SN: " +Util.getSNCode()+" "+context.getResources().getString(R.string.device_inactive),toast);
+                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);
                 }
             } else {
                 if (json1.isNull("access_token")) return;
@@ -1163,6 +1175,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.getSettings((SettingCallback) context, context);
+
+//                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);
@@ -1179,14 +1193,15 @@ public class Util {
             String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
             String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
             String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
-            Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, id);
-            Util.writeString(sharedPreferences, GlobalParameters.FIRST_NAME, firstName);
-            Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
-            Util.writeString(sharedPreferences, GlobalParameters.TRQ_STATUS, trqStatus);
-            Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
-            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, qrAccessid);
 
-
+            QrCodeData qrCodeData = new QrCodeData();
+            qrCodeData.setUniqueId(id);
+            qrCodeData.setFirstName(firstName);
+            qrCodeData.setLastName(lastName);
+            qrCodeData.setTrqStatus(trqStatus);
+            qrCodeData.setMemberId(memberId);
+            qrCodeData.setAccessId(qrAccessid);
+            CameraController.getInstance().setQrCodeData(qrCodeData);
         } catch (Exception e) {
             Logger.error("getQRCode(JSONObject reportInfo, String status, Context context, String toast) ", e.getMessage());
         }
@@ -1285,7 +1300,7 @@ public class Util {
     }
 
     public static void openDialogSetting(final Context context) {
-      Typeface rubiklight = Typeface.createFromAsset(context.getAssets(),
+        Typeface rubiklight = Typeface.createFromAsset(context.getAssets(),
                 "rubiklight.ttf");
         final Dialog d = new Dialog(context);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1299,7 +1314,6 @@ public class Util {
         tv_setting_message.setTypeface(rubiklight);
         tv_note_message.setTypeface(rubiklight);
         btn_continue.setTypeface(rubiklight);
-
 
 
         btn_continue.setOnClickListener(new View.OnClickListener() {
@@ -1327,7 +1341,6 @@ public class Util {
         tv_setting_message.setText(message);
         tv_setting_message.setTypeface(rubiklight);
         btn_continue.setTypeface(rubiklight);
-
 
 
         btn_continue.setOnClickListener(new View.OnClickListener() {
@@ -1360,22 +1373,9 @@ public class Util {
         }
     }
 
-    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context,String device_sn) {
+    public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
-            if (responseTemp != null && !responseTemp.equals("")) {
-                return new JSONObject(responseTemp);
-            }
-        } catch (Exception e) {
-            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
-                    + ", url = " + url, e.getMessage());
-            return null;
-        }
-        return null;
-    }
-    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context,String device_sn) {
-        try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context,"device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1387,16 +1387,26 @@ public class Util {
         return null;
     }
 
-    public static void resetData(Context context) {
-        SharedPreferences sp = getSharedPreferences(context);
-        Util.writeString(sp, GlobalParameters.FIRST_NAME,"");
-        Util.writeString(sp, GlobalParameters.LAST_NAME,"");
-        Util.writeString(sp, GlobalParameters.MEMBER_ID,"");
-        Util.writeString(sp, GlobalParameters.TRQ_STATUS,"");
-        Util.writeString(sp, GlobalParameters.MASK_VALUE,"");
-        Util.writeString(sp, GlobalParameters.FACE_SCORE,"");
-        Util.writeString(sp, GlobalParameters.ACCESS_ID,"");
-        Util.writeString(sp, GlobalParameters.QRCODE_ID, "");
+    public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context, String device_sn) {
+        try {
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+        }
+        return null;
+    }
+
+    public static boolean isNumeric(String str) {
+        if (str.isEmpty()) {
+            return false;
+        } else {
+            return str != null && str.matches("[+-]?\\d*(\\.\\d+)?");
+        }
     }
 
 }
