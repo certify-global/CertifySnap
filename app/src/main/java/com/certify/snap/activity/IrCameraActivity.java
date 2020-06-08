@@ -2493,6 +2493,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String name = registeredMembers.getFirstname();
                                     String memberId = registeredMembers.getMemberid();
                                     String image = registeredMembers.getImage();
+                                    clearLeftFace(null);
                                     if (registeredMembers.getStatus().equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
