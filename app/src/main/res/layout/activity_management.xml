@@ -110,6 +110,19 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/record_counter_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_margin="5dp"
+                android:paddingRight="150dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+
+            <TextView
                 android:id="@+id/count_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"

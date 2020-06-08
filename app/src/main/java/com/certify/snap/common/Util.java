@@ -1346,7 +1346,8 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
+            new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
+                    EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());

@@ -88,6 +88,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import static com.certify.snap.common.Util.getnumberString;
+import static com.certify.snap.common.Util.showToast;
 
 public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback, MemberListCallback, MemberIDCallback {
 
@@ -223,13 +224,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         popupEnrollBtn.setVisibility(View.GONE);
     }
 
-    public void onmemberclick(View v) {
+    public synchronized void onmemberclick(View v) {
         switch (v.getId()) {
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
                     Util.getmemberList(this, this);
                     count=0;
+                    testCount = 1;
                     mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
 
                 }
@@ -245,7 +247,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 Util.hideSoftKeyboard(this);
                 break;
             case R.id.member_back:
-                startActivity(new Intent(ManagementActivity.this, SettingActivity.class));
+                //startActivity(new Intent(ManagementActivity.this, SettingActivity.class));
                 finish();
                 break;
         }
@@ -257,15 +259,22 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 LitePal.findAllAsync(RegisteredMembers.class).listen(new FindMultiCallback<RegisteredMembers>() {
                     @Override
                     public void onFinish(List<RegisteredMembers> list) {
-                        Log.e("list---", list.size() + "");
+                        Log.e("NagaTest list---", list.size() + "");
+                        //mCountTv.setText(String.valueOf( 0 + " / " + list.size()));
                         if (list != null) {
                             datalist = list;
+                            if(list.size() == 34){
+                                Toast.makeText(ManagementActivity.this, getString(R.string.records_sync_completed), Toast.LENGTH_LONG).show();
+
+                            }
                             if (isNeedInit) {
                                 initMember();
                             } else {
                                 refreshMemberList(list);
+                                //Util.showToast(ManagementActivity.this, getString(R.string.records_sync_completed));
                                // recyclerView.scrollToPosition(0);
                             }
+
                         }
                     }
                 });
@@ -289,11 +298,13 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private void initMember() {
-        mCountTv.setText(String.valueOf(datalist.size()));
-        memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
+        //mCountTv.setText(String.valueOf(datalist.size()));
+        if(memberAdapter == null)
+            memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(memberAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
         memberAdapter.notifyDataSetChanged();
         memberAdapter.setOnItemClickListener(new MemberAdapter.OnItemClickListener() {
             @Override
@@ -1430,6 +1441,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         updateMember = null;
     }
 
+    private int totalMemberCount;
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
         try {
@@ -1443,6 +1455,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
                     JSONArray memberList = reportInfo.getJSONArray("responseData");
+                    totalMemberCount = memberList.length();
+                   // System.out.println("NagaTest onJSONObjectListenerMemberList memberList.size: " + memberList.length() );
                     for (int i = 0; i < memberList.length(); i++) {
                         JSONObject c = memberList.getJSONObject(i);
 
@@ -1450,13 +1464,21 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         String memberId = c.getString("memberId");
                         String accessId = c.getString("accessId");
 
+                       // System.out.println("NagaTest onJSONObjectListenerMemberList memberList: " + i + "/" + memberList.length());
                         JSONObject obj = new JSONObject();
                         obj.put("id", certifyId);
-                        new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                        //Intent intent = new Intent(this, MemberDataService.class);
+                        //intent.putExtra()
+                        //startService(intent);
+                        new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                                EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
 
                         //Toast.makeText(this, "Loading: "+count++ +" out of "+memberList.length(), Toast.LENGTH_SHORT).show();
+                        //updateRecordMsg(i, memberList.length());
 
                     }
+
                 } else {
                     Logger.toast(this, "Something went wrong please try again");
                 }
@@ -1468,13 +1490,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     }
 
-    @Override
+    private int testCount=1;
     public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(300);
                     if (reportInfo == null) {
                         return;
                     }
@@ -1504,8 +1525,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 String memberType = c.getString("memberType");
 
                                 String imagePath = getImagePath(faceTemplate);
+                                initData(true);
 
-                                if (statusVal)
+                                if (statusVal){
+                                   // Thread.sleep(200);
+
                                     if (isCertifyIdExist(certifyId)) {
                                         deleteDatabaseCertifyId(firstName, certifyId);
                                         localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
@@ -1513,19 +1537,20 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                         deleteDatabaseCertifyId(firstName, certifyId);
                                         localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                                     }
+                                    mCountTv.setText(testCount++ + " / " + totalMemberCount);
+                                }
                             }
                             DismissProgressDialog(mloadingprogress);
-                            initData(true);
+                           // initData(true);
                         } else {
                             DismissProgressDialog(mloadingprogress);
                             Logger.toast(ManagementActivity.this, "Something went wrong please try again");
                         }
                     }
-
-
                 } catch (Exception e) {
                     DismissProgressDialog(mloadingprogress);
                     Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+                    //initData(true);
                 }
             }
         });
