@@ -15,6 +15,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 //            if (Util.isServiceRunning(BeaconService.class, context))
 //                context.stopService(new Intent(context, BackgroundSyncService.class));
             context.startService(new Intent(context, DeviceHealthService.class));
+            context.startService(new Intent(context, MemberSyncService.class));
             //  BackgroundSyncService.callFromCreate = true;
             // MyApplication.StartService(context, null, intent);
         } catch (Exception e) {

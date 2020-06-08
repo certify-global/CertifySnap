@@ -38,6 +38,7 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.MemberSyncService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -286,6 +287,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                     startService(new Intent(this, DeviceHealthService.class));
                     Application.StartService(this);
                 }
+            if (!Util.isServiceRunning(MemberSyncService.class, this)) {
+                startService(new Intent(this, MemberSyncService.class));
+                Application.StartService(this);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());

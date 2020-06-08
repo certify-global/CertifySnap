@@ -52,12 +52,16 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -83,6 +87,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -1393,4 +1398,5 @@ public class Util {
         Util.writeString(sp, GlobalParameters.ACCESS_ID,"");
         Util.writeString(sp, GlobalParameters.QRCODE_ID, "");
     }
+
 }
