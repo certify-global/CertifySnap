@@ -42,9 +42,11 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 public class SettingActivity extends Activity implements JSONObjectCallback,SettingCallback {
 
@@ -325,6 +327,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
                                 // edit text
+                                if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())){
+                                    LitePal.deleteAll(RegisteredMembers.class);
+                                    Util.clearAllSharedPreferences(sharedPreferences);
+                                    Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                                }
                                 String url = userInput.getText().toString().trim();
                                 if (url.endsWith("/"))
                                     url = url.substring(0, url.length() - 1);
