@@ -120,8 +120,8 @@ public class MemberUtilData {
            registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid, context);
                 //if (!sync.equals("sync"))
                   //  showResult(getString(R.string.Register_success));
-              //  handler.obtainMessage(REGISTER).sendToTarget();
-             //   refresh();
+             //   handler.obtainMessage(REGISTER).sendToTarget();
+               // refresh();
 //                File file = new File(registerpath);
 //                if (file.exists()) {
 //                    file.delete();
@@ -155,7 +155,7 @@ public class MemberUtilData {
             registeredMembers.setEmail(email);
             registeredMembers.setAccessid(accessid);
             registeredMembers.setUniqueid(uniqueid);
-//      registeredMembers.setExpire_time(time);
+//          registeredMembers.setExpire_time(time);
             registeredMembers.setImage(image);
             registeredMembers.setFeatures(feature);
             boolean result = registeredMembers.save();

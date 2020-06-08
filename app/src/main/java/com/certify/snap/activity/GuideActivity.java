@@ -287,9 +287,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                     startService(new Intent(this, DeviceHealthService.class));
                     Application.StartService(this);
                 }
-            if (!Util.isServiceRunning(MemberSyncService.class, this)) {
-                startService(new Intent(this, MemberSyncService.class));
-                Application.StartService(this);
+            if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this)) {
+                startService(new Intent(GuideActivity.this, MemberSyncService.class));
+                Application.StartService(GuideActivity.this);
             }
         } catch (Exception e) {
             e.printStackTrace();

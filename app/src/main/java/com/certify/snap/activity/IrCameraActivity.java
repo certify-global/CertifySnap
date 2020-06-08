@@ -2136,6 +2136,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     public void onBarcodeData(String guid) {
         try {
+
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setText(R.string.tv_qr_validating);

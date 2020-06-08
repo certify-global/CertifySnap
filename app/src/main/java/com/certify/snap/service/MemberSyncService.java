@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -34,6 +35,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
     private SharedPreferences sharedPreferences;
+    ArrayList<String> certifyIDList=new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -85,16 +87,22 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 //  totalMemberCount = memberList.length();
+                Logger.debug("length",""+memberList.length());
+
                 for (int i = 0; i < memberList.length(); i++) {
                     JSONObject c = memberList.getJSONObject(i);
 
                     String certifyId = c.getString("id");
                     // String memberId = c.getString("memberId");
                     // String accessId = c.getString("accessId");
-                    JSONObject obj = new JSONObject();
-                    obj.put("id", certifyId);
-                    new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                            EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+
+                    certifyIDList.add(certifyId);
+
+
+
+                }
+                if(certifyIDList.size()>0){
+                    getMemberID(certifyIDList.get(0));
 
                 }
 
@@ -107,14 +115,33 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
     }
 
+    private void getMemberID(String certifyId) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("id", certifyId);
+            new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                    EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+        }catch (Exception e){
+            Logger.error(" getMemberID()",e.getMessage());
+        }
+    }
+
     @Override
     public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo.isNull("responseCode")) return;
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
+                Logger.debug("length ID",""+memberList.length());
+
 
                 MemberUtilData.MemberData(memberList,MemberSyncService.this);
+                if(certifyIDList.size()>0){
+                    certifyIDList.remove(0);
+                    if(certifyIDList.size()>0){
+                        getMemberID(certifyIDList.get(0));
+                    }
+                }
             }
         } catch (JSONException e) {
 
