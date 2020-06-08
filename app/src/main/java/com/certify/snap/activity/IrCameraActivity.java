@@ -154,6 +154,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     OfflineVerifyMembers offlineVerifyMembers;
     List<RegisteredMembers> registeredMemberslist;
     private boolean isTemperatureIdentified = false;
+    private boolean isFaceIdentified;
     RelativeLayout rl_header;
 
     private View previewViewRgb;
@@ -640,6 +641,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     protected void onResume() {
+        Log.v(TAG, "onResume");
         super.onResume();
         enableNfc();
         startCameraSource();
@@ -685,6 +687,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     protected void onPause() {
+        Log.v(TAG, "onPause");
         super.onPause();
         preview.stop();
         disableNfc();
@@ -702,6 +705,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     protected void onDestroy() {
+        Log.v(TAG, "onDestroy");
         super.onDestroy();
         if (mSwipeCardThread != null) {
             mSwipeCardThread.interrupt();
@@ -755,6 +759,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     long time1, time2;
 
     public void runTemperature(final UserExportedData data) {
+        Log.v(TAG, "runTemperature");
         isTemperature = false;
         isSearch = false;
         time1 = time2 = 0;
@@ -770,6 +775,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
                                 .getDataAndBitmap(50, true, new HotImageCallbackImpl());
                         if (temperatureData == null) {
+                            isFaceIdentified = false;
                             Logger.error(TAG, "runTemperature()", "TemperatureData is null");
                             return;
                         }
@@ -852,6 +858,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
 
                 if (faceFeature != null) {
+                    isFaceIdentified = false;
+
                     if (maskDetectBitmap == null && maskEnabled) {
                         maskDetectBitmap = rgbBitmap;
                         processImageAndGetMaskStatus(maskDetectBitmap);
@@ -859,7 +867,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isFaceCameraOn = true;
                     disableNfc();
                     countTempError = 0;
-                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "Face recognition values = " + System.currentTimeMillis() + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
+                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
                     tempServiceClose = false;
                     takePicRgb = true;
@@ -868,11 +876,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (compareResultList != null) {
                         for (int i = compareResultList.size() - 1; i >= 0; i--) {
                             if (compareResultList.get(i).getTrackId() == requestId) {
-                                isTemperatureIdentified = true;
+//                                isTemperatureIdentified = true;
+                                isFaceIdentified = true;
                                 break;
                             }
                         }
-                        if (!isTemperatureIdentified) {
+                        if (!isFaceIdentified) {
                             enableLedPower();
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -899,7 +908,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 public void run() {
                                                     if (that != null && that.isDestroyed()) return;
                                                     isSearch = true;
-                                                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "ImageTimer execute, Is Temperature identified:" + isTemperatureIdentified);
+                                                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
                                                     if (isTemperatureIdentified || !takePicRgb)
                                                         return;
@@ -2410,6 +2419,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
+        Log.v(TAG, "searchFace");
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2563,7 +2573,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void initiateFaceSearch(FaceFeature faceFeature, int requestId, Integer liveness, Bitmap rgb, Bitmap ir) {
-        if (faceDetectEnabled && isSearchFace) {
+        Log.v(TAG, String.format("initiateFaceSearch faceDetectEnabled: %s, isSearchFace: %s", faceDetectEnabled, isSearchFace));
+        if (faceDetectEnabled) {
             if (GlobalParameters.livenessDetect) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
                     isSearchFace = false;
