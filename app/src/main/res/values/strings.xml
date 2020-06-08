@@ -309,5 +309,7 @@
     <string name="display">"Display Image and name on the confirmation screen "</string>
     <string name="update_face_not_recognized">Update Failed! Face cannot be recognized</string>
     <string name="register_face_not_recognized">Register Failed! Face cannot be recognized</string>
+    <string name ="records_loading_msg">Record are loading</string>
+    <string name ="records_sync_completed">All the records got synced</string>
 
 </resources>
