@@ -66,4 +66,16 @@ public class CompareResult implements Serializable {
     public void setMemberId(String memberId) {
         this.memberId = memberId;
     }
+
+    @Override
+    public String toString() {
+        return "CompareResult{" +
+                "userName='" + userName + '\'' +
+                ", similar=" + similar +
+                ", trackId=" + trackId +
+                ", memberId='" + memberId + '\'' +
+                ", facialScore='" + facialScore + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

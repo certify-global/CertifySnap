@@ -24,6 +24,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -67,6 +68,7 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
@@ -116,6 +118,8 @@ import io.reactivex.schedulers.Schedulers;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.security.PrivateKey;
@@ -2419,7 +2423,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        Log.v(TAG, "searchFace");
+        Log.v(TAG, String.format("searchFace requestId: %s", requestId));
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2438,10 +2442,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(final CompareResult compareResult) {
+                        Log.v(TAG, String.format("searchFace requestId: %s, compareResult : %s", requestId, compareResult));
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                             faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
                             return;
+                        }
+                        if (BuildConfig.DEBUG) {
+                            long timestamp = System.currentTimeMillis();
+                            if (ir != null && rgb != null) {
+                                try {
+                                    ir.compress(Bitmap.CompressFormat.JPEG, 1, new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + timestamp + compareResult.getMemberId() + "-ir.jpg"));
+                                    rgb.compress(Bitmap.CompressFormat.JPEG, 1, new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + timestamp + compareResult.getMemberId() + "-rgb.jpg"));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                         float similarValue = compareResult.getSimilar() * 100;
                         String formattedSimilarityScore = df.format(compareResult.getSimilar() * 100);
