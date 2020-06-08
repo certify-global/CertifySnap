@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 
-import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.snap.async.AsyncGetMemberData;
@@ -85,6 +84,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         try {
             if (reportInfo.isNull("responseCode")) return;
             if (reportInfo.getString("responseCode").equals("1")) {
+                certifyIDList.clear();
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 //  totalMemberCount = memberList.length();
                 Logger.debug("length",""+memberList.length());
