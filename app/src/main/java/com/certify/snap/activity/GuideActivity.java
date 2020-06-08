@@ -272,6 +272,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
             startHealthCheckService();
+            startMemberSyncService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
@@ -301,13 +302,21 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                     startService(new Intent(this, DeviceHealthService.class));
                     Application.StartService(this);
                 }
-            if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this)) {
-                startService(new Intent(GuideActivity.this, MemberSyncService.class));
-                Application.StartService(GuideActivity.this);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+        }
+    }
+
+    private void startMemberSyncService() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if (!Util.isServiceRunning(MemberSyncService.class, this)) {
+            startService(new Intent(this, MemberSyncService.class));
+            Application.StartService(this);
         }
     }
 }

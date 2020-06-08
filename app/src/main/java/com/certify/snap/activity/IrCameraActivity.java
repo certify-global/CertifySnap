@@ -73,6 +73,7 @@ import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -1122,7 +1123,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (cameraHelper != null) {
                     cameraHelper.start();
                 }
-
+                //startMemberSyncService();
             } else {
                 Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 Logger.error(TAG, "onRequestPermissionsResult()", "Permission denied");
@@ -2628,5 +2629,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 searchFace(faceFeature, requestId, rgb, ir);
             }
         }
+    }
+
+    private void startMemberSyncService() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
+                    startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
+                    Application.StartService(IrCameraActivity.this);
+                }
+            }
+        }, 500);
     }
 }
