@@ -68,9 +68,11 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.common.LoggerUtil;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.QrCodeData;
 import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -340,6 +342,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
         getAppSettings();
+        CameraController.getInstance().init();
         initAccessControl();
         try {
 
@@ -1965,6 +1968,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     data.temperature = tempValue;
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
+                    data.maskStatus = String.valueOf(maskStatus);
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
             }
@@ -1983,6 +1987,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public boolean exceedsThreshold;
         public String maskStatus;
         public CompareResult compareResult;
+        private QrCodeData qrCodeData;  //TODO1: Optimize
 
         public UserExportedData() {
             this.member = new RegisteredMembers();
@@ -1993,6 +1998,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             this.ir = ir;
             this.member = member;
             this.faceScore = faceScore;
+        }
+
+        public QrCodeData getQrCodeData() {
+            return qrCodeData;
+        }
+
+        public void setQrCodeData(QrCodeData qrCodeData) {
+            this.qrCodeData = qrCodeData;
         }
 
         @Override
@@ -2119,6 +2132,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 //  preview.release();
 
                 Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+                CameraController.getInstance().setQrCodeId(guid);
                 if (institutionId.isEmpty()) {
                     Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
                     Snackbar snackbar = Snackbar

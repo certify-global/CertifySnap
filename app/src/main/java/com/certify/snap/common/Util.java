@@ -47,6 +47,8 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.controller.CameraController;
+import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
@@ -608,7 +610,6 @@ public class Util {
 
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
-            obj.put("id", sp.getString(GlobalParameters.SNAP_ID, ""));
             obj.put("deviceId", Util.getSerialNumber());
             obj.put("temperature", data.temperature);
             obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
@@ -623,20 +624,31 @@ public class Util {
             obj.put("deviceData", MobileDetails(context));
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", data.exceedsThreshold);
-            obj.put("qrCodeId", sp.getString(GlobalParameters.QRCODE_ID, ""));
             if (accessId.isEmpty()) {
                 obj.put("accessId", accessId);
             }
 
-            if (data.member == null) data.member = new RegisteredMembers();
-
-            obj.put("accessId", data.member.getAccessid());
-            obj.put("firstName", data.member.getFirstname());
-            obj.put("lastName", data.member.getLastname());
-            obj.put("memberId", data.member.getMemberid());
-            obj.put("trqStatus", sp.getString(GlobalParameters.TRQ_STATUS, ""));//TODO: replace
+            QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+            if (qrCodeData != null) {
+                obj.put("id", qrCodeData.getUniqueId());
+                obj.put("accessId", qrCodeData.getAccessId());
+                obj.put("firstName", qrCodeData.getFirstName());
+                obj.put("lastName", qrCodeData.getLastName());
+                obj.put("memberId", qrCodeData.getMemberId());
+                obj.put("trqStatus", qrCodeData.getTrqStatus());
+            } else {
+                if (data.member == null) data.member = new RegisteredMembers();
+                obj.put("id", data.member.getUniqueid());
+                obj.put("accessId", data.member.getAccessid());
+                obj.put("firstName", data.member.getFirstname());
+                obj.put("lastName", data.member.getLastname());
+                obj.put("memberId", data.member.getMemberid());
+                obj.put("trqStatus", ""); //Send this empty if not Qr
+            }
+            obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
+
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
@@ -1180,15 +1192,15 @@ public class Util {
             String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
             String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
             String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
-            //TODO:
-            Util.writeString(sharedPreferences, GlobalParameters.SNAP_ID, id);
-            Util.writeString(sharedPreferences, GlobalParameters.FIRST_NAME, firstName);
-            Util.writeString(sharedPreferences, GlobalParameters.LAST_NAME, lastName);
-            Util.writeString(sharedPreferences, GlobalParameters.TRQ_STATUS, trqStatus);
-            Util.writeString(sharedPreferences, GlobalParameters.MEMBER_ID, memberId);
-            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, qrAccessid);
 
-
+            QrCodeData qrCodeData = new QrCodeData();
+            qrCodeData.setUniqueId(id);
+            qrCodeData.setFirstName(firstName);
+            qrCodeData.setLastName(lastName);
+            qrCodeData.setTrqStatus(trqStatus);
+            qrCodeData.setMemberId(memberId);
+            qrCodeData.setAccessId(qrAccessid);
+            CameraController.getInstance().setQrCodeData(qrCodeData);
         } catch (Exception e) {
             Logger.error("getQRCode(JSONObject reportInfo, String status, Context context, String toast) ", e.getMessage());
         }
