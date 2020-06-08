@@ -632,7 +632,9 @@ public class Util {
             obj.put("trqStatus", sp.getString(GlobalParameters.TRQ_STATUS, ""));//TODO: replace
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
-
+            if(BuildConfig.DEBUG){
+                Log.v(LOG,  "recordUserTemperature: "+obj.toString());
+            }
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
 
         } catch (Exception e) {
