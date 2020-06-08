@@ -65,10 +65,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
         View itemview = LayoutInflater.from(mcontext).inflate(R.layout.member_item, parent, false);
         return new MyViewHolder(itemview);
     }
-
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-
         try {
             holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
             holder.lastname.setText(mlist.get(position).getLastname());

@@ -30,5 +30,4 @@ public class EndPoints {
     public static final String GetMemberList = domainUrl + "GetMemberList";
     public static final String GetMemberById = domainUrl + "GetMemberById";
 
-
 }
