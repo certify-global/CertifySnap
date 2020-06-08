@@ -67,6 +67,7 @@ import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.common.LoggerUtil;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
@@ -2102,47 +2103,52 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         try {
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
-            tv_scan.setText(R.string.tv_qr_validating);
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
-            img_qr.setVisibility(View.VISIBLE);
-            img_qr.setBackgroundResource(R.drawable.qrimage);
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
+            if (Util.isNumeric(guid)) {
+                tv_scan.setText(R.string.tv_bar_validating);
+                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                initCameraPreview();
+            } else {
+                tv_scan.setText(R.string.tv_qr_validating);
+                img_qr.setVisibility(View.VISIBLE);
+                img_qr.setBackgroundResource(R.drawable.qrimage);
 
-            //  preview.release();
+                //  preview.release();
 
-            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
-            if (institutionId.isEmpty()) {
-                Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
-                Snackbar snackbar = Snackbar
-                        .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
-                snackbar.show();
-                preview.stop();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        img_qr.setVisibility(View.GONE);
-                        startCameraSource();
-                    }
-                }, 3 * 1000);
-                return;
-            }
-            for (int i = 0; i < guid.length(); i++) {
-                try {
-                    if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                        JSONObject obj = new JSONObject();
-                        obj.put("qrCodeID", guid);
-                        obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                        new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                    }
-                } catch (Exception e) {
-                    Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+                if (institutionId.isEmpty()) {
+                    Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
+                    Snackbar snackbar = Snackbar
+                            .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                    preview.stop();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            img_qr.setVisibility(View.GONE);
+                            startCameraSource();
+                        }
+                    }, 3 * 1000);
+                    return;
                 }
-                if (i == 0) {
-                    break;
+                for (int i = 0; i < guid.length(); i++) {
+                    try {
+                        if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                            JSONObject obj = new JSONObject();
+                            obj.put("qrCodeID", guid);
+                            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                            new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                        }
+                    } catch (Exception e) {
+                        Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                    }
+                    if (i == 0) {
+                        break;
+                    }
                 }
             }
-
 
         } catch (Exception e) {
             Logger.error(LOG + "onBarcodeData(String guid)", e.getMessage());
@@ -2412,7 +2418,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        Log.v(TAG, String.format("searchFace requestId: %s", requestId));
+        Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2455,6 +2461,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
 
                         if (similarValue > thresholdvalue) {
+                            Log.d(TAG, "Snap Compare result Match Similarity value " +similarValue);
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2469,6 +2476,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
                             if (!isAdded && isTemperature) {
+                                Log.d(TAG, "Snap Compare result isAdded, Add it " +isAdded);
+
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
                                     compareResultList.remove(0);
                                     //adapter.notifyItemRemoved(0);
@@ -2486,9 +2495,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
+                                    Log.d(TAG, "Snap Matched Database, Run temperature");
+
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
                                     String memberId = registeredMembers.getMemberid();
@@ -2497,17 +2509,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     if (registeredMembers.getStatus().equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
+                                            Log.d(TAG, "Snap Matched Database match Status 1 member id is " +memberId);
                                             memberId = getString(R.string.id) + memberId;
                                             addOfflineMember(name, id, image, new Date(), temperature);
                                             time2 = System.currentTimeMillis();
                                             showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                         }
                                     } else if (!status.equals("1")) {
+                                        Log.d(TAG, "Snap Matched Database match Status is not 1 " +memberId);
                                         String fullName = getString(R.string.text_nopermission);
                                         showResult(compareResult, requestId, fullName, memberId, formattedSimilarityScore, false);
                                     }
+                                } else {
+                                    Log.d(TAG, "Snap Compare result database no match " +isAdded);
                                 }
-
+                            } else {
+                                Log.d(TAG, "Snap Compare result, isAdded condition failed " +isAdded);
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
@@ -2517,7 +2534,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 retryRecognizeDelayed(requestId);
                             }
                         } else {
-                            runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), 0)); //Check for temperature if the face is not recognized
+                            Log.d(TAG, "Snap Compare result Match not meeting threshold " +similarValue);
+                            runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue)); //Check for temperature if the face is not recognized
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
@@ -2525,7 +2543,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error in processing face search " + e.getMessage());
+                        Log.d(TAG, "Snap Compare result Error ");
 //                        runTemperature(); // Register member photo is not there, Still find temperature
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);

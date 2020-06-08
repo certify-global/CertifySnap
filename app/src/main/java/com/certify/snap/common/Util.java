@@ -1387,4 +1387,12 @@ public class Util {
         }
         return null;
     }
+
+    public static boolean isNumeric(String str) {
+        if (str.isEmpty()) {
+            return false;
+        } else {
+            return str != null && str.matches("[+-]?\\d*(\\.\\d+)?");
+        }
+    }
 }
