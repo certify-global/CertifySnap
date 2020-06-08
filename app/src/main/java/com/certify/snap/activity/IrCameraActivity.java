@@ -67,6 +67,7 @@ import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.common.LoggerUtil;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
@@ -2528,7 +2529,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                         } else {
                             Log.d(TAG, "Snap Compare result Match not meeting threshold " +similarValue);
-                            runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), 0)); //Check for temperature if the face is not recognized
+                            runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue)); //Check for temperature if the face is not recognized
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
