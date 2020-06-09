@@ -920,7 +920,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
                                     if (isFindTemperature()) {
                                         if (isCalibrating)
-                                            runTemperature(new UserExportedData());
+                                            runTemperature(new UserExportedData(rgbBitmapClone, irBitmapClone, new RegisteredMembers(), 0));
                                     }
 
                                     cancelImageTimer();
