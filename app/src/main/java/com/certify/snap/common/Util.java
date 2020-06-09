@@ -840,8 +840,10 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
-        Log.v(LOG, String.format("convertYuvByteArrayToBitmap data: %s, cameraParameters: %s", data == null, cameraParameters == null));
-        if (data == null || cameraParameters == null) return null;
+        if (data == null || cameraParameters == null){
+            Log.w(LOG, String.format("convertYuvByteArrayToBitmap data: %s, cameraParameters: %s", data == null, cameraParameters == null));
+            return null;
+        }
         Camera.Size size = cameraParameters.getPreviewSize();
         YuvImage image = new YuvImage(data, cameraParameters.getPreviewFormat(), size.width, size.height, null);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
