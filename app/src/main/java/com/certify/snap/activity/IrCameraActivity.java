@@ -75,6 +75,7 @@ import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.view.MyGridLayoutManager;
@@ -1988,6 +1989,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                             startActivity(intent);
                             ConfirmationBoolean = true;
+                            MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                             finish();
                         } else {
 
