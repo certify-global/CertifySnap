@@ -75,8 +75,9 @@ public class MemberUtilData {
             FaceServer.getInstance().deleteInfo(name + "-" + certifyId);
             String featurePath = list.get(0).getFeatures();
             String imgPath = list.get(0).getImage();
-            int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
-            Log.e("tag", "line---" + line);
+            int line = LitePal.delete(RegisteredMembers.class, Long.parseLong(certifyId));
+            //int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
+            //Log.e("tag", "line---" + line);
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);
             if (featureFile.exists() && featureFile.isFile()) {
@@ -165,7 +166,7 @@ public class MemberUtilData {
         }
         return false;
     }
-    public static String getImagePath(String name, String encodedImage) {
+    public static String getImagePath(String encodedImage) {
         String imagePath = "";
         Bitmap bitmap = Util.decodeToBase64(encodedImage);
         if (bitmap != null) {
