@@ -259,6 +259,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private String mNfcIdString = "";
     private boolean isFaceCameraOn = false;
     private Snackbar mSnackbar;
+    private Snackbar toastmSnackbar;
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
@@ -284,7 +285,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public static final int TOAST_START = 111;
     public static final int TOAST_STOP = 100;
     int memberCount;
-    int totalCount=1;
+    int totalCount;
     String snackMessage;
     RelativeLayout snack_layout;
     private void instanceStart() {
@@ -336,12 +337,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       /* LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("EVENT_SNACKBAR"));*/
         mMessageReceiver=new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                memberCount=intent.getIntExtra("memberCount",0);
+                totalCount=intent.getIntExtra("count",0);
                snackMessage=intent.getStringExtra("message");
                showSnackbar(snackMessage);
             }
@@ -553,7 +553,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                             finishAffinity();
                             stopHealthCheckService();
-                            stopMemberSyncService();
+                            //stopMemberSyncService();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1144,7 +1144,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (cameraHelper != null) {
                     cameraHelper.start();
                 }
-                startMemberSyncService();
+              //  startMemberSyncService();
             } else {
                 Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 Logger.error(TAG, "onRequestPermissionsResult()", "Permission denied");
@@ -1446,13 +1446,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
     private void showSnackbar(String snackMessage) {
         if(snackMessage.equals("start")){
-            Snackbar snackbar = Snackbar
+            toastmSnackbar = Snackbar
                     .make(snack_layout, "Syncing the members "+totalCount+++" out of "+memberCount, Snackbar.LENGTH_LONG);
-            snackbar.show();
+            toastmSnackbar.show();
         }else{
-            Snackbar snackbar = Snackbar
+            toastmSnackbar = Snackbar
                     .make(snack_layout, "Members Sync completed", Snackbar.LENGTH_LONG);
-            snackbar.show();
+            toastmSnackbar.show();
         }
 
     }
@@ -1935,6 +1935,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 dismissSnackBar();
+                if (toastmSnackbar != null) {
+                    toastmSnackbar.dismiss();
+                    toastmSnackbar = null;
+                }
                 isTemperatureIdentified = true;
                 outerCircle.setBackgroundResource(R.drawable.border_shape);
                 tvErrorMessage.setVisibility(View.GONE);
@@ -2662,7 +2666,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void startMemberSyncService() {
+   /* private void startMemberSyncService() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -2674,11 +2678,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }, 100);
     }
 
-    /**
+    *//**
      * Method that stop the Member Sync service
-     */
+     *//*
     private void stopMemberSyncService() {
         Intent intent = new Intent(this, MemberSyncService.class);
         stopService(intent);
-    }
+    }*/
 }

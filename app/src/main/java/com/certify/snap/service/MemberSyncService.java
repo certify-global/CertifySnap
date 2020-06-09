@@ -136,7 +136,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             obj.put("id", certifyId);
             new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
-            doSendBroadcast("start",totalMemberCount);
+             doSendBroadcast("start",totalMemberCount,count++);
         }catch (Exception e){
             Logger.error(" getMemberID()",e.getMessage());
         }
@@ -156,7 +156,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     certifyIDList.remove(0);
                     if (certifyIDList.isEmpty()) {
                       //  Toast.makeText(getApplicationContext(), "Members Sync completed", Toast.LENGTH_LONG).show();
-                        doSendBroadcast("stop",totalMemberCount);
+                        doSendBroadcast("stop",totalMemberCount,0);
                     }
                     if(certifyIDList.size()>0){
                         getMemberID(certifyIDList.get(0));
@@ -168,12 +168,13 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
     }
 
-    private void doSendBroadcast(String message,int memberCount) {
+    private void doSendBroadcast(String message,int memberCount,int count) {
         Intent event_snackbar = new Intent("EVENT_SNACKBAR");
 
         if (!TextUtils.isEmpty(message))
             event_snackbar.putExtra("message",message);
             event_snackbar.putExtra("memberCount",memberCount);
+            event_snackbar.putExtra("count",count);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(event_snackbar);
     }
