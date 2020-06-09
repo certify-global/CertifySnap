@@ -117,7 +117,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             obj.put("id", certifyId);
             new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
-             doSendBroadcast("start", totalMemberCount,count++);
+            doSendBroadcast("start", totalMemberCount,count++);
         } catch (Exception e) {
             Logger.error(" getMemberID()",e.getMessage());
         }
@@ -168,8 +168,8 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
         if (!TextUtils.isEmpty(message))
             event_snackbar.putExtra("message",message);
-            event_snackbar.putExtra("memberCount",memberCount);
-            event_snackbar.putExtra("count",count);
+        event_snackbar.putExtra("memberCount",memberCount);
+        event_snackbar.putExtra("count",count);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(event_snackbar);
     }
