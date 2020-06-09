@@ -142,6 +142,11 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
     @Override
     public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
+        if(reportInfo == null){
+            Logger.error(LOG, "onJSONObjectListenerMemberID reportInfo nul");
+            return;
+        }
+
         try {
             if (reportInfo.isNull("responseCode")) return;
             if (reportInfo.getString("responseCode").equals("1")) {
