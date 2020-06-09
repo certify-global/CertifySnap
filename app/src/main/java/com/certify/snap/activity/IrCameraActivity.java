@@ -68,9 +68,12 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.common.LoggerUtil;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.QrCodeData;
+import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -340,6 +343,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
         getAppSettings();
+        CameraController.getInstance().init();
         initAccessControl();
         try {
 
@@ -530,7 +534,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                             finishAffinity();
                             stopHealthCheckService();
-
+                            stopMemberSyncService();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1119,7 +1123,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (cameraHelper != null) {
                     cameraHelper.start();
                 }
-
+                startMemberSyncService();
             } else {
                 Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 Logger.error(TAG, "onRequestPermissionsResult()", "Permission denied");
@@ -1946,8 +1950,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
-                            if (compareResult != null) {
-                                intent.putExtra("compareResult", compareResult);
+                            if (data.compareResult != null) {
+                                intent.putExtra("compareResult", data.compareResult);
                             }
                             startActivity(intent);
                             ConfirmationBoolean = true;
@@ -1965,6 +1969,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     data.temperature = tempValue;
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
+                    data.maskStatus = String.valueOf(maskStatus);
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
             }
@@ -1982,6 +1987,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public boolean sendImages;
         public boolean exceedsThreshold;
         public String maskStatus;
+        public CompareResult compareResult;
+        private QrCodeData qrCodeData;  //TODO1: Optimize
 
         public UserExportedData() {
             this.member = new RegisteredMembers();
@@ -1992,6 +1999,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             this.ir = ir;
             this.member = member;
             this.faceScore = faceScore;
+        }
+
+        public QrCodeData getQrCodeData() {
+            return qrCodeData;
+        }
+
+        public void setQrCodeData(QrCodeData qrCodeData) {
+            this.qrCodeData = qrCodeData;
         }
 
         @Override
@@ -2101,6 +2116,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     public void onBarcodeData(String guid) {
         try {
+
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -2118,6 +2134,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 //  preview.release();
 
                 Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+                CameraController.getInstance().setQrCodeId(guid);
                 if (institutionId.isEmpty()) {
                     Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
                     Snackbar snackbar = Snackbar
@@ -2498,6 +2515,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
+                                    data.compareResult = compareResult;
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
@@ -2505,6 +2523,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String name = registeredMembers.getFirstname();
                                     String memberId = registeredMembers.getMemberid();
                                     String image = registeredMembers.getImage();
+                                    clearLeftFace(null);
                                     if (registeredMembers.getStatus().equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
@@ -2610,5 +2629,25 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 searchFace(faceFeature, requestId, rgb, ir);
             }
         }
+    }
+
+    private void startMemberSyncService() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
+                    Log.d(TAG, "Ir Camera service");
+                    startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
+                }
+            }
+        }, 100);
+    }
+
+    /**
+     * Method that stop the Member Sync service
+     */
+    private void stopMemberSyncService() {
+        Intent intent = new Intent(this, MemberSyncService.class);
+        stopService(intent);
     }
 }

@@ -68,10 +68,12 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
+import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -187,6 +189,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (!TextUtils.isEmpty(searchtext)) mhandler.postDelayed(searchRun, 1000);
             }
         });
+
         initData(true);
         initNfc();
 
@@ -278,6 +281,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
                     }
                 });
+
              /*   List<RegisteredFailedMembers> list = getFailedList();
                 if (list != null) {
                     Log.e("faillist---", list.size() + "-" + list.toString());
@@ -961,7 +965,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
-
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -1091,34 +1094,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 boolean imgDeleteResult = imgFile.delete();
                 if (imgDeleteResult) {
                     Log.e("tag", "image delete success---" + featurePath);
-                }
-            }
-            return line > 0;
-        }
-        return false;
-    }
-
-    public boolean deleteDatabaseCertifyId(String name, String certifyId) {
-        List<RegisteredMembers> list = LitePal.where("uniqueid = ?", certifyId).find(RegisteredMembers.class);
-        if (list != null && list.size() > 0) {
-            FaceServer.getInstance().deleteInfo(name + "-" + certifyId);
-            String featurePath = list.get(0).getFeatures();
-            String imgPath = list.get(0).getImage();
-            int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
-            Log.e("tag", "line---" + line);
-            File featureFile = new File(featurePath);
-            File imgFile = new File(imgPath);
-            if (featureFile.exists() && featureFile.isFile()) {
-                boolean featureDeleteResult = featureFile.delete();
-                if (featureDeleteResult) {
-                    FaceServer.getInstance().deleteInfo(featureFile.getName());
-                    Log.e("feature delete", "feature delete success---" + featurePath);
-                }
-            }
-            if (imgFile.exists() && imgFile.isFile()) {
-                boolean imgDeleteResult = imgFile.delete();
-                if (imgDeleteResult) {
-                    Log.e("image delete ", "image delete success---" + featurePath);
                 }
             }
             return line > 0;
@@ -1530,18 +1505,20 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 String accountId = c.getString("accountId");
                                 String memberType = c.getString("memberType");
 
-                                String imagePath = getImagePath(faceTemplate);
+                                String imagePath = MemberUtilData.getImagePath(firstName + lastName, faceTemplate);
+
 
                                 if (statusVal){
                                    // Thread.sleep(200);
 
-                                    if (isCertifyIdExist(certifyId)) {
-                                        deleteDatabaseCertifyId(firstName, certifyId);
+                                    //if (isCertifyIdExist(certifyId)) {
+                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
                                         localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                                    } else {
-                                        deleteDatabaseCertifyId(firstName, certifyId);
-                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                                    }
+
+                                    //} else {
+//                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
+//                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
+//                                    }
                                     initData(true);
                                 }else {
                                     totalMemberCount--;
@@ -1563,18 +1540,5 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 }
             }
         });
-    }
-
-    private String getImagePath(String encodedImage) {
-        String imagePath = "";
-        Bitmap bitmap = Util.decodeToBase64(encodedImage);
-        if (bitmap != null) {
-            try {
-                imagePath = Util.saveBitmapFile(bitmap, "register.jpg");
-            } catch (IOException e) {
-                Log.e(TAG, "Error in saving the bitmap in File");
-            }
-        }
-        return imagePath;
     }
 }

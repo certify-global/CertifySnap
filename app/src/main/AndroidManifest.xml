@@ -118,6 +118,7 @@
         </receiver>
 
         <service android:name = ".service.DeviceHealthService" android:stopWithTask="false" />
+        <service android:name = ".service.MemberSyncService" android:stopWithTask="false" />
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
         <activity android:name="com.certify.snap.qrscan.LivePreviewActivity"
             android:screenOrientation="portrait"/>
