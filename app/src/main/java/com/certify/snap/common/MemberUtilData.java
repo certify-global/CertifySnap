@@ -171,7 +171,7 @@ public class MemberUtilData {
         if (bitmap != null) {
             try {
                 imagePath = Util.saveBitmapFile(bitmap, "register.jpg");
-                imagePath = Util.saveAllImages(bitmap, name + ".jpg");
+                //imagePath = Util.saveAllImages(bitmap, name + ".jpg");
             } catch (IOException e) {
                 Log.e(LOG, "Error in saving the bitmap in File");
             }
