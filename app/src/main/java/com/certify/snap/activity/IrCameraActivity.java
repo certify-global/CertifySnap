@@ -2632,10 +2632,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void startMemberSyncService() {
-        if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
-            Log.d(TAG, "Deep Ir Camera service");
-            startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
+                    Log.d(TAG, "Deep Ir Camera service");
+                    startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
+                }
+            }
+        }, 100);
     }
 
     /**
