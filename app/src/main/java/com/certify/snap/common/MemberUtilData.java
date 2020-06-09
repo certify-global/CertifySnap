@@ -48,8 +48,12 @@ public class MemberUtilData {
 
                 if (statusVal) {
                     // Thread.sleep(200);
-                    MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
-                    localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync",context);
+                    if (isCertifyIdExist(certifyId)) {
+                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
+                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync",context);
+                    } else {
+                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync", context);
+                    }
 
                 }
             }
@@ -177,5 +181,13 @@ public class MemberUtilData {
             }
         }
         return imagePath;
+    }
+
+    private static boolean isCertifyIdExist(String uniqueID) {
+        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
+        if (membersList != null && membersList.size() > 0) {
+            return true;
+        }
+        return false;
     }
 }
