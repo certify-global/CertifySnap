@@ -75,9 +75,8 @@ public class MemberUtilData {
             FaceServer.getInstance().deleteInfo(name + "-" + certifyId);
             String featurePath = list.get(0).getFeatures();
             String imgPath = list.get(0).getImage();
-            int line = LitePal.delete(RegisteredMembers.class, Long.parseLong(certifyId));
-            //int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
-            //Log.e("tag", "line---" + line);
+            int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
+            Log.e("tag", "line---" + line);
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);
             if (featureFile.exists() && featureFile.isFile()) {
