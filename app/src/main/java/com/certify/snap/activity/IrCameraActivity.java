@@ -4,9 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -30,6 +32,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -277,7 +280,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean maskEnabled = false;
     private boolean faceDetectEnabled = false;
     private boolean isSearchFace = true;
-
+    private BroadcastReceiver mMessageReceiver = null;
+    public static final int TOAST_START = 111;
+    public static final int TOAST_STOP = 100;
+    int memberCount;
+    int totalCount=1;
+    String snackMessage;
+    RelativeLayout snack_layout;
     private void instanceStart() {
         try {
             faceEngineHelper = new FaceEngineHelper();
@@ -327,6 +336,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       /* LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("EVENT_SNACKBAR"));*/
+        mMessageReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+               memberCount=intent.getIntExtra("memberCount",0);
+               snackMessage=intent.getStringExtra("message");
+               showSnackbar(snackMessage);
+            }
+        };
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
 
@@ -556,6 +575,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         previewViewIr = findViewById(R.id.texture_preview_ir);
 
         relative_main = findViewById(R.id.relative_layout);
+        snack_layout = findViewById(R.id.snack_layout);
 
         relativeLayout = findViewById(R.id.rl_verify);
         outerCircle = findViewById(R.id.iv_verify_outer_circle);
@@ -645,6 +665,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onResume() {
         Log.v(TAG, "onResume");
         super.onResume();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
         enableNfc();
         startCameraSource();
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "3");
@@ -1423,7 +1444,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }
     }
+    private void showSnackbar(String snackMessage) {
+        if(snackMessage.equals("start")){
+            Snackbar snackbar = Snackbar
+                    .make(snack_layout, "Syncing the members "+totalCount+++" out of "+memberCount, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        }else{
+            Snackbar snackbar = Snackbar
+                    .make(snack_layout, "Members Sync completed", Snackbar.LENGTH_LONG);
+            snackbar.show();
+        }
 
+    }
     private void showNfcResult(boolean isSuccess, boolean isLimitTime) {
         if (nfcDialog != null && nfcDialog.isShowing())
             return;
@@ -1443,7 +1475,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             window.setBackgroundDrawable(new ColorDrawable());
         }
     }
-
 
     private void sendMessageToStopAnimation(int what) {
         if (processHandler == null)

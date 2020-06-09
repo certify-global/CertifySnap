@@ -29,7 +29,7 @@ public class MemberUtilData {
                 JSONObject c = memberList.getJSONObject(i);
 
                 String certifyId = c.getString("id");
-                String memberId = c.getString("memberId");
+                String memberId = c.getString("memberId").replaceAll("[-+.^:,]","");;
                 if (memberId.isEmpty()) {
                     memberId = certifyId;
                 }
