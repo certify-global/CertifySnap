@@ -288,6 +288,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     int totalCount;
     String snackMessage;
     RelativeLayout snack_layout;
+
     private void instanceStart() {
         try {
             faceEngineHelper = new FaceEngineHelper();
@@ -337,13 +338,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMessageReceiver=new BroadcastReceiver() {
+        mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-               memberCount=intent.getIntExtra("memberCount",0);
-                totalCount=intent.getIntExtra("count",0);
-               snackMessage=intent.getStringExtra("message");
-               showSnackbar(snackMessage);
+                memberCount = intent.getIntExtra("memberCount", 0);
+                totalCount = intent.getIntExtra("count", 0);
+                snackMessage = intent.getStringExtra("message");
+                showSnackbar(snackMessage);
             }
         };
         rubiklight = Typeface.createFromAsset(getAssets(),
@@ -1144,7 +1145,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (cameraHelper != null) {
                     cameraHelper.start();
                 }
-              //  startMemberSyncService();
+                //  startMemberSyncService();
             } else {
                 Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 Logger.error(TAG, "onRequestPermissionsResult()", "Permission denied");
@@ -1444,18 +1445,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }
     }
-    private void showSnackbar(String snackMessage) {
-        if(snackMessage.equals("start")){
+
+    private void showSnackbar(final String snackMessage) {
+        if (snackMessage.equals("start")) {
             toastmSnackbar = Snackbar
-                    .make(snack_layout, "Syncing the members "+totalCount+++" out of "+memberCount, Snackbar.LENGTH_LONG);
+                    .make(snack_layout, "Syncing the members " + totalCount++ + " out of " + memberCount, Snackbar.LENGTH_LONG);
             toastmSnackbar.show();
-        }else{
+        } else {
             toastmSnackbar = Snackbar
                     .make(snack_layout, "Members Sync completed", Snackbar.LENGTH_LONG);
             toastmSnackbar.show();
         }
-
     }
+
     private void showNfcResult(boolean isSuccess, boolean isLimitTime) {
         if (nfcDialog != null && nfcDialog.isShowing())
             return;
@@ -1935,10 +1937,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 dismissSnackBar();
-                if (toastmSnackbar != null) {
-                    toastmSnackbar.dismiss();
-                    toastmSnackbar = null;
-                }
                 isTemperatureIdentified = true;
                 outerCircle.setBackgroundResource(R.drawable.border_shape);
                 tvErrorMessage.setVisibility(View.GONE);
@@ -2513,7 +2511,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
 
                         if (similarValue > thresholdvalue) {
-                            Log.d(TAG, "Snap Compare result Match Similarity value " +similarValue);
+                            Log.d(TAG, "Snap Compare result Match Similarity value " + similarValue);
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2528,7 +2526,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
                             if (!isAdded && isTemperature) {
-                                Log.d(TAG, "Snap Compare result isAdded, Add it " +isAdded);
+                                Log.d(TAG, "Snap Compare result isAdded, Add it " + isAdded);
 
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
                                     compareResultList.remove(0);
@@ -2562,22 +2560,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     if (registeredMembers.getStatus().equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                            Log.d(TAG, "Snap Matched Database match Status 1 member id is " +memberId);
+                                            Log.d(TAG, "Snap Matched Database match Status 1 member id is " + memberId);
                                             memberId = getString(R.string.id) + memberId;
                                             addOfflineMember(name, id, image, new Date(), temperature);
                                             time2 = System.currentTimeMillis();
                                             showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                         }
                                     } else if (!status.equals("1")) {
-                                        Log.d(TAG, "Snap Matched Database match Status is not 1 " +memberId);
+                                        Log.d(TAG, "Snap Matched Database match Status is not 1 " + memberId);
                                         String fullName = getString(R.string.text_nopermission);
                                         showResult(compareResult, requestId, fullName, memberId, formattedSimilarityScore, false);
                                     }
                                 } else {
-                                    Log.d(TAG, "Snap Compare result database no match " +isAdded);
+                                    Log.d(TAG, "Snap Compare result database no match " + isAdded);
                                 }
                             } else {
-                                Log.d(TAG, "Snap Compare result, isAdded condition failed " +isAdded);
+                                Log.d(TAG, "Snap Compare result, isAdded condition failed " + isAdded);
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
@@ -2587,7 +2585,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 retryRecognizeDelayed(requestId);
                             }
                         } else {
-                            Log.d(TAG, "Snap Compare result Match not meeting threshold " +similarValue);
+                            Log.d(TAG, "Snap Compare result Match not meeting threshold " + similarValue);
                             runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue)); //Check for temperature if the face is not recognized
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
@@ -2646,6 +2644,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mSnackbar != null) {
             mSnackbar.dismiss();
             mSnackbar = null;
+        }
+
+        if (toastmSnackbar != null) {
+            toastmSnackbar.dismiss();
+            toastmSnackbar = null;
         }
     }
 

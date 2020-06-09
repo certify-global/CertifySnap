@@ -48,8 +48,6 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     ArrayList<String> certifyIDList=new ArrayList<>();
     int totalMemberCount;
     int count;
-    Toast toastMessage;
-
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -72,7 +70,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             long currTime = Util.getCurrentTimeLong();
             if (alarmService != null)
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
-            Util.getmemberList(this, this);
+               Util.getmemberList(this, this);
         } catch (Exception e) {
             Logger.error(LOG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
         }

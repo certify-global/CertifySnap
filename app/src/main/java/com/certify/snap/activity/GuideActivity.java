@@ -302,7 +302,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this)) {
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
                     startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
                 }
