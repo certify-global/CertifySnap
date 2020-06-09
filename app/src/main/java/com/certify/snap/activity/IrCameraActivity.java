@@ -29,6 +29,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -165,7 +166,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private View previewViewIr;
     private static boolean ConfirmationBoolean = false;
 
-    private TextView tv_display_time, tv_message, template_view, mask_message;
+    private TextView tv_display_time, tv_message, template_view, mask_message,tv_sync;
 
     Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
 
@@ -328,6 +329,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = null;
             imageqr = null;
             qr_main = null;
+            tv_sync=null;
 
         } catch (Exception e) {
             Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
@@ -768,6 +770,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             ConfigUtil.setTrackedFaceCount(this, faceHelperIr.getTrackedFaceCount());
             faceHelperIr.release();
             faceHelperIr = null;
+        }
+        if(mMessageReceiver!=null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         }
 
         FaceServer.getInstance().unInit();
@@ -1447,14 +1452,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showSnackbar(final String snackMessage) {
+        tv_sync = findViewById(R.id.tv_sync);
+        tv_sync.setTypeface(rubiklight);
         if (snackMessage.equals("start")) {
-            toastmSnackbar = Snackbar
-                    .make(snack_layout, "Syncing the members " + totalCount++ + " out of " + memberCount, Snackbar.LENGTH_LONG);
-            toastmSnackbar.show();
+          tv_sync.setText(totalCount++ + " out of " + memberCount);
         } else {
-            toastmSnackbar = Snackbar
-                    .make(snack_layout, "Members Sync completed", Snackbar.LENGTH_LONG);
-            toastmSnackbar.show();
+            tv_sync.setText("");
         }
     }
 

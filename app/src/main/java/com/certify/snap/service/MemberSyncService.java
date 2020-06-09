@@ -111,6 +111,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     // String accessId = c.getString("accessId");
 
                     certifyIDList.add(certifyId);
+                    Logger.debug("deep",""+certifyIDList.size());
                    // Toast.makeText(getApplicationContext(), "Syncing the members "+count+++" out of "+totalMemberCount, Toast.LENGTH_LONG).show();
                    // processResult(TOAST_START);
 
@@ -156,8 +157,6 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             }
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
-                Logger.debug("length ID",""+memberList.length());
-
 
                 MemberUtilData.MemberData(memberList,MemberSyncService.this);
                 if(certifyIDList.size()>0){
@@ -176,6 +175,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 }
             }
         } catch (JSONException e) {
+            Logger.error("deep onJSONObjectListenerMemberID",e.getMessage());
 
         }
     }
