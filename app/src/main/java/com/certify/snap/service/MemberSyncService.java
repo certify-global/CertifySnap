@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
+import android.widget.Toast;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
@@ -103,7 +104,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 }
                 if(certifyIDList.size()>0){
                     getMemberID(certifyIDList.get(0));
-
+                    Toast.makeText(getApplicationContext(), "Syncing the members", Toast.LENGTH_LONG).show();
                 }
 
             } else {
@@ -138,6 +139,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 MemberUtilData.MemberData(memberList,MemberSyncService.this);
                 if(certifyIDList.size()>0){
                     certifyIDList.remove(0);
+                    if (certifyIDList.isEmpty()) {
+                        Toast.makeText(getApplicationContext(), "Members Sync completed", Toast.LENGTH_LONG).show();
+                    }
                     if(certifyIDList.size()>0){
                         getMemberID(certifyIDList.get(0));
                     }

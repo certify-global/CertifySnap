@@ -534,7 +534,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                             finishAffinity();
                             stopHealthCheckService();
-
+                            stopMemberSyncService();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -1123,7 +1123,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (cameraHelper != null) {
                     cameraHelper.start();
                 }
-                //startMemberSyncService();
+                startMemberSyncService();
             } else {
                 Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 Logger.error(TAG, "onRequestPermissionsResult()", "Permission denied");
@@ -2632,14 +2632,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void startMemberSyncService() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
-                    startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
-                    Application.StartService(IrCameraActivity.this);
-                }
-            }
-        }, 500);
+        if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
+            Log.d(TAG, "Deep Ir Camera service");
+            startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
+        }
+    }
+
+    /**
+     * Method that stop the Member Sync service
+     */
+    private void stopMemberSyncService() {
+        Intent intent = new Intent(this, MemberSyncService.class);
+        stopService(intent);
     }
 }
