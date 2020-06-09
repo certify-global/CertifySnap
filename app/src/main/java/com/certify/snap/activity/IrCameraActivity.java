@@ -2636,7 +2636,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
-                    Log.d(TAG, "Deep Ir Camera service");
+                    Log.d(TAG, "Ir Camera service");
                     startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
                 }
             }

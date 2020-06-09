@@ -299,9 +299,14 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        if (!Util.isServiceRunning(MemberSyncService.class, this)) {
-            startService(new Intent(this, MemberSyncService.class));
-            Application.StartService(this);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this)) {
+                    startService(new Intent(GuideActivity.this, MemberSyncService.class));
+                    Application.StartService(GuideActivity.this);
+                }
+            }
+        }, 100);
     }
 }
