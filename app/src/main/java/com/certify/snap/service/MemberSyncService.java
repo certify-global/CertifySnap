@@ -39,7 +39,7 @@ import static android.os.SystemClock.elapsedRealtime;
 
 public class MemberSyncService extends Service implements MemberListCallback, MemberIDCallback {
     protected static final String LOG = "MemberSyncService - ";
-    private final static int BACKGROUND_INTERVAL_10_MINUTES = 10;
+    private final static int BACKGROUND_INTERVAL_10_MINUTES = 240;
     public static final int TOAST_START = 111;
     public static final int TOAST_STOP = 100;
     private AlarmManager alarmService;
