@@ -148,7 +148,12 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
 
         try {
-            if (reportInfo.isNull("responseCode")) return;
+            if (reportInfo.isNull("responseCode"))  {
+                if (certifyIDList.size() > 0) {
+                    getMemberID(certifyIDList.get(0));
+                }
+                return;
+            }
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 Logger.debug("length ID",""+memberList.length());
@@ -164,6 +169,10 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     if(certifyIDList.size()>0){
                         getMemberID(certifyIDList.get(0));
                     }
+                }
+            } else {
+                if (certifyIDList.size() > 0) {
+                    getMemberID(certifyIDList.get(0));
                 }
             }
         } catch (JSONException e) {
