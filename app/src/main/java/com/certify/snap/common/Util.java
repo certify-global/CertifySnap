@@ -225,6 +225,25 @@ public class Util {
 
     }
 
+    public static String saveAllImages(Bitmap bm, String fileName) throws IOException {//Bitmap
+        String path = Environment.getExternalStorageDirectory() + "/certifysnap/registeredface/";
+        File dirFile = new File(path);
+        if (!dirFile.exists()) {
+            dirFile.mkdir();
+        }
+        File myCaptureFile = new File(path + fileName);
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return myCaptureFile.getPath();
+
+    }
+
     public static String getnumberString(int number) {
         String numberstr = "";
         try {

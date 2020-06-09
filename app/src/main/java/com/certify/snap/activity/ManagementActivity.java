@@ -1505,18 +1505,20 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 String accountId = c.getString("accountId");
                                 String memberType = c.getString("memberType");
 
-                                String imagePath = MemberUtilData.getImagePath(faceTemplate);
+                                String imagePath = MemberUtilData.getImagePath(firstName + lastName, faceTemplate);
+
 
                                 if (statusVal){
                                    // Thread.sleep(200);
 
-                                    if (isCertifyIdExist(certifyId)) {
+                                    //if (isCertifyIdExist(certifyId)) {
                                         MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
                                         localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                                    } else {
-                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
-                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                                    }
+
+                                    //} else {
+//                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
+//                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
+//                                    }
                                     initData(true);
                                 }else {
                                     totalMemberCount--;

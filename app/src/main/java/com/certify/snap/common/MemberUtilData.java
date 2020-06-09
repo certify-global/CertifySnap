@@ -165,12 +165,13 @@ public class MemberUtilData {
         }
         return false;
     }
-    public static String getImagePath(String encodedImage) {
+    public static String getImagePath(String name, String encodedImage) {
         String imagePath = "";
         Bitmap bitmap = Util.decodeToBase64(encodedImage);
         if (bitmap != null) {
             try {
                 imagePath = Util.saveBitmapFile(bitmap, "register.jpg");
+                imagePath = Util.saveAllImages(bitmap, name + ".jpg");
             } catch (IOException e) {
                 Log.e(LOG, "Error in saving the bitmap in File");
             }
