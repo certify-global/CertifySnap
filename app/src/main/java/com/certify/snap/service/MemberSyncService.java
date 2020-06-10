@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.RequiresApi;
@@ -26,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -34,14 +34,12 @@ import static android.os.SystemClock.elapsedRealtime;
 public class MemberSyncService extends Service implements MemberListCallback, MemberIDCallback {
     protected static final String LOG = "MemberSyncService - ";
     private final static int BACKGROUND_INTERVAL_MINUTES = 240;
-    public static final int TOAST_START = 111;
-    public static final int TOAST_STOP = 100;
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
     private SharedPreferences sharedPreferences;
-    ArrayList<String> certifyIDList=new ArrayList<>();
     int totalMemberCount;
     int count;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -91,17 +89,14 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             count=1;
             if (reportInfo.isNull("responseCode")) return;
             if (reportInfo.getString("responseCode").equals("1")) {
-                certifyIDList.clear();
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 totalMemberCount = memberList.length();
                 Logger.debug("length",""+memberList.length());
 
+                MemberSyncDataModel.getInstance().setNumOfRecords(memberList.length());
                 for (int i = 0; i < memberList.length(); i++) {
                     JSONObject c = memberList.getJSONObject(i);
-                    certifyIDList.add(c.getString("id"));
-                }
-                if (certifyIDList.size() > 0) {
-                    getMemberID(certifyIDList.get(0));
+                    getMemberID(c.getString("id"));
                 }
             } else {
                 Logger.toast(this, "Something went wrong please try again");
@@ -116,8 +111,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             JSONObject obj = new JSONObject();
             obj.put("id", certifyId);
             new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                    EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
-            doSendBroadcast("start", totalMemberCount,count++);
+                    EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (Exception e) {
             Logger.error(" getMemberID()",e.getMessage());
         }
@@ -132,31 +126,17 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
         try {
             if (reportInfo.isNull("responseCode"))  {
-                if (certifyIDList.size() > 0) {
-                    getMemberID(certifyIDList.get(0));
-                }
+                onMemberIdErrorResponse(req);
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
-                MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-
-                if (certifyIDList.size() > 0) {
-                    certifyIDList.remove(0);
-                    if (certifyIDList.isEmpty()) {
-                        //doSendBroadcast("stop", totalMemberCount,0);
-                        //All data received from the API, now add to database
-                        MemberSyncDataModel.getInstance().addToDatabase(MemberSyncService.this);
-                    }
-                    if (certifyIDList.size() > 0) {
-                        Log.d("MemberSyncService", "SnapXT Get Member API for Id " + certifyIDList.get(0));
-                        getMemberID(certifyIDList.get(0));
-                    }
+                if (memberList != null) {
+                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
+                    doSendBroadcast("start", totalMemberCount, count++);
                 }
             } else {
-                if (certifyIDList.size() > 0) {
-                    getMemberID(certifyIDList.get(0));
-                }
+                onMemberIdErrorResponse(req);
             }
         } catch (JSONException e) {
 
@@ -172,5 +152,18 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         event_snackbar.putExtra("count",count);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(event_snackbar);
+    }
+
+    private void onMemberIdErrorResponse(JSONObject req) {
+        if (req != null) {
+            try {
+                String certifyId = req.getString("id");
+                if (!certifyId.isEmpty()) {
+                    getMemberID(certifyId);
+                }
+            } catch (JSONException e) {
+                Log.e("MemberSyncService", "Error in fetching the certify id from Json");
+            }
+        }
     }
 }
