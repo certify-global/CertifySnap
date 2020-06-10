@@ -1,8 +1,11 @@
 package com.certify.snap.model;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.arcsoft.imageutil.ArcSoftImageFormat;
@@ -28,6 +31,9 @@ public class MemberSyncDataModel {
     private List<RegisteredMembers> dbSyncErrorMemberList = new ArrayList<>();
     private HashMap<RegisteredMembers, Boolean> dbSyncErrorMap = new HashMap<>();  //Map to keep track for the successful addition from the errorList
     private boolean isSyncing = false;
+    private Context context;
+    private static final String SYNCING_MESSAGE = "Syncing...";
+    private static final String SYNCING_COMPLETED = "Sync completed";
 
     public static MemberSyncDataModel getInstance() {
         if (mInstance == null) {
@@ -39,7 +45,8 @@ public class MemberSyncDataModel {
     /**
      * Method for initialization
      */
-    public void init() {
+    public void init(Context ctx) {
+        this.context = ctx;
         clear();
     }
 
@@ -84,23 +91,29 @@ public class MemberSyncDataModel {
      */
     public void addToDatabase(Context context) {
         Log.d(TAG, "SnapXT Add to database, number of records: " + membersList.size());
+        doSendBroadcast(SYNCING_MESSAGE, 0, 0);
         new Thread(() -> {
                 for (int i = 0; i < membersList.size(); i++) {
+                    doSendBroadcast(SYNCING_MESSAGE, 0, 0);
                     RegisteredMembers member = membersList.get(i);
-                    //if (member.getStatus().equalsIgnoreCase("true")) {
-                    if (isMemberExistsInDb(member.getUniqueid())) {
-                        Log.d(TAG, "SnapXT Member already exist, delete and update " +i);
-                        MemberUtilData.deleteDatabaseCertifyId(member.firstname, member.getUniqueid());
-                        localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
-                                member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                member.getImage(), "sync", context, member);
-                    } else {
-                        Log.d(TAG, "SnapXT New member update " +i);
-                        localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
-                                member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                member.getImage(), "sync", context, member);
+                    if (member.getStatus().equalsIgnoreCase("true") ||
+                        member.getStatus().equalsIgnoreCase("1")) {
+                        if (isMemberExistsInDb(member.getUniqueid())) {
+                            Log.d(TAG, "SnapXT Member already exist, delete and update " +i);
+                            MemberUtilData.deleteDatabaseCertifyId(member.firstname, member.getUniqueid());
+                            localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                                    member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                                    member.getImage(), "sync", context, member);
+                        } else {
+                            Log.d(TAG, "SnapXT New member update " +i);
+                            localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                                    member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                                    member.getImage(), "sync", context, member);
+                        }
                     }
-                    //}
+                }
+                if (dbSyncErrorMemberList.isEmpty()) {
+                    doSendBroadcast(SYNCING_COMPLETED, 0, 0);
                 }
                 isSyncing = false;
         }).start();
@@ -149,13 +162,14 @@ public class MemberSyncDataModel {
                 Log.d(TAG, "SnapXT Record failed to update in db");
                 if (!dbSyncErrorMemberList.contains(member)) {
                     dbSyncErrorMemberList.add(member);
+                    Log.d(TAG, "SnapXT Error dbSyncErrorMemberList size " + dbSyncErrorMemberList.size());
                 }
             }
         } else {
             Log.d(TAG, "SnapXT Fail to process the image");
             if (!dbSyncErrorMemberList.contains(member)) {
                 dbSyncErrorMemberList.add(member);
-                Log.d(TAG, "SnapXT dbSyncErrorMemberList size " + dbSyncErrorMemberList.size());
+                Log.d(TAG, "SnapXT Error dbSyncErrorMemberList size " + dbSyncErrorMemberList.size());
             }
         }
         return result;
@@ -234,13 +248,16 @@ public class MemberSyncDataModel {
     public void syncDbErrorList(Context context) {
         if (isSyncing) return;
         if (dbSyncErrorMemberList.isEmpty()) {
-            Log.d(TAG, "All members added to db");
+            Log.d(TAG, "SnapXT Error All members added to db");
+            doSendBroadcast(SYNCING_COMPLETED, 0, 0);
             return;
         }
         dbSyncErrorMap.clear();
+        doSendBroadcast(SYNCING_MESSAGE, 0, 0);
         new Thread(() -> {
-                Log.d(TAG, "SnapXT Sync error members to db");
+                Log.d(TAG, "SnapXT Error Sync members to db, Records: " + dbSyncErrorMemberList.size());
                 for (int i = 0; i < dbSyncErrorMemberList.size(); i++) {
+                    doSendBroadcast(SYNCING_MESSAGE, 0, 0);
                     isSyncing = true;
                     RegisteredMembers member = dbSyncErrorMemberList.get(i);
                     if (isMemberExistsInDb(member.getUniqueid())) {
@@ -267,7 +284,6 @@ public class MemberSyncDataModel {
      */
     private void updateDbSyncErrorMap(RegisteredMembers member) {
         if (dbSyncErrorMemberList.isEmpty()) return;
-        Log.d(TAG, "SnapXT Error member added successfully to db");
         dbSyncErrorMap.put(member, true);
     }
 
@@ -276,7 +292,7 @@ public class MemberSyncDataModel {
      */
     private void updateDbSyncErrorList() {
         if (dbSyncErrorMemberList.isEmpty()) {
-            Log.d(TAG , "SnapXT Sync completed successfully");
+            Log.d(TAG , "SnapXT Error Sync completed successfully");
             clear();
             return;
         }
@@ -288,10 +304,21 @@ public class MemberSyncDataModel {
         }
     }
 
+    private void doSendBroadcast(String message, int memberCount, int count) {
+        Intent event_snackbar = new Intent("EVENT_SNACKBAR");
+        if (!TextUtils.isEmpty(message))
+            event_snackbar.putExtra("message",message);
+        event_snackbar.putExtra("memberCount",memberCount);
+        event_snackbar.putExtra("count",count);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(event_snackbar);
+    }
+
     /**
      * Method that clears the data model
      */
     private void clear() {
+        Log.d(TAG, "SnapXT Clear Data model");
         membersList.clear();
         dbSyncErrorMemberList.clear();
         dbSyncErrorMap.clear();

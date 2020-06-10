@@ -330,7 +330,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = null;
             imageqr = null;
             qr_main = null;
-            tv_sync=null;
 
         } catch (Exception e) {
             Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
@@ -588,6 +587,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
         mask_message = findViewById(R.id.mask_message);
         mask_message.setTypeface(rubiklight);
+        tv_sync = findViewById(R.id.tv_sync);
 
         tv_display_time = findViewById(R.id.tv_display_time);
         TextView tvVersionIr = findViewById(R.id.tv_version_ir);
@@ -1453,12 +1453,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showSnackbar(final String snackMessage) {
-        tv_sync = findViewById(R.id.tv_sync);
         tv_sync.setTypeface(rubiklight);
         if (snackMessage.equals("start")) {
-          tv_sync.setText(totalCount++ + " out of " + memberCount);
+           tv_sync.setText(totalCount++ + " out of " + memberCount);
+        } else if (snackMessage.contains("completed")) {
+           tv_sync.setText("Sync completed");
+           new Handler().postDelayed(new Runnable() {
+               @Override
+               public void run() {
+                   tv_sync.setText("");
+               }
+           }, 2 * 1000);
         } else {
-            tv_sync.setText("");
+           tv_sync.setText(snackMessage);
         }
     }
 

@@ -63,7 +63,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             long currTime = Util.getCurrentTimeLong();
             if (alarmService != null)
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
-            MemberSyncDataModel.getInstance().init();
+            MemberSyncDataModel.getInstance().init(this);
             Util.getmemberList(this, this);
         } catch (Exception e) {
             Logger.error(LOG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
@@ -144,7 +144,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 if (certifyIDList.size() > 0) {
                     certifyIDList.remove(0);
                     if (certifyIDList.isEmpty()) {
-                        doSendBroadcast("stop",totalMemberCount,0);
+                        //doSendBroadcast("stop", totalMemberCount,0);
                         //All data received from the API, now add to database
                         MemberSyncDataModel.getInstance().addToDatabase(MemberSyncService.this);
                     }
