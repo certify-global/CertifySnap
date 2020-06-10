@@ -233,14 +233,14 @@ public class InitializationActivity extends Activity {
         RegisteredMembers registeredMembers;
         List<RegisteredMembers> list = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
-             registeredMembers = list.get(0);
+            registeredMembers = list.get(0);
         }else{
-             registeredMembers = new RegisteredMembers();
+            registeredMembers = new RegisteredMembers();
         }
-        registeredMembers.setName(name);
+        registeredMembers.setFirstname(name);
         registeredMembers.setMobile(mobile);
         registeredMembers.setStatus("1");
-        registeredMembers.setExpire_time(time);
+        //registeredMembers.setExpire_time(time);
         registeredMembers.setImage(image);
         registeredMembers.setFeatures(feature);
         boolean result = registeredMembers.save();

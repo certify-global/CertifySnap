@@ -1,11 +1,23 @@
 package com.certify.snap.faceserver;
 
 
+import java.io.Serializable;
 
-public class CompareResult {
+public class CompareResult implements Serializable {
     private String userName;
     private float similar;
     private int trackId;
+    private String memberId;
+
+    public String getFacialScore() {
+        return facialScore;
+    }
+
+    public void setFacialScore(String facialScore) {
+        this.facialScore = facialScore;
+    }
+
+    private String facialScore;
 
     public String getMessage() {
         return message;
@@ -45,5 +57,25 @@ public class CompareResult {
 
     public void setTrackId(int trackId) {
         this.trackId = trackId;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    @Override
+    public String toString() {
+        return "CompareResult{" +
+                "userName='" + userName + '\'' +
+                ", similar=" + similar +
+                ", trackId=" + trackId +
+                ", memberId='" + memberId + '\'' +
+                ", facialScore='" + facialScore + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

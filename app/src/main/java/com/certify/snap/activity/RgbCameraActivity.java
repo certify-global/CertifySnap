@@ -1019,9 +1019,9 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                     registeredMemberslist = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
                                     if (registeredMemberslist.size() > 0) {
                                         RegisteredMembers registeredMembers = registeredMemberslist.get(0);
-                                        String expire_time = registeredMembers.getExpire_time();
+                                        String expire_time = registeredMembers.getExpiretime();
                                         String status = registeredMembers.getStatus();
-                                        String name = registeredMembers.getName();
+                                        String name = registeredMembers.getFirstname();
                                         String image = registeredMembers.getImage();
 
                                         Log.e("yw——超时时间和状态", "expire_time:" + expire_time + " status:" + status + Util.isDateOneBigger(expire_time, verify_time));
@@ -1105,7 +1105,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
         compareResultList.add(compareResult);
-        processHandler.postDelayed(new Runnable() {
+        /*processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(isdoor){
@@ -1121,7 +1121,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }
-        }, 20*100);
+        }, 20*100);*/
     }
 
     private void addOfflineMember(String name,String mobile,String image,Date verify_time,float temperature){

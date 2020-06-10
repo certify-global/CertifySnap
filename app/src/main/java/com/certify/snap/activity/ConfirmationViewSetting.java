@@ -25,7 +25,7 @@ import com.certify.snap.common.Util;
 
 public class ConfirmationViewSetting extends Activity {
     Typeface rubiklight;
-    TextView confirmation_screen, tv_confirm_above, tv_confirm_below;
+    TextView confirmation_screen, tv_confirm_above, tv_confirm_below,confirmation_above;
     TextInputLayout text_input_title_below, text_input_subtitle_below, text_input_title_above, text_input_subtitle_above, text_input_delay;
     private SharedPreferences sp;
     EditText edittext_title_below, edittext_subtitle_below, edittext_title_above, edittext_subtitle_above, et_screen_delay_above, et_screen_below;
@@ -62,9 +62,11 @@ public class ConfirmationViewSetting extends Activity {
             text_input_delay = findViewById(R.id.text_input_delay);
             et_screen_below = findViewById(R.id.et_screen_below);
             btn_exit = findViewById(R.id.btn_exit);
+            confirmation_above = findViewById(R.id.confirmation_above);
             confirmation_screen.setTypeface(rubiklight);
             tv_confirm_above.setTypeface(rubiklight);
             tv_confirm_below.setTypeface(rubiklight);
+            confirmation_above.setTypeface(rubiklight);
             if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true))
                 rbCaptureYesAbove.setChecked(true);
             else rbCaptureNoAbove.setChecked(true);
@@ -72,8 +74,8 @@ public class ConfirmationViewSetting extends Activity {
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
 
-            et_screen_delay_above.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "3"));
-            et_screen_below.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "3"));
+            et_screen_delay_above.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1"));
+            et_screen_below.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1"));
             edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work."));
             edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!"));
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

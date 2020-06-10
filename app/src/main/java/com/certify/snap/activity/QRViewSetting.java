@@ -8,10 +8,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
@@ -19,14 +22,21 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 public class QRViewSetting extends Activity {
-   private static String  TAG ="GuideViewSetting";
+    private static String TAG = "GuideViewSetting";
     Typeface rubiklight;
     SharedPreferences sp;
-    TextView btn_save,titles,qr_screen;
+    TextView btn_save, titles, qr_screen, tv_facial;
     private RadioGroup rfidRg;
     private RadioButton rfidYesRb;
     private RadioButton rfidNoRb;
     EditText editTextDialogTimeout;
+    RadioGroup radio_group_facial,radio_group_display;
+    RadioButton radio_yes_facial;
+    RadioButton radio_no_facial;
+    RadioButton rbguideyes,radio_yes_display,radio_no_display;
+    RadioButton rbguideno;
+    EditText editTextDialogUserInput;
+    TextView tv_display;
 
 
     @Override
@@ -38,9 +48,10 @@ public class QRViewSetting extends Activity {
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);
             RadioGroup radio_group_qr = findViewById(R.id.radio_group_qr);
-            RadioButton rbguideyes = findViewById(R.id.radio_yes_qr);
-            RadioButton rbguideno = findViewById(R.id.radio_no_qr);
+            rbguideyes = findViewById(R.id.radio_yes_qr);
+            rbguideno = findViewById(R.id.radio_no_qr);
             editTextDialogTimeout = findViewById(R.id.editTextDialogTimeout);
+            editTextDialogUserInput = findViewById(R.id.editTextDialogUserInput);
             btn_save = findViewById(R.id.btn_exit);
             qr_screen = findViewById(R.id.qr_screen);
             titles = findViewById(R.id.titles);
@@ -52,9 +63,20 @@ public class QRViewSetting extends Activity {
             rfidRg = findViewById(R.id.radio_group_rfid);
             rfidYesRb = findViewById(R.id.radio_yes_rfid);
             rfidNoRb = findViewById(R.id.radio_no_rfid);
+            radio_group_facial = findViewById(R.id.radio_group_facial);
+            radio_yes_facial = findViewById(R.id.radio_yes_facial);
+            radio_no_facial = findViewById(R.id.radio_no_facial);
+            tv_facial = findViewById(R.id.tv_facial);
+            tv_display = findViewById(R.id.tv_display);
+            radio_group_display = findViewById(R.id.radio_group_display);
+            radio_yes_display = findViewById(R.id.radio_yes_display);
+            radio_no_display = findViewById(R.id.radio_no_display);
+            tv_facial.setTypeface(rubiklight);
+            tv_display.setTypeface(rubiklight);
+
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
-
+            editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70"));
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);
@@ -67,7 +89,56 @@ public class QRViewSetting extends Activity {
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     if (checkedId == R.id.radio_yes_qr)
                         Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, true);
-                    else Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
+                    else
+                        Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
+
+                }
+            });
+            // Facial
+            if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
+                radio_yes_facial.setChecked(true);
+            } else {
+                radio_no_facial.setChecked(true);
+            }
+            radio_group_facial.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    System.out.println("Test CheckId" + checkedId);
+                    if (checkedId == R.id.radio_yes_facial) {
+                        radio_yes_facial.setChecked(true);
+                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
+                    }
+                }
+            });
+
+            if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
+                radio_yes_display.setChecked(true);
+            } else {
+                radio_no_display.setChecked(true);
+            }
+
+            radio_group_display.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.radio_yes_display) {
+                        Util.writeBoolean(sp, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, true);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
+                    }
+                }
+            });
+            radio_group_facial.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    System.out.println("Test CheckId" + checkedId);
+                    if (checkedId == R.id.radio_yes_facial) {
+                        radio_yes_facial.setChecked(true);
+                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
+                    }
                 }
             });
 
@@ -76,14 +147,15 @@ public class QRViewSetting extends Activity {
                 @Override
                 public void onClick(View v) {
                     saveRfidSettings();
-                    startActivity(new Intent(QRViewSetting.this,SettingActivity.class));
+                    startActivity(new Intent(QRViewSetting.this, SettingActivity.class));
                     Util.showToast(QRViewSetting.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
                     finish();
                 }
             });
-        }catch (Exception e){
-            Logger.error(TAG,e.toString());
+        } catch (Exception e) {
+            Logger.error(TAG, e.toString());
         }
     }
 
@@ -117,7 +189,7 @@ public class QRViewSetting extends Activity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(QRViewSetting.this,SettingActivity.class));
+        startActivity(new Intent(QRViewSetting.this, SettingActivity.class));
         finish();
     }
 }

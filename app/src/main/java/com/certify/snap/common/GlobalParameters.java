@@ -41,7 +41,7 @@ public class GlobalParameters {
     public static String Access_token = "";
     public static String channelID = "";
 
-    public static boolean livenessDetect=true;
+    public static boolean livenessDetect=false;
 
     public static final String ACTION_SHOW_NAVIGATIONBAR = "com.android.internal.policy.impl.showNavigationBar";
     public static final String ACTION_HIDE_NAVIGATIONBAR = "com.android.internal.policy.impl.hideNavigationBar";
@@ -60,6 +60,7 @@ public class GlobalParameters {
     public static final String UUID = "uuid";
     public static final String IMEI = "imei";
     public static final String ONLINE_MODE = "online_mode";
+    public static final String ONLINE_SWITCH = "online_switch";
     public static final String FIRST_RUN = "first_run";
     public static final String URL = "url";
     public static final String Thermalscan_title = "Thermalscan_title";
@@ -68,6 +69,8 @@ public class GlobalParameters {
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
     public static final String CAPTURE_SOUND = "c_m_sound";
+    public static final String MASK_DETECT = "mask_detect";
+    public static final String FACIAL_DETECT = "facial_detect";
     public static final String ALLOW_ALL = "allow_all";
     public static final String DELAY_VALUE="delay_value";
     public static final String DELAY_VALUE_CONFIRM_BELOW="delay_value_confirm";
@@ -98,7 +101,10 @@ public class GlobalParameters {
     public static final String Timeout = "timeout";
     public static final String ACCESS_ID = "access_id";
     public static final String Cloud_Activated = "cloud_activated";
-
+    public static final String FACIAL_THRESHOLD = "facial_similarity_range";
+    public static final String DISPLAY_IMAGE_CONFIRMATION = "display_image_confirmation";
+    public static final String MASK_VALUE = "mask_value";
+    public static final String FACE_SCORE = "face_score";
 
 
 }

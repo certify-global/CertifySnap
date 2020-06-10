@@ -2,6 +2,7 @@ package com.certify.snap.controller;
 
 import android.util.Log;
 
+import com.certify.snap.model.AccessControlModel;
 import com.common.pos.api.util.PosUtil;
 
 import java.util.Timer;
@@ -25,16 +26,17 @@ public class AccessCardController  {
         return mInstance;
     }
 
-    /*public void init(Activity context) {
-        mNfcAdapter = M1CardUtils.isNfcAble(context);
-    }*/
+    public void init() {
+        //mNfcAdapter = M1CardUtils.isNfcAble(context);
+        AccessControlModel.getInstance().clearData();
+    }
 
     public void setAccessControlEnabled(boolean value) {
         isAccessControlEnabled = value;
     }
 
     public boolean isAccessControlEnabled() {
-        return isAccessControlEnabled && !isAutomaticDoorAccess;
+        return isAccessControlEnabled;
     }
 
     public void setBlockAccessOnHighTemp(boolean value) {
@@ -52,7 +54,7 @@ public class AccessCardController  {
     public void unlockDoor() {
         if(!isAutomaticDoorAccess) return;
         unLockStandAloneDoor();
-        //unLockWeiganDoorController();
+        unLockWeiganDoorController();
     }
 
     public void unlockDoorOnHighTemp() {
@@ -83,6 +85,7 @@ public class AccessCardController  {
     }
 
     private void unLockStandAloneDoor() {
+        if (!isAutomaticDoorAccess) return;
         int result = PosUtil.setRelayPower(1);
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
@@ -101,6 +104,7 @@ public class AccessCardController  {
     }
 
     public void lockStandAloneDoor() {
+        if (!isAutomaticDoorAccess) return;
         if (mRelayTimer != null) mRelayTimer.cancel();
         int result = PosUtil.setRelayPower(0);
         if (result != 0) {

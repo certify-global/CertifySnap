@@ -34,11 +34,15 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.ManageMemberHelper;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.MemberSyncService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 import com.romainpiel.titanic.library.Titanic;
 import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;
@@ -64,7 +68,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     Gson gson = new Gson();
     private boolean isRunService = false;
     private SharedPreferences sharedPreferences;
-
+    private boolean onlineMode = true;
     boolean libraryExists = true;
     // Demo
     private static final String[] LIBRARIES = new String[]{
@@ -73,7 +77,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             "libarcsoft_image_util.so",
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +93,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
-        boolean onlineMode = true;
         try {
             onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
         } catch (Exception ex) {
@@ -98,10 +100,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         }
         AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
-
-        if (onlineMode) {
-            Util.activateApplication(this, this);
-        }
 
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
@@ -213,28 +211,18 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-//        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-//        Logger.debug(TAG, "start()", "Check permission start, SharedPref License activate with status:" +activateStatus);
-        if(!License.activateLicense(this)){
+        if (!License.activateLicense(this)) {
             String message = getResources().getString(R.string.active_failed);
             Logger.error(TAG, message);
-            Toast.makeText(GuideActivity.this, message, Toast.LENGTH_LONG).show();
-          //  Util.switchRgbOrIrActivity(GuideActivity.this, true);
-            finish();
-            return;
-        }
+            //TODO: alternate license activation
+            Util.openDialogactivate(this, message, "");
+        }else if (!onlineMode) {
+            startActivity(new Intent(this, IrCameraActivity.class));
 
-//        if (!activateStatus) //offline Active Engine
-//            new AsyncActiveEngine(GuideActivity.this, sharedPreferences, GuideActivity.this, Util.getSNCode()).execute();
-        else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //FaceServer.getInstance().init(GuideActivity.this);
-                    Util.switchRgbOrIrActivity(GuideActivity.this, true);
-                }
-            }, 1000);
-
+        } else {
+            //TODO: This dialog is required when the connection fails to API server
+            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+            Util.activateApplication(this, this);
         }
     }
 
@@ -253,7 +241,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Util.retrieveSetting(reportInfo, GuideActivity.this);
 
         } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" +e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
         }
 
     }
@@ -264,10 +252,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            }
             startHealthCheckService();
+            startMemberSyncService();
         } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" +e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
     }
@@ -290,13 +281,31 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      */
     private void startHealthCheckService() {
         try {
-            if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
-                startService(new Intent(this, DeviceHealthService.class));
-                Application.StartService(this);
-            }
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
+                if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
+                    startService(new Intent(this, DeviceHealthService.class));
+                    Application.StartService(this);
+                }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
+    }
+
+    private void startMemberSyncService() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
+                    startService(new Intent(GuideActivity.this, MemberSyncService.class));
+                    Application.StartService(GuideActivity.this);
+                }
+            }
+        }, 100);
     }
 }

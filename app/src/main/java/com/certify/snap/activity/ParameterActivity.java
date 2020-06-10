@@ -106,7 +106,7 @@ public class ParameterActivity extends AppCompatActivity {
         radioGroupLiving = findViewById(R.id.radio_group_living_type);
         rbLiving0 = findViewById(R.id.radio_living_0);
         rbLiving1 = findViewById(R.id.radio_living_1);
-        boolean living = sp.getBoolean(GlobalParameters.LivingType,true);
+        boolean living = sp.getBoolean(GlobalParameters.LivingType,false);
 
         if (living){
             rbLiving1.setChecked(true);

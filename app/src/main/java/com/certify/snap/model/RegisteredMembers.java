@@ -5,28 +5,40 @@ import org.litepal.crud.LitePalSupport;
 
 public class RegisteredMembers extends LitePalSupport {
 
-    String name;
-    String expire_time;
+    String firstname;
+    String lastname;
+    String expiretime;
     String status;
-    @Column(unique = true)
     String mobile;
     String image;
     String features;
+    String memberid;
+    String email;
+    String accessid;
+    String uniqueid;
 
-    public String getName() {
-        return name;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
-    public String getExpire_time() {
-        return expire_time;
+    public String getLastname() {
+        return lastname;
     }
 
-    public void setExpire_time(String expire_time) {
-        this.expire_time = expire_time;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getExpiretime() {
+        return expiretime;
+    }
+
+    public void setExpiretime(String expiretime) {
+        this.expiretime = expiretime;
     }
 
     public String getStatus() {
@@ -61,13 +73,49 @@ public class RegisteredMembers extends LitePalSupport {
         this.features = features;
     }
 
+    public String getMemberid() {
+        return memberid;
+    }
+
+    public void setMemberid(String memberid) {
+        this.memberid = memberid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAccessid() {
+        return accessid;
+    }
+
+    public void setAccessid(String accessid) {
+        this.accessid = accessid;
+    }
+
+    public String getUniqueid() {
+        return uniqueid;
+    }
+
+    public void setUniqueid(String uniqueid) {
+        this.uniqueid = uniqueid;
+    }
+
     @Override
     public String toString() {
         return "Members{" +
-                " name='" + name + '\'' +
-                ", expire_time='" + expire_time + '\'' +
+                " firstname='" + firstname + '\'' +
+                " lastname='" + lastname + '\'' +
+                ", memberid='" + memberid + '\'' +
                 ", status='" + status + '\'' +
                 ", mobile='" + mobile + '\'' +
+                ", email='" + email + '\'' +
+                ", accessid='"+ accessid +'\'' +
+                ", uniqueid='"+ uniqueid +'\'' +
                 ", image='" + image + '\'' +
                 ", feature='"+ features +'\'' +
                 '}';

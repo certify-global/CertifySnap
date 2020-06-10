@@ -2,7 +2,6 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,13 +10,12 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -34,32 +32,21 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.arcsoft.face.ActiveFileInfo;
-import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
-import com.certify.snap.BuildConfig;
+import com.certify.snap.R;
 import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.Application;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
-import com.certify.snap.R;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
-import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import org.litepal.LitePal;
 
 public class SettingActivity extends Activity implements JSONObjectCallback,SettingCallback {
 
@@ -69,7 +56,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             thermal_check_setting, scan_setting, confirmation_setting, guide_setting,qr_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting,tv_qr_setting;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting,tv_qr_setting, tv_member_management;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -119,9 +106,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
+                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
                         Util.activateApplication(SettingActivity.this, SettingActivity.this);
+
                     } else {
+                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                         stopHealthCheckService();
@@ -130,7 +119,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             });
 
         initView();
-        initOnlineModeSetting();
+        //initOnlineModeSetting();
         Application.getInstance().addActivity(this);
 
         sharedPreferences = Util.getSharedPreferences(this);
@@ -196,6 +185,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_thermal_setting = findViewById(R.id.tv_thermal_setting);
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
+        tv_member_management = findViewById(R.id.member_management_setting);
         tv_guide_setting = findViewById(R.id.tv_guide_setting);
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
         accessControl = findViewById(R.id.access_control);
@@ -212,6 +202,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_thermal_setting.setTypeface(rubiklight);
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
+        tv_member_management.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_qr_setting.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
@@ -302,6 +293,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 Intent acIntent = new Intent(SettingActivity.this, AccessControlActivity.class);
                 startActivity(acIntent);
                 break;
+            case R.id.management_setting:
+                Intent memberIntent = new Intent(SettingActivity.this, ManagementActivity.class);
+                startActivity(memberIntent);
+                break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);
                 finish();
@@ -332,6 +327,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
                                 // edit text
+                                if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())){
+                                    LitePal.deleteAll(RegisteredMembers.class);
+                                    Util.clearAllSharedPreferences(sharedPreferences);
+                                    Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                                }
                                 String url = userInput.getText().toString().trim();
                                 if (url.endsWith("/"))
                                     url = url.substring(0, url.length() - 1);
@@ -442,13 +442,35 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
+            JSONObject json1 = null;
             if (reportInfo == null) {
                 return;
             }
+            try {
+                String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
+                json1 = new JSONObject(formatedString.replace("\\", ""));
+
+            } catch (Exception e) {
+                json1 = new JSONObject(reportInfo.replace("\\", ""));
+            }
+
             Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
             startHealthCheckService();
+            if(json1.isNull("responseSubCode"))return;
+            if (json1.getString("responseSubCode").equals("104")) {
+                switch_activate.setChecked(false);
+            } else if (json1.getString("responseSubCode").equals("105")) {
+                switch_activate.setChecked(false);
+            }else if(json1.getString("responseCode").equals("1")){
+                switch_activate.setChecked(true);
+            }else if(json1.getString("responseSubCode").equals("103")){
+                switch_activate.setChecked(true);
+            }
+
+
+
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -472,7 +494,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             }
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenertemperature(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -485,7 +507,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
      */
     private void startHealthCheckService() {
         try {
-            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this)) {
+            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
                 startService(new Intent(this, DeviceHealthService.class));
                 Application.StartService(this);
             }
