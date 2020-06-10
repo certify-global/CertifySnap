@@ -29,7 +29,6 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -71,14 +70,16 @@ import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
-import com.certify.snap.common.LoggerUtil;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.QrCodeData;
-import com.certify.snap.service.MemberSyncService;
+import com.certify.snap.qrscan.BarcodeScannerProcessor;
+import com.certify.snap.qrscan.CameraSource;
+import com.certify.snap.qrscan.CameraSourcePreview;
+import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -104,10 +105,6 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.qrscan.BarcodeScanningProcessor;
-import com.certify.snap.qrscan.CameraSource;
-import com.certify.snap.qrscan.CameraSourcePreview;
-import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
@@ -2130,7 +2127,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             switch (model) {
                 case BARCODE_DETECTION:
                     Log.i(TAG, "Using Custom Image Classifier Processor");
-                    cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor((BarcodeSendData) this));
+                    cameraSource.setMachineLearningFrameProcessor(new BarcodeScannerProcessor((BarcodeSendData) this));
                     break;
                 default:
                     Log.e(TAG, "Unknown model: " + model);
