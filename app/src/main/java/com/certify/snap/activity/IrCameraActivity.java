@@ -2607,7 +2607,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "Snap Compare result Error ");
-//                        runTemperature(); // Register member photo is not there, Still find temperature
+                        runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0)); // Register member photo is not there, Still find temperature
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
                     }
