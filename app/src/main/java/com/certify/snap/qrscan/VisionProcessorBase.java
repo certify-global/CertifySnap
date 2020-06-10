@@ -28,9 +28,6 @@ import android.widget.Toast;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.camera.core.ExperimentalGetImage;
-import androidx.camera.core.ImageProxy;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskExecutors;
@@ -148,32 +145,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
                 .addOnSuccessListener(executor, results -> processLatestImage(graphicOverlay));
     }
 
-    // -----------------Code for processing live preview frame from CameraX API-----------------------
-
-    @RequiresApi(VERSION_CODES.KITKAT)
-    @ExperimentalGetImage
-    public void processImageProxy(ImageProxy image, GraphicOverlay graphicOverlay) {
-        if (isShutdown) {
-            image.close();
-            return;
-        }
-
-        Bitmap bitmap = null;
-        if (!PreferenceUtils.isCameraLiveViewportEnabled(graphicOverlay.getContext())) {
-            bitmap = BitmapUtils.getBitmap(image);
-        }
-
-        requestDetectInImage(
-                InputImage.fromMediaImage(image.getImage(), image.getImageInfo().getRotationDegrees()),
-                graphicOverlay,
-                /* originalCameraImage= */ bitmap,
-                /* shouldShowFps= */ true)
-                // When the image is from CameraX analysis use case, must call image.close() on received
-                // images when finished using them. Otherwise, new images may not be received or the camera
-                // may stall.
-                .addOnCompleteListener(results -> image.close());
-    }
-
     // -----------------Common processing logic-------------------------------------------------------
     private Task<T> requestDetectInImage(
             final InputImage image,
@@ -195,13 +166,13 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
                             // Only log inference info once per second. When frameProcessedInOneSecondInterval is
                             // equal to 1, it means this is the first frame processed during the current second.
                             if (frameProcessedInOneSecondInterval == 1) {
-                                Log.d(TAG, "Max latency is: " + maxRunMs);
-                                Log.d(TAG, "Min latency is: " + minRunMs);
-                                Log.d(TAG, "Num of Runs: " + numRuns + ", Avg latency is: " + totalRunMs / numRuns);
+//                                Log.d(TAG, "Max latency is: " + maxRunMs);
+//                                Log.d(TAG, "Min latency is: " + minRunMs);
+//                                Log.d(TAG, "Num of Runs: " + numRuns + ", Avg latency is: " + totalRunMs / numRuns);
                                 MemoryInfo mi = new MemoryInfo();
                                 activityManager.getMemoryInfo(mi);
                                 long availableMegs = mi.availMem / 0x100000L;
-                                Log.d(TAG, "Memory available in system: " + availableMegs + " MB");
+//                                Log.d(TAG, "Memory available in system: " + availableMegs + " MB");
                             }
 
                             graphicOverlay.clear();
@@ -209,10 +180,6 @@ public abstract class VisionProcessorBase<T> implements VisionImageProcessor {
                                 graphicOverlay.add(new CameraImageGraphic(graphicOverlay, originalCameraImage));
                             }
                             VisionProcessorBase.this.onSuccess(results, graphicOverlay);
-                           /* graphicOverlay.add(
-                                    new InferenceInfoGraphic(
-                                            graphicOverlay, currentLatencyMs, shouldShowFps ? framesPerSecond : null));
-                            graphicOverlay.postInvalidate();*/
                         })
                 .addOnFailureListener(
                         executor,

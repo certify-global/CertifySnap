@@ -514,7 +514,7 @@ public class CameraSource {
     private void setRotation(Camera camera, Camera.Parameters parameters, int cameraId) {
         WindowManager windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         int degrees = 0;
-        int rotation = windowManager.getDefaultDisplay().getRotation();
+        int rotation = 1;
         switch (rotation) {
             case Surface.ROTATION_0:
                 degrees = 0;

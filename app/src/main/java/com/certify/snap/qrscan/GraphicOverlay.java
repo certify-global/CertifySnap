@@ -22,7 +22,7 @@ import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.google.common.base.Preconditions;
+//import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,16 +177,7 @@ public class GraphicOverlay extends View {
         postInvalidate();
     }
 
-    /**
-     * Sets the source information of the image being processed by detectors, including size and
-     * whether it is flipped, which informs how to transform image coordinates later.
-     *
-     * @param imageWidth  the width of the image sent to ML Kit detectors
-     * @param imageHeight the height of the image sent to ML Kit detectors
-     * @param isFlipped   whether the image is flipped. Should set it to true when the image is from the
-     *                    front camera.
-     */
-    public void setImageSourceInfo(int imageWidth, int imageHeight, boolean isFlipped) {
+   /* public void setImageSourceInfo(int imageWidth, int imageHeight, boolean isFlipped) {
         Preconditions.checkState(imageWidth > 0, "image width must be positive");
         Preconditions.checkState(imageHeight > 0, "image height must be positive");
         synchronized (lock) {
@@ -196,7 +187,7 @@ public class GraphicOverlay extends View {
             needUpdateTransformation = true;
         }
         postInvalidate();
-    }
+    }*/
 
     public int getImageWidth() {
         return imageWidth;

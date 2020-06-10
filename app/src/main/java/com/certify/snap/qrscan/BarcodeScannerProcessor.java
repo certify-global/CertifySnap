@@ -49,6 +49,7 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
         //     .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
         //     .build();
         barcodeScanner = BarcodeScanning.getClient();
+        this.barcodeSendData=barcodeSendData;
     }
 
     @Override
