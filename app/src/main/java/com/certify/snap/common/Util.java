@@ -28,7 +28,7 @@ import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
@@ -42,7 +42,6 @@ import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
-import com.certify.fcm.FireBaseInstanceIDService;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
@@ -87,9 +86,6 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {

@@ -24,7 +24,14 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
+    <uses-sdk
+        tools:overrideLibrary="
+          androidx.camera.camera2, androidx.camera.core,
+          androidx.camera.view, androidx.camera.lifecycle" />
+
     <application
+        tools:replace="android:appComponentFactory"
+        android:appComponentFactory="whateverString"
         android:name=".common.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -99,7 +106,7 @@
         <service android:name=".service.UpdateService" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -123,13 +130,12 @@
             android:permission="android.permission.BIND_JOB_SERVICE" ></service>
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
-        <meta-data
+     <!--   <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-            android:value="barcode,face,ocr,ica" />
-    <!--    <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode,face,ocr,ica" />-->
-
+        <meta-data
+            android:name="com.google.mlkit.vision.DEPENDENCIES"
+            android:value="barcode,face,ocr,ica"/>
 
         <service
             android:name=".service.DeviceHealthService"

@@ -22,6 +22,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.certify.callback.BarcodeSendData;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.barcode.Barcode;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
@@ -38,8 +39,9 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
     private static final String TAG = "BarcodeProcessor";
 
     private final BarcodeScanner barcodeScanner;
+    private BarcodeSendData barcodeSendData;
 
-    public BarcodeScannerProcessor(Context context) {
+    public BarcodeScannerProcessor(Context context, BarcodeSendData barcodeSendData) {
         super(context);
         // Note that if you know which format of barcode your app is dealing with, detection will be
         // faster to specify the supported barcode formats one by one, e.g.
@@ -64,11 +66,12 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
     protected void onSuccess(
             @NonNull List<Barcode> barcodes, @NonNull GraphicOverlay graphicOverlay) {
         if (barcodes.isEmpty()) {
-            Log.v(MANUAL_TESTING_LOG, "No barcode has been detected");
+          //  Log.v(MANUAL_TESTING_LOG, "No barcode has been detected");
         }
         for (int i = 0; i < barcodes.size(); ++i) {
             Barcode barcode = barcodes.get(i);
-            graphicOverlay.add(new BarcodeGraphic(graphicOverlay, barcode));
+            barcodeSendData.onBarcodeData(barcode.getDisplayValue());
+           // graphicOverlay.add(new BarcodeGraphic(graphicOverlay, barcode));
         }
     }
 

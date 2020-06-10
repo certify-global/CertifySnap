@@ -129,7 +129,7 @@
 
 
     </LinearLayout>
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_timeout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextDialogTimeout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -146,7 +146,7 @@
             android:inputType="number"
             android:paddingLeft="05dp"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
     <TextView
         android:id="@+id/tv_facial"
         android:layout_width="match_parent"
@@ -186,7 +186,7 @@
 
     </RadioGroup>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_delay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -194,7 +194,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextDialogUserInput"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -203,7 +203,7 @@
             android:inputType="numberDecimal"
             android:paddingLeft="05dp"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
