@@ -39,12 +39,15 @@ public class ApiTest {
     @Mock
     ThermalImageUtil thermalImageUtil;
     @Mock
+    Application appContext;
+    @Mock
     Intent temperatureServiceIntent;
 
     @Test
     public void testRecordUserTemperature() throws IOException {
         HttpClient defaultHttpClient = Mockito.mock(HttpClient.class);
-
+        when(context.getApplicationContext()).thenReturn(appContext);
+        when(appContext.getTemperatureUtil()).thenReturn(thermalImageUtil);
         when(defaultHttpClient.execute(Mockito.isA(HttpUriRequest.class))).thenThrow(new java.net.SocketException("invalid address"));
 //        Util.recordUserTemperature(null, context, "37.0", null, null, null, false);
         //Assert.assertTrue();
@@ -57,7 +60,6 @@ public class ApiTest {
         ManageMemberHelper.GetMemberListResponse memberList = new ManageMemberHelper(accessToken, "A040980P02800254").getMemberList();
 //        System.out.println(memberList);
         Assert.assertTrue(memberList.responseCode == 1);
-
     }
     @Test
     public void testGetMemberById() throws IOException {

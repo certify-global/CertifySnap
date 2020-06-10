@@ -28,7 +28,6 @@ import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.BuildConfig;
 import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
