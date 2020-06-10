@@ -5,6 +5,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -50,6 +53,7 @@ import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.service.AccessTokenJobService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -78,15 +82,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
     private static String accessId = "";
+    private static long timeInMillis;
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -100,7 +107,7 @@ public class Util {
         return sharedPreferences;
     }
 
-    public static  void clearAllSharedPreferences(SharedPreferences sp){
+    public static void clearAllSharedPreferences(SharedPreferences sp) {
         SharedPreferences.Editor edit = sp.edit();
         edit.clear().commit();
     }
@@ -342,6 +349,7 @@ public class Util {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        timeInMillis = dt1.getTime() - 60*60*1000;
         if (dt1.getTime() > dt2.getTime()) {
             isBigger = true;
         } else if (dt1.getTime() < dt2.getTime()) {
@@ -441,11 +449,17 @@ public class Util {
         return "";
     }
 
-    public static String getUTCDate() {
+    public static String getUTCDate(String str) {
         try {
             final SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            f.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return f.format(new Date());
+            if (str.isEmpty()) {
+                f.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return f.format(new Date());
+            } else {
+                Date localTime = new Date(str);
+                f.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return f.format(localTime);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
@@ -509,13 +523,31 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             //  obj.put("DeviceSN", Util.getSerialNumber());
-
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GenerateToken, context).execute();
+
+            String expire_time = sharedPreferences.getString(GlobalParameters.EXPIRE_TIME, "");
+            if (!expire_time.isEmpty() && expire_time != null) {
+                String expireTime = getUTCDate(expire_time);
+                String currentTime = currentDate();
+                if (isDateOneBigger(expireTime, currentTime)) {
+                    scheduleJobAccessToken(context);
+                }
+            }
 
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
 
         }
+    }
+
+    private static void scheduleJobAccessToken(Context context) {
+        ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
+        JobInfo jobInfo = new JobInfo.Builder(1, componentName)
+                .setRequiresCharging(true)
+                .setPeriodic(timeInMillis).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setPersisted(true).build();
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.schedule(jobInfo);
     }
 
     public static void getSettings(SettingCallback callback, Context context) {
@@ -921,7 +953,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("lastUpdateDateTime", Util.getUTCDate());
+            obj.put("lastUpdateDateTime", Util.getUTCDate(""));
             obj.put("deviceSN", Util.getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
@@ -1192,7 +1224,9 @@ public class Util {
                 String access_token = json1.getString("access_token");
                 String token_type = json1.getString("token_type");
                 String institutionId = json1.getString("InstitutionID");
+                String expire_time = json1.getString(".expires");
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
+                Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.getSettings((SettingCallback) context, context);
@@ -1428,6 +1462,13 @@ public class Util {
         } else {
             return str != null && str.matches("[+-]?\\d*(\\.\\d+)?");
         }
+    }
+
+    public static String currentDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date curDate = new Date(System.currentTimeMillis());
+        String currentDate = formatter.format(curDate);
+        return currentDate;
     }
 
 }

@@ -53,6 +53,7 @@ public class GlobalParameters {
     public static final String IMAGE_ICON = "image";
     public static final String IMAGE_ICON_API = "image_api";
     public static final String ACCESS_TOKEN = "access_token";
+    public static final String EXPIRE_TIME = "expire_time";
     public static final String TOKEN_TYPE = "token_type";
     public static final String INSTITUTION_ID = "institutionID";
     public static final String DEVICE_PASSWORD = "device_password";
