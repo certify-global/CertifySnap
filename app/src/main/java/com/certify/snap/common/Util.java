@@ -42,6 +42,7 @@ import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.fcm.FireBaseInstanceIDService;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
@@ -56,6 +57,7 @@ import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONObject;
@@ -762,6 +764,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
+            obj.put("pushAuthToken", FirebaseInstanceId.getInstance().getToken());
 
 
         } catch (Exception e) {
