@@ -101,7 +101,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     // implementation 'com.tencent.bugly:crashreport:latest.release'
-    api project(path: ':library')
+   // api project(path: ':library')
     //  api project(path: ':myokhttp')
     implementation files('libs/core-3.1.0.jar')
     implementation files('libs/telpo_api.jar')

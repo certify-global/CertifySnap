@@ -43,8 +43,6 @@ import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
-import com.romainpiel.titanic.library.Titanic;
-import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;
 
 import org.json.JSONObject;
@@ -61,8 +59,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private ImageView imgPic;
     private Animation myAnimation;
     private FaceEngine faceEngine = new FaceEngine();
-    private Titanic titanic;
-    private TitanicTextView TitanicTextView;
     private Novate mnovate;
     HashMap<String, String> map = new HashMap<String, String>();
     Gson gson = new Gson();
@@ -125,8 +121,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (titanic != null) titanic.cancel();
-
         try {
             FaceServer.getInstance().unInit();
         } catch (Exception e) {

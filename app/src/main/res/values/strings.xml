@@ -217,7 +217,8 @@
     <string name="tv_scan_setting">Scan View Settings</string>
     <string name="capture_images">Capture images of Users with Temperature above Threshold</string>
     <string name="Capture_all">Capture images of all Users</string>
-    <string name="enable_sound">Enable sound</string>
+    <string name="enable_sound">Enable sound on normal temperature</string>
+    <string name="enable_sound_high">Enable sound on temperature above threshold</string>
     <string name="enable_mask">Enable Mask Detection</string>
     <string name="enable_facial">Enable Facial Recognition</string>
     <string name="screen_delay">Screen display time (seconds)</string>

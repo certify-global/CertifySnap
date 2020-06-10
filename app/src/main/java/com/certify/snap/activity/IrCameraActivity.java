@@ -1974,10 +1974,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
-                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH, false)) {
                     if (aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "high", soundPool);
-                    } else {
+                    }
+                }
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                    if (!aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
                 }
