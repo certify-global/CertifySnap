@@ -619,18 +619,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes attributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
-
-            soundPool = new SoundPool.Builder()
-                    .setAudioAttributes(attributes)
-                    .build();
-        } else {
-            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        }
+        initSound();
     }
 
     private boolean checkPermissions(String[] neededPermissions) {
@@ -2641,6 +2630,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
                 startIrCamera();
+                if (soundPool == null) {
+                    initSound(); //when access card is recognized, onPause is getting called and resetting the sound
+                }
                 return;
             }
             showSnackBarMessage(getString(R.string.access_denied));
@@ -2649,6 +2641,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Util.setAccessId(mNfcIdString);
         showSnackBarMessage(getString(R.string.access_granted));
         startIrCamera();
+        if (soundPool == null) {
+            initSound(); //when access card is recognized, onPause is getting called and resetting the sound
+        }
     }
 
     private void showSnackBarMessage(String message) {
@@ -2685,6 +2680,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Log.d(TAG, "Search face using RGB Image");
                 searchFace(faceFeature, requestId, rgb, ir);
             }
+        }
+    }
+
+    private void initSound(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(attributes)
+                    .build();
+        } else {
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         }
     }
 
