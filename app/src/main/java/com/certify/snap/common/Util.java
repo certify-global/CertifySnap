@@ -50,6 +50,7 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
@@ -681,7 +682,18 @@ public class Util {
             }
 
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-            if (qrCodeData != null) {
+            RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+
+
+            if(rfidScanMatchedMember != null){
+                obj.put("id", rfidScanMatchedMember.getUniqueid());
+                obj.put("accessId", rfidScanMatchedMember.getAccessid());
+                obj.put("firstName", rfidScanMatchedMember.getFirstname());
+                obj.put("lastName", rfidScanMatchedMember.getLastname());
+                obj.put("memberId", rfidScanMatchedMember.getMemberid());
+                obj.put("trqStatus", "");// Send this empty if not Qr
+            }
+            else if (qrCodeData != null) {
                 obj.put("id", qrCodeData.getUniqueId());
                 obj.put("accessId", qrCodeData.getAccessId());
                 obj.put("firstName", qrCodeData.getFirstName());
