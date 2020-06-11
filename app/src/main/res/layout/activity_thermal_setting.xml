@@ -63,12 +63,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edittext_title"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="100dp"
             android:hint="@string/enter_title"
             android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"
-            android:singleLine="true"
-            android:maxLength="25"/>
+            android:paddingLeft="05dp"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
