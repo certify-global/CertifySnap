@@ -264,12 +264,13 @@
     <string name="tv_qr_validating">Validating QR Code</string>
     <string name="tv_bar_validating">Validating Bar Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>
+    <string name="enable_anonymous">Enable Anonymous QR Code / Bar Code</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
     <string name="grant_access">Access granted</string>
     <string name="device_not_register">  is not registered on your certify.me account. Please make sure the device is connected to Internet and device is added to your cloud account under Devices.\n
    \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="invalid_qr">Invalid QRCode</string>
-    <string name="timeout">Timeout in seconds</string>
+    <string name="timeout">Sceen timeout(seconds) for RFID and CODE Scan</string>
     <string name="device_inactive">is not active on the your certify.me account. Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
     \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="onlinemode_nointernet">Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
