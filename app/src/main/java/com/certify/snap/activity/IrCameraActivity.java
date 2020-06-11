@@ -421,7 +421,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = findViewById(R.id.tv_scan);
             img_qr = findViewById(R.id.img_qr);
             qr_main = findViewById(R.id.qr_main);
-            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) && sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+            if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
             } else {
                 tv_scan.setText(R.string.tv_qr_scan);
@@ -442,7 +442,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             livePreviewActivity = this;
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
-            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) {
+            if ((sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) || (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) == true) ) {
                 //Move the logo to the top
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);

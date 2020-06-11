@@ -172,7 +172,6 @@ public class QRViewSetting extends Activity {
         radio_group_anonymous.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                System.out.println("Test CheckId" + checkedId);
                 if (checkedId == R.id.radio_yes_anonymous) {
                     rAnonymousYesRb.setChecked(true);
                     Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, true);
