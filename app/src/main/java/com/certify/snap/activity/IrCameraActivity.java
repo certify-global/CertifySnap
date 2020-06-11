@@ -1997,6 +1997,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             ConfirmationBoolean = true;
                             MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                             finish();
+                            data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
 
                             ShowLauncherView();
