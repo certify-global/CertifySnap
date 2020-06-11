@@ -43,7 +43,6 @@ public class MemberSyncDataModel {
     private static final String SYNCING_MESSAGE = "Syncing...";
     private static final String SYNCING_COMPLETED = "Sync completed";
     private int NUM_OF_RECORDS = 0;
-    private CompositeDisposable disposable = new CompositeDisposable();
 
     public static MemberSyncDataModel getInstance() {
         if (mInstance == null) {
@@ -96,9 +95,11 @@ public class MemberSyncDataModel {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<RegisteredMembers>() {
+                    Disposable addMemberDisposable;
+
                     @Override
                     public void onSubscribe(Disposable d) {
-                        disposable.add(d);
+                        addMemberDisposable = d;
                     }
 
                     @Override
@@ -112,7 +113,7 @@ public class MemberSyncDataModel {
                         if (membersList.size() == NUM_OF_RECORDS) {
                             addToDatabase(context);
                         }
-                        disposable.remove(disposable);
+                        addMemberDisposable.dispose();
                     }
 
                     @Override
@@ -372,6 +373,5 @@ public class MemberSyncDataModel {
         membersList.clear();
         dbSyncErrorMemberList.clear();
         dbSyncErrorMap.clear();
-        disposable.clear();
     }
 }
