@@ -38,7 +38,7 @@ android {
         versionCode = gitVersionCode
         versionName = gitVersionName
         versionNameSuffix ""
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         testOptions.unitTests.includeAndroidResources = true
         ndk {
@@ -72,9 +72,6 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
-    testOptions {
-        unitTests.includeAndroidResources = true
-    }
 }
 android.applicationVariants.all { variant ->
     def buildType = variant.buildType.buildType.name
@@ -103,8 +100,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
-    // implementation 'com.tencent.bugly:crashreport:latest.release'
-//    api project(path: ':library')
     //  api project(path: ':myokhttp')
     implementation files('libs/core-3.1.0.jar')
     implementation files('libs/telpo_api.jar')

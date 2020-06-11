@@ -83,7 +83,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
              if(bitmap!=null){
                  holder.image.setImageBitmap(bitmap);
              }else{
-                 holder.image.setBackgroundResource(R.drawable.face_title);
+                 //holder.image.setBackgroundResource(R.drawable.face_title);
+                 holder.image.setImageResource(R.drawable.face_title);
             }
 /*
             Glide.with(mcontext).asBitmap()

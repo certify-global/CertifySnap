@@ -29,6 +29,9 @@ import android.os.Message;
 import android.os.RemoteException;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import com.certify.snap.BuildConfig;
+import com.certify.snap.qrscan.CameraSource;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -68,7 +71,6 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
-import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
@@ -77,7 +79,6 @@ import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.qrscan.BarcodeScannerProcessor;
-import com.certify.snap.qrscan.CameraSource;
 import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.view.MyGridLayoutManager;
@@ -262,7 +263,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
-    private CameraSource cameraSource = null;
+    public CameraSource cameraSource = null;
     public static CameraSourcePreview preview;
     public static GraphicOverlay graphicOverlay;
     public static IrCameraActivity livePreviewActivity;
@@ -418,7 +419,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = findViewById(R.id.tv_scan);
             img_qr = findViewById(R.id.img_qr);
             qr_main = findViewById(R.id.qr_main);
-            tv_scan.setText(R.string.tv_qr_scan);
+            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) && sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+                tv_scan.setText(R.string.tv_qr_bar_scan);
+            } else {
+                tv_scan.setText(R.string.tv_qr_scan);
+            }
             tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             tv_scan.setTypeface(rubiklight);
@@ -1971,10 +1976,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
-                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH, false)) {
                     if (aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "high", soundPool);
-                    } else {
+                    }
+                }
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                    if (!aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
                 }

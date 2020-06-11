@@ -38,6 +38,8 @@ import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 import com.tamic.novate.Novate;
 
 import org.json.JSONObject;

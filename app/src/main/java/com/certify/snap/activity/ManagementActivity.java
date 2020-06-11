@@ -168,6 +168,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().equals("\n")){
+                    msearch.setSingleLine(true);
+                } else {
+                    msearch.setSingleLine(false);
+                }
 
             }
 
@@ -178,6 +183,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 }
                 searchtext = s.toString();
                 if (!TextUtils.isEmpty(searchtext)) mhandler.postDelayed(searchRun, 1000);
+
+                if (TextUtils.isEmpty(searchtext) && searchtext != null) {
+                    refresh();
+                   Util.hideSoftKeyboard(ManagementActivity.this);
+                }
             }
         });
 

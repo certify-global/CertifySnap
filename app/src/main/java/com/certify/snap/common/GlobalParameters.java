@@ -70,6 +70,7 @@ public class GlobalParameters {
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
     public static final String CAPTURE_SOUND = "c_m_sound";
+    public static final String CAPTURE_SOUND_HIGH = "c_sound_high";
     public static final String MASK_DETECT = "mask_detect";
     public static final String FACIAL_DETECT = "facial_detect";
     public static final String ALLOW_ALL = "allow_all";
@@ -106,6 +107,7 @@ public class GlobalParameters {
     public static final String DISPLAY_IMAGE_CONFIRMATION = "display_image_confirmation";
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
+    public static final String ANONYMOUS_ENABLE = "anonymous_enable";
 
 
 }

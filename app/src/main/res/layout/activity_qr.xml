@@ -1,60 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:orientation="horizontal"
+        android:background="@color/bg_green"
         android:gravity="center_vertical"
-        android:background="@color/bg_green">
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="5dp"
             android:background="@mipmap/back"
-            android:onClick="onParamterback"
-            />
+            android:onClick="onParamterback" />
 
         <TextView
             android:id="@+id/titles"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:gravity="left|center"
+            android:onClick="onParamterback"
             android:text="@string/identification_setting"
             android:textColor="#ffffff"
-            android:textSize="22sp"
-            android:layout_marginLeft="10dp"
-            android:onClick="onParamterback" />
+            android:textSize="22sp" />
+
         <TextView
             android:id="@+id/btn_exit"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginRight="10dp"
             android:gravity="right|center"
+            android:onClick="onclick"
             android:text="@string/save"
             android:textColor="#ffffff"
-            android:textSize="22sp"
-            android:layout_marginRight="10dp"
-            android:onClick="onclick"/>
+            android:textSize="22sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:orientation="vertical"
-        android:paddingTop="20dp"
-        android:layout_marginLeft="10dp">
+        android:paddingTop="20dp">
+
         <TextView
             android:id="@+id/qr_screen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enable_qr"
             android:textColor="@color/black"
-            android:textSize="@dimen/margin_20"/>
+            android:textSize="@dimen/margin_20" />
+
         <RadioGroup
             android:id="@+id/radio_group_qr"
             android:layout_width="match_parent"
@@ -67,8 +69,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_30"
-                android:textColor="@color/black"
                 android:text="@string/living_type_1"
+                android:textColor="@color/black"
                 android:textSize="@dimen/font_14"
                 android:theme="@style/MyCheckBox" />
 
@@ -76,9 +78,9 @@
                 android:id="@+id/radio_no_qr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
                 android:textColor="@color/black"
                 android:textSize="@dimen/font_14"
-                android:text="@string/living_type_0"
                 android:theme="@style/MyCheckBox" />
 
         </RadioGroup>
@@ -87,16 +89,64 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:orientation="vertical"
-        android:paddingTop="20dp"
-        android:layout_marginLeft="10dp">
+        android:paddingTop="20dp">
+
+        <TextView
+            android:id="@+id/anonymous_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enable_anonymous"
+            android:textColor="@color/black"
+            android:textSize="@dimen/margin_20" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_anonymous"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_10"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_yes_anonymous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:checked="false"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/radio_no_anonymous"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        android:paddingTop="20dp">
+
         <TextView
             android:id="@+id/rfid_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enable_rfid"
             android:textColor="@color/black"
-            android:textSize="@dimen/margin_20"/>
+            android:textSize="@dimen/margin_20" />
 
         <RadioGroup
             android:id="@+id/radio_group_rfid"
@@ -110,43 +160,45 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_30"
-                android:textColor="@color/black"
-                android:text="@string/living_type_1"
-                android:textSize="@dimen/font_14"
                 android:checked="false"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton
                 android:id="@+id/radio_no_rfid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
                 android:textColor="@color/black"
                 android:textSize="@dimen/font_14"
-                android:text="@string/living_type_0"
                 android:theme="@style/MyCheckBox" />
 
         </RadioGroup>
 
 
     </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_timeout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextDialogTimeout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/timeout"
             android:background="@drawable/edittextbackground"
+            android:hint="@string/timeout"
             android:inputType="number"
-            android:paddingLeft="05dp"/>
+            android:paddingLeft="05dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
     <TextView
         android:id="@+id/tv_facial"
         android:layout_width="match_parent"
@@ -190,20 +242,21 @@
         android:id="@+id/text_input_delay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextDialogUserInput"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="@string/facial_threshold"
             android:background="@drawable/edittextbackground"
+            android:hint="@string/facial_threshold"
             android:inputType="numberDecimal"
-            android:paddingLeft="05dp"/>
+            android:paddingLeft="05dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
@@ -212,7 +265,7 @@
         android:layout_marginTop="@dimen/margin_15"
         android:text="@string/display"
         android:textColor="@color/black"
-        android:textSize="@dimen/margin_20"/>
+        android:textSize="@dimen/margin_20" />
 
     <RadioGroup
         android:id="@+id/radio_group_display"
