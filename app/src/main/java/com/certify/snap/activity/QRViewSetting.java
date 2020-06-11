@@ -5,16 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
+import androidx.annotation.Nullable;
+
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;

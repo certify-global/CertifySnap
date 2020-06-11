@@ -1,6 +1,6 @@
 package com.tsy.sdk.myokhttp.download_mgr;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.tsy.sdk.myokhttp.MyOkHttp;

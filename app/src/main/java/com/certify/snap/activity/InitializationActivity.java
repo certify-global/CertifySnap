@@ -358,7 +358,7 @@ public class InitializationActivity extends Activity {
     }
 
     public void clear(View v) {
-        android.support.v7.app.AlertDialog dialog = new android.support.v7.app.AlertDialog.Builder(this)
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle(R.string.notification)
                 .setMessage(R.string.confirm_delete)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

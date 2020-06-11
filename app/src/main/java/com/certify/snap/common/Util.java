@@ -28,7 +28,7 @@ import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.Log;
@@ -57,6 +57,7 @@ import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONObject;
@@ -86,9 +87,6 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
@@ -774,6 +772,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
+            obj.put("pushAuthToken", FirebaseInstanceId.getInstance().getToken());
 
 
         } catch (Exception e) {
