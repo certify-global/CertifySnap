@@ -78,6 +78,7 @@ public class QRViewSetting extends Activity {
             tv_display.setTypeface(rubiklight);
             rAnonymousYesRb = findViewById(R.id.radio_yes_anonymous);
             rAnonymousNoRb = findViewById(R.id.radio_no_anonymous);
+            radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
 
 
 
@@ -150,7 +151,7 @@ public class QRViewSetting extends Activity {
                 }
             });
 
-
+            btn_save = findViewById(R.id.btn_exit);
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

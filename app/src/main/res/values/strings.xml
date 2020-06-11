@@ -261,6 +261,7 @@
     <string name="identification_setting">Identification Settings</string>
     <string name="enable_qr">Enable QRCode Scanner</string>
     <string name="tv_qr_scan">Scan Your QR Code</string>
+    <string name="tv_qr_bar_scan">Scan Your QR/Bar Code</string>
     <string name="tv_qr_validating">Validating QR Code</string>
     <string name="tv_bar_validating">Validating Bar Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>

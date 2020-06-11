@@ -421,7 +421,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = findViewById(R.id.tv_scan);
             img_qr = findViewById(R.id.img_qr);
             qr_main = findViewById(R.id.qr_main);
-            tv_scan.setText(R.string.tv_qr_scan);
+            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) && sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+                tv_scan.setText(R.string.tv_qr_bar_scan);
+            } else {
+                tv_scan.setText(R.string.tv_qr_scan);
+            }
             tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             tv_scan.setTypeface(rubiklight);
