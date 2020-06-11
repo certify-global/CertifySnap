@@ -648,23 +648,25 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent != null)
-            mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        if (mTag != null) {
-            byte[] ID = new byte[20];
-            ID = mTag.getId();
-            String UID = Util.bytesToHexString(ID);
-            if (UID == null) {
-                Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
-                return;
+        if (intent != null) {
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
+                    NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+                mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                if (mTag != null) {
+                    byte[] ID = new byte[20];
+                    ID = mTag.getId();
+                    String UID = Util.bytesToHexString(ID);
+                    if (UID == null) {
+                        Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                    mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
+                    onRfidScan(mNfcIdString);
+                    return;
+                }
+                showSnackBarMessage(getString(R.string.rfid_card_error));
             }
-            mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
-
-            onRfidScan(mNfcIdString);
-            return;
         }
-        showSnackBarMessage(getString(R.string.rfid_card_error));
     }
 
     @Override
