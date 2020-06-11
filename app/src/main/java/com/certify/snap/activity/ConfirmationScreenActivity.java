@@ -129,7 +129,7 @@ public class ConfirmationScreenActivity extends Activity {
     }
 
     private void onAccessCardMatch() {
-        RegisteredMembers matchedMember = AccessControlModel.getInstance().getScannedMatchedMember();
+        RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
         if (matchedMember != null) {
             Glide.with(ConfirmationScreenActivity.this)
                     .load(matchedMember.getImage())
