@@ -2640,6 +2640,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             showSnackBarMessage(getString(R.string.access_denied));
             return;
         }
+        AccessCardController.getInstance().setAccessCardId(cardId);
         Util.setAccessId(mNfcIdString);
         showSnackBarMessage(getString(R.string.access_granted));
         startIrCamera();
