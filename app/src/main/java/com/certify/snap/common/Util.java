@@ -1098,36 +1098,33 @@ public class Util {
                 JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
                 JSONObject jsonValueAccessControl = jsonValue.getJSONObject("AccessControl");
                 //Homeview
-                String settingVersion = responseData.getString("settingVersion");
-                String deviceMasterCode = responseData.getString("deviceMasterCode");
-                String homeLogo = jsonValueHome.getString("logo");
+                String settingVersion = responseData.isNull("settingVersion") ? "":responseData.getString("settingVersion");
+                String deviceMasterCode = responseData.isNull("deviceMasterCode") ? "":responseData.getString("deviceMasterCode");
+                String homeLogo = jsonValueHome.isNull("logo") ? "":jsonValueHome.getString("logo");
                 String enableThermal = jsonValueHome.getString("enableThermalCheck");
-                String homeLine1 = jsonValueHome.getString("line1");
-                String homeLine2 = jsonValueHome.getString("line2");
+                String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN": jsonValueHome.getString("line1");
+                String homeLine2 = jsonValueHome.isNull("line2") ? "" :jsonValueHome.getString("line2");
 
                 Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
                 Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
                 Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
-                Log.d("mastercode", deviceMasterCode);
+
 
                 //Scan View
 
-                String displayTemperatureDetail = jsonValueScan.getString("displayTemperatureDetail");
-                String captureUserImageAboveThreshold = jsonValueScan.getString("captureUserImageAboveThreshold");
-                String captureAllUsersImage = jsonValueScan.getString("captureAllUsersImage");
-                String enableSoundOnHighTemperature = jsonValueScan.getString("enableSoundOnHighTemperature");
-                String enableSoundOnNormalTemperature = jsonValueScan.getString("enableSoundOnNormalTemperature");
-                String viewDelay = jsonValueScan.getString("viewDelay");
-                String tempval = jsonValueScan.getString("temperatureThreshold");
-                String temperatureFormat = jsonValueScan.getString("temperatureFormat");
-                String allowlowtemperaturescanning = jsonValueScan.getString("allowLowTemperatureScanning");
-                String lowtemperatureThreshold = jsonValueScan.getString("lowTemperatureThreshold");
-                String enableMaskDetection = "";
-                if (jsonValueScan.has("enableMaskDetection")) {
-                    enableMaskDetection = jsonValueScan.getString("enableMaskDetection");
-                }
+                String displayTemperatureDetail = jsonValueScan.isNull("displayTemperatureDetail") ? "1":jsonValueScan.getString("displayTemperatureDetail");
+                String captureUserImageAboveThreshold = jsonValueScan.isNull("captureUserImageAboveThreshold") ? "1" :jsonValueScan.getString("captureUserImageAboveThreshold");
+                String captureAllUsersImage = jsonValueScan.isNull("captureAllUsersImage") ? "0": jsonValueScan.getString("captureAllUsersImage");
+                String enableSoundOnHighTemperature = jsonValueScan.isNull("enableSoundOnHighTemperature") ? "0": jsonValueScan.getString("enableSoundOnHighTemperature");
+                String enableSoundOnNormalTemperature = jsonValueScan.isNull("enableSoundOnNormalTemperature") ? "0": jsonValueScan.getString("enableSoundOnNormalTemperature");
+                String viewDelay = jsonValueScan.isNull("viewDelay") ? "3": jsonValueScan.getString("viewDelay");
+                String tempval = jsonValueScan.isNull("temperatureThreshold") ? "100.4" :jsonValueScan.getString("temperatureThreshold");
+                String temperatureFormat =jsonValueScan.isNull("temperatureFormat") ? "F": jsonValueScan.getString("temperatureFormat");
+                String allowlowtemperaturescanning =jsonValueScan.isNull("allowLowTemperatureScanning") ? "0": jsonValueScan.getString("allowLowTemperatureScanning");
+                String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" :jsonValueScan.getString("lowTemperatureThreshold");
+                String enableMaskDetection =  jsonValueScan.isNull("enableMaskDetection") ? "0" :jsonValueScan.getString("enableMaskDetection");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -1142,14 +1139,14 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
 
                 //ConfirmationView
-                String enableConfirmationScreen = jsonValueConfirm.getString("enableConfirmationScreen");
-                String normalViewLine1 = jsonValueConfirm.getString("normalViewLine1");
-                String normalViewLine2 = jsonValueConfirm.getString("normalViewLine2");
-                String aboveThresholdViewLine1 = jsonValueConfirm.getString("aboveThresholdViewLine1");
-                String temperatureAboveThreshold2 = jsonValueConfirm.getString("temperatureAboveThreshold2");
-                String confirmationviewDelay = jsonValueConfirm.getString("viewDelay");
-                String enableConfirmationScreenAboveThreshold = jsonValueConfirm.getString("enableConfirmationScreenAboveThreshold");
-                String viewDelayAboveThreshold = jsonValueConfirm.getString("viewDelayAboveThreshold");
+                String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1": jsonValueConfirm.getString("enableConfirmationScreen");
+                String normalViewLine1 = jsonValueConfirm.isNull("normalViewLine1") ? "Have a nice day" :jsonValueConfirm.getString("normalViewLine1");
+                String normalViewLine2 = jsonValueConfirm.isNull("normalViewLine2") ? " ":jsonValueConfirm.getString("normalViewLine2");
+                String aboveThresholdViewLine1 = jsonValueConfirm.isNull("aboveThresholdViewLine1") ? "Please contact your supervisor before starting any work.":jsonValueConfirm.getString("aboveThresholdViewLine1");
+                String temperatureAboveThreshold2 = jsonValueConfirm.isNull("temperatureAboveThreshold2") ? "": jsonValueConfirm.getString("temperatureAboveThreshold2");
+                String confirmationviewDelay =jsonValueConfirm.isNull("viewDelay") ? "1":jsonValueConfirm.getString("viewDelay");
+                String enableConfirmationScreenAboveThreshold = jsonValueConfirm.isNull("enableConfirmationScreenAboveThreshold") ? "1":jsonValueConfirm.getString("enableConfirmationScreenAboveThreshold");
+                String viewDelayAboveThreshold = jsonValueConfirm.isNull("viewDelayAboveThreshold") ? "1" :jsonValueConfirm.getString("viewDelayAboveThreshold");
 //todo in api
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, enableConfirmationScreen.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, enableConfirmationScreenAboveThreshold.equals("1"));
@@ -1162,10 +1159,10 @@ public class Util {
                 // Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
 
                 //GuideMessages
-                String enableGuidMessages = jsonValueGuide.getString("enableGuideMessages");
-                String message1 = jsonValueGuide.getString("message1");
-                String message2 = jsonValueGuide.getString("message2");
-                String message3 = jsonValueGuide.getString("message3");
+                String enableGuidMessages = jsonValueGuide.isNull("enableGuideMessages") ? "1":jsonValueGuide.getString("enableGuideMessages");
+                String message1 = jsonValueGuide.isNull("message1")? "Please center your face to the screen.":jsonValueGuide.getString("message1");
+                String message2 = jsonValueGuide.isNull("message2") ? "Move closer and center your face.":jsonValueGuide.getString("message2");
+                String message3 = jsonValueGuide.isNull("message3") ? "Please wait, preparing to scan.":jsonValueGuide.getString("message3");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, enableGuidMessages.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);
@@ -1173,13 +1170,13 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
 
                 //Identification setting
-                String enableQRCodeScanner = jsonValueIdentification.getString("enableQRCodeScanner");
-                String enableRFIDScanner = jsonValueIdentification.getString("enableRFIDScanner");
-                String identificationTimeout = jsonValueIdentification.getString("identificationTimeout");
-                String enableFacialRecognition = jsonValueIdentification.getString("enableFacialRecognition");
-                String facialThreshold = jsonValueIdentification.getString("facialThreshold");
-                String enableConfirmationNameAndImage = jsonValueIdentification.getString("enableConfirmationNameAndImage");
-                String enableAnonymousQRCode = jsonValueIdentification.getString("enableAnonymousQRCode");
+                String enableQRCodeScanner = jsonValueIdentification.isNull("enableQRCodeScanner") ? "0":jsonValueIdentification.getString("enableQRCodeScanner");
+                String enableRFIDScanner = jsonValueIdentification.isNull("enableRFIDScanner") ? "0":jsonValueIdentification.getString("enableRFIDScanner");
+                String identificationTimeout =jsonValueIdentification.isNull("identificationTimeout") ? "5" : jsonValueIdentification.getString("identificationTimeout");
+                String enableFacialRecognition =  jsonValueIdentification.isNull("enableFacialRecognition") ? "0":jsonValueIdentification.getString("enableFacialRecognition");
+                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? "70":jsonValueIdentification.getString("facialThreshold");
+                String enableConfirmationNameAndImage =jsonValueIdentification.isNull("enableConfirmationNameAndImage")? "0":jsonValueIdentification.getString("enableConfirmationNameAndImage");
+                String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0":jsonValueIdentification.getString("enableAnonymousQRCode");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1190,11 +1187,11 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
 
                 //access control setting
-                String enableAutomaticDoors = jsonValueAccessControl.getString("enableAutomaticDoors");
-                String blockAccessHighTemperature = jsonValueAccessControl.getString("blockAccessHighTemperature");
-                int doorControlTimeWired = jsonValueAccessControl.getInt("doorControlTimeWired");
-                String enableAccessControl = jsonValueAccessControl.getString("enableAccessControl");
-                int accessControllerCardFormat = jsonValueAccessControl.getInt("accessControllerCardFormat");
+                String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0":jsonValueAccessControl.getString("enableAutomaticDoors");
+                String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "1":jsonValueAccessControl.getString("blockAccessHighTemperature");
+                int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 :jsonValueAccessControl.getInt("doorControlTimeWired");
+                String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0": jsonValueAccessControl.getString("enableAccessControl");
+                int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26:jsonValueAccessControl.getInt("accessControllerCardFormat");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AutomaticDoorAccess, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AccessControlEnable, enableAccessControl.equals("1"));
