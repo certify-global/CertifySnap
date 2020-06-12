@@ -1318,10 +1318,6 @@ public class Util {
         return String.format("v%s.%s", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
-    public static void setAccessId(String id) {
-        accessId = id;
-    }
-
     public static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder("0x");
         if (src == null || src.length <= 0) {
