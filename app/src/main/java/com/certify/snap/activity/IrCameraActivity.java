@@ -2166,6 +2166,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
             if (Util.isNumeric(guid)) {
                 tv_scan.setText(R.string.tv_bar_validating);
+                CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                 initCameraPreview();
             } else {
@@ -2639,6 +2640,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             showSnackBarMessage(getString(R.string.access_denied));
             return;
         }
+        AccessCardController.getInstance().setAccessCardId(cardId);
         Util.setAccessId(mNfcIdString);
         showSnackBarMessage(getString(R.string.access_granted));
         startIrCamera();

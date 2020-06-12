@@ -50,6 +50,7 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
@@ -60,6 +61,7 @@ import com.example.a950jnisdk.SDKUtil;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.microsoft.appcenter.analytics.Analytics;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
@@ -92,7 +94,7 @@ import java.util.UUID;
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
     private static String accessId = "";
-    private static long timeInMillis;
+    private static Long timeInMillis;
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -529,7 +531,9 @@ public class Util {
                 String expireTime = getUTCDate(expire_time);
                 String currentTime = currentDate();
                 if (isDateOneBigger(expireTime, currentTime)) {
-                    scheduleJobAccessToken(context);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        scheduleJobAccessToken(context);
+                    }
                 }
             }
 
@@ -539,11 +543,11 @@ public class Util {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private static void scheduleJobAccessToken(Context context) {
         ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(1, componentName)
-                .setRequiresCharging(true)
-                .setPeriodic(timeInMillis).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setPeriodic(timeInMillis, 5 * 60 *1000).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .setPersisted(true).build();
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(jobInfo);
@@ -682,7 +686,7 @@ public class Util {
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
 
-
+             //TODO Simplifying following logic
             if(rfidScanMatchedMember != null){
                 obj.put("id", rfidScanMatchedMember.getUniqueid());
                 obj.put("accessId", rfidScanMatchedMember.getAccessid());
@@ -690,6 +694,9 @@ public class Util {
                 obj.put("lastName", rfidScanMatchedMember.getLastname());
                 obj.put("memberId", rfidScanMatchedMember.getMemberid());
                 obj.put("trqStatus", "");// Send this empty if not Qr
+            } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()){
+                obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
+                updateFaceMemberValues(obj, data);
             }
             else if (qrCodeData != null) {
                 obj.put("id", qrCodeData.getUniqueId());
@@ -698,14 +705,12 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
+            } else if(isNumeric(CameraController.getInstance().getQrCodeId())) {
+                obj.put("accessId", CameraController.getInstance().getQrCodeId());
+                updateFaceMemberValues(obj, data);
             } else {
-                if (data.member == null) data.member = new RegisteredMembers();
-                obj.put("id", data.member.getUniqueid());
                 obj.put("accessId", data.member.getAccessid());
-                obj.put("firstName", data.member.getFirstname());
-                obj.put("lastName", data.member.getLastname());
-                obj.put("memberId", data.member.getMemberid());
-                obj.put("trqStatus", ""); //Send this empty if not Qr
+                updateFaceMemberValues(obj, data);
             }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
@@ -719,6 +724,20 @@ public class Util {
         } catch (Exception e) {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
+    }
+
+    private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
+        try {
+        if (data.member == null) data.member = new RegisteredMembers();
+            obj.put("id", data.member.getUniqueid());
+            obj.put("firstName", data.member.getFirstname());
+            obj.put("lastName", data.member.getLastname());
+            obj.put("memberId", data.member.getMemberid());
+            obj.put("trqStatus", ""); //Send this empty if not Qr
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static int getBatteryLevel(Context context) {

@@ -17,6 +17,7 @@ public class AccessCardController  {
     private Timer mRelayTimer;
     private boolean isAutomaticDoorAccess = false;
     private int mWeiganControllerFormat = 26;
+
     private String mAccessCardID = "";
 
     public static AccessCardController getInstance() {
@@ -29,6 +30,7 @@ public class AccessCardController  {
     public void init() {
         //mNfcAdapter = M1CardUtils.isNfcAble(context);
         AccessControlModel.getInstance().clearData();
+        mAccessCardID = "";
     }
 
     public void setAccessControlEnabled(boolean value) {
@@ -72,6 +74,10 @@ public class AccessCardController  {
 
     public void setAccessCardId(String cardId) {
         mAccessCardID = cardId;
+    }
+
+    public String getAccessCardID() {
+        return mAccessCardID;
     }
 
     private void startRelayTimer() {
