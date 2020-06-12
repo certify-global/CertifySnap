@@ -4,17 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/splash_white">
-
+    android:background="@color/white">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_weight=".5">
     <TextView
         android:id="@+id/facial_score"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="15dp"
         android:layout_marginEnd="16dp"
         android:textColor="@color/lightergray"
-        android:layout_gravity="center"
-        android:text="dnsd"/>
+        android:gravity="center"
+        android:layout_alignTop="@+id/iv_item_head_img"/>
 
     <com.certify.snap.view.OvalImageView
         android:id="@+id/iv_item_head_img"
@@ -22,17 +26,26 @@
         android:layout_height="170dp"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
-        android:visibility="gone"/>
-
-
+        android:visibility="visible"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="@dimen/margin_20"/>
     <TextView
         android:id="@+id/tv_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:textColor="@color/black"
         android:textSize="20dp"
-        android:gravity="center"/>
+        android:layout_alignBottom="@+id/iv_item_head_img"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_5"/>
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
 
 
 
@@ -43,10 +56,11 @@
         android:text="Have a nice day!"
         android:textSize="40sp"
         android:textColor="@color/black"
-        android:gravity="bottom|center_horizontal"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:ellipsize="end"></TextView>
+        android:ellipsize="end"
+        android:gravity="center"
+        android:layout_gravity="center"></TextView>
 
 
 
@@ -62,6 +76,6 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"></TextView>
 
-
+    </LinearLayout>
 
 </LinearLayout>
