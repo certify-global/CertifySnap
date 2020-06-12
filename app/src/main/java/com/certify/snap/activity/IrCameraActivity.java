@@ -2567,6 +2567,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String memberId = registeredMembers.getMemberid();
                                     String image = registeredMembers.getImage();
                                     clearLeftFace(null);
+                                    AccessCardController.getInstance().setAccessIdDb(registeredMembers.getAccessid());
                                     if (registeredMembers.getStatus().equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
@@ -2641,7 +2642,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
-        Util.setAccessId(mNfcIdString);
         showSnackBarMessage(getString(R.string.access_granted));
         startIrCamera();
         if (soundPool == null) {

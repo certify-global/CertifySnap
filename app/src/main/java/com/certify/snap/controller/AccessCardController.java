@@ -19,6 +19,7 @@ public class AccessCardController  {
     private int mWeiganControllerFormat = 26;
 
     private String mAccessCardID = "";
+    private String mAccessIdDb = "";
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -31,6 +32,7 @@ public class AccessCardController  {
         //mNfcAdapter = M1CardUtils.isNfcAble(context);
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
+        mAccessIdDb = "";
     }
 
     public void setAccessControlEnabled(boolean value) {
@@ -80,6 +82,10 @@ public class AccessCardController  {
         return mAccessCardID;
     }
 
+    public void setAccessIdDb(String mAccessIdDb) {
+        this.mAccessIdDb = mAccessIdDb;
+    }
+
     private void startRelayTimer() {
         mRelayTimer = new Timer();
         mRelayTimer.schedule(new TimerTask() {
@@ -119,16 +125,34 @@ public class AccessCardController  {
     }
 
     private void unlock26BitDoorController() {
-        if(mAccessCardID.isEmpty()) return;
-        int result = PosUtil.getWg26Status(Long.parseLong(mAccessCardID));
+        if (mAccessCardID.isEmpty()) {
+            if (!mAccessIdDb.isEmpty()) {
+                sendWg26BitSignal(mAccessIdDb);
+            }
+            return;
+        }
+        sendWg26BitSignal(mAccessCardID);
+    }
+
+    private void sendWg26BitSignal(String cardId) {
+        int result = PosUtil.getWg26Status(Long.parseLong(cardId));
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
         }
     }
 
     private void unlock34BitDoorController() {
-        if(mAccessCardID.isEmpty()) return;
-        int result = PosUtil.getWg34Status(Long.parseLong(mAccessCardID));
+        if (mAccessCardID.isEmpty()) {
+            if (!mAccessIdDb.isEmpty()) {
+                sendWg34BitSignal(mAccessIdDb);
+            }
+            return;
+        }
+        sendWg34BitSignal(mAccessCardID);
+    }
+
+    private void sendWg34BitSignal(String cardId) {
+        int result = PosUtil.getWg34Status(Long.parseLong(cardId));
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
         }

@@ -93,8 +93,7 @@ import java.util.UUID;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
-    private static String accessId = "";
-    private static Long timeInMillis;
+        private static Long timeInMillis;
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -679,9 +678,6 @@ public class Util {
             obj.put("deviceData", MobileDetails(context));
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", data.exceedsThreshold);
-            if (accessId.isEmpty()) {
-                obj.put("accessId", accessId);
-            }
 
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
