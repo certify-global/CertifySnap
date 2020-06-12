@@ -2166,6 +2166,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
             if (Util.isNumeric(guid)) {
                 tv_scan.setText(R.string.tv_bar_validating);
+                CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                 initCameraPreview();
             } else {

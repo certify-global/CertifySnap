@@ -45,7 +45,6 @@ public class AccessTokenJobService extends JobService implements JSONObjectCallb
             String token_type = json1.getString("token_type");
             String institutionId = json1.getString("InstitutionID");
             String expire_time = json1.getString(".expires");
-            Log.i("Shailendra Jobcls ", "reponse");
             Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
             Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
             Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
