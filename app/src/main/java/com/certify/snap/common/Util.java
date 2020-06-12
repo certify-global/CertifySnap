@@ -1099,6 +1099,7 @@ public class Util {
                 String captureUserImageAboveThreshold = jsonValueScan.getString("captureUserImageAboveThreshold");
                 String captureAllUsersImage = jsonValueScan.getString("captureAllUsersImage");
                 String enableSoundOnHighTemperature = jsonValueScan.getString("enableSoundOnHighTemperature");
+                String enableSoundOnNormalTemperature = jsonValueScan.getString("enableSoundOnNormalTemperature");
                 String viewDelay = jsonValueScan.getString("viewDelay");
                 String tempval = jsonValueScan.getString("temperatureThreshold");
                 String temperatureFormat = jsonValueScan.getString("temperatureFormat");
@@ -1112,7 +1113,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnHighTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnNormalTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND_HIGH, enableSoundOnHighTemperature.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
                 Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
@@ -1158,6 +1160,7 @@ public class Util {
                 String enableFacialRecognition = jsonValueIdentification.getString("enableFacialRecognition");
                 String facialThreshold = jsonValueIdentification.getString("facialThreshold");
                 String enableConfirmationNameAndImage = jsonValueIdentification.getString("enableConfirmationNameAndImage");
+                String enableAnonymousQRCode = jsonValueIdentification.getString("enableAnonymousQRCode");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1165,6 +1168,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, enableFacialRecognition.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD, facialThreshold);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
 
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.getString("enableAutomaticDoors");
