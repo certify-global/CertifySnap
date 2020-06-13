@@ -67,7 +67,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     RelativeLayout relative_layout;
     Switch switch_activate;
     private RelativeLayout accessControl;
-    private TextView accessControlTv,tvDeviceOnline,tvDeviceName,tvDeviceSettings;
+    private TextView accessControlTv,tvDeviceOnline,tvDeviceName,tvDeviceSettings,tvDeviceMode;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -195,6 +195,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tvDeviceOnline= findViewById(R.id.tv_online);
         tvDeviceName= findViewById(R.id.tv_device_name);
         tvDeviceSettings= findViewById(R.id.tv_device_setting);
+        tvDeviceMode = findViewById(R.id.tv_device_model);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -212,11 +213,13 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tvDeviceOnline.setTypeface(rubiklight);
         tvDeviceName.setTypeface(rubiklight);
         tvDeviceSettings.setTypeface(rubiklight);
+        tvDeviceMode.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
         tvDeviceOnline.setText(String.format("%s: %s",getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true)?"Activated":"Not Activated"));
         tvDeviceName.setText(String.format("%s: %s",getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
         tvDeviceSettings.setText(String.format("%s: %s",getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
+        tvDeviceMode.setText(String.format("%s: %s",getResources().getString(R.string.device_mode),Util.isConnectingToInternet(SettingActivity.this)?"online":"offline"));
         accessControlTv.setTypeface(rubiklight);
     }
 

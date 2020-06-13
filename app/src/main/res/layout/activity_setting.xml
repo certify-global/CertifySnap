@@ -844,15 +844,7 @@
                 android:text="@string/app_version"
                 android:textSize="@dimen/font_18"/>
             </RelativeLayout>
-            <TextView
-                android:id="@+id/tv_online"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:gravity="start"
-                android:paddingStart="@dimen/margin_20"
-                android:text="@string/online_device_activation_status"
-                android:textSize="@dimen/font_18"/>
+
             <TextView
                 android:id="@+id/tv_device_name"
                 android:layout_width="wrap_content"
@@ -870,6 +862,24 @@
                 android:gravity="start"
                 android:paddingStart="@dimen/margin_20"
                 android:text="@string/device_settings"
+                android:textSize="@dimen/font_18"/>
+            <TextView
+                android:id="@+id/tv_device_model"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
+                android:text="@string/device_mode"
+                android:textSize="@dimen/font_18"/>
+            <TextView
+                android:id="@+id/tv_online"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
+                android:text="@string/online_device_activation_status"
                 android:textSize="@dimen/font_18"/>
         </LinearLayout>
 </ScrollView>

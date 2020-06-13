@@ -314,6 +314,7 @@
     <string name="keep_device_online">Keep Device Online</string>
     <string name="device_settings">Device Settings</string>
     <string name="device_password">Device Access Password</string>
-    <string name="online_device_activation_status">Online Device Activation Status</string>
+    <string name="online_device_activation_status">Device Online Activation Status</string>
+    <string name="device_mode">Device Mode</string>
 
 </resources>
