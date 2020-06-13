@@ -213,6 +213,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             //TODO: This dialog is required when the connection fails to API server
             //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+
+            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+            if (Util.isNetworkOff(GuideActivity.this)) {
+                new Handler().postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                return;
+            }
             Util.activateApplication(this, this);
         }
     }

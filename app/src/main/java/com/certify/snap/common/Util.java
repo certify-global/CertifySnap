@@ -23,6 +23,8 @@ import android.graphics.YuvImage;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.media.SoundPool;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -1494,4 +1496,19 @@ public class Util {
         return currentDate;
     }
 
+    /**
+     * Method that checks if there is a network connected
+     * @param context context
+     * @return true or false accordingly
+     */
+    public static boolean isNetworkOff(Context context) {
+        boolean result = false;
+        ConnectivityManager connMgr =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network[] networks = connMgr.getAllNetworks();
+        if (networks != null && networks.length == 0) {
+            result = true;
+        }
+        return result;
+    }
 }
