@@ -308,6 +308,12 @@
     <string name="access_id">Access Id</string>
     <string name="display">"Display Image and name on the confirmation screen "</string>
     <string name="update_face_not_recognized">Update Failed! Face cannot be recognized</string>
+
     <string name="register_face_not_recognized">Register Failed! Face cannot be recognized</string>
+    <string name="device_name">Device Name</string>
+    <string name="keep_device_online">Keep Device Online</string>
+    <string name="device_settings">Device Settings</string>
+    <string name="device_password">Device Access Password</string>
+    <string name="online_device_activation_status">Online Device Activation Status</string>
 
 </resources>

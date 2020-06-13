@@ -63,6 +63,8 @@ public class GlobalParameters {
     public static final String ONLINE_SWITCH = "online_switch";
     public static final String FIRST_RUN = "first_run";
     public static final String URL = "url";
+    public static final String DEVICE_NAME = "device_name";
+    public static final String DEVICE_SETTINGS_NAME = "device_settings_name";
     public static final String Thermalscan_title = "Thermalscan_title";
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";
     public static final String CAPTURE_IMAGES_ABOVE = "c_m_above";

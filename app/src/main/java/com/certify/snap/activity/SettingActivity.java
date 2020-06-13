@@ -46,6 +46,10 @@ import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
 
+import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
+import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
+import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
+
 public class SettingActivity extends Activity implements JSONObjectCallback,SettingCallback {
 
     private FaceEngine faceEngine = new FaceEngine();
@@ -63,7 +67,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     RelativeLayout relative_layout;
     Switch switch_activate;
     private RelativeLayout accessControl;
-    private TextView accessControlTv;
+    private TextView accessControlTv,tvDeviceOnline,tvDeviceName,tvDeviceSettings;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -110,7 +114,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                     } else {
                        // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        Util.writeBoolean(sharedPreferences, ONLINE_MODE, false);
                         stopHealthCheckService();
                     }
                 }
@@ -128,7 +132,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         img_sync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+                if(sharedPreferences.getBoolean(ONLINE_MODE,true)) {
                     Util.getSettings(SettingActivity.this, SettingActivity.this);
                     Snackbar snackbar = Snackbar
                             .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
@@ -142,7 +146,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
 
                 }
             });
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+            if (sharedPreferences.getBoolean(ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
             } else {
                 switch_activate.setChecked(false);
@@ -188,7 +192,9 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
         accessControl = findViewById(R.id.access_control);
         accessControlTv = findViewById(R.id.access_control_tv);
-
+        tvDeviceOnline= findViewById(R.id.tv_online);
+        tvDeviceName= findViewById(R.id.tv_device_name);
+        tvDeviceSettings= findViewById(R.id.tv_device_setting);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -203,8 +209,14 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_member_management.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_qr_setting.setTypeface(rubiklight);
+        tvDeviceOnline.setTypeface(rubiklight);
+        tvDeviceName.setTypeface(rubiklight);
+        tvDeviceSettings.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
+        tvDeviceOnline.setText(String.format("%s: %s",getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true)?"Activated":"Not Activated"));
+        tvDeviceName.setText(String.format("%s: %s",getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
+        tvDeviceSettings.setText(String.format("%s: %s",getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
         accessControlTv.setTypeface(rubiklight);
     }
 
@@ -219,13 +231,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(ONLINE_MODE,true)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
                 }else{
                     Snackbar snackbar = Snackbar
                             .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
                     snackbar.show();
                 }
+                break;
+            case R.id.rl_device_setting:
+                startActivity(new Intent(SettingActivity.this, DeviceSettingsActivity.class));
                 break;
             case R.id.setting_init:
                 if (isopen)
@@ -492,7 +507,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     }
 
     private void initOnlineModeSetting() {
-        switch_activate.setChecked(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true));
+        switch_activate.setChecked(sharedPreferences.getBoolean(ONLINE_MODE, true));
     }
 
     /**
@@ -500,7 +515,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
      */
     private void startHealthCheckService() {
         try {
-            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this) && sharedPreferences.getBoolean(ONLINE_MODE,false)) {
                 startService(new Intent(this, DeviceHealthService.class));
                 Application.StartService(this);
             }

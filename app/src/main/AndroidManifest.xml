@@ -81,6 +81,8 @@
             android:name=".activity.AccessControlActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".activity.DeviceSettingsActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activity.InitializationActivity"
             android:launchMode="singleTask" />
