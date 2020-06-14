@@ -219,7 +219,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tvDeviceOnline.setText(String.format("%s: %s",getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true)?"Activated":"Not Activated"));
         tvDeviceName.setText(String.format("%s: %s",getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
         tvDeviceSettings.setText(String.format("%s: %s",getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
-        tvDeviceMode.setText(String.format("%s: %s",getResources().getString(R.string.device_mode),Util.isConnectingToInternet(SettingActivity.this)?"online":"offline"));
+        tvDeviceMode.setText(String.format("%s: %s",getResources().getString(R.string.device_mode),Util.isConnectingToInternet(SettingActivity.this)?"Online":"Offline"));
         accessControlTv.setTypeface(rubiklight);
     }
 
