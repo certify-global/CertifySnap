@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,7 +24,7 @@ public class ScanViewActivity extends Activity {
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low;
     Typeface rubiklight;
-    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask;
+    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask,tv_sound_high;
     TextInputLayout text_input_low_temp;
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
@@ -55,6 +54,10 @@ public class ScanViewActivity extends Activity {
             RadioGroup radio_group_reg = findViewById(R.id.radio_group_reg);
             RadioButton radio_yes_reg = findViewById(R.id.radio_yes_reg);
             RadioButton radio_no_reg = findViewById(R.id.radio_no_reg);
+            RadioGroup radio_group_sound_high = findViewById(R.id.radio_group_sound_high);
+            RadioButton radio_yes_sound_high = findViewById(R.id.radio_yes_sound_high);
+            RadioButton radio_no_sound_high = findViewById(R.id.radio_no_sound_high);
+            tv_sound_high = findViewById(R.id.tv_sound_high);
             et_screen_delay = findViewById(R.id.et_screen_delay);
             text_input_low_temp = findViewById(R.id.text_input_low_temp);
             editTextDialogUserInput_low = findViewById(R.id.editTextDialogUserInput_low);
@@ -78,6 +81,7 @@ public class ScanViewActivity extends Activity {
             tv_scan.setTypeface(rubiklight);
             tv_reg.setTypeface(rubiklight);
             tv_mask.setTypeface(rubiklight);
+            tv_sound_high.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
@@ -91,6 +95,9 @@ public class ScanViewActivity extends Activity {
             if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false))
                 radio_yes_sound.setChecked(true);
             else radio_no_sound.setChecked(true);
+            if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH,false))
+                radio_yes_sound_high.setChecked(true);
+            else radio_no_sound_high.setChecked(true);
             if(sp.getBoolean(GlobalParameters.ALLOW_ALL,false)) {
                 radio_yes_reg.setChecked(true);
                 text_input_low_temp.setVisibility(View.VISIBLE);
@@ -140,6 +147,14 @@ public class ScanViewActivity extends Activity {
                     if(checkedId==R.id.radio_yes_sound)
                         Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, true);
                     else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, false);
+                }
+            });
+            radio_group_sound_high.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if(checkedId==R.id.radio_yes_sound_high)
+                        Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND_HIGH, true);
+                    else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND_HIGH, false);
                 }
             });
             radio_group_reg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

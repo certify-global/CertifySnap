@@ -1,9 +1,8 @@
 package com.certify.snap;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;

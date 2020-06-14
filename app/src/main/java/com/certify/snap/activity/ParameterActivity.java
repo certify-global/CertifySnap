@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;

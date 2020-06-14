@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,8 +27,6 @@ import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.BuildConfig;
-import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
@@ -38,12 +35,11 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.MemberSyncService;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
-import com.romainpiel.titanic.library.Titanic;
-import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;
 
 import org.json.JSONObject;
@@ -60,8 +56,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private ImageView imgPic;
     private Animation myAnimation;
     private FaceEngine faceEngine = new FaceEngine();
-    private Titanic titanic;
-    private TitanicTextView TitanicTextView;
     private Novate mnovate;
     HashMap<String, String> map = new HashMap<String, String>();
     Gson gson = new Gson();
@@ -76,7 +70,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             "libarcsoft_image_util.so",
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,11 +94,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         AppCenter.setEnabled(onlineMode);
         Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
 
-        //  Util.activateApplication(this, this);
-
-        if (onlineMode) {
-            Util.activateApplication(this, this);
-        }
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -130,8 +118,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (titanic != null) titanic.cancel();
-
         try {
             FaceServer.getInstance().unInit();
         } catch (Exception e) {
@@ -225,7 +211,15 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             startActivity(new Intent(this, IrCameraActivity.class));
 
         } else {
-            Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+            //TODO: This dialog is required when the connection fails to API server
+            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+
+            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+            if (Util.isNetworkOff(GuideActivity.this)) {
+                new Handler().postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                return;
+            }
+            Util.activateApplication(this, this);
         }
     }
 
@@ -255,8 +249,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
-            Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+            }
             startHealthCheckService();
+            startMemberSyncService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
@@ -290,5 +287,22 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
+    }
+
+    private void startMemberSyncService() {
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
+                    startService(new Intent(GuideActivity.this, MemberSyncService.class));
+                    Application.StartService(GuideActivity.this);
+                }
+            }
+        }, 100);
     }
 }

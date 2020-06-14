@@ -3,17 +3,14 @@ package com.certify.snap.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
-import com.certify.snap.common.Util;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.InputStream;
@@ -65,10 +62,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
         View itemview = LayoutInflater.from(mcontext).inflate(R.layout.member_item, parent, false);
         return new MyViewHolder(itemview);
     }
-
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-
         try {
             holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
             holder.lastname.setText(mlist.get(position).getLastname());
@@ -88,7 +83,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
              if(bitmap!=null){
                  holder.image.setImageBitmap(bitmap);
              }else{
-                 holder.image.setBackgroundResource(R.drawable.face_title);
+                 //holder.image.setBackgroundResource(R.drawable.face_title);
+                 holder.image.setImageResource(R.drawable.face_title);
             }
 /*
             Glide.with(mcontext).asBitmap()

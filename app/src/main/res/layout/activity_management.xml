@@ -110,6 +110,19 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/record_counter_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_margin="5dp"
+                android:paddingRight="150dp"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+
+            <TextView
                 android:id="@+id/count_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
@@ -129,13 +142,13 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/member_text">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="230dp"
             android:background="@color/snow"
@@ -167,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:descendantFocusability="beforeDescendants">
 
-                    <android.support.v7.widget.RecyclerView
+                    <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/failed_recyclerview"
                         android:layout_width="match_parent"
                         android:layout_height="150dp" />
@@ -206,18 +219,18 @@
 
             </LinearLayout>
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/register"
         android:layout_width="100dp"
         android:layout_height="100dp"

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.certify.callback.MemberIDCallback;
-import com.certify.callback.MemberListCallback;
 import com.certify.snap.common.Util;
 
 import org.json.JSONObject;
@@ -33,7 +32,7 @@ public class AsyncGetMemberData extends AsyncTask<Void, Void, JSONObject> {
     }
 
     @Override
-    protected void onPostExecute(JSONObject reportInfo) {
+    protected void onPostExecute(final JSONObject reportInfo) {
         if (myComponent == null) return;
         myComponent.onJSONObjectListenerMemberID(reportInfo, url,req);
     }

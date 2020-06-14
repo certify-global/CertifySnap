@@ -5,16 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
+import androidx.annotation.Nullable;
+
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
@@ -22,7 +19,7 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 public class QRViewSetting extends Activity {
-    private static String TAG = "GuideViewSetting";
+    private static String TAG = "QRViewSetting";
     Typeface rubiklight;
     SharedPreferences sp;
     TextView btn_save, titles, qr_screen, tv_facial;
@@ -30,13 +27,14 @@ public class QRViewSetting extends Activity {
     private RadioButton rfidYesRb;
     private RadioButton rfidNoRb;
     EditText editTextDialogTimeout;
-    RadioGroup radio_group_facial,radio_group_display;
-    RadioButton radio_yes_facial;
-    RadioButton radio_no_facial;
+    RadioGroup radio_group_facial,radio_group_display, radio_group_anonymous;
+    RadioButton radio_yes_facial, rAnonymousYesRb;
+    RadioButton radio_no_facial, rAnonymousNoRb;
     RadioButton rbguideyes,radio_yes_display,radio_no_display;
     RadioButton rbguideno;
     EditText editTextDialogUserInput;
     TextView tv_display;
+    TextView mAnonymousTv;
 
 
     @Override
@@ -71,8 +69,14 @@ public class QRViewSetting extends Activity {
             radio_group_display = findViewById(R.id.radio_group_display);
             radio_yes_display = findViewById(R.id.radio_yes_display);
             radio_no_display = findViewById(R.id.radio_no_display);
+            mAnonymousTv = findViewById(R.id.anonymous_tv);
+            mAnonymousTv.setTypeface(rubiklight);
             tv_facial.setTypeface(rubiklight);
             tv_display.setTypeface(rubiklight);
+            rAnonymousYesRb = findViewById(R.id.radio_yes_anonymous);
+            rAnonymousNoRb = findViewById(R.id.radio_no_anonymous);
+            radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
+
 
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
@@ -83,6 +87,8 @@ public class QRViewSetting extends Activity {
 
             setRfidDefault();
             setRfidClickListener();
+            setAnonymousDefault();
+            setAnonymousClickListener();
 
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -142,7 +148,7 @@ public class QRViewSetting extends Activity {
                 }
             });
 
-
+            btn_save = findViewById(R.id.btn_exit);
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -156,6 +162,30 @@ public class QRViewSetting extends Activity {
             });
         } catch (Exception e) {
             Logger.error(TAG, e.toString());
+        }
+    }
+
+    private void setAnonymousClickListener() {
+        radio_group_anonymous.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_anonymous) {
+                    rAnonymousYesRb.setChecked(true);
+                    Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, true);
+                } else {
+                    Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, false);
+                }
+            }
+        });
+    }
+
+    private void setAnonymousDefault() {
+        if (sp.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+            rAnonymousYesRb.setChecked(true);
+            rAnonymousNoRb.setChecked(false);
+        } else {
+            rAnonymousNoRb.setChecked(true);
+            rAnonymousYesRb.setChecked(false);
         }
     }
 

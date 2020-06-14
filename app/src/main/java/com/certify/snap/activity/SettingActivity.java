@@ -10,11 +10,9 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
+import androidx.annotation.RequiresApi;
+import com.google.android.material.snackbar.Snackbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,9 +40,11 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
 import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
@@ -343,6 +343,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
                                 // edit text
+                                if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())){
+                                    LitePal.deleteAll(RegisteredMembers.class);
+                                    Util.clearAllSharedPreferences(sharedPreferences);
+                                    Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                                }
                                 String url = userInput.getText().toString().trim();
                                 if (url.endsWith("/"))
                                     url = url.substring(0, url.length() - 1);

@@ -6,8 +6,9 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -61,9 +62,11 @@ public class ConfirmationScreenActivity extends Activity {
             face_score = findViewById(R.id.facial_score);
 
             if (compareResultValues!= null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
+                user_img.setVisibility(View.VISIBLE);
                 compareResult();
             } else {
                 onAccessCardMatch();
+                user_img.setVisibility(View.GONE);
             }
 
             if (value.equals("high")) {
@@ -129,7 +132,7 @@ public class ConfirmationScreenActivity extends Activity {
     }
 
     private void onAccessCardMatch() {
-        RegisteredMembers matchedMember = AccessControlModel.getInstance().getScannedMatchedMember();
+        RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
         if (matchedMember != null) {
             Glide.with(ConfirmationScreenActivity.this)
                     .load(matchedMember.getImage())

@@ -26,7 +26,7 @@ public class AccessControlModel {
         return false;
     }
 
-    public RegisteredMembers getScannedMatchedMember() {
+    public RegisteredMembers getRfidScanMatchedMember() {
         return currentScannedMember;
     }
 

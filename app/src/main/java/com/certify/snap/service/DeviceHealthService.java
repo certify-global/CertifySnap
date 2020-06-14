@@ -7,13 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.RequiresApi;
-import android.widget.Toast;
+import androidx.annotation.RequiresApi;
 
 import com.certify.callback.JSONObjectCallback;
-import com.certify.snap.R;
-import com.certify.snap.activity.SettingActivity;
-import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
