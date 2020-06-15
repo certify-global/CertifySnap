@@ -98,8 +98,6 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     JSONObject c = memberList.getJSONObject(i);
                     getMemberID(c.getString("id"));
                 }
-            } else {
-                Logger.toast(this, "Something went wrong please try again");
             }
         } catch (Exception e) {
             Logger.error(LOG + "onJSONObjectListenerMemberList(String report, String status, JSONObject req)", e.getMessage());

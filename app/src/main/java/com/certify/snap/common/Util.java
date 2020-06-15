@@ -1206,7 +1206,7 @@ public class Util {
             }
         } catch (Exception e) {
             Logger.error("retrieveSetting(JSONObject reportInfo)", e.getMessage());
-            Logger.toast(context, "Something went wrong please try again");
+            Logger.toast(context, "Retrieving Settings failed.");
         }
 
     }
