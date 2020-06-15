@@ -947,6 +947,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     mask_message.setVisibility(View.GONE);
                                                     rl_header.setVisibility(View.VISIBLE);
                                                     tempServiceClose = true;
+                                                    retryFaceOnTimeout(requestId); //Retry again on timeout
                                                     disableLedPower();
                                                     enableNfc();
                                                 }
@@ -2699,6 +2700,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } else {
             soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         }
+    }
+
+    private void retryFaceOnTimeout(int requestId) {
+        new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }
 
    /* private void startMemberSyncService() {
