@@ -3,10 +3,8 @@ package com.certify.snap.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,6 +18,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.certify.callback.JSONObjectCallback;
 import com.certify.snap.R;
 import com.certify.snap.common.Application;
@@ -28,6 +28,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.service.DeviceHealthService;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
@@ -175,7 +176,7 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
             } catch (Exception e) {
                 json1 = new JSONObject(reportInfo.replace("\\", ""));
             }
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             Util.getTokenActivate(reportInfo, status, DeviceSettingsActivity.this, "setting");
             startHealthCheckService();
             if (json1.isNull("responseSubCode")) return;

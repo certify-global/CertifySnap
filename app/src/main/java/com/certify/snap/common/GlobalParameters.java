@@ -110,6 +110,12 @@ public class GlobalParameters {
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
     public static final String ANONYMOUS_ENABLE = "anonymous_enable";
+    public static final String HOME_TEXT ="home_text";
+    public static final String HOME_TEXT_ONLY ="home_text_only";
+    public static final String HOME_TEXT_ONLY_MESSAGE ="home_text_only_message";
+    public static final String HOME_DISPLAY_TIME ="home_display_time";
+    public static final String HOME_TEXT_ONLY_IS_ENABLE ="home_text_only_is_enable";
+    public static final String HOME_TEXT_IS_ENABLE ="home_display_is_enable";
 
 
 }

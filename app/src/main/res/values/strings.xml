@@ -208,7 +208,7 @@
     <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Home View Settings</string>
-    <string name="welcome_thermal">Welcome Text For Home View</string>
+    <string name="welcome_thermal">Home Screen Text</string>
     <string name="enter_title">Enter Large Text </string>
     <string name="enter_subtitle">Enter Small Text </string>
     <string name="display_temperature">Display Temperature Details to the User on Screen</string>
@@ -330,5 +330,7 @@
     <string name="device_password">Device Access Password</string>
     <string name="online_device_activation_status">Device Online Activation Status</string>
     <string name="device_mode">Device Mode</string>
+    <string name="enable_home_screen">Enable Home Screen</string>
+    <string name="enable_text_only_screen">Enable Text Only Mode</string>
 
 </resources>
