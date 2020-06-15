@@ -37,6 +37,7 @@ public class GlobalParameters {
     public static final String BlockAccessHighTemp = "blockAccessHighTemp";
     public static final String AccessControlCardFormat = "accessControlCardFormat";
     public static final String AutomaticDoorAccess = "automaticDoorAccess";
+    public static final String LedBrightnessLevel = "ledBrightnessLevel";
 
     public static String Access_token = "";
     public static String channelID = "";

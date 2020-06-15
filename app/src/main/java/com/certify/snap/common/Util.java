@@ -396,8 +396,10 @@ public class Util {
                 new SDKUtil().camera_led(status);
             } else {
                 PosUtil.setLedPower(status);
-                if (status == 1)
-                    ShellUtils.execCommand("echo 5 > /sys/class/backlight/led-brightness/brightness", false);
+
+                //Below code is not required as the Led brightness level is controlled through the Parameter settings
+                /*if (status == 1)
+                    ShellUtils.execCommand("echo " + progress + " > /sys/class/backlight/led-brightness/brightness", false);*/
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -45,6 +45,8 @@ public class ParameterActivity extends AppCompatActivity {
     private SeekBar seekBar;
     SharedPreferences sp;
     TextView title_save;
+    private int ledLevel = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +100,7 @@ public class ParameterActivity extends AppCompatActivity {
         title_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                saveLedBrightnessSetting();
                 Util.showToast(ParameterActivity.this, getString(R.string.save_success));
                 finish();
             }
@@ -234,6 +237,7 @@ public class ParameterActivity extends AppCompatActivity {
         radio_led_off=findViewById(R.id.radio_led_off);
         radio_led_lamp=findViewById(R.id.radio_led_lamp);
         seekBar=findViewById(R.id.seekbar);
+        setDefaultLedBrightnessLevel();
 
         int led = sp.getInt(GlobalParameters.LedType,0);
         switch (led) {
@@ -377,6 +381,7 @@ public class ParameterActivity extends AppCompatActivity {
                     Util.setLedPower(progress);
                 }else {
                     Process p = null;
+                    ledLevel = progress;
                     //String cmd = "echo " + progress + " > /sys/class/backlight/rk28_bl_sub/brightness";
                     //String cmd = "echo " + progress + " > /sys/class/backlight/backlight_extend/brightness";//新
                     String cmd = "echo " + progress + " > /sys/class/backlight/led-brightness/brightness";//新
@@ -393,6 +398,15 @@ public class ParameterActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setDefaultLedBrightnessLevel() {
+        ledLevel = sp.getInt(GlobalParameters.LedBrightnessLevel, 30);
+        seekBar.setProgress(ledLevel);
+    }
+
+    private void saveLedBrightnessSetting() {
+        Util.writeInt(sp, GlobalParameters.LedBrightnessLevel, ledLevel);
     }
 
     public void onParamterback(View view) {
