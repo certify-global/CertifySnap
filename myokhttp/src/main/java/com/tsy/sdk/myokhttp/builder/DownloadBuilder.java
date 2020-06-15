@@ -1,6 +1,6 @@
 package com.tsy.sdk.myokhttp.builder;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.tsy.sdk.myokhttp.MyOkHttp;
 import com.tsy.sdk.myokhttp.body.ResponseProgressBody;

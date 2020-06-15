@@ -1,33 +1,19 @@
 package com.certify.snap.common;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Environment;
-import android.support.annotation.RequiresApi;
+
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
-import com.certify.callback.MemberIDCallback;
-import com.certify.callback.MemberListCallback;
-import com.certify.snap.R;
-import com.certify.snap.activity.ManagementActivity;
-import com.certify.snap.async.AsyncGetMemberData;
-import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredMembers;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.litepal.LitePal;
-import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,11 +27,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.Field;
-import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
-import rx.internal.operators.CompletableOnSubscribeTimeout;
 
 public class ManageMemberHelper {
     private SnapService snapService;

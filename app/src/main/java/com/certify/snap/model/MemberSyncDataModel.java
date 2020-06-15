@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.content.LocalBroadcastManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -24,6 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class MemberSyncDataModel {
     private static final String TAG = MemberSyncDataModel.class.getSimpleName();
     private static MemberSyncDataModel mInstance = null;
@@ -34,6 +42,7 @@ public class MemberSyncDataModel {
     private Context context;
     private static final String SYNCING_MESSAGE = "Syncing...";
     private static final String SYNCING_COMPLETED = "Sync completed";
+    private int NUM_OF_RECORDS = 0;
 
     public static MemberSyncDataModel getInstance() {
         if (mInstance == null) {
@@ -55,41 +64,75 @@ public class MemberSyncDataModel {
      * @param memberList Member Info
      */
     public void createMemberDataAndAdd(JSONArray memberList) {
-        new Thread(() -> {
-                RegisteredMembers member = new RegisteredMembers();
-                isSyncing = true;
-                try {
-                    for (int i = 0; i < memberList.length(); i++) {
-                        JSONObject c = memberList.getJSONObject(i);
-                        String certifyId = c.getString("id");
-                        String memberId = c.getString("memberId").replaceAll("[-+.^:,]", "");
-                        if (memberId.isEmpty()) {
-                            memberId = certifyId;
+        isSyncing = true;
+        Observable
+                .create((ObservableOnSubscribe<RegisteredMembers>) emitter -> {
+                    RegisteredMembers member = new RegisteredMembers();
+                    try {
+                        for (int i = 0; i < memberList.length(); i++) {
+                            JSONObject c = memberList.getJSONObject(i);
+                            String certifyId = c.getString("id");
+                            String memberId = c.getString("memberId").replaceAll("[-+.^:,]", "");
+                            if (memberId.isEmpty()) {
+                                memberId = certifyId;
+                            }
+                            String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
+                            member.setFirstname(c.getString("firstName"));
+                            member.setLastname(c.getString("lastName"));
+                            member.setAccessid(c.getString("accessId"));
+                            member.setUniqueid(c.getString("id"));
+                            member.setMemberid(memberId);
+                            member.setEmail(c.getString("email"));
+                            member.setMobile(c.getString("phoneNumber"));
+                            member.setImage(imagePath);
+                            member.setStatus(String.valueOf(c.getBoolean("status")));
+                            emitter.onNext(member);
                         }
-                        String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
-                        member.setFirstname(c.getString("firstName"));
-                        member.setLastname(c.getString("lastName"));
-                        member.setAccessid(c.getString("accessId"));
-                        member.setUniqueid(c.getString("id"));
-                        member.setMemberid(memberId);
-                        member.setEmail(c.getString("email"));
-                        member.setMobile(c.getString("phoneNumber"));
-                        member.setImage(imagePath);
-                        member.setStatus(String.valueOf(c.getBoolean("status")));
-                        membersList.add(member);
-                        Log.d(TAG, "SnapXT Add API response Member added " + membersList.size());
+                    } catch (Exception e) {
+                        Log.e(TAG, "SnapXT Exception while adding API response member to the model");
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "SnapXT Exception while adding API response member to the model");
-                }
-        }).start();
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<RegisteredMembers>() {
+                    Disposable addMemberDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addMemberDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(RegisteredMembers member) {
+                        synchronized (this) {
+                            membersList.add(member);
+                        }
+                        Log.d(TAG, "SnapXT Add API response Member added " + membersList.size());
+
+                        //Add records fetched from server, add it to the database
+                        if (membersList.size() == NUM_OF_RECORDS) {
+                            addToDatabase(context);
+                        }
+                        addMemberDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in adding the member to data model from server");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
     }
 
     /**
      * Method that initiates process of adding to the database
      * @param context context
      */
-    public void addToDatabase(Context context) {
+    private void addToDatabase(Context context) {
         Log.d(TAG, "SnapXT Add to database, number of records: " + membersList.size());
         doSendBroadcast(SYNCING_MESSAGE, 0, 0);
         new Thread(() -> {
@@ -248,7 +291,7 @@ public class MemberSyncDataModel {
     public void syncDbErrorList(Context context) {
         if (isSyncing) return;
         if (dbSyncErrorMemberList.isEmpty()) {
-            Log.d(TAG, "SnapXT Error All members added to db");
+            Log.d(TAG, "SnapXT All members added to db");
             doSendBroadcast(SYNCING_COMPLETED, 0, 0);
             return;
         }
@@ -312,6 +355,14 @@ public class MemberSyncDataModel {
         event_snackbar.putExtra("count",count);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(event_snackbar);
+    }
+
+    /**
+     *
+     * @param value
+     */
+    public void setNumOfRecords(int value) {
+        this.NUM_OF_RECORDS = value;
     }
 
     /**

@@ -27,15 +27,17 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import com.certify.snap.BuildConfig;
+import com.certify.snap.qrscan.CameraSource;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -69,16 +71,16 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
-import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
-import com.certify.snap.common.LoggerUtil;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.QrCodeData;
-import com.certify.snap.service.MemberSyncService;
+import com.certify.snap.qrscan.BarcodeScannerProcessor;
+import com.certify.snap.qrscan.CameraSourcePreview;
+import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.view.MyGridLayoutManager;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -104,10 +106,6 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.qrscan.BarcodeScanningProcessor;
-import com.certify.snap.qrscan.CameraSource;
-import com.certify.snap.qrscan.CameraSourcePreview;
-import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
@@ -265,7 +263,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
-    private CameraSource cameraSource = null;
+    public CameraSource cameraSource = null;
     public static CameraSourcePreview preview;
     public static GraphicOverlay graphicOverlay;
     public static IrCameraActivity livePreviewActivity;
@@ -421,7 +419,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = findViewById(R.id.tv_scan);
             img_qr = findViewById(R.id.img_qr);
             qr_main = findViewById(R.id.qr_main);
-            tv_scan.setText(R.string.tv_qr_scan);
+            if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+                tv_scan.setText(R.string.tv_qr_bar_scan);
+            } else {
+                tv_scan.setText(R.string.tv_qr_scan);
+            }
             tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             tv_scan.setTypeface(rubiklight);
@@ -438,7 +440,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             livePreviewActivity = this;
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
-            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) {
+            if ((sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) || (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) == true) ) {
                 //Move the logo to the top
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -617,18 +619,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            AudioAttributes attributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build();
-
-            soundPool = new SoundPool.Builder()
-                    .setAudioAttributes(attributes)
-                    .build();
-        } else {
-            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        }
+        initSound();
     }
 
     private boolean checkPermissions(String[] neededPermissions) {
@@ -646,23 +637,25 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent != null)
-            mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        if (mTag != null) {
-            byte[] ID = new byte[20];
-            ID = mTag.getId();
-            String UID = Util.bytesToHexString(ID);
-            if (UID == null) {
-                Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
-                return;
+        if (intent != null) {
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
+                    NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
+                mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                if (mTag != null) {
+                    byte[] ID = new byte[20];
+                    ID = mTag.getId();
+                    String UID = Util.bytesToHexString(ID);
+                    if (UID == null) {
+                        Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
+                        return;
+                    }
+                    mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
+                    onRfidScan(mNfcIdString);
+                    return;
+                }
+                showSnackBarMessage(getString(R.string.rfid_card_error));
             }
-            mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
-
-            onRfidScan(mNfcIdString);
-            return;
         }
-        showSnackBarMessage(getString(R.string.rfid_card_error));
     }
 
     @Override
@@ -1102,7 +1095,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private synchronized void processPreviewData(byte[] rgbData) {
         if (rgbData != null && irData != null) {
-            final byte[] cloneNv21Rgb = rgbData.clone();
+            final byte[] cloneNv21Rgb = irData.clone();//rgbData.clone();
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
             clearLeftFace(facePreviewInfoList);
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
@@ -1974,10 +1967,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
-                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH, false)) {
                     if (aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "high", soundPool);
-                    } else {
+                    }
+                }
+                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                    if (!aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
                 }
@@ -2001,6 +1997,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             ConfirmationBoolean = true;
                             MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                             finish();
+                            data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
 
                             ShowLauncherView();
@@ -2130,7 +2127,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             switch (model) {
                 case BARCODE_DETECTION:
                     Log.i(TAG, "Using Custom Image Classifier Processor");
-                    cameraSource.setMachineLearningFrameProcessor(new BarcodeScanningProcessor((BarcodeSendData) this));
+                    cameraSource.setMachineLearningFrameProcessor(new BarcodeScannerProcessor(this,(BarcodeSendData) this));
                     break;
                 default:
                     Log.e(TAG, "Unknown model: " + model);
@@ -2169,6 +2166,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
             if (Util.isNumeric(guid)) {
                 tv_scan.setText(R.string.tv_bar_validating);
+                CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                 initCameraPreview();
             } else {
@@ -2569,6 +2567,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String memberId = registeredMembers.getMemberid();
                                     String image = registeredMembers.getImage();
                                     clearLeftFace(null);
+                                    AccessCardController.getInstance().setAccessIdDb(registeredMembers.getAccessid());
                                     if (registeredMembers.getStatus().equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
@@ -2634,14 +2633,20 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
                 startIrCamera();
+                if (soundPool == null) {
+                    initSound(); //when access card is recognized, onPause is getting called and resetting the sound
+                }
                 return;
             }
             showSnackBarMessage(getString(R.string.access_denied));
             return;
         }
-        Util.setAccessId(mNfcIdString);
+        AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
         startIrCamera();
+        if (soundPool == null) {
+            initSound(); //when access card is recognized, onPause is getting called and resetting the sound
+        }
     }
 
     private void showSnackBarMessage(String message) {
@@ -2678,6 +2683,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Log.d(TAG, "Search face using RGB Image");
                 searchFace(faceFeature, requestId, rgb, ir);
             }
+        }
+    }
+
+    private void initSound(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            AudioAttributes attributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(attributes)
+                    .build();
+        } else {
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         }
     }
 

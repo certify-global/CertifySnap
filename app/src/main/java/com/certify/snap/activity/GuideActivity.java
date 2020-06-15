@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -28,13 +27,11 @@ import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
-import com.certify.snap.common.ManageMemberHelper;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
@@ -43,8 +40,6 @@ import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.Crashes;
-import com.romainpiel.titanic.library.Titanic;
-import com.romainpiel.titanic.library.TitanicTextView;
 import com.tamic.novate.Novate;
 
 import org.json.JSONObject;
@@ -61,8 +56,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private ImageView imgPic;
     private Animation myAnimation;
     private FaceEngine faceEngine = new FaceEngine();
-    private Titanic titanic;
-    private TitanicTextView TitanicTextView;
     private Novate mnovate;
     HashMap<String, String> map = new HashMap<String, String>();
     Gson gson = new Gson();
@@ -125,8 +118,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (titanic != null) titanic.cancel();
-
         try {
             FaceServer.getInstance().unInit();
         } catch (Exception e) {
@@ -222,6 +213,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             //TODO: This dialog is required when the connection fails to API server
             //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+
+            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+            if (Util.isNetworkOff(GuideActivity.this)) {
+                new Handler().postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                return;
+            }
             Util.activateApplication(this, this);
         }
     }

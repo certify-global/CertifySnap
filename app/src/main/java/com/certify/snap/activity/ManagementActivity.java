@@ -13,21 +13,20 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -52,7 +51,6 @@ import android.widget.Toast;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
-import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.ManageMemberCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
@@ -60,9 +58,7 @@ import com.certify.snap.R;
 import com.certify.snap.adapter.MemberAdapter;
 import com.certify.snap.adapter.MemberFailedAdapter;
 import com.certify.snap.async.AsyncGetMemberData;
-import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectManageMember;
-import com.certify.snap.async.AsyncJSONObjectQRCode;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -73,24 +69,19 @@ import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 import static com.certify.snap.common.Util.getnumberString;
-import static com.certify.snap.common.Util.showToast;
 
 public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback, MemberListCallback, MemberIDCallback {
 
@@ -177,6 +168,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().equals("\n")){
+                    msearch.setSingleLine(true);
+                } else {
+                    msearch.setSingleLine(false);
+                }
 
             }
 
@@ -187,6 +183,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 }
                 searchtext = s.toString();
                 if (!TextUtils.isEmpty(searchtext)) mhandler.postDelayed(searchRun, 1000);
+
+                if (TextUtils.isEmpty(searchtext) && searchtext != null) {
+                    refresh();
+                   Util.hideSoftKeyboard(ManagementActivity.this);
+                }
             }
         });
 
