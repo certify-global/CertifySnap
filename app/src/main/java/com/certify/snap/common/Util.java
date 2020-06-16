@@ -730,7 +730,7 @@ public class Util {
         JSONObject obj = new JSONObject();
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, "0");
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             obj.put("thresholdValue", thresholdvalue);
             obj.put("faceScore", data.faceScore);
