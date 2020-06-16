@@ -38,7 +38,6 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
     private SharedPreferences sharedPreferences;
     private TextView btn_save;
     private RelativeLayout ll;
-    private TextInputLayout tiy_endpoint, tiy_password;
     private Switch switch_activate;
 
     @Override
@@ -51,8 +50,6 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
             etPassword = findViewById(R.id.et_device_password);
             btn_save = findViewById(R.id.btn_save_device);
             switch_activate = findViewById(R.id.switch_activate_device);
-            tiy_endpoint = findViewById(R.id.tiy_endpoint);
-            tiy_password = findViewById(R.id.tiy_password);
             sharedPreferences = Util.getSharedPreferences(this);
             String url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
             etEndUrl.setText(url_end);
@@ -125,12 +122,12 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
                     try {
                         String strUserInput = etPassword.getText().toString().trim();
                         if (TextUtils.isEmpty(strUserInput)) {
-                            tiy_password.setError("Password should not be empty");
+                            etPassword.setError("Password should not be empty");
                             return;
                         } else if (etPassword.getText().toString().length() < 6) {
-                            tiy_password.setError("Password should be minimum six digits");
+                            etPassword.setError("Password should be minimum six digits");
                         } else {
-                            tiy_password.setError(null);
+                            etPassword.setError(null);
                             Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, etPassword.getText().toString().trim());
                         }
                     } catch (Exception e) {
@@ -177,7 +174,7 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
                 json1 = new JSONObject(reportInfo.replace("\\", ""));
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            Util.getTokenActivate(reportInfo, status, DeviceSettingsActivity.this, "setting");
+                Util.getTokenActivate(reportInfo, status, DeviceSettingsActivity.this, "setting");
             startHealthCheckService();
             if (json1.isNull("responseSubCode")) return;
             if (json1.getString("responseSubCode").equals("104")) {

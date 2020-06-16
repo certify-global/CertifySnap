@@ -97,23 +97,16 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tiy_endpoint"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1">
 
-            <EditText
-                android:id="@+id/et_end_url"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:padding="@dimen/margin_5"
-                android:layout_weight="1"
-                android:background="@drawable/edittextbackground"
-                android:hint="@string/endpoint" />
-        </com.google.android.material.textfield.TextInputLayout>
+
+        <EditText
+            android:id="@+id/et_end_url"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:padding="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/edittextbackground"
+            android:hint="@string/endpoint" />
     </LinearLayout>
 
     <View
@@ -137,23 +130,16 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tiy_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1">
 
-            <EditText
-                android:id="@+id/et_device_name"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:padding="@dimen/margin_5"
-                android:background="@drawable/edittextbackground"
-                android:hint="@string/device_name" />
-        </com.google.android.material.textfield.TextInputLayout>
+
+        <EditText
+            android:id="@+id/et_device_name"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:padding="@dimen/margin_5"
+            android:background="@drawable/edittextbackground"
+            android:hint="@string/device_name" />
     </LinearLayout>
 
     <View
@@ -177,25 +163,18 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tiy_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1">
 
-            <EditText
-                android:id="@+id/et_device_password"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/edittextbackground"
-                android:hint="@string/acces_password"
-                android:inputType="numberPassword"
-                android:padding="@dimen/margin_5"
-                android:maxLength="20" />
-        </com.google.android.material.textfield.TextInputLayout>
+
+        <EditText
+            android:id="@+id/et_device_password"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/edittextbackground"
+            android:hint="@string/acces_password"
+            android:inputType="numberPassword"
+            android:padding="@dimen/margin_5"
+            android:maxLength="20" />
     </LinearLayout>
 
     <View
@@ -219,14 +198,14 @@
             android:textSize="20sp" />
 
 
-            <TextView
-                android:id="@+id/tv_device_settings"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:textColor="@color/black"
-                android:text="Local"
-                android:padding="@dimen/margin_10" />
+        <TextView
+            android:id="@+id/tv_device_settings"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:text="Local"
+            android:padding="@dimen/margin_10" />
 
     </LinearLayout>
 
