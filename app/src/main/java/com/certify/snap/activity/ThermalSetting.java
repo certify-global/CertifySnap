@@ -30,8 +30,8 @@ public class ThermalSetting extends Activity {
     Typeface rubiklight;
     TextView tv_welcome, titles;
     CheckBox cbHomeText, cbTextOnly;
-    String deffat ="if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to" +
-            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";//+
+//    String deffat ="if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to" +
+//            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";//+
 //               "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for "+
 //            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";
     String title = "";
@@ -70,7 +70,6 @@ public class ThermalSetting extends Activity {
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
             etDisplayTime.setText("" + sp.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2));
             etOnlyText.setText(sp.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, ""));
-            etOnlyText.setText(deffat+deffat+deffat);
             cbHomeText.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false));
             cbTextOnly.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false));
 

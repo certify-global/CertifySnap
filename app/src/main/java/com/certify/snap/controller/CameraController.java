@@ -49,7 +49,7 @@ public class CameraController {
         else if(length>500)
         return 24;
        else if(length>250)
-           return 28;
+           return 34;
         return 32;
    }
 }

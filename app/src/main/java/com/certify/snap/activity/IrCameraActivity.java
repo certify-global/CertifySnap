@@ -169,7 +169,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private View previewViewIr;
     private static boolean ConfirmationBoolean = false;
 
-    private TextView tv_display_time, tv_message, template_view, mask_message, tv_sync;
+    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync,tvDisplayTimeOnly,tvVersionOnly;
 
     Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
 
@@ -417,7 +417,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         });
 
-        template_view = findViewById(R.id.template_view);
+        //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
     }
 
@@ -603,10 +603,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tv_sync = findViewById(R.id.tv_sync);
 
         tv_display_time = findViewById(R.id.tv_display_time);
-        TextView tvVersionIr = findViewById(R.id.tv_version_ir);
+        tvDisplayTimeOnly= findViewById(R.id.tv_display_time_only);
+        tvVersionOnly= findViewById(R.id.tv_version_ir_only);
+         tvVersionIr = findViewById(R.id.tv_version_ir);
         tvVersionIr.setText(Util.getVersionBuild());
+        tvVersionOnly.setText(Util.getVersionBuild());
         tv_display_time.setTypeface(rubiklight);
         tvOnlyText.setTypeface(rubiklight);
+        tvDisplayTimeOnly.setTypeface(rubiklight);
+        tvVersionOnly.setTypeface(rubiklight);
         tv_message = findViewById(R.id.tv_message);
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
@@ -620,6 +625,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void run() {
                         if (tv_display_time != null)//todo null value
                             tv_display_time.setText(str);
+                        if (tvDisplayTimeOnly != null)//todo null value
+                            tvDisplayTimeOnly.setText(str);
                     }
                 });
             }
@@ -689,15 +696,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         //   if (sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN, true)) {
         if (ConfirmationBoolean) {
             isTemperatureIdentified = true;
-            if(!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false)&&!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false))
-            {
-                relative_main.setVisibility(View.GONE);
-               // rl_header.setVisibility(View.GONE);
-            }else {
-                relative_main.setVisibility(View.VISIBLE);
-                HomeTextOnlyText();
-                rl_header.setVisibility(View.VISIBLE);
-            }
+            homeDisplayView();
             tv_message.setVisibility(View.GONE);
             temperature_image.setVisibility(View.GONE);
             mask_message.setVisibility(View.GONE);
@@ -709,8 +708,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     clearLeftFace(null);
                     isTemperatureIdentified = false;
                 }
-            }, homeScreenTimeOut*1000);
+            }, homeScreenTimeOut * 1000);
             //  }
+        } else {
+            homeDisplayView();
+            if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
+                ConfirmationBoolean = false;
+                clearLeftFace(null);
+                isTemperatureIdentified = false;
+            }
         }
         try {
             if (cameraHelper != null) {
@@ -932,7 +938,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     if (rl_header == null) return;//TODO: post destroy calls
                                     changeVerifyBackground(R.color.transparency, true);
                                     relative_main.setVisibility(View.GONE);
-                                   // rl_header.setVisibility(View.GONE);
+                                    // rl_header.setVisibility(View.GONE);
                                     logo.setVisibility(View.GONE);
                                     showAnimation();
 
@@ -961,15 +967,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     tv_message.setVisibility(View.GONE);
                                                     tvErrorMessage.setVisibility(View.GONE);
                                                     temperature_image.setVisibility(View.GONE);
-                                                    if(!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false)&&!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false))
-                                                    {
-                                                        relative_main.setVisibility(View.GONE);
-                                                        rl_header.setVisibility(View.VISIBLE);
-                                                    }else {
-                                                        rl_header.setVisibility(View.VISIBLE);
-                                                        relative_main.setVisibility(View.VISIBLE);
-                                                        HomeTextOnlyText();
-                                                    }
+                                                    homeDisplayView();
                                                     mask_message.setText("");
                                                     mask_message.setVisibility(View.GONE);
                                                     tempServiceClose = true;
@@ -1193,16 +1191,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     temperature_image.setVisibility(View.GONE);
                     tvErrorMessage.setVisibility(View.GONE);
-                    if(!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false)&&!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false))
-                    {
-                        relative_main.setVisibility(View.GONE);
-                     //   rl_header.setVisibility(View.GONE);
-                    }else {
-                        logo.setVisibility(View.VISIBLE);
-                        relative_main.setVisibility(View.VISIBLE);
-                        HomeTextOnlyText();
-                        rl_header.setVisibility(View.VISIBLE);
-                    }
+                    homeDisplayView();
                     mask_message.setText("");
                     mask_message.setVisibility(View.GONE);
                     disableLedPower();
@@ -1624,15 +1613,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     tv_message.setVisibility(View.GONE);
                     tvErrorMessage.setVisibility(View.GONE);
                     temperature_image.setVisibility(View.GONE);
-                    if(!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false)&&!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE,false))
-                    {
-                        relative_main.setVisibility(View.GONE);
-                        //rl_header.setVisibility(View.GONE);
-                    }else {
-                        relative_main.setVisibility(View.VISIBLE);
-                        HomeTextOnlyText();
-                        rl_header.setVisibility(View.VISIBLE);
-                    }
+                    homeDisplayView();
                     mask_message.setVisibility(View.GONE);
                     final Activity that = IrCameraActivity.this;
                     isTemperatureIdentified = false;
@@ -1987,7 +1968,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (tempServiceClose) {
                     relative_main.setVisibility(View.GONE);
                     logo.setVisibility(View.GONE);
-                   // rl_header.setVisibility(View.GONE);
+                    // rl_header.setVisibility(View.GONE);
                 }
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 boolean showTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
@@ -2391,7 +2372,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-              //  rl_header.setVisibility(View.GONE);
+                //  rl_header.setVisibility(View.GONE);
                 logo.setVisibility(View.GONE);
                 relative_main.setVisibility(View.GONE);
                 changeVerifyBackground(R.color.transparency, true);
@@ -2646,7 +2627,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void onError(Throwable e) {
                         Log.d(TAG, "Snap Compare result Error ");
 //                        runTemperature(); // Register member photo is not there, Still find temperature
-                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        if (faceHelperIr != null)
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
                     }
 
@@ -2748,15 +2730,37 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_thermal_subtitle.setVisibility(View.GONE);
                 img_logo.setVisibility(View.GONE);
                 tvOnlyText.setVisibility(View.VISIBLE);
+                tvDisplayTimeOnly.setVisibility(View.VISIBLE);
+                tvVersionOnly.setVisibility(View.VISIBLE);
+                tv_display_time.setVisibility(View.GONE);
+                tvVersionIr.setVisibility(View.GONE);
             } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false)) {
                 logo.setVisibility(View.VISIBLE);
                 tv_thermal.setVisibility(View.VISIBLE);
                 tv_thermal_subtitle.setVisibility(View.VISIBLE);
                 tvOnlyText.setVisibility(View.GONE);
                 img_logo.setVisibility(View.VISIBLE);
+                tvDisplayTimeOnly.setVisibility(View.GONE);
+                tvVersionOnly.setVisibility(View.GONE);
+                tvVersionIr.setVisibility(View.VISIBLE);
+                tv_display_time.setVisibility(View.VISIBLE);
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    public void homeDisplayView(){
+        try{
+            if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
+                relative_main.setVisibility(View.GONE);
+                // rl_header.setVisibility(View.GONE);
+            } else {
+                relative_main.setVisibility(View.VISIBLE);
+                HomeTextOnlyText();
+                rl_header.setVisibility(View.VISIBLE);
+            }
+        }catch (Exception e){
+
         }
     }
    /* private void startMemberSyncService() {
