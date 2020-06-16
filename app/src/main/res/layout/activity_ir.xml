@@ -174,7 +174,7 @@
                 autofit:minTextSize="8sp"
                 android:layout_marginTop="@dimen/margin_38"
                 android:layout_marginBottom="@dimen/margin_50"
-                android:visibility="visible" />
+                android:visibility="gone" />
             <TextView
                 android:id="@+id/tv_thermal_subtitle"
                 android:layout_width="match_parent"
@@ -285,8 +285,6 @@
         android:textColor="@color/green"
         android:textSize="60sp"
         android:textStyle="bold" />
-
-    <include layout="@layout/titlebar" />
 
     <include layout="@layout/titlebar" />
 

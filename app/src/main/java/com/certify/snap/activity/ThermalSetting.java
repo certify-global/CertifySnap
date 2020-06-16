@@ -30,7 +30,10 @@ public class ThermalSetting extends Activity {
     Typeface rubiklight;
     TextView tv_welcome, titles;
     CheckBox cbHomeText, cbTextOnly;
-    String deffat ="if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to";
+    String deffat ="if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to" +
+            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";//+
+//               "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for "+
+//            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";
     String title = "";
 
 

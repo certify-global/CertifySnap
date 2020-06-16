@@ -1,5 +1,7 @@
 package com.certify.snap.controller;
 
+import android.util.Log;
+
 import com.certify.snap.model.QrCodeData;
 
 public class CameraController {
@@ -38,4 +40,16 @@ public class CameraController {
         qrCodeData = null;
         qrCodeId = "";
     }
+   public float getOnlyTextSize(int length){
+       Log.i("getOnlyTextSize  ",""+length);
+       if(length>2000)
+           return 16;
+        else if(length>1000)
+            return 20;
+        else if(length>500)
+        return 24;
+       else if(length>250)
+           return 28;
+        return 32;
+   }
 }
