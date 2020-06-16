@@ -1,11 +1,13 @@
 package com.certify.snap.common;
 
 
+import com.certify.snap.BuildConfig;
+
 public class EndPoints {
 
     public enum Mode {Prod, Demo}
     public static final Mode deployment = Mode.Demo;
-    public static String prod_url = "https://api.certify.me";//
+    public static String prod_url = BuildConfig.ENDPOINT_URL;
     public static String dev_url = "https://apidev.certify.me";
 
 
