@@ -322,7 +322,8 @@
     <string name="pref_key_front_camera_preview_size" translatable="false">fcpvs</string>
     <string name="pref_key_rear_camera_picture_size" translatable="false">rcpts</string>
     <string name="pref_key_front_camera_picture_size" translatable="false">fcpts</string>
-
+    <string name="temperature_compensation">Temperature Compensation</string>
+    <string name="tv_compensation">Ex:\u0020 1.5 \u0020 or \u0020  -0.5</string>
 
 
 </resources>

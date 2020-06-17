@@ -127,6 +127,11 @@ public class Util {
         edit.putInt(key, value);
         edit.commit();
     }
+    public static void writeFloat(SharedPreferences sp, String key, Float value) {
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putFloat(key, value);
+        edit.commit();
+    }
 
     //sp写入boolean
     public static void writeBoolean(SharedPreferences sp, String key, Boolean value) {

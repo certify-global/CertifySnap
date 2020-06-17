@@ -109,6 +109,9 @@ public class GlobalParameters {
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
     public static final String ANONYMOUS_ENABLE = "anonymous_enable";
+    public static final String Firebase_Command = "firebase_command";
+    public static final String Firebase_Value = "firebase_value";
+    public static final String COMPENSATION = "compensation";
 
 
 }

@@ -809,7 +809,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         String temperatureFormat = temperaturePreference.equals("F")
                                 ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
                         String abnormalTemperature = getString(R.string.temperature_anormaly);
-                        temperature = temperatureData.getTemperature();//centigrade
+                        float tempCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
+                        temperature = temperatureData.getTemperature()+(tempCompensation);//centigrade
                         if (temperaturePreference.equals("F")) {
                             temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
                         }
