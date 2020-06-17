@@ -8,6 +8,7 @@ public class CameraController {
     private static CameraController mInstance = null;
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
+    private boolean isFaceVisible = false; //flag to let know when the face is detected
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -36,9 +37,18 @@ public class CameraController {
         this.qrCodeId = qrCodeId;
     }
 
+    public boolean isFaceVisible() {
+        return isFaceVisible;
+    }
+
+    public void setFaceVisible(boolean faceVisible) {
+        isFaceVisible = faceVisible;
+    }
+
     private void clearData() {
         qrCodeData = null;
         qrCodeId = "";
+        isFaceVisible = false;
     }
 
     public float getOnlyTextSize(int length) {

@@ -299,6 +299,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     String snackMessage;
     RelativeLayout snack_layout;
     private int scanMode = 0;
+    private HotImageCallbackImpl thermalImageCallback;
 
     private void instanceStart() {
         try {
@@ -808,12 +809,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         clearQrCodePreview();
         resetMaskStatus();
         compareResult = null;
+        thermalImageCallback = null;
     }
 
     long time1, time2;
 
     public void runTemperature(final UserExportedData data) {
         Log.v(TAG, "runTemperature");
+        if (!CameraController.getInstance().isFaceVisible()) return;
         isTemperature = false;
         isSearch = false;
         time1 = time2 = 0;
@@ -825,9 +828,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     try {
-
+                        thermalImageCallback = null;
+                        thermalImageCallback = new HotImageCallbackImpl();
                         TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
-                                .getDataAndBitmap(50, true, new HotImageCallbackImpl());
+                                .getDataAndBitmap(50, true, thermalImageCallback);
                         if (temperatureData == null) {
                             isFaceIdentified = false;
                             Log.d(TAG, "runTemperature() TemperatureData is null");
@@ -1153,6 +1157,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     if (status == null
                             || status == RequestFeatureStatus.TO_RETRY) {
+                        CameraController.getInstance().setFaceVisible(true);
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
                         faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
@@ -1218,6 +1223,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (getFeatureDelayedDisposables != null) {
                 getFeatureDelayedDisposables.clear();
             }
+            CameraController.getInstance().setFaceVisible(false);
+            thermalImageCallback = null;
             return;
         }
         Enumeration<Integer> keys = requestFeatureStatusMap.keys();
@@ -1975,6 +1982,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void TemperatureCallBackUISetup(final boolean aboveThreshold, final String temperature, final String tempValue,
                                             final boolean lowTemp, final UserExportedData data) {
         if (isDestroyed()) return;
+        if (!CameraController.getInstance().isFaceVisible()) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
