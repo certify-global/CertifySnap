@@ -2807,6 +2807,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tvVersionOnly.setVisibility(View.GONE);
                 tvVersionIr.setVisibility(View.VISIBLE);
                 tv_display_time.setVisibility(View.VISIBLE);
+            } else {
+                new Handler().postDelayed(() -> {
+                    logo.setVisibility(View.GONE);
+                    relative_main.setVisibility(View.GONE);
+                    changeVerifyBackground(R.color.transparency, true);
+                }, 150);
             }
         } catch (Exception e) {
             e.printStackTrace();
