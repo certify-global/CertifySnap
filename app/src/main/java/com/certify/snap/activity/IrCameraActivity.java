@@ -2747,6 +2747,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void retryFaceOnTimeout(int requestId) {
+        if (qrCodeEnable) {
+            return;
+        }
+        if (rfIdEnable) {
+            if (faceDetectEnabled) {
+                new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+            }
+            return;
+        }
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }
 
