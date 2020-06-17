@@ -684,7 +684,10 @@ public class Util {
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
                 obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
             }
+            JSONObject deviceObject=new JSONObject();
+            deviceObject.put("temperatureCompensationValue",sp.getFloat(GlobalParameters.COMPENSATION,0));
             obj.put("deviceData", MobileDetails(context));
+            obj.put("deviceParameters", deviceObject);
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", data.exceedsThreshold);
 
