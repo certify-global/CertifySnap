@@ -1165,6 +1165,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 facePreviewInfoList.get(i).getTrackId());
                     }
                 }
+            } else {
+                CameraController.getInstance().setFaceVisible(false);
             }
             irData = null;
         }
@@ -1224,7 +1226,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (getFeatureDelayedDisposables != null) {
                 getFeatureDelayedDisposables.clear();
             }
-            CameraController.getInstance().setFaceVisible(false);
             thermalImageCallback = null;
             return;
         }
