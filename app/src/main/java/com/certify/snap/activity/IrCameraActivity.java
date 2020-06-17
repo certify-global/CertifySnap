@@ -110,6 +110,7 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
+import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -122,6 +123,8 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -2342,6 +2345,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        } else if (rfIdEnable) {
+            new HidReader().init();
         }
     }
 
@@ -2749,7 +2754,65 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void retryFaceOnTimeout(int requestId) {
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }
+    //HID card reader on serial port /dev/ttyS0. Reads 125kHz, 13.56MHz access cards
+    //TODO: extract once stabilized along with NFC into outer class
+    class HidReader {
+        private Serial serial;
+        private InputStream inputStream;
+        private OutputStream outputStream;
 
+        private boolean flag = true;
+        private String serialPath = "/dev/ttyS0";
+
+        public void init(){
+            try{
+                serial = new Serial(serialPath, 9600, 0);
+                inputStream = serial.getInputStream();
+                outputStream = serial.getOutputStream();
+                new ReadThread().start();
+            }catch(Exception e){
+                Logger.warn(TAG, "HidReader "+e.getMessage());
+            }
+
+        }
+        private class ReadThread extends Thread{
+            @Override
+            public void run() {
+                super.run();
+                while (flag) {
+                    sleep(10);
+                    if(inputStream != null){
+
+                        int size = 0;
+                        byte[] buffer = new byte[64];
+                        try{
+                            size = inputStream.available();
+                            if(size > 0){
+                                size = inputStream.read(buffer);
+                                if(size > 0){
+                                    String cardData = new String(buffer, 0, size, "UTF-8");
+                                    onRfidScan(cardData);
+                                    flag = false;
+                                }
+                            }
+                        }catch(Exception e){
+                            Logger.warn(TAG, "HidReader "+e.getMessage());
+                        }
+                    }
+                }
+            }
+
+            private void sleep(int ms) {
+                try {
+                    java.lang.Thread.sleep(ms);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
    /* private void startMemberSyncService() {
         new Handler().postDelayed(new Runnable() {
             @Override
