@@ -2766,6 +2766,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         public void init(){
             try{
+                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
                 serial = new Serial(serialPath, 9600, 0);
                 inputStream = serial.getInputStream();
                 outputStream = serial.getOutputStream();
@@ -2791,6 +2792,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 size = inputStream.read(buffer);
                                 if(size > 0){
                                     String cardData = new String(buffer, 0, size, "UTF-8");
+                                    Log.v(TAG, "HidReader cardData: "+cardData);
                                     onRfidScan(cardData);
                                     flag = false;
                                 }
