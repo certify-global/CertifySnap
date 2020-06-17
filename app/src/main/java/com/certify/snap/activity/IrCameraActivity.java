@@ -288,6 +288,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     int totalCount;
     String snackMessage;
     RelativeLayout snack_layout;
+    private int scanMode = 0;
 
     private void instanceStart() {
         try {
@@ -799,7 +800,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 .getDataAndBitmap(50, true, new HotImageCallbackImpl());
                         if (temperatureData == null) {
                             isFaceIdentified = false;
-                            Logger.error(TAG, "runTemperature()", "TemperatureData is null");
+                            Log.d(TAG, "runTemperature() TemperatureData is null");
                             return;
                         }
                         String text = "";
@@ -833,6 +834,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     } catch (Exception e) {
                         Logger.error(TAG, "runTemperature()", "Exception occurred in getTemperature data" + e.getMessage());
 //                        retry(retrytemp);
+                        Log.d(TAG, "runTemperature Exception occurred when fetching the temperature");
                     }
 
                 }
@@ -884,7 +886,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isFaceIdentified = false;
 
                     if (maskDetectBitmap == null && maskEnabled) {
-                        maskDetectBitmap = rgbBitmap;
+                        maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
                         processImageAndGetMaskStatus(maskDetectBitmap);
                     }
                     isFaceCameraOn = true;
@@ -1096,7 +1098,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private synchronized void processPreviewData(byte[] rgbData) {
         if (rgbData != null && irData != null) {
-            final byte[] cloneNv21Rgb = irData.clone();//rgbData.clone();
+            byte[] cloneNv21Rgb;
+            if (scanMode == 1) {
+                cloneNv21Rgb = rgbData.clone();
+            } else {
+                cloneNv21Rgb = irData.clone();
+            }
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
             clearLeftFace(facePreviewInfoList);
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
@@ -1746,7 +1753,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private class HotImageCallbackImpl extends HotImageCallback.Stub {
         @Override
         public void onTemperatureFail(final String e) throws RemoteException {
-            Logger.error(TAG, "HotImageCallbackImpl.onTemperatureFail()", "onTemperatureFail callback, Count temp error" + countTempError + " Error message:" + e);
+            Log.e(TAG, "SnapXT Temperature Failed Reason: " + e);
             if (isDestroyed()) return;
             isTemperatureIdentified = false;
             if (e != null) {
@@ -1756,6 +1763,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         try {
                             JSONObject obj = new JSONObject(e);
                             String error = obj.getString("err");
+
+                            Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + error);
+
                             //   Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                             // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
                             float tmpr = 0f;
@@ -1772,6 +1782,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                isTemperatureIdentified = true;
 //                                if(countTempError > 10){
 //                                    tvErrorMessage.setVisibility( View.GONE );
+                                Log.e(TAG, "SnapXT Temperature Failed Reason wrong tem , too cold");
                                 String lowTemperature = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
                                 Float lowThresholdTemperature = Float.parseFloat(lowTemperature);
                                 String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
@@ -1784,6 +1795,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 //
                                 if (lowTempValue > lowThresholdTemperature && !isTemperatureIdentified) {
+                                    Log.e(TAG, "SnapXT Temperature Failed Reason lowTempValue > lowThresholdTemperature");
                                     tempMessageUi(tmpr);
                                 } else if (tvErrorMessage != null) {
                                     tvErrorMessage.setVisibility(tempServiceClose && isTemperatureIdentified ? View.GONE : View.VISIBLE);
@@ -1793,6 +1805,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
 
                             if (sharedPreferences.getBoolean(GlobalParameters.GUIDE_SCREEN, true)) {
+                                Log.e(TAG, "SnapXT Temperature Failed Guide sreen " + error);
                                 tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                 if (error.contains("face out of range or for head too low"))
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
@@ -1811,7 +1824,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                RestartAppOnTooManyErrors(error);
                             }
                         } catch (Exception ee) {
-
+                            Log.e(TAG, "SnapXT Temperature Failed exception occurred " + ee.getMessage());
                         }
                     }
 
@@ -1844,7 +1857,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     if (data.getBitmap() != null && temperature_image != null) {//TODO: check view destroyed
-                        Logger.debug(TAG, "HotImageCallbackImpl.getTemperatureBimapData()", "Get temperature Bitmap data");
+                        Log.d(TAG, "SnapXT Temp HotImageCallbackImp Get temperature Success");
                         temperature_image.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                         temperature_image.setImageBitmap(data.getBitmap());
                     }
@@ -2299,6 +2312,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
+        scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
         getAccessControlSettings();
     }
 
@@ -2399,42 +2413,72 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private String model = Build.MODEL;
     //static int inc;
 
-    public boolean processImageAndGetMaskStatus(Bitmap maskDetectBitmap) {
-        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(maskDetectBitmap, true);
-        if (bitmap == null) {
-            Logger.debug(TAG, "Bitmap is null");
-            return false;
-        }
+    public void processImageAndGetMaskStatus(Bitmap maskDetectBitmap) {
+        Observable
+                .create((ObservableOnSubscribe<Integer>) emitter -> {
+                    Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(maskDetectBitmap, true);
+                    if (bitmap == null) {
+                        Logger.debug(TAG, "Bitmap is null");
+                        emitter.onNext(-2);
+                        return;
+                    }
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+                    int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
+                    if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+                        Log.d(TAG, "Mask Value --- transform failed, code is " + transformCode);
+                        emitter.onNext(-2);
+                        return;
+                    }
+                    List<FaceInfo> faceInfoList = new ArrayList<>();
+                    int result = faceEngineHelper.getFrEngine().detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
+                    Log.d(TAG, "Mask Result = " + result);
 
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-            Log.d(TAG, "Mask Value --- transform failed, code is " + transformCode);
-            return false;
-        }
-        List<FaceInfo> faceInfoList = new ArrayList<>();
-        int result = faceEngineHelper.getFrEngine().detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
-        Log.d(TAG, "Mask Result = " + result);
+                    if (result != ErrorInfo.MOK) {
+                        emitter.onNext(-2);
+                        return;
+                    }
 
-        if (result != ErrorInfo.MOK) {
-            return false;
-        }
-        int faceProcessCode = faceEngineHelper.getFrEngine().process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
-        // Need to work on condition
-        if (faceProcessCode == ErrorInfo.MOK) {
-            Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
-            List<MaskInfo> maskInfoList = new ArrayList<>();
-            faceEngineHelper.getFrEngine().getMask(maskInfoList);
-            if (maskInfoList.size() > 0) {
-                maskStatus = maskInfoList.get(0).getMask();
-                Log.d(TAG, "Call Mask Status " + maskStatus);
-            }
-            return true;
-        }
-        return false;
+                    int faceProcessCode = faceEngineHelper.getFrEngine().process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
+                    // Need to work on condition
+                    if (faceProcessCode == ErrorInfo.MOK) {
+                        Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
+                        List<MaskInfo> maskInfoList = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getMask(maskInfoList);
+                        if (maskInfoList.size() > 0) {
+                            emitter.onNext(maskInfoList.get(0).getMask());
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Integer>() {
+                    Disposable maskDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        maskDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Integer maskStat) {
+                        Log.d(TAG, "Call Mask Status " + maskStatus);
+                        maskStatus = maskStat;
+                        maskDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in getting the mask status");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
     }
 
     private void showMaskStatus() {

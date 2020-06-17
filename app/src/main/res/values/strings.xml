@@ -276,6 +276,10 @@
     \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="onlinemode_nointernet">Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
 \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
+    <string name="scan_mode">Scan Mode</string>
+    <string name="scan_mode_easy">Easy</string>
+    <string name="scan_mode_strict">Firm</string>
+
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
     <string name="access_control_parameter">sec</string>
