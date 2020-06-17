@@ -252,6 +252,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private FaceEngineHelper faceEngineHelper;
 
     private NfcAdapter mNfcAdapter;
+    private HidReader hidReader;//HID access card reader
     private Tag mTag;
     private PendingIntent mPendingIntent;
     private SwipeCardThread mSwipeCardThread;
@@ -2340,13 +2341,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        hidReader = new HidReader();
     }
 
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable) {
-            new HidReader().init();
+            hidReader.start();
         }
     }
 
@@ -2354,6 +2356,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
+        if(hidReader != null) hidReader.stop();
     }
 
     private void startIrCamera() {
@@ -2764,7 +2767,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         private boolean flag = true;
         private String serialPath = "/dev/ttyS0";
 
-        public void init(){
+        public void start(){
             try{
                 Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
                 serial = new Serial(serialPath, 9600, 0);
@@ -2775,6 +2778,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Logger.warn(TAG, "HidReader "+e.getMessage());
             }
 
+        }
+        public void stop(){
+            try{
+                flag = false;
+                if(serial != null) serial.close();
+            }catch (Exception e){
+                Logger.warn(TAG, "HidReader "+e.getMessage());
+            }
         }
         private class ReadThread extends Thread{
             @Override
@@ -2794,7 +2805,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String cardData = new String(buffer, 0, size, "UTF-8");
                                     Log.v(TAG, "HidReader cardData: "+cardData);
                                     onRfidScan(cardData);
-                                    flag = false;
                                 }
                             }
                         }catch(Exception e){
