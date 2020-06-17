@@ -100,7 +100,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         if (reportInfo != null) {
             Gson gson = new Gson();
             MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
-            if (response.responseCode.equals("1")) {
+            if (response.responseCode != null && response.responseCode.equals("1")) {
                 List<MemberListData> memberList = response.memberList;
                 totalMemberCount = memberList.size();
                 Log.d(TAG, "MemberList Size " + memberList.size());
