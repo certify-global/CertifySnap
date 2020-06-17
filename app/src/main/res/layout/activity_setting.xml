@@ -883,4 +883,15 @@
                 android:textSize="@dimen/font_18"/>
         </LinearLayout>
 </ScrollView>
+    <TextView
+        android:id="@+id/tv_connectivity_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingStart="@dimen/margin_20"
+        android:layout_marginRight="@dimen/font_10"
+        android:text="@string/connectivity_status"
+        android:textColor="@color/black"
+        android:textSize="@dimen/font_22"/>
 </RelativeLayout>

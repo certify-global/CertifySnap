@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus"/>
     <uses-permission
@@ -103,6 +105,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.ConnectivityStatusActivity"
+            android:screenOrientation="portrait" />
 
         <service android:name=".service.GuideService" />
         <service android:name=".service.UpdateService" />

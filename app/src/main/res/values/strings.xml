@@ -332,5 +332,19 @@
     <string name="device_mode">Device Mode</string>
     <string name="enable_home_screen">Enable Home Screen</string>
     <string name="enable_text_only_screen">Enable Text Only Mode</string>
+    <string name="connectivity_status">View Connectivity Status</string>
+    <string name="connectivity_status_title">Connectivity Status and Information</string>
+    <string name="connectivity_status_text">Connected to: Wifi/Ethernet</string>
+    <string name="mac">MAC</string>
+    <string name="ip_address">IP address</string>
+    <string name="netmask">netmask</string>
+    <string name="gateway">gateway</string>
+    <string name="dns1">dns1</string>
+    <string name="dns2">dns2</string>
+    <string name="ethernet_ip_mode">Ethernet Ip mode</string>
+    <string name="ssid">SSID:</string>
+    <string name="internet_connectivity">Internet_Connectivity:</string>
+    <string name="cloud_connectivity">CERTIFY Cloud Connectivity:</string>
+
 
 </resources>
