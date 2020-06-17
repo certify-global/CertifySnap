@@ -12,4 +12,7 @@ public class MemberListData {
 
     @SerializedName("accessId")
     public String accessId;
+
+    @SerializedName("status")
+    public boolean status;
 }

@@ -19,6 +19,7 @@ import com.certify.callback.MemberListCallback;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
+import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -32,6 +33,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import static android.os.SystemClock.elapsedRealtime;
 
@@ -42,7 +44,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     private PendingIntent restartServicePendingIntent;
     private SharedPreferences sharedPreferences;
     int totalMemberCount;
-    int count;
+    int count = 1;
+    private ExecutorService taskExecutorService;
+    private int activeMemberCount = 0;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -63,9 +67,13 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
             long currTime = Util.getCurrentTimeLong();
-            if (alarmService != null)
+            if (alarmService != null) {
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
+            }
+            resetCounters();
             MemberSyncDataModel.getInstance().init(this);
+            AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+            taskExecutorService = executorService.getExecutorService();
             Util.getmemberList(this, this);
         } catch (Exception e) {
             Logger.error(TAG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
@@ -78,6 +86,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         super.onDestroy();
         if (alarmService != null && restartServicePendingIntent != null) {
             alarmService.cancel(restartServicePendingIntent);
+        }
+        if (taskExecutorService != null) {
+            taskExecutorService = null;
         }
     }
 
@@ -92,14 +103,19 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         if (reportInfo != null) {
             Gson gson = new Gson();
             MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
-            if (response.responseCode.equals("1")) {
+            if (response.responseCode != null && response.responseCode.equals("1")) {
                 List<MemberListData> memberList = response.memberList;
                 totalMemberCount = memberList.size();
                 Log.d(TAG, "MemberList Size " + memberList.size());
                 MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
                 for (int i = 0; i < memberList.size(); i++) {
-                    getMemberID(memberList.get(i).id);
+                    if (memberList.get(i).status) {
+                        activeMemberCount++;
+                        getMemberID(memberList.get(i).id);
+                    }
                 }
+                MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
+                doSendBroadcast("start", activeMemberCount, count);
                 return;
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
@@ -111,8 +127,13 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         try {
             JSONObject obj = new JSONObject();
             obj.put("id", certifyId);
-            new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                    EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            if (taskExecutorService != null) {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
+            } else {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+            }
         } catch (Exception e) {
             Logger.error(" getMemberID()",e.getMessage());
         }
@@ -121,6 +142,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     @Override
     public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
         if (reportInfo == null) {
+            onMemberIdErrorResponse(req);
             Logger.error(TAG, "onJSONObjectListenerMemberID reportInfo nul");
             return;
         }
@@ -134,7 +156,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
                     MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                    doSendBroadcast("start", totalMemberCount, count++);
+                    doSendBroadcast("start", activeMemberCount, count++);
                 }
             } else {
                 onMemberIdErrorResponse(req);
@@ -166,5 +188,11 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 Log.e("MemberSyncService", "Error in fetching the certify id from Json");
             }
         }
+    }
+
+    private void resetCounters() {
+        totalMemberCount = 0;
+        count = 1;
+        activeMemberCount = 0;
     }
 }

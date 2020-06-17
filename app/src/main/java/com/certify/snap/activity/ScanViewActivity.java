@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+
+import com.certify.snap.common.Constants;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +31,11 @@ public class ScanViewActivity extends Activity {
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
     RadioButton radio_no_mask;
+    private TextView scanMode;
+    private RadioGroup scanModeRg;
+    private RadioButton scanModeRbEasy;
+    private RadioButton scanModeRbFirm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +64,10 @@ public class ScanViewActivity extends Activity {
             RadioGroup radio_group_sound_high = findViewById(R.id.radio_group_sound_high);
             RadioButton radio_yes_sound_high = findViewById(R.id.radio_yes_sound_high);
             RadioButton radio_no_sound_high = findViewById(R.id.radio_no_sound_high);
+            scanModeRg = findViewById(R.id.radio_group_scan_mode);
+            scanModeRbEasy = findViewById(R.id.radio_scanmode_easy);
+            scanModeRbFirm = findViewById(R.id.radio_scanmode_strict);
+
             tv_sound_high = findViewById(R.id.tv_sound_high);
             et_screen_delay = findViewById(R.id.et_screen_delay);
             text_input_low_temp = findViewById(R.id.text_input_low_temp);
@@ -73,6 +84,7 @@ public class ScanViewActivity extends Activity {
             tv_scan = findViewById(R.id.titles);
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_mask = findViewById(R.id.tv_mask);
+            scanMode = findViewById(R.id.tv_scan_mode);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
@@ -82,6 +94,10 @@ public class ScanViewActivity extends Activity {
             tv_reg.setTypeface(rubiklight);
             tv_mask.setTypeface(rubiklight);
             tv_sound_high.setTypeface(rubiklight);
+            scanMode.setTypeface(rubiklight);
+
+            setScanModeDefault();
+            setScanModeClickListener();
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
@@ -187,11 +203,45 @@ public class ScanViewActivity extends Activity {
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
                     Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
+                    saveScanModeSetting();
                     finish();
                 }
             });
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private void setScanModeDefault() {
+        if (sp.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE) == 1) {
+            scanModeRbEasy.setChecked(true);
+            scanModeRbFirm.setChecked(false);
+        } else {
+            scanModeRbFirm.setChecked(true);
+            scanModeRbEasy.setChecked(false);
+        }
+    }
+
+    private void setScanModeClickListener() {
+        scanModeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.radio_scanmode_easy) {
+                    scanModeRbEasy.setChecked(true);
+                    scanModeRbFirm.setChecked(false);
+                } else if (checkedId == R.id.radio_scanmode_strict) {
+                    scanModeRbFirm.setChecked(true);
+                    scanModeRbEasy.setChecked(false);
+                }
+            }
+        });
+    }
+
+    private void saveScanModeSetting() {
+        if (scanModeRbEasy.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanMode, 1);
+        } else if(scanModeRbFirm.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanMode, 2);
         }
     }
 

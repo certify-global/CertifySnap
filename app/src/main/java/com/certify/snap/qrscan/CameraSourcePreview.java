@@ -99,13 +99,13 @@ public class CameraSourcePreview extends ViewGroup {
                 int min = Math.min(size.getWidth(), size.getHeight());
                 int max = Math.max(size.getWidth(), size.getHeight());
                 boolean isImageFlipped = cameraSource.getCameraFacing() == CameraSource.CAMERA_FACING_FRONT;
-               /* if (isPortraitMode()) {
+               if (isPortraitMode()) {
                     // Swap width and height sizes when in portrait, since it will be rotated by 90 degrees.
                     // The camera preview and the image being processed have the same size.
                     overlay.setImageSourceInfo(min, max, isImageFlipped);
                 } else {
                     overlay.setImageSourceInfo(max, min, isImageFlipped);
-                }*/
+                }
                 overlay.clear();
             }
             startRequested = false;

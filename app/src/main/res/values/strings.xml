@@ -208,7 +208,7 @@
     <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Home View Settings</string>
-    <string name="welcome_thermal">Welcome Text For Home View</string>
+    <string name="welcome_thermal">Home Screen Text</string>
     <string name="enter_title">Enter Large Text </string>
     <string name="enter_subtitle">Enter Small Text </string>
     <string name="display_temperature">Display Temperature Details to the User on Screen</string>
@@ -276,6 +276,10 @@
     \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="onlinemode_nointernet">Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
 \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
+    <string name="scan_mode">Scan Mode</string>
+    <string name="scan_mode_easy">Easy</string>
+    <string name="scan_mode_strict">Firm</string>
+
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
     <string name="access_control_parameter">sec</string>
@@ -324,6 +328,28 @@
     <string name="pref_key_front_camera_picture_size" translatable="false">fcpts</string>
     <string name="temperature_compensation">Temperature Compensation</string>
     <string name="tv_compensation">Ex:\u0020 1.5 \u0020 or \u0020  -0.5</string>
+
+    <string name="device_name">Device Name</string>
+    <string name="keep_device_online">Keep Device Online</string>
+    <string name="device_settings">Device Settings</string>
+    <string name="device_password">Device Access Password</string>
+    <string name="online_device_activation_status">Device Online Activation Status</string>
+    <string name="device_mode">Device Mode</string>
+    <string name="enable_home_screen">Enable Home Screen</string>
+    <string name="enable_text_only_screen">Enable Text Only Mode</string>
+    <string name="connectivity_status">View Connectivity Status</string>
+    <string name="connectivity_status_title">Connectivity Status and Information</string>
+    <string name="connectivity_status_text">Connected to: Wifi/Ethernet</string>
+    <string name="mac">MAC</string>
+    <string name="ip_address">IP address</string>
+    <string name="netmask">netmask</string>
+    <string name="gateway">gateway</string>
+    <string name="dns1">dns1</string>
+    <string name="dns2">dns2</string>
+    <string name="ethernet_ip_mode">Ethernet Ip mode</string>
+    <string name="ssid">SSID:</string>
+    <string name="internet_connectivity">Internet_Connectivity:</string>
+    <string name="cloud_connectivity">CERTIFY Cloud Connectivity:</string>
 
 
 </resources>

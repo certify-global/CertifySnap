@@ -14,6 +14,7 @@
     <dimen name="margin_5">5dp</dimen>
     <dimen name="margin_38">38dp</dimen>
     <dimen name="margin_50">50dp</dimen>
+    <dimen name="margin_08">8dp</dimen>
 
     <dimen name="text_14">14sp</dimen>
     <dimen name="text_18">18sp</dimen>

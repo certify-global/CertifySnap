@@ -11,8 +11,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
 import androidx.annotation.RequiresApi;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,15 +49,19 @@ import com.certify.snap.service.DeviceHealthService;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
-public class SettingActivity extends Activity implements JSONObjectCallback,SettingCallback {
+import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
+import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
+import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
+
+public class SettingActivity extends Activity implements JSONObjectCallback, SettingCallback {
 
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-            thermal_check_setting, scan_setting, confirmation_setting, guide_setting,qr_setting;
+            thermal_check_setting, scan_setting, confirmation_setting, guide_setting, qr_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting,tv_qr_setting, tv_member_management;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -63,7 +70,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     RelativeLayout relative_layout;
     Switch switch_activate;
     private RelativeLayout accessControl;
-    private TextView accessControlTv;
+    private TextView accessControlTv, tvDeviceOnline, tvDeviceName, tvDeviceSettings, tvDeviceMode;
+    private TextView mConnectivityStatus;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -85,16 +93,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
             switch_activate = findViewById(R.id.switch_activate);
             String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
 
-        rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radio_camera_0:
-                        Util.writeString(sharedPreferences, GlobalParameters.TEMP_ONLY, "temp");
-                        break;
-                    case R.id.radio_camera_1:
-                        Util.writeString(sharedPreferences, GlobalParameters.FACE_TEMP, "facetemp");
-                        break;
+            rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    switch (checkedId) {
+                        case R.id.radio_camera_0:
+                            Util.writeString(sharedPreferences, GlobalParameters.TEMP_ONLY, "temp");
+                            break;
+                        case R.id.radio_camera_1:
+                            Util.writeString(sharedPreferences, GlobalParameters.FACE_TEMP, "facetemp");
+                            break;
 
                     }
                 }
@@ -104,51 +112,57 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
-                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
+                        // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
                         Util.activateApplication(SettingActivity.this, SettingActivity.this);
 
                     } else {
-                       // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
+                        // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        Util.writeBoolean(sharedPreferences, ONLINE_MODE, false);
                         stopHealthCheckService();
                     }
                 }
             });
 
-        initView();
-        //initOnlineModeSetting();
-        Application.getInstance().addActivity(this);
+            initView();
+            //initOnlineModeSetting();
+            Application.getInstance().addActivity(this);
 
-        sharedPreferences = Util.getSharedPreferences(this);
-        boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-        Logger.debug("sp---true", "activate:" + activateStatus);
-        if (!activateStatus)
-            new AsyncActiveEngine(SettingActivity.this, sharedPreferences,null,Util.getSNCode()).execute();
-        img_sync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
-                    Util.getSettings(SettingActivity.this, SettingActivity.this);
-                    Snackbar snackbar = Snackbar
-                            .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }else{
-                    Snackbar snackbar = Snackbar
-                            .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
+            sharedPreferences = Util.getSharedPreferences(this);
+            boolean activateStatus = sharedPreferences.getBoolean("activate", false);
+            Logger.debug("sp---true", "activate:" + activateStatus);
+            if (!activateStatus)
+                new AsyncActiveEngine(SettingActivity.this, sharedPreferences, null, Util.getSNCode()).execute();
+            img_sync.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (sharedPreferences.getBoolean(ONLINE_MODE, true)) {
+                        Util.getSettings(SettingActivity.this, SettingActivity.this);
+                        Snackbar snackbar = Snackbar
+                                .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                    } else {
+                        Snackbar snackbar = Snackbar
+                                .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                    }
 
 
                 }
             });
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+            mConnectivityStatus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(SettingActivity.this, ConnectivityStatusActivity.class));
+                }
+            });
+            if (sharedPreferences.getBoolean(ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
             } else {
                 switch_activate.setChecked(false);
             }
-        }catch (Exception e){
-            Logger.error("Setting  onCreate(Bundle savedInstanceState) ",e.getMessage());
+        } catch (Exception e) {
+            Logger.error("Setting  onCreate(Bundle savedInstanceState) ", e.getMessage());
         }
 
     }
@@ -188,7 +202,11 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
         accessControl = findViewById(R.id.access_control);
         accessControlTv = findViewById(R.id.access_control_tv);
-
+        tvDeviceOnline = findViewById(R.id.tv_online);
+        tvDeviceName = findViewById(R.id.tv_device_name);
+        tvDeviceSettings = findViewById(R.id.tv_device_setting);
+        tvDeviceMode = findViewById(R.id.tv_device_model);
+        mConnectivityStatus = findViewById(R.id.tv_connectivity_status);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -203,8 +221,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         tv_member_management.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_qr_setting.setTypeface(rubiklight);
+        tvDeviceOnline.setTypeface(rubiklight);
+        tvDeviceName.setTypeface(rubiklight);
+        tvDeviceSettings.setTypeface(rubiklight);
+        tvDeviceMode.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
+        tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? "Activated" : "Not Activated"));
+        tvDeviceName.setText(String.format("%s: %s", getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
+        tvDeviceSettings.setText(String.format("%s: %s", getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
+        tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), Util.isConnectingToInternet(SettingActivity.this) ? "Online" : "Offline"));
         accessControlTv.setTypeface(rubiklight);
     }
 
@@ -219,13 +245,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                if(Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+                if (Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(ONLINE_MODE, true)) {
                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
-                }else{
+                } else {
                     Snackbar snackbar = Snackbar
                             .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
                     snackbar.show();
                 }
+                break;
+            case R.id.rl_device_setting:
+                startActivity(new Intent(SettingActivity.this, DeviceSettingsActivity.class));
                 break;
             case R.id.setting_init:
                 if (isopen)
@@ -325,7 +354,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
                                 // edit text
-                                if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())){
+                                if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())) {
                                     LitePal.deleteAll(RegisteredMembers.class);
                                     Util.clearAllSharedPreferences(sharedPreferences);
                                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
@@ -437,6 +466,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -452,19 +482,18 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 json1 = new JSONObject(reportInfo.replace("\\", ""));
             }
 
-            Util.getTokenActivate(reportInfo,status,SettingActivity.this,"setting");
+            Util.getTokenActivate(reportInfo, status, SettingActivity.this, "setting");
             startHealthCheckService();
-            if(json1.isNull("responseSubCode"))return;
+            if (json1.isNull("responseSubCode")) return;
             if (json1.getString("responseSubCode").equals("104")) {
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseSubCode").equals("105")) {
                 switch_activate.setChecked(false);
-            }else if(json1.getString("responseCode").equals("1")){
+            } else if (json1.getString("responseCode").equals("1")) {
                 switch_activate.setChecked(true);
-            }else if(json1.getString("responseSubCode").equals("103")){
+            } else if (json1.getString("responseSubCode").equals("103")) {
                 switch_activate.setChecked(true);
             }
-
 
 
         } catch (Exception e) {
@@ -482,10 +511,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
                 if (reportInfo.getString("Message").contains("token expired"))
                     Util.getToken(this, this);
 
-            }else{
+            } else {
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    Util.retrieveSetting(reportInfo,SettingActivity.this);
+                    Util.retrieveSetting(reportInfo, SettingActivity.this);
                 } else {
                     Logger.toast(this, "Something went wrong please try again");
                 }
@@ -497,7 +526,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
     }
 
     private void initOnlineModeSetting() {
-        switch_activate.setChecked(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true));
+        switch_activate.setChecked(sharedPreferences.getBoolean(ONLINE_MODE, true));
     }
 
     /**
@@ -505,7 +534,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback,Sett
      */
     private void startHealthCheckService() {
         try {
-            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this) && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,false)) {
+            if (Util.isConnectingToInternet(this) && !Util.isServiceRunning(DeviceHealthService.class, this) && sharedPreferences.getBoolean(ONLINE_MODE, false)) {
                 startService(new Intent(this, DeviceHealthService.class));
                 Application.StartService(this);
             }

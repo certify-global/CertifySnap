@@ -38,6 +38,7 @@ public class GlobalParameters {
     public static final String AccessControlCardFormat = "accessControlCardFormat";
     public static final String AutomaticDoorAccess = "automaticDoorAccess";
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
+    public static final String ScanMode = "ScanMode";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -65,6 +66,8 @@ public class GlobalParameters {
     public static final String ONLINE_SWITCH = "online_switch";
     public static final String FIRST_RUN = "first_run";
     public static final String URL = "url";
+    public static final String DEVICE_NAME = "device_name";
+    public static final String DEVICE_SETTINGS_NAME = "device_settings_name";
     public static final String Thermalscan_title = "Thermalscan_title";
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";
     public static final String CAPTURE_IMAGES_ABOVE = "c_m_above";
@@ -109,6 +112,12 @@ public class GlobalParameters {
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
     public static final String ANONYMOUS_ENABLE = "anonymous_enable";
+    public static final String HOME_TEXT ="home_text";
+    public static final String HOME_TEXT_ONLY ="home_text_only";
+    public static final String HOME_TEXT_ONLY_MESSAGE ="home_text_only_message";
+    public static final String HOME_DISPLAY_TIME ="home_display_time";
+    public static final String HOME_TEXT_ONLY_IS_ENABLE ="home_text_only_is_enable";
+    public static final String HOME_TEXT_IS_ENABLE ="home_display_is_enable";
     public static final String Firebase_Command = "firebase_command";
     public static final String Firebase_Value = "firebase_value";
     public static final String COMPENSATION = "compensation";
