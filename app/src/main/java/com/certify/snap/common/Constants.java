@@ -21,5 +21,7 @@ public class Constants {
     public static final int DEFAULT_RELAY_TIME = 5;
 
     public static final int DEFAULT_WEIGAN_CONTROLLER_FORMAT = 26;
+
+    public static final int DEFAULT_SCAN_MODE = 1;
 }
 

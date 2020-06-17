@@ -16,29 +16,36 @@ import android.util.Log;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
+import com.certify.snap.api.response.MemberListData;
+import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
+import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.MemberSyncDataModel;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import static android.os.SystemClock.elapsedRealtime;
 
 public class MemberSyncService extends Service implements MemberListCallback, MemberIDCallback {
-    protected static final String LOG = "MemberSyncService - ";
+    protected static final String TAG = MemberSyncService.class.getSimpleName();
     private final static int BACKGROUND_INTERVAL_MINUTES = 240;
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
     private SharedPreferences sharedPreferences;
     int totalMemberCount;
     int count;
+    private ExecutorService taskExecutorService;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -62,9 +69,11 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             if (alarmService != null)
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
             MemberSyncDataModel.getInstance().init(this);
+            AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+            taskExecutorService = executorService.getExecutorService();
             Util.getmemberList(this, this);
         } catch (Exception e) {
-            Logger.error(LOG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
+            Logger.error(TAG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -74,6 +83,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         super.onDestroy();
         if (alarmService != null && restartServicePendingIntent != null) {
             alarmService.cancel(restartServicePendingIntent);
+        }
+        if (taskExecutorService != null) {
+            taskExecutorService = null;
         }
     }
 
@@ -85,33 +97,35 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            count=1;
-            if (reportInfo.isNull("responseCode")) return;
-            if (reportInfo.getString("responseCode").equals("1")) {
-                JSONArray memberList = reportInfo.getJSONArray("responseData");
-                totalMemberCount = memberList.length();
-                Logger.debug("length",""+memberList.length());
-
-                MemberSyncDataModel.getInstance().setNumOfRecords(memberList.length());
-                for (int i = 0; i < memberList.length(); i++) {
-                    JSONObject c = memberList.getJSONObject(i);
-                    getMemberID(c.getString("id"));
+        if (reportInfo != null) {
+            Gson gson = new Gson();
+            MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
+            if (response.responseCode != null && response.responseCode.equals("1")) {
+                List<MemberListData> memberList = response.memberList;
+                totalMemberCount = memberList.size();
+                Log.d(TAG, "MemberList Size " + memberList.size());
+                MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
+                for (int i = 0; i < memberList.size(); i++) {
+                    getMemberID(memberList.get(i).id);
                 }
-            } else {
-                Logger.toast(this, "Something went wrong please try again");
+                return;
             }
-        } catch (Exception e) {
-            Logger.error(LOG + "onJSONObjectListenerMemberList(String report, String status, JSONObject req)", e.getMessage());
+            Log.e(TAG, "MemberList response = " + response.responseCode);
         }
+        Log.e(TAG, "MemberList null response");
     }
 
     private void getMemberID(String certifyId) {
         try {
             JSONObject obj = new JSONObject();
             obj.put("id", certifyId);
-            new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                    EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            if (taskExecutorService != null) {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
+            } else {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+            }
         } catch (Exception e) {
             Logger.error(" getMemberID()",e.getMessage());
         }
@@ -120,7 +134,8 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     @Override
     public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
         if (reportInfo == null) {
-            Logger.error(LOG, "onJSONObjectListenerMemberID reportInfo nul");
+            onMemberIdErrorResponse(req);
+            Logger.error(TAG, "onJSONObjectListenerMemberID reportInfo nul");
             return;
         }
 

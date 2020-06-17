@@ -113,6 +113,7 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
+import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -125,6 +126,8 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -253,6 +256,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private FaceEngineHelper faceEngineHelper;
 
     private NfcAdapter mNfcAdapter;
+    private HidReader hidReader;//HID access card reader
     private Tag mTag;
     private PendingIntent mPendingIntent;
     private SwipeCardThread mSwipeCardThread;
@@ -294,6 +298,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     int totalCount;
     String snackMessage;
     RelativeLayout snack_layout;
+    private int scanMode = 0;
 
     private void instanceStart() {
         try {
@@ -825,7 +830,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 .getDataAndBitmap(50, true, new HotImageCallbackImpl());
                         if (temperatureData == null) {
                             isFaceIdentified = false;
-                            Logger.error(TAG, "runTemperature()", "TemperatureData is null");
+                            Log.d(TAG, "runTemperature() TemperatureData is null");
                             return;
                         }
                         String text = "";
@@ -859,6 +864,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     } catch (Exception e) {
                         Logger.error(TAG, "runTemperature()", "Exception occurred in getTemperature data" + e.getMessage());
 //                        retry(retrytemp);
+                        Log.d(TAG, "runTemperature Exception occurred when fetching the temperature");
                     }
 
                 }
@@ -910,7 +916,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isFaceIdentified = false;
 
                     if (maskDetectBitmap == null && maskEnabled) {
-                        maskDetectBitmap = rgbBitmap;
+                        maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
                         processImageAndGetMaskStatus(maskDetectBitmap);
                     }
                     isFaceCameraOn = true;
@@ -971,6 +977,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     mask_message.setText("");
                                                     mask_message.setVisibility(View.GONE);
                                                     tempServiceClose = true;
+                                                    retryFaceOnTimeout(requestId); //Retry again on timeout
                                                     disableLedPower();
                                                     enableNfc();
                                                 }
@@ -1119,7 +1126,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private synchronized void processPreviewData(byte[] rgbData) {
         if (rgbData != null && irData != null) {
-            final byte[] cloneNv21Rgb = irData.clone();//rgbData.clone();
+            byte[] cloneNv21Rgb;
+            if (scanMode == 1) {
+                cloneNv21Rgb = rgbData.clone();
+            } else {
+                cloneNv21Rgb = irData.clone();
+            }
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
             clearLeftFace(facePreviewInfoList);
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
@@ -1765,7 +1777,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private class HotImageCallbackImpl extends HotImageCallback.Stub {
         @Override
         public void onTemperatureFail(final String e) throws RemoteException {
-            Logger.error(TAG, "HotImageCallbackImpl.onTemperatureFail()", "onTemperatureFail callback, Count temp error" + countTempError + " Error message:" + e);
+            Log.e(TAG, "SnapXT Temperature Failed Reason: " + e);
             if (isDestroyed()) return;
             isTemperatureIdentified = false;
             if (e != null) {
@@ -1775,6 +1787,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         try {
                             JSONObject obj = new JSONObject(e);
                             String error = obj.getString("err");
+
+                            Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + error);
+
                             //   Toast.makeText(IrCameraActivity.this,obj.getString("err"),Toast.LENGTH_SHORT).show();
                             // if (obj.getString("err").equals("face out of range or for head too low")&&!isIdentified) {
                             float tmpr = 0f;
@@ -1791,6 +1806,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                isTemperatureIdentified = true;
 //                                if(countTempError > 10){
 //                                    tvErrorMessage.setVisibility( View.GONE );
+                                Log.e(TAG, "SnapXT Temperature Failed Reason wrong tem , too cold");
                                 String lowTemperature = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
                                 Float lowThresholdTemperature = Float.parseFloat(lowTemperature);
                                 String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
@@ -1803,6 +1819,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 //
                                 if (lowTempValue > lowThresholdTemperature && !isTemperatureIdentified) {
+                                    Log.e(TAG, "SnapXT Temperature Failed Reason lowTempValue > lowThresholdTemperature");
                                     tempMessageUi(tmpr);
                                 } else if (tvErrorMessage != null) {
                                     tvErrorMessage.setVisibility(tempServiceClose && isTemperatureIdentified ? View.GONE : View.VISIBLE);
@@ -1812,6 +1829,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
 
                             if (sharedPreferences.getBoolean(GlobalParameters.GUIDE_SCREEN, true)) {
+                                Log.e(TAG, "SnapXT Temperature Failed Guide sreen " + error);
                                 tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                 if (error.contains("face out of range or for head too low"))
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
@@ -1830,7 +1848,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                                RestartAppOnTooManyErrors(error);
                             }
                         } catch (Exception ee) {
-
+                            Log.e(TAG, "SnapXT Temperature Failed exception occurred " + ee.getMessage());
                         }
                     }
 
@@ -1863,7 +1881,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     if (data.getBitmap() != null && temperature_image != null) {//TODO: check view destroyed
-                        Logger.debug(TAG, "HotImageCallbackImpl.getTemperatureBimapData()", "Get temperature Bitmap data");
+                        Log.d(TAG, "SnapXT Temp HotImageCallbackImp Get temperature Success");
                         temperature_image.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                         temperature_image.setImageBitmap(data.getBitmap());
                     }
@@ -2318,6 +2336,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
+        scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
         getAccessControlSettings();
     }
 
@@ -2342,11 +2361,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        hidReader = new HidReader();
     }
 
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        } else if (rfIdEnable) {
+            hidReader.start();
         }
     }
 
@@ -2354,6 +2376,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
+        if(hidReader != null) hidReader.stop();
     }
 
     private void startIrCamera() {
@@ -2418,42 +2441,72 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private String model = Build.MODEL;
     //static int inc;
 
-    public boolean processImageAndGetMaskStatus(Bitmap maskDetectBitmap) {
-        Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(maskDetectBitmap, true);
-        if (bitmap == null) {
-            Logger.debug(TAG, "Bitmap is null");
-            return false;
-        }
+    public void processImageAndGetMaskStatus(Bitmap maskDetectBitmap) {
+        Observable
+                .create((ObservableOnSubscribe<Integer>) emitter -> {
+                    Bitmap bitmap = ArcSoftImageUtil.getAlignedBitmap(maskDetectBitmap, true);
+                    if (bitmap == null) {
+                        Logger.debug(TAG, "Bitmap is null");
+                        emitter.onNext(-2);
+                        return;
+                    }
+                    int width = bitmap.getWidth();
+                    int height = bitmap.getHeight();
+                    byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+                    int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
+                    if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+                        Log.d(TAG, "Mask Value --- transform failed, code is " + transformCode);
+                        emitter.onNext(-2);
+                        return;
+                    }
+                    List<FaceInfo> faceInfoList = new ArrayList<>();
+                    int result = faceEngineHelper.getFrEngine().detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
+                    Log.d(TAG, "Mask Result = " + result);
 
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-            Log.d(TAG, "Mask Value --- transform failed, code is " + transformCode);
-            return false;
-        }
-        List<FaceInfo> faceInfoList = new ArrayList<>();
-        int result = faceEngineHelper.getFrEngine().detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, DetectModel.RGB, faceInfoList);
-        Log.d(TAG, "Mask Result = " + result);
+                    if (result != ErrorInfo.MOK) {
+                        emitter.onNext(-2);
+                        return;
+                    }
 
-        if (result != ErrorInfo.MOK) {
-            return false;
-        }
-        int faceProcessCode = faceEngineHelper.getFrEngine().process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
-        // Need to work on condition
-        if (faceProcessCode == ErrorInfo.MOK) {
-            Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
-            List<MaskInfo> maskInfoList = new ArrayList<>();
-            faceEngineHelper.getFrEngine().getMask(maskInfoList);
-            if (maskInfoList.size() > 0) {
-                maskStatus = maskInfoList.get(0).getMask();
-                Log.d(TAG, "Call Mask Status " + maskStatus);
-            }
-            return true;
-        }
-        return false;
+                    int faceProcessCode = faceEngineHelper.getFrEngine().process(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList, processMask);
+                    // Need to work on condition
+                    if (faceProcessCode == ErrorInfo.MOK) {
+                        Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
+                        List<MaskInfo> maskInfoList = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getMask(maskInfoList);
+                        if (maskInfoList.size() > 0) {
+                            emitter.onNext(maskInfoList.get(0).getMask());
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Integer>() {
+                    Disposable maskDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        maskDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Integer maskStat) {
+                        Log.d(TAG, "Call Mask Status " + maskStatus);
+                        maskStatus = maskStat;
+                        maskDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in getting the mask status");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
     }
 
     private void showMaskStatus() {
@@ -2749,8 +2802,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             e.printStackTrace();
         }
     }
-    public void homeDisplayView(){
-        try{
+
+    public void homeDisplayView() {
+        try {
             if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
@@ -2759,10 +2813,83 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 HomeTextOnlyText();
                 rl_header.setVisibility(View.VISIBLE);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
+
+    private void retryFaceOnTimeout(int requestId) {
+        new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+    }
+
+    //HID card reader on serial port /dev/ttyS0. Reads 125kHz, 13.56MHz access cards
+    //TODO: extract once stabilized along with NFC into outer class
+    class HidReader {
+        private Serial serial;
+        private InputStream inputStream;
+        private OutputStream outputStream;
+
+        private boolean flag = true;
+        private String serialPath = "/dev/ttyS0";
+
+        public void start(){
+            try{
+                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
+                serial = new Serial(serialPath, 9600, 0);
+                inputStream = serial.getInputStream();
+                outputStream = serial.getOutputStream();
+                new ReadThread().start();
+            }catch(Exception e){
+                Logger.warn(TAG, "HidReader "+e.getMessage());
+            }
+
+        }
+        public void stop(){
+            try{
+                flag = false;
+                if(serial != null) serial.close();
+            }catch (Exception e){
+                Logger.warn(TAG, "HidReader "+e.getMessage());
+            }
+        }
+        private class ReadThread extends Thread{
+            @Override
+            public void run() {
+                super.run();
+                while (flag) {
+                    sleep(10);
+                    if(inputStream != null){
+
+                        int size = 0;
+                        byte[] buffer = new byte[64];
+                        try{
+                            size = inputStream.available();
+                            if(size > 0){
+                                size = inputStream.read(buffer);
+                                if(size > 0){
+                                    String cardData = new String(buffer, 0, size, "UTF-8");
+                                    Log.v(TAG, "HidReader cardData: "+cardData);
+                                    onRfidScan(cardData);
+                                }
+                            }
+                        }catch(Exception e){
+                            Logger.warn(TAG, "HidReader "+e.getMessage());
+                        }
+                    }
+                }
+            }
+
+            private void sleep(int ms) {
+                try {
+                    java.lang.Thread.sleep(ms);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
    /* private void startMemberSyncService() {
         new Handler().postDelayed(new Runnable() {
             @Override
