@@ -379,6 +379,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         getAppSettings();
         CameraController.getInstance().init();
         initAccessControl();
+        initTriggerType();
         try {
 
             processHandler = new ProcessHandler(this);
@@ -2350,16 +2351,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
-        String str;
-        if (faceDetectEnabled)
-            str = "Face";
-        else if (rfIdEnable)
-            str = "Accessid";
-        else if (qrCodeEnable)
-            str = "Codeid";
-        else//CAMERA - Anonymous temp scan
-            str = "Camera";
-        new UserExportedData().triggerType = str;
         getAccessControlSettings();
     }
 
@@ -2386,12 +2377,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
     }
-
+private void initTriggerType(){
+    String str;
+    if (faceDetectEnabled)
+        str = "Face";
+    else if (rfIdEnable)
+        str = "Accessid";
+    else if (qrCodeEnable)
+        str = "Codeid";
+    else//CAMERA - Anonymous temp scan
+        str = "Camera";
+    new UserExportedData().triggerType = str;
+}
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
-            hidReader.start(this);
+            hidReader.start();
         }else{
             Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }

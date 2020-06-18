@@ -205,6 +205,7 @@
             android:layout_weight="1"
             android:textColor="@color/black"
             android:text="Local"
+            android:textSize="@dimen/font_18"
             android:padding="@dimen/margin_10" />
 
     </LinearLayout>
@@ -217,7 +218,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawablePadding="5dp"
-        android:layout_margin="@dimen/margin_5"
+        android:layout_marginStart="@dimen/margin_10"
         android:text="@string/data_management"
         android:textColor="@color/black"
         android:layout_marginTop="@dimen/margin_50"
@@ -226,7 +227,8 @@
         android:id="@+id/cb_enable_do_not_sync"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginLeft="@dimen/margin_10"
         android:text="@string/do_not_sync"
         android:layoutDirection="rtl"
         android:textSize="@dimen/text_18"/>
