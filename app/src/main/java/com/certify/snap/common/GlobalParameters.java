@@ -118,6 +118,9 @@ public class GlobalParameters {
     public static final String HOME_DISPLAY_TIME ="home_display_time";
     public static final String HOME_TEXT_ONLY_IS_ENABLE ="home_text_only_is_enable";
     public static final String HOME_TEXT_IS_ENABLE ="home_display_is_enable";
+    public static final String Firebase_Command = "firebase_command";
+    public static final String Firebase_Value = "firebase_value";
+    public static final String COMPENSATION = "compensation";
 
 
 }
