@@ -127,6 +127,11 @@ public class Util {
         edit.putInt(key, value);
         edit.commit();
     }
+    public static void writeFloat(SharedPreferences sp, String key, Float value) {
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putFloat(key, value);
+        edit.commit();
+    }
 
     //sp写入boolean
     public static void writeBoolean(SharedPreferences sp, String key, Boolean value) {
@@ -679,7 +684,10 @@ public class Util {
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
                 obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
             }
+            JSONObject deviceObject=new JSONObject();
+            deviceObject.put("temperatureCompensationValue",sp.getFloat(GlobalParameters.COMPENSATION,0));
             obj.put("deviceData", MobileDetails(context));
+            obj.put("deviceParameters", deviceObject);
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", data.exceedsThreshold);
 

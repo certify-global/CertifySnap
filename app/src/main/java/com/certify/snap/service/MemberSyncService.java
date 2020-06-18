@@ -44,8 +44,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     private PendingIntent restartServicePendingIntent;
     private SharedPreferences sharedPreferences;
     int totalMemberCount;
-    int count;
+    int count = 1;
     private ExecutorService taskExecutorService;
+    private int activeMemberCount = 0;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,8 +67,10 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
             long currTime = Util.getCurrentTimeLong();
-            if (alarmService != null)
+            if (alarmService != null) {
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
+            }
+            resetCounters();
             MemberSyncDataModel.getInstance().init(this);
             AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
             taskExecutorService = executorService.getExecutorService();
@@ -106,8 +109,13 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 Log.d(TAG, "MemberList Size " + memberList.size());
                 MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
                 for (int i = 0; i < memberList.size(); i++) {
-                    getMemberID(memberList.get(i).id);
+                    if (memberList.get(i).status) {
+                        activeMemberCount++;
+                        getMemberID(memberList.get(i).id);
+                    }
                 }
+                MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
+                doSendBroadcast("start", activeMemberCount, count);
                 return;
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
@@ -148,7 +156,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
                     MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                    doSendBroadcast("start", totalMemberCount, count++);
+                    doSendBroadcast("start", activeMemberCount, count++);
                 }
             } else {
                 onMemberIdErrorResponse(req);
@@ -180,5 +188,11 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 Log.e("MemberSyncService", "Error in fetching the certify id from Json");
             }
         }
+    }
+
+    private void resetCounters() {
+        totalMemberCount = 0;
+        count = 1;
+        activeMemberCount = 0;
     }
 }

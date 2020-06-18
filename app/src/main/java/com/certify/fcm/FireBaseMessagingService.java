@@ -27,6 +27,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
             Map<String, String> data = remoteMessage.getData();
              String title=remoteMessage.getData().get("Title");
              String body=remoteMessage.getData().get("Body");
+             Logger.debug("push",data.toString());
             }
 
         } catch (Exception e) {

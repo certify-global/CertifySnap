@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import com.certify.snap.BuildConfig;
+import com.certify.snap.common.HidReader;
 import com.certify.snap.qrscan.CameraSource;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -113,7 +114,6 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -126,8 +126,6 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -149,7 +147,8 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
-public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData, JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback {
+public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
+        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, HidReader.RfidScanCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView logo, scan, outerCircle, innerCircle, exit;
@@ -299,6 +298,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     String snackMessage;
     RelativeLayout snack_layout;
     private int scanMode = 0;
+    private HotImageCallbackImpl thermalImageCallback;
 
     private void instanceStart() {
         try {
@@ -808,12 +808,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         clearQrCodePreview();
         resetMaskStatus();
         compareResult = null;
+        thermalImageCallback = null;
     }
 
     long time1, time2;
 
     public void runTemperature(final UserExportedData data) {
         Log.v(TAG, "runTemperature");
+        if (!CameraController.getInstance().isFaceVisible()) return;
         isTemperature = false;
         isSearch = false;
         time1 = time2 = 0;
@@ -825,9 +827,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     try {
-
+                        thermalImageCallback = null;
+                        thermalImageCallback = new HotImageCallbackImpl();
                         TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
-                                .getDataAndBitmap(50, true, new HotImageCallbackImpl());
+                                .getDataAndBitmap(50, true, thermalImageCallback);
                         if (temperatureData == null) {
                             isFaceIdentified = false;
                             Log.d(TAG, "runTemperature() TemperatureData is null");
@@ -840,7 +843,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         String temperatureFormat = temperaturePreference.equals("F")
                                 ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
                         String abnormalTemperature = getString(R.string.temperature_anormaly);
-                        temperature = temperatureData.getTemperature();//centigrade
+                        float tempCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
+                        temperature = temperatureData.getTemperature()+(tempCompensation);//centigrade
                         if (temperaturePreference.equals("F")) {
                             temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
                         }
@@ -1153,12 +1157,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     if (status == null
                             || status == RequestFeatureStatus.TO_RETRY) {
+                        CameraController.getInstance().setFaceVisible(true);
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
                         faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
                                 facePreviewInfoList.get(i).getTrackId());
                     }
                 }
+            } else {
+                CameraController.getInstance().setFaceVisible(false);
             }
             irData = null;
         }
@@ -1218,6 +1225,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (getFeatureDelayedDisposables != null) {
                 getFeatureDelayedDisposables.clear();
             }
+            thermalImageCallback = null;
             return;
         }
         Enumeration<Integer> keys = requestFeatureStatusMap.keys();
@@ -1975,6 +1983,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void TemperatureCallBackUISetup(final boolean aboveThreshold, final String temperature, final String tempValue,
                                             final boolean lowTemp, final UserExportedData data) {
         if (isDestroyed()) return;
+        if (!CameraController.getInstance().isFaceVisible()) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -2361,14 +2370,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        hidReader = new HidReader();
+        if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
     }
 
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-        } else if (rfIdEnable) {
-            hidReader.start();
+        } else if (rfIdEnable && hidReader != null) {
+            hidReader.start(this);
+        }else{
+            Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }
     }
 
@@ -2701,7 +2712,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         return (!faceDetectEnabled || (LitePal.findAll(RegisteredMembers.class).isEmpty()));
     }
 
-    private void onRfidScan(String cardId) {
+    public void onRfidScan(String cardId) {
+        Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (AccessCardController.getInstance().isAccessControlEnabled()) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
@@ -2797,6 +2809,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tvVersionOnly.setVisibility(View.GONE);
                 tvVersionIr.setVisibility(View.VISIBLE);
                 tv_display_time.setVisibility(View.VISIBLE);
+            } else {
+                new Handler().postDelayed(() -> {
+                    logo.setVisibility(View.GONE);
+                    relative_main.setVisibility(View.GONE);
+                    changeVerifyBackground(R.color.transparency, true);
+                }, 150);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -2819,75 +2837,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void retryFaceOnTimeout(int requestId) {
+        if (qrCodeEnable) {
+            return;
+        }
+        if (rfIdEnable) {
+            if (faceDetectEnabled) {
+                new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+            }
+            return;
+        }
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
-    }
-
-    //HID card reader on serial port /dev/ttyS0. Reads 125kHz, 13.56MHz access cards
-    //TODO: extract once stabilized along with NFC into outer class
-    class HidReader {
-        private Serial serial;
-        private InputStream inputStream;
-        private OutputStream outputStream;
-
-        private boolean flag = true;
-        private String serialPath = "/dev/ttyS0";
-
-        public void start(){
-            try{
-                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
-                serial = new Serial(serialPath, 9600, 0);
-                inputStream = serial.getInputStream();
-                outputStream = serial.getOutputStream();
-                new ReadThread().start();
-            }catch(Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
-            }
-
-        }
-        public void stop(){
-            try{
-                flag = false;
-                if(serial != null) serial.close();
-            }catch (Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
-            }
-        }
-        private class ReadThread extends Thread{
-            @Override
-            public void run() {
-                super.run();
-                while (flag) {
-                    sleep(10);
-                    if(inputStream != null){
-
-                        int size = 0;
-                        byte[] buffer = new byte[64];
-                        try{
-                            size = inputStream.available();
-                            if(size > 0){
-                                size = inputStream.read(buffer);
-                                if(size > 0){
-                                    String cardData = new String(buffer, 0, size, "UTF-8");
-                                    Log.v(TAG, "HidReader cardData: "+cardData);
-                                    onRfidScan(cardData);
-                                }
-                            }
-                        }catch(Exception e){
-                            Logger.warn(TAG, "HidReader "+e.getMessage());
-                        }
-                    }
-                }
-            }
-
-            private void sleep(int ms) {
-                try {
-                    java.lang.Thread.sleep(ms);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
     }
 
    /* private void startMemberSyncService() {
