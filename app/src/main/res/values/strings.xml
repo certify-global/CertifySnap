@@ -350,6 +350,8 @@
     <string name="ssid">SSID:</string>
     <string name="internet_connectivity">Internet_Connectivity:</string>
     <string name="cloud_connectivity">CERTIFY Cloud Connectivity:</string>
+    <string name="data_management">Data Management</string>
+    <string name="do_not_sync">Do Not Sync online Member Data to Device </string>
 
 
 </resources>

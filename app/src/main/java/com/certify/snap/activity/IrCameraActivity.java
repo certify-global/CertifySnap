@@ -114,6 +114,7 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
+import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -126,6 +127,8 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -376,6 +379,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         getAppSettings();
         CameraController.getInstance().init();
         initAccessControl();
+        initTriggerType();
         try {
 
             processHandler = new ProcessHandler(this);
@@ -608,9 +612,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tv_sync = findViewById(R.id.tv_sync);
 
         tv_display_time = findViewById(R.id.tv_display_time);
-        tvDisplayTimeOnly= findViewById(R.id.tv_display_time_only);
-        tvVersionOnly= findViewById(R.id.tv_version_ir_only);
-         tvVersionIr = findViewById(R.id.tv_version_ir);
+        tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
+        tvVersionOnly = findViewById(R.id.tv_version_ir_only);
+        tvVersionIr = findViewById(R.id.tv_version_ir);
         tvVersionIr.setText(Util.getVersionBuild());
         tvVersionOnly.setText(Util.getVersionBuild());
         tv_display_time.setTypeface(rubiklight);
@@ -2077,6 +2081,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         public String maskStatus;
         public CompareResult compareResult;
         private QrCodeData qrCodeData;  //TODO1: Optimize
+        public String triggerType = "";
 
         public UserExportedData() {
             this.member = new RegisteredMembers();
@@ -2371,12 +2376,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
     }
-
+private void initTriggerType(){
+    String str;
+    if (faceDetectEnabled)
+        str = "Face";
+    else if (rfIdEnable)
+        str = "Accessid";
+    else if (qrCodeEnable)
+        str = "Codeid";
+    else//CAMERA - Anonymous temp scan
+        str = "Camera";
+    new UserExportedData().triggerType = str;
+}
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
-            hidReader.start(this);
+            hidReader.start();
         }else{
             Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }
@@ -2386,7 +2402,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
-        if(hidReader != null) hidReader.stop();
+        if (hidReader != null) hidReader.stop();
     }
 
     private void startIrCamera() {
@@ -2846,6 +2862,74 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+    }
+
+    //HID card reader on serial port /dev/ttyS0. Reads 125kHz, 13.56MHz access cards
+    //TODO: extract once stabilized along with NFC into outer class
+    class HidReader {
+        private Serial serial;
+        private InputStream inputStream;
+        private OutputStream outputStream;
+
+        private boolean flag = true;
+        private String serialPath = "/dev/ttyS0";
+
+        public void start(){
+            try{
+                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
+                serial = new Serial(serialPath, 9600, 0);
+                inputStream = serial.getInputStream();
+                outputStream = serial.getOutputStream();
+                new ReadThread().start();
+            }catch(Exception e){
+                Logger.warn(TAG, "HidReader "+e.getMessage());
+            }
+
+        }
+        public void stop(){
+            try{
+                flag = false;
+                if(serial != null) serial.close();
+            }catch (Exception e){
+                Logger.warn(TAG, "HidReader "+e.getMessage());
+            }
+        }
+        private class ReadThread extends Thread{
+            @Override
+            public void run() {
+                super.run();
+                while (flag) {
+                    sleep(10);
+                    if(inputStream != null){
+
+                        int size = 0;
+                        byte[] buffer = new byte[64];
+                        try{
+                            size = inputStream.available();
+                            if(size > 0){
+                                size = inputStream.read(buffer);
+                                if(size > 0){
+                                    String cardData = new String(buffer, 0, size, "UTF-8");
+                                    Log.v(TAG, "HidReader cardData: "+cardData);
+                                    onRfidScan(cardData);
+                                }
+                            }
+                        }catch(Exception e){
+                            Logger.warn(TAG, "HidReader "+e.getMessage());
+                        }
+                    }
+                }
+            }
+
+            private void sleep(int ms) {
+                try {
+                    java.lang.Thread.sleep(ms);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
     }
 
    /* private void startMemberSyncService() {
