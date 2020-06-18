@@ -104,8 +104,6 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
             for (NetworkInterface nif : all) {
                 if (!nif.getName().equalsIgnoreCase("eth0")) continue;
 
-                Log.i("Shailendra dhcp", nif.getDisplayName());
-                Log.i("Shailendra dhcp1", nif.getName());
                 byte[] macBytes = nif.getHardwareAddress();
                 if (macBytes == null) {
                     return "";
@@ -136,7 +134,6 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
 
             JSONObject json = new JSONObject(reportInfo);
             if (json.getInt("responseCode") == 1){
-                Log.i("Shailendra res", "responseCode");
                 mRbcloudConnectivity.setChecked(true);
 
             } else {
