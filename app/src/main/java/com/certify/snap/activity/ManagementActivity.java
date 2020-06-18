@@ -19,6 +19,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+
+import com.certify.snap.common.HidReader;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
@@ -83,7 +85,8 @@ import java.util.List;
 
 import static com.certify.snap.common.Util.getnumberString;
 
-public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback, MemberListCallback, MemberIDCallback {
+public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback,
+        MemberListCallback, MemberIDCallback, HidReader.RfidScanCallback {
 
     protected static final String LOG = "Management Activity ";
     private EditText msearch;
@@ -117,6 +120,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private Boolean isDeleted = false;
 
     private NfcAdapter mNfcAdapter; //Optimize
+    private HidReader hidReader;
     private PendingIntent mPendingIntent;
     private RegisteredMembers updateMember = null;
     private EditText registerAccessid;
@@ -218,13 +222,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         String UID = Util.bytesToHexString(ID);
         if (UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
-        if (updateMember != null) {
-            updateMember.setAccessid(id);
-            //Update UI
-            maccessid.setText(id);
-            return;
-        }
-        registerAccessid.setText(id);
+        onRfidScan(id);
         popupEnrollBtn.setVisibility(View.GONE);
     }
 
@@ -1289,21 +1287,28 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private void initNfc() {
+        Log.v(TAG, "initNfc");
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        if(mNfcAdapter == null) hidReader = new HidReader();
     }
 
     private void enableNfc() {
+        Log.v(TAG, "enableNfc");
         if (mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        } else if(hidReader != null) {
+            hidReader.start(this);
         }
     }
 
     private void disableNfc() {
+        Log.v(TAG, "disableNfc");
         if (mNfcAdapter != null) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
+        if(hidReader != null) hidReader.stop();
     }
 
     @Override
@@ -1540,6 +1545,19 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     //initData(true);
                 }
             }
+        });
+    }
+
+    @Override
+    public void onRfidScan(String cardId) {
+        if(updateMember != null) updateMember.setAccessid(cardId);
+        runOnUiThread(()->{
+            if (updateMember != null) {
+                maccessid.setText(cardId);
+            }else{
+                registerAccessid.setText(cardId);
+            }
+
         });
     }
 }
