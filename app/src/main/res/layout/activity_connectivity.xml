@@ -299,7 +299,7 @@
                     android:text="@string/cloud_connectivity"
                     android:layout_marginLeft="@dimen/margin_15"
                     android:layout_marginRight="@dimen/margin_10"
-                    android:textColor="@color/red"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/font_18"/>
 
                 <RadioButton
