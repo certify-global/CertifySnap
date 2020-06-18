@@ -284,7 +284,7 @@
                         android:layout_marginEnd="@dimen/margin_30"
                         android:textColor="@color/black"
                         android:layout_marginLeft="@dimen/font_10"
-                        android:theme="@style/MyCheckBox" />
+                        android:theme="@style/CustomRadioButton" />
             </LinearLayout>
 
             <LinearLayout
