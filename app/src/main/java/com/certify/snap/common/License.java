@@ -2,10 +2,18 @@ package com.certify.snap.common;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
+import android.view.textclassifier.TextLinks;
 
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.enums.DetectMode;
+import com.bumptech.glide.RequestBuilder;
+import com.google.gson.Gson;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +27,7 @@ public class License {
         try{
             int activationCode = new FaceEngine().init(context, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(context),
                     16, 10, FaceEngine.ASF_FACE_DETECT);
-            Logger.warn(TAG, "checkLicense activationCode: "+activationCode);
+            Logger.debug(TAG, "checkLicense activationCode: "+activationCode);
             return (activationCode == ErrorInfo.MOK || activationCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED);
         }catch (Exception ex){
 
@@ -35,7 +43,7 @@ public class License {
             activated = License.checkLicense(context);
         }
         if(!activated){
-            activated = ActiveEngine.activeEngineOffline(context);
+//            activated = ActiveEngine.activeEngineOffline(context);
 
             if(!activated){
                 String serialNumber = Util.getSNCode();
@@ -45,7 +53,7 @@ public class License {
                                 serialNumber, activationKey));
                 int activationResult = FaceEngine.activeOnline(context, activationKey, Constants.APP_ID, Constants.SDK_KEY);
                 activated = activationResult == ErrorInfo.MOK || activationResult == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED;
-                Logger.debug(TAG, String.format("doInBackground FaceEngine.activeOnline activationResult: %d", activationResult));
+                Logger.debug(TAG, String.format("activateLicense activationResult: %d", activationResult));
             }
             if(activated) copyLicense(context);
             Util.writeBoolean(Util.getSharedPreferences(context), "activate", activated);
@@ -53,19 +61,46 @@ public class License {
         }
         return activated;
     }
+    public static String getLicenseRemote(String url, String deviceSN){
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url+"/GetFaceLicenceInfo?deviceSN="+deviceSN)
+                .build();
+        try(Response resp = client.newCall(request).execute()){
+            if(!resp.isSuccessful()) return "";
+
+            String body = resp.body().string();
+            Log.v(TAG, "getLicenseRemote "+body);
+            LicenseResponse licenseResponse = new Gson().fromJson(body, LicenseResponse.class);
+            if(licenseResponse.responseCode != 1 || licenseResponse.responseSubCode != 0){
+                return "";
+            }
+
+            return licenseResponse.responseData.faceLicenceInfo;
+        } catch (Exception ex) {
+            Log.w(TAG, "getLicenseRemote "+ex.getMessage());
+            //TODO: return error / log
+        }
+        return "";
+    }
+    public static class LicenseResponse extends ManageMemberHelper.SnapResponse{
+        public LicenseData responseData;
+    }
+    public static class LicenseData{
+        public String deviceSN;
+        public String activationKey;
+        public String faceLicenceInfo;
+    }
     public static void copyLicense(Context context){
         String licenseFileName = "ArcFacePro32.dat";
 
         File externalStorageLicense = new File(Environment.getExternalStorageDirectory(), licenseFileName);
         File applicationLicense = new File(context.getFilesDir(), licenseFileName);
-        boolean shouldCopyToApplication = !externalStorageLicense.exists() && applicationLicense.exists();
-        boolean shouldCopyToExternalStorage = externalStorageLicense.exists() && !applicationLicense.exists();
-        Logger.debug(TAG, String.format("copyLicense shouldCopy: %b, folders externalStorage: %s, application: %s",
+        boolean shouldCopyToApplication = externalStorageLicense.exists() && !applicationLicense.exists();
+        Logger.debug(TAG, String.format("copyLicense shouldCopyToApplication: %b, folders externalStorage: %s, application: %s",
                 shouldCopyToApplication, externalStorageLicense.getPath(), applicationLicense.getPath()));
 
         if(shouldCopyToApplication){
-            copyFiles(applicationLicense, externalStorageLicense);
-        }else if(shouldCopyToExternalStorage){
             copyFiles(externalStorageLicense, applicationLicense);
         }
 
