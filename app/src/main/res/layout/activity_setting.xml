@@ -890,8 +890,10 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:paddingStart="@dimen/margin_20"
-        android:layout_marginRight="@dimen/font_10"
+        android:layout_marginRight="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
         android:text="@string/connectivity_status"
         android:textColor="@color/black"
-        android:textSize="@dimen/font_22"/>
+        android:textSize="@dimen/font_18"
+        android:textStyle="bold"/>
 </RelativeLayout>
