@@ -50,7 +50,7 @@
         android:onClick="onclick">
 
         <TextView
-            android:id="@+id/activate_tv"
+            android:id="@+id/activate_tv_device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -87,7 +87,7 @@
         android:orientation="horizontal"
         android:padding="@dimen/margin_5">
 
-        <TextView
+        <TextView android:id="@+id/tv_end_device"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -120,7 +120,7 @@
         android:orientation="horizontal"
         android:padding="@dimen/margin_5">
 
-        <TextView
+        <TextView android:id="@+id/tv_device_name_dev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -153,7 +153,7 @@
         android:orientation="horizontal"
         android:padding="@dimen/margin_5">
 
-        <TextView
+        <TextView android:id="@+id/tv_password_device"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -187,7 +187,7 @@
         android:orientation="horizontal"
         android:padding="@dimen/margin_5">
 
-        <TextView
+        <TextView android:id="@+id/tv_device_settings_str"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -213,4 +213,21 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/blue" />
+    <TextView android:id="@+id/tv_device_manage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="5dp"
+        android:layout_margin="@dimen/margin_5"
+        android:text="@string/data_management"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/margin_50"
+        android:textSize="20sp" />
+    <CheckBox
+        android:id="@+id/cb_enable_do_not_sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_20"
+        android:text="@string/do_not_sync"
+        android:layoutDirection="rtl"
+        android:textSize="@dimen/text_18"/>
 </LinearLayout>
