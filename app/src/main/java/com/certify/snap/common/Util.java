@@ -25,6 +25,7 @@ import android.hardware.Camera;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -1536,5 +1537,41 @@ public class Util {
             result = true;
         }
         return result;
+    }
+    /**
+     * Get the network info
+     * @param context
+     * @return
+     */
+    public static NetworkInfo getNetworkInfo(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo();
+    }
+    /**
+     * Check if there is any connectivity to a Wifi network
+     * @param context
+     * @return
+     */
+    public static boolean isConnectedWifi(Context context){
+        NetworkInfo info = Util.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI);
+    }
+    /**
+     * Check if there is any connectivity to a mobile network
+     * @param context
+     * @return
+     */
+    public static boolean isConnectedMobile(Context context){
+        NetworkInfo info = Util.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_MOBILE);
+    }
+    /**
+     * Check if there is any connectivity to a ethernet network
+     * @param context
+     * @return
+     */
+    public static boolean isConnectedEthernet(Context context){
+        NetworkInfo info = Util.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_ETHERNET);
     }
 }
