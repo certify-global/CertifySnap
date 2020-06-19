@@ -34,7 +34,10 @@ import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +46,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
@@ -58,6 +62,7 @@ import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
@@ -98,11 +103,14 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
     private static Long timeInMillis;
+    private static ExecutorService taskExecutorService;
+
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -1287,10 +1295,12 @@ public class Util {
                 String token_type = json1.getString("token_type");
                 String institutionId = json1.getString("InstitutionID");
                 String expire_time = json1.getString(".expires");
+                String command = json1.isNull("command") ? "":json1.getString("command");
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
+                Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
                 Util.getSettings((SettingCallback) context, context);
 
 //                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
@@ -1556,23 +1566,34 @@ public class Util {
         return result;
     }
 
-  /*  public static void getMemberID(Context context,String certifyId) {
+    public static void getMemberID(Context context,String certifyId) {
         try {
+            MemberSyncDataModel.getInstance().setNumOfRecords(1);
+            doSendBroadcast(context,"start", 1, 1);
             SharedPreferences sharedPreferences=Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
             obj.put("id", certifyId);
             if (taskExecutorService != null) {
-                new AsyncGetMemberData(obj, context, sharedPreferences.getString(GlobalParameters.URL,
+                new AsyncGetMemberData(obj, (MemberIDCallback) context, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, context).executeOnExecutor(taskExecutorService);
             } else {
-                new AsyncGetMemberData(obj, context, sharedPreferences.getString(GlobalParameters.URL,
+                new AsyncGetMemberData(obj, (MemberIDCallback) context, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, context).execute();
             }
         } catch (Exception e) {
             Logger.error(" getMemberID()",e.getMessage());
         }
-    }*/
+    }
+    private static void doSendBroadcast(Context context,String message,int memberCount,int count) {
+        Intent event_snackbar = new Intent("EVENT_SNACKBAR");
 
+        if (!TextUtils.isEmpty(message))
+            event_snackbar.putExtra("message",message);
+        event_snackbar.putExtra("memberCount",memberCount);
+        event_snackbar.putExtra("count",count);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(event_snackbar);
+    }
     //bitmap
     public static void createAudioDirectory() throws IOException {//Bitmap
         String path = Environment.getExternalStorageDirectory() + "/Audio/";

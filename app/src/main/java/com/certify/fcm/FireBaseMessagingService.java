@@ -17,10 +17,12 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.MemberSyncService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,6 +38,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try {
+            Logger.debug(TAG, "Remote home: " + remoteMessage);
+
             if (remoteMessage.getNotification() != null) {
                 Logger.debug(TAG, "Remote Body: " + remoteMessage.getNotification().getBody());
                 sendNotification(remoteMessage.getNotification().getBody());
@@ -66,7 +70,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                     }
                 }else if(command.equals("MEMBER")){
                     String CertifyId=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
-                  //  Util.getMemberID(this,CertifyId);
+                    Util.getMemberID(this,CertifyId);
 
                 }
 
@@ -114,7 +118,25 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     }
 
     @Override
-    public void onJSONObjectListenerMemberID(JSONObject report, String status, JSONObject req) {
+    public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
+        if (reportInfo == null) {
+            Logger.error(TAG, "onJSONObjectListenerMemberID reportInfo nul");
+            return;
+        }
 
+        try {
+            if (reportInfo.isNull("responseCode"))  {
+                return;
+            }
+            if (reportInfo.getString("responseCode").equals("1")) {
+                JSONArray memberList = reportInfo.getJSONArray("responseData");
+                if (memberList != null) {
+                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
+                   // doSendBroadcast("start", activeMemberCount, count++);
+                }
+            }
+        } catch (JSONException e) {
+
+        }
     }
 }
