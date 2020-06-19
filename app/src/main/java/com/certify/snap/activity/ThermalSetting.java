@@ -70,7 +70,7 @@ public class ThermalSetting extends Activity {
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
             etDisplayTime.setText("" + sp.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2));
             etOnlyText.setText(sp.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, ""));
-            cbHomeText.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false));
+            cbHomeText.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true));
             cbTextOnly.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false));
 
             btn_save.setOnClickListener(new View.OnClickListener() {
