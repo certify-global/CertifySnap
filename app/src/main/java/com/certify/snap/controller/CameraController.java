@@ -9,6 +9,7 @@ public class CameraController {
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
+    private boolean isFaceVisible = false; //flag to let know when the face is detected
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -53,10 +54,19 @@ public class CameraController {
         isFaceNotMatchedOnRetry = faceNotMatchedOnRetry;
     }
 
+    public boolean isFaceVisible() {
+        return isFaceVisible;
+    }
+
+    public void setFaceVisible(boolean faceVisible) {
+        isFaceVisible = faceVisible;
+    }
+
     private void clearData() {
         qrCodeData = null;
         qrCodeId = "";
         compareResult = null;
         isFaceNotMatchedOnRetry = false;
+        isFaceVisible = false;
     }
 }

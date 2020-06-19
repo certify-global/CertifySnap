@@ -785,6 +785,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     long time1, time2;
 
     public void runTemperature(final UserExportedData data) {
+        if (!CameraController.getInstance().isFaceVisible()) return;
         Log.v(TAG, "runTemperature");
         isTemperature = false;
         isSearch = false;
@@ -1127,12 +1128,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     if (status == null
                             || status == RequestFeatureStatus.TO_RETRY) {
+                        CameraController.getInstance().setFaceVisible(true);
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
                         faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
                                 facePreviewInfoList.get(i).getTrackId());
                     }
                 }
+            } else {
+                CameraController.getInstance().setFaceVisible(false);
             }
             irData = null;
         }
@@ -1953,6 +1957,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void TemperatureCallBackUISetup(final boolean aboveThreshold, final String temperature, final String tempValue,
                                             final boolean lowTemp, final UserExportedData data) {
         if (isDestroyed()) return;
+        if (!CameraController.getInstance().isFaceVisible()) return;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -2613,6 +2618,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
                                     CameraController.getInstance().setCompareResult(compareResult);
+                                    CameraController.getInstance().setFaceVisible(true);
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
