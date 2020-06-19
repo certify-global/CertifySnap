@@ -93,6 +93,7 @@ public class ThermalSetting extends Activity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Util.writeBoolean(sp, GlobalParameters.HOME_TEXT_IS_ENABLE, isChecked);
+                    if(!isChecked)setIdentificationOptions();
                 }
             });
             cbTextOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -106,7 +107,12 @@ public class ThermalSetting extends Activity {
         }
 
     }
-
+public void  setIdentificationOptions(){
+    Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
+    Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, false);
+    Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, false);
+    Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
+}
     public void onParamterback(View view) {
         startActivity(new Intent(ThermalSetting.this, SettingActivity.class));
         finish();

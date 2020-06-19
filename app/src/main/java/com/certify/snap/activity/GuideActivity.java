@@ -207,7 +207,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Logger.error(TAG, message);
             //TODO: alternate license activation
             Util.openDialogactivate(this, message, "");
-        }else if (!onlineMode) {
+        } else if (!onlineMode) {
             startActivity(new Intent(this, IrCameraActivity.class));
 
         } else {
@@ -298,8 +298,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
-                    startService(new Intent(GuideActivity.this, MemberSyncService.class));
+
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)) {
+                    if (!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+                        startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
                 }
             }

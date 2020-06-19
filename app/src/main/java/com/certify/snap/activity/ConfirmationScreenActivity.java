@@ -36,6 +36,8 @@ public class ConfirmationScreenActivity extends Activity {
     String longVal ;
     ImageView user_img;
     CompareResult compareResultValues;
+    private String titleConf;
+    private String subTitle;
 
 
     @Override

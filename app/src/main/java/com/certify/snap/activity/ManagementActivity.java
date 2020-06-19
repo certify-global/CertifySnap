@@ -232,11 +232,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
-                    Util.getmemberList(this, this);
-                    count=0;
-                    testCount = 1;
-                    mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
-
+                    if(!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
+                        Util.getmemberList(this, this);
+                        count = 0;
+                        testCount = 1;
+                        mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                    }
                 }
                 break;
             case R.id.register:
