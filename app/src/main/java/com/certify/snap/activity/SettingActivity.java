@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -228,6 +229,13 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
         accessControlTv.setTypeface(rubiklight);
+
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";
+        if (Build.VERSION.SDK_INT >= 24) {
+            mConnectivityStatus.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            mConnectivityStatus.setText(Html.fromHtml(text));
+        }
         setData();
     }
 

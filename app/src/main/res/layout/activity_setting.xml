@@ -893,7 +893,5 @@
         android:layout_marginRight="@dimen/margin_10"
         android:layout_marginBottom="@dimen/margin_10"
         android:text="@string/connectivity_status"
-        android:textColor="@color/black"
-        android:textSize="@dimen/font_18"
-        android:textStyle="bold"/>
+        android:textSize="@dimen/font_18" />
 </RelativeLayout>
