@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -35,6 +36,10 @@ public class QRViewSetting extends Activity {
     EditText editTextDialogUserInput;
     TextView tv_display;
     TextView mAnonymousTv;
+    private TextView scanMode;
+    private RadioGroup scanModeRg;
+    private RadioButton scanModeRbEasy;
+    private RadioButton scanModeRbFirm;
 
 
     @Override
@@ -53,9 +58,11 @@ public class QRViewSetting extends Activity {
             btn_save = findViewById(R.id.btn_exit);
             qr_screen = findViewById(R.id.qr_screen);
             titles = findViewById(R.id.titles);
+            scanMode = findViewById(R.id.tv_scan_mode);
             btn_save.setTypeface(rubiklight);
             titles.setTypeface(rubiklight);
             qr_screen.setTypeface(rubiklight);
+            scanMode.setTypeface(rubiklight);
             TextView rfId = findViewById(R.id.rfid_tv);
             rfId.setTypeface(rubiklight);
             rfidRg = findViewById(R.id.radio_group_rfid);
@@ -70,6 +77,9 @@ public class QRViewSetting extends Activity {
             radio_yes_display = findViewById(R.id.radio_yes_display);
             radio_no_display = findViewById(R.id.radio_no_display);
             mAnonymousTv = findViewById(R.id.anonymous_tv);
+            scanModeRg = findViewById(R.id.radio_group_scan_mode);
+            scanModeRbEasy = findViewById(R.id.radio_scanmode_easy);
+            scanModeRbFirm = findViewById(R.id.radio_scanmode_strict);
             mAnonymousTv.setTypeface(rubiklight);
             tv_facial.setTypeface(rubiklight);
             tv_display.setTypeface(rubiklight);
@@ -89,6 +99,8 @@ public class QRViewSetting extends Activity {
             setRfidClickListener();
             setAnonymousDefault();
             setAnonymousClickListener();
+            setScanModeDefault();
+            setScanModeClickListener();
 
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -157,6 +169,7 @@ public class QRViewSetting extends Activity {
                     Util.showToast(QRViewSetting.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
+                    saveScanModeSetting();
                     finish();
                 }
             });
@@ -216,6 +229,39 @@ public class QRViewSetting extends Activity {
 
     private void saveRfidSettings() {
         Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, rfidYesRb.isChecked());
+    }
+
+    private void setScanModeDefault() {
+        if (sp.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE) == 1) {
+            scanModeRbEasy.setChecked(true);
+            scanModeRbFirm.setChecked(false);
+        } else {
+            scanModeRbFirm.setChecked(true);
+            scanModeRbEasy.setChecked(false);
+        }
+    }
+
+    private void setScanModeClickListener() {
+        scanModeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.radio_scanmode_easy) {
+                    scanModeRbEasy.setChecked(true);
+                    scanModeRbFirm.setChecked(false);
+                } else if (checkedId == R.id.radio_scanmode_strict) {
+                    scanModeRbFirm.setChecked(true);
+                    scanModeRbEasy.setChecked(false);
+                }
+            }
+        });
+    }
+
+    private void saveScanModeSetting() {
+        if (scanModeRbEasy.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanMode, 1);
+        } else if(scanModeRbFirm.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanMode, 2);
+        }
     }
 
     public void onParamterback(View view) {
