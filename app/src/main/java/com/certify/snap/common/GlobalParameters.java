@@ -121,6 +121,7 @@ public class GlobalParameters {
     public static final String Firebase_Command = "firebase_command";
     public static final String Firebase_Value = "firebase_value";
     public static final String COMPENSATION = "compensation";
+    public static final String Firebase_Token = "firebase_token";
 
 
 }

@@ -361,7 +361,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         };
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ir);
@@ -847,7 +846,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         float tempCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
                         temperature = temperatureData.getTemperature()+(tempCompensation);//centigrade
                         if (temperaturePreference.equals("F")) {
-                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature()+(tempCompensation));
                         }
                         String tempString = String.format("%,.1f", temperature);
                         String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");

@@ -4,44 +4,75 @@ import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 
+import com.certify.callback.MemberIDCallback;
+import com.certify.callback.SettingCallback;
+import com.certify.snap.activity.GuideActivity;
+import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.common.Application;
+import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.Util;
+import com.certify.snap.service.MemberSyncService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Map;
 import java.util.Random;
 
-public class FireBaseMessagingService extends FirebaseMessagingService {
+public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback {
     private static final String TAG = "FireBaseMessagingService -> ";
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
-
+     SharedPreferences sharedPreferences;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try {
-            if (remoteMessage.getData().size() > 0) {
-            Map<String, String> data = remoteMessage.getData();
-             String title=remoteMessage.getData().get("Title");
-             String body=remoteMessage.getData().get("Body");
-             Logger.debug("push",data.toString());
+            if (remoteMessage.getNotification() != null) {
+                Logger.debug(TAG, "Remote Body: " + remoteMessage.getNotification().getBody());
+                sendNotification(remoteMessage.getNotification().getBody());
             }
 
         } catch (Exception e) {
-            Logger.error(TAG + "onMessageReceived(RemoteMessage remoteMessage)", e.getMessage());
+            Logger.error(TAG + "onMessageReceived()", e.getMessage());
         }
     }
 
     //This method is only generating push notification
     @SuppressLint("WrongConstant")
-    private void sendNotification(String messageTitle, String messageBody, Map<String, String> row,String click_action) {
+    private void sendNotification(String messageBody) {
         try {
+            JSONObject jsonObject = new JSONObject(messageBody);
+            sharedPreferences=Util.getSharedPreferences(this);
+
+            String command=jsonObject.isNull("Command") ? "":jsonObject.getString("Command");
+            String Value1=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
+
+
+                if(command.equals("SETTINGS")){
+                    Util.getSettings(this,this);
+                }else if(command.equals("ALLMEMBER")){
+                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
+                        startService(new Intent(this, MemberSyncService.class));
+                        Application.StartService(this);
+                    }
+                }else if(command.equals("MEMBER")){
+                    String CertifyId=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
+                  //  Util.getMemberID(this,CertifyId);
+
+                }
+
 
         } catch (Exception e) {
-            Logger.error(TAG + "sendNotification(String messageTitle, String messageBody, Map<String, String> row)", e.getMessage());
+            Logger.error(TAG + "sendNotification()", e.getMessage());
         }
     }
 
@@ -68,5 +99,22 @@ public class FireBaseMessagingService extends FirebaseMessagingService {
     private static int generateRandomNumber(int max, int min) {
         Random random = new Random();
         return random.nextInt(max - min + 1) + min;
+    }
+
+    @Override
+    public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            Util.retrieveSetting(reportInfo, this);
+        } catch (Exception e) {
+            Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerMemberID(JSONObject report, String status, JSONObject req) {
+
     }
 }
