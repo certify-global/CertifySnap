@@ -2858,14 +2858,16 @@ private void initTriggerType(){
     }
 
     private void retryFaceOnTimeout(int requestId) {
-        if (qrCodeEnable) {
-            return;
-        }
-        if (rfIdEnable) {
-            if (faceDetectEnabled) {
-                new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+        if (isHomeViewEnabled) { //TODO1: Optimize
+            if (qrCodeEnable) {
+                return;
             }
-            return;
+            if (rfIdEnable) {
+                if (faceDetectEnabled) {
+                    new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+                }
+                return;
+            }
         }
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }
