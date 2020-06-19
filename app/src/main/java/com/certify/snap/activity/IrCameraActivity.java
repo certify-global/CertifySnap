@@ -950,6 +950,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     mask_message.setVisibility(View.GONE);
                                                     rl_header.setVisibility(View.VISIBLE);
                                                     tempServiceClose = true;
+                                                    CameraController.getInstance().init();   //Clear the data on timeout
                                                     retryFaceOnTimeout(requestId); //Retry again on timeout
                                                     disableLedPower();
                                                     enableNfc();
@@ -2009,6 +2010,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             ConfirmationBoolean = true;
                             MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                             finish();
+                            compareResultList.clear();
                             data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
 
@@ -2521,7 +2523,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        Log.d(TAG, String.format("Deep Snap searchFace requestId: %s", requestId));
+        Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2533,9 +2535,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<CompareResult>() {
+                    Disposable searchMemberDisposable;
+
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        searchMemberDisposable = d;
                     }
 
                     @Override
@@ -2604,7 +2608,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
-                                    Log.d(TAG, "Deep Snap Matched Database, Run temperature");
+                                    Log.d(TAG, "Snap Matched Database, Run temperature");
 
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
@@ -2655,6 +2659,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
+                        searchMemberDisposable.dispose();
                     }
 
                     @Override
@@ -2663,6 +2668,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //                        runTemperature(); // Register member photo is not there, Still find temperature
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
+                        searchMemberDisposable.dispose();
                     }
 
                     @Override
@@ -2786,12 +2792,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      * @param requestId request id
      */
     public void detectAlignedFaces(FaceEngine faceEngine, Bitmap rgbBitmap, int requestId) {
-        Log.d(TAG, "Deep Detect faces start");
         Observable
                 .create((ObservableOnSubscribe<List<FaceInfo>>) emitter -> {
                     Bitmap mAlignedBitmap = ArcSoftImageUtil.getAlignedBitmap(rgbBitmap, true);
                     if (mAlignedBitmap == null) {
-                        Logger.debug(TAG, "Deep Face Bitmap is null");
+                        Logger.debug(TAG, "Face Bitmap is null");
                         emitter.onNext(searchFaceInfoList);
                         return;
                     }
@@ -2820,7 +2825,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(List<FaceInfo> resultList) {
-                        Log.d(TAG, "Deep SearchFaceInfoList = " + resultList.size());
+                        Log.d(TAG, "SearchFaceInfoList = " + resultList.size());
                         searchFaceInfoList.addAll(resultList);
                         faceDisposable.dispose();
                         checkFaceCloseness(searchFaceInfoList, requestId);
@@ -2840,7 +2845,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
         if (searchFaceList.size() > 0 && isFaceClose(searchFaceList.get(0))) {
-            Log.d(TAG, "Deep Face is close, Initiate search");
+            Log.d(TAG, "Face is close, Initiate search");
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
             return;
         }
@@ -2857,12 +2862,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (faceInfo != null) {
             Rect rect = faceInfo.getRect();
             Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.left + " " +rect.top + " " + rect.right + " " +rect.bottom + ")");
-            if ((rect.right - rect.top) > 0 &&
-                rect.bottom - rect.left > 100) {
+
+            if (((rect.bottom - rect.left > 100) && ((rect.right - rect.top) > -50))
+               || ((rect.bottom - rect.left > 90) && ((rect.right - rect.top) > 40))) {
                 result = true;
-                Log.d(TAG, "Deep SnapXT Face is close");
+                Log.d(TAG, "SnapXT Face is close");
             } else {
-                Log.d(TAG, "Deep SnapXT Face is not close");
+                Log.d(TAG, "SnapXT Face is not close");
             }
         }
         return result;

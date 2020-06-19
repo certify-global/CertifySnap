@@ -127,7 +127,7 @@ public class ConfirmationScreenActivity extends Activity {
                     face_score.setText(compareResultValues.getFacialScore());
                 }
             });
-
+            CameraController.getInstance().setCompareResult(null);
         }
         catch (Exception e){
             Logger.error(" compare result", e.getMessage());
