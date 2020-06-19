@@ -302,6 +302,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout snack_layout;
     private int scanMode = 0;
     private HotImageCallbackImpl thermalImageCallback;
+    private boolean isHomeViewEnabled;
 
     private void instanceStart() {
         try {
@@ -431,6 +432,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void initQRCode() {
+        if (!isHomeViewEnabled) return;
         try {
             frameLayout = findViewById(R.id.barcode_scanner);
             preview = findViewById(R.id.firePreview);
@@ -1296,16 +1298,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
-                return;
-            }
-            if (rfIdEnable) {
-                if (faceDetectEnabled) {
-                    faceEngineHelper.initEngine(this);
-                    initRgbCamera();
-                    initIrCamera();
+            if (isHomeViewEnabled) {
+                if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
+                    return;
                 }
-                return;
+                if (rfIdEnable) {
+                    if (faceDetectEnabled) {
+                        faceEngineHelper.initEngine(this);
+                        initRgbCamera();
+                        initIrCamera();
+                    }
+                    return;
+                }
             }
             faceEngineHelper.initEngine(this);
             initRgbCamera();
@@ -2350,6 +2354,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
+        isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
+                sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         getAccessControlSettings();
     }
 
