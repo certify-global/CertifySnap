@@ -231,6 +231,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         accessControlTv.setTypeface(rubiklight);
 
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";
+        mConnectivityStatus.setTypeface(rubiklight);
         if (Build.VERSION.SDK_INT >= 24) {
             mConnectivityStatus.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
         } else {
