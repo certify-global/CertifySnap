@@ -33,16 +33,32 @@
             android:textColor="#ffffff"
             android:textSize="22sp" />
     </LinearLayout>
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/connectivity_status_text"
-        android:layout_marginTop="@dimen/margin_20"
-        android:layout_marginLeft="@dimen/margin_10"
-        android:layout_marginBottom="@dimen/margin_10"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:textSize="@dimen/font_22"/>
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connectivity_status_text"
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_marginLeft="@dimen/margin_10"
+            android:layout_marginBottom="@dimen/margin_10"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_22"/>
+        <TextView
+            android:id="@+id/tv_network_available"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_marginLeft="@dimen/margin_10"
+            android:layout_marginBottom="@dimen/margin_10"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_22"/>
+    </LinearLayout>
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
@@ -284,7 +300,7 @@
                         android:layout_marginEnd="@dimen/margin_30"
                         android:textColor="@color/black"
                         android:layout_marginLeft="@dimen/font_10"
-                        android:theme="@style/MyCheckBox" />
+                        android:theme="@style/CustomRadioButton" />
             </LinearLayout>
 
             <LinearLayout
@@ -299,7 +315,7 @@
                     android:text="@string/cloud_connectivity"
                     android:layout_marginLeft="@dimen/margin_15"
                     android:layout_marginRight="@dimen/margin_10"
-                    android:textColor="@color/red"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/font_18"/>
 
                 <RadioButton

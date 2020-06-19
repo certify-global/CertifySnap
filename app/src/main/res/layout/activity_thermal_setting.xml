@@ -57,6 +57,7 @@
             android:layout_marginTop="@dimen/margin_20"
             android:text="@string/enable_home_screen"
             android:textSize="@dimen/text_18"
+            android:checked="true"
 
             />
 

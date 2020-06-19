@@ -66,7 +66,7 @@ public class ConfirmationScreenActivity extends Activity {
                 compareResult();
             } else {
                 onAccessCardMatch();
-                user_img.setVisibility(View.GONE);
+                //user_img.setVisibility(View.GONE);
             }
 
             if (value.equals("high")) {

@@ -4,7 +4,6 @@ import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,8 +19,10 @@ import com.certify.snap.R;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
+import org.apache.http.conn.util.InetAddressUtils;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
@@ -29,10 +30,11 @@ import java.util.List;
 public class ConnectivityStatusActivity extends AppCompatActivity implements JSONObjectCallback{
 
     LinearLayout mRelativeConnectivity;
-    private TextView mMacTv, mIPAddress, mNetmaskTv, mGatewayTv, mDns1Tv, mDns2Tv, mEthernetIpTv, mSsidTv;
+    private TextView mMacTv, mIPAddress, mNetmaskTv, mGatewayTv, mDns1Tv, mDns2Tv, mEthernetIpTv, mSsidTv, mNetworkAvailableTv;
     private RadioButton mRbInternetConnectivity, mRbcloudConnectivity;
     DhcpInfo dhcpInfo;
     WifiManager wifi;
+    String macAddress = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
 
         Util.getDeviceHealthCheck((JSONObjectCallback) this,this);
         initView();
+        networkAvailableSetText();
         if (!Util.isNetworkOff(ConnectivityStatusActivity.this)){
             mRbInternetConnectivity.setChecked(true);
         } else {
@@ -54,12 +57,24 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
         
     }
 
+    private void networkAvailableSetText() {
+        if (Util.isConnectedWifi(ConnectivityStatusActivity.this)){
+            mNetworkAvailableTv.setText(getString(R.string.wifi));
+            macAddress = getMacAddress("p2p0");
+        } else if (Util.isConnectedEthernet(ConnectivityStatusActivity.this)){
+            mNetworkAvailableTv.setText(getString(R.string.ethernet));
+            macAddress = getMacAddress("eth0");
+        } else if (Util.isConnectedMobile(ConnectivityStatusActivity.this)){
+            mNetworkAvailableTv.setText(getString(R.string.mobile));
+            macAddress = getMacAddress("wlan0");
+        }
+    }
+
     @SuppressWarnings("deprecation")
     private void getConnectionData() {
-        String macAddress = getMacAddress();
         mMacTv.setText(macAddress);
         if (dhcpInfo != null){
-            mIPAddress.setText(String.valueOf(Formatter.formatIpAddress(dhcpInfo.ipAddress)));
+            mIPAddress.setText(getIPAddress(true));
             mNetmaskTv.setText(String.valueOf(Formatter.formatIpAddress(dhcpInfo.netmask)));
             mGatewayTv.setText(String.valueOf(Formatter.formatIpAddress(dhcpInfo.gateway)));
             mDns1Tv.setText(String.valueOf(Formatter.formatIpAddress(dhcpInfo.dns1)));
@@ -87,6 +102,7 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
         mSsidTv = findViewById(R.id.tv_ssid);
         mRbInternetConnectivity = findViewById(R.id.radio_connectivity);
         mRbcloudConnectivity = findViewById(R.id.radio_cloud);
+        mNetworkAvailableTv = findViewById(R.id.tv_network_available);
     }
 
     public void onConnectivityClick(View v) {
@@ -98,14 +114,12 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
 
     }
 
-    public static String getMacAddress() {
+    public static String getMacAddress(String networkType) {
         try {
             List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("eth0")) continue;
+                if (!nif.getName().equalsIgnoreCase(networkType)) continue;
 
-                Log.i("Shailendra dhcp", nif.getDisplayName());
-                Log.i("Shailendra dhcp1", nif.getName());
                 byte[] macBytes = nif.getHardwareAddress();
                 if (macBytes == null) {
                     return "";
@@ -127,6 +141,31 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
         return "02:00:00:00:00:00";
     }
 
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress().toUpperCase();
+                        boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 port suffix
+                                return delim<0 ? sAddr : sAddr.substring(0, delim);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) { } // for now eat exceptions
+        return "0.0.0.0";
+    }
+
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -136,7 +175,6 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
 
             JSONObject json = new JSONObject(reportInfo);
             if (json.getInt("responseCode") == 1){
-                Log.i("Shailendra res", "responseCode");
                 mRbcloudConnectivity.setChecked(true);
 
             } else {

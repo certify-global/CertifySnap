@@ -8,15 +8,19 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.google.android.material.snackbar.Snackbar;
 
 public class QRViewSetting extends Activity {
     private static String TAG = "QRViewSetting";
@@ -35,7 +39,12 @@ public class QRViewSetting extends Activity {
     EditText editTextDialogUserInput;
     TextView tv_display;
     TextView mAnonymousTv;
-
+    private TextView scanMode;
+    private RadioGroup scanModeRg;
+    private RadioButton scanModeRbEasy;
+    private RadioButton scanModeRbFirm;
+    private boolean isHomeScreenViewEnabled;
+    private LinearLayout parentLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,9 +62,11 @@ public class QRViewSetting extends Activity {
             btn_save = findViewById(R.id.btn_exit);
             qr_screen = findViewById(R.id.qr_screen);
             titles = findViewById(R.id.titles);
+            scanMode = findViewById(R.id.tv_scan_mode);
             btn_save.setTypeface(rubiklight);
             titles.setTypeface(rubiklight);
             qr_screen.setTypeface(rubiklight);
+            scanMode.setTypeface(rubiklight);
             TextView rfId = findViewById(R.id.rfid_tv);
             rfId.setTypeface(rubiklight);
             rfidRg = findViewById(R.id.radio_group_rfid);
@@ -70,14 +81,16 @@ public class QRViewSetting extends Activity {
             radio_yes_display = findViewById(R.id.radio_yes_display);
             radio_no_display = findViewById(R.id.radio_no_display);
             mAnonymousTv = findViewById(R.id.anonymous_tv);
+            scanModeRg = findViewById(R.id.radio_group_scan_mode);
+            scanModeRbEasy = findViewById(R.id.radio_scanmode_easy);
+            scanModeRbFirm = findViewById(R.id.radio_scanmode_strict);
             mAnonymousTv.setTypeface(rubiklight);
             tv_facial.setTypeface(rubiklight);
             tv_display.setTypeface(rubiklight);
             rAnonymousYesRb = findViewById(R.id.radio_yes_anonymous);
             rAnonymousNoRb = findViewById(R.id.radio_no_anonymous);
             radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
-
-
+            parentLayout = findViewById(R.id.parent_view_layout);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70"));
@@ -85,16 +98,28 @@ public class QRViewSetting extends Activity {
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);
 
+            this.getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
             setRfidDefault();
             setRfidClickListener();
             setAnonymousDefault();
             setAnonymousClickListener();
+            setScanModeDefault();
+            setScanModeClickListener();
+            getHomeScreenEnabledStatus();
 
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if (checkedId == R.id.radio_yes_qr)
+                    if (checkedId == R.id.radio_yes_qr) {
+                        if (!isHomeScreenViewEnabled) {
+                            showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                            rbguideno.setChecked(true);
+                            return;
+                        }
                         Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, true);
+                    }
                     else
                         Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
 
@@ -157,6 +182,7 @@ public class QRViewSetting extends Activity {
                     Util.showToast(QRViewSetting.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
+                    saveScanModeSetting();
                     finish();
                 }
             });
@@ -170,6 +196,11 @@ public class QRViewSetting extends Activity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.radio_yes_anonymous) {
+                    if (!isHomeScreenViewEnabled) {
+                        showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                        rAnonymousNoRb.setChecked(true);
+                        return;
+                    }
                     rAnonymousYesRb.setChecked(true);
                     Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, true);
                 } else {
@@ -204,6 +235,11 @@ public class QRViewSetting extends Activity {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int id) {
                 if (id == R.id.radio_yes_rfid) {
+                    if (!isHomeScreenViewEnabled) {
+                        showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                        rfidNoRb.setChecked(true);
+                        return;
+                    }
                     rfidYesRb.setChecked(true);
                     rfidNoRb.setChecked(false);
                 } else if (id == R.id.radio_no_rfid) {
@@ -216,6 +252,47 @@ public class QRViewSetting extends Activity {
 
     private void saveRfidSettings() {
         Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, rfidYesRb.isChecked());
+    }
+
+    private void setScanModeDefault() {
+        if (sp.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE) == 1) {
+            scanModeRbEasy.setChecked(true);
+            scanModeRbFirm.setChecked(false);
+        } else {
+            scanModeRbFirm.setChecked(true);
+            scanModeRbEasy.setChecked(false);
+        }
+    }
+
+    private void setScanModeClickListener() {
+        scanModeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.radio_scanmode_easy) {
+                    scanModeRbEasy.setChecked(true);
+                    scanModeRbFirm.setChecked(false);
+                } else if (checkedId == R.id.radio_scanmode_strict) {
+                    scanModeRbFirm.setChecked(true);
+                    scanModeRbEasy.setChecked(false);
+                }
+            }
+        });
+    }
+
+    private void saveScanModeSetting() {
+        if (scanModeRbEasy.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanMode, 1);
+        } else if(scanModeRbFirm.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanMode, 2);
+        }
+    }
+
+    private void getHomeScreenEnabledStatus() {
+        isHomeScreenViewEnabled = sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true);
+    }
+
+    private void showSnackBarMessage(String message) {
+        Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 
     public void onParamterback(View view) {

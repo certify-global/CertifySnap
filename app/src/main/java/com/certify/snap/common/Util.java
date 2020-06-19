@@ -25,7 +25,7 @@ import android.hardware.Camera;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
-import android.net.Uri;
+import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -142,7 +142,6 @@ public class Util {
         edit.putInt(key, value);
         edit.commit();
     }
-
     public static void writeFloat(SharedPreferences sp, String key, Float value) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putFloat(key, value);
@@ -372,7 +371,7 @@ public class Util {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        timeInMillis = dt1.getTime() - 60 * 60 * 1000;
+        timeInMillis = dt1.getTime() - 60*60*1000;
         if (dt1.getTime() > dt2.getTime()) {
             isBigger = true;
         } else if (dt1.getTime() < dt2.getTime()) {
@@ -571,7 +570,7 @@ public class Util {
     private static void scheduleJobAccessToken(Context context) {
         ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(1, componentName)
-                .setPeriodic(timeInMillis, 5 * 60 * 1000).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setPeriodic(timeInMillis, 5 * 60 *1000).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .setPersisted(true).build();
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(jobInfo);
@@ -695,13 +694,14 @@ public class Util {
             obj.put("facilityId", 0);
             obj.put("locationId", 0);
             obj.put("deviceTime", Util.getMMDDYYYYDate());
+            obj.put("trigger",data.triggerType);
             if (data.sendImages) {
                 obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
                 obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
             }
-            JSONObject deviceObject = new JSONObject();
-            deviceObject.put("temperatureCompensationValue", sp.getFloat(GlobalParameters.COMPENSATION, 0));
+            JSONObject deviceObject=new JSONObject();
+            deviceObject.put("temperatureCompensationValue",sp.getFloat(GlobalParameters.COMPENSATION,0));
             obj.put("deviceData", MobileDetails(context));
             obj.put("deviceParameters", deviceObject);
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
@@ -710,25 +710,26 @@ public class Util {
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
 
-            //TODO Simplifying following logic
-            if (rfidScanMatchedMember != null) {
+             //TODO Simplifying following logic
+            if(rfidScanMatchedMember != null){
                 obj.put("id", rfidScanMatchedMember.getUniqueid());
                 obj.put("accessId", rfidScanMatchedMember.getAccessid());
                 obj.put("firstName", rfidScanMatchedMember.getFirstname());
                 obj.put("lastName", rfidScanMatchedMember.getLastname());
                 obj.put("memberId", rfidScanMatchedMember.getMemberid());
                 obj.put("trqStatus", "");// Send this empty if not Qr
-            } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()) {
+            } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()){
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
                 updateFaceMemberValues(obj, data);
-            } else if (qrCodeData != null) {
+            }
+            else if (qrCodeData != null) {
                 obj.put("id", qrCodeData.getUniqueId());
                 obj.put("accessId", qrCodeData.getAccessId());
                 obj.put("firstName", qrCodeData.getFirstName());
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId())) {
+            } else if(isNumeric(CameraController.getInstance().getQrCodeId())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -768,7 +769,7 @@ public class Util {
 
     private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
         try {
-            if (data.member == null) data.member = new RegisteredMembers();
+        if (data.member == null) data.member = new RegisteredMembers();
             obj.put("id", data.member.getUniqueid());
             obj.put("firstName", data.member.getFirstname());
             obj.put("lastName", data.member.getLastname());
@@ -817,6 +818,7 @@ public class Util {
         JSONObject obj = new JSONObject();
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
+
             getNumberVersion(context);
             getDeviceUUid(context);
 
@@ -830,7 +832,6 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-            // obj.put("pushAuthToken", sp.getString(GlobalParameters.Firebase_Token,""));
 
 
         } catch (Exception e) {
@@ -941,7 +942,7 @@ public class Util {
     }
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera.Parameters cameraParameters) {
-        if (data == null || cameraParameters == null) {
+        if (data == null || cameraParameters == null){
             Log.w(LOG, String.format("convertYuvByteArrayToBitmap data: %s, cameraParameters: %s", data == null, cameraParameters == null));
             return null;
         }
@@ -1137,12 +1138,13 @@ public class Util {
                 JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
                 JSONObject jsonValueAccessControl = jsonValue.getJSONObject("AccessControl");
                 //Homeview
-                String settingVersion = responseData.isNull("settingVersion") ? "" : responseData.getString("settingVersion");
-                String deviceMasterCode = responseData.isNull("deviceMasterCode") ? "" : responseData.getString("deviceMasterCode");
-                String homeLogo = jsonValueHome.isNull("logo") ? "" : jsonValueHome.getString("logo");
+                Util.writeString(sharedPreferences,GlobalParameters.DEVICE_SETTINGS_NAME,responseData.isNull("settingName")?"":responseData.getString("settingName"));
+                String settingVersion = responseData.isNull("settingVersion") ? "":responseData.getString("settingVersion");
+                String deviceMasterCode = responseData.isNull("deviceMasterCode") ? "":responseData.getString("deviceMasterCode");
+                String homeLogo = jsonValueHome.isNull("logo") ? "":jsonValueHome.getString("logo");
                 String enableThermal = jsonValueHome.getString("enableThermalCheck");
-                String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN" : jsonValueHome.getString("line1");
-                String homeLine2 = jsonValueHome.isNull("line2") ? "" : jsonValueHome.getString("line2");
+                String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN": jsonValueHome.getString("line1");
+                String homeLine2 = jsonValueHome.isNull("line2") ? "" :jsonValueHome.getString("line2");
 
                 Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
                 Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
@@ -1153,17 +1155,17 @@ public class Util {
 
                 //Scan View
 
-                String displayTemperatureDetail = jsonValueScan.isNull("displayTemperatureDetail") ? "1" : jsonValueScan.getString("displayTemperatureDetail");
-                String captureUserImageAboveThreshold = jsonValueScan.isNull("captureUserImageAboveThreshold") ? "1" : jsonValueScan.getString("captureUserImageAboveThreshold");
-                String captureAllUsersImage = jsonValueScan.isNull("captureAllUsersImage") ? "0" : jsonValueScan.getString("captureAllUsersImage");
-                String enableSoundOnHighTemperature = jsonValueScan.isNull("enableSoundOnHighTemperature") ? "0" : jsonValueScan.getString("enableSoundOnHighTemperature");
-                String enableSoundOnNormalTemperature = jsonValueScan.isNull("enableSoundOnNormalTemperature") ? "0" : jsonValueScan.getString("enableSoundOnNormalTemperature");
-                String viewDelay = jsonValueScan.isNull("viewDelay") ? "3" : jsonValueScan.getString("viewDelay");
-                String tempval = jsonValueScan.isNull("temperatureThreshold") ? "100.4" : jsonValueScan.getString("temperatureThreshold");
-                String temperatureFormat = jsonValueScan.isNull("temperatureFormat") ? "F" : jsonValueScan.getString("temperatureFormat");
-                String allowlowtemperaturescanning = jsonValueScan.isNull("allowLowTemperatureScanning") ? "0" : jsonValueScan.getString("allowLowTemperatureScanning");
-                String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" : jsonValueScan.getString("lowTemperatureThreshold");
-                String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
+                String displayTemperatureDetail = jsonValueScan.isNull("displayTemperatureDetail") ? "1":jsonValueScan.getString("displayTemperatureDetail");
+                String captureUserImageAboveThreshold = jsonValueScan.isNull("captureUserImageAboveThreshold") ? "1" :jsonValueScan.getString("captureUserImageAboveThreshold");
+                String captureAllUsersImage = jsonValueScan.isNull("captureAllUsersImage") ? "0": jsonValueScan.getString("captureAllUsersImage");
+                String enableSoundOnHighTemperature = jsonValueScan.isNull("enableSoundOnHighTemperature") ? "0": jsonValueScan.getString("enableSoundOnHighTemperature");
+                String enableSoundOnNormalTemperature = jsonValueScan.isNull("enableSoundOnNormalTemperature") ? "0": jsonValueScan.getString("enableSoundOnNormalTemperature");
+                String viewDelay = jsonValueScan.isNull("viewDelay") ? "3": jsonValueScan.getString("viewDelay");
+                String tempval = jsonValueScan.isNull("temperatureThreshold") ? "100.4" :jsonValueScan.getString("temperatureThreshold");
+                String temperatureFormat =jsonValueScan.isNull("temperatureFormat") ? "F": jsonValueScan.getString("temperatureFormat");
+                String allowlowtemperaturescanning =jsonValueScan.isNull("allowLowTemperatureScanning") ? "0": jsonValueScan.getString("allowLowTemperatureScanning");
+                String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" :jsonValueScan.getString("lowTemperatureThreshold");
+                String enableMaskDetection =  jsonValueScan.isNull("enableMaskDetection") ? "0" :jsonValueScan.getString("enableMaskDetection");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -1178,14 +1180,14 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
 
                 //ConfirmationView
-                String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");
-                String normalViewLine1 = jsonValueConfirm.isNull("normalViewLine1") ? "Have a nice day" : jsonValueConfirm.getString("normalViewLine1");
-                String normalViewLine2 = jsonValueConfirm.isNull("normalViewLine2") ? " " : jsonValueConfirm.getString("normalViewLine2");
-                String aboveThresholdViewLine1 = jsonValueConfirm.isNull("aboveThresholdViewLine1") ? "Please contact your supervisor before starting any work." : jsonValueConfirm.getString("aboveThresholdViewLine1");
-                String temperatureAboveThreshold2 = jsonValueConfirm.isNull("temperatureAboveThreshold2") ? "" : jsonValueConfirm.getString("temperatureAboveThreshold2");
-                String confirmationviewDelay = jsonValueConfirm.isNull("viewDelay") ? "1" : jsonValueConfirm.getString("viewDelay");
-                String enableConfirmationScreenAboveThreshold = jsonValueConfirm.isNull("enableConfirmationScreenAboveThreshold") ? "1" : jsonValueConfirm.getString("enableConfirmationScreenAboveThreshold");
-                String viewDelayAboveThreshold = jsonValueConfirm.isNull("viewDelayAboveThreshold") ? "1" : jsonValueConfirm.getString("viewDelayAboveThreshold");
+                String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1": jsonValueConfirm.getString("enableConfirmationScreen");
+                String normalViewLine1 = jsonValueConfirm.isNull("normalViewLine1") ? "Have a nice day" :jsonValueConfirm.getString("normalViewLine1");
+                String normalViewLine2 = jsonValueConfirm.isNull("normalViewLine2") ? " ":jsonValueConfirm.getString("normalViewLine2");
+                String aboveThresholdViewLine1 = jsonValueConfirm.isNull("aboveThresholdViewLine1") ? "Please contact your supervisor before starting any work.":jsonValueConfirm.getString("aboveThresholdViewLine1");
+                String temperatureAboveThreshold2 = jsonValueConfirm.isNull("temperatureAboveThreshold2") ? "": jsonValueConfirm.getString("temperatureAboveThreshold2");
+                String confirmationviewDelay =jsonValueConfirm.isNull("viewDelay") ? "1":jsonValueConfirm.getString("viewDelay");
+                String enableConfirmationScreenAboveThreshold = jsonValueConfirm.isNull("enableConfirmationScreenAboveThreshold") ? "1":jsonValueConfirm.getString("enableConfirmationScreenAboveThreshold");
+                String viewDelayAboveThreshold = jsonValueConfirm.isNull("viewDelayAboveThreshold") ? "1" :jsonValueConfirm.getString("viewDelayAboveThreshold");
 //todo in api
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, enableConfirmationScreen.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, enableConfirmationScreenAboveThreshold.equals("1"));
@@ -1198,10 +1200,10 @@ public class Util {
                 // Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
 
                 //GuideMessages
-                String enableGuidMessages = jsonValueGuide.isNull("enableGuideMessages") ? "1" : jsonValueGuide.getString("enableGuideMessages");
-                String message1 = jsonValueGuide.isNull("message1") ? "Please center your face to the screen." : jsonValueGuide.getString("message1");
-                String message2 = jsonValueGuide.isNull("message2") ? "Move closer and center your face." : jsonValueGuide.getString("message2");
-                String message3 = jsonValueGuide.isNull("message3") ? "Please wait, preparing to scan." : jsonValueGuide.getString("message3");
+                String enableGuidMessages = jsonValueGuide.isNull("enableGuideMessages") ? "1":jsonValueGuide.getString("enableGuideMessages");
+                String message1 = jsonValueGuide.isNull("message1")? "Please center your face to the screen.":jsonValueGuide.getString("message1");
+                String message2 = jsonValueGuide.isNull("message2") ? "Move closer and center your face.":jsonValueGuide.getString("message2");
+                String message3 = jsonValueGuide.isNull("message3") ? "Please wait, preparing to scan.":jsonValueGuide.getString("message3");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, enableGuidMessages.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);
@@ -1209,13 +1211,13 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
 
                 //Identification setting
-                String enableQRCodeScanner = jsonValueIdentification.isNull("enableQRCodeScanner") ? "0" : jsonValueIdentification.getString("enableQRCodeScanner");
-                String enableRFIDScanner = jsonValueIdentification.isNull("enableRFIDScanner") ? "0" : jsonValueIdentification.getString("enableRFIDScanner");
-                String identificationTimeout = jsonValueIdentification.isNull("identificationTimeout") ? "5" : jsonValueIdentification.getString("identificationTimeout");
-                String enableFacialRecognition = jsonValueIdentification.isNull("enableFacialRecognition") ? "0" : jsonValueIdentification.getString("enableFacialRecognition");
-                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? "70" : jsonValueIdentification.getString("facialThreshold");
-                String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
-                String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
+                String enableQRCodeScanner = jsonValueIdentification.isNull("enableQRCodeScanner") ? "0":jsonValueIdentification.getString("enableQRCodeScanner");
+                String enableRFIDScanner = jsonValueIdentification.isNull("enableRFIDScanner") ? "0":jsonValueIdentification.getString("enableRFIDScanner");
+                String identificationTimeout =jsonValueIdentification.isNull("identificationTimeout") ? "5" : jsonValueIdentification.getString("identificationTimeout");
+                String enableFacialRecognition =  jsonValueIdentification.isNull("enableFacialRecognition") ? "0":jsonValueIdentification.getString("enableFacialRecognition");
+                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? "70":jsonValueIdentification.getString("facialThreshold");
+                String enableConfirmationNameAndImage =jsonValueIdentification.isNull("enableConfirmationNameAndImage")? "0":jsonValueIdentification.getString("enableConfirmationNameAndImage");
+                String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0":jsonValueIdentification.getString("enableAnonymousQRCode");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1226,11 +1228,11 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
 
                 //access control setting
-                String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
-                String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "1" : jsonValueAccessControl.getString("blockAccessHighTemperature");
-                int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 : jsonValueAccessControl.getInt("doorControlTimeWired");
-                String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
-                int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
+                String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0":jsonValueAccessControl.getString("enableAutomaticDoors");
+                String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "1":jsonValueAccessControl.getString("blockAccessHighTemperature");
+                int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 :jsonValueAccessControl.getInt("doorControlTimeWired");
+                String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0": jsonValueAccessControl.getString("enableAccessControl");
+                int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26:jsonValueAccessControl.getInt("accessControllerCardFormat");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AutomaticDoorAccess, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AccessControlEnable, enableAccessControl.equals("1"));
@@ -1551,7 +1553,6 @@ public class Util {
 
     /**
      * Method that checks if there is a network connected
-     *
      * @param context context
      * @return true or false accordingly
      */
@@ -1564,6 +1565,42 @@ public class Util {
             result = true;
         }
         return result;
+    }
+    /**
+     * Get the network info
+     * @param context
+     * @return
+     */
+    public static NetworkInfo getNetworkInfo(Context context){
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo();
+    }
+    /**
+     * Check if there is any connectivity to a Wifi network
+     * @param context
+     * @return
+     */
+    public static boolean isConnectedWifi(Context context){
+        NetworkInfo info = Util.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_WIFI);
+    }
+    /**
+     * Check if there is any connectivity to a mobile network
+     * @param context
+     * @return
+     */
+    public static boolean isConnectedMobile(Context context){
+        NetworkInfo info = Util.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_MOBILE);
+    }
+    /**
+     * Check if there is any connectivity to a ethernet network
+     * @param context
+     * @return
+     */
+    public static boolean isConnectedEthernet(Context context){
+        NetworkInfo info = Util.getNetworkInfo(context);
+        return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_ETHERNET);
     }
 
     public static void getMemberID(Context context,String certifyId) {
@@ -1605,5 +1642,3 @@ public class Util {
         }
     }
 }
-
-

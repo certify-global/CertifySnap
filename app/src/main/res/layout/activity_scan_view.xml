@@ -379,46 +379,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <TextView
-            android:id="@+id/tv_scan_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/scan_mode"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_scan_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_scanmode_easy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/scan_mode_easy"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-            <RadioButton
-                android:id="@+id/radio_scanmode_strict"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/scan_mode_strict"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-        </RadioGroup>
-
     </LinearLayout>
 
 </LinearLayout>
