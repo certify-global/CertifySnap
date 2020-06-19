@@ -223,7 +223,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         if (UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
         onRfidScan(id);
-        popupEnrollBtn.setVisibility(View.GONE);
+        if (popupEnrollBtn != null)
+            popupEnrollBtn.setVisibility(View.GONE);
     }
 
     public synchronized void onmemberclick(View v) {
