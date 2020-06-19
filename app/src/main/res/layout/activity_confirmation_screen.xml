@@ -5,48 +5,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white">
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_weight=".5">
-    <TextView
-        android:id="@+id/facial_score"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/lightergray"
-        android:gravity="center"
-        android:layout_alignTop="@+id/iv_item_head_img"/>
-
-    <com.certify.snap.view.OvalImageView
-        android:id="@+id/iv_item_head_img"
-        android:layout_width="170dp"
-        android:layout_height="170dp"
-        android:scaleType="centerCrop"
-        android:layout_gravity="center"
-        android:visibility="visible"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="@dimen/margin_20"/>
-    <TextView
-        android:id="@+id/tv_item_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:layout_alignBottom="@+id/iv_item_head_img"
-        android:gravity="center"
-        android:layout_marginTop="@dimen/margin_5"/>
-
-</LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="center"
         android:layout_weight="1">
 
+        <TextView
+            android:id="@+id/facial_score"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/lightergray"
+            android:gravity="center"
+            android:layout_alignTop="@+id/iv_item_head_img"/>
+
+        <com.certify.snap.view.OvalImageView
+            android:id="@+id/iv_item_head_img"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            android:layout_marginTop="@dimen/margin_20"/>
+        <TextView
+            android:id="@+id/tv_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:layout_alignBottom="@+id/iv_item_head_img"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/margin_5"/>
 
 
     <TextView
@@ -60,7 +51,7 @@
         android:layout_marginRight="20dp"
         android:ellipsize="end"
         android:gravity="center"
-        android:layout_gravity="center"></TextView>
+        android:layout_gravity="center"/>
 
 
 
@@ -74,7 +65,7 @@
         android:layout_below="@id/tv_title"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"></TextView>
+        android:layout_marginRight="20dp"/>
 
     </LinearLayout>
 

@@ -356,5 +356,7 @@
     <string name="data_management">Data Management</string>
     <string name="do_not_sync">Do Not Sync online Member Data to Device </string>
     <string name="enable_home_view_msg">Please enable the Home Screen setting to set this option.</string>
+    <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
+    <string name="confirm_title_below">Have a nice day!</string>
 
 </resources>
