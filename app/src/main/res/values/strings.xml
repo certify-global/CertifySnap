@@ -353,5 +353,7 @@
     <string name="wifi">Wifi</string>
     <string name="ethernet">Ethernet</string>
     <string name="mobile">Cellular</string>
+    <string name="data_management">Data Management</string>
+    <string name="do_not_sync">Do Not Sync online Member Data to Device </string>
 
 </resources>
