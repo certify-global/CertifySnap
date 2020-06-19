@@ -22,6 +22,10 @@ public class Constants {
 
     public static final int DEFAULT_WEIGAN_CONTROLLER_FORMAT = 26;
 
-    public static final int DEFAULT_SCAN_MODE = 1;
+    public static final int DEFAULT_SCAN_MODE = 2;
+
+    public static final int FACE_MATCH_MAX_RETRY = 3;
+
+    public static final int FACE_MIN_THRESHOLD_RETRY = 50;
 }
 

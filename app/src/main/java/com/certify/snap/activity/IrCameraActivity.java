@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
@@ -209,7 +210,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ShowFaceInfoAdapter adapter;
     private SharedPreferences sharedPreferences;
     protected static final String LOG = "IRCamera Activity - ";
-
+    private List<FaceInfo> searchFaceInfoList = new ArrayList<>();
+    private int mFaceMatchRetry = 0;
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -885,7 +887,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (faceFeature != null) {
                     isFaceIdentified = false;
 
-                    if (maskDetectBitmap == null && maskEnabled) {
+                    if (maskDetectBitmap == null && maskEnabled && faceDetectEnabled) {
                         maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
                         processImageAndGetMaskStatus(maskDetectBitmap);
                     }
@@ -920,8 +922,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
                                     if (isFindTemperature()) {
-                                        if (isCalibrating)
-                                            runTemperature(new UserExportedData(rgbBitmapClone, irBitmapClone, new RegisteredMembers(), 0));
+                                        runTemperature(new UserExportedData(rgbBitmapClone, irBitmapClone, new RegisteredMembers(), 0));
                                     }
 
                                     cancelImageTimer();
@@ -2004,9 +2005,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
-                            if (data.compareResult != null) {
-                                intent.putExtra("compareResult", data.compareResult);
-                            }
                             startActivity(intent);
                             ConfirmationBoolean = true;
                             MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
@@ -2312,7 +2310,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
-        scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
+        scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE);
         getAccessControlSettings();
     }
 
@@ -2523,7 +2521,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
+        Log.d(TAG, String.format("Deep Snap searchFace requestId: %s", requestId));
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2566,6 +2564,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
 
                         if (similarValue > thresholdvalue) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tvErrorMessage.setVisibility(View.GONE);
+                                }
+                            });
                             Log.d(TAG, "Snap Compare result Match Similarity value " + similarValue);
                             boolean isAdded = false;
                             if (compareResultList == null) {
@@ -2580,7 +2584,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 }
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
-                            if (!isAdded && isTemperature) {
+                            if (!isAdded) {
                                 Log.d(TAG, "Snap Compare result isAdded, Add it " + isAdded);
 
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
@@ -2600,10 +2604,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
-                                    Log.d(TAG, "Snap Matched Database, Run temperature");
+                                    Log.d(TAG, "Deep Snap Matched Database, Run temperature");
 
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
+                                    CameraController.getInstance().setCompareResult(compareResult);
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
@@ -2613,36 +2618,40 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     String image = registeredMembers.getImage();
                                     clearLeftFace(null);
                                     AccessCardController.getInstance().setAccessIdDb(registeredMembers.getAccessid());
-                                    if (registeredMembers.getStatus().equals("1")) {
-                                        if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
-                                                || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                            Log.d(TAG, "Snap Matched Database match Status 1 member id is " + memberId);
-                                            memberId = getString(R.string.id) + memberId;
-                                            addOfflineMember(name, id, image, new Date(), temperature);
-                                            time2 = System.currentTimeMillis();
-                                            showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
-                                        }
-                                    } else if (!status.equals("1")) {
-                                        Log.d(TAG, "Snap Matched Database match Status is not 1 " + memberId);
-                                        String fullName = getString(R.string.text_nopermission);
-                                        showResult(compareResult, requestId, fullName, memberId, formattedSimilarityScore, false);
+                                    if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
+                                            || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
+                                        Log.d(TAG, "Snap Matched Database match Status 1 member id is " + memberId);
+                                        memberId = getString(R.string.id) + memberId;
+                                        addOfflineMember(name, id, image, new Date(), temperature);
+                                        time2 = System.currentTimeMillis();
+                                        showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                     }
                                 } else {
-                                    Log.d(TAG, "Snap Compare result database no match " + isAdded);
+                                    Log.e(TAG, "Snap Compare result database no match " + isAdded);
                                 }
                             } else {
                                 Log.d(TAG, "Snap Compare result, isAdded condition failed " + isAdded);
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
-                            if (!isTemperature) {
-                                Log.e("retry----", "istemperature=" + isTemperature);
-                                faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
-                                retryRecognizeDelayed(requestId);
-                            }
                         } else {
                             Log.d(TAG, "Snap Compare result Match not meeting threshold " + similarValue);
-                            runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue)); //Check for temperature if the face is not recognized
+                            if (similarValue < Constants.FACE_MIN_THRESHOLD_RETRY) {
+                                runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue));
+                                return;
+                            }
+                            if (mFaceMatchRetry == Constants.FACE_MATCH_MAX_RETRY) {
+                                CameraController.getInstance().setFaceNotMatchedOnRetry(true);
+                                runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue));
+                            }
+                            mFaceMatchRetry++;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tvErrorMessage.setVisibility(View.VISIBLE);
+                                    tvErrorMessage.setText("Analyzing Face");
+                                }
+                            });
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
@@ -2719,15 +2728,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (faceDetectEnabled) {
             if (GlobalParameters.livenessDetect) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                    isSearchFace = false;
-                    Log.d(TAG, "Search face using liveness");
-                    searchFace(faceFeature, requestId, rgb, ir);
+                    checkFaceClosenessAndSearch(faceFeature, requestId, rgb, ir);
                 }
             } else {
-                isSearchFace = false;
-                Log.d(TAG, "Search face using RGB Image");
-                searchFace(faceFeature, requestId, rgb, ir);
+                checkFaceClosenessAndSearch(faceFeature, requestId, rgb, ir);
             }
+        }
+    }
+
+    private void checkFaceClosenessAndSearch(FaceFeature faceFeature, int requestId, Bitmap rgb, Bitmap ir) {
+        isSearchFace = false;
+        if (searchFaceInfoList.isEmpty()) {
+            detectAlignedFaces(faceEngineHelper.getFrEngine(), rgb, requestId);
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvErrorMessage.setVisibility(View.GONE);
+                }
+            });
+            searchFace(faceFeature, requestId, rgb, ir);
         }
     }
 
@@ -2757,6 +2777,95 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+    }
+
+    /**
+     * TODO1: Optimize with process image
+     * @param faceEngine faceEngine
+     * @param rgbBitmap bitmap
+     * @param requestId request id
+     */
+    public void detectAlignedFaces(FaceEngine faceEngine, Bitmap rgbBitmap, int requestId) {
+        Log.d(TAG, "Deep Detect faces start");
+        Observable
+                .create((ObservableOnSubscribe<List<FaceInfo>>) emitter -> {
+                    Bitmap mAlignedBitmap = ArcSoftImageUtil.getAlignedBitmap(rgbBitmap, true);
+                    if (mAlignedBitmap == null) {
+                        Logger.debug(TAG, "Deep Face Bitmap is null");
+                        emitter.onNext(searchFaceInfoList);
+                        return;
+                    }
+                    byte[] mBgr24 = ArcSoftImageUtil.createImageData(mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), ArcSoftImageFormat.BGR24);
+                    int transformCode = ArcSoftImageUtil.bitmapToImageData(mAlignedBitmap, mBgr24, ArcSoftImageFormat.BGR24);
+                    if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+                        emitter.onNext(searchFaceInfoList);
+                        return;
+                    }
+                    int detectFacesResult = faceEngine.detectFaces(mBgr24, mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), FaceEngine.CP_PAF_BGR24, DetectModel.RGB, searchFaceInfoList);
+                    if (detectFacesResult != ErrorInfo.MOK) {
+                        emitter.onNext(searchFaceInfoList);
+                        return;
+                    }
+                    emitter.onNext(searchFaceInfoList);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<FaceInfo>>() {
+                    Disposable faceDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        faceDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(List<FaceInfo> resultList) {
+                        Log.d(TAG, "Deep SearchFaceInfoList = " + resultList.size());
+                        searchFaceInfoList.addAll(resultList);
+                        faceDisposable.dispose();
+                        checkFaceCloseness(searchFaceInfoList, requestId);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in getting the face properties");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
+        if (searchFaceList.size() > 0 && isFaceClose(searchFaceList.get(0))) {
+            Log.d(TAG, "Deep Face is close, Initiate search");
+            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+            return;
+        }
+        runOnUiThread(() -> {
+            tvErrorMessage.setVisibility(View.VISIBLE);
+            tvErrorMessage.setText(getString(R.string.text_value2));
+        });
+        searchFaceInfoList.clear();
+        requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+    }
+
+    public boolean isFaceClose(FaceInfo faceInfo) {
+        boolean result = false;
+        if (faceInfo != null) {
+            Rect rect = faceInfo.getRect();
+            Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.left + " " +rect.top + " " + rect.right + " " +rect.bottom + ")");
+            if ((rect.right - rect.top) > 0 &&
+                rect.bottom - rect.left > 100) {
+                result = true;
+                Log.d(TAG, "Deep SnapXT Face is close");
+            } else {
+                Log.d(TAG, "Deep SnapXT Face is not close");
+            }
+        }
+        return result;
     }
 
    /* private void startMemberSyncService() {

@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -20,10 +21,12 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.RegisteredMembers;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 
@@ -48,8 +51,7 @@ public class ConfirmationScreenActivity extends Activity {
 
             Intent intent = getIntent();
             value = getIntent().getStringExtra("tempVal");
-            if (intent.getSerializableExtra("compareResult") != null)
-                compareResultValues = (CompareResult) intent.getSerializableExtra("compareResult");
+            compareResultValues = CameraController.getInstance().getCompareResult();
 
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -64,6 +66,8 @@ public class ConfirmationScreenActivity extends Activity {
             if (compareResultValues!= null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
                 user_img.setVisibility(View.VISIBLE);
                 compareResult();
+            } else if (CameraController.getInstance().isFaceNotMatchedOnRetry()) {
+                showSnackBarMessage("Potential face match didn't happen. Please retry");
             } else {
                 onAccessCardMatch();
                 user_img.setVisibility(View.GONE);
@@ -141,5 +145,9 @@ public class ConfirmationScreenActivity extends Activity {
                     .into(user_img);
             user_name.setText(matchedMember.getFirstname());
         }
+    }
+
+    private void showSnackBarMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
