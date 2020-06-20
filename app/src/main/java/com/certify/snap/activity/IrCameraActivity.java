@@ -2386,14 +2386,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled())
+            hidReader = new HidReader();//try HID if NFC reader not found
     }
     private void enableNfc() {
-        if (rfIdEnable && mNfcAdapter != null) {
+        if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
-            hidReader.start();
-        }else{
+            hidReader.start(this);
+        } else {
             Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }
     }
