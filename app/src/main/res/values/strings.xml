@@ -358,5 +358,6 @@
     <string name="enable_home_view_msg">Please enable the Home Screen setting to set this option.</string>
     <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
     <string name="confirm_title_below">Have a nice day!</string>
+    <string name="analyzing_face">Analyzing Face</string>
 
 </resources>

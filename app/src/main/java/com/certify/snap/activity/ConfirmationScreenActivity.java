@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -23,6 +23,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
@@ -54,8 +55,8 @@ public class ConfirmationScreenActivity extends Activity {
             setContentView(R.layout.activity_confirmation_screen);
             Intent intent = getIntent();
             value = getIntent().getStringExtra("tempVal");
-            if (intent.getSerializableExtra("compareResult") != null)
-                compareResultValues = (CompareResult) intent.getSerializableExtra("compareResult");
+            compareResultValues = CameraController.getInstance().getCompareResult();
+
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);
@@ -69,6 +70,8 @@ public class ConfirmationScreenActivity extends Activity {
             if (compareResultValues != null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 user_img.setVisibility(View.VISIBLE);
                 compareResult();
+            } else if (CameraController.getInstance().isFaceNotMatchedOnRetry()) {
+                showSnackBarMessage("Potential face match didn't happen. Please retry");
             } else {
                 onAccessCardMatch();
                 //user_img.setVisibility(View.GONE);
@@ -127,9 +130,10 @@ public class ConfirmationScreenActivity extends Activity {
                     face_score.setText(compareResultValues.getFacialScore());
                 }
             });
-
+            CameraController.getInstance().setCompareResult(null);
         } catch (Exception e) {
             Logger.error(" compare result", e.getMessage());
+            CameraController.getInstance().setCompareResult(null);
         }
 
     }
@@ -163,5 +167,9 @@ public class ConfirmationScreenActivity extends Activity {
         else if (titleLength > 150)
             return 28;
         else return 32;
+    }
+
+    private void showSnackBarMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
