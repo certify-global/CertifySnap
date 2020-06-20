@@ -1132,7 +1132,11 @@ public class Util {
                 JSONObject responseData = reportInfo.getJSONObject("responseData");
                 JSONObject jsonValue = responseData.getJSONObject("jsonValue");
                 JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
-                JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
+                if (jsonValue.has("DeviceSettings")) {
+                    JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
+                    String doNotSyncMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.DO_NOT_SYNC_MEMBERS, doNotSyncMembers.equals("1"));
+                }
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
                 JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
@@ -1148,7 +1152,6 @@ public class Util {
                 String enableThermal = jsonValueHome.getString("enableThermalCheck");
                 String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN": jsonValueHome.getString("line1");
                 String homeLine2 = jsonValueHome.isNull("line2") ? "" :jsonValueHome.getString("line2");
-                String doNotSyncMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
                 String enableHomeScreen = jsonValueHome.isNull("enableHomeScreen") ? "": jsonValueHome.getString("enableHomeScreen");
                 String viewIntervalDelay = jsonValueHome.isNull("viewIntervalDelay") ? "": jsonValueHome.getString("viewIntervalDelay");
                 String enableTextOnly = jsonValueHome.isNull("enableTextOnly") ? "": jsonValueHome.getString("enableTextOnly");
@@ -1159,7 +1162,6 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
                 Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.DO_NOT_SYNC_MEMBERS, doNotSyncMembers.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_HOME_SCREEN, enableHomeScreen.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.VIEW_INTERVAL_DELAY, viewIntervalDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_TEXT_ONLY, enableTextOnly.equals("1"));
