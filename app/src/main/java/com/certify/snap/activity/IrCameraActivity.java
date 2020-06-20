@@ -302,6 +302,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout snack_layout;
     private int scanMode = 0;
     private HotImageCallbackImpl thermalImageCallback;
+    private boolean isHomeViewEnabled;
 
     private void instanceStart() {
         try {
@@ -363,7 +364,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         };
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ir);
@@ -379,9 +379,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         getAppSettings();
         CameraController.getInstance().init();
         initAccessControl();
-        initTriggerType();
         try {
-
             processHandler = new ProcessHandler(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -431,6 +429,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void initQRCode() {
+        if (!isHomeViewEnabled) return;
         try {
             frameLayout = findViewById(R.id.barcode_scanner);
             preview = findViewById(R.id.firePreview);
@@ -850,7 +849,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         float tempCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
                         temperature = temperatureData.getTemperature()+(tempCompensation);//centigrade
                         if (temperaturePreference.equals("F")) {
-                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature()+(tempCompensation));
                         }
                         String tempString = String.format("%,.1f", temperature);
                         String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
@@ -1296,16 +1295,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
-                return;
-            }
-            if (rfIdEnable) {
-                if (faceDetectEnabled) {
-                    faceEngineHelper.initEngine(this);
-                    initRgbCamera();
-                    initIrCamera();
+            if (isHomeViewEnabled) {
+                if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
+                    return;
                 }
-                return;
+                if (rfIdEnable) {
+                    if (faceDetectEnabled) {
+                        faceEngineHelper.initEngine(this);
+                        initRgbCamera();
+                        initIrCamera();
+                    }
+                    return;
+                }
             }
             faceEngineHelper.initEngine(this);
             initRgbCamera();
@@ -2053,7 +2054,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
                 }, delayMilli * 1000);
-
                 showMaskStatus();
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
                     boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
@@ -2062,6 +2062,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
+                    if(!(rfIdEnable && data.triggerType.equals(CameraController.triggerValue.Accessid.toString()))&&!(qrCodeEnable && data.triggerType.equals(CameraController.triggerValue.Codeid.toString())))
+                    {
+                        if(data.compareResult != null)
+                            data.triggerType =CameraController.triggerValue.Face.toString();
+                        else data.triggerType =CameraController.triggerValue.Camera.toString();
+                    }
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
             }
@@ -2219,6 +2225,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                new UserExportedData().triggerType = CameraController.triggerValue.Codeid.toString();
                 initCameraPreview();
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
@@ -2295,6 +2302,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (reportInfo.getString("responseCode").equals("1")) {
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
+                    new UserExportedData().triggerType = CameraController.triggerValue.Codeid.toString();
                     initCameraPreview();
                 } else {
                     preview.stop();
@@ -2350,6 +2358,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
+        isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
+                sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         getAccessControlSettings();
     }
 
@@ -2376,18 +2386,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
     }
-private void initTriggerType(){
-    String str;
-    if (faceDetectEnabled)
-        str = "Face";
-    else if (rfIdEnable)
-        str = "Accessid";
-    else if (qrCodeEnable)
-        str = "Codeid";
-    else//CAMERA - Anonymous temp scan
-        str = "Camera";
-    new UserExportedData().triggerType = str;
-}
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
@@ -2733,6 +2731,7 @@ private void initTriggerType(){
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
+                new UserExportedData().triggerType = CameraController.triggerValue.Accessid.toString();
                 startIrCamera();
                 if (soundPool == null) {
                     initSound(); //when access card is recognized, onPause is getting called and resetting the sound
@@ -2744,6 +2743,7 @@ private void initTriggerType(){
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
+        new UserExportedData().triggerType = CameraController.triggerValue.Accessid.toString();
         startIrCamera();
         if (soundPool == null) {
             initSound(); //when access card is recognized, onPause is getting called and resetting the sound
@@ -2814,7 +2814,7 @@ private void initTriggerType(){
                 tvVersionOnly.setVisibility(View.VISIBLE);
                 tv_display_time.setVisibility(View.GONE);
                 tvVersionIr.setVisibility(View.GONE);
-            } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false)) {
+            } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
                 logo.setVisibility(View.VISIBLE);
                 tv_thermal.setVisibility(View.VISIBLE);
                 tv_thermal_subtitle.setVisibility(View.VISIBLE);
@@ -2838,7 +2838,7 @@ private void initTriggerType(){
 
     public void homeDisplayView() {
         try {
-            if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
+            if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
             } else {
@@ -2852,14 +2852,16 @@ private void initTriggerType(){
     }
 
     private void retryFaceOnTimeout(int requestId) {
-        if (qrCodeEnable) {
-            return;
-        }
-        if (rfIdEnable) {
-            if (faceDetectEnabled) {
-                new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+        if (isHomeViewEnabled) { //TODO1: Optimize
+            if (qrCodeEnable) {
+                return;
             }
-            return;
+            if (rfIdEnable) {
+                if (faceDetectEnabled) {
+                    new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
+                }
+                return;
+            }
         }
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }

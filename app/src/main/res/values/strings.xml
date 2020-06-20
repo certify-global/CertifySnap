@@ -74,7 +74,7 @@
     <string name="camera_type">Camera Type: </string>
     <string name="camera_type_0">Single Camera</string>
     <string name="camera_type_1">Binocular Camera</string>
-    <string name="face_Angle">Face Angle: </string>
+    <string name="face_Angle">Face Detection Angle: </string>
     <string name="living_type">Liveness: </string>
     <string name="living_type_0">No</string>
     <string name="living_type_1">Yes</string>
@@ -125,7 +125,7 @@
     <string name="statusbar_show">Show</string>
     <string name="statusbar_hide">Hide</string>
 
-    <string name="NavigationBar">NavigationBar: </string>
+    <string name="NavigationBar">Navigation Bar: </string>
     <string name="navigation_show">Show</string>
     <string name="navigation_hide">Hide</string>
 
@@ -278,7 +278,7 @@
 \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="scan_mode">Scan Mode</string>
     <string name="scan_mode_easy">Easy</string>
-    <string name="scan_mode_strict">Firm</string>
+    <string name="scan_mode_strict">Strict(Recommended)</string>
 
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
@@ -355,5 +355,8 @@
     <string name="mobile">Cellular</string>
     <string name="data_management">Data Management</string>
     <string name="do_not_sync">Do Not Sync online Member Data to Device </string>
+    <string name="enable_home_view_msg">Please enable the Home Screen setting to set this option.</string>
+    <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
+    <string name="confirm_title_below">Have a nice day!</string>
 
 </resources>

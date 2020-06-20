@@ -31,8 +31,13 @@ import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -41,6 +46,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
@@ -49,19 +55,24 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
@@ -92,11 +103,14 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
-        private static Long timeInMillis;
+    private static Long timeInMillis;
+    private static ExecutorService taskExecutorService;
+
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -787,6 +801,7 @@ public class Util {
             SharedPreferences sp = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
+            obj.put("pushAuthToken", sp.getString(GlobalParameters.Firebase_Token, ""));
             obj.put("deviceInfo", MobileDetails(context));
 
             new AsyncJSONObjectSender(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ActivateApplication, context).execute();
@@ -817,7 +832,6 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-            obj.put("pushAuthToken", FirebaseInstanceId.getInstance().getToken());
 
 
         } catch (Exception e) {
@@ -1300,10 +1314,12 @@ public class Util {
                 String token_type = json1.getString("token_type");
                 String institutionId = json1.getString("InstitutionID");
                 String expire_time = json1.getString(".expires");
+                String command = json1.isNull("command") ? "":json1.getString("command");
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
+                Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
                 Util.getSettings((SettingCallback) context, context);
 
 //                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
@@ -1342,9 +1358,19 @@ public class Util {
         try {
 
             if (tempVal.equals("high")) {
-                soundPool.load(context, R.raw.failed_last, 1);
+                File file =  new File(Environment.getExternalStorageDirectory() + "/Audio/High.mp3");
+                if(file.exists()) {
+                    soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/High.mp3", 1);
+                }else{
+                     soundPool.load(context, R.raw.failed_last, 1);
+                }
             } else {
-                soundPool.load(context, R.raw.thankyou_last, 1);
+                File file=new File(Environment.getExternalStorageDirectory() + "/Audio/Normal.mp3");
+                if(file.exists()) {
+                    soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/Normal.mp3", 1);
+                }else{
+                      soundPool.load(context, R.raw.thankyou_last, 1);
+                }
             }
             soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                 int lastStreamId = -1;
@@ -1592,5 +1618,44 @@ public class Util {
     public static boolean isConnectedEthernet(Context context){
         NetworkInfo info = Util.getNetworkInfo(context);
         return (info != null && info.isConnected() && info.getType() == ConnectivityManager.TYPE_ETHERNET);
+    }
+
+    public static void getMemberID(Context context,String certifyId) {
+        try {
+            MemberSyncDataModel.getInstance().setNumOfRecords(1);
+            doSendBroadcast(context,"start", 1, 1);
+            SharedPreferences sharedPreferences=Util.getSharedPreferences(context);
+            JSONObject obj = new JSONObject();
+            obj.put("id", certifyId);
+            if (taskExecutorService != null) {
+                new AsyncGetMemberData(obj, (MemberIDCallback) context, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, context).executeOnExecutor(taskExecutorService);
+            } else {
+                new AsyncGetMemberData(obj, (MemberIDCallback) context, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, context).execute();
+            }
+        } catch (Exception e) {
+            Logger.error(" getMemberID()",e.getMessage());
+        }
+    }
+    private static void doSendBroadcast(Context context,String message,int memberCount,int count) {
+        Intent event_snackbar = new Intent("EVENT_SNACKBAR");
+
+        if (!TextUtils.isEmpty(message))
+            event_snackbar.putExtra("message",message);
+        event_snackbar.putExtra("memberCount",memberCount);
+        event_snackbar.putExtra("count",count);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcast(event_snackbar);
+    }
+    //bitmap
+    public static void createAudioDirectory() throws IOException {//Bitmap
+        String path = Environment.getExternalStorageDirectory() + "/Audio/";
+        File dirFile = new File(path);
+        if (!dirFile.exists()) {
+            dirFile.mkdir();
+
+
+        }
     }
 }

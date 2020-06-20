@@ -70,7 +70,7 @@ public class ThermalSetting extends Activity {
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
             etDisplayTime.setText("" + sp.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2));
             etOnlyText.setText(sp.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, ""));
-            cbHomeText.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, false));
+            cbHomeText.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true));
             cbTextOnly.setChecked(sp.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false));
 
             btn_save.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +93,7 @@ public class ThermalSetting extends Activity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Util.writeBoolean(sp, GlobalParameters.HOME_TEXT_IS_ENABLE, isChecked);
+                    if(!isChecked)setIdentificationOptions();
                 }
             });
             cbTextOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -106,7 +107,12 @@ public class ThermalSetting extends Activity {
         }
 
     }
-
+public void  setIdentificationOptions(){
+    Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
+    Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, false);
+    Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, false);
+    Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
+}
     public void onParamterback(View view) {
         startActivity(new Intent(ThermalSetting.this, SettingActivity.class));
         finish();

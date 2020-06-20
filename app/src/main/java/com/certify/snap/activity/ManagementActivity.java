@@ -223,7 +223,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         if (UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
         onRfidScan(id);
-        popupEnrollBtn.setVisibility(View.GONE);
+        if (popupEnrollBtn != null)
+            popupEnrollBtn.setVisibility(View.GONE);
     }
 
     public synchronized void onmemberclick(View v) {
@@ -231,11 +232,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
-                    Util.getmemberList(this, this);
-                    count=0;
-                    testCount = 1;
-                    mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
-
+                    if(!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
+                        Util.getmemberList(this, this);
+                        count = 0;
+                        testCount = 1;
+                        mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                    }
                 }
                 break;
             case R.id.register:

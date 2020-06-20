@@ -6,12 +6,15 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.Nullable;
+
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -31,11 +34,15 @@ public class ConfirmationScreenActivity extends Activity {
     Typeface rubiklight;
     TextView tv_title, tv_subtitle, user_name, face_score;
     private SharedPreferences sp;
-    String value;
+    String value ="";
     private long delayMilli = 0;
-    String longVal ;
+
+    String longVal;
     ImageView user_img;
     CompareResult compareResultValues;
+
+    private String confirm_title,
+            confirm_subtitle ;
 
 
     @Override
@@ -45,12 +52,10 @@ public class ConfirmationScreenActivity extends Activity {
             requestWindowFeature(Window.FEATURE_NO_TITLE);
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_confirmation_screen);
-
             Intent intent = getIntent();
             value = getIntent().getStringExtra("tempVal");
             if (intent.getSerializableExtra("compareResult") != null)
                 compareResultValues = (CompareResult) intent.getSerializableExtra("compareResult");
-
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);
@@ -61,32 +66,31 @@ public class ConfirmationScreenActivity extends Activity {
             user_name = findViewById(R.id.tv_item_name);
             face_score = findViewById(R.id.facial_score);
 
-            if (compareResultValues!= null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION,false) ){
+            if (compareResultValues != null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 user_img.setVisibility(View.VISIBLE);
                 compareResult();
             } else {
                 onAccessCardMatch();
-                user_img.setVisibility(View.GONE);
+                //user_img.setVisibility(View.GONE);
+            }
+            if (value.equals("high")) {
+                confirm_title = sp.getString(GlobalParameters.Confirm_title_above, getResources().getString(R.string.confirmation_text_above));
+                confirm_subtitle = sp.getString(GlobalParameters.Confirm_subtitle_above, "");
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1");
+                tv_title.setText(confirm_title);
+                tv_subtitle.setText(confirm_subtitle);
+            } else {
+                confirm_title = sp.getString(GlobalParameters.Confirm_title_below, getResources().getString(R.string.confirm_title_below));
+                confirm_subtitle = sp.getString(GlobalParameters.Confirm_subtitle_below, "");
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1");
+                tv_title.setText(confirm_title);
+                tv_subtitle.setText(confirm_subtitle);
             }
 
-            if (value.equals("high")) {
-                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1");
-                if (sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work.").isEmpty())
-                    tv_title.setText("Please contact your supervisor before starting any work.");
-                else
-                    tv_title.setText(sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work."));
-                tv_subtitle.setText(sp.getString(GlobalParameters.Confirm_subtitle_above, ""));
-            } else {
-                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1");
-                if (sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!").isEmpty())
-                    tv_title.setText("Have a nice day!");
-                else
-                    tv_title.setText(sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!"));
-                tv_subtitle.setText(sp.getString(GlobalParameters.Confirm_subtitle_below, ""));
-            }
             tv_title.setTypeface(rubiklight);
             tv_subtitle.setTypeface(rubiklight);
-
+            tv_title.setTextSize(titleSize(confirm_title.length()));
+            tv_subtitle.setTextSize(titleSizeSub(confirm_subtitle.length()));
             if (longVal.equals("")) {
                 delayMilli = 3;
             } else {
@@ -101,7 +105,7 @@ public class ConfirmationScreenActivity extends Activity {
                 }
             }, delayMilli*900);
 
-            Log.d("delay milli seconds",""+delayMilli);
+            Log.d("delay milli seconds", "" + delayMilli);
 
         } catch (Exception e) {
             Logger.error(" onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
@@ -124,8 +128,7 @@ public class ConfirmationScreenActivity extends Activity {
                 }
             });
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Logger.error(" compare result", e.getMessage());
         }
 
@@ -140,6 +143,25 @@ public class ConfirmationScreenActivity extends Activity {
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .into(user_img);
             user_name.setText(matchedMember.getFirstname());
+        }else {
+            user_img.setVisibility(View.GONE);
+            user_name.setVisibility(View.GONE);
+            face_score.setVisibility(View.GONE);
         }
+    }
+
+    private float titleSize(int titleLength) {
+        if (titleLength > 500)
+            return 28;
+        else if (titleLength > 150)
+            return 34;
+        else return 40;
+    }
+    private float titleSizeSub(int titleLength) {
+        if (titleLength > 500)
+            return 22;
+        else if (titleLength > 150)
+            return 28;
+        else return 32;
     }
 }

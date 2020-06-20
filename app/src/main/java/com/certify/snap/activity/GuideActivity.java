@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
 import com.certify.callback.ActiveEngineCallback;
@@ -36,6 +38,10 @@ import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -45,6 +51,7 @@ import com.tamic.novate.Novate;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,11 +83,32 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
+        try {
+            Util.createAudioDirectory();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
             attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             getWindow().setAttributes(attributes);
         }
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "getInstanceId failed", task.getException());
+                    return;
+                }
+
+                // Get new Instance ID token
+                String token = task.getResult().getToken();
+                Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+                Logger.debug("firebase token",token);
+
+            }
+        });
+
         mActivity = this;
         Application.getInstance().addActivity(this);
         sharedPreferences = Util.getSharedPreferences(this);
@@ -103,6 +131,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             });
 
         }
+
 
         myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
         imgPic = findViewById(R.id.img_telpo);
@@ -207,7 +236,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Logger.error(TAG, message);
             //TODO: alternate license activation
             Util.openDialogactivate(this, message, "");
-        }else if (!onlineMode) {
+        } else if (!onlineMode) {
             startActivity(new Intent(this, IrCameraActivity.class));
 
         } else {
@@ -298,8 +327,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
-                    startService(new Intent(GuideActivity.this, MemberSyncService.class));
+
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)) {
+                    if (!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+                        startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
                 }
             }
