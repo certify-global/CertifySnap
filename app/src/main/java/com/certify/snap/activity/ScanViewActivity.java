@@ -21,7 +21,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
-public class ScanViewActivity extends Activity {
+public class ScanViewActivity extends SettingBaseActivity {
 
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low;
@@ -36,8 +36,6 @@ public class ScanViewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             setContentView(R.layout.activity_scan_view);
@@ -197,10 +195,5 @@ public class ScanViewActivity extends Activity {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(ScanViewActivity.this,SettingActivity.class));
-        finish();
     }
 }

@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -35,7 +36,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
-public class DeviceSettingsActivity extends Activity implements JSONObjectCallback {
+public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback {
     private static String LOG = "DeviceSettingsActivity -> ";
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
@@ -185,11 +186,6 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
     private void stopHealthCheckService() {
         Intent intent = new Intent(this, DeviceHealthService.class);
         stopService(intent);
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(DeviceSettingsActivity.this, SettingActivity.class));
-        finish();
     }
 
     @Override

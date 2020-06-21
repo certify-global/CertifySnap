@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,7 +23,7 @@ import com.certify.snap.common.Util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TemperatureActivity extends Activity {
+public class TemperatureActivity extends SettingBaseActivity {
     EditText editTextDialogUserInput,editTextcompensation;
     SharedPreferences sp;
     TextView btn_save;
@@ -89,10 +90,5 @@ public class TemperatureActivity extends Activity {
         });
 
 
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(TemperatureActivity.this, SettingActivity.class));
-        finish();
     }
 }

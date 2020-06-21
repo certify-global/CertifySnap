@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class ConnectivityStatusActivity extends AppCompatActivity implements JSONObjectCallback{
+public class ConnectivityStatusActivity extends SettingBaseActivity implements JSONObjectCallback{
 
     LinearLayout mRelativeConnectivity;
     private TextView mMacTv, mIPAddress, mNetmaskTv, mGatewayTv, mDns1Tv, mDns2Tv, mEthernetIpTv, mSsidTv, mNetworkAvailableTv;
@@ -63,8 +63,6 @@ public class ConnectivityStatusActivity extends AppCompatActivity implements JSO
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_connectivity);
 
         Util.getDeviceHealthCheck((JSONObjectCallback) this,this);

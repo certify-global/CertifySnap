@@ -22,8 +22,8 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.google.android.material.snackbar.Snackbar;
 
-public class QRViewSetting extends Activity {
-    private static String TAG = "QRViewSetting";
+public class IdentificationSettingActivity extends SettingBaseActivity {
+    private static String TAG = IdentificationSettingActivity.class.getSimpleName();
     Typeface rubiklight;
     SharedPreferences sp;
     TextView btn_save, titles, qr_screen, tv_facial;
@@ -97,9 +97,6 @@ public class QRViewSetting extends Activity {
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);
-
-            this.getWindow().setSoftInputMode(
-                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
             setRfidDefault();
             setRfidClickListener();
@@ -178,8 +175,8 @@ public class QRViewSetting extends Activity {
                 @Override
                 public void onClick(View v) {
                     saveRfidSettings();
-                    startActivity(new Intent(QRViewSetting.this, SettingActivity.class));
-                    Util.showToast(QRViewSetting.this, getString(R.string.save_success));
+                    startActivity(new Intent(IdentificationSettingActivity.this, SettingActivity.class));
+                    Util.showToast(IdentificationSettingActivity.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
                     saveScanModeSetting();
@@ -293,10 +290,5 @@ public class QRViewSetting extends Activity {
 
     private void showSnackBarMessage(String message) {
         Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show();
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(QRViewSetting.this, SettingActivity.class));
-        finish();
     }
 }

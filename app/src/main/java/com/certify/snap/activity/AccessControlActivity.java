@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -19,7 +20,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
-public class AccessControlActivity extends Activity {
+public class AccessControlActivity extends SettingBaseActivity {
     private CheckBox mEnableADCheckBox;
     private CheckBox mEnableACCheckBox;
     private RadioGroup mBlockAccessRadioGroup;
@@ -34,6 +35,7 @@ public class AccessControlActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.access_control_layout);
         saveButton = findViewById(R.id.btn_save);
         mRelayTimeEt = findViewById(R.id.edit_relaytime);
@@ -133,10 +135,5 @@ public class AccessControlActivity extends Activity {
         }
         finish();
         Toast.makeText(getApplicationContext(), getString(R.string.save_success), Toast.LENGTH_LONG).show();
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(this, SettingActivity.class));
-        finish();
     }
 }

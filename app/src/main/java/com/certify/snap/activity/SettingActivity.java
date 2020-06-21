@@ -332,7 +332,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 startActivity(guideIntent);
                 break;
             case R.id.qr_setting:
-                Intent qrintent = new Intent(SettingActivity.this, QRViewSetting.class);
+                Intent qrintent = new Intent(SettingActivity.this, IdentificationSettingActivity.class);
                 startActivity(qrintent);
                 break;
             case R.id.access_control:
