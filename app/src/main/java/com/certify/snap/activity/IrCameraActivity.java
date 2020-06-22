@@ -952,9 +952,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     if (CameraController.getInstance().isScanCloseProximityEnabled()) {
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
-                    } /*else if (!isFaceIdentified) {
+                    } else if (!isFaceIdentified) {
                         showCameraPreview(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
-                    }*/
+                    }
 
                     Integer liveness = livenessMap.get(requestId);
                     initiateFaceSearch(faceFeature, requestId, liveness, rgbBitmapClone, irBitmapClone);
@@ -2971,7 +2971,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             detectAlignedFaces(faceEngineHelper.getFrEngine(), rgb, requestId);
         } else {
             runOnUiThread(() -> tvErrorMessage.setVisibility(View.GONE));
-            /*if (faceDetectEnabled) {
+            if (faceDetectEnabled) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                 !isFaceIdentified) {
                     Log.d(TAG, "Deep FaceRecognition");
@@ -2979,7 +2979,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
                 searchFace(faceFeature, requestId, rgb, ir);
                 return;
-            }*/
+            }
             showCameraPreview(faceFeature, requestId, rgb, ir);
         }
     }
@@ -3011,12 +3011,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } else {
                     Log.d(TAG, "SnapXT Face is not close");
                 }
-                /*if (((rect.bottom - rect.left > 35) && ((rect.right - rect.top) > 20))) {
-                    result = true;
-                    Log.d(TAG, "SnapXT Face is close");
-                } else {
-                    Log.d(TAG, "SnapXT Face is not close");
-                }*/
             } else {
                 if (((rect.bottom - rect.left > 100) && ((rect.right - rect.top) > -50))
                         || ((rect.bottom - rect.left > 90) && ((rect.right - rect.top) > 40))) {
