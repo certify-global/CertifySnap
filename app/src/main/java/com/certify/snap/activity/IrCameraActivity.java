@@ -268,7 +268,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private boolean rfIdEnable = false;
     private String mNfcIdString = "";
-    private boolean isFaceCameraOn = false;
     private Snackbar mSnackbar;
     private Snackbar toastmSnackbar;
 
@@ -933,8 +932,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
                         processImageAndGetMaskStatus(maskDetectBitmap);
                     }
-                    isFaceCameraOn = true;
-                    disableNfc();
                     countTempError = 0;
                     Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
@@ -2394,7 +2391,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void setCameraPreview() {
         enableLedPower();
         disableNfc();
-        isFaceCameraOn = true;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -2954,23 +2950,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         boolean result = false;
         if (faceInfo != null) {
             Rect rect = faceInfo.getRect();
-            //Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.left + " " +rect.top + " " + rect.right + " " +rect.bottom + ")");
             Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.width() + " " +rect.height() + " )");
-            if (CameraController.getInstance().isScanCloseProximityEnabled()) {
-                if (rect.width() > 45) {
-                    result = true;
-                    Log.d(TAG, "SnapXT Face is close");
-                } else {
-                    Log.d(TAG, "SnapXT Face is not close");
-                }
+            if (rect.width() > 45) {
+                result = true;
+                Log.d(TAG, "SnapXT Face is close");
             } else {
-                if (((rect.bottom - rect.left > 100) && ((rect.right - rect.top) > -50))
-                        || ((rect.bottom - rect.left > 90) && ((rect.right - rect.top) > 40))) {
-                    result = true;
-                    Log.d(TAG, "SnapXT Face is close");
-                } else {
-                    Log.d(TAG, "SnapXT Face is not close");
-                }
+                Log.d(TAG, "SnapXT Face is not close");
             }
         }
         return result;
@@ -2978,6 +2963,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         cancelPreviewIdleTimer();
+        disableNfc();
         enableLedPower();
         runOnUiThread(new Runnable() {
             @Override
@@ -3042,6 +3028,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void clearData() {
         CameraController.getInstance().clearData();
         searchFaceInfoList.clear();
+        compareResultList.clear();
     }
 
     private void setPreviewIdleTimer() {
