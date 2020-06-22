@@ -359,5 +359,7 @@
     <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
     <string name="confirm_title_below">Have a nice day!</string>
     <string name="analyzing_face">Analyzing Face</string>
+    <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
+    <string name="step_closer">Please step closer</string>
 
 </resources>

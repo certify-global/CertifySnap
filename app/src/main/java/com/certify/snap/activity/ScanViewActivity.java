@@ -1,17 +1,9 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-
-import com.certify.snap.common.Constants;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -20,6 +12,7 @@ import android.widget.TextView;
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class ScanViewActivity extends SettingBaseActivity {
 
@@ -31,6 +24,10 @@ public class ScanViewActivity extends SettingBaseActivity {
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
     RadioButton radio_no_mask;
+    private TextView scanProximityView;
+    private RadioGroup scanProximityRg;
+    private RadioButton scanProximityYes;
+    private RadioButton scanProximityNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +72,7 @@ public class ScanViewActivity extends SettingBaseActivity {
             tv_scan = findViewById(R.id.titles);
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_mask = findViewById(R.id.tv_mask);
+            scanProximityView = findViewById(R.id.tv_scan_proximity);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
@@ -84,6 +82,7 @@ public class ScanViewActivity extends SettingBaseActivity {
             tv_reg.setTypeface(rubiklight);
             tv_mask.setTypeface(rubiklight);
             tv_sound_high.setTypeface(rubiklight);
+            scanProximityView.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
@@ -115,6 +114,9 @@ public class ScanViewActivity extends SettingBaseActivity {
             }
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
             editTextDialogUserInput_low.setText(sp.getString(GlobalParameters.TEMP_TEST_LOW, "93.2"));
+
+            setDefaultScanProximity();
+            setScanProximityClickListener();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -194,6 +196,39 @@ public class ScanViewActivity extends SettingBaseActivity {
             });
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private void setDefaultScanProximity() {
+        if (sp.getBoolean(GlobalParameters.ScanProximity, true)) {
+            scanProximityYes.setChecked(true);
+            scanProximityNo.setChecked(false);
+        } else {
+            scanProximityNo.setChecked(true);
+            scanProximityYes.setChecked(false);
+        }
+    }
+
+    private void setScanProximityClickListener() {
+        scanProximityRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.radio_scanmode_easy) {
+                    scanProximityYes.setChecked(true);
+                    scanProximityNo.setChecked(false);
+                } else if (checkedId == R.id.radio_scanmode_strict) {
+                    scanProximityNo.setChecked(true);
+                    scanProximityYes.setChecked(false);
+                }
+            }
+        });
+    }
+
+    private void saveScanProximity() {
+        if (scanProximityYes.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanProximity, 1);
+        } else if(scanProximityNo.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanProximity, 0);
         }
     }
 }
