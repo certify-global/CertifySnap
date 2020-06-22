@@ -24,6 +24,7 @@ public class GlobalParameters {
     public static String Device_password = "";
     public static String Wallpaper = "";
 
+    public static final String LICENSE_ACTIVATED = "activate";
     //sp参数的key名
     public static final String CameraType = "cameratype";
     public static final String LivingType = "livingtype";
