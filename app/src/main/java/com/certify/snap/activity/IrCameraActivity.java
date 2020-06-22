@@ -747,7 +747,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
-        preview.stop();
+        if (preview != null) {
+            preview.stop();
+        }
         disableNfc();
         if (cameraHelper != null) {
             cameraHelper.stop();
@@ -1633,7 +1635,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     Logger.debug(TAG, "ShowLauncherView()", "Display Home page start");
-
+                    if(!isHomeViewEnabled) {
+                        final Activity that = IrCameraActivity.this;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                isTemperatureIdentified = false;
+                                if (tv_message != null) tv_message.setVisibility(View.GONE);
+                                if(tvErrorMessage!=null) tvErrorMessage.setVisibility(View.GONE);
+                                if(temperature_image!= null) temperature_image.setVisibility(View.GONE);
+                                if(mask_message!=null) mask_message.setVisibility(View.GONE);
+                                isTemperatureIdentified = false;
+                                clearData();
+                                clearLeftFace(null);
+                            }
+                        }, 1 * 1000);
+                        return;
+                    }
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
 
@@ -2983,6 +3001,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }
         return result;
+    }
+
+    private void clearData() {
+        CameraController.getInstance().clearData();
+        searchFaceInfoList.clear();
     }
 
    /* private void startMemberSyncService() {

@@ -65,7 +65,7 @@ public class CameraController {
         isFaceNotMatchedOnRetry = faceNotMatchedOnRetry;
     }
 
-    private void clearData() {
+    public void clearData() {
         qrCodeData = null;
         qrCodeId = "";
         isFaceVisible = false;
