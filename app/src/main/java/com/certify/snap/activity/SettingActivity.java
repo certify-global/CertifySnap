@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -56,6 +57,7 @@ import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
 
 public class SettingActivity extends Activity implements JSONObjectCallback, SettingCallback {
 
+    private static final String TAG = SettingActivity.class.getSimpleName();
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
@@ -131,7 +133,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
             sharedPreferences = Util.getSharedPreferences(this);
             boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-            Logger.debug("sp---true", "activate:" + activateStatus);
+            Logger.verbose(TAG, "activate:", activateStatus);
             if (!activateStatus)
                 new AsyncActiveEngine(SettingActivity.this, sharedPreferences, null, Util.getSNCode()).execute();
             img_sync.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +165,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 switch_activate.setChecked(false);
             }
         } catch (Exception e) {
-            Logger.error("Setting  onCreate(Bundle savedInstanceState) ", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
     }

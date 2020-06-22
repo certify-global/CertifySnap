@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -37,7 +38,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONObject;
 
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback {
-    private static String LOG = "DeviceSettingsActivity -> ";
+    private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
     private TextView btn_save, tvSettingsName;
@@ -159,7 +160,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                             Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, etPassword.getText().toString().trim());
                         }
                     } catch (Exception e) {
-                        Logger.error(LOG + "etPassword --> afterTextChanged", e.getMessage());
+                        Log.e(TAG, e.getMessage());
 
                     }
                 }
@@ -178,7 +179,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 }
             });
         } catch (Exception e) {
-            Logger.error(LOG + "onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
     }
@@ -216,7 +217,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(true);
             }
         } catch (Exception e) {
-            Logger.error(LOG + "onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -228,7 +229,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.error(LOG + "startHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+            Logger.error(TAG, "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
 }

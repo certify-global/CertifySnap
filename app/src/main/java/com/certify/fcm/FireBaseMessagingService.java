@@ -38,10 +38,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try {
-            Logger.debug(TAG, "Remote home: " + remoteMessage);
+            Logger.verbose(TAG, "Remote home: ", remoteMessage);
 
             if (remoteMessage.getNotification() != null) {
-                Logger.debug(TAG, "Remote Body: " + remoteMessage.getNotification().getBody());
+                Logger.verbose(TAG, "Remote Body: ", remoteMessage.getNotification().getBody());
                // sendNotification(remoteMessage.getNotification().getBody());
             }
 

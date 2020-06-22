@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -19,7 +20,7 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 public class GuideViewSetting extends SettingBaseActivity {
-   private static String  TAG ="GuideViewSetting";
+   private static String  TAG = GuideViewSetting.class.getSimpleName();
     Typeface rubiklight;
     SharedPreferences sp;
     EditText edittext_text1,edittext_text3,edittext_text2;
@@ -79,7 +80,7 @@ public class GuideViewSetting extends SettingBaseActivity {
                 }
             });
         }catch (Exception e){
-            Logger.error(TAG,e.toString());
+            Log.e(TAG,e.toString());
         }
     }
 }

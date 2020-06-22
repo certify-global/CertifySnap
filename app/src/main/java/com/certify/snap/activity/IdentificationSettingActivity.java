@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -184,7 +185,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                 }
             });
         } catch (Exception e) {
-            Logger.error(TAG, e.toString());
+            Log.e(TAG, e.toString());
         }
     }
 

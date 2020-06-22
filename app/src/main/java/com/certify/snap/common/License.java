@@ -12,32 +12,34 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class License {
-    private static  final String TAG = "License";
-    static boolean checkLicense(Context context){
+    private static final String TAG = "License";
+
+    static boolean checkLicense(Context context) {
         FaceEngine faceEngine = null;
 
-        try{
+        try {
             int activationCode = new FaceEngine().init(context, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(context),
                     16, 10, FaceEngine.ASF_FACE_DETECT);
-            Logger.warn(TAG, "checkLicense activationCode: "+activationCode);
+            Logger.verbose(TAG, "checkLicense activationCode: ", activationCode);
             return (activationCode == ErrorInfo.MOK || activationCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED);
-        }catch (Exception ex){
+        } catch (Exception ex) {
 
         } finally {
-            if(faceEngine != null) faceEngine.unInit();
+            if (faceEngine != null) faceEngine.unInit();
         }
         return false;
     }
-    public  static boolean activateLicense(Context context){
+
+    public static boolean activateLicense(Context context) {
         boolean activated = License.checkLicense(context);
-        if(!activated){
+        if (!activated) {
             copyLicense(context);
             activated = License.checkLicense(context);
         }
-        if(!activated){
+        if (!activated) {
             activated = ActiveEngine.activeEngineOffline(context);
 
-            if(!activated){
+            if (!activated) {
                 String serialNumber = Util.getSNCode();
                 String activationKey = ActiveEngine.getDeviceList().get(serialNumber);
                 Logger.debug(TAG,
@@ -45,15 +47,16 @@ public class License {
                                 serialNumber, activationKey));
                 int activationResult = FaceEngine.activeOnline(context, activationKey, Constants.APP_ID, Constants.SDK_KEY);
                 activated = activationResult == ErrorInfo.MOK || activationResult == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED;
-                Logger.debug(TAG, String.format("doInBackground FaceEngine.activeOnline activationResult: %d", activationResult));
+                Logger.verbose(TAG, "doInBackground FaceEngine.activeOnline activationResult: %d", activationResult);
             }
-            if(activated) copyLicense(context);
+            if (activated) copyLicense(context);
             Util.writeBoolean(Util.getSharedPreferences(context), "activate", activated);
 
         }
         return activated;
     }
-    public static void copyLicense(Context context){
+
+    public static void copyLicense(Context context) {
         String licenseFileName = "ArcFacePro32.dat";
 
         File externalStorageLicense = new File(Environment.getExternalStorageDirectory(), licenseFileName);
@@ -63,16 +66,17 @@ public class License {
         Logger.debug(TAG, String.format("copyLicense shouldCopy: %b, folders externalStorage: %s, application: %s",
                 shouldCopyToApplication, externalStorageLicense.getPath(), applicationLicense.getPath()));
 
-        if(shouldCopyToApplication){
+        if (shouldCopyToApplication) {
             copyFiles(applicationLicense, externalStorageLicense);
-        }else if(shouldCopyToExternalStorage){
+        } else if (shouldCopyToExternalStorage) {
             copyFiles(externalStorageLicense, applicationLicense);
         }
 
     }
-    private static void copyFiles(File in, File out){
-        if(in == null || !in.exists()) return;
-        try(
+
+    private static void copyFiles(File in, File out) {
+        if (in == null || !in.exists()) return;
+        try (
                 FileInputStream fin = new FileInputStream(in);
                 FileOutputStream fout = new FileOutputStream(out);
         ) {

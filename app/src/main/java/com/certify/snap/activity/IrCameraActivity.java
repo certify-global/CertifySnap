@@ -175,7 +175,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private View previewViewIr;
     private static boolean ConfirmationBoolean = false;
 
-    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync,tvDisplayTimeOnly,tvVersionOnly;
+    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly;
 
     Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
 
@@ -495,7 +495,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
 
         } catch (Exception ex) {
-            Logger.warn(TAG, String.format("homeIcone path: %s, message: %s", path, ex.getMessage()));
+            Log.e(TAG, String.format("homeIcone path: %s, message: %s", path, ex.getMessage()));
         }
 
     }
@@ -549,7 +549,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     offlineGuestMembers.setUserId(guestMembers.get(0).getUserId());
                                     offlineGuestMembers.setVerify_time(verify_time);
                                     offlineGuestMembers.save();
-                                    Logger.debug("tag", "offlineGuestMembers userId----" + guestMembers.get(0).getUserId());
+                                    Logger.verbose(TAG, "offlineGuestMembers userId----", guestMembers.get(0).getUserId());
                                 } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                                     restoreCameraAfterScan(true);
                                     if (txt_guest != null)
@@ -851,9 +851,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
                         String abnormalTemperature = getString(R.string.temperature_anormaly);
                         float tempCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
-                        temperature = temperatureData.getTemperature()+(tempCompensation);//centigrade
+                        temperature = temperatureData.getTemperature() + (tempCompensation);//centigrade
                         if (temperaturePreference.equals("F")) {
-                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature()+(tempCompensation));
+                            temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature() + (tempCompensation));
                         }
                         String tempString = String.format("%,.1f", temperature);
                         String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
@@ -931,7 +931,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isFaceCameraOn = true;
                     disableNfc();
                     countTempError = 0;
-                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
+                    Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
                     tempServiceClose = false;
                     takePicRgb = true;
@@ -971,7 +971,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                 public void run() {
                                                     if (that != null && that.isDestroyed()) return;
                                                     isSearch = true;
-                                                    Logger.debug(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
+                                                    Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
                                                     //  tvDisplayingCount.setVisibility(View.GONE);
                                                     if (isTemperatureIdentified || !takePicRgb)
                                                         return;
@@ -1632,7 +1632,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Logger.debug(TAG, "ShowLauncherView()", "Display Home page start");
+                    Logger.verbose(TAG, "ShowLauncherView()", "Display Home page start");
 
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
@@ -1647,7 +1647,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     recreate();
                 }
             });
-            Logger.debug(TAG, "ShowLauncherView()", "isTemperatureIdentified :" + isTemperatureIdentified);
+            Logger.verbose(TAG, "ShowLauncherView() isTemperatureIdentified :", isTemperatureIdentified);
         } catch (Exception e) {
             Logger.debug(TAG, "ShowLauncherView()", "Exception in launching Home page" + e.getMessage());
         }
@@ -1673,7 +1673,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onCameraClosed() {
-            Logger.debug(TAG, "IrCameraListener.onCameraClosed()", "onCameraClosed");
+            Logger.verbose(TAG, "IrCameraListener.onCameraClosed()", "onCameraClosed");
         }
 
         @Override
@@ -1686,7 +1686,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (drawHelperIr != null) {
                 drawHelperIr.setCameraDisplayOrientation(displayOrientation);
             }
-            Logger.debug(TAG, "IrCameraListener.onCameraConfigurationChanged()", "CameraId:" + cameraID + "DisplayOrientation:" + displayOrientation);
+            Logger.verbose(TAG, "IrCameraListener.onCameraConfigurationChanged()-CameraId:", cameraID + "DisplayOrientation:" + displayOrientation);
         }
     }
 
@@ -1730,7 +1730,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         @Override
         public void onCameraClosed() {
-            Logger.debug(TAG, "RgbCameraListener.onCameraClosed()", "onCameraClosed");
+            Logger.verbose(TAG, "RgbCameraListener.onCameraClosed()", "onCameraClosed");
         }
 
         @Override
@@ -1744,7 +1744,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (drawHelperRgb != null) {
                 drawHelperRgb.setCameraDisplayOrientation(displayOrientation);
             }
-            Logger.debug(TAG, "RgbCameraListener.onCameraConfigurationChanged()", "CameraId:" + cameraID + "DisplayOrientation:" + displayOrientation);
+            Logger.verbose(TAG, "RgbCameraListener.onCameraConfigurationChanged()-CameraId:", cameraID + "DisplayOrientation:" + displayOrientation);
         }
     }
 
@@ -1761,7 +1761,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 temperature = temperatureInput;
             }
             String tempString = String.format("%,.1f", temperature);
-            Logger.debug(TAG, "tempMessageUi()", "Temperature is" + tempString);
+            Logger.warn(TAG, "tempMessageUi()", "Temperature is" + tempString);
 
             String testing_tempe = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
             Float tmpFloat = Float.parseFloat(testing_tempe);
@@ -1772,7 +1772,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     text = getString(R.string.temperature_anormaly) + tempString + getString(R.string.centi);
                 }
                 TemperatureCallBackUISetup(true, text, tempString, true, new UserExportedData());
-                Logger.debug(TAG, "tempMessageUi()", "Temperature is above Threshold");
+                Logger.verbose(TAG, "tempMessageUi()", "Temperature is above Threshold");
             } else {
                 if (sharedPreferences.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
                     text = getString(R.string.temperature_normal) + tempString + getString(R.string.fahrenheit_symbol);
@@ -1810,9 +1810,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             float tmpr = 0f;
                             try {
                                 tmpr = Float.parseFloat(obj.getString("temNoCorrect"));
-                                Logger.debug(TAG, "HotImageCallbackImpl.onTemperatureFail()", "Get temperature in Float value " + tmpr);
+                                Logger.verbose(TAG, "HotImageCallbackImpl.onTemperatureFail()-Get temperature in Float value ", tmpr);
                             } catch (Exception ex) {
-                                Logger.debug(TAG, "HotImageCallbackImpl.onTemperatureFail()", "Exception occurred in parsing float value for temperature " + ex.getMessage());
+                                Logger.error(TAG, "HotImageCallbackImpl.onTemperatureFail()", "Exception occurred in parsing float value for temperature " + ex.getMessage());
                                 tmpr = 0f;
                             }
                             countTempError++;
@@ -1830,7 +1830,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 } else {
                                     lowTempValue = lowThresholdTemperature;
                                 }
-                                Logger.debug(TAG, "HotImageCallbackImpl.onTemperatureFail()", "Low Temperature threshold value:" + lowTempValue + " Temperature: " + tmpr);
+                                Logger.verbose(TAG, "HotImageCallbackImpl.onTemperatureFail()-Low Temperature threshold value:", lowTempValue + " Temperature: " + tmpr);
 
 //
                                 if (lowTempValue > lowThresholdTemperature && !isTemperatureIdentified) {
@@ -1945,21 +1945,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             flInitCode = flEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT,
                     16, MAX_DETECT_NUM, FaceEngine.ASF_IR_LIVENESS | FaceEngine.ASF_FACE_DETECT | processMask);
 
-            Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face EngineHelper init with code: " + flInitCode);
+            Logger.verbose(TAG, "FaceEngineHelper.initEngine()-Face EngineHelper init with code: ", flInitCode);
 
             if (ftInitCode != ErrorInfo.MOK) {
                 String error = getString(R.string.specific_engine_init_failed, "ftEngine", ftInitCode);
-                Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face Detect init code is not Error MOK, Error: " + error);
+                Logger.verbose(TAG, "FaceEngineHelper.initEngine()-Face Detect init code is not Error MOK, Error: ", error);
                 // Toast.makeText(this,error,Toast.LENGTH_SHORT).show();
             }
             if (frInitCode != ErrorInfo.MOK) {
                 String error = getString(R.string.specific_engine_init_failed, "frEngine", ftInitCode);
-                Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face Recognition init code is not Error MOK, Error: " + error);
+                Logger.verbose(TAG, "FaceEngineHelper.initEngine()-Face Recognition init code is not Error MOK, Error: ", error);
                 // Toast.makeText(this,error,Toast.LENGTH_SHORT).show();
             }
             if (flInitCode != ErrorInfo.MOK) {
                 String error = getString(R.string.specific_engine_init_failed, "flEngine", ftInitCode);
-                Logger.debug(TAG, "FaceEngineHelper.initEngine()", "Face IrLiveness init code is not Error MOK, Error: " + error);
+                Logger.verbose(TAG, "FaceEngineHelper.initEngine()-Face IrLiveness init code is not Error MOK, Error: ", error);
                 // Toast.makeText(this,error,Toast.LENGTH_SHORT).show();
             }
         }
@@ -1969,19 +1969,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (ftInitCode == ErrorInfo.MOK && ftEngine != null) {
                 synchronized (ftEngine) {
                     int ftUnInitCode = ftEngine.unInit();
-                    Logger.debug(TAG, "FaceEngineHelper.unInitEngine()", "Face detection UnInitEngine with code:" + ftUnInitCode);
+                    Logger.verbose(TAG, "FaceEngineHelper.unInitEngine()-Face detection UnInitEngine with code:", ftUnInitCode);
                 }
             }
             if (frInitCode == ErrorInfo.MOK && frEngine != null) {
                 synchronized (frEngine) {
                     int frUnInitCode = frEngine.unInit();
-                    Logger.debug(TAG, "FaceEngineHelper.unInitEngine()", "Face recognition UnInitEngine with code:" + frUnInitCode);
+                    Logger.verbose(TAG, "FaceEngineHelper.unInitEngine()-Face recognition UnInitEngine with code:", frUnInitCode);
                 }
             }
             if (flInitCode == ErrorInfo.MOK && flEngine != null) {
                 synchronized (flEngine) {
                     int flUnInitCode = flEngine.unInit();
-                    Logger.debug(TAG, "FaceEngineHelper.unInitEngine()", "Face IrLiveness UnInitEngine with code:" + flUnInitCode);
+                    Logger.verbose(TAG, "FaceEngineHelper.unInitEngine()-Face IrLiveness UnInitEngine with code:", flUnInitCode);
                 }
             }
         }
@@ -2006,7 +2006,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 boolean showTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
-                Logger.debug(TAG, "TemperatureCallBackUISetup()", "Capture temperature setting value:" + showTemperature); //Optimize
+                Logger.verbose(TAG, "TemperatureCallBackUISetup() Capture temperature setting value: ", showTemperature); //Optimize
                 if (showTemperature) {
                     tv_message.setVisibility(View.VISIBLE);
                 } else {
@@ -2064,11 +2064,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
-                    if(!(rfIdEnable && data.triggerType.equals(CameraController.triggerValue.Accessid.toString()))&&!(qrCodeEnable && data.triggerType.equals(CameraController.triggerValue.Codeid.toString())))
-                    {
-                        if(data.compareResult != null)
-                            data.triggerType =CameraController.triggerValue.Face.toString();
-                        else data.triggerType =CameraController.triggerValue.Camera.toString();
+                    if (!(rfIdEnable && data.triggerType.equals(CameraController.triggerValue.Accessid.toString())) && !(qrCodeEnable && data.triggerType.equals(CameraController.triggerValue.Codeid.toString()))) {
+                        if (data.compareResult != null)
+                            data.triggerType = CameraController.triggerValue.Face.toString();
+                        else data.triggerType = CameraController.triggerValue.Camera.toString();
                     }
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
@@ -2156,7 +2155,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Util.getToken(this, this);
 
         } catch (Exception e) {
-            Logger.debug(TAG, "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
 
     }
@@ -2172,7 +2171,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Util.getToken(this, this);
 
         } catch (Exception e) {
-            Logger.debug(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -2386,14 +2385,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
+        if (mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
     }
+
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
             hidReader.start();
-        }else{
+        } else {
             Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }
     }
@@ -2889,48 +2889,50 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         private boolean flag = true;
         private String serialPath = "/dev/ttyS0";
 
-        public void start(){
-            try{
-                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
+        public void start() {
+            try {
+                Log.v(TAG, "HidReader.init open serial port: " + serialPath);
                 serial = new Serial(serialPath, 9600, 0);
                 inputStream = serial.getInputStream();
                 outputStream = serial.getOutputStream();
                 new ReadThread().start();
-            }catch(Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
+            } catch (Exception e) {
+                Log.w(TAG, "HidReader " + e.getMessage());
             }
 
         }
-        public void stop(){
-            try{
+
+        public void stop() {
+            try {
                 flag = false;
-                if(serial != null) serial.close();
-            }catch (Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
+                if (serial != null) serial.close();
+            } catch (Exception e) {
+                Log.w(TAG, "HidReader " + e.getMessage());
             }
         }
-        private class ReadThread extends Thread{
+
+        private class ReadThread extends Thread {
             @Override
             public void run() {
                 super.run();
                 while (flag) {
                     sleep(10);
-                    if(inputStream != null){
+                    if (inputStream != null) {
 
                         int size = 0;
                         byte[] buffer = new byte[64];
-                        try{
+                        try {
                             size = inputStream.available();
-                            if(size > 0){
+                            if (size > 0) {
                                 size = inputStream.read(buffer);
-                                if(size > 0){
+                                if (size > 0) {
                                     String cardData = new String(buffer, 0, size, "UTF-8");
-                                    Log.v(TAG, "HidReader cardData: "+cardData);
+                                    Log.v(TAG, "HidReader cardData: " + cardData);
                                     onRfidScan(cardData);
                                 }
                             }
-                        }catch(Exception e){
-                            Logger.warn(TAG, "HidReader "+e.getMessage());
+                        } catch (Exception e) {
+                            Logger.warn(TAG, "HidReader " + e.getMessage());
                         }
                     }
                 }
@@ -2949,9 +2951,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     /**
      * TODO1: Optimize with process image
+     *
      * @param faceEngine faceEngine
-     * @param rgbBitmap bitmap
-     * @param requestId request id
+     * @param rgbBitmap  bitmap
+     * @param requestId  request id
      */
     public void detectAlignedFaces(FaceEngine faceEngine, Bitmap rgbBitmap, int requestId) {
         Observable
@@ -3038,7 +3041,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         boolean result = false;
         if (faceInfo != null) {
             Rect rect = faceInfo.getRect();
-            Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.left + " " +rect.top + " " + rect.right + " " +rect.bottom + ")");
+            Log.d(TAG, "SnapXT Face Rect values" + "(" + rect.left + " " + rect.top + " " + rect.right + " " + rect.bottom + ")");
 
             if (((rect.bottom - rect.left > 100) && ((rect.right - rect.top) > -50))
                     || ((rect.bottom - rect.left > 90) && ((rect.right - rect.top) > 40))) {

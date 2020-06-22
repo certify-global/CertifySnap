@@ -68,7 +68,7 @@ public class ActiveEngine {
 //                            show();
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
 //                            Util.showToast(SettingActivity.this,getString(R.string.already_activated));
-                            Logger.debug("active engine", "activate:" + true);
+                            Logger.verbose(TAG, "activate:", true);
                             Util.writeBoolean(sharedPreferences, "activate", true);
                             if (activeEngineCallback != null)
                                 activeEngineCallback.onActiveEngineCallback(true, "online", null);
@@ -76,7 +76,7 @@ public class ActiveEngine {
                         } else {
 //                            Util.showToast(SettingActivity.this,getString(R.string.active_failed, activeCode));
                             Util.writeBoolean(sharedPreferences, "activate", false);
-                            Logger.debug("active engine", "activate:" + false);
+                            Logger.verbose(TAG, "activate:", false);
 //                            hide();
                             if (activeEngineCallback != null)
                                 activeEngineCallback.onActiveEngineCallback(false, "online", null);
@@ -89,9 +89,8 @@ public class ActiveEngine {
                             if (activeEngineCallback != null)
                                 activeEngineCallback.onActiveEngineCallback(true, "online", null);
 
-                            Logger.debug("activate---", activeFileInfo.toString());
-                        }
-                        else {
+                            Logger.debug(TAG, activeFileInfo.toString());
+                        } else {
                             if (activeEngineCallback != null)
                                 activeEngineCallback.onActiveEngineCallback(false, "online", null);
                         }
@@ -115,8 +114,8 @@ public class ActiveEngine {
         String path = Environment.getExternalStorageDirectory() + "/active_result.dat";
         String path1 = Environment.getExternalStorageDirectory() + "/ArcFacePro32.dat";
         String path2 = context.getApplicationContext().getFilesDir() + "/ArcFacePro32.dat";
-        Logger.debug(TAG, "path : " + path);
-        Logger.debug(TAG, "path2 : " + path2);
+        Logger.verbose(TAG, "path : ", path);
+        Logger.verbose(TAG, "path2 : ", path2);
         File file = new File(path);
         if (file.exists()) {
             int activeCode = FaceEngine.activeOffline(context,
@@ -222,7 +221,7 @@ public class ActiveEngine {
 
                     }
                     if (serialNumber.equals(deviceSno)) {
-                        Logger.debug(TAG, "serialNumber" + serialNumber + " deviceSno " + deviceSno);
+                        Logger.verbose(TAG, "serialNumber", serialNumber + " deviceSno " + deviceSno);
                         return ActivationCode;
 
                     }
@@ -234,7 +233,8 @@ public class ActiveEngine {
         }
         return activityKey;
     }
-    public static Map<String, String> getDeviceList(){
+
+    public static Map<String, String> getDeviceList() {
         Logger.debug(TAG, "getDeviceList");
         Map map = new HashMap<String, String>();
         map.put("A040980P02800144", "0858-112B-P3GN-CT4Z");

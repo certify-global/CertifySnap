@@ -536,7 +536,7 @@ public class Util {
             byte[] decodedByte = Base64.decode(input, 0);
             return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
         } catch (Exception e) {
-            Logger.debug("Bitmap decodeToBase64(String input) ", e.getMessage());
+            Logger.verbose(LOG,"Bitmap decodeToBase64(String input) ", e.getMessage());
         }
         return null;
     }
@@ -977,7 +977,7 @@ public class Util {
 //            android.os.Process.killProcess(android.os.Process.myPid());
 
         } catch (Exception e) {
-            Logger.error(LOG + "KillApp()", e.getMessage());
+            Log.e(LOG + "KillApp()", e.getMessage());
         }
     }
 
@@ -1384,7 +1384,7 @@ public class Util {
                 }
             });
         } catch (Exception e) {
-            Logger.error(" beepSound(Context context,String tempVal) ", e.getMessage());
+            Log.e(LOG, e.getMessage());
         }
 
 

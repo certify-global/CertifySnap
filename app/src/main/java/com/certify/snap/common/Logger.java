@@ -18,7 +18,7 @@ public class Logger {
     public static void debug(String classname, String message) {
 
         Log.d(classname, "" + message);
-        Analytics.trackEvent(classname+" "+message, properties);
+        //Analytics.trackEvent(classname+" "+message, properties);
     }
 
     public static void toast(Context context, String message) {
@@ -37,11 +37,21 @@ public class Logger {
 
     public static void debug(String classname, String methodName, String message) {
         Log.d(classname, methodName + "-" + message);
-        Analytics.trackEvent(classname+" "+methodName+" "+message, properties);
+        //Analytics.trackEvent(classname+" "+methodName+" "+message, properties);
     }
 
     public static void error(String classname, String methodName, String message) {
         Log.e(classname, methodName + "-" + message);
         Analytics.trackEvent(classname+" "+methodName+" "+message, properties);
+    }
+
+    public static void verbose(String tag, String format, Object params){
+        Log.v(tag, String.format(format, params));
+    }
+
+    public static void warn(String tag, String format, Object params) {
+        String message = String.format(format, params);
+        Log.w(tag, message);
+        Analytics.trackEvent(message, properties);
     }
 }
