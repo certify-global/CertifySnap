@@ -73,6 +73,9 @@ public class ScanViewActivity extends SettingBaseActivity {
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_mask = findViewById(R.id.tv_mask);
             scanProximityView = findViewById(R.id.tv_scan_proximity);
+            scanProximityRg = findViewById(R.id.scan_proximity_rg);
+            scanProximityYes = findViewById(R.id.radio_yes_scan_proximity);
+            scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
@@ -191,6 +194,7 @@ public class ScanViewActivity extends SettingBaseActivity {
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
                     Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
+                    saveScanProximity();
                     finish();
                 }
             });
@@ -226,9 +230,9 @@ public class ScanViewActivity extends SettingBaseActivity {
 
     private void saveScanProximity() {
         if (scanProximityYes.isChecked()) {
-            Util.writeInt(sp, GlobalParameters.ScanProximity, 1);
+            Util.writeBoolean(sp, GlobalParameters.ScanProximity, true);
         } else if(scanProximityNo.isChecked()) {
-            Util.writeInt(sp, GlobalParameters.ScanProximity, 0);
+            Util.writeBoolean(sp, GlobalParameters.ScanProximity, false);
         }
     }
 }
