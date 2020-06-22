@@ -18,7 +18,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
-public class GuideViewSetting extends Activity {
+public class GuideViewSetting extends SettingBaseActivity {
    private static String  TAG ="GuideViewSetting";
     Typeface rubiklight;
     SharedPreferences sp;
@@ -81,10 +81,5 @@ public class GuideViewSetting extends Activity {
         }catch (Exception e){
             Logger.error(TAG,e.toString());
         }
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(GuideViewSetting.this,SettingActivity.class));
-        finish();
     }
 }

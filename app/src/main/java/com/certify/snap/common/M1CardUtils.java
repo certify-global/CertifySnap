@@ -34,7 +34,7 @@ public class M1CardUtils {
            // Toast.makeText(mContext, "The device does not support NFC!", Toast.LENGTH_LONG).show();
         }
         else if (!mNfcAdapter.isEnabled()) {
-            Toast.makeText(mContext, "Please enable NFC function in system settings first!", Toast.LENGTH_LONG).show();
+//            Toast.makeText(mContext, "Please enable NFC function in system settings first!", Toast.LENGTH_LONG).show();
         }
         return mNfcAdapter;
     }

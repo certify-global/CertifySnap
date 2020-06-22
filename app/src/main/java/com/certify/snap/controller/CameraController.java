@@ -2,6 +2,7 @@ package com.certify.snap.controller;
 
 import android.util.Log;
 
+import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.QrCodeData;
 
 public class CameraController {
@@ -9,6 +10,9 @@ public class CameraController {
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private boolean isFaceVisible = false; //flag to let know when the face is detected
+    public enum triggerValue {Face, Accessid, Codeid, Camera}
+    private CompareResult compareResult = null;
+    private boolean isFaceNotMatchedOnRetry = false;
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -45,10 +49,28 @@ public class CameraController {
         isFaceVisible = faceVisible;
     }
 
+    public CompareResult getCompareResult() {
+        return compareResult;
+    }
+
+    public void setCompareResult(CompareResult compareResult) {
+        this.compareResult = compareResult;
+    }
+
+    public boolean isFaceNotMatchedOnRetry() {
+        return isFaceNotMatchedOnRetry;
+    }
+
+    public void setFaceNotMatchedOnRetry(boolean faceNotMatchedOnRetry) {
+        isFaceNotMatchedOnRetry = faceNotMatchedOnRetry;
+    }
+
     private void clearData() {
         qrCodeData = null;
         qrCodeId = "";
         isFaceVisible = false;
+        compareResult = null;
+        isFaceNotMatchedOnRetry = false;
     }
 
     public float getOnlyTextSize(int length) {

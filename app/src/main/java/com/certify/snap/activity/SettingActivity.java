@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -227,17 +228,35 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tvDeviceMode.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
-        tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? "Activated" : "Not Activated"));
-        tvDeviceName.setText(String.format("%s: %s", getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
-        tvDeviceSettings.setText(String.format("%s: %s", getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
-        tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), Util.isConnectingToInternet(SettingActivity.this) ? "Online" : "Offline"));
         accessControlTv.setTypeface(rubiklight);
+
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";
+        mConnectivityStatus.setTypeface(rubiklight);
+        if (Build.VERSION.SDK_INT >= 24) {
+            mConnectivityStatus.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            mConnectivityStatus.setText(Html.fromHtml(text));
+        }
+        setData();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        setData();
+    }
 
+    public void setData() {
+        try {
+            if (tvDeviceOnline == null) return;
+            tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? "Activated" : "Not Activated"));
+            tvDeviceName.setText(String.format("%s: %s", getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
+            tvDeviceSettings.setText(String.format("%s: %s", getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
+            tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), Util.isConnectingToInternet(SettingActivity.this) ? "Online" : "Offline"));
+
+        } catch (Exception e) {
+
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -313,7 +332,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 startActivity(guideIntent);
                 break;
             case R.id.qr_setting:
-                Intent qrintent = new Intent(SettingActivity.this, QRViewSetting.class);
+                Intent qrintent = new Intent(SettingActivity.this, IdentificationSettingActivity.class);
                 startActivity(qrintent);
                 break;
             case R.id.access_control:

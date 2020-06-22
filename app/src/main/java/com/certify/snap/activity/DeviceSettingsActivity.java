@@ -3,12 +3,16 @@ package com.certify.snap.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -32,13 +36,16 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
-public class DeviceSettingsActivity extends Activity implements JSONObjectCallback {
+public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback {
     private static String LOG = "DeviceSettingsActivity -> ";
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
-    private TextView btn_save;
+    private TextView btn_save, tvSettingsName;
     private RelativeLayout ll;
     private Switch switch_activate;
+    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device;
+    private CheckBox cbDoSyc;
+    private Typeface rubiklight;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,8 +56,27 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
             etDeviceName = findViewById(R.id.et_device_name);
             etPassword = findViewById(R.id.et_device_password);
             btn_save = findViewById(R.id.btn_save_device);
+            tvSettingsName = findViewById(R.id.tv_device_settings);
             switch_activate = findViewById(R.id.switch_activate_device);
+            tvDeviceManager = findViewById(R.id.tv_device_manage);
+            tv_activate_tv_device = findViewById(R.id.activate_tv_device);
+            tvEnd = findViewById(R.id.tv_end_device);
+            tvDeviceName = findViewById(R.id.tv_device_name_dev);
+            tvPass = findViewById(R.id.tv_password_device);
+            tvSettingStr = findViewById(R.id.tv_device_settings_str);
+            cbDoSyc = findViewById(R.id.cb_enable_do_not_sync);
             sharedPreferences = Util.getSharedPreferences(this);
+            rubiklight = Typeface.createFromAsset(getAssets(),
+                    "rubiklight.ttf");
+            tvDeviceManager.setTypeface(rubiklight);
+            tv_activate_tv_device.setTypeface(rubiklight);
+            tvDeviceName.setTypeface(rubiklight);
+            tvPass.setTypeface(rubiklight);
+            tvSettingStr.setTypeface(rubiklight);
+            tvSettingsName.setTypeface(rubiklight);
+            tvEnd.setTypeface(rubiklight);
+            cbDoSyc.setTypeface(rubiklight);
+            tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             String url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
             etEndUrl.setText(url_end);
             if (url_end != null && url_end.length() > 0)
@@ -66,6 +92,7 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
             }
             etPassword.setText(sharedPreferences.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits));
             etPassword.setSelection(lastsixDigits.length());
+            tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -87,6 +114,7 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
             } else {
                 switch_activate.setChecked(false);
             }
+            cbDoSyc.setChecked(sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false));
             etEndUrl.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -143,6 +171,12 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
                     finish();
                 }
             });
+            cbDoSyc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, isChecked);
+                }
+            });
         } catch (Exception e) {
             Logger.error(LOG + "onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }
@@ -152,11 +186,6 @@ public class DeviceSettingsActivity extends Activity implements JSONObjectCallba
     private void stopHealthCheckService() {
         Intent intent = new Intent(this, DeviceHealthService.class);
         stopService(intent);
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(DeviceSettingsActivity.this, SettingActivity.class));
-        finish();
     }
 
     @Override
