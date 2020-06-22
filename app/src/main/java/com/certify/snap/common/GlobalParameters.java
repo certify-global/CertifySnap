@@ -113,7 +113,6 @@ public class GlobalParameters {
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
     public static final String ANONYMOUS_ENABLE = "anonymous_enable";
-    public static final String HOME_TEXT ="home_text";
     public static final String HOME_TEXT_ONLY ="home_text_only";
     public static final String HOME_TEXT_ONLY_MESSAGE ="home_text_only_message";
     public static final String HOME_DISPLAY_TIME ="home_display_time";
@@ -125,12 +124,6 @@ public class GlobalParameters {
     public static final String Firebase_Token = "firebase_token";
     public static final String Generate_Token_Command = "generate_token_command";
     public static final String MEMBER_SYNC_DO_NOT ="member_sync_do_not";
-    public static final String TEMPERATURE_COMPENSATION ="temperature_compensation";
-    public static final String CAMERA_SCAN_MODE ="camera_scan_mode";
-    public static final String DO_NOT_SYNC_MEMBERS ="do_not_sync_members";
-    public static final String ENABLE_HOME_SCREEN ="enable_home_screen";
-    public static final String VIEW_INTERVAL_DELAY ="view_interval_delay";
-    public static final String ENABLE_TEXT_ONLY ="enable_text_only";
 
 
 }

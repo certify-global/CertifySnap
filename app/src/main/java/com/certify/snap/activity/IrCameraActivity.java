@@ -748,7 +748,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
-        preview.stop();
+        if (preview != null) {
+            preview.stop();
+        }
         disableNfc();
         if (cameraHelper != null) {
             cameraHelper.stop();
@@ -1589,7 +1591,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     Logger.debug(TAG, "ShowLauncherView()", "Display Home page start");
-
+                    if(!isHomeViewEnabled) {
+                        final Activity that = IrCameraActivity.this;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                isTemperatureIdentified = false;
+                                if (tv_message != null) tv_message.setVisibility(View.GONE);
+                                if(tvErrorMessage!=null) tvErrorMessage.setVisibility(View.GONE);
+                                if(temperature_image!= null) temperature_image.setVisibility(View.GONE);
+                                if(mask_message!=null) mask_message.setVisibility(View.GONE);
+                                isTemperatureIdentified = false;
+                                clearData();
+                                clearLeftFace(null);
+                            }
+                        }, 1 * 1000);
+                        return;
+                    }
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
 
@@ -2344,14 +2362,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled())
+            hidReader = new HidReader();//try HID if NFC reader not found
     }
     private void enableNfc() {
-        if (rfIdEnable && mNfcAdapter != null) {
+        if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
-            hidReader.start();
-        }else{
+            hidReader.start(this);
+        } else {
             Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }
     }
@@ -2838,73 +2857,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }
 
-    //HID card reader on serial port /dev/ttyS0. Reads 125kHz, 13.56MHz access cards
-    //TODO: extract once stabilized along with NFC into outer class
-    class HidReader {
-        private Serial serial;
-        private InputStream inputStream;
-        private OutputStream outputStream;
-
-        private boolean flag = true;
-        private String serialPath = "/dev/ttyS0";
-
-        public void start(){
-            try{
-                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
-                serial = new Serial(serialPath, 9600, 0);
-                inputStream = serial.getInputStream();
-                outputStream = serial.getOutputStream();
-                new ReadThread().start();
-            }catch(Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
-            }
-
-        }
-        public void stop(){
-            try{
-                flag = false;
-                if(serial != null) serial.close();
-            }catch (Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
-            }
-        }
-        private class ReadThread extends Thread{
-            @Override
-            public void run() {
-                super.run();
-                while (flag) {
-                    sleep(10);
-                    if(inputStream != null){
-
-                        int size = 0;
-                        byte[] buffer = new byte[64];
-                        try{
-                            size = inputStream.available();
-                            if(size > 0){
-                                size = inputStream.read(buffer);
-                                if(size > 0){
-                                    String cardData = new String(buffer, 0, size, "UTF-8");
-                                    Log.v(TAG, "HidReader cardData: "+cardData);
-                                    onRfidScan(cardData);
-                                }
-                            }
-                        }catch(Exception e){
-                            Logger.warn(TAG, "HidReader "+e.getMessage());
-                        }
-                    }
-                }
-            }
-
-            private void sleep(int ms) {
-                try {
-                    java.lang.Thread.sleep(ms);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
 
     /**
      * TODO1: Optimize with process image

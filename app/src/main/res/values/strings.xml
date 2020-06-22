@@ -201,7 +201,7 @@
     <string name="work_flow">Work Flow</string>
     <string name="thermal_scan">THERMAL SCAN</string>
     <string name="network_error">Internet is not available.Please check your internet connection!</string>
-    <string name="SetTemp">Set Temperature</string>
+    <string name="SetTemp">Settings Temperature</string>
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
     <string name="endpoint">Endpoint URL</string>

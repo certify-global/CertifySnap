@@ -1,5 +1,7 @@
 package com.certify.snap.common;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.telpo.tps550.api.serial.Serial;
@@ -50,9 +52,22 @@ public class HidReader {
         public void cancel(){
             keepRunning = false;
         }
-        private void onReadCardData(String cardId){
-            Log.v(TAG, "HidReader cardData: "+cardId);
-            if(callback != null) callback.onRfidScan(cardId);//TODO: invoke on a thread?
+        private void onReadCardData(String cardId) {
+            Log.v(TAG, "HidReader cardData: " + cardId);
+            if (callback != null) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onRfidScan(cardId);
+                    }
+                };
+                if (callback instanceof Activity) {
+                    Activity activity = (Activity) callback;
+                    activity.runOnUiThread(runnable);
+                } else {
+                    new Thread(runnable).start();
+                }
+            }
         }
         @Override
         public void run() {

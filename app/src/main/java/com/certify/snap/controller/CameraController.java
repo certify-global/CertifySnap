@@ -1,9 +1,7 @@
 package com.certify.snap.controller;
 
-import android.graphics.Rect;
 import android.util.Log;
 
-import com.arcsoft.face.FaceInfo;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.QrCodeData;
 

@@ -320,7 +320,7 @@
                     android:drawablePadding="5dp"
                     android:gravity="center"
                     android:paddingLeft="6dp"
-                    android:text="Parameter Setting"
+                    android:text="Parameter Settings"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
