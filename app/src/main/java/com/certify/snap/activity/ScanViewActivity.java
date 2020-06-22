@@ -204,7 +204,7 @@ public class ScanViewActivity extends SettingBaseActivity {
     }
 
     private void setDefaultScanProximity() {
-        if (sp.getBoolean(GlobalParameters.ScanProximity, true)) {
+        if (sp.getBoolean(GlobalParameters.ScanProximity, false)) {
             scanProximityYes.setChecked(true);
             scanProximityNo.setChecked(false);
         } else {

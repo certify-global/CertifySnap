@@ -81,7 +81,6 @@ public class CameraController {
         isFaceVisible = false;
         compareResult = null;
         isFaceNotMatchedOnRetry = false;
-        isScanCloseProximityEnabled = false;
     }
 
     public float getOnlyTextSize(int length) {
