@@ -146,6 +146,24 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_title_4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edittext_text4"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:hint="@string/enter_text4"
+            android:textSize="@dimen/text_18"
+            android:background="@drawable/edittextbackground"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
