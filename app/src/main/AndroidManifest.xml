@@ -158,15 +158,6 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
 
-      <!--  <receiver
-            android:name="com.certify.fcm.FirebaseBackgroundService"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </receiver>-->
-
         <service
             android:name="com.certify.fcm.FireBaseMessagingService"
             android:exported="false">
@@ -177,14 +168,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="default_channel_id"/>
-      <!--  <service
-            android:name="com.certify.fcm.FireBaseInstanceIDService"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>-->
-
 
     </application>
 
