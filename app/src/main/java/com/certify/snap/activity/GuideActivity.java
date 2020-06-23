@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -250,7 +251,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                     //If the network is off still launch the IRActivity and allow temperature scan in offline mode
                     if (Util.isNetworkOff(GuideActivity.this)) {
-                        new Handler().postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
                         return;
                     }
                     Util.activateApplication(GuideActivity.this, GuideActivity.this);
