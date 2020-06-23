@@ -52,6 +52,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
 
     @Override
     public void onNewToken(String token) {
+        sharedPreferences=Util.getSharedPreferences(this);
         sendRegistrationToServer(token);
     }
 
