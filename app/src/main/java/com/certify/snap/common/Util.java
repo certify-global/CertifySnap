@@ -1152,7 +1152,7 @@ public class Util {
                 String enableThermal = jsonValueHome.getString("enableThermalCheck");
                 String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN" : jsonValueHome.getString("line1");
                 String homeLine2 = jsonValueHome.isNull("line2") ? "" : jsonValueHome.getString("line2");
-                String enableHomeScreen = jsonValueHome.isNull("enableHomeScreen") ? "" : jsonValueHome.getString("enableHomeScreen");
+                String enableHomeScreen = jsonValueHome.isNull("enableHomeScreen") ? "1" : jsonValueHome.getString("enableHomeScreen");
                 String viewIntervalDelay = jsonValueHome.isNull("viewIntervalDelay") ? "2" : jsonValueHome.getString("viewIntervalDelay");
                 String enableTextOnly = jsonValueHome.isNull("enableTextOnly") ? "" : jsonValueHome.getString("enableTextOnly");
                 String homeText = jsonValueHome.isNull("homeText") ? "" : jsonValueHome.getString("homeText");
@@ -1181,7 +1181,7 @@ public class Util {
                 String allowlowtemperaturescanning = jsonValueScan.isNull("allowLowTemperatureScanning") ? "0" : jsonValueScan.getString("allowLowTemperatureScanning");
                 String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" : jsonValueScan.getString("lowTemperatureThreshold");
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
-                String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "-1.8" : jsonValueScan.getString("temperatureCompensation");
+                String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
