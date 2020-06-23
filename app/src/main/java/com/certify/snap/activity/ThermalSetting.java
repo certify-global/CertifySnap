@@ -22,7 +22,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
-public class ThermalSetting extends Activity {
+public class ThermalSetting extends SettingBaseActivity {
     TextInputLayout text_input_title, text_input_subtitle;
     EditText edittext_subtitle, edittext_title, etDisplayTime, etOnlyText;
     SharedPreferences sp;
@@ -41,7 +41,6 @@ public class ThermalSetting extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_thermal_setting);
             rubiklight = Typeface.createFromAsset(getAssets(),
@@ -93,6 +92,7 @@ public class ThermalSetting extends Activity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Util.writeBoolean(sp, GlobalParameters.HOME_TEXT_IS_ENABLE, isChecked);
+                    if(!isChecked)setIdentificationOptions();
                 }
             });
             cbTextOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -107,8 +107,9 @@ public class ThermalSetting extends Activity {
 
     }
 
-    public void onParamterback(View view) {
-        startActivity(new Intent(ThermalSetting.this, SettingActivity.class));
-        finish();
+    public void  setIdentificationOptions() {
+        Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
+        Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, false);
+        Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, false);
     }
 }

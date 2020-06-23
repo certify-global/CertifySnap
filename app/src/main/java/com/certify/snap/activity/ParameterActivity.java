@@ -32,7 +32,7 @@ import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_270_ONLY;
 import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_90_ONLY;
 import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_ALL_OUT;
 
-public class ParameterActivity extends AppCompatActivity {
+public class ParameterActivity extends SettingBaseActivity {
 
     private EditText relaytime;
     RadioGroup radioGroupCamera,radioGroupLiving,radioGroupOrientation,radioGroupFtOrient;
@@ -52,8 +52,6 @@ public class ParameterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_parameter);
 
             Application.getInstance().addActivity(this);

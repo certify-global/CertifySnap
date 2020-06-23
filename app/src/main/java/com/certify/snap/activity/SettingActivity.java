@@ -231,6 +231,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         accessControlTv.setTypeface(rubiklight);
 
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";
+        mConnectivityStatus.setTypeface(rubiklight);
         if (Build.VERSION.SDK_INT >= 24) {
             mConnectivityStatus.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
         } else {
@@ -251,7 +252,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? "Activated" : "Not Activated"));
             tvDeviceName.setText(String.format("%s: %s", getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
             tvDeviceSettings.setText(String.format("%s: %s", getResources().getString(R.string.device_settings), sharedPreferences.getString(DEVICE_SETTINGS_NAME, "Local")));
-            tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), Util.isConnectingToInternet(SettingActivity.this) ? "Online" : "Offline"));
+            tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true) ? "Online" : "Offline"));
 
         } catch (Exception e) {
 
@@ -331,7 +332,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 startActivity(guideIntent);
                 break;
             case R.id.qr_setting:
-                Intent qrintent = new Intent(SettingActivity.this, QRViewSetting.class);
+                Intent qrintent = new Intent(SettingActivity.this, IdentificationSettingActivity.class);
                 startActivity(qrintent);
                 break;
             case R.id.access_control:

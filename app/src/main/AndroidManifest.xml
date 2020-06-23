@@ -84,7 +84,7 @@
             android:name=".activity.GuideViewSetting"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.QRViewSetting"
+            android:name=".activity.IdentificationSettingActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.AccessControlActivity"

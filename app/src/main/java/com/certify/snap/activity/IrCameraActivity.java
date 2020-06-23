@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
@@ -303,6 +304,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int scanMode = 0;
     private HotImageCallbackImpl thermalImageCallback;
     private boolean isHomeViewEnabled;
+    private List<FaceInfo> searchFaceInfoList = new ArrayList<>();
+    private int mFaceMatchRetry = 0;
 
     private void instanceStart() {
         try {
@@ -379,9 +382,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         getAppSettings();
         CameraController.getInstance().init();
         initAccessControl();
-        initTriggerType();
         try {
-
             processHandler = new ProcessHandler(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -439,6 +440,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan = findViewById(R.id.tv_scan);
             img_qr = findViewById(R.id.img_qr);
             qr_main = findViewById(R.id.qr_main);
+            qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
             } else {
@@ -745,7 +747,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
-        preview.stop();
+        if (preview != null) {
+            preview.stop();
+        }
         disableNfc();
         if (cameraHelper != null) {
             cameraHelper.stop();
@@ -957,8 +961,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                                     // Log.e("runTemperature---","isIdentified="+isIdentified);
                                     if (isFindTemperature()) {
-                                        if (isCalibrating)
-                                            runTemperature(new UserExportedData(rgbBitmapClone, irBitmapClone, new RegisteredMembers(), 0));
+                                        runTemperature(new UserExportedData(rgbBitmapClone, irBitmapClone, new RegisteredMembers(), 0));
                                     }
 
                                     cancelImageTimer();
@@ -984,6 +987,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                                     mask_message.setText("");
                                                     mask_message.setVisibility(View.GONE);
                                                     tempServiceClose = true;
+                                                    CameraController.getInstance().init();   //Clear the data on timeout
                                                     retryFaceOnTimeout(requestId); //Retry again on timeout
                                                     disableLedPower();
                                                     enableNfc();
@@ -1631,7 +1635,23 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 @Override
                 public void run() {
                     Logger.debug(TAG, "ShowLauncherView()", "Display Home page start");
-
+                    if(!isHomeViewEnabled) {
+                        final Activity that = IrCameraActivity.this;
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                isTemperatureIdentified = false;
+                                if (tv_message != null) tv_message.setVisibility(View.GONE);
+                                if(tvErrorMessage!=null) tvErrorMessage.setVisibility(View.GONE);
+                                if(temperature_image!= null) temperature_image.setVisibility(View.GONE);
+                                if(mask_message!=null) mask_message.setVisibility(View.GONE);
+                                isTemperatureIdentified = false;
+                                clearData();
+                                clearLeftFace(null);
+                            }
+                        }, 1 * 1000);
+                        return;
+                    }
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
 
@@ -2042,13 +2062,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
-                            if (data.compareResult != null) {
-                                intent.putExtra("compareResult", data.compareResult);
-                            }
                             startActivity(intent);
                             ConfirmationBoolean = true;
                             MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                             finish();
+                            compareResultList.clear();
                             data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
 
@@ -2056,7 +2074,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
                 }, delayMilli * 1000);
-
                 showMaskStatus();
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
                     boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
@@ -2065,6 +2082,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
+                    if(!(rfIdEnable && data.triggerType.equals(CameraController.triggerValue.Accessid.toString()))&&!(qrCodeEnable && data.triggerType.equals(CameraController.triggerValue.Codeid.toString())))
+                    {
+                        if(data.compareResult != null)
+                            data.triggerType =CameraController.triggerValue.Face.toString();
+                        else data.triggerType =CameraController.triggerValue.Camera.toString();
+                    }
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
             }
@@ -2222,6 +2245,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                new UserExportedData().triggerType = CameraController.triggerValue.Codeid.toString();
                 initCameraPreview();
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
@@ -2298,6 +2322,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (reportInfo.getString("responseCode").equals("1")) {
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
+                    new UserExportedData().triggerType = CameraController.triggerValue.Codeid.toString();
                     initCameraPreview();
                 } else {
                     preview.stop();
@@ -2352,7 +2377,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
-        scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, 1);
+        scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE);
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         getAccessControlSettings();
@@ -2379,26 +2404,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(mNfcAdapter == null) hidReader = new HidReader();//try HID if NFC reader not found
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled())
+            hidReader = new HidReader();//try HID if NFC reader not found
     }
-private void initTriggerType(){
-    String str;
-    if (faceDetectEnabled)
-        str = "Face";
-    else if (rfIdEnable)
-        str = "Accessid";
-    else if (qrCodeEnable)
-        str = "Codeid";
-    else//CAMERA - Anonymous temp scan
-        str = "Camera";
-    new UserExportedData().triggerType = str;
-}
     private void enableNfc() {
-        if (rfIdEnable && mNfcAdapter != null) {
+        if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
-            hidReader.start();
-        }else{
+            hidReader.start(this);
+        } else {
             Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
         }
     }
@@ -2594,9 +2608,11 @@ private void initTriggerType(){
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<CompareResult>() {
+                    Disposable searchMemberDisposable;
+
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        searchMemberDisposable = d;
                     }
 
                     @Override
@@ -2621,10 +2637,16 @@ private void initTriggerType(){
                         float similarValue = compareResult.getSimilar() * 100;
                         String formattedSimilarityScore = df.format(compareResult.getSimilar() * 100);
 
-                        String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
+                        String thresholdFacialPreference = sharedPreferences.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
                         int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
 
                         if (similarValue > thresholdvalue) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tvErrorMessage.setVisibility(View.GONE);
+                                }
+                            });
                             Log.d(TAG, "Snap Compare result Match Similarity value " + similarValue);
                             boolean isAdded = false;
                             if (compareResultList == null) {
@@ -2639,7 +2661,7 @@ private void initTriggerType(){
                                 }
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
-                            if (!isAdded && isTemperature) {
+                            if (!isAdded) {
                                 Log.d(TAG, "Snap Compare result isAdded, Add it " + isAdded);
 
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
@@ -2663,6 +2685,8 @@ private void initTriggerType(){
 
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
+                                    CameraController.getInstance().setCompareResult(compareResult);
+                                    CameraController.getInstance().setFaceVisible(true);
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
@@ -2672,48 +2696,53 @@ private void initTriggerType(){
                                     String image = registeredMembers.getImage();
                                     clearLeftFace(null);
                                     AccessCardController.getInstance().setAccessIdDb(registeredMembers.getAccessid());
-                                    if (registeredMembers.getStatus().equals("1")) {
-                                        if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
-                                                || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                            Log.d(TAG, "Snap Matched Database match Status 1 member id is " + memberId);
-                                            memberId = getString(R.string.id) + memberId;
-                                            addOfflineMember(name, id, image, new Date(), temperature);
-                                            time2 = System.currentTimeMillis();
-                                            showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
-                                        }
-                                    } else if (!status.equals("1")) {
-                                        Log.d(TAG, "Snap Matched Database match Status is not 1 " + memberId);
-                                        String fullName = getString(R.string.text_nopermission);
-                                        showResult(compareResult, requestId, fullName, memberId, formattedSimilarityScore, false);
+                                    if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
+                                            || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
+                                        Log.d(TAG, "Snap Matched Database match Status 1 member id is " + memberId);
+                                        memberId = getString(R.string.id) + memberId;
+                                        addOfflineMember(name, id, image, new Date(), temperature);
+                                        time2 = System.currentTimeMillis();
+                                        showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                     }
                                 } else {
-                                    Log.d(TAG, "Snap Compare result database no match " + isAdded);
+                                    Log.e(TAG, "Snap Compare result database no match " + isAdded);
                                 }
                             } else {
                                 Log.d(TAG, "Snap Compare result, isAdded condition failed " + isAdded);
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
-                            if (!isTemperature) {
-                                Log.e("retry----", "istemperature=" + isTemperature);
-                                faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
-                                retryRecognizeDelayed(requestId);
-                            }
                         } else {
                             Log.d(TAG, "Snap Compare result Match not meeting threshold " + similarValue);
-                            runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue)); //Check for temperature if the face is not recognized
+                            if (similarValue < Constants.FACE_MIN_THRESHOLD_RETRY) {
+                                runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue));
+                                return;
+                            }
+                            if (mFaceMatchRetry == Constants.FACE_MATCH_MAX_RETRY) {
+                                CameraController.getInstance().setFaceNotMatchedOnRetry(true);
+                                runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue));
+                            }
+                            mFaceMatchRetry++;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tvErrorMessage.setVisibility(View.VISIBLE);
+                                    tvErrorMessage.setText(getString(R.string.analyzing_face));
+                                }
+                            });
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
+                        searchMemberDisposable.dispose();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "Snap Compare result Error ");
 //                        runTemperature(); // Register member photo is not there, Still find temperature
-                        if (faceHelperIr != null)
-                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         retryRecognizeDelayed(requestId);
+                        searchMemberDisposable.dispose();
                     }
 
                     @Override
@@ -2738,6 +2767,7 @@ private void initTriggerType(){
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
+                new UserExportedData().triggerType = CameraController.triggerValue.Accessid.toString();
                 startIrCamera();
                 if (soundPool == null) {
                     initSound(); //when access card is recognized, onPause is getting called and resetting the sound
@@ -2749,6 +2779,7 @@ private void initTriggerType(){
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
+        new UserExportedData().triggerType = CameraController.triggerValue.Accessid.toString();
         startIrCamera();
         if (soundPool == null) {
             initSound(); //when access card is recognized, onPause is getting called and resetting the sound
@@ -2780,14 +2811,10 @@ private void initTriggerType(){
         if (faceDetectEnabled) {
             if (GlobalParameters.livenessDetect) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                    isSearchFace = false;
-                    Log.d(TAG, "Search face using liveness");
-                    searchFace(faceFeature, requestId, rgb, ir);
+                    checkFaceClosenessAndSearch(faceFeature, requestId, rgb, ir);
                 }
             } else {
-                isSearchFace = false;
-                Log.d(TAG, "Search face using RGB Image");
-                searchFace(faceFeature, requestId, rgb, ir);
+                checkFaceClosenessAndSearch(faceFeature, requestId, rgb, ir);
             }
         }
     }
@@ -2871,72 +2898,114 @@ private void initTriggerType(){
         new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
     }
 
-    //HID card reader on serial port /dev/ttyS0. Reads 125kHz, 13.56MHz access cards
-    //TODO: extract once stabilized along with NFC into outer class
-    class HidReader {
-        private Serial serial;
-        private InputStream inputStream;
-        private OutputStream outputStream;
 
-        private boolean flag = true;
-        private String serialPath = "/dev/ttyS0";
-
-        public void start(){
-            try{
-                Log.v(TAG, "HidReader.init open serial port: "+ serialPath);
-                serial = new Serial(serialPath, 9600, 0);
-                inputStream = serial.getInputStream();
-                outputStream = serial.getOutputStream();
-                new ReadThread().start();
-            }catch(Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
-            }
-
-        }
-        public void stop(){
-            try{
-                flag = false;
-                if(serial != null) serial.close();
-            }catch (Exception e){
-                Logger.warn(TAG, "HidReader "+e.getMessage());
-            }
-        }
-        private class ReadThread extends Thread{
-            @Override
-            public void run() {
-                super.run();
-                while (flag) {
-                    sleep(10);
-                    if(inputStream != null){
-
-                        int size = 0;
-                        byte[] buffer = new byte[64];
-                        try{
-                            size = inputStream.available();
-                            if(size > 0){
-                                size = inputStream.read(buffer);
-                                if(size > 0){
-                                    String cardData = new String(buffer, 0, size, "UTF-8");
-                                    Log.v(TAG, "HidReader cardData: "+cardData);
-                                    onRfidScan(cardData);
-                                }
-                            }
-                        }catch(Exception e){
-                            Logger.warn(TAG, "HidReader "+e.getMessage());
-                        }
+    /**
+     * TODO1: Optimize with process image
+     * @param faceEngine faceEngine
+     * @param rgbBitmap bitmap
+     * @param requestId request id
+     */
+    public void detectAlignedFaces(FaceEngine faceEngine, Bitmap rgbBitmap, int requestId) {
+        Observable
+                .create((ObservableOnSubscribe<List<FaceInfo>>) emitter -> {
+                    Bitmap mAlignedBitmap = ArcSoftImageUtil.getAlignedBitmap(rgbBitmap, true);
+                    if (mAlignedBitmap == null) {
+                        Logger.debug(TAG, "Face Bitmap is null");
+                        emitter.onNext(searchFaceInfoList);
+                        return;
                     }
-                }
-            }
+                    byte[] mBgr24 = ArcSoftImageUtil.createImageData(mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), ArcSoftImageFormat.BGR24);
+                    int transformCode = ArcSoftImageUtil.bitmapToImageData(mAlignedBitmap, mBgr24, ArcSoftImageFormat.BGR24);
+                    if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+                        emitter.onNext(searchFaceInfoList);
+                        return;
+                    }
+                    int detectFacesResult = faceEngine.detectFaces(mBgr24, mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), FaceEngine.CP_PAF_BGR24, DetectModel.RGB, searchFaceInfoList);
+                    if (detectFacesResult != ErrorInfo.MOK) {
+                        emitter.onNext(searchFaceInfoList);
+                        return;
+                    }
+                    emitter.onNext(searchFaceInfoList);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<FaceInfo>>() {
+                    Disposable faceDisposable;
 
-            private void sleep(int ms) {
-                try {
-                    java.lang.Thread.sleep(ms);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        faceDisposable = d;
+                    }
 
+                    @Override
+                    public void onNext(List<FaceInfo> resultList) {
+                        Log.d(TAG, "SearchFaceInfoList = " + resultList.size());
+                        searchFaceInfoList.addAll(resultList);
+                        faceDisposable.dispose();
+                        checkFaceCloseness(searchFaceInfoList, requestId);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in getting the face properties");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    private void checkFaceClosenessAndSearch(FaceFeature faceFeature, int requestId, Bitmap rgb, Bitmap ir) {
+        isSearchFace = false;
+        if (searchFaceInfoList.isEmpty()) {
+            detectAlignedFaces(faceEngineHelper.getFrEngine(), rgb, requestId);
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvErrorMessage.setVisibility(View.GONE);
+                }
+            });
+            searchFace(faceFeature, requestId, rgb, ir);
         }
+    }
+
+    private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
+        if (searchFaceList.size() > 0 && isFaceClose(searchFaceList.get(0))) {
+            Log.d(TAG, "Face is close, Initiate search");
+            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+            return;
+        }
+        runOnUiThread(() -> {
+            tvErrorMessage.setVisibility(View.VISIBLE);
+            tvErrorMessage.setText(getString(R.string.text_value2));
+        });
+        searchFaceInfoList.clear();
+        requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+    }
+
+    public boolean isFaceClose(FaceInfo faceInfo) {
+        boolean result = false;
+        if (faceInfo != null) {
+            Rect rect = faceInfo.getRect();
+            Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.left + " " +rect.top + " " + rect.right + " " +rect.bottom + ")");
+
+            if (((rect.bottom - rect.left > 100) && ((rect.right - rect.top) > -50))
+                    || ((rect.bottom - rect.left > 90) && ((rect.right - rect.top) > 40))) {
+                result = true;
+                Log.d(TAG, "SnapXT Face is close");
+            } else {
+                Log.d(TAG, "SnapXT Face is not close");
+            }
+        }
+        return result;
+    }
+
+    private void clearData() {
+        CameraController.getInstance().clearData();
+        searchFaceInfoList.clear();
     }
 
    /* private void startMemberSyncService() {
