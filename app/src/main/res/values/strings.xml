@@ -245,9 +245,11 @@
     <string name="enter_text1">Text1</string>
     <string name="enter_text2">Text2</string>
     <string name="enter_text3">Text3</string>
+    <string name="enter_text4">Text4</string>
     <string name="text_value1">Please center your face to the screen.</string>
     <string name="text_value2">Move closer and center your face.</string>
     <string name="text_value3">Please wait, preparing to scan.</string>
+    <string name="text_value4">Please step closer</string>
     <string name="snack_msg">Retrieving updated settings</string>
     <string name="invalid_pwd">Invalid Password</string>
     <string name="allow_low">Allow low temperature scanning</string>
@@ -322,8 +324,8 @@
     <string name="display">"Display Image and name on the confirmation screen "</string>
     <string name="update_face_not_recognized">Update Failed! Face cannot be recognized</string>
     <string name="register_face_not_recognized">Register Failed! Face cannot be recognized</string>
-    <string name ="records_loading_msg">Record are loading</string>
-    <string name ="records_sync_completed">All the records got synced</string>
+    <string name="records_loading_msg">Record are loading</string>
+    <string name="records_sync_completed">All the records got synced</string>
 
 
     <string name="pref_key_camera_live_viewport" translatable="false">clv</string>
@@ -366,5 +368,7 @@
     <string name="analyzing_face">Analyzing Face</string>
     <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
     <string name="step_closer">Please step closer</string>
+    <string name="reset_snap_app">Reset SNAP APP</string>
+    <string name="clear_cache_app">CLEAR DATA and CACHE</string>
 
 </resources>

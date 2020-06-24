@@ -7,8 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.activity.GuideActivity;
@@ -29,7 +32,7 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.Random;
 
-public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback {
+public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback {
     private static final String TAG = "FireBaseMessagingService -> ";
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
@@ -38,16 +41,24 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try {
-            Logger.debug(TAG, "Remote home: " + remoteMessage);
-
             if (remoteMessage.getNotification() != null) {
-                Logger.debug(TAG, "Remote Body: " + remoteMessage.getNotification().getBody());
-               // sendNotification(remoteMessage.getNotification().getBody());
+                sendNotification(remoteMessage.getNotification().getBody());
             }
 
         } catch (Exception e) {
             Logger.error(TAG + "onMessageReceived()", e.getMessage());
         }
+    }
+
+    @Override
+    public void onNewToken(String token) {
+        sharedPreferences=Util.getSharedPreferences(this);
+        sendRegistrationToServer(token);
+    }
+
+    private void sendRegistrationToServer(String token) {
+        Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+        Util.activateApplication(this, this);
     }
 
     //This method is only generating push notification
@@ -137,6 +148,21 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             }
         } catch (JSONException e) {
 
+        }
+    }
+
+    @Override
+    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Util.getTokenActivate(reportInfo, status, this, "");
+            }
+
+        } catch (Exception e) {
+            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.certify.snap.activity;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -12,6 +15,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -43,15 +47,18 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private TextView btn_save, tvSettingsName;
     private RelativeLayout ll;
     private Switch switch_activate;
-    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device;
+    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
+    private Button tvClearData ;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
+    private boolean doRestart;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_device_settings);
+            doRestart = false;
             etEndUrl = findViewById(R.id.et_end_url);
             etDeviceName = findViewById(R.id.et_device_name);
             etPassword = findViewById(R.id.et_device_password);
@@ -66,6 +73,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvSettingStr = findViewById(R.id.tv_device_settings_str);
             cbDoSyc = findViewById(R.id.cb_enable_do_not_sync);
             sharedPreferences = Util.getSharedPreferences(this);
+            tvClearData = findViewById(R.id.tv_clear_cache);
+            tvResetSnap = findViewById(R.id.tv_reset_snap);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             tvDeviceManager.setTypeface(rubiklight);
@@ -74,6 +83,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvPass.setTypeface(rubiklight);
             tvSettingStr.setTypeface(rubiklight);
             tvSettingsName.setTypeface(rubiklight);
+            tvResetSnap.setTypeface(rubiklight);
+            tvClearData.setTypeface(rubiklight);
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -177,6 +188,20 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, isChecked);
                 }
             });
+            tvClearData.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
+//                        ((ActivityManager) getSystemService(ACTIVITY_SERVICE))
+//                                .clearApplicationUserData();
+                        deleteAppData();
+                        doRestart = true;
+                       // triggerRebirth();
+                    } catch (Exception e) {
+
+                    }
+                }
+            });
         } catch (Exception e) {
             Logger.error(LOG + "onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }
@@ -231,4 +256,37 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             Logger.error(LOG + "startHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (doRestart)
+            startActivity(new Intent(getApplicationContext(), GuideActivity.class));
+        doRestart = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    private void triggerRebirth() {
+        PackageManager packageManager = this.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(this.getPackageName());
+        ComponentName componentName = intent.getComponent();
+        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+        startActivity(mainIntent);
+     //   Runtime.getRuntime().exit(0);
+    }
+    private void deleteAppData() {
+        try {
+            // clearing app data
+            String packageName = getApplicationContext().getPackageName();
+            Runtime runtime = Runtime.getRuntime();
+            runtime.exec("pm clear "+packageName);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } }
 }
