@@ -30,6 +30,8 @@ import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ConfirmationScreenActivity extends Activity {
     Typeface rubiklight;
@@ -94,19 +96,14 @@ public class ConfirmationScreenActivity extends Activity {
             tv_subtitle.setTypeface(rubiklight);
             tv_title.setTextSize(titleSize(confirm_title.length()));
             tv_subtitle.setTextSize(titleSizeSub(confirm_subtitle.length()));
+            Log.d("ConfirmationScreen", "Deep confirmation setting time value " + longVal);
             if (longVal.equals("")) {
                 delayMilli = 3;
             } else {
                 delayMilli = Long.parseLong(longVal);
             }
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Util.switchRgbOrIrActivity(ConfirmationScreenActivity.this, true);
-                    finish();
-
-                }
-            }, delayMilli*900);
+            Log.d("ConfirmationScreen", "Deep confirmation setting time value " + delayMilli);
+            setHomeScreenTimer();
 
             Log.d("delay milli seconds", "" + delayMilli);
 
@@ -171,5 +168,16 @@ public class ConfirmationScreenActivity extends Activity {
 
     private void showSnackBarMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setHomeScreenTimer() {
+        Timer time = new Timer();
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                startActivity(new Intent(getApplicationContext(), IrCameraActivity.class));
+                finish();
+            }
+        }, delayMilli * 400);
     }
 }
