@@ -93,6 +93,7 @@ public class GlobalParameters {
     public static final String GUIDE_TEXT1 = "guide_text1";
     public static final String GUIDE_TEXT2 = "guide_text2";
     public static final String GUIDE_TEXT3 = "guide_text3";
+    public static final String GUIDE_TEXT4 = "guide_text4";
     public static final String GUIDE_SCREEN = "guide_screen";
     public static final String TEMP_TEST_LOW = "temp_test_low";
     public static final String SNAP_ID = "snap_id";
