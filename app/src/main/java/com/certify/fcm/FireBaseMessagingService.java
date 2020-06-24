@@ -75,7 +75,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 if(command.equals("SETTINGS")){
                     Util.getSettings(this,this);
                 }else if(command.equals("ALLMEMBER")){
-                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
+                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)
+                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
                         startService(new Intent(this, MemberSyncService.class));
                         Application.StartService(this);
                     }

@@ -737,6 +737,7 @@ public class Util {
                 updateFaceMemberValues(obj, data);
             }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
+            obj.put("maskStatus", data.maskStatus);
             obj.put("faceParams", FaceParam(context, data));
 
             if (BuildConfig.DEBUG) {
@@ -758,7 +759,6 @@ public class Util {
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             obj.put("thresholdValue", thresholdvalue);
             obj.put("faceScore", data.faceScore);
-            obj.put("maskStatus", data.maskStatus);
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
 
