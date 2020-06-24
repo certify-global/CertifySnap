@@ -48,6 +48,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private Button tvClearData ;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
+    private String url_end;
+    private String url;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,7 +85,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            String url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
             etEndUrl.setText(url_end);
             if (url_end != null && url_end.length() > 0)
                 etEndUrl.setSelection(url_end.length());
@@ -134,7 +136,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String url = etEndUrl.getText().toString().trim();
+                    url = etEndUrl.getText().toString().trim();
                     if (url.endsWith("/"))
                         url = url.substring(0, url.length() - 1);
                     Util.writeString(sharedPreferences, GlobalParameters.URL, url);
@@ -174,7 +176,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onClick(View v) {
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
-                    finish();
+                    if (!TextUtils.isEmpty(url_end) && !url_end.equals(etEndUrl.getText().toString().trim())) {
+                        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
+                        deleteAppData();
+                        Util.writeString(sharedPreferences, GlobalParameters.URL, url);
+                        restartApp();
+                    } else {
+                        finish();
+                    }
                 }
             });
             cbDoSyc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -187,6 +196,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onClick(View v) {
                     deleteAppData();
+                    restartApp();
                 }
             });
         } catch (Exception e) {
@@ -250,8 +260,6 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             sharedPreferences.edit().clear().apply();
         }
         LitePal.deleteDatabase("telpo_face");
-        stopMemberSyncService();
-        restartApp();
     }
 
     private void stopMemberSyncService() {
@@ -260,6 +268,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void restartApp() {
+        stopMemberSyncService();
         finishAffinity();
         Intent intent = new Intent(this, GuideActivity.class);
         int mPendingIntentId = 111111;
