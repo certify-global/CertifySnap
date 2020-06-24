@@ -2945,7 +2945,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         runOnUiThread(() -> {
             tvErrorMessage.setVisibility(View.VISIBLE);
-            tvErrorMessage.setText(getString(R.string.step_closer));
+            tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
         });
         searchFaceInfoList.clear();
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
