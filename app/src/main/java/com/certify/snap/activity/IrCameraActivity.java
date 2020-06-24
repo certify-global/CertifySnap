@@ -287,7 +287,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int ledSettingEnabled = 0;
     private int processMask = FaceEngine.ASF_MASK_DETECT;
     private Bitmap maskDetectBitmap;
-    private int maskStatus = 100;
+    private int maskStatus = -2;
     private boolean maskEnabled = false;
     private boolean faceDetectEnabled = false;
     private boolean isSearchFace = true;
@@ -2712,7 +2712,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void resetMaskStatus() {
         maskDetectBitmap = null;
-        maskStatus = 100;
+        maskStatus = -2;
     }
 
     private boolean isFindTemperature() {
@@ -3034,6 +3034,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         CameraController.getInstance().clearData();
         searchFaceInfoList.clear();
         compareResultList.clear();
+        resetMaskStatus();
     }
 
     private void setPreviewIdleTimer() {
