@@ -46,8 +46,7 @@
         android:id="@+id/setting_activate"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="@dimen/margin_5"
-        android:onClick="onclick">
+        android:layout_marginTop="@dimen/margin_5">
 
         <TextView
             android:id="@+id/activate_tv_device"
