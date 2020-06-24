@@ -61,7 +61,7 @@
             android:orientation="horizontal">
 
             <CheckBox
-                android:id="@+id/enable_ad_check_box"
+                android:id="@+id/enable_relay_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false">
@@ -79,44 +79,67 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
-            android:orientation="vertical">
+            android:layout_marginStart="5dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/allow_anonymous_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false">
+            </CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/block_high_temperature"
-                android:textSize="18sp"
-                android:textColor="@color/black">
+                android:text="@string/allow_anonymous"
+                android:textColor="@color/black"
+                android:textSize="18sp">
             </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical">
 
             <RadioGroup
-                android:id="@+id/block_access_rg"
+                android:id="@+id/access_rg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_5"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <RadioButton
-                    android:id="@+id/block_access_yes"
+                    android:id="@+id/normal_mode_rb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
-                    android:text="Yes"
+                    android:text="@string/normal_mode"
                     android:textSize="@dimen/font_14"
-                    android:checked="true"
                     android:theme="@style/MyCheckBox" />
 
+                <CheckBox
+                    android:id="@+id/stop_relay_cb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="60dp"
+                    android:text="@string/stop_relay"
+                    android:checked="false">
+                </CheckBox>
+
                 <RadioButton
-                    android:id="@+id/block_access_no"
+                    android:id="@+id/reverse_mode_rb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
-                    android:layout_marginStart="10dp"
                     android:textSize="@dimen/font_14"
-                    android:text="No"
+                    android:text="@string/reverse_mode"
                     android:theme="@style/MyCheckBox" />
 
             </RadioGroup>
@@ -125,18 +148,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:text="@string/door_control_timing">
-            </TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -148,7 +163,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/RelayTime"
+                    android:text="@string/relay_timeout"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -175,6 +190,15 @@
 
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/lightgray">
+        </View>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -184,7 +208,7 @@
             android:orientation="horizontal">
 
             <CheckBox
-                android:id="@+id/enable_ac_check_box"
+                android:id="@+id/enable_weigand_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="false">

@@ -2342,11 +2342,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      * Method that fetches settings from the SharedPref
      */
     private void getAccessControlSettings() {
-        AccessCardController.getInstance().setAutomaticDoorEnabled(Util.getSharedPreferences(this).getBoolean(GlobalParameters.AutomaticDoorAccess, false));
-        AccessCardController.getInstance().setAccessControlEnabled(Util.getSharedPreferences(this).getBoolean(GlobalParameters.AccessControlEnable, false));
-        AccessCardController.getInstance().setBlockAccessOnHighTemp(Util.getSharedPreferences(this).getBoolean(GlobalParameters.BlockAccessHighTemp, true));
+        AccessCardController.getInstance().setEnableRelay(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableRelay, false));
+        AccessCardController.getInstance().setAllowAnonymous(Util.getSharedPreferences(this).getBoolean(GlobalParameters.AllowAnonymous, false));
+        AccessCardController.getInstance().setNormalRelayMode(Util.getSharedPreferences(this).getBoolean(GlobalParameters.RelayNormalMode, false));
+        AccessCardController.getInstance().setReverseRelayMode(Util.getSharedPreferences(this).getBoolean(GlobalParameters.RelayReverseMode, false));
+        AccessCardController.getInstance().setStopRelayOnHighTemp(Util.getSharedPreferences(this).getBoolean(GlobalParameters.StopRelayOnHighTemp, false));
+        AccessCardController.getInstance().setEnableWeigan(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableWeigand, false));
         AccessCardController.getInstance().setRelayTime(Util.getSharedPreferences(this).getInt(GlobalParameters.RelayTime, Constants.DEFAULT_RELAY_TIME));
-        AccessCardController.getInstance().setWeiganControllerFormat(Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlCardFormat, Constants.DEFAULT_WEIGAN_CONTROLLER_FORMAT));
+        AccessCardController.getInstance().setWeiganControllerFormat(Util.getSharedPreferences(this).getInt(GlobalParameters.WeiganFormatMessage, Constants.DEFAULT_WEIGAN_CONTROLLER_FORMAT));
     }
 
     /**
@@ -2717,7 +2720,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        if (AccessCardController.getInstance().isAccessControlEnabled()) {
+        if (!AccessCardController.getInstance().isAllowAnonymous()
+            && AccessCardController.getInstance().isEnableRelay()) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));

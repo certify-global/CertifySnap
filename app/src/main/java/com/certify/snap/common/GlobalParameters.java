@@ -33,10 +33,13 @@ public class GlobalParameters {
     public static final String NavigationBar = "navigationbar";
     public static final String RelayTime = "relaytime";
     public static final String LogFilePath = "logfilepath";
-    public static final String AccessControlEnable = "accessControlEnable";
-    public static final String BlockAccessHighTemp = "blockAccessHighTemp";
-    public static final String AccessControlCardFormat = "accessControlCardFormat";
-    public static final String AutomaticDoorAccess = "automaticDoorAccess";
+    public static final String EnableRelay = "enableRelay";
+    public static final String AllowAnonymous = "allowAnonymous";
+    public static final String RelayNormalMode = "relayNormalMode";
+    public static final String RelayReverseMode = "relayReverseMode";
+    public static final String StopRelayOnHighTemp = "stopRelayOnHighTemp";
+    public static final String EnableWeigand = "enableWeigand";
+    public static final String WeiganFormatMessage = "weiganFormatMessage";
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
     public static final String ScanMode = "ScanMode";
     public static final String ScanProximity = "ScanProximity";
