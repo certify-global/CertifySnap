@@ -93,7 +93,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             parentLayout = findViewById(R.id.parent_view_layout);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
-            editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70"));
+            editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);

@@ -754,7 +754,7 @@ public class Util {
         JSONObject obj = new JSONObject();
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             obj.put("thresholdValue", thresholdvalue);
             obj.put("faceScore", data.faceScore);
@@ -1232,7 +1232,7 @@ public class Util {
                 String enableRFIDScanner = jsonValueIdentification.isNull("enableRFIDScanner") ? "0" : jsonValueIdentification.getString("enableRFIDScanner");
                 String identificationTimeout = jsonValueIdentification.isNull("identificationTimeout") ? "5" : jsonValueIdentification.getString("identificationTimeout");
                 String enableFacialRecognition = jsonValueIdentification.isNull("enableFacialRecognition") ? "0" : jsonValueIdentification.getString("enableFacialRecognition");
-                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? "70" : jsonValueIdentification.getString("facialThreshold");
+                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? String.valueOf(Constants.FACIAL_DETECT_THRESHOLD) : jsonValueIdentification.getString("facialThreshold");
                 String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
                 String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
                 String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "2" : jsonValueIdentification.getString("cameraScanMode");
