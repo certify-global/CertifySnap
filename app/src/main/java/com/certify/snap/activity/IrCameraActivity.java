@@ -219,7 +219,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ShowFaceInfoAdapter adapter;
     private SharedPreferences sharedPreferences;
     protected static final String LOG = "IRCamera Activity - ";
-
+    private String mTriggerType = CameraController.triggerValue.Camera.toString();
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -2037,12 +2037,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
-                    if(!(rfIdEnable && data.triggerType.equals(CameraController.triggerValue.Accessid.toString()))&&!(qrCodeEnable && data.triggerType.equals(CameraController.triggerValue.Codeid.toString())))
-                    {
-                        if(data.compareResult != null)
-                            data.triggerType =CameraController.triggerValue.Face.toString();
-                        else data.triggerType =CameraController.triggerValue.Camera.toString();
-                    }
+                    data.triggerType = mTriggerType;
                     Util.recordUserTemperature(null, IrCameraActivity.this, data);
                 }
             }
@@ -2191,6 +2186,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void onBarcodeData(String guid) {
         try {
 
+            mTriggerType = CameraController.triggerValue.Codeid.toString();
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -2200,7 +2196,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-                new UserExportedData().triggerType = CameraController.triggerValue.Codeid.toString();
                 initCameraPreview();
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
@@ -2277,7 +2272,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (reportInfo.getString("responseCode").equals("1")) {
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
-                    new UserExportedData().triggerType = CameraController.triggerValue.Codeid.toString();
                     initCameraPreview();
                 } else {
                     preview.stop();
@@ -2645,6 +2639,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     data.compareResult = compareResult;
                                     CameraController.getInstance().setCompareResult(compareResult);
                                     CameraController.getInstance().setFaceVisible(true);
+                                    if (mTriggerType.equals(CameraController.triggerValue.Camera.toString())) {
+                                        mTriggerType = CameraController.triggerValue.Face.toString();
+                                    }
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
@@ -2721,12 +2718,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
+        mTriggerType = CameraController.triggerValue.Accessid.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
             && AccessCardController.getInstance().isEnableRelay()) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
-                new UserExportedData().triggerType = CameraController.triggerValue.Accessid.toString();
                 startIrCamera();
                 if (soundPool == null) {
                     initSound(); //when access card is recognized, onPause is getting called and resetting the sound
@@ -2738,7 +2735,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
-        new UserExportedData().triggerType = CameraController.triggerValue.Accessid.toString();
         startIrCamera();
         if (soundPool == null) {
             initSound(); //when access card is recognized, onPause is getting called and resetting the sound
