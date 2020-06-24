@@ -96,13 +96,11 @@ public class ConfirmationScreenActivity extends Activity {
             tv_subtitle.setTypeface(rubiklight);
             tv_title.setTextSize(titleSize(confirm_title.length()));
             tv_subtitle.setTextSize(titleSizeSub(confirm_subtitle.length()));
-            Log.d("ConfirmationScreen", "Deep confirmation setting time value " + longVal);
             if (longVal.equals("")) {
                 delayMilli = 3;
             } else {
                 delayMilli = Long.parseLong(longVal);
             }
-            Log.d("ConfirmationScreen", "Deep confirmation setting time value " + delayMilli);
             setHomeScreenTimer();
 
             Log.d("delay milli seconds", "" + delayMilli);
