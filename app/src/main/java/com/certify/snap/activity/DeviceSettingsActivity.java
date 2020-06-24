@@ -1,11 +1,10 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.ComponentName;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -14,13 +13,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -36,9 +32,10 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.service.DeviceHealthService;
-import com.google.android.material.textfield.TextInputLayout;
+import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback {
     private static String LOG = "DeviceSettingsActivity -> ";
@@ -51,14 +48,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private Button tvClearData ;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
-    private boolean doRestart;
+    private String url_end;
+    private String url;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_device_settings);
-            doRestart = false;
             etEndUrl = findViewById(R.id.et_end_url);
             etDeviceName = findViewById(R.id.et_device_name);
             etPassword = findViewById(R.id.et_device_password);
@@ -88,7 +85,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            String url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
             etEndUrl.setText(url_end);
             if (url_end != null && url_end.length() > 0)
                 etEndUrl.setSelection(url_end.length());
@@ -139,7 +136,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String url = etEndUrl.getText().toString().trim();
+                    url = etEndUrl.getText().toString().trim();
                     if (url.endsWith("/"))
                         url = url.substring(0, url.length() - 1);
                     Util.writeString(sharedPreferences, GlobalParameters.URL, url);
@@ -179,7 +176,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onClick(View v) {
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
-                    finish();
+                    if (!TextUtils.isEmpty(url_end) && !url_end.equals(etEndUrl.getText().toString().trim())) {
+                        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
+                        deleteAppData();
+                        Util.writeString(sharedPreferences, GlobalParameters.URL, url);
+                        restartApp();
+                    } else {
+                        finish();
+                    }
                 }
             });
             cbDoSyc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -191,15 +195,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvClearData.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-//                        ((ActivityManager) getSystemService(ACTIVITY_SERVICE))
-//                                .clearApplicationUserData();
-                        deleteAppData();
-                        doRestart = true;
-                       // triggerRebirth();
-                    } catch (Exception e) {
-
-                    }
+                    deleteAppData();
+                    restartApp();
                 }
             });
         } catch (Exception e) {
@@ -257,36 +254,26 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (doRestart)
-            startActivity(new Intent(getApplicationContext(), GuideActivity.class));
-        doRestart = false;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    private void triggerRebirth() {
-        PackageManager packageManager = this.getPackageManager();
-        Intent intent = packageManager.getLaunchIntentForPackage(this.getPackageName());
-        ComponentName componentName = intent.getComponent();
-        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
-        startActivity(mainIntent);
-     //   Runtime.getRuntime().exit(0);
-    }
     private void deleteAppData() {
-        try {
-            // clearing app data
-            String packageName = getApplicationContext().getPackageName();
-            Runtime runtime = Runtime.getRuntime();
-            runtime.exec("pm clear "+packageName);
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().clear().apply();
+        }
+        LitePal.deleteDatabase("telpo_face");
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } }
+    private void stopMemberSyncService() {
+        Intent intent = new Intent(this, MemberSyncService.class);
+        stopService(intent);
+    }
+
+    private void restartApp() {
+        stopMemberSyncService();
+        finishAffinity();
+        Intent intent = new Intent(this, GuideActivity.class);
+        int mPendingIntentId = 111111;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
 }

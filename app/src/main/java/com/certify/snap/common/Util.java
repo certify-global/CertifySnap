@@ -737,6 +737,7 @@ public class Util {
                 updateFaceMemberValues(obj, data);
             }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
+            obj.put("maskStatus", data.maskStatus);
             obj.put("faceParams", FaceParam(context, data));
 
             if (BuildConfig.DEBUG) {
@@ -754,11 +755,10 @@ public class Util {
         JSONObject obj = new JSONObject();
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70");
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             obj.put("thresholdValue", thresholdvalue);
             obj.put("faceScore", data.faceScore);
-            obj.put("maskStatus", data.maskStatus);
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
 
@@ -1152,7 +1152,7 @@ public class Util {
                 String enableThermal = jsonValueHome.getString("enableThermalCheck");
                 String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN" : jsonValueHome.getString("line1");
                 String homeLine2 = jsonValueHome.isNull("line2") ? "" : jsonValueHome.getString("line2");
-                String enableHomeScreen = jsonValueHome.isNull("enableHomeScreen") ? "" : jsonValueHome.getString("enableHomeScreen");
+                String enableHomeScreen = jsonValueHome.isNull("enableHomeScreen") ? "1" : jsonValueHome.getString("enableHomeScreen");
                 String viewIntervalDelay = jsonValueHome.isNull("viewIntervalDelay") ? "2" : jsonValueHome.getString("viewIntervalDelay");
                 String enableTextOnly = jsonValueHome.isNull("enableTextOnly") ? "" : jsonValueHome.getString("enableTextOnly");
                 String homeText = jsonValueHome.isNull("homeText") ? "" : jsonValueHome.getString("homeText");
@@ -1181,7 +1181,7 @@ public class Util {
                 String allowlowtemperaturescanning = jsonValueScan.isNull("allowLowTemperatureScanning") ? "0" : jsonValueScan.getString("allowLowTemperatureScanning");
                 String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" : jsonValueScan.getString("lowTemperatureThreshold");
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
-                String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "-1.8" : jsonValueScan.getString("temperatureCompensation");
+                String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -1232,7 +1232,7 @@ public class Util {
                 String enableRFIDScanner = jsonValueIdentification.isNull("enableRFIDScanner") ? "0" : jsonValueIdentification.getString("enableRFIDScanner");
                 String identificationTimeout = jsonValueIdentification.isNull("identificationTimeout") ? "5" : jsonValueIdentification.getString("identificationTimeout");
                 String enableFacialRecognition = jsonValueIdentification.isNull("enableFacialRecognition") ? "0" : jsonValueIdentification.getString("enableFacialRecognition");
-                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? "70" : jsonValueIdentification.getString("facialThreshold");
+                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? String.valueOf(Constants.FACIAL_DETECT_THRESHOLD) : jsonValueIdentification.getString("facialThreshold");
                 String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
                 String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
                 String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "2" : jsonValueIdentification.getString("cameraScanMode");
@@ -1248,21 +1248,22 @@ public class Util {
 
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
+                String allowAnonymous = jsonValueAccessControl.isNull("allowAnonymous") ? "0" : jsonValueAccessControl.getString("allowAnonymous");
+                String relayMode = jsonValueAccessControl.isNull("relayMode") ? "0" : jsonValueAccessControl.getString("relayMode");
                 String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "1" : jsonValueAccessControl.getString("blockAccessHighTemperature");
                 int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 : jsonValueAccessControl.getInt("doorControlTimeWired");
                 String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
                 int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
 
-                Util.writeBoolean(sharedPreferences, GlobalParameters.AutomaticDoorAccess, enableAutomaticDoors.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.AccessControlEnable, enableAccessControl.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.BlockAccessHighTemp, blockAccessHighTemperature.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.AccessControlCardFormat, accessControllerCardFormat);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, relayMode.equals("0"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.StopRelayOnHighTemp, blockAccessHighTemperature.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
-
-
+                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
+                Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
             } else {
                 Logger.toast(context, "Something went wrong please try again");
-
             }
         } catch (Exception e) {
             Logger.error("retrieveSetting(JSONObject reportInfo)", e.getMessage());

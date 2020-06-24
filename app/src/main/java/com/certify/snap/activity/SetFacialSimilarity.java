@@ -13,6 +13,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
@@ -38,7 +39,7 @@ public class SetFacialSimilarity extends AppCompatActivity {
         btn_save = findViewById(R.id.btn_save);
         sp = Util.getSharedPreferences(this);
 
-        editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, "70"));
+        editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
 
         radio_group_mask = findViewById(R.id.radio_group_mask);
         radio_yes_mask = findViewById(R.id.radio_yes_mask);

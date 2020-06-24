@@ -201,7 +201,7 @@
     <string name="work_flow">Work Flow</string>
     <string name="thermal_scan">THERMAL SCAN</string>
     <string name="network_error">Internet is not available.Please check your internet connection!</string>
-    <string name="SetTemp">Settings Temperature</string>
+    <string name="SetTemp">Temperature Settings</string>
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
     <string name="endpoint">Endpoint URL</string>
@@ -285,15 +285,20 @@
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
     <string name="access_control_parameter">sec</string>
-    <string name="enable_access_control">Enable Access Control (require ID)</string>
+    <string name="enable_access_control">Enable Weigan Output (ID Required)</string>
     <string name="block_high_temperature">Block access on High Temperature Scan</string>
     <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
-    <string name="access_control_card_format">Access Controller Card Format</string>
+    <string name="access_control_card_format">Message Format</string>
     <string name="access_control_enroll">Enroll</string>
     <string name="access_granted">Access granted</string>
     <string name="access_denied">Access denied!</string>
     <string name="access_failed">User cannot be identified. Please enroll</string>
-    <string name="automatic_door_access">Automatic Doors (does not require ID)</string>
+    <string name="automatic_door_access">Enable Relay</string>
+    <string name="allow_anonymous">Allow Anonymous</string>
+    <string name="relay_timeout">Relay Timeout:</string>
+    <string name="normal_mode">Normal Mode (Operate Relay for every scan)</string>
+    <string name="reverse_mode">Reverse Mode (Operate Relay on High Temperature Scan Only)</string>
+    <string name="stop_relay">Stop Relay on High Temperature Scan</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
@@ -339,6 +344,7 @@
     <string name="device_mode">Device Mode</string>
     <string name="enable_home_screen">Enable Home Screen</string>
     <string name="enable_text_only_screen">Enable Text Only Mode</string>
+    <string name="enable_text_only_hint">Enter Full Screen Text</string>
     <string name="connectivity_status">View Connectivity Status</string>
     <string name="connectivity_status_title">Connectivity Status and Information</string>
     <string name="connectivity_status_text">Connected to: </string>
@@ -361,6 +367,9 @@
     <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
     <string name="confirm_title_below">Have a nice day!</string>
     <string name="analyzing_face">Analyzing Face</string>
+    <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
+    <string name="step_closer">Please step closer</string>
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
+
 </resources>
