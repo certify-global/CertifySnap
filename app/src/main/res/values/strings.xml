@@ -344,6 +344,7 @@
     <string name="device_mode">Device Mode</string>
     <string name="enable_home_screen">Enable Home Screen</string>
     <string name="enable_text_only_screen">Enable Text Only Mode</string>
+    <string name="enable_text_only_hint">Enter Full Screen Text</string>
     <string name="connectivity_status">View Connectivity Status</string>
     <string name="connectivity_status_title">Connectivity Status and Information</string>
     <string name="connectivity_status_text">Connected to: </string>
