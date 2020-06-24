@@ -97,7 +97,7 @@ public class ConfirmationScreenActivity extends Activity {
             tv_title.setTextSize(titleSize(confirm_title.length()));
             tv_subtitle.setTextSize(titleSizeSub(confirm_subtitle.length()));
             if (longVal.equals("")) {
-                delayMilli = 3;
+                delayMilli = 1;
             } else {
                 delayMilli = Long.parseLong(longVal);
             }

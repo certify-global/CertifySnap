@@ -698,9 +698,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         enableNfc();
         startCameraSource();
         homeScreenTimeOut = sharedPreferences.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2);
-        String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "3");
+        String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "1");
         if (longVal.equals("")) {
-            delayMilli = 3;
+            delayMilli = 1;
         } else {
             delayMilli = Long.parseLong(longVal);
         }
