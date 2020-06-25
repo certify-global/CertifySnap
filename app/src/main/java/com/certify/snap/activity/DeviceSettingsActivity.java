@@ -42,15 +42,16 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private static String LOG = "DeviceSettingsActivity -> ";
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
-    private TextView btn_save, tvSettingsName;
+    private TextView btn_save, tvSettingsName, activateStatus;
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
-    private Button tvClearData ;
+    private Button tvClearData, btn_activate ;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
     private String url_end;
     private String url;
+    private Boolean isOnline;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,6 +64,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             btn_save = findViewById(R.id.btn_save_device);
             tvSettingsName = findViewById(R.id.tv_device_settings);
             switch_activate = findViewById(R.id.switch_activate_device);
+            activateStatus = findViewById(R.id.activate_status);
+            btn_activate = findViewById(R.id.btn_activate);
             tvDeviceManager = findViewById(R.id.tv_device_manage);
             tv_activate_tv_device = findViewById(R.id.activate_tv_device);
             tvEnd = findViewById(R.id.tv_end_device);
@@ -75,6 +78,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvResetSnap = findViewById(R.id.tv_reset_snap);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
+            activateStatus.setTypeface(rubiklight);
             tvDeviceManager.setTypeface(rubiklight);
             tv_activate_tv_device.setTypeface(rubiklight);
             tvDeviceName.setTypeface(rubiklight);
@@ -83,6 +87,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvSettingsName.setTypeface(rubiklight);
             tvResetSnap.setTypeface(rubiklight);
             tvClearData.setTypeface(rubiklight);
+            btn_activate.setTypeface(rubiklight);
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -101,12 +106,15 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        isOnline = true;
                         tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
-                        Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+                       // Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+                        activateStatus();
 
                     } else {
+                        isOnline = false;
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
@@ -118,6 +126,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             if(!switch_activate.isChecked()){
                 tvSettingsName.setText("Local");
             }
+
 
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
@@ -205,6 +214,19 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             Logger.error(LOG + "onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }
 
+    }
+
+    private void activateStatus(){
+        if(isOnline){
+            Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+            activateStatus.setText("Activated");
+            activateStatus.setTextColor(getResources().getColor(R.color.green));
+            btn_activate.setVisibility(View.GONE);
+        }
+        else {
+            activateStatus.setText("Not Activated");
+            btn_activate.setVisibility(View.VISIBLE);
+        }
     }
 
     private void deviceAccessPassword() {
