@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
+import com.certify.snap.common.License;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.text.Html;
@@ -38,7 +39,6 @@ import com.arcsoft.face.FaceEngine;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.async.AsyncActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -131,9 +131,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
             sharedPreferences = Util.getSharedPreferences(this);
             boolean activateStatus = sharedPreferences.getBoolean("activate", false);
-            Logger.debug("sp---true", "activate:" + activateStatus);
-            if (!activateStatus)
-                new AsyncActiveEngine(SettingActivity.this, sharedPreferences, null, Util.getSNCode()).execute();
+            if (!activateStatus) License.activateLicense(this);
+//                new AsyncActiveEngine(SettingActivity.this, sharedPreferences, null, Util.getSNCode()).execute();
             img_sync.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

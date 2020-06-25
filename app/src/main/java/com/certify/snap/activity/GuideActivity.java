@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -29,7 +30,6 @@ import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback, ActiveEngineCallback {
+public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
     public static final String TAG = GuideActivity.class.getSimpleName();
     public static Activity mActivity;
@@ -230,25 +230,35 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-        if (!License.activateLicense(this)) {
-            String message = getResources().getString(R.string.active_failed);
-            Logger.error(TAG, message);
-            //TODO: alternate license activation
-            Util.openDialogactivate(this, message, "");
-        } else if (!onlineMode) {
-            startActivity(new Intent(this, IrCameraActivity.class));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!License.activateLicense(GuideActivity.this)) {
+                    String message = getResources().getString(R.string.active_failed);
+                    Logger.error(TAG, message);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Util.openDialogactivate(GuideActivity.this, message, "");
+                        }
+                    });
+                } else if (!onlineMode) {
+                    startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
 
-        } else {
-            //TODO: This dialog is required when the connection fails to API server
-            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+                } else {
+                    //TODO: This dialog is required when the connection fails to API server
+                    //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
 
-            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
-            if (Util.isNetworkOff(GuideActivity.this)) {
-                new Handler().postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
-                return;
+                    //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+                    if (Util.isNetworkOff(GuideActivity.this)) {
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                        return;
+                    }
+                    Util.activateApplication(GuideActivity.this, GuideActivity.this);
+                }
+
             }
-            Util.activateApplication(this, this);
-        }
+        }).start();
     }
 
     @Override
@@ -286,19 +296,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
-    }
-
-    @Override
-    public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        Logger.debug(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
-        if (activeStatus) {
-            License.copyLicense(getApplicationContext());
-            Util.switchRgbOrIrActivity(GuideActivity.this, true);
-        } else if ("Offline".equals(status)) {
-            String activityKey = ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
-            ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
-        } else
-            Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
     }
 
     /**
