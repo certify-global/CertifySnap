@@ -2,6 +2,7 @@ package com.certify.snap.common;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
@@ -85,7 +86,7 @@ public class License {
             fout.write(buffer);
             fout.flush();
         } catch (Exception e) {
-            Logger.error(TAG, String.format("copyLicense failed: %s", e.getMessage()));
+            Log.e(TAG, String.format("copyLicense failed: %s", e.getMessage()));
         }
 
     }

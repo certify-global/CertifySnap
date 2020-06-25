@@ -891,13 +891,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //            }
 //        });
         if (retryNumber < 3) {
-            Logger.error(TAG, "retry()", "Retry num is less than 3, Retry temp and number is " + retrytemp + tempretrynum);
+            Logger.verbose(TAG, "retry()", "Retry num is less than 3, Retry temp and number is " + retrytemp + tempretrynum);
             runTemperature(new UserExportedData());
             retryNumber++;
             // showTip(getString(R.string.temperature_retry), false);
         } else {
             showTip(getString(R.string.temperature_failresult), false);
-            Logger.error(TAG, "retry()", "Temperature fetch failed, Retry temp and number is " + retrytemp + tempretrynum);
+            Logger.verbose(TAG, "retry()", "Temperature fetch failed, Retry temp and number is " + retrytemp + tempretrynum);
             isSearch = true;
         }
     }
@@ -1128,7 +1128,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             cameraHelperIr.start();
         } catch (RuntimeException e) {
             Toast.makeText(IrCameraActivity.this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
-            Logger.error(TAG, "initIrCamera()", "Exception in IrCamera start" + e.getMessage());
+            Logger.debug(TAG, "initIrCamera()", "Exception in IrCamera start" + e.getMessage());
         }
     }
 
@@ -2270,7 +2270,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
 
         } catch (Exception e) {
-            Logger.error(LOG + "onBarcodeData(String guid)", e.getMessage());
+            Log.e(TAG + "onBarCodeData", e.getMessage());
         }
     }
 

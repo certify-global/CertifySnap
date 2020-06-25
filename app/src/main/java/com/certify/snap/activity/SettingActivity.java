@@ -518,7 +518,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG,"onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -542,7 +542,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             }
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -561,7 +561,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.error("SettingActivity", "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
 

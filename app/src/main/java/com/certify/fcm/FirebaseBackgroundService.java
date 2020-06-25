@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import java.util.Random;
 
 public class FirebaseBackgroundService extends BroadcastReceiver implements SettingCallback {
-    private static final String TAG = "FirebaseBackground";
+    private static final String TAG = FirebaseBackgroundService.class.getSimpleName();
     SharedPreferences sharedPreferences;
 
     @Override
@@ -46,7 +46,7 @@ public class FirebaseBackgroundService extends BroadcastReceiver implements Sett
             }
 
         } catch (Exception e) {
-            Logger.error(TAG + "onReceive(Context context, Intent intent)", e.getMessage());
+            Logger.error(TAG , "onReceive(Context context, Intent intent)", e.getMessage());
         }
     }
 

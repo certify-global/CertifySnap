@@ -98,7 +98,7 @@ public class ActiveEngine {
 
                     @Override
                     public void onError(Throwable e) {
-                        Logger.error(Util.getSNCode() + "onerror engine not activated", e.getMessage());
+                        Logger.error(TAG,Util.getSNCode() + "onerror engine not activated", e.getMessage());
 
                     }
 

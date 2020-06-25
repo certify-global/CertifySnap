@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 
 import com.certify.callback.MemberIDCallback;
@@ -30,7 +32,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback {
-    private static final String TAG = "FireBaseMessagingService -> ";
+    private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
      SharedPreferences sharedPreferences;
@@ -46,7 +48,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             }
 
         } catch (Exception e) {
-            Logger.error(TAG + "onMessageReceived()", e.getMessage());
+            Log.e(TAG + "onMessageReceived()", e.getMessage());
         }
     }
 
@@ -120,7 +122,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     @Override
     public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
         if (reportInfo == null) {
-            Logger.error(TAG, "onJSONObjectListenerMemberID reportInfo nul");
+            Logger.info(TAG, "onJSONObjectListenerMemberID reportInfo nul", reportInfo);
             return;
         }
 

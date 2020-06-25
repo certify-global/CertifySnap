@@ -232,7 +232,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void start() {
         if (!License.activateLicense(this)) {
             String message = getResources().getString(R.string.active_failed);
-            Logger.error(TAG, message);
+            Log.e(TAG, message);
             //TODO: alternate license activation
             Util.openDialogactivate(this, message, "");
         } else if (!onlineMode) {
@@ -290,7 +290,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     @Override
     public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        Logger.warn(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
+        Logger.verbose(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
         if (activeStatus) {
             License.copyLicense(getApplicationContext());
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
