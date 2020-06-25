@@ -1145,7 +1145,7 @@ public class Util {
                 JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
                 JSONObject jsonValueAccessControl = jsonValue.getJSONObject("AccessControl");
                 //Homeview
-                Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, responseData.isNull("settingName") ? "" : responseData.getString("settingName"));
+                Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, responseData.isNull("settingName") ? "Local" : responseData.getString("settingName"));
                 String deviceName = responseData.isNull("deviceName") ? "" : responseData.getString("deviceName");
                 Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, deviceName);
                 String settingVersion = responseData.isNull("settingVersion") ? "" : responseData.getString("settingVersion");
@@ -1237,7 +1237,7 @@ public class Util {
                 String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? String.valueOf(Constants.FACIAL_DETECT_THRESHOLD) : jsonValueIdentification.getString("facialThreshold");
                 String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
                 String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
-                String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "2" : jsonValueIdentification.getString("cameraScanMode");
+                String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "1" : jsonValueIdentification.getString("cameraScanMode");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1251,15 +1251,15 @@ public class Util {
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
                 String allowAnonymous = jsonValueAccessControl.isNull("allowAnonymous") ? "0" : jsonValueAccessControl.getString("allowAnonymous");
-                String relayMode = jsonValueAccessControl.isNull("relayMode") ? "0" : jsonValueAccessControl.getString("relayMode");
-                String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "1" : jsonValueAccessControl.getString("blockAccessHighTemperature");
+                String relayMode = jsonValueAccessControl.isNull("relayMode") ? "1" : jsonValueAccessControl.getString("relayMode");
+                String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "0" : jsonValueAccessControl.getString("blockAccessHighTemperature");
                 int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 : jsonValueAccessControl.getInt("doorControlTimeWired");
                 String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
                 int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, relayMode.equals("0"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, relayMode.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.StopRelayOnHighTemp, blockAccessHighTemperature.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
@@ -1394,7 +1394,7 @@ public class Util {
     }
 
     public static String getVersionBuild() {
-        return String.format("v%s.%s", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        return String.format("v%s", BuildConfig.VERSION_NAME);
     }
 
     public static String bytesToHexString(byte[] src) {

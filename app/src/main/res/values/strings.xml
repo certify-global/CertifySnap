@@ -204,6 +204,10 @@
     <string name="SetTemp">Temperature Settings</string>
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
+    <string name="device_activation_status">Online Activation Status</string>
+    <string name="not_activated"><u>Not Activated</u></string>
+    <string name="activate"><u>Activate</u></string>
+    <string name="activated"><u>Activate</u></string>
     <string name="endpoint">Endpoint URL</string>
     <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
@@ -285,7 +289,7 @@
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
     <string name="access_control_parameter">sec</string>
-    <string name="enable_access_control">Enable Weigan Output (ID Required)</string>
+    <string name="enable_access_control">Enable Weigand Output (ID Required)</string>
     <string name="block_high_temperature">Block access on High Temperature Scan</string>
     <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
     <string name="access_control_card_format">Message Format</string>
@@ -371,5 +375,6 @@
     <string name="step_closer">Please step closer</string>
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
+    <string name="local_data">Reset Local Data</string>
 
 </resources>

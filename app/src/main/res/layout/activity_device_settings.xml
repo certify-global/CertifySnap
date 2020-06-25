@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -79,7 +80,47 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/blue" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
 
+        <TextView
+            android:id="@+id/tv_device_activation_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:text="@string/device_activation_status"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/activate_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="@string/not_activated"
+            android:textColor="@color/gray"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/not_activate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="@string/activate"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            android:background="@color/bg_blue"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -250,7 +291,7 @@
             android:layout_marginTop="@dimen/margin_50"
             android:layout_weight="1"
             android:drawablePadding="5dp"
-            android:text="@string/reset_snap_app"
+            android:text="@string/local_data"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -265,7 +306,8 @@
             android:gravity="center_vertical|center_horizontal"
             android:padding="@dimen/margin_10"
             android:text="@string/clear_cache_app"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="#D6D6D6"/>
     </LinearLayout>
 </LinearLayout>
