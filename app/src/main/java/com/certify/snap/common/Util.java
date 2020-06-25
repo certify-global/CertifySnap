@@ -1242,11 +1242,11 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationTimeout);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, false);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, enableFacialRecognition.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD, facialThreshold);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, 1);
+                Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(cameraScanMode));
 
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
