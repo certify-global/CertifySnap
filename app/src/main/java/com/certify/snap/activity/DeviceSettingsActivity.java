@@ -102,10 +102,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         isOnline = true;
-                        // tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
-                        Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
-                        // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
-                        // Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+                        Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
                         activateStatus();
 
                     } else {
@@ -229,10 +226,6 @@ private void setUIData(){
         }
 }
     private void activateStatus() {
-      /*  if(isOnline){
-            activateStatus.setText("Activated");
-            not_activate.setVisibility(View.GONE);
-        }else {*/
         activateStatus.setText("Not Activated");
         not_activate.setText("Activate");
         not_activate.setVisibility(View.VISIBLE);
@@ -243,7 +236,6 @@ private void setUIData(){
                 Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
             }
         });
-        //}
     }
 
     private void deviceAccessPassword() {
