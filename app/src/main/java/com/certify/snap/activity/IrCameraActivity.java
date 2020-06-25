@@ -2307,7 +2307,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
-            Logger.toast(this, "QRCode something went wrong.Please try again");
+            Logger.toast(this, "QRCode something went wrong. Please try again");
         }
     }
 
