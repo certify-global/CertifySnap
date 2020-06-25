@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.certify.callback.JSONObjectCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.EndPoints;
@@ -37,7 +38,7 @@ import com.certify.snap.service.MemberSyncService;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
-public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback {
+public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static String LOG = "DeviceSettingsActivity -> ";
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
@@ -93,18 +94,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             String input = Util.getSNCode();     //input string
             String lastsixDigits = "";
 
-            if (input.length() > 6) {
-                lastsixDigits = input.substring(input.length() - 6);
-            } else {
-                lastsixDigits = input;
-            }
-            etPassword.setText(sharedPreferences.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits));
-            etPassword.setSelection(lastsixDigits.length());
+            deviceAccessPassword();
+
             tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
@@ -113,10 +110,15 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        tvSettingsName.setText("Local");
                         stopHealthCheckService();
                     }
                 }
             });
+            if(!switch_activate.isChecked()){
+                tvSettingsName.setText("Local");
+            }
+
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
             } else {
@@ -205,6 +207,26 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     }
 
+    private void deviceAccessPassword() {
+        if(!sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()){
+            etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, ""));
+        }
+        else if (!sharedPreferences.getString(GlobalParameters.deviceMasterCode, "").isEmpty()) {
+            etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceMasterCode, ""));
+        } else {
+            String input = Util.getSNCode();
+            String lastsixDigits = "";
+
+            if (input.length() > 6) {
+                lastsixDigits = input.substring(input.length() - 6);
+            } else {
+                lastsixDigits = input;
+            }
+            etPassword.setText(sharedPreferences.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits));
+            etPassword.setSelection(lastsixDigits.length());
+        }
+    }
+
     private void stopHealthCheckService() {
         Intent intent = new Intent(this, DeviceHealthService.class);
         stopService(intent);
@@ -225,7 +247,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 json1 = new JSONObject(reportInfo.replace("\\", ""));
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                Util.getTokenActivate(reportInfo, status, DeviceSettingsActivity.this, "setting");
+                Util.getTokenActivate(reportInfo, status, this, "setting");
             startHealthCheckService();
             if (json1.isNull("responseSubCode")) return;
             if (json1.getString("responseSubCode").equals("104")) {
@@ -275,5 +297,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
+    @Override
+    public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
+        //no operation
     }
 }

@@ -847,7 +847,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"MissingPermission", "HardwareIds"})
-    public static void getDeviceUUid(Context context) {
+        public static void getDeviceUUid(Context context) {
         SharedPreferences sp = Util.getSharedPreferences(context);
 
         if (!sp.getString(GlobalParameters.UUID, "").isEmpty())
@@ -1136,6 +1136,8 @@ public class Util {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String doNotSyncMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, doNotSyncMembers.equals("1"));
+                    String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
+                    Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
                 }
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
