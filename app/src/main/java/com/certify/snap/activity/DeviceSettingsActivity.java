@@ -38,15 +38,17 @@ import com.certify.snap.service.MemberSyncService;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
+
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static String LOG = "DeviceSettingsActivity -> ";
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
-    private TextView btn_save, tvSettingsName, activateStatus;
+    private TextView btn_save, tvSettingsName, activateStatus,not_activate,tv_device_activation_status;
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
-    private Button tvClearData, btn_activate ;
+    private Button tvClearData;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
     private String url_end;
@@ -65,7 +67,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvSettingsName = findViewById(R.id.tv_device_settings);
             switch_activate = findViewById(R.id.switch_activate_device);
             activateStatus = findViewById(R.id.activate_status);
-            btn_activate = findViewById(R.id.btn_activate);
+            not_activate = findViewById(R.id.not_activate);
+            tv_device_activation_status = findViewById(R.id.tv_device_activation_status);
             tvDeviceManager = findViewById(R.id.tv_device_manage);
             tv_activate_tv_device = findViewById(R.id.activate_tv_device);
             tvEnd = findViewById(R.id.tv_end_device);
@@ -87,7 +90,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvSettingsName.setTypeface(rubiklight);
             tvResetSnap.setTypeface(rubiklight);
             tvClearData.setTypeface(rubiklight);
-            btn_activate.setTypeface(rubiklight);
+            not_activate.setTypeface(rubiklight);
+            tv_device_activation_status.setTypeface(rubiklight);
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -107,7 +111,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         isOnline = true;
-                        tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
+                       // tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
                        // Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
@@ -115,23 +119,27 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
                     } else {
                         isOnline = false;
+                        activateStatus();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        Util.writeString(sharedPreferences,GlobalParameters.DEVICE_SETTINGS_NAME,"Local");
                         tvSettingsName.setText("Local");
                         stopHealthCheckService();
+
                     }
                 }
             });
-            if(!switch_activate.isChecked()){
-                tvSettingsName.setText("Local");
-            }
-
 
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
+                activateStatus.setText("Activated");
+                not_activate.setVisibility(View.GONE);
             } else {
                 switch_activate.setChecked(false);
+                activateStatus.setText("Not Activated");
+                not_activate.setText("Activate");
+                tvSettingsName.setText("Local");
             }
             cbDoSyc.setChecked(sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false));
             etEndUrl.addTextChangedListener(new TextWatcher() {
@@ -217,16 +225,21 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void activateStatus(){
-        if(isOnline){
-            Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+      /*  if(isOnline){
             activateStatus.setText("Activated");
-            activateStatus.setTextColor(getResources().getColor(R.color.green));
-            btn_activate.setVisibility(View.GONE);
-        }
-        else {
+            not_activate.setVisibility(View.GONE);
+        }else {*/
             activateStatus.setText("Not Activated");
-            btn_activate.setVisibility(View.VISIBLE);
-        }
+            not_activate.setText("Activate");
+           not_activate.setVisibility(View.VISIBLE);
+
+        not_activate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+                }
+            });
+        //}
     }
 
     private void deviceAccessPassword() {
@@ -278,8 +291,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseCode").equals("1")) {
                 switch_activate.setChecked(true);
+                activateStatus.setText("Activated");
+                not_activate.setVisibility(View.GONE);
             } else if (json1.getString("responseSubCode").equals("103")) {
                 switch_activate.setChecked(true);
+                activateStatus.setText("Activated");
+                not_activate.setVisibility(View.GONE);
             }
         } catch (Exception e) {
             Logger.error(LOG + "onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());

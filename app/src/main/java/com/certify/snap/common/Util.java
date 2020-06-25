@@ -1145,7 +1145,7 @@ public class Util {
                 JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
                 JSONObject jsonValueAccessControl = jsonValue.getJSONObject("AccessControl");
                 //Homeview
-                Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, responseData.isNull("settingName") ? "" : responseData.getString("settingName"));
+                Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, responseData.isNull("settingName") ? "Local" : responseData.getString("settingName"));
                 String deviceName = responseData.isNull("deviceName") ? "" : responseData.getString("deviceName");
                 Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, deviceName);
                 String settingVersion = responseData.isNull("settingVersion") ? "" : responseData.getString("settingVersion");

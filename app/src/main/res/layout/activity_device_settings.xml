@@ -103,15 +103,17 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:text="@string/not_activated"
-            android:textColor="@color/black"
+            android:textColor="@color/blue"
             android:textSize="20sp" />
 
-        <Button
-            android:id="@+id/btn_activate"
+        <TextView
+            android:id="@+id/not_activate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/btn_shape"
-            tools:text="@string/activate" />
+            android:layout_margin="4dp"
+            android:text="@string/activate"
+            android:textColor="@color/blue"
+            android:textSize="20sp" />
     </LinearLayout>
     <View
         android:layout_width="match_parent"
@@ -287,7 +289,7 @@
             android:layout_marginTop="@dimen/margin_50"
             android:layout_weight="1"
             android:drawablePadding="5dp"
-            android:text="@string/reset_snap_app"
+            android:text="@string/local_data"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -302,7 +304,8 @@
             android:gravity="center_vertical|center_horizontal"
             android:padding="@dimen/margin_10"
             android:text="@string/clear_cache_app"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:background="#FF4040"/>
     </LinearLayout>
 </LinearLayout>
