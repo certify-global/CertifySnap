@@ -1,6 +1,8 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
@@ -12,12 +14,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -33,9 +33,10 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.service.DeviceHealthService;
-import com.google.android.material.textfield.TextInputLayout;
+import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
@@ -44,9 +45,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private TextView btn_save, tvSettingsName;
     private RelativeLayout ll;
     private Switch switch_activate;
-    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device;
+    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
+    private Button tvClearData ;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
+    private String url_end;
+    private String url;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +71,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvSettingStr = findViewById(R.id.tv_device_settings_str);
             cbDoSyc = findViewById(R.id.cb_enable_do_not_sync);
             sharedPreferences = Util.getSharedPreferences(this);
+            tvClearData = findViewById(R.id.tv_clear_cache);
+            tvResetSnap = findViewById(R.id.tv_reset_snap);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             tvDeviceManager.setTypeface(rubiklight);
@@ -75,10 +81,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvPass.setTypeface(rubiklight);
             tvSettingStr.setTypeface(rubiklight);
             tvSettingsName.setTypeface(rubiklight);
+            tvResetSnap.setTypeface(rubiklight);
+            tvClearData.setTypeface(rubiklight);
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            String url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
             etEndUrl.setText(url_end);
             if (url_end != null && url_end.length() > 0)
                 etEndUrl.setSelection(url_end.length());
@@ -129,7 +137,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
                 @Override
                 public void afterTextChanged(Editable s) {
-                    String url = etEndUrl.getText().toString().trim();
+                    url = etEndUrl.getText().toString().trim();
                     if (url.endsWith("/"))
                         url = url.substring(0, url.length() - 1);
                     Util.writeString(sharedPreferences, GlobalParameters.URL, url);
@@ -169,13 +177,27 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onClick(View v) {
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
-                    finish();
+                    if (!TextUtils.isEmpty(url_end) && !url_end.equals(etEndUrl.getText().toString().trim())) {
+                        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
+                        deleteAppData();
+                        Util.writeString(sharedPreferences, GlobalParameters.URL, url);
+                        restartApp();
+                    } else {
+                        finish();
+                    }
                 }
             });
             cbDoSyc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, isChecked);
+                }
+            });
+            tvClearData.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteAppData();
+                    restartApp();
                 }
             });
         } catch (Exception e) {
@@ -231,5 +253,28 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             e.printStackTrace();
             Logger.error(TAG, "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
+    }
+
+    private void deleteAppData() {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().clear().apply();
+        }
+        LitePal.deleteDatabase("telpo_face");
+    }
+
+    private void stopMemberSyncService() {
+        Intent intent = new Intent(this, MemberSyncService.class);
+        stopService(intent);
+    }
+
+    private void restartApp() {
+        stopMemberSyncService();
+        finishAffinity();
+        Intent intent = new Intent(this, GuideActivity.class);
+        int mPendingIntentId = 111111;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
     }
 }

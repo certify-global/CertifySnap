@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.activity.GuideActivity;
@@ -31,7 +32,7 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.Random;
 
-public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback {
+public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
@@ -45,11 +46,23 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (remoteMessage.getNotification() != null) {
                 Logger.verbose(TAG, "Remote Body: ", remoteMessage.getNotification().getBody());
                // sendNotification(remoteMessage.getNotification().getBody());
+                sendNotification(remoteMessage.getNotification().getBody());
             }
 
         } catch (Exception e) {
             Log.e(TAG + "onMessageReceived()", e.getMessage());
         }
+    }
+
+    @Override
+    public void onNewToken(String token) {
+        sharedPreferences=Util.getSharedPreferences(this);
+        sendRegistrationToServer(token);
+    }
+
+    private void sendRegistrationToServer(String token) {
+        Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+        Util.activateApplication(this, this);
     }
 
     //This method is only generating push notification
@@ -66,7 +79,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 if(command.equals("SETTINGS")){
                     Util.getSettings(this,this);
                 }else if(command.equals("ALLMEMBER")){
-                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
+                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)
+                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
                         startService(new Intent(this, MemberSyncService.class));
                         Application.StartService(this);
                     }
@@ -139,6 +153,21 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             }
         } catch (JSONException e) {
 
+        }
+    }
+
+    @Override
+    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Util.getTokenActivate(reportInfo, status, this, "");
+            }
+
+        } catch (Exception e) {
+            Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
     }
 }

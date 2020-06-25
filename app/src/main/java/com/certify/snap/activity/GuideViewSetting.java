@@ -23,7 +23,7 @@ public class GuideViewSetting extends SettingBaseActivity {
    private static String  TAG = GuideViewSetting.class.getSimpleName();
     Typeface rubiklight;
     SharedPreferences sp;
-    EditText edittext_text1,edittext_text3,edittext_text2;
+    EditText edittext_text1,edittext_text3,edittext_text2,edittext_text4;
     TextView btn_save,titles,guide_screen;
 
 
@@ -41,6 +41,7 @@ public class GuideViewSetting extends SettingBaseActivity {
             edittext_text1 = findViewById(R.id.edittext_text1);
             edittext_text2 = findViewById(R.id.edittext_text2);
             edittext_text3 = findViewById(R.id.edittext_text3);
+            edittext_text4 = findViewById(R.id.edittext_text4);
             btn_save = findViewById(R.id.btn_exit);
             guide_screen = findViewById(R.id.guide_screen);
             titles = findViewById(R.id.titles);
@@ -64,6 +65,7 @@ public class GuideViewSetting extends SettingBaseActivity {
             edittext_text1.setText(sp.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
             edittext_text2.setText(sp.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
             edittext_text3.setText(sp.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
+            edittext_text4.setText(sp.getString(GlobalParameters.GUIDE_TEXT4, getResources().getString(R.string.text_value4)));
 
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -74,6 +76,8 @@ public class GuideViewSetting extends SettingBaseActivity {
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT2, edittext_text2.getText().toString());
                     if (!edittext_text3.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT3, edittext_text3.getText().toString());
+                    if (!edittext_text4.getText().toString().isEmpty())
+                        Util.writeString(sp, GlobalParameters.GUIDE_TEXT4, edittext_text4.getText().toString());
                     startActivity(new Intent(GuideViewSetting.this,SettingActivity.class));
                     Util.showToast(GuideViewSetting.this, getString(R.string.save_success));
                     finish();

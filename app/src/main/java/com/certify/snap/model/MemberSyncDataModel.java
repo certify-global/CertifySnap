@@ -292,7 +292,6 @@ public class MemberSyncDataModel {
         if (isSyncing) return;
         if (dbSyncErrorMemberList.isEmpty()) {
             Log.d(TAG, "SnapXT All members added to db");
-            doSendBroadcast(SYNCING_COMPLETED, 0, 0);
             return;
         }
         dbSyncErrorMap.clear();
@@ -336,6 +335,7 @@ public class MemberSyncDataModel {
     private void updateDbSyncErrorList() {
         if (dbSyncErrorMemberList.isEmpty()) {
             Log.d(TAG , "SnapXT Error Sync completed successfully");
+            doSendBroadcast(SYNCING_COMPLETED, 0, 0);
             clear();
             return;
         }

@@ -149,7 +149,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:background="@drawable/edittextbackground"
-                android:hint="@string/enable_text_only_screen"
+                android:hint="@string/enable_text_only_hint"
                 android:padding="@dimen/margin_05" />
 
         </com.google.android.material.textfield.TextInputLayout>

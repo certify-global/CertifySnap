@@ -38,7 +38,7 @@ android {
         versionCode = gitVersionCode
         versionName = gitVersionName
         versionNameSuffix ""
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         testOptions.unitTests.includeAndroidResources = true
         ndk {

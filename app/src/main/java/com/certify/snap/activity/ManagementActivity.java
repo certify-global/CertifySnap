@@ -231,11 +231,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
-                    if(!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
-                        Util.getmemberList(this, this);
+                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&&!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
+
                         count = 0;
                         testCount = 1;
                         mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                        Util.getmemberList(this, this);
                     }
                 }
                 break;
@@ -1439,7 +1440,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 //                if (reportInfo.getString("Message").contains("token expired"))
 //                    Util.getToken(ManagementActivity.this, this);
             } else {
-                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.isNull("responseCode")) {
+                    mloadingprogress.dismiss();
+                    return;
+                }
                 if (reportInfo.getString("responseCode").equals("1")) {
                     JSONArray memberList = reportInfo.getJSONArray("responseData");
                     totalMemberCount = memberList.length();
@@ -1468,6 +1472,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
 
                 } else {
+                    DismissProgressDialog(mloadingprogress);
                     Logger.toast(this, "Something went wrong please try again");
                 }
             }

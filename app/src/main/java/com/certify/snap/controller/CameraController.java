@@ -6,6 +6,7 @@ import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.QrCodeData;
 
 public class CameraController {
+    private final String TAG = CameraController.class.getSimpleName();
     private static CameraController mInstance = null;
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
@@ -13,6 +14,7 @@ public class CameraController {
     public enum triggerValue {Face, Accessid, Codeid, Camera}
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
+    private boolean isScanCloseProximityEnabled = false;
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -65,7 +67,15 @@ public class CameraController {
         isFaceNotMatchedOnRetry = faceNotMatchedOnRetry;
     }
 
-    private void clearData() {
+    public boolean isScanCloseProximityEnabled() {
+        return isScanCloseProximityEnabled;
+    }
+
+    public void setScanCloseProximityEnabled(boolean scanCloseProximityEnabled) {
+        isScanCloseProximityEnabled = scanCloseProximityEnabled;
+    }
+
+    public void clearData() {
         qrCodeData = null;
         qrCodeId = "";
         isFaceVisible = false;
