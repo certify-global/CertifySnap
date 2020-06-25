@@ -52,19 +52,24 @@ public class LoginActivity extends Activity {
                     if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
                         if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setError("Password should not be empty");
-                        } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceSettingMasterCode, "")) || etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
+                            return;
+                        }
+                        if (!sp.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()) {
+                            if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceSettingMasterCode, ""))) {
+                                launchSettings();
+                            } else {
+                                validatePassword();
+                            }
+                            return;
+                        }
+                        if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
                             launchSettings();
                         } else {
-                            count--;
-                            text_input_login.setError(null);
-                            tv_pwd_error.setVisibility(View.VISIBLE);
-                            tv_pwd_error.setText("Invalid Password, Try Again");
-                            //tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
+                            validatePassword();
                         }
                     } else {
                         String input = Util.getSNCode();     //input string
                         String lastsixDigits = "";
-
                         if (input.length() > 6) {
                             lastsixDigits = input.substring(input.length() - 6);
                         } else {
@@ -88,13 +93,19 @@ public class LoginActivity extends Activity {
                             tv_pwd_error.setText("Invalid Password, Try Again");
 //
                         }
-
                     }
                 }
             });
         } catch (Exception e) {
             Logger.error(" LoginActivity onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }
+    }
+
+    private  void validatePassword(){
+        count--;
+        text_input_login.setError(null);
+        tv_pwd_error.setVisibility(View.VISIBLE);
+        tv_pwd_error.setText("Invalid Password, Try Again");
     }
     public void onParamterback(View view) {
        startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
