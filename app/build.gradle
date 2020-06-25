@@ -35,7 +35,8 @@ android {
         minSdkVersion 23
         targetSdkVersion 28
         compileSdkVersion 28
-        versionName = gitVersionName + "." + gitVersionCode
+        versionCode = gitVersionCode
+        versionName = gitVersionName
         versionNameSuffix ""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

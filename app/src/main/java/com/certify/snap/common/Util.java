@@ -1394,7 +1394,7 @@ public class Util {
     }
 
     public static String getVersionBuild() {
-        return String.format("v%s", BuildConfig.VERSION_NAME);
+        return String.format("v%s.%s", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
     public static String bytesToHexString(byte[] src) {
