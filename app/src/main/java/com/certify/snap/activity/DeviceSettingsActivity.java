@@ -44,7 +44,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private static String LOG = "DeviceSettingsActivity -> ";
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
-    private TextView btn_save, tvSettingsName, activateStatus,not_activate,tv_device_activation_status;
+    private TextView btn_save, tvSettingsName, activateStatus, not_activate, tv_device_activation_status;
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
@@ -95,26 +95,17 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
-            etEndUrl.setText(url_end);
-            if (url_end != null && url_end.length() > 0)
-                etEndUrl.setSelection(url_end.length());
-            etDeviceName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
-            String input = Util.getSNCode();     //input string
-            String lastsixDigits = "";
+            setUIData();
 
-            deviceAccessPassword();
-
-            tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         isOnline = true;
-                       // tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
+                        // tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
-                       // Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+                        // Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
                         activateStatus();
 
                     } else {
@@ -123,7 +114,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                        Util.writeString(sharedPreferences,GlobalParameters.DEVICE_SETTINGS_NAME,"Local");
+                        Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, "Local");
                         tvSettingsName.setText("Local");
                         stopHealthCheckService();
 
@@ -131,17 +122,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 }
             });
 
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
-                not_activate.setVisibility(View.GONE);
-            } else {
-                switch_activate.setChecked(false);
-                activateStatus.setText("Not Activated");
-                not_activate.setText("Activate");
-                tvSettingsName.setText("Local");
-            }
-            cbDoSyc.setChecked(sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false));
+
             etEndUrl.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -223,30 +204,52 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         }
 
     }
+private void setUIData(){
+        try{
+            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            etEndUrl.setText(url_end);
+            if (url_end != null && url_end.length() > 0)
+                etEndUrl.setSelection(url_end.length());
+            etDeviceName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
+            tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                switch_activate.setChecked(true);
+                activateStatus.setText("Activated");
+                not_activate.setVisibility(View.GONE);
+            } else {
+                switch_activate.setChecked(false);
+                activateStatus.setText("Not Activated");
+                not_activate.setText("Activate");
+                tvSettingsName.setText("Local");
+            }
+            cbDoSyc.setChecked(sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false));
+            deviceAccessPassword();
+        }catch (Exception e){
 
-    private void activateStatus(){
+        }
+}
+    private void activateStatus() {
       /*  if(isOnline){
             activateStatus.setText("Activated");
             not_activate.setVisibility(View.GONE);
         }else {*/
-            activateStatus.setText("Not Activated");
-            not_activate.setText("Activate");
-           not_activate.setVisibility(View.VISIBLE);
+        activateStatus.setText("Not Activated");
+        not_activate.setText("Activate");
+        not_activate.setVisibility(View.VISIBLE);
 
         not_activate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
-                }
-            });
+            @Override
+            public void onClick(View v) {
+                Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
+            }
+        });
         //}
     }
 
     private void deviceAccessPassword() {
-        if(!sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()){
+        if (!sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()) {
             etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, ""));
-        }
-        else if (!sharedPreferences.getString(GlobalParameters.deviceMasterCode, "").isEmpty()) {
+        } else if (!sharedPreferences.getString(GlobalParameters.deviceMasterCode, "").isEmpty()) {
             etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceMasterCode, ""));
         } else {
             String input = Util.getSNCode();
@@ -337,8 +340,30 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
     }
+
     @Override
     public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
         //no operation
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+            if (!reportInfo.isNull("Message")) {
+                if (reportInfo.getString("Message").contains("token expired"))
+                    Util.getToken(this, this);
+
+            } else {
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    Util.retrieveSetting(reportInfo, DeviceSettingsActivity.this);
+                    setUIData();
+                } else {
+                    Logger.toast(this, "Something went wrong please try again");
+                }
+            }
+
+        } catch (Exception e) {
+
+        }
     }
 }
