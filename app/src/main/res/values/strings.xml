@@ -89,7 +89,7 @@
     <string name="toast_initialize_download_no_data">No data to download,please import the data first</string>
     <string name="toast_initialize_download">You have downloaded all the data</string>
     <string name="txt_initialize_download_fail">Download stopped, please try again</string>
-    <string name="dialog_initialize_wait">Processing...pls wait for a while</string>
+    <string name="dialog_initialize_wait">Processing...please wait for a while</string>
     <string name="txt_initialize_result_item">The result of initialization</string>
     <string name="txt_data_clear_all">Clear all data</string>
     <string name="txt_initialize_delete">clear</string>
@@ -130,7 +130,7 @@
     <string name="navigation_hide">Hide</string>
 
     <string name="RelayTime">Relay Time: </string>
-    <string name="relayinfo">pls input a time!</string>
+    <string name="relayinfo">Please input a time!</string>
     <string name="time">(s)</string>
 
     <string name="text_batchimport">batch import</string>
@@ -143,7 +143,7 @@
 
     <string name="text_nfc_activatecard">Activate Card</string>
     <string name="text_nfc_title">Activate Card</string>
-    <string name="toast_tempservice_notinstall">not install TempatureServices.apk!pls install it!</string>
+    <string name="toast_tempservice_notinstall">not install TempatureServices.apk!Please install it!</string>
     <string name="toast_guide_permission">Please give permission manually!</string>
     <string name="toast_init_deleteinfo"> faces cleared!</string>
 
@@ -174,7 +174,7 @@
     <string name="VISITOR">VISITOR </string>
 
 
-    <string name="toast_manage_photoerror">This photo have some error,pls check the photo!</string>
+    <string name="toast_manage_photoerror">This photo have some error, please check the photo!</string>
     <string name="toast_manage_dateerror">Date format or length is wrong, please check!</string>
     <string name="toast_manage_notfullinfo">Please Enter Name, Mobile, Member ID</string>
     <string name="toast_manage_no_memberid">Please Enter The MemberId !</string>
@@ -183,19 +183,19 @@
     <string name="SetDate">Set Date</string>
     <string name="SetTime">Set Time</string>
     <string name="delete">Delete</string>
-    <string name="delete_wait">Delete! pls wait...</string>
+    <string name="delete_wait">Delete! Please wait...</string>
     <string name="Register">Register</string>
-    <string name="register_wait">Register! pls wait...</string>
-    <string name="register_takephoto">pls click image and take a face photo!</string>
+    <string name="register_wait">Register! Please wait...</string>
+    <string name="register_takephoto">Please click image and take a face photo!</string>
     <string name="Register_success">Register Success!</string>
-    <string name="register_failed">Register failed! Pls try again!</string>
-    <string name="update_failed">Update failed! Pls try again!</string>
+    <string name="register_failed">Register failed! Please try again!</string>
+    <string name="update_failed">Update failed! Please try again!</string>
     <string name="deletion_failed">Due to some network problem. Data can not be deleted online.</string>
     <string name="register_failprocess">Register failed! Fail to process bitmap!</string>
     <string name="Update_success">Update Success!</string>
-    <string name="Update_failed">Update failed! Pls try again!</string>
+    <string name="Update_failed">Update failed! Please try again!</string>
     <string name="Delete_success">Delete Success!</string>
-    <string name="Delete_failed">Register failed! Pls try again!</string>
+    <string name="Delete_failed">Register failed! Please try again!</string>
     <string name="camera_temp">Temperature</string>
     <string name="camera_face">Temperature and Face</string>
     <string name="work_flow">Work Flow</string>

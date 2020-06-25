@@ -532,9 +532,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             return;
                         }
 
-                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
-//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
 //                        }else{
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
