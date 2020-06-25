@@ -195,6 +195,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private CompositeDisposable getFeatureDelayedDisposables = new CompositeDisposable();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
+    private CompositeDisposable temperatureRetryDisposable = new CompositeDisposable();
 
     private static final int MAX_DETECT_NUM = 10;
 
@@ -820,6 +821,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         thermalImageCallback = null;
         searchFaceInfoList.clear();
         cancelPreviewIdleTimer();
+        if (temperatureRetryDisposable != null) {
+            temperatureRetryDisposable.clear();
+        }
     }
 
     long time1, time2;
@@ -840,6 +844,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     try {
                         thermalImageCallback = null;
                         thermalImageCallback = new HotImageCallbackImpl();
+                        thermalImageCallback.setUserData(data);
                         TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
                                 .getDataAndBitmap(50, true, thermalImageCallback);
                         if (temperatureData == null) {
@@ -885,6 +890,80 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }).start();
 
         }
+    }
+
+    /**
+     * Optimize this method to use the same as runTemperature
+     * @param data data
+     */
+    private void retryTemperature(UserExportedData data) {
+        temperatureRetryDisposable.clear();
+        Observable
+                .create((ObservableOnSubscribe<Float>) emitter -> {
+                    thermalImageCallback = null;
+                    thermalImageCallback = new HotImageCallbackImpl();
+                    thermalImageCallback.setUserData(data);
+                    TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
+                            .getDataAndBitmap(50, true, thermalImageCallback);
+                    if (temperatureData == null) {
+                        isFaceIdentified = false;
+                        Log.d(TAG, "runTemperature() TemperatureData is null");
+                        return;
+                    }
+                    String text = "";
+                    takePicIr = false;
+                    takePicRgb = false;
+                    String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
+                    String temperatureFormat = temperaturePreference.equals("F")
+                            ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
+                    String abnormalTemperature = getString(R.string.temperature_anormaly);
+                    float tempCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
+                    temperature = temperatureData.getTemperature(); //centigrade
+                    if (temperaturePreference.equals("F")) {
+                        temperature = Util.FahrenheitToCelcius(temperatureData.getTemperature());
+                    }
+                    temperature += tempCompensation;
+                    String tempString = String.format("%,.1f", temperature);
+                    String thresholdTemperaturePreference = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
+                    Float thresholdTemperature = Float.parseFloat(thresholdTemperaturePreference);
+                    if (temperature > thresholdTemperature) {
+                        text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
+                        TemperatureCallBackUISetup(true, text, tempString, false, data);
+                        AccessCardController.getInstance().unlockDoorOnHighTemp();
+                    } else {
+                        text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
+                        TemperatureCallBackUISetup(false, text, tempString, false, data);
+                        AccessCardController.getInstance().unlockDoor();
+                    }
+                    emitter.onNext(temperature);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Float>() {
+                    Disposable tempDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        tempDisposable = d;
+                        temperatureRetryDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onNext(Float temperature) {
+                        temperatureRetryDisposable.remove(tempDisposable);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in getting the face properties");
+                        temperatureRetryDisposable.remove(tempDisposable);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
     }
 
     private void retry(int retryNumber) {
@@ -1762,6 +1841,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private class HotImageCallbackImpl extends HotImageCallback.Stub {
+        UserExportedData userExportedData;
+
         @Override
         public void onTemperatureFail(final String e) throws RemoteException {
             Log.e(TAG, "SnapXT Temperature Failed Reason: " + e);
@@ -1819,10 +1900,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Log.e(TAG, "SnapXT Temperature Failed Guide sreen " + error);
                                 tvErrorMessage.setVisibility(tempServiceClose ? View.GONE : View.VISIBLE);
                                 if (error.contains("face out of range or for head too low") ||
-                                        error.contains("face out of range or forhead too low"))
+                                        error.contains("face out of range or forhead too low")) {
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
-                                else if (error.contains("wrong tem , too cold"))
+                                    retryTemperature(userExportedData);
+                                }
+                                else if (error.contains("wrong tem , too cold")) {
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
+                                    retryTemperature(userExportedData);
+                                }
                                 else if (error.contains("not enough validData , get tem fail"))
                                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
                                 else
@@ -1877,6 +1962,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             });
         }
 
+        void setUserData(UserExportedData data) {
+            userExportedData = data;
+        }
 
     }
 
@@ -3031,6 +3119,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         searchFaceInfoList.clear();
         compareResultList.clear();
         resetMaskStatus();
+        if (temperatureRetryDisposable != null) {
+            temperatureRetryDisposable.clear();
+        }
     }
 
     private void setPreviewIdleTimer() {
