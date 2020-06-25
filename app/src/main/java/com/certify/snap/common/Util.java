@@ -1237,7 +1237,7 @@ public class Util {
                 String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? String.valueOf(Constants.FACIAL_DETECT_THRESHOLD) : jsonValueIdentification.getString("facialThreshold");
                 String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
                 String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
-                String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "2" : jsonValueIdentification.getString("cameraScanMode");
+                String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "1" : jsonValueIdentification.getString("cameraScanMode");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1394,7 +1394,7 @@ public class Util {
     }
 
     public static String getVersionBuild() {
-        return String.format("v%s.%s", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        return String.format("v%s", BuildConfig.VERSION_NAME);
     }
 
     public static String bytesToHexString(byte[] src) {
