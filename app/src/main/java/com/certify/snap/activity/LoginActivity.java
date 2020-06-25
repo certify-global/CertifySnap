@@ -32,60 +32,52 @@ public class LoginActivity extends Activity {
         try {
             setContentView(R.layout.activity_login);
             etPassword = findViewById(R.id.edittext_login);
-             btn_confirm = findViewById(R.id.btn_login);
+            btn_confirm = findViewById(R.id.btn_login);
             textview_name = findViewById(R.id.textview_name);
             tv_version = findViewById(R.id.tv_version);
             tv_serial_no = findViewById(R.id.tv_serial_no);
             text_input_login = findViewById(R.id.text_input_login);
             tv_pwd_error = findViewById(R.id.tv_pwd_error);
-             sp = Util.getSharedPreferences(LoginActivity.this);
+            sp = Util.getSharedPreferences(LoginActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             textview_name.setTypeface(rubiklight);
             tv_pwd_error.setTypeface(rubiklight);
             tv_version.setText(Util.getVersionBuild());
-            tv_serial_no.setText("Serial No: "+Util.getSNCode());
+            tv_serial_no.setText("Serial No: " + Util.getSNCode());
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    if(count<=10  && count>1 && !sp.getString(GlobalParameters.deviceMasterCode, "").equals("")) {
-                        if(etPassword.getText().toString().isEmpty()){
+                    if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
+                        if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setError("Password should not be empty");
-                        }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
-                            text_input_login.setError(null);
-                            if(sp.getBoolean(GlobalParameters.ONLINE_MODE,false)){
-                                Util.openDialogSetting(LoginActivity.this);
-                               // finish();
-                            }else {
-                                Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }else{
+                        } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceSettingMasterCode, "")) || etPassword.getText().toString().equals(sp.getString(GlobalParameters.deviceMasterCode, ""))) {
+                            launchSettings();
+                        } else {
                             count--;
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
                             tv_pwd_error.setText("Invalid Password, Try Again");
                             //tv_pwd_error.setText("Invalid Password.Enter your access code "+""+count  +" times left");
                         }
-                    }else{
-                        String input =Util.getSNCode();     //input string
+                    } else {
+                        String input = Util.getSNCode();     //input string
                         String lastsixDigits = "";
 
-                        if (input.length() >6) {
+                        if (input.length() > 6) {
                             lastsixDigits = input.substring(input.length() - 6);
                         } else {
                             lastsixDigits = input;
                         }
-                        if(etPassword.getText().toString().isEmpty()){
+                        if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setError("Password should not be empty");
-                        }else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
+                        } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
-                            if(sp.getBoolean(GlobalParameters.ONLINE_MODE,false)){
+                            if (sp.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
                                 Util.openDialogSetting(LoginActivity.this);
-                               // finish();
-                            }else {
+                                // finish();
+                            } else {
                                 Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -100,8 +92,8 @@ public class LoginActivity extends Activity {
                     }
                 }
             });
-        }catch (Exception e){
-            Logger.error(" LoginActivity onCreate(@Nullable Bundle savedInstanceState)",e.getMessage());
+        } catch (Exception e) {
+            Logger.error(" LoginActivity onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }
     }
     public void onParamterback(View view) {
@@ -114,5 +106,17 @@ public class LoginActivity extends Activity {
 
         startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
         finish();
+    }
+
+    private void launchSettings(){
+        text_input_login.setError(null);
+        if(sp.getBoolean(GlobalParameters.ONLINE_MODE,false)){
+            Util.openDialogSetting(LoginActivity.this);
+            // finish();
+        }else {
+            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

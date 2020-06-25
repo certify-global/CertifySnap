@@ -93,13 +93,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             String input = Util.getSNCode();     //input string
             String lastsixDigits = "";
 
-            if (input.length() > 6) {
-                lastsixDigits = input.substring(input.length() - 6);
-            } else {
-                lastsixDigits = input;
-            }
-            etPassword.setText(sharedPreferences.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits));
-            etPassword.setSelection(lastsixDigits.length());
+            deviceAccessPassword();
+
             tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -113,10 +108,15 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                        tvSettingsName.setText("Local");
                         stopHealthCheckService();
                     }
                 }
             });
+            if(!switch_activate.isChecked()){
+                tvSettingsName.setText("Local");
+            }
+
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
             } else {
@@ -203,6 +203,26 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             Logger.error(LOG + "onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
         }
 
+    }
+
+    private void deviceAccessPassword() {
+        if(!sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()){
+            etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceSettingMasterCode, ""));
+        }
+        else if (!sharedPreferences.getString(GlobalParameters.deviceMasterCode, "").isEmpty()) {
+            etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceMasterCode, ""));
+        } else {
+            String input = Util.getSNCode();
+            String lastsixDigits = "";
+
+            if (input.length() > 6) {
+                lastsixDigits = input.substring(input.length() - 6);
+            } else {
+                lastsixDigits = input;
+            }
+            etPassword.setText(sharedPreferences.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits));
+            etPassword.setSelection(lastsixDigits.length());
+        }
     }
 
     private void stopHealthCheckService() {

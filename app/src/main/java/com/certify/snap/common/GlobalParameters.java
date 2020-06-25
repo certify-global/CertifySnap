@@ -94,6 +94,7 @@ public class GlobalParameters {
     public static final String F_TO_C = "f_to_c";
     public static final String settingVersion = "settingVersion";
     public static final String deviceMasterCode = "deviceMasterCode";
+    public static final String deviceSettingMasterCode = "deviceSettingMasterCode";
     public static final String GUIDE_TEXT1 = "guide_text1";
     public static final String GUIDE_TEXT2 = "guide_text2";
     public static final String GUIDE_TEXT3 = "guide_text3";
