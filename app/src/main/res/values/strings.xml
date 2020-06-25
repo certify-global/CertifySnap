@@ -204,7 +204,7 @@
     <string name="SetTemp">Temperature Settings</string>
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
-    <string name="device_activation_status">Device Activation Status</string>
+    <string name="device_activation_status">Online Activation Status</string>
     <string name="not_activated"><u>Not Activated</u></string>
     <string name="activate"><u>Activate</u></string>
     <string name="activated"><u>Activate</u></string>
