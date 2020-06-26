@@ -91,4 +91,9 @@ public class TemperatureActivity extends SettingBaseActivity {
 
 
     }
+
+    public void temperatureCalibration(View view){
+        Intent tempIntent = new Intent(this, TemperatureCalibrationActivity.class);
+        startActivity(tempIntent);
+    }
 }

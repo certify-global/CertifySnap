@@ -116,4 +116,18 @@
         android:layout_marginTop="@dimen/margin_10"
         android:textSize="14sp"
         android:textColor="@color/black"></TextView>
+
+    <Button
+        android:id="@+id/btn_temperature_calibration"
+        style="@style/buttonNumberStyle"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/btn_shape"
+        android:onClick="temperatureCalibration"
+        android:text="Temperature Calibration"
+        android:textSize="25sp" />
+
 </LinearLayout>
