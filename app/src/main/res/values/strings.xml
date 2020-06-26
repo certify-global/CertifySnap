@@ -242,6 +242,7 @@
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
     <string name="temperature">Temperature</string>
+    <string name="temperature_calibration">Temperature Calibration</string>
     <string name="look_screen">Look at the screen,center you face</string>
     <string name="app_serial">Serial No:</string>
     <string name="tv_guide_setting">Guide Settings</string>
