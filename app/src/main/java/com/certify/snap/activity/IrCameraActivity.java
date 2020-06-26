@@ -871,13 +871,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (temperature > thresholdTemperature) {
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(true, text, tempString, false, data);
-                            AccessCardController.getInstance().unlockDoorOnHighTemp();
-                            //  mTemperatureListener.onTemperatureCall(true, text);
-
+                            faceAndRelayEnabledForHighTemperature();
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false, data);
-                            AccessCardController.getInstance().unlockDoor();
+                            faceAndRelayEnabledForNormalTemperature();
                         }
 
                     } catch (Exception e) {
@@ -892,6 +890,25 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
+    private void faceAndRelayEnabledForNormalTemperature(){
+        if (faceDetectEnabled) {
+            if (registeredMemberslist.size() > 0) {
+                AccessCardController.getInstance().unlockDoor();
+            }
+        } else {
+            AccessCardController.getInstance().unlockDoor();
+        }
+    }
+
+    private void faceAndRelayEnabledForHighTemperature(){
+        if (faceDetectEnabled) {
+            if (registeredMemberslist.size() > 0) {
+                AccessCardController.getInstance().unlockDoorOnHighTemp();
+            }
+        } else {
+            AccessCardController.getInstance().unlockDoorOnHighTemp();
+        }
+    }
     /**
      * Optimize this method to use the same as runTemperature
      * @param data data
@@ -929,11 +946,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (temperature > thresholdTemperature) {
                         text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                         TemperatureCallBackUISetup(true, text, tempString, false, data);
-                        AccessCardController.getInstance().unlockDoorOnHighTemp();
+                        faceAndRelayEnabledForHighTemperature();
                     } else {
                         text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                         TemperatureCallBackUISetup(false, text, tempString, false, data);
-                        AccessCardController.getInstance().unlockDoor();
+                        faceAndRelayEnabledForNormalTemperature();
                     }
                     emitter.onNext(temperature);
                 })
