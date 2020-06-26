@@ -72,7 +72,7 @@ public class Requestor {
                     properties.put(key, value);
                 }
                 properties.put("URL:", urlStr);
-                properties.put("Response:", responseStr);
+                //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
 
             } else {
@@ -180,7 +180,7 @@ public class Requestor {
                     properties.put(key, value);
                 }
                 properties.put("URL:", urlStr);
-                properties.put("Response:", responseStr);
+                //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
             } else {
                 responseStr = EntityUtils
