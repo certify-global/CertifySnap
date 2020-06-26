@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.certify.snap.activity.GuideActivity;
+import com.certify.snap.activity.ManagementActivity;
+import com.certify.snap.common.Logger;
 
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
+    protected static final String TAG = BootBroadcastReceiver.class.getSimpleName();
     private final String ACTION_BOOT = "android.intent.action.BOOT_COMPLETED";
 
     /**
@@ -28,7 +31,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             Intent guideintent = new Intent(context, GuideActivity.class);
             guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(guideintent);
-            Log.e("bootcomplete---","开机完毕~启动应用！");
+            Logger.info(TAG,"bootcompleted", "开机完毕~启动应用！");
         }
     }
 
