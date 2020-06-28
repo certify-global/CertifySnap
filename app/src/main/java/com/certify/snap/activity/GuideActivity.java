@@ -110,6 +110,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         mActivity = this;
         Application.getInstance().addActivity(this);
+        Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
@@ -271,11 +272,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
+                onSettingsUpdated();
                 return;
             }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
-            startMemberSyncService();
+            onSettingsUpdated();
         } catch (Exception e) {
+            onSettingsUpdated();
             Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
         }
 
@@ -331,5 +334,16 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 }
             }
         }, 100);
+    }
+
+    /**
+     * Method that processes next steps after the App settings are updated in the SharedPref on app launch
+     */
+    private void onSettingsUpdated() {
+        if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
+            Util.switchRgbOrIrActivity(this, true);
+            Util.setTokenRequestName("");
+        }
+        startMemberSyncService();
     }
 }

@@ -127,6 +127,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
             initView();
             //initOnlineModeSetting();
+            Util.setTokenRequestName("");
             Application.getInstance().addActivity(this);
 
             sharedPreferences = Util.getSharedPreferences(this);

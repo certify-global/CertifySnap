@@ -110,7 +110,7 @@ public class Util {
     private static final String LOG = Util.class.getSimpleName();
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
-
+    private static String tokenRequestModule = ""; //Optimize
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -588,6 +588,7 @@ public class Util {
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
         } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
             Logger.error(LOG + "getSettings(JSONObjectCallback callback, Context context)", e.getMessage());
 
         }
@@ -1277,6 +1278,7 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void getTokenActivate(String reportInfo, String status, Context context, String toast) {
         try {
+            tokenRequestModule = toast;
             JSONObject json1 = null;
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             try {
@@ -1292,18 +1294,19 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
-                    } else {
+                    } /*else {
                         Util.switchRgbOrIrActivity(context, true);
-                    }
+                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
-                    } else {
+                    } /*else {
+                        //The IrCameraActivity would be launched after AppSettings are completely retrieved and set
                         Util.switchRgbOrIrActivity(context, true);
-                    }
+                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
@@ -1673,5 +1676,13 @@ public class Util {
 
 
         }
+    }
+
+    public static String getTokenRequestName() {
+        return tokenRequestModule;
+    }
+
+    public static void setTokenRequestName(String value) {
+        tokenRequestModule = value;
     }
 }
