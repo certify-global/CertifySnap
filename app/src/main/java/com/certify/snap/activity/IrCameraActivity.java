@@ -307,6 +307,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private List<FaceInfo> searchFaceInfoList = new ArrayList<>();
     private int mFaceMatchRetry = 0;
     private Timer previewIdleTimer;
+    private boolean isNfcFDispatchEnabled = false;
 
     private void instanceStart() {
         try {
@@ -824,6 +825,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (temperatureRetryDisposable != null) {
             temperatureRetryDisposable.clear();
         }
+        disableNfc();
     }
 
     long time1, time2;
@@ -2467,6 +2469,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
+            isNfcFDispatchEnabled = true;
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
             hidReader.start(this);
@@ -2476,8 +2479,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void disableNfc() {
-        if (mNfcAdapter != null) {
+        if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
+            isNfcFDispatchEnabled = false;
         }
         if (hidReader != null) hidReader.stop();
     }
@@ -2818,7 +2822,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private boolean isFindTemperature() {
-        return (!faceDetectEnabled || (LitePal.findAll(RegisteredMembers.class).isEmpty()));
+        RegisteredMembers firstMember = LitePal.findFirst(RegisteredMembers.class);
+        return (!faceDetectEnabled || firstMember == null);
     }
 
     public void onRfidScan(String cardId) {
