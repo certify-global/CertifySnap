@@ -274,7 +274,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
-
+            startMemberSyncService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
         }
@@ -291,7 +291,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
             startHealthCheckService();
-            startMemberSyncService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
