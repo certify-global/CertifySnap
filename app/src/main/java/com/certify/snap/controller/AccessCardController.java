@@ -93,8 +93,8 @@ public class AccessCardController  {
     public void unlockDoor() {
         if (mNormalRelayMode) {
             unLockStandAloneDoor();
-            unLockWeiganDoorController();
         }
+        unLockWeiganDoorController();
     }
 
     public void unlockDoorOnHighTemp() {
@@ -106,7 +106,6 @@ public class AccessCardController  {
         }
         if (mReverseRelayMode) {
             unLockStandAloneDoor();
-            unLockWeiganDoorController();
         }
     }
 
