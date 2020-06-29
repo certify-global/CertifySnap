@@ -307,6 +307,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private List<FaceInfo> searchFaceInfoList = new ArrayList<>();
     private int mFaceMatchRetry = 0;
     private Timer previewIdleTimer;
+    private boolean isNfcFDispatchEnabled = false;
 
     private void instanceStart() {
         try {
@@ -823,6 +824,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelPreviewIdleTimer();
         if (temperatureRetryDisposable != null) {
             temperatureRetryDisposable.clear();
+        }
+        if (mNfcAdapter != null && isNfcFDispatchEnabled) {
+            mNfcAdapter.disableForegroundDispatch(this);
+            isNfcFDispatchEnabled = false;
         }
     }
 
@@ -2462,11 +2467,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if (mNfcAdapter == null || !mNfcAdapter.isEnabled())
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
             hidReader = new HidReader();//try HID if NFC reader not found
+            hidReader.setCallbackListener(this);
+        }
     }
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
+            isNfcFDispatchEnabled = true;
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
             hidReader.start(this);
@@ -2476,8 +2484,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void disableNfc() {
-        if (mNfcAdapter != null) {
+        if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
+            isNfcFDispatchEnabled = false;
         }
         if (hidReader != null) hidReader.stop();
     }
@@ -2818,7 +2827,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private boolean isFindTemperature() {
-        return (!faceDetectEnabled || (LitePal.findAll(RegisteredMembers.class).isEmpty()));
+        RegisteredMembers firstMember = LitePal.findFirst(RegisteredMembers.class);
+        return (!faceDetectEnabled || firstMember == null);
     }
 
     public void onRfidScan(String cardId) {
@@ -2836,6 +2846,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 return;
             }
             showSnackBarMessage(getString(R.string.access_denied));
+            //If Access denied, stop the reader and start again
+            if (hidReader != null) {
+                hidReader.stop();
+                hidReader.start(this);
+            }
             return;
         }
         AccessCardController.getInstance().setAccessCardId(cardId);

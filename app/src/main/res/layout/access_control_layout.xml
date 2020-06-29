@@ -80,75 +80,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="5dp"
-            android:orientation="horizontal">
-
-            <CheckBox
-                android:id="@+id/allow_anonymous_cb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false">
-            </CheckBox>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/allow_anonymous"
-                android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:orientation="vertical">
-
-            <RadioGroup
-                android:id="@+id/access_rg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_5"
-                android:orientation="vertical">
-
-                <RadioButton
-                    android:id="@+id/normal_mode_rb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:text="@string/normal_mode"
-                    android:textSize="@dimen/font_14"
-                    android:theme="@style/MyCheckBox" />
-
-                <CheckBox
-                    android:id="@+id/stop_relay_cb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
-                    android:text="@string/stop_relay"
-                    android:checked="false">
-                </CheckBox>
-
-                <RadioButton
-                    android:id="@+id/reverse_mode_rb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/font_14"
-                    android:text="@string/reverse_mode"
-                    android:theme="@style/MyCheckBox" />
-
-            </RadioGroup>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:orientation="vertical">
@@ -277,6 +208,84 @@
 
             </LinearLayout>
 
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/lightgray">
+        </View>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="5dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/allow_anonymous_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false">
+            </CheckBox>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/allow_anonymous"
+                android:textColor="@color/black"
+                android:textSize="18sp">
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/access_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/normal_mode_rb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:text="@string/normal_mode"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <CheckBox
+                    android:id="@+id/stop_relay_cb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="60dp"
+                    android:text="@string/stop_relay"
+                    android:checked="false">
+                </CheckBox>
+
+                <RadioButton
+                    android:id="@+id/reverse_mode_rb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:text="@string/reverse_mode"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
         </LinearLayout>
 
     </LinearLayout>

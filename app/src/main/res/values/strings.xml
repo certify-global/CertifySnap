@@ -301,9 +301,13 @@
     <string name="automatic_door_access">Enable Relay</string>
     <string name="allow_anonymous">Allow Anonymous</string>
     <string name="relay_timeout">Relay Timeout:</string>
-    <string name="normal_mode">Normal Mode (Operate Relay for every scan)</string>
-    <string name="reverse_mode">Reverse Mode (Operate Relay on High Temperature Scan Only)</string>
-    <string name="stop_relay">Stop Relay on High Temperature Scan</string>
+    <string name="normal_mode">
+        <font size="16">Normal Mode</font><font size="14"> (Operate Relay/Weigand for every scan)</font>
+    </string>
+    <string name="reverse_mode">
+        <font size="16">Reverse Mode</font><font size="14"> (Operate Relay on High Temperature Scan Only)</font>
+    </string>
+    <string name="stop_relay">Stop Relay/Weigand on High Temperature Scan</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>

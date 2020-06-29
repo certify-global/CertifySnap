@@ -1,13 +1,13 @@
 package com.certify.snap.common;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import com.telpo.tps550.api.serial.Serial;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 //card reader on serial port /dev/ttyS0.
 public class HidReader {
@@ -15,6 +15,7 @@ public class HidReader {
     private static final String TAG = "HidReader"; 
     private Serial serial;
     private InputStream inputStream;
+    private final AtomicBoolean running = new AtomicBoolean(false);
     private OutputStream outputStream;
 
     private String serialPath = "/dev/ttyS0";
@@ -34,23 +35,29 @@ public class HidReader {
             Logger.warn(TAG, "start "+e.getMessage());
         }
     }
+
+    public void setCallbackListener(RfidScanCallback callbackListener) {
+        this.callback = callbackListener;
+    }
+
     public void stop(){
         Log.v(TAG, "stop");
         try{
             callback = null;
+            inputStream.reset();
+            inputStream.close();
             if(readThread != null){
                 readThread.cancel();
-                readThread.join();
+                //readThread.join();
             }
             if(serial != null) serial.close();
         }catch (Exception e){
             Logger.warn(TAG, "stop "+e.getMessage());
         }
     }
-    private class ReadThread extends Thread{
-        private volatile  boolean keepRunning = true;
+    private class ReadThread extends Thread {
         public void cancel(){
-            keepRunning = false;
+            running.set(false);
         }
         private void onReadCardData(String cardId) {
             Log.v(TAG, "HidReader cardData: " + cardId);
@@ -72,7 +79,8 @@ public class HidReader {
         @Override
         public void run() {
             super.run();
-            while (keepRunning) {
+            running.set(true);
+            while (running.get()) {
                 sleep(10);
                 if(inputStream != null){
 

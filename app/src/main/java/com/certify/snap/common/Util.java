@@ -110,7 +110,7 @@ public class Util {
     private static final String LOG = Util.class.getSimpleName();
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
-
+    private static String tokenRequestModule = ""; //Optimize
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -588,6 +588,7 @@ public class Util {
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
 
         } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
             Logger.error(LOG + "getSettings(JSONObjectCallback callback, Context context)", e.getMessage());
 
         }
@@ -738,7 +739,14 @@ public class Util {
             }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
-            obj.put("faceParams", FaceParam(context, data));
+            obj.put("faceScore", data.faceScore);
+
+            JSONObject faceParamObj = new JSONObject();
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
+            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
+            faceParamObj.put("thresholdValue", thresholdvalue);
+            faceParamObj.put("faceScore", data.faceScore);
+            obj.put("faceParams", faceParamObj);
 
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
@@ -749,23 +757,6 @@ public class Util {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static JSONObject FaceParam(Context context, IrCameraActivity.UserExportedData data) {
-        JSONObject obj = new JSONObject();
-        try {
-            SharedPreferences sp = Util.getSharedPreferences(context);
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
-            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-            obj.put("thresholdValue", thresholdvalue);
-            obj.put("faceScore", data.faceScore);
-        } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
-
-        }
-        return obj;
-    }
-
 
     private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
         try {
@@ -1277,6 +1268,7 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static void getTokenActivate(String reportInfo, String status, Context context, String toast) {
         try {
+            tokenRequestModule = toast;
             JSONObject json1 = null;
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             try {
@@ -1292,18 +1284,19 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Device Activated");
-                    } else {
+                    } /*else {
                         Util.switchRgbOrIrActivity(context, true);
-                    }
+                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     if (!toast.equals("guide")) {
                         Logger.toast(context, "Already Activated");
-                    } else {
+                    } /*else {
+                        //The IrCameraActivity would be launched after AppSettings are completely retrieved and set
                         Util.switchRgbOrIrActivity(context, true);
-                    }
+                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
@@ -1673,5 +1666,13 @@ public class Util {
 
 
         }
+    }
+
+    public static String getTokenRequestName() {
+        return tokenRequestModule;
+    }
+
+    public static void setTokenRequestName(String value) {
+        tokenRequestModule = value;
     }
 }
