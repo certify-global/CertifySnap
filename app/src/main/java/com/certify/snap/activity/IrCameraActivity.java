@@ -825,7 +825,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (temperatureRetryDisposable != null) {
             temperatureRetryDisposable.clear();
         }
-        disableNfc();
+        if (mNfcAdapter != null && isNfcFDispatchEnabled) {
+            mNfcAdapter.disableForegroundDispatch(this);
+            isNfcFDispatchEnabled = false;
+        }
     }
 
     long time1, time2;
@@ -2464,8 +2467,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if (mNfcAdapter == null || !mNfcAdapter.isEnabled())
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
             hidReader = new HidReader();//try HID if NFC reader not found
+            hidReader.setCallbackListener(this);
+        }
     }
     private void enableNfc() {
         if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
@@ -2841,6 +2846,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 return;
             }
             showSnackBarMessage(getString(R.string.access_denied));
+            //If Access denied, stop the reader and start again
+            if (hidReader != null) {
+                hidReader.stop();
+                hidReader.start(this);
+            }
             return;
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
