@@ -898,7 +898,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void faceAndRelayEnabledForNormalTemperature(){
         if (faceDetectEnabled) {
-            if (registeredMemberslist.size() > 0) {
+            if (registeredMemberslist != null && registeredMemberslist.size() > 0 ) {
                 AccessCardController.getInstance().unlockDoor();
             }
         } else {
@@ -908,7 +908,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void faceAndRelayEnabledForHighTemperature(){
         if (faceDetectEnabled) {
-            if (registeredMemberslist.size() > 0) {
+            if ( registeredMemberslist != null && registeredMemberslist.size() > 0 ) {
                 AccessCardController.getInstance().unlockDoorOnHighTemp();
             }
         } else {
