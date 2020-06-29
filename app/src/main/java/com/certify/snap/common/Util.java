@@ -739,7 +739,14 @@ public class Util {
             }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
-            obj.put("faceParams", FaceParam(context, data));
+            obj.put("faceScore", data.faceScore);
+
+            JSONObject faceParamObj = new JSONObject();
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
+            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
+            faceParamObj.put("thresholdValue", thresholdvalue);
+            faceParamObj.put("faceScore", data.faceScore);
+            obj.put("faceParams", faceParamObj);
 
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
@@ -750,23 +757,6 @@ public class Util {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static JSONObject FaceParam(Context context, IrCameraActivity.UserExportedData data) {
-        JSONObject obj = new JSONObject();
-        try {
-            SharedPreferences sp = Util.getSharedPreferences(context);
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
-            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-            obj.put("thresholdValue", thresholdvalue);
-            obj.put("faceScore", data.faceScore);
-        } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
-
-        }
-        return obj;
-    }
-
 
     private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
         try {
