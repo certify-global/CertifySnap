@@ -15,6 +15,7 @@ public class CameraController {
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
+    public int CAMERA_PREVIEW_HEIGHT = 1208;
 
     public static CameraController getInstance() {
         if (mInstance == null) {

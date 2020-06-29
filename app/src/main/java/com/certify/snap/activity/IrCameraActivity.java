@@ -308,6 +308,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int mFaceMatchRetry = 0;
     private Timer previewIdleTimer;
     private boolean isNfcFDispatchEnabled = false;
+    private boolean isNavigationBarOn = true;
 
     private void instanceStart() {
         try {
@@ -1151,8 +1152,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         };
         CameraListener rgbCameraListener = new RgbCameraListener(faceListener);
+        int previewHeight = previewViewRgb.getMeasuredHeight();
+        if (!isNavigationBarOn) {
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelper = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewViewRgb.getMeasuredHeight()))
+                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
@@ -1170,8 +1175,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void initIrCamera() {
         CameraListener irCameraListener = new IrCameraListener();
 
+        int previewHeight = previewViewIr.getMeasuredHeight();
+        if (!isNavigationBarOn) {
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelperIr = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewViewIr.getMeasuredHeight()))
+                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)
@@ -2439,6 +2448,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE);
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
+        isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
         CameraController.getInstance().setScanCloseProximityEnabled(sharedPreferences.getBoolean(GlobalParameters.ScanProximity, false));
         getAccessControlSettings();
     }
