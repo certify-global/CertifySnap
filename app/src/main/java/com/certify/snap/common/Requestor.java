@@ -71,7 +71,7 @@ public class Requestor {
                     String value = reqPing.optString(key);
                     properties.put(key, value);
                 }
-                properties.put("URL:", urlStr);
+                //properties.put("URL:", urlStr);
                 //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
 
@@ -179,7 +179,7 @@ public class Requestor {
                     String value = reqPing.optString(key);
                     properties.put(key, value);
                 }
-                properties.put("URL:", urlStr);
+                //properties.put("URL:", urlStr);
                 //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
             } else {
