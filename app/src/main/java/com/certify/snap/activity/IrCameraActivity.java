@@ -222,7 +222,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ShowFaceInfoAdapter adapter;
     private SharedPreferences sharedPreferences;
     protected static final String LOG = "IRCamera Activity - ";
-    private String mTriggerType = CameraController.triggerValue.Camera.toString();
+    private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -2308,7 +2308,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void onBarcodeData(String guid) {
         try {
 
-            mTriggerType = CameraController.triggerValue.Codeid.toString();
+            mTriggerType = CameraController.triggerValue.CODEID.toString();
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -2799,8 +2799,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     data.compareResult = compareResult;
                                     CameraController.getInstance().setCompareResult(compareResult);
                                     CameraController.getInstance().setFaceVisible(true);
-                                    if (mTriggerType.equals(CameraController.triggerValue.Camera.toString())) {
-                                        mTriggerType = CameraController.triggerValue.Face.toString();
+                                    if (mTriggerType.equals(CameraController.triggerValue.CAMERA.toString())) {
+                                        mTriggerType = CameraController.triggerValue.FACE.toString();
                                     }
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
@@ -2879,7 +2879,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        mTriggerType = CameraController.triggerValue.Accessid.toString();
+        mTriggerType = CameraController.triggerValue.ACCESSID.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
             && AccessCardController.getInstance().isEnableRelay()) {
             AccessCardController.getInstance().setAccessCardId(cardId);
