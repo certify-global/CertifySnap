@@ -1034,7 +1034,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (faceFeature != null) {
                     isFaceIdentified = false;
 
-                    if (maskDetectBitmap == null && maskEnabled) {
+                    if (maskDetectBitmap == null) {
                         maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
                         processImageAndGetMaskStatus(maskDetectBitmap);
                     }
