@@ -312,6 +312,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private Timer previewIdleTimer;
     private boolean isNfcFDispatchEnabled = false;
     private boolean isNavigationBarOn = true;
+    private boolean isActivityResumed = false;
 
     private void instanceStart() {
         try {
@@ -700,6 +701,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onResume() {
         Log.v(TAG, "onResume");
         super.onResume();
+        isActivityResumed = true;
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
         enableNfc();
         startCameraSource();
@@ -753,6 +755,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
+        isActivityResumed = false;
         if (preview != null) {
             preview.stop();
         }
@@ -773,6 +776,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     protected void onDestroy() {
         Log.v(TAG, "onDestroy");
         super.onDestroy();
+        isActivityResumed = false;
         if (mSwipeCardThread != null) {
             mSwipeCardThread.interrupt();
             mSwipeCardThread = null;
@@ -2486,7 +2490,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
     private void enableNfc() {
-        if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()) {
+        if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()
+            && isActivityResumed) {
             isNfcFDispatchEnabled = true;
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
         } else if (rfIdEnable && hidReader != null) {
