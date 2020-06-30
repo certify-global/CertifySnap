@@ -103,7 +103,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 // Get new Instance ID token
                 String token = task.getResult().getToken();
                 Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                Logger.debug("firebase token",token);
+                Logger.verbose(TAG,"firebase token",token);
 
             }
         });
@@ -120,7 +120,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
         }
         AppCenter.setEnabled(onlineMode);
-        Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
+        Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
 
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
@@ -236,7 +236,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void run() {
                 if (!License.activateLicense(GuideActivity.this)) {
                     String message = getResources().getString(R.string.active_failed);
-                    Logger.error(TAG, message);
+                    Log.e(TAG, message);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

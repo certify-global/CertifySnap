@@ -7,6 +7,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +21,7 @@ import com.certify.snap.common.Util;
 
 public class LoginActivity extends Activity {
 
+    private static final String TAG = LoginActivity.class.getSimpleName();
     EditText etPassword;
     SharedPreferences sp;
     Button btn_confirm;
@@ -96,8 +99,8 @@ public class LoginActivity extends Activity {
                     }
                 }
             });
-        } catch (Exception e) {
-            Logger.error(" LoginActivity onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
+        }catch (Exception e){
+            Log.e(TAG,e.getMessage());
         }
     }
 

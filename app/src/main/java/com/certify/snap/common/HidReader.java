@@ -31,8 +31,8 @@ public class HidReader {
             outputStream = serial.getOutputStream();
             readThread = new ReadThread();
             readThread.start();
-        }catch(Exception e){
-            Logger.warn(TAG, "start "+e.getMessage());
+        } catch (Exception e) {
+            Log.w(TAG, "start " + e.getMessage());
         }
     }
 
@@ -42,7 +42,7 @@ public class HidReader {
 
     public void stop(){
         Log.v(TAG, "stop");
-        try{
+        try {
             callback = null;
             inputStream.reset();
             inputStream.close();
@@ -50,9 +50,9 @@ public class HidReader {
                 readThread.cancel();
                 //readThread.join();
             }
-            if(serial != null) serial.close();
-        }catch (Exception e){
-            Logger.warn(TAG, "stop "+e.getMessage());
+            if (serial != null) serial.close();
+        } catch (Exception e) {
+            Log.w(TAG, "stop " + e.getMessage());
         }
     }
     private class ReadThread extends Thread {
@@ -82,21 +82,21 @@ public class HidReader {
             running.set(true);
             while (running.get()) {
                 sleep(10);
-                if(inputStream != null){
+                if (inputStream != null) {
 
                     int size = 0;
                     byte[] buffer = new byte[64];
-                    try{
+                    try {
                         size = inputStream.available();
-                        if(size > 0){
+                        if (size > 0) {
                             size = inputStream.read(buffer);
                             if(size > 0){
                                 String cardData = new String(buffer, 0, size, "UTF-8");
                                 onReadCardData(cardData);
                             }
                         }
-                    }catch(Exception e){
-                        Logger.warn(TAG, "HidReader "+e.getMessage());
+                    } catch (Exception e) {
+                        Logger.warn(TAG, "HidReader " + e.getMessage());
                     }
                 }
             }

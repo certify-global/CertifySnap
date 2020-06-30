@@ -88,7 +88,7 @@ import static com.certify.snap.common.Util.getnumberString;
 public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback,
         MemberListCallback, MemberIDCallback, HidReader.RfidScanCallback {
 
-    protected static final String LOG = "Management Activity ";
+    protected static final String TAG = ManagementActivity.class.getSimpleName();
     private EditText msearch;
     private TextView mCountTv;
     private RecyclerView recyclerView, failed_recyclerView;
@@ -139,7 +139,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         }
     };
 
-    private String TAG = "management---";
     public String OFFLINE_FAILED_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "offline/failed/";
 
     @Override
@@ -556,7 +555,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 obj.put("memberType", 1);
                                 new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                             } catch (Exception e) {
-                                Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                                Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
                             localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
@@ -720,7 +719,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                     obj.put("memberType", 1);
                                     new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                                 } catch (Exception e) {
-                                    Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                                    Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                                 }
                                 }
 
@@ -866,7 +865,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             obj.put("memberType", 1);
                             new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                         } catch (Exception e) {
-                            Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                            Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
                         localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
@@ -1548,7 +1547,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
                 } catch (Exception e) {
                     DismissProgressDialog(mloadingprogress);
-                    Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+                    Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
                     //initData(true);
                 }
             }

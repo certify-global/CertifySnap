@@ -37,7 +37,7 @@ public class License {
             faceEngine = new FaceEngine();
             int activationCode = faceEngine.init(context, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(context),
                     16, 10, FaceEngine.ASF_FACE_DETECT);
-            Log.v(TAG, "checkLicense activationCode: " + activationCode);
+            Logger.verbose(TAG, "checkLicense activationCode: ", activationCode);
             return (activationCode == ErrorInfo.MOK || activationCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED);
         } catch (Exception ex) {
 
@@ -205,7 +205,7 @@ public class License {
             fout.write(buffer);
             fout.flush();
         } catch (Exception e) {
-            Logger.error(TAG, String.format("copyLicense failed: %s", e.getMessage()));
+            Log.e(TAG, String.format("copyLicense failed: %s", e.getMessage()));
         }
 
     }

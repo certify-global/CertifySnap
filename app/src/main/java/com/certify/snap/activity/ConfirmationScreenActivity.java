@@ -34,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ConfirmationScreenActivity extends Activity {
+    private static final String TAG = ConfirmationScreenActivity.class.getSimpleName();
     Typeface rubiklight;
     TextView tv_title, tv_subtitle, user_name, face_score;
     private SharedPreferences sp;
@@ -106,7 +107,7 @@ public class ConfirmationScreenActivity extends Activity {
             Log.d("delay milli seconds", "" + delayMilli);
 
         } catch (Exception e) {
-            Logger.error(" onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
     }
 
@@ -127,7 +128,7 @@ public class ConfirmationScreenActivity extends Activity {
             });
             CameraController.getInstance().setCompareResult(null);
         } catch (Exception e) {
-            Logger.error(" compare result", e.getMessage());
+            Log.e(TAG, e.getMessage());
             CameraController.getInstance().setCompareResult(null);
         }
 

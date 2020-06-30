@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 
 import com.certify.callback.JSONObjectCallback;
@@ -20,7 +22,7 @@ import java.util.Calendar;
 import static android.os.SystemClock.elapsedRealtime;
 
 public class DeviceHealthService extends Service implements JSONObjectCallback {
-    protected static final String LOG = "BackgroundSyncService - ";
+    protected static final String LOG = DeviceHealthService.class.getSimpleName();
     private final static int BACKGROUND_INTERVAL_10_MINUTES = 10;
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
@@ -48,7 +50,7 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
             Util.getDeviceHealthCheck(this, this);
         } catch (Exception e) {
-            Logger.error(LOG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
+            Log.e(LOG + "onStartCommand(Intent.)", e.getMessage());
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -71,8 +73,9 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
 
             if (reportInfo.contains("token expired"))
                 Util.getToken(this, this);
+
         } catch (Exception e) {
-            Logger.error("onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+            Logger.error(LOG + "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
     }
 
