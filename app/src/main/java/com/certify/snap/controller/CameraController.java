@@ -3,6 +3,7 @@ package com.certify.snap.controller;
 import android.util.Log;
 
 import com.certify.snap.faceserver.CompareResult;
+import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
 
 public class CameraController {
@@ -16,6 +17,7 @@ public class CameraController {
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
     public int CAMERA_PREVIEW_HEIGHT = 1208;
+    private FaceParameters faceParameters;
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -26,6 +28,7 @@ public class CameraController {
 
     public void init() {
         clearData();
+        faceParameters = new FaceParameters();
     }
 
     public QrCodeData getQrCodeData() {
@@ -76,12 +79,8 @@ public class CameraController {
         isScanCloseProximityEnabled = scanCloseProximityEnabled;
     }
 
-    public void clearData() {
-        qrCodeData = null;
-        qrCodeId = "";
-        isFaceVisible = false;
-        compareResult = null;
-        isFaceNotMatchedOnRetry = false;
+    public FaceParameters getFaceParameters() {
+        return faceParameters;
     }
 
     public float getOnlyTextSize(int length) {
@@ -93,5 +92,14 @@ public class CameraController {
         else if (length > 350)
             return 24;
         return 34;
+    }
+
+    public void clearData() {
+        qrCodeData = null;
+        qrCodeId = "";
+        isFaceVisible = false;
+        compareResult = null;
+        isFaceNotMatchedOnRetry = false;
+        faceParameters = null;
     }
 }

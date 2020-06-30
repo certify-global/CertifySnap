@@ -32,8 +32,13 @@ import android.os.RemoteException;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.arcsoft.face.AgeInfo;
+import com.arcsoft.face.Face3DAngle;
+import com.arcsoft.face.FaceShelterInfo;
+import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.common.HidReader;
+import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -115,7 +120,6 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -128,8 +132,6 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -286,7 +288,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean qrCodeEnable = false;
     private String institutionId = "";
     private int ledSettingEnabled = 0;
-    private int processMask = FaceEngine.ASF_MASK_DETECT;
+    private int processMask = FaceEngine.ASF_MASK_DETECT | FaceEngine.ASF_FACE_SHELTER | FaceEngine.ASF_AGE
+                              | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER | FaceEngine.ASF_LIVENESS;
     private Bitmap maskDetectBitmap;
     private int maskStatus = -2;
     private boolean maskEnabled = false;
@@ -2594,10 +2597,43 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     // Need to work on condition
                     if (faceProcessCode == ErrorInfo.MOK) {
                         Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
+                        FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
+
                         List<MaskInfo> maskInfoList = new ArrayList<>();
                         faceEngineHelper.getFrEngine().getMask(maskInfoList);
                         if (maskInfoList.size() > 0) {
+                            faceParameters.maskStatus = maskInfoList.get(0).getMask();
                             emitter.onNext(maskInfoList.get(0).getMask());
+                        }
+
+                        List<FaceShelterInfo> shelterInfoList = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getFaceShelter(shelterInfoList);
+                        if (shelterInfoList.size() > 0) {
+                            faceParameters.faceShelter = faceParameters.getFaceShelter(shelterInfoList.get(0));
+                        }
+
+                        List<Face3DAngle> face3DAngles = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getFace3DAngle(face3DAngles);
+                        if (face3DAngles.size() > 0) {
+                            faceParameters.face3DAngle = faceParameters.getFace3DAngle(face3DAngles.get(0));
+                        }
+
+                        List<AgeInfo> ageInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getAge(ageInfos);
+                        if (ageInfos.size() > 0) {
+                            faceParameters.age = ageInfos.get(0).getAge();
+                        }
+
+                        List<GenderInfo> genderInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getGender(genderInfos);
+                        if (genderInfos.size() > 0) {
+                            faceParameters.gender = faceParameters.getGender(genderInfos.get(0));
+                        }
+
+                        List<LivenessInfo> livenessInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getLiveness(livenessInfos);
+                        if (livenessInfos.size() > 0) {
+                            faceParameters.liveness = faceParameters.getFaceLiveness(livenessInfos.get(0));
                         }
                     }
                 })
@@ -2613,7 +2649,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(Integer maskStat) {
-                        Log.d(TAG, "Call Mask Status " + maskStatus);
+                        Log.d(TAG, "Call Mask Status " + maskStat);
                         maskStatus = maskStat;
                         maskDisposable.dispose();
                     }
