@@ -37,8 +37,7 @@
                 android:text="@string/save"
                 android:textColor="#ffffff"
                 android:textSize="22sp"
-                android:layout_marginRight="10dp"
-                android:onClick="onclick"/>
+                android:layout_marginRight="10dp" />
 
         </LinearLayout>
 
