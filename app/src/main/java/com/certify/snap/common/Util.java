@@ -62,6 +62,7 @@ import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
@@ -740,13 +741,7 @@ public class Util {
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
-
-            JSONObject faceParamObj = new JSONObject();
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
-            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-            faceParamObj.put("thresholdValue", thresholdvalue);
-            faceParamObj.put("faceScore", data.faceScore);
-            obj.put("faceParams", faceParamObj);
+            obj.put("faceParameters", FaceParameters(context, data));
 
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
@@ -756,6 +751,31 @@ public class Util {
         } catch (Exception e) {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public static JSONObject FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
+        JSONObject obj = new JSONObject();
+        try {
+            SharedPreferences sp = Util.getSharedPreferences(context);
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
+            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
+            String value = "thresholdValue:" + thresholdvalue + ", " +
+                            "faceScore:" + data.faceScore;
+            FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
+            if (faceParameters != null) {
+                value = value + ", " + "age:" + faceParameters.age + ", " +
+                                      "gender:" + faceParameters.gender + ", " +
+                                      "maskStatus:" + faceParameters.maskStatus + ", " +
+                                      "faceShelter:" + faceParameters.faceShelter + ", " +
+                                      "face3DAngle:" + faceParameters.face3DAngle + ", " +
+                                      "liveness:" + faceParameters.liveness;
+            }
+            obj.put("faceParameters", value);
+        } catch (Exception e) {
+            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+        }
+        return obj;
     }
 
     private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {

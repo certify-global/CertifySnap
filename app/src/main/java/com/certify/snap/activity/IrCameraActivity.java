@@ -32,8 +32,13 @@ import android.os.RemoteException;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.arcsoft.face.AgeInfo;
+import com.arcsoft.face.Face3DAngle;
+import com.arcsoft.face.FaceShelterInfo;
+import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.common.HidReader;
+import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -115,7 +120,6 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -128,8 +132,6 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -220,7 +222,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ShowFaceInfoAdapter adapter;
     private SharedPreferences sharedPreferences;
     protected static final String LOG = "IRCamera Activity - ";
-    private String mTriggerType = CameraController.triggerValue.Camera.toString();
+    private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -286,7 +288,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean qrCodeEnable = false;
     private String institutionId = "";
     private int ledSettingEnabled = 0;
-    private int processMask = FaceEngine.ASF_MASK_DETECT;
+    private int processMask = FaceEngine.ASF_MASK_DETECT | FaceEngine.ASF_FACE_SHELTER | FaceEngine.ASF_AGE
+                              | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER | FaceEngine.ASF_LIVENESS;
     private Bitmap maskDetectBitmap;
     private int maskStatus = -2;
     private boolean maskEnabled = false;
@@ -308,6 +311,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int mFaceMatchRetry = 0;
     private Timer previewIdleTimer;
     private boolean isNfcFDispatchEnabled = false;
+    private boolean isNavigationBarOn = true;
 
     private void instanceStart() {
         try {
@@ -1151,8 +1155,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         };
         CameraListener rgbCameraListener = new RgbCameraListener(faceListener);
+        int previewHeight = previewViewRgb.getMeasuredHeight();
+        if (!isNavigationBarOn) {
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelper = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewViewRgb.getMeasuredHeight()))
+                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
@@ -1170,8 +1178,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void initIrCamera() {
         CameraListener irCameraListener = new IrCameraListener();
 
+        int previewHeight = previewViewIr.getMeasuredHeight();
+        if (!isNavigationBarOn) {
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelperIr = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewViewIr.getMeasuredHeight()))
+                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)
@@ -2296,7 +2308,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void onBarcodeData(String guid) {
         try {
 
-            mTriggerType = CameraController.triggerValue.Codeid.toString();
+            mTriggerType = CameraController.triggerValue.CODEID.toString();
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -2439,6 +2451,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE);
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
+        isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
         CameraController.getInstance().setScanCloseProximityEnabled(sharedPreferences.getBoolean(GlobalParameters.ScanProximity, false));
         getAccessControlSettings();
     }
@@ -2584,10 +2597,43 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     // Need to work on condition
                     if (faceProcessCode == ErrorInfo.MOK) {
                         Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
+                        FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
+
                         List<MaskInfo> maskInfoList = new ArrayList<>();
                         faceEngineHelper.getFrEngine().getMask(maskInfoList);
                         if (maskInfoList.size() > 0) {
+                            faceParameters.maskStatus = maskInfoList.get(0).getMask();
                             emitter.onNext(maskInfoList.get(0).getMask());
+                        }
+
+                        List<FaceShelterInfo> shelterInfoList = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getFaceShelter(shelterInfoList);
+                        if (shelterInfoList.size() > 0) {
+                            faceParameters.faceShelter = faceParameters.getFaceShelter(shelterInfoList.get(0));
+                        }
+
+                        List<Face3DAngle> face3DAngles = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getFace3DAngle(face3DAngles);
+                        if (face3DAngles.size() > 0) {
+                            faceParameters.face3DAngle = faceParameters.getFace3DAngle(face3DAngles.get(0));
+                        }
+
+                        List<AgeInfo> ageInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getAge(ageInfos);
+                        if (ageInfos.size() > 0) {
+                            faceParameters.age = ageInfos.get(0).getAge();
+                        }
+
+                        List<GenderInfo> genderInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getGender(genderInfos);
+                        if (genderInfos.size() > 0) {
+                            faceParameters.gender = faceParameters.getGender(genderInfos.get(0));
+                        }
+
+                        List<LivenessInfo> livenessInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getLiveness(livenessInfos);
+                        if (livenessInfos.size() > 0) {
+                            faceParameters.liveness = faceParameters.getFaceLiveness(livenessInfos.get(0));
                         }
                     }
                 })
@@ -2603,7 +2649,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(Integer maskStat) {
-                        Log.d(TAG, "Call Mask Status " + maskStatus);
+                        Log.d(TAG, "Call Mask Status " + maskStat);
                         maskStatus = maskStat;
                         maskDisposable.dispose();
                     }
@@ -2753,8 +2799,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     data.compareResult = compareResult;
                                     CameraController.getInstance().setCompareResult(compareResult);
                                     CameraController.getInstance().setFaceVisible(true);
-                                    if (mTriggerType.equals(CameraController.triggerValue.Camera.toString())) {
-                                        mTriggerType = CameraController.triggerValue.Face.toString();
+                                    if (mTriggerType.equals(CameraController.triggerValue.CAMERA.toString())) {
+                                        mTriggerType = CameraController.triggerValue.FACE.toString();
                                     }
                                     runTemperature(data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
@@ -2833,7 +2879,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        mTriggerType = CameraController.triggerValue.Accessid.toString();
+        mTriggerType = CameraController.triggerValue.ACCESSID.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
             && AccessCardController.getInstance().isEnableRelay()) {
             AccessCardController.getInstance().setAccessCardId(cardId);
