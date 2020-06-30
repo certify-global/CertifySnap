@@ -758,20 +758,23 @@ public class Util {
         JSONObject obj = new JSONObject();
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
-            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
-            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-            String value = "thresholdValue:" + thresholdvalue + ", " +
-                            "faceScore:" + data.faceScore;
-            FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
-            if (faceParameters != null) {
-                value = value + ", " + "age:" + faceParameters.age + ", " +
-                                      "gender:" + faceParameters.gender + ", " +
-                                      "maskStatus:" + faceParameters.maskStatus + ", " +
-                                      "faceShelter:" + faceParameters.faceShelter + ", " +
-                                      "face3DAngle:" + faceParameters.face3DAngle + ", " +
-                                      "liveness:" + faceParameters.liveness;
+            if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)
+                || sp.getBoolean(GlobalParameters.ScanProximity, false)) {
+                String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
+                int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
+                String value = "thresholdValue:" + thresholdvalue + ", " +
+                        "faceScore:" + data.faceScore;
+                FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
+                if (faceParameters != null) {
+                    value = value + ", " + "age:" + faceParameters.age + ", " +
+                            "gender:" + faceParameters.gender + ", " +
+                            "maskStatus:" + faceParameters.maskStatus + ", " +
+                            "faceShelter:" + faceParameters.faceShelter + ", " +
+                            "face3DAngle:" + faceParameters.face3DAngle + ", " +
+                            "liveness:" + faceParameters.liveness;
+                }
+                obj.put("faceParameters", value);
             }
-            obj.put("faceParameters", value);
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
         }

@@ -1034,7 +1034,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (faceFeature != null) {
                     isFaceIdentified = false;
 
-                    if (maskDetectBitmap == null) {
+                    if (maskDetectBitmap == null && maskEnabled) {
                         maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
                         processImageAndGetMaskStatus(maskDetectBitmap);
                     }
@@ -2597,43 +2597,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     // Need to work on condition
                     if (faceProcessCode == ErrorInfo.MOK) {
                         Log.d(TAG, "Mask Value --- faceProcessCode is success, code is " + faceProcessCode);
-                        FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
 
                         List<MaskInfo> maskInfoList = new ArrayList<>();
                         faceEngineHelper.getFrEngine().getMask(maskInfoList);
                         if (maskInfoList.size() > 0) {
-                            faceParameters.maskStatus = maskInfoList.get(0).getMask();
                             emitter.onNext(maskInfoList.get(0).getMask());
-                        }
-
-                        List<FaceShelterInfo> shelterInfoList = new ArrayList<>();
-                        faceEngineHelper.getFrEngine().getFaceShelter(shelterInfoList);
-                        if (shelterInfoList.size() > 0) {
-                            faceParameters.faceShelter = faceParameters.getFaceShelter(shelterInfoList.get(0));
-                        }
-
-                        List<Face3DAngle> face3DAngles = new ArrayList<>();
-                        faceEngineHelper.getFrEngine().getFace3DAngle(face3DAngles);
-                        if (face3DAngles.size() > 0) {
-                            faceParameters.face3DAngle = faceParameters.getFace3DAngle(face3DAngles.get(0));
-                        }
-
-                        List<AgeInfo> ageInfos = new ArrayList<>();
-                        faceEngineHelper.getFrEngine().getAge(ageInfos);
-                        if (ageInfos.size() > 0) {
-                            faceParameters.age = ageInfos.get(0).getAge();
-                        }
-
-                        List<GenderInfo> genderInfos = new ArrayList<>();
-                        faceEngineHelper.getFrEngine().getGender(genderInfos);
-                        if (genderInfos.size() > 0) {
-                            faceParameters.gender = faceParameters.getGender(genderInfos.get(0));
-                        }
-
-                        List<LivenessInfo> livenessInfos = new ArrayList<>();
-                        faceEngineHelper.getFrEngine().getLiveness(livenessInfos);
-                        if (livenessInfos.size() > 0) {
-                            faceParameters.liveness = faceParameters.getFaceLiveness(livenessInfos.get(0));
                         }
                     }
                 })
@@ -3048,6 +3016,48 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         return;
                     }
                     emitter.onNext(searchFaceInfoList);
+
+                    int faceProcessCode = faceEngineHelper.getFrEngine().process(mBgr24, mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), FaceEngine.CP_PAF_BGR24, searchFaceInfoList, processMask);
+                    // Need to work on condition
+                    if (faceProcessCode == ErrorInfo.MOK) {
+                        FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
+
+                        List<MaskInfo> maskInfoList = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getMask(maskInfoList);
+                        if (maskInfoList.size() > 0) {
+                            faceParameters.maskStatus = maskInfoList.get(0).getMask();
+                        }
+
+                        List<FaceShelterInfo> shelterInfoList = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getFaceShelter(shelterInfoList);
+                        if (shelterInfoList.size() > 0) {
+                            faceParameters.faceShelter = faceParameters.getFaceShelter(shelterInfoList.get(0));
+                        }
+
+                        List<Face3DAngle> face3DAngles = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getFace3DAngle(face3DAngles);
+                        if (face3DAngles.size() > 0) {
+                            faceParameters.face3DAngle = faceParameters.getFace3DAngle(face3DAngles.get(0));
+                        }
+
+                        List<AgeInfo> ageInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getAge(ageInfos);
+                        if (ageInfos.size() > 0) {
+                            faceParameters.age = ageInfos.get(0).getAge();
+                        }
+
+                        List<GenderInfo> genderInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getGender(genderInfos);
+                        if (genderInfos.size() > 0) {
+                            faceParameters.gender = faceParameters.getGender(genderInfos.get(0));
+                        }
+
+                        List<LivenessInfo> livenessInfos = new ArrayList<>();
+                        faceEngineHelper.getFrEngine().getLiveness(livenessInfos);
+                        if (livenessInfos.size() > 0) {
+                            faceParameters.liveness = faceParameters.getFaceLiveness(livenessInfos.get(0));
+                        }
+                    }
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
