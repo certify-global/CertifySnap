@@ -758,8 +758,7 @@ public class Util {
         JSONObject obj = new JSONObject();
         try {
             SharedPreferences sp = Util.getSharedPreferences(context);
-            if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)
-                || sp.getBoolean(GlobalParameters.ScanProximity, false)) {
+            if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
                 String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
                 int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
                 String value = "thresholdValue:" + thresholdvalue + ", " +
