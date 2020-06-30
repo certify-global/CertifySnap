@@ -139,6 +139,15 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:3.3.3"
     testImplementation "org.robolectric:robolectric:4.3.1"
 
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == "androidx") {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion "${targetSdk}.+"
+                }
+            }
+        }}
 }
 apply plugin: 'com.google.gms.google-services'
 
