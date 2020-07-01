@@ -53,6 +53,7 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
@@ -747,6 +748,7 @@ public class Util {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+            Logger.debug("deep comp",""+obj);
 
         } catch (Exception e) {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
@@ -1318,10 +1320,14 @@ public class Util {
                         Util.switchRgbOrIrActivity(context, true);
                     }*/
                     Util.getToken((JSONObjectCallback) context, context);
+                  //  context.startActivity(new Intent(context,AddDeviceActivity.class));
+
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                   // openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                    context.startActivity(new Intent(context,AddDeviceActivity.class));
+
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                     openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);

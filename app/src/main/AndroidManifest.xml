@@ -111,6 +111,8 @@
         <activity
             android:name=".activity.ConnectivityStatusActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".activity.AddDeviceActivity"></activity>
+        <activity android:name=".activity.AdminLoginActivity"></activity>
 
         <service android:name=".service.GuideService" />
         <service android:name=".service.UpdateService" />

@@ -381,5 +381,16 @@
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
+    <string name="add_device">Login to add the device</string>
+    <string name="not_configure">This device is not configure to work online.</string>
+    <string name="cloud">If you already have a cloud account,</string>
+    <string name="device_added">If you have already added the device SL NO:   on the portal,go to settings and activate.</string>
+    <string name="activation_again">Try Activation Again</string>
+    <string name="skip">Skip for Now</string>
+    <string name="offline_mode">Offline Mode</string>
+    <string name="login_account">Login to your account</string>
+    <string name="enter_email">Email</string>
+    <string name="enter_password">Password</string>
+    <string name="login_note">Note:User should have administrative rights on the account.</string>
 
 </resources>

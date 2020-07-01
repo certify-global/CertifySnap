@@ -48,8 +48,6 @@ public class Requestor {
             else {
                 httpost.setHeader("DeviceSN", SerialNo);//A040980P02800140
             }
-            //httpost.setHeader("device_sn",SerialNo);
-            // if(!sp.getString(GlobalParameters.ACCESS_TOKEN,"").equals(""))
             httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();

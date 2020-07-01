@@ -201,8 +201,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         }
 
     }
-private void setUIData(){
-        try{
+
+    private void setUIData() {
+        try {
             url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
             etEndUrl.setText(url_end);
             if (url_end != null && url_end.length() > 0)
@@ -221,10 +222,11 @@ private void setUIData(){
             }
             cbDoSyc.setChecked(sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false));
             deviceAccessPassword();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
-}
+    }
+
     private void activateStatus() {
         activateStatus.setText("Not Activated");
         not_activate.setText("Activate");
