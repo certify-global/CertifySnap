@@ -120,6 +120,8 @@ import com.certify.snap.service.DeviceHealthService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
+import com.telpo.tps550.api.DeviceAlreadyOpenException;
+import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -132,6 +134,8 @@ import org.litepal.LitePal;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -313,6 +317,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isNfcFDispatchEnabled = false;
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
+
+    private Serial serial;
+    private InputStream inputStream;
+    private OutputStream outputStream;
+    private boolean readTerminal = false;
 
     private void instanceStart() {
         try {
@@ -2484,29 +2493,30 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
-            hidReader = new HidReader();//try HID if NFC reader not found
-            hidReader.setCallbackListener(this);
-        }
     }
+
     private void enableNfc() {
-        if (rfIdEnable && mNfcAdapter != null && mNfcAdapter.isEnabled()
-            && isActivityResumed) {
-            isNfcFDispatchEnabled = true;
-            mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-        } else if (rfIdEnable && hidReader != null) {
-            hidReader.start(this);
-        } else {
-            Log.w(TAG, "enableNfc None of the Nfc, HID readers enabled.");
+        if (rfIdEnable) {
+            if (mNfcAdapter != null && mNfcAdapter.isEnabled()
+                && isActivityResumed) {
+                isNfcFDispatchEnabled = true;
+                mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+            } else {
+                if (initHidReader()) {
+                    startHidReading();
+                }
+            }
         }
     }
 
     private void disableNfc() {
-        if (mNfcAdapter != null && isNfcFDispatchEnabled) {
+        if (mNfcAdapter != null && mNfcAdapter.isEnabled() &&
+                isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
+        } else {
+            closeHidReader();
         }
-        if (hidReader != null) hidReader.stop();
     }
 
     private void startIrCamera() {
@@ -2866,9 +2876,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             showSnackBarMessage(getString(R.string.access_denied));
             //If Access denied, stop the reader and start again
-            if (hidReader != null) {
-                hidReader.stop();
-                hidReader.start(this);
+            //Optimize: Not to close the stream
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+                closeHidReader();
+                if (initHidReader()) {
+                    startHidReading();
+                }
             }
             return;
         }
@@ -3241,23 +3254,99 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-   /* private void startMemberSyncService() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, IrCameraActivity.this)) {
-                    Log.d(TAG, "Ir Camera service");
-                    startService(new Intent(IrCameraActivity.this, MemberSyncService.class));
-                }
-            }
-        }, 100);
+    /**
+     * Method that initiates the serial port
+     */
+    private boolean initHidReader() {
+        boolean result = false;
+        try {
+            serial = new Serial("/dev/ttyS0", 9600, 0);
+        } catch (DeviceAlreadyOpenException | IOException e) {
+            Log.e(TAG, "HID Exception while instantiating Serial port");
+        }
+        if (serial != null) {
+            inputStream = serial.getInputStream();
+            outputStream = serial.getOutputStream();
+            readTerminal = true;
+            result = true;
+            Log.d(TAG, "HID Port initialized successfully");
+        }
+        return result;
     }
 
-    *//**
-     * Method that stop the Member Sync service
-     *//*
-    private void stopMemberSyncService() {
-        Intent intent = new Intent(this, MemberSyncService.class);
-        stopService(intent);
-    }*/
+    /**
+     * Method that starts listening to the HID port
+     */
+    public void startHidReading() {
+        Observable
+                .create((ObservableOnSubscribe<String>) emitter -> {
+                    while(readTerminal) {
+                        if (inputStream != null) {
+                            int size = 0;
+                            byte[] buffer = new byte[64];
+                            try {
+                                size = inputStream.available();
+                                if (size > 0) {
+                                    size = inputStream.read(buffer);
+                                    if (size > 0) {
+                                        String cardData = new String(buffer, 0, size, "UTF-8");
+                                        Log.d(TAG, "HID Card data " + cardData);
+                                        readTerminal = false;
+                                        emitter.onNext(cardData);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
+                                emitter.onNext("");
+                            }
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    Disposable hidReaderDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        hidReaderDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(String cardId) {
+                        onRfidScan(cardId);
+                        hidReaderDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "HID Error in reading from the serial port");
+                        hidReaderDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    /**
+     * Method that closes HID serial port
+     */
+    private void closeHidReader() {
+        readTerminal = false;
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "HID Error in closing the serial port stream");
+        }
+        if (serial != null) serial.close();
+    }
+
 }
