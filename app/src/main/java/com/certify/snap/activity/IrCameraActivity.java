@@ -37,7 +37,6 @@ import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
-import com.certify.snap.common.HidReader;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
 import com.google.android.material.snackbar.Snackbar;
@@ -158,7 +157,7 @@ import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
-        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, HidReader.RfidScanCallback {
+        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView logo, scan, outerCircle, innerCircle, exit;
@@ -266,7 +265,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private FaceEngineHelper faceEngineHelper;
 
     private NfcAdapter mNfcAdapter;
-    private HidReader hidReader;//HID access card reader
     private Tag mTag;
     private PendingIntent mPendingIntent;
     private SwipeCardThread mSwipeCardThread;

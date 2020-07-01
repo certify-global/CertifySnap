@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 
-import com.certify.snap.common.HidReader;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
@@ -97,7 +96,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.certify.snap.common.Util.getnumberString;
 
 public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback,
-        MemberListCallback, MemberIDCallback, HidReader.RfidScanCallback {
+        MemberListCallback, MemberIDCallback {
 
     protected static final String TAG = ManagementActivity.class.getSimpleName();
     private EditText msearch;
@@ -131,7 +130,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private Boolean isDeleted = false;
 
     private NfcAdapter mNfcAdapter; //Optimize
-    private HidReader hidReader;
     private PendingIntent mPendingIntent;
     private RegisteredMembers updateMember = null;
     private EditText registerAccessid;
@@ -1309,7 +1307,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(!mNfcAdapter.isEnabled()) hidReader = new HidReader();
     }
 
     private void enableNfc() {
@@ -1574,7 +1571,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         });
     }
 
-    @Override
     public void onRfidScan(String cardId) {
         if(updateMember != null) updateMember.setAccessid(cardId);
         runOnUiThread(()->{
@@ -1585,9 +1581,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             }
 
         });
-        closeHidReader();
-        if (initHidReader()) {
-            startHidReading();
+        if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+            closeHidReader();
+            if (initHidReader()) {
+                startHidReading();
+            }
         }
     }
 
