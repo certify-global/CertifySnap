@@ -3113,7 +3113,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             setPreviewIdleTimer();
             detectAlignedFaces(faceEngineHelper.getFrEngine(), rgb, requestId);
         } else {
-            runOnUiThread(() -> tvErrorMessage.setVisibility(View.GONE));
+            runOnUiThread(() -> {
+                if (tvErrorMessage != null) {
+                    tvErrorMessage.setVisibility(View.GONE);
+                }
+            });
             if (faceDetectEnabled) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                 !isFaceIdentified) {
