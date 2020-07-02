@@ -2097,8 +2097,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void run() {
                 dismissSnackBar();
                 isTemperatureIdentified = true;
-                outerCircle.setBackgroundResource(R.drawable.border_shape);
-                tvErrorMessage.setVisibility(View.GONE);
+                if (outerCircle != null) {
+                    outerCircle.setBackgroundResource(R.drawable.border_shape);
+                }
+                if (tvErrorMessage != null) {
+                    tvErrorMessage.setVisibility(View.GONE);
+                }
                 //   temperature_image.setImageBitmap(rgbBitmap);
                 if (tempServiceClose) {
                     relative_main.setVisibility(View.GONE);
@@ -2170,7 +2174,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
             }
         });
-
     }
 
     public class UserExportedData {
