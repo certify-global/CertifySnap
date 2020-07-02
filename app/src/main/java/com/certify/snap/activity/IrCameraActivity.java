@@ -125,6 +125,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import org.json.JSONObject;
 import org.litepal.LitePal;
+import org.litepal.exceptions.LitePalSupportException;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -2852,8 +2853,24 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private boolean isFindTemperature() {
-        RegisteredMembers firstMember = LitePal.findFirst(RegisteredMembers.class);
-        return (!faceDetectEnabled || firstMember == null);
+        if (faceDetectEnabled) {
+            boolean result = true;
+            //TODO1: Optimize
+            if (LitePal.getDatabase() != null) {
+                try {
+                    if (LitePal.isExist(RegisteredMembers.class)) {
+                        RegisteredMembers firstMember = LitePal.findFirst(RegisteredMembers.class);
+                        if (firstMember != null) {
+                            result = false;
+                        }
+                    }
+                } catch (LitePalSupportException exception) {
+                    Log.e(TAG, "Exception occurred while querying for first member from db");
+                }
+            }
+            return  result;
+        }
+        return true;
     }
 
     public void onRfidScan(String cardId) {
