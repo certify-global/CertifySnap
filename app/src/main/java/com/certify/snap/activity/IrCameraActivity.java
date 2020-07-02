@@ -39,7 +39,6 @@ import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -269,8 +268,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             (byte) 0x30, (byte) 0x30, (byte) 0x70, (byte) 0x80};
     private boolean rfIdEnable = false;
     private String mNfcIdString = "";
-    private Snackbar mSnackbar;
-    private Snackbar toastmSnackbar;
+    private Toast mToastbar;
+    private Toast toastmSnackbar;
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
@@ -688,7 +687,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     ID = mTag.getId();
                     String UID = Util.bytesToHexString(ID);
                     if (UID == null) {
-                        Snackbar.make(relativeLayout, "Error! Card cannot be recognized", Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Error! Card cannot be recognized", Toast.LENGTH_LONG).show();
                         return;
                     }
                     mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
@@ -1270,7 +1269,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
                 //  startMemberSyncService();
             } else {
-                Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_SHORT).show();
                 Logger.error(TAG, "onRequestPermissionsResult()", "Permission denied");
             }
         }
@@ -2340,9 +2339,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 CameraController.getInstance().setQrCodeId(guid);
                 if (institutionId.isEmpty()) {
                     Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
-                    Snackbar snackbar = Snackbar
-                            .make(relativeLayout, R.string.device_not_register, Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                    Toast toastbar = Toast
+                            .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
+                    toastbar.show();
                     preview.stop();
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -2410,8 +2409,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     img_qr.setVisibility(View.VISIBLE);
                     img_qr.setBackgroundResource(R.drawable.invalid_qr);
                     imageqr.setBackgroundColor(getResources().getColor(R.color.red));
-                    Snackbar snackbar = Snackbar
-                            .make(relativeLayout, R.string.invalid_qr, Snackbar.LENGTH_LONG);
+                    Toast snackbar = Toast
+                            .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
                     snackbar.show();
                     Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
                     new Handler().postDelayed(new Runnable() {
@@ -2907,21 +2906,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showSnackBarMessage(String message) {
-        if (mSnackbar != null) {
-            mSnackbar.dismiss();
+        if (mToastbar != null) {
+            mToastbar.cancel();
         }
-        mSnackbar = Snackbar.make(relativeLayout, message, Snackbar.LENGTH_LONG);
-        mSnackbar.show();
+        mToastbar = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+        mToastbar.show();
     }
 
     private void dismissSnackBar() {
-        if (mSnackbar != null) {
-            mSnackbar.dismiss();
-            mSnackbar = null;
+        if (mToastbar != null) {
+            mToastbar.cancel();
+            mToastbar = null;
         }
 
         if (toastmSnackbar != null) {
-            toastmSnackbar.dismiss();
+            toastmSnackbar.cancel();
             toastmSnackbar = null;
         }
     }
