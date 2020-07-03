@@ -31,5 +31,7 @@ public class EndPoints {
     public static final String ManageMember = domainUrl + "ManageMember";
     public static final String GetMemberList = domainUrl + "GetMemberList";
     public static final String GetMemberById = domainUrl + "GetMemberById";
+    public static final String Token = domainUrl + "token";
+    public static final String RegisterDevice = domainUrl + "RegisterDevice";
 
 }

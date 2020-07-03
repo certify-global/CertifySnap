@@ -5,9 +5,10 @@
     android:background="@drawable/splash_white">
 
     <LinearLayout
+        android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_blue"
+        android:background="@color/bg_green"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -19,39 +20,27 @@
             android:onClick="onParamterback" />
 
         <TextView
-            android:id="@+id/titles"
+            android:id="@+id/textview_name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:gravity="center"
+            android:gravity="left|center"
             android:onClick="onParamterback"
             android:textColor="#ffffff"
-            android:textSize="28sp" />
+            android:textSize="28sp"
+            android:text="@string/login_account"/>
 
 
     </LinearLayout>
 
 
-
-    <TextView
-        android:id="@+id/textview_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/logo"
-        android:layout_marginTop="90dp"
-        android:gravity="center"
-        android:text="@string/login_account"
-        android:textColor="@color/black"
-        android:textSize="28dp"
-        android:textStyle="bold"></TextView>
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textview_name"
+        android:layout_below="@+id/toolbar_layout"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="40dp"
         android:layout_marginRight="20dp">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -79,7 +68,7 @@
             android:layout_height="60dp"
             android:background="@drawable/edittextbackground"
             android:hint="@string/enter_password"
-            android:inputType="numberPassword"
+            android:inputType="textPassword"
             android:paddingLeft="@dimen/margin_05" />
 
     </com.google.android.material.textfield.TextInputLayout>

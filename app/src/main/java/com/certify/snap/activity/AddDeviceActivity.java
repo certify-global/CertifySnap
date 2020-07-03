@@ -30,7 +30,7 @@ import org.json.JSONObject;
 public class AddDeviceActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static String LOG = "AddDeviceActivity -> ";
     SharedPreferences sharedPreferences;
-    TextView tv_header, tv_header1, tv_header2, tv_skip;
+    TextView tv_header, tv_header1, tv_header2, tv_skip,textview_name;
     Button btn_offline, btn_activation_again, btn_add_device;
     private Typeface rubiklight;
 
@@ -46,6 +46,7 @@ public class AddDeviceActivity extends SettingBaseActivity implements JSONObject
             tv_header1 = findViewById(R.id.tv_header1);
             tv_header2 = findViewById(R.id.tv_header2);
             tv_skip = findViewById(R.id.tv_skip);
+            textview_name = findViewById(R.id.textview_name);
             btn_offline = findViewById(R.id.btn_offline);
             btn_activation_again = findViewById(R.id.btn_activation_again);
             btn_add_device = findViewById(R.id.btn_add_device);
@@ -53,6 +54,7 @@ public class AddDeviceActivity extends SettingBaseActivity implements JSONObject
             tv_header1.setTypeface(rubiklight);
             tv_header2.setTypeface(rubiklight);
             tv_skip.setTypeface(rubiklight);
+            textview_name.setTypeface(rubiklight);
 
             tv_header2.setText("If you have already added the device SL NO: " + Util.getSNCode() + "  on the portal,go to settings and activate.");
 

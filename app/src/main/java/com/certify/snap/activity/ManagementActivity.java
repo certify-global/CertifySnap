@@ -23,12 +23,14 @@ import android.provider.MediaStore;
 import com.certify.snap.common.HidReader;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -128,7 +130,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     private RelativeLayout relative_management;
     Snackbar snackbar;
     int listPosition;
-    int count=0;
+    int count = 0;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -172,7 +174,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().equals("\n")){
+                if (s.toString().equals("\n")) {
                     msearch.setSingleLine(true);
                 } else {
                     msearch.setSingleLine(false);
@@ -190,7 +192,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
                 if (TextUtils.isEmpty(searchtext) && searchtext != null) {
                     refresh();
-                   Util.hideSoftKeyboard(ManagementActivity.this);
+                    Util.hideSoftKeyboard(ManagementActivity.this);
                 }
             }
         });
@@ -232,7 +234,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
-                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&&!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true) && !sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false)) {
 
                         count = 0;
                         testCount = 1;
@@ -276,7 +278,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             } else {
                                 refreshMemberList(list);
                                 //Util.showToast(ManagementActivity.this, getString(R.string.records_sync_completed));
-                               // recyclerView.scrollToPosition(0);
+                                // recyclerView.scrollToPosition(0);
                             }
 
                         }
@@ -303,12 +305,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private void initMember() {
-        if(totalMemberCount==totalMemberLastcount){
+        if (totalMemberCount == totalMemberLastcount) {
             mCountTv.setText(String.valueOf(datalist.size()));
-        }else{
+        } else {
             mCountTv.setText(testCount++ + " / " + totalMemberCount);
         }
-        if(memberAdapter == null)
+        if (memberAdapter == null)
             memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(memberAdapter);
@@ -704,25 +706,25 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     if (members.getUniqueid() != null) {
 
-                                mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
-                                try {
-                                    isDeleted = true;
-                                    JSONObject obj = new JSONObject();
-                                    obj.put("id", members.getUniqueid());
-                                    obj.put("firstName", members.getFirstname());
-                                    obj.put("lastname", members.getLastname());
-                                    obj.put("email", members.getEmail());
-                                    obj.put("phoneNumber", members.getMobile());
-                                    obj.put("memberId", members.getMemberid());
-                                    obj.put("accessId", members.getAccessid());
-                                    obj.put("faceTemplate", Util.encodeImagePath(members.getImage()));
-                                    obj.put("status", false);
-                                    obj.put("memberType", 1);
-                                    new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
-                                } catch (Exception e) {
-                                    Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
-                                }
-                                }
+                        mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
+                        try {
+                            isDeleted = true;
+                            JSONObject obj = new JSONObject();
+                            obj.put("id", members.getUniqueid());
+                            obj.put("firstName", members.getFirstname());
+                            obj.put("lastname", members.getLastname());
+                            obj.put("email", members.getEmail());
+                            obj.put("phoneNumber", members.getMobile());
+                            obj.put("memberId", members.getMemberid());
+                            obj.put("accessId", members.getAccessid());
+                            obj.put("faceTemplate", Util.encodeImagePath(members.getImage()));
+                            obj.put("status", false);
+                            obj.put("memberType", 1);
+                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                        } catch (Exception e) {
+                            Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                        }
+                    }
 
                 } else {
                     localDelete(members);
@@ -916,22 +918,22 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
             Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
-        RegisteredMembers registeredMembers = new RegisteredMembers();
-        registeredMembers.setFirstname(firstname);
-        registeredMembers.setLastname(lastname);
-        registeredMembers.setMobile(mobile);
-        registeredMembers.setStatus("1");
-        registeredMembers.setMemberid(id);
-        registeredMembers.setEmail(email);
-        registeredMembers.setAccessid(accessid);
-        registeredMembers.setUniqueid(uniqueid);
+            RegisteredMembers registeredMembers = new RegisteredMembers();
+            registeredMembers.setFirstname(firstname);
+            registeredMembers.setLastname(lastname);
+            registeredMembers.setMobile(mobile);
+            registeredMembers.setStatus("1");
+            registeredMembers.setMemberid(id);
+            registeredMembers.setEmail(email);
+            registeredMembers.setAccessid(accessid);
+            registeredMembers.setUniqueid(uniqueid);
 //      registeredMembers.setExpire_time(time);
-        registeredMembers.setImage(image);
-        registeredMembers.setFeatures(feature);
-        boolean result = registeredMembers.save();
-        return result;
-        }catch (Exception e){
-            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
+            registeredMembers.setImage(image);
+            registeredMembers.setFeatures(feature);
+            boolean result = registeredMembers.save();
+            return result;
+        } catch (Exception e) {
+            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {", e.getMessage());
         }
         return false;
     }
@@ -1294,14 +1296,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        if(!mNfcAdapter.isEnabled()) hidReader = new HidReader();
+        if (!mNfcAdapter.isEnabled()) hidReader = new HidReader();
     }
 
     private void enableNfc() {
         Log.v(TAG, "enableNfc");
         if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-        } else if(hidReader != null) {
+        } else if (hidReader != null) {
             hidReader.start(this);
         }
     }
@@ -1311,7 +1313,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.disableForegroundDispatch(this);
         }
-        if(hidReader != null) hidReader.stop();
+        if (hidReader != null) hidReader.stop();
     }
 
     @Override
@@ -1396,17 +1398,17 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     if (isDeleted) {
                         deletionFailed();
                     } else {
-                        if (isUpdate){
+                        if (isUpdate) {
                             showResult(getString(R.string.update_failed));
                             isUpdate = false;
-                        }else {
+                        } else {
                             showResult(getString(R.string.register_failed));
                         }
                     }
                 }
 
             } catch (Exception e) {
-                if (isDeleted){
+                if (isDeleted) {
                     deletionFailed();
                 } else {
                     DismissProgressDialog(mprogressDialog);
@@ -1430,7 +1432,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         updateMember = null;
     }
 
-    private int totalMemberCount,totalMemberLastcount;
+    private int totalMemberCount, totalMemberLastcount;
+
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
         try {
@@ -1448,8 +1451,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                 if (reportInfo.getString("responseCode").equals("1")) {
                     JSONArray memberList = reportInfo.getJSONArray("responseData");
                     totalMemberCount = memberList.length();
-                    totalMemberLastcount = memberList.length()-1;
-                   // System.out.println("NagaTest onJSONObjectListenerMemberList memberList.size: " + memberList.length() );
+                    totalMemberLastcount = memberList.length() - 1;
+                    // System.out.println("NagaTest onJSONObjectListenerMemberList memberList.size: " + memberList.length() );
                     for (int i = 0; i < memberList.length(); i++) {
                         JSONObject c = memberList.getJSONObject(i);
 
@@ -1457,7 +1460,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                         String memberId = c.getString("memberId");
                         String accessId = c.getString("accessId");
 
-                       // System.out.println("NagaTest onJSONObjectListenerMemberList memberList: " + i + "/" + memberList.length());
+                        // System.out.println("NagaTest onJSONObjectListenerMemberList memberList: " + i + "/" + memberList.length());
                         JSONObject obj = new JSONObject();
                         obj.put("id", certifyId);
 
@@ -1484,7 +1487,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     }
 
-    private int testCount=1;
+    private int testCount = 1;
+
     public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
         runOnUiThread(new Runnable() {
             @Override
@@ -1504,7 +1508,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 JSONObject c = memberList.getJSONObject(i);
 
                                 String certifyId = c.getString("id");
-                                String memberId = c.getString("memberId").replaceAll("[-+.^:,]","");
+                                String memberId = c.getString("memberId").replaceAll("[-+.^:,]", "");
                                 if (memberId.isEmpty()) {
                                     memberId = certifyId;
                                 }
@@ -1521,8 +1525,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 String imagePath = MemberUtilData.getImagePath(faceTemplate);
 
 
-                                if (statusVal){
-                                   // Thread.sleep(200);
+                                if (statusVal) {
+                                    // Thread.sleep(200);
 
                                     if (isCertifyIdExist(certifyId)) {
                                         MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
@@ -1533,14 +1537,14 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                         localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
                                     }
                                     initData(true);
-                                }else {
+                                } else {
                                     totalMemberCount--;
                                     totalMemberLastcount--;
 
                                 }
                             }
                             DismissProgressDialog(mloadingprogress);
-                           // initData(true);
+                            // initData(true);
                         } else {
                             DismissProgressDialog(mloadingprogress);
                             Logger.toast(ManagementActivity.this, "Something went wrong please try again");
@@ -1557,11 +1561,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
     @Override
     public void onRfidScan(String cardId) {
-        if(updateMember != null) updateMember.setAccessid(cardId);
-        runOnUiThread(()->{
+        if (updateMember != null) updateMember.setAccessid(cardId);
+        runOnUiThread(() -> {
             if (updateMember != null) {
                 maccessid.setText(cardId);
-            }else{
+            } else {
                 registerAccessid.setText(cardId);
             }
 

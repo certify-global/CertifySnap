@@ -612,6 +612,18 @@ public class Util {
         }
         return null;
     }
+    public static JSONObject getJSONObjectLogin(String req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJsonLogin(url, req,"");
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectLogin", e.getMessage());
+            return null;
+        }
+        return null;
+    }
 
     public static String getJSONObjectAddmember(JSONObject req, String url, String header, Context context) {
         try {
@@ -648,6 +660,20 @@ public class Util {
     public static JSONObject getJSONObjectQRCode(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+    public static JSONObject getJSONObjectAddDevice(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJsonAdmin(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1320,9 +1346,6 @@ public class Util {
                         Util.switchRgbOrIrActivity(context, true);
                     }*/
                     Util.getToken((JSONObjectCallback) context, context);
-                  //  context.startActivity(new Intent(context,AddDeviceActivity.class));
-
-
                 } else if (json1.getString("responseSubCode").equals("104")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                    // openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
@@ -1700,5 +1723,9 @@ public class Util {
 
     public static void setTokenRequestName(String value) {
         tokenRequestModule = value;
+    }
+
+    public final static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 }
