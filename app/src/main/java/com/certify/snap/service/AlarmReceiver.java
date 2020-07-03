@@ -21,7 +21,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 //            if (Util.isServiceRunning(BeaconService.class, context))
 //                context.stopService(new Intent(context, BackgroundSyncService.class));
             context.startService(new Intent(context, DeviceHealthService.class));
-            if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true))
+            if((sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true) || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE,false))
+                    && !sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false))
                 context.startService(new Intent(context, MemberSyncService.class));
             //  BackgroundSyncService.callFromCreate = true;
             // MyApplication.StartService(context, null, intent);

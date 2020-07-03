@@ -11,11 +11,14 @@ import java.util.TimerTask;
 public class AccessCardController  {
     private static final String TAG = AccessCardController.class.getSimpleName();
     private static AccessCardController mInstance = null;
+    private boolean mEnableRelay = false;
+    private boolean mAllowAnonymous = false;
+    private boolean mNormalRelayMode = false;
+    private boolean mReverseRelayMode = false;
+    private boolean mStopRelayOnHighTemp = false;
+    private boolean mEnableWeigan = false;
     private int mRelayTime = 0;
-    private boolean isAccessControlEnabled = false;
-    private boolean mBlockAccessHighTemp = false;
     private Timer mRelayTimer;
-    private boolean isAutomaticDoorAccess = false;
     private int mWeiganControllerFormat = 26;
 
     private String mAccessCardID = "";
@@ -35,35 +38,36 @@ public class AccessCardController  {
         mAccessIdDb = "";
     }
 
-    public void setAccessControlEnabled(boolean value) {
-        isAccessControlEnabled = value;
+    public boolean isEnableRelay() {
+        return mEnableRelay;
     }
 
-    public boolean isAccessControlEnabled() {
-        return isAccessControlEnabled;
+    public void setEnableRelay(boolean mEnableRelay) {
+        this.mEnableRelay = mEnableRelay;
     }
 
-    public void setBlockAccessOnHighTemp(boolean value) {
-        mBlockAccessHighTemp = value;
+    public boolean isAllowAnonymous() {
+        return mAllowAnonymous;
     }
 
-    public void setAutomaticDoorEnabled(boolean value) {
-        isAutomaticDoorAccess = value;
+    public void setAllowAnonymous(boolean mAllowAnonymous) {
+        this.mAllowAnonymous = mAllowAnonymous;
     }
 
-    public boolean isAutomaticDoorEnabled() {
-        return isAutomaticDoorAccess;
+    public void setNormalRelayMode(boolean mNormalRelayMode) {
+        this.mNormalRelayMode = mNormalRelayMode;
     }
 
-    public void unlockDoor() {
-        if(!isAutomaticDoorAccess) return;
-        unLockStandAloneDoor();
-        unLockWeiganDoorController();
+    public void setReverseRelayMode(boolean mReverseRelayMode) {
+        this.mReverseRelayMode = mReverseRelayMode;
     }
 
-    public void unlockDoorOnHighTemp() {
-        if(mBlockAccessHighTemp) return;
-        unlockDoor();
+    public void setStopRelayOnHighTemp(boolean mStopRelayOnHighTemp) {
+        this.mStopRelayOnHighTemp = mStopRelayOnHighTemp;
+    }
+
+    public void setEnableWeigan(boolean mEnableWeigan) {
+        this.mEnableWeigan = mEnableWeigan;
     }
 
     public void setRelayTime(int time) {
@@ -86,6 +90,25 @@ public class AccessCardController  {
         this.mAccessIdDb = mAccessIdDb;
     }
 
+    public void unlockDoor() {
+        if (mNormalRelayMode) {
+            unLockStandAloneDoor();
+        }
+        unLockWeiganDoorController();
+    }
+
+    public void unlockDoorOnHighTemp() {
+        if (mNormalRelayMode) {
+            if (!mStopRelayOnHighTemp) {
+                unlockDoor();
+            }
+            return;
+        }
+        if (mReverseRelayMode) {
+            unLockStandAloneDoor();
+        }
+    }
+
     private void startRelayTimer() {
         mRelayTimer = new Timer();
         mRelayTimer.schedule(new TimerTask() {
@@ -97,7 +120,7 @@ public class AccessCardController  {
     }
 
     private void unLockStandAloneDoor() {
-        if (!isAutomaticDoorAccess) return;
+        if (!mEnableRelay) return;
         int result = PosUtil.setRelayPower(1);
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
@@ -107,6 +130,7 @@ public class AccessCardController  {
     }
 
     private void unLockWeiganDoorController() {
+        if (!mEnableWeigan) return;
         //Check if its 34 Bit or 26 Bit Weigan controller and send signal accordingly
         if (mWeiganControllerFormat == 26) {
             unlock26BitDoorController();
@@ -116,7 +140,6 @@ public class AccessCardController  {
     }
 
     public void lockStandAloneDoor() {
-        if (!isAutomaticDoorAccess) return;
         if (mRelayTimer != null) mRelayTimer.cancel();
         int result = PosUtil.setRelayPower(0);
         if (result != 0) {
@@ -135,6 +158,7 @@ public class AccessCardController  {
     }
 
     private void sendWg26BitSignal(String cardId) {
+        if (!mEnableWeigan) return;
         int result = PosUtil.getWg26Status(Long.parseLong(cardId));
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
@@ -152,6 +176,7 @@ public class AccessCardController  {
     }
 
     private void sendWg34BitSignal(String cardId) {
+        if (!mEnableWeigan) return;
         int result = PosUtil.getWg34Status(Long.parseLong(cardId));
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");

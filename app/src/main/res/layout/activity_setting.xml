@@ -39,7 +39,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
                     android:layout_marginRight="@dimen/margin_10"
-                    android:src="@drawable/sync"></ImageView>
+                    android:src="@drawable/sync"/>
 
             </RelativeLayout>
 
@@ -91,7 +91,7 @@
                 android:visibility="gone" />
 
             <RelativeLayout
-                android:id="@+id/setting_activate"
+                android:id="@+id/rl_device_setting"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:onClick="onclick">
@@ -106,10 +106,16 @@
                     android:drawablePadding="5dp"
                     android:gravity="center"
                     android:paddingLeft="6dp"
-                    android:text="@string/add_cloud"
+                    android:text="@string/device_settings"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
-
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="2dp"
+                    android:src="@mipmap/enter" />
                 <Switch
                     android:id="@+id/switch_activate"
                     android:layout_width="wrap_content"
@@ -118,6 +124,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="2dp"
                     android:checked="true"
+                    android:visibility="gone"
                     android:src="@mipmap/enter"
                     android:theme="@style/SwitchTheme" />
 
@@ -313,7 +320,7 @@
                     android:drawablePadding="5dp"
                     android:gravity="center"
                     android:paddingLeft="6dp"
-                    android:text="Parameter Setting"
+                    android:text="Parameter Settings"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
@@ -468,6 +475,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/blue" />
 
 
@@ -476,7 +484,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:onClick="onclick"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/access_pwd"
@@ -512,7 +520,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:onClick="onclick"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/endpoint"
@@ -541,6 +549,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:visibility="gone"
                 android:background="@color/blue" />
 
             <RelativeLayout
@@ -813,32 +822,76 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/margin_30"
-                android:layout_marginBottom="@dimen/margin_20">
+                android:layout_marginBottom="@dimen/margin_5">
 
 
             <TextView
                 android:id="@+id/tv_serial_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:gravity="left"
-                android:paddingLeft="@dimen/margin_20"
-                android:paddingBottom="20dp"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
                 android:text="@string/app_serial"
-                android:textSize="18dp"></TextView>
+                android:textSize="@dimen/font_18"/>
 
             <TextView
                 android:id="@+id/tv_version"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginRight="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="20dp"
+                android:paddingEnd="20dp"
                 android:text="@string/app_version"
-                android:textSize="18dp"></TextView>
+                android:textSize="@dimen/font_18"/>
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_device_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
+                android:text="@string/device_name"
+                android:textSize="@dimen/font_18"/>
+            <TextView
+                android:id="@+id/tv_device_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
+                android:text="@string/device_settings"
+                android:textSize="@dimen/font_18"/>
+            <TextView
+                android:id="@+id/tv_device_model"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
+                android:text="@string/device_mode"
+                android:textSize="@dimen/font_18"/>
+            <TextView
+                android:id="@+id/tv_online"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="start"
+                android:paddingStart="@dimen/margin_20"
+                android:text="@string/online_device_activation_status"
+                android:textSize="@dimen/font_18"/>
         </LinearLayout>
 </ScrollView>
+    <TextView
+        android:id="@+id/tv_connectivity_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:paddingStart="@dimen/margin_20"
+        android:layout_marginRight="@dimen/margin_10"
+        android:layout_marginBottom="@dimen/margin_10"
+        android:text="@string/connectivity_status"
+        android:textSize="@dimen/font_18" />
 </RelativeLayout>

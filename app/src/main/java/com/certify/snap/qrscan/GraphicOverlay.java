@@ -16,6 +16,7 @@
 
 package com.certify.snap.qrscan;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -23,6 +24,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 //import com.google.common.base.Preconditions;
+
+import androidx.core.util.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,7 +180,8 @@ public class GraphicOverlay extends View {
         postInvalidate();
     }
 
-   /* public void setImageSourceInfo(int imageWidth, int imageHeight, boolean isFlipped) {
+    @SuppressLint("RestrictedApi")
+    public void setImageSourceInfo(int imageWidth, int imageHeight, boolean isFlipped) {
         Preconditions.checkState(imageWidth > 0, "image width must be positive");
         Preconditions.checkState(imageHeight > 0, "image height must be positive");
         synchronized (lock) {
@@ -187,7 +191,7 @@ public class GraphicOverlay extends View {
             needUpdateTransformation = true;
         }
         postInvalidate();
-    }*/
+    }
 
     public int getImageWidth() {
         return imageWidth;

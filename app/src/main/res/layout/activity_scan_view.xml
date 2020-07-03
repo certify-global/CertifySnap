@@ -43,7 +43,6 @@
                 android:layout_height="50dp"
                 android:layout_marginRight="10dp"
                 android:gravity="right|center"
-                android:onClick="onclick"
                 android:text="@string/save"
                 android:textColor="#ffffff"
                 android:textSize="22sp" />
@@ -379,6 +378,45 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:id="@+id/tv_scan_proximity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_15"
+            android:text="@string/allow_scan_proximity"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+
+        <RadioGroup
+            android:id="@+id/scan_proximity_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_yes_scan_proximity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:checked="true"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/radio_no_scan_proximity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
 
     </LinearLayout>
 

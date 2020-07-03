@@ -18,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import com.certify.snap.BuildConfig;
 
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
@@ -31,7 +32,7 @@ import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_270_ONLY;
 import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_90_ONLY;
 import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_ALL_OUT;
 
-public class ParameterActivity extends AppCompatActivity {
+public class ParameterActivity extends SettingBaseActivity {
 
     private EditText relaytime;
     RadioGroup radioGroupCamera,radioGroupLiving,radioGroupOrientation,radioGroupFtOrient;
@@ -51,8 +52,6 @@ public class ParameterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_parameter);
 
             Application.getInstance().addActivity(this);
@@ -106,33 +105,36 @@ public class ParameterActivity extends AppCompatActivity {
             }
         });
 
-        radioGroupLiving = findViewById(R.id.radio_group_living_type);
-        rbLiving0 = findViewById(R.id.radio_living_0);
-        rbLiving1 = findViewById(R.id.radio_living_1);
-        boolean living = sp.getBoolean(GlobalParameters.LivingType,false);
+        if (BuildConfig.BUILD_TYPE != "release") {
+            findViewById(R.id.liveness_layout).setVisibility(View.VISIBLE);
+            radioGroupLiving = findViewById(R.id.radio_group_living_type);
+            rbLiving0 = findViewById(R.id.radio_living_0);
+            rbLiving1 = findViewById(R.id.radio_living_1);
+            boolean living = sp.getBoolean(GlobalParameters.LivingType, false);
 
-        if (living){
-            rbLiving1.setChecked(true);
-        }else {
-            rbLiving0.setChecked(true);
-        }
-
-        radioGroupLiving.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radio_living_0:
-                        Util.writeBoolean(sp, GlobalParameters.LivingType,false);
-                        break;
-                    case R.id.radio_living_1:
-                        Util.writeBoolean(sp, GlobalParameters.LivingType,true);
-                        break;
-                    default:
-                        Util.writeBoolean(sp, GlobalParameters.LivingType,true);
-                        break;
-                }
+            if (living) {
+                rbLiving1.setChecked(true);
+            } else {
+                rbLiving0.setChecked(true);
             }
-        });
+
+            radioGroupLiving.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    switch (checkedId) {
+                        case R.id.radio_living_0:
+                            Util.writeBoolean(sp, GlobalParameters.LivingType, false);
+                            break;
+                        case R.id.radio_living_1:
+                            Util.writeBoolean(sp, GlobalParameters.LivingType, true);
+                            break;
+                        default:
+                            Util.writeBoolean(sp, GlobalParameters.LivingType, true);
+                            break;
+                    }
+                }
+            });
+        }
 
         radioGroupOrientation = findViewById(R.id.radio_group_orientation);
         rbOrientation0 = findViewById(R.id.rb_orientation_0);

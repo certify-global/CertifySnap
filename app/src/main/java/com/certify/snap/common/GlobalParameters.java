@@ -24,6 +24,7 @@ public class GlobalParameters {
     public static String Device_password = "";
     public static String Wallpaper = "";
 
+    public static final String LICENSE_ACTIVATED = "activate";
     //sp参数的key名
     public static final String CameraType = "cameratype";
     public static final String LivingType = "livingtype";
@@ -33,11 +34,16 @@ public class GlobalParameters {
     public static final String NavigationBar = "navigationbar";
     public static final String RelayTime = "relaytime";
     public static final String LogFilePath = "logfilepath";
-    public static final String AccessControlEnable = "accessControlEnable";
-    public static final String BlockAccessHighTemp = "blockAccessHighTemp";
-    public static final String AccessControlCardFormat = "accessControlCardFormat";
-    public static final String AutomaticDoorAccess = "automaticDoorAccess";
+    public static final String EnableRelay = "enableRelay";
+    public static final String AllowAnonymous = "allowAnonymous";
+    public static final String RelayNormalMode = "relayNormalMode";
+    public static final String RelayReverseMode = "relayReverseMode";
+    public static final String StopRelayOnHighTemp = "stopRelayOnHighTemp";
+    public static final String EnableWeigand = "enableWeigand";
+    public static final String WeiganFormatMessage = "weiganFormatMessage";
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
+    public static final String ScanMode = "ScanMode";
+    public static final String ScanProximity = "ScanProximity";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -65,6 +71,8 @@ public class GlobalParameters {
     public static final String ONLINE_SWITCH = "online_switch";
     public static final String FIRST_RUN = "first_run";
     public static final String URL = "url";
+    public static final String DEVICE_NAME = "device_name";
+    public static final String DEVICE_SETTINGS_NAME = "device_settings_name";
     public static final String Thermalscan_title = "Thermalscan_title";
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";
     public static final String CAPTURE_IMAGES_ABOVE = "c_m_above";
@@ -87,9 +95,11 @@ public class GlobalParameters {
     public static final String F_TO_C = "f_to_c";
     public static final String settingVersion = "settingVersion";
     public static final String deviceMasterCode = "deviceMasterCode";
+    public static final String deviceSettingMasterCode = "deviceSettingMasterCode";
     public static final String GUIDE_TEXT1 = "guide_text1";
     public static final String GUIDE_TEXT2 = "guide_text2";
     public static final String GUIDE_TEXT3 = "guide_text3";
+    public static final String GUIDE_TEXT4 = "guide_text4";
     public static final String GUIDE_SCREEN = "guide_screen";
     public static final String TEMP_TEST_LOW = "temp_test_low";
     public static final String SNAP_ID = "snap_id";
@@ -109,6 +119,17 @@ public class GlobalParameters {
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
     public static final String ANONYMOUS_ENABLE = "anonymous_enable";
+    public static final String HOME_TEXT_ONLY ="home_text_only";
+    public static final String HOME_TEXT_ONLY_MESSAGE ="home_text_only_message";
+    public static final String HOME_DISPLAY_TIME ="home_display_time";
+    public static final String HOME_TEXT_ONLY_IS_ENABLE ="home_text_only_is_enable";
+    public static final String HOME_TEXT_IS_ENABLE ="home_display_is_enable";
+    public static final String Firebase_Command = "firebase_command";
+    public static final String Firebase_Value = "firebase_value";
+    public static final String COMPENSATION = "compensation";
+    public static final String Firebase_Token = "firebase_token";
+    public static final String Generate_Token_Command = "generate_token_command";
+    public static final String MEMBER_SYNC_DO_NOT ="member_sync_do_not";
 
 
 }

@@ -74,7 +74,7 @@
     <string name="camera_type">Camera Type: </string>
     <string name="camera_type_0">Single Camera</string>
     <string name="camera_type_1">Binocular Camera</string>
-    <string name="face_Angle">Face Angle: </string>
+    <string name="face_Angle">Face Detection Angle: </string>
     <string name="living_type">Liveness: </string>
     <string name="living_type_0">No</string>
     <string name="living_type_1">Yes</string>
@@ -89,7 +89,7 @@
     <string name="toast_initialize_download_no_data">No data to download,please import the data first</string>
     <string name="toast_initialize_download">You have downloaded all the data</string>
     <string name="txt_initialize_download_fail">Download stopped, please try again</string>
-    <string name="dialog_initialize_wait">Processing...pls wait for a while</string>
+    <string name="dialog_initialize_wait">Processing...please wait for a while</string>
     <string name="txt_initialize_result_item">The result of initialization</string>
     <string name="txt_data_clear_all">Clear all data</string>
     <string name="txt_initialize_delete">clear</string>
@@ -125,12 +125,12 @@
     <string name="statusbar_show">Show</string>
     <string name="statusbar_hide">Hide</string>
 
-    <string name="NavigationBar">NavigationBar: </string>
+    <string name="NavigationBar">Navigation Bar: </string>
     <string name="navigation_show">Show</string>
     <string name="navigation_hide">Hide</string>
 
     <string name="RelayTime">Relay Time: </string>
-    <string name="relayinfo">pls input a time!</string>
+    <string name="relayinfo">Please input a time!</string>
     <string name="time">(s)</string>
 
     <string name="text_batchimport">batch import</string>
@@ -143,7 +143,7 @@
 
     <string name="text_nfc_activatecard">Activate Card</string>
     <string name="text_nfc_title">Activate Card</string>
-    <string name="toast_tempservice_notinstall">not install TempatureServices.apk!pls install it!</string>
+    <string name="toast_tempservice_notinstall">not install TempatureServices.apk!Please install it!</string>
     <string name="toast_guide_permission">Please give permission manually!</string>
     <string name="toast_init_deleteinfo"> faces cleared!</string>
 
@@ -174,7 +174,7 @@
     <string name="VISITOR">VISITOR </string>
 
 
-    <string name="toast_manage_photoerror">This photo have some error,pls check the photo!</string>
+    <string name="toast_manage_photoerror">This photo have some error, please check the photo!</string>
     <string name="toast_manage_dateerror">Date format or length is wrong, please check!</string>
     <string name="toast_manage_notfullinfo">Please Enter Name, Mobile, Member ID</string>
     <string name="toast_manage_no_memberid">Please Enter The MemberId !</string>
@@ -183,32 +183,36 @@
     <string name="SetDate">Set Date</string>
     <string name="SetTime">Set Time</string>
     <string name="delete">Delete</string>
-    <string name="delete_wait">Delete! pls wait...</string>
+    <string name="delete_wait">Delete! Please wait...</string>
     <string name="Register">Register</string>
-    <string name="register_wait">Register! pls wait...</string>
-    <string name="register_takephoto">pls click image and take a face photo!</string>
+    <string name="register_wait">Register! Please wait...</string>
+    <string name="register_takephoto">Please click image and take a face photo!</string>
     <string name="Register_success">Register Success!</string>
-    <string name="register_failed">Register failed! Pls try again!</string>
-    <string name="update_failed">Update failed! Pls try again!</string>
+    <string name="register_failed">Register failed! Please try again!</string>
+    <string name="update_failed">Update failed! Please try again!</string>
     <string name="deletion_failed">Due to some network problem. Data can not be deleted online.</string>
     <string name="register_failprocess">Register failed! Fail to process bitmap!</string>
     <string name="Update_success">Update Success!</string>
-    <string name="Update_failed">Update failed! Pls try again!</string>
+    <string name="Update_failed">Update failed! Please try again!</string>
     <string name="Delete_success">Delete Success!</string>
-    <string name="Delete_failed">Register failed! Pls try again!</string>
+    <string name="Delete_failed">Register failed! Please try again!</string>
     <string name="camera_temp">Temperature</string>
     <string name="camera_face">Temperature and Face</string>
     <string name="work_flow">Work Flow</string>
     <string name="thermal_scan">THERMAL SCAN</string>
     <string name="network_error">Internet is not available.Please check your internet connection!</string>
-    <string name="SetTemp">Set Temperature</string>
+    <string name="SetTemp">Temperature Settings</string>
     <string name="upload_logo">Upload Logo</string>
     <string name="acces_password">Access Password</string>
+    <string name="device_activation_status">Online Activation Status</string>
+    <string name="not_activated"><u>Not Activated</u></string>
+    <string name="activate"><u>Activate</u></string>
+    <string name="activated"><u>Activate</u></string>
     <string name="endpoint">Endpoint URL</string>
     <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Home View Settings</string>
-    <string name="welcome_thermal">Welcome Text For Home View</string>
+    <string name="welcome_thermal">Home Screen Text</string>
     <string name="enter_title">Enter Large Text </string>
     <string name="enter_subtitle">Enter Small Text </string>
     <string name="display_temperature">Display Temperature Details to the User on Screen</string>
@@ -238,6 +242,7 @@
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
     <string name="temperature">Temperature</string>
+    <string name="temperature_calibration">Temperature Calibration</string>
     <string name="look_screen">Look at the screen,center you face</string>
     <string name="app_serial">Serial No:</string>
     <string name="tv_guide_setting">Guide Settings</string>
@@ -245,9 +250,11 @@
     <string name="enter_text1">Text1</string>
     <string name="enter_text2">Text2</string>
     <string name="enter_text3">Text3</string>
+    <string name="enter_text4">Text4</string>
     <string name="text_value1">Please center your face to the screen.</string>
     <string name="text_value2">Move closer and center your face.</string>
     <string name="text_value3">Please wait, preparing to scan.</string>
+    <string name="text_value4">Please step closer</string>
     <string name="snack_msg">Retrieving updated settings</string>
     <string name="invalid_pwd">Invalid Password</string>
     <string name="allow_low">Allow low temperature scanning</string>
@@ -276,18 +283,31 @@
     \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="onlinemode_nointernet">Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
 \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
+    <string name="scan_mode">Scan Mode</string>
+    <string name="scan_mode_easy">Easy</string>
+    <string name="scan_mode_strict">Strict(Recommended)</string>
+
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
     <string name="access_control_parameter">sec</string>
-    <string name="enable_access_control">Enable Access Control (require ID)</string>
+    <string name="enable_access_control">Enable Weigand Output (ID Required)</string>
     <string name="block_high_temperature">Block access on High Temperature Scan</string>
     <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
-    <string name="access_control_card_format">Access Controller Card Format</string>
+    <string name="access_control_card_format">Message Format</string>
     <string name="access_control_enroll">Enroll</string>
     <string name="access_granted">Access granted</string>
     <string name="access_denied">Access denied!</string>
     <string name="access_failed">User cannot be identified. Please enroll</string>
-    <string name="automatic_door_access">Automatic Doors (does not require ID)</string>
+    <string name="automatic_door_access">Enable Relay</string>
+    <string name="allow_anonymous">Allow Anonymous</string>
+    <string name="relay_timeout">Relay Timeout:</string>
+    <string name="normal_mode">
+        <font size="16">Normal Mode</font><font size="14"> (Operate Relay/Weigand for every scan)</font>
+    </string>
+    <string name="reverse_mode">
+        <font size="16">Reverse Mode</font><font size="14"> (Operate Relay on High Temperature Scan Only)</font>
+    </string>
+    <string name="stop_relay">Stop Relay/Weigand on High Temperature Scan</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
@@ -313,8 +333,8 @@
     <string name="display">"Display Image and name on the confirmation screen "</string>
     <string name="update_face_not_recognized">Update Failed! Face cannot be recognized</string>
     <string name="register_face_not_recognized">Register Failed! Face cannot be recognized</string>
-    <string name ="records_loading_msg">Record are loading</string>
-    <string name ="records_sync_completed">All the records got synced</string>
+    <string name="records_loading_msg">Record are loading</string>
+    <string name="records_sync_completed">All the records got synced</string>
 
 
     <string name="pref_key_camera_live_viewport" translatable="false">clv</string>
@@ -322,7 +342,44 @@
     <string name="pref_key_front_camera_preview_size" translatable="false">fcpvs</string>
     <string name="pref_key_rear_camera_picture_size" translatable="false">rcpts</string>
     <string name="pref_key_front_camera_picture_size" translatable="false">fcpts</string>
+    <string name="temperature_compensation">Temperature Compensation</string>
+    <string name="tv_compensation">Ex:\u0020 1.5 \u0020 or \u0020  -0.5</string>
 
-
+    <string name="device_name">Device Name</string>
+    <string name="keep_device_online">Keep Device Online</string>
+    <string name="device_settings">Device Settings</string>
+    <string name="device_password">Device Access Password</string>
+    <string name="online_device_activation_status">Device Online Activation Status</string>
+    <string name="device_mode">Device Mode</string>
+    <string name="enable_home_screen">Enable Home Screen</string>
+    <string name="enable_text_only_screen">Enable Text Only Mode</string>
+    <string name="enable_text_only_hint">Enter Full Screen Text</string>
+    <string name="connectivity_status">View Connectivity Status</string>
+    <string name="connectivity_status_title">Connectivity Status and Information</string>
+    <string name="connectivity_status_text">Connected to: </string>
+    <string name="mac">MAC</string>
+    <string name="ip_address">IP address</string>
+    <string name="netmask">Netmask</string>
+    <string name="gateway">Gateway</string>
+    <string name="dns1">DNS1</string>
+    <string name="dns2">DNS2</string>
+    <string name="ethernet_ip_mode">Ethernet Ip mode</string>
+    <string name="ssid">SSID:</string>
+    <string name="internet_connectivity">Internet Connectivity:</string>
+    <string name="cloud_connectivity">CERTIFY Cloud Connectivity:</string>
+    <string name="wifi">Wifi</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="mobile">Cellular</string>
+    <string name="data_management">Data Management</string>
+    <string name="do_not_sync">Do Not Sync online Member Data to Device </string>
+    <string name="enable_home_view_msg">Please enable the Home Screen setting to set this option.</string>
+    <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
+    <string name="confirm_title_below">Have a nice day!</string>
+    <string name="analyzing_face">Analyzing Face</string>
+    <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
+    <string name="step_closer">Please step closer</string>
+    <string name="reset_snap_app">Reset SNAP APP</string>
+    <string name="clear_cache_app">CLEAR DATA and CACHE</string>
+    <string name="local_data">Reset Local Data</string>
 
 </resources>

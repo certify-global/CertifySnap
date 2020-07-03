@@ -7,6 +7,8 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
+
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,7 +23,8 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 
-public class ConfirmationViewSetting extends Activity {
+public class ConfirmationViewSetting extends SettingBaseActivity {
+    private static final String TAG = ConfirmationViewSetting.class.getSimpleName();
     Typeface rubiklight;
     TextView confirmation_screen, tv_confirm_above, tv_confirm_below,confirmation_above;
     TextInputLayout text_input_title_below, text_input_subtitle_below, text_input_title_above, text_input_subtitle_above, text_input_delay;
@@ -33,8 +36,6 @@ public class ConfirmationViewSetting extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_confirmation_setting);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -116,12 +117,7 @@ public class ConfirmationViewSetting extends Activity {
             });
 
         } catch (Exception e) {
-            Logger.error(" onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
-    }
-
-    public void onParamterback(View view) {
-        startActivity(new Intent(ConfirmationViewSetting.this, SettingActivity.class));
-        finish();
     }
 }

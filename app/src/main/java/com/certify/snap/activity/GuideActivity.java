@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -21,13 +22,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
 import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.common.ActiveEngine;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
@@ -36,6 +38,10 @@ import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -45,11 +51,12 @@ import com.tamic.novate.Novate;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback, ActiveEngineCallback {
+public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
     public static final String TAG = GuideActivity.class.getSimpleName();
     public static Activity mActivity;
@@ -73,16 +80,37 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
+        try {
+            Util.createAudioDirectory();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
             attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             getWindow().setAttributes(attributes);
         }
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "getInstanceId failed", task.getException());
+                    return;
+                }
+
+                // Get new Instance ID token
+                String token = task.getResult().getToken();
+                Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+                Logger.verbose(TAG,"firebase token",token);
+
+            }
+        });
+
         mActivity = this;
         Application.getInstance().addActivity(this);
+        Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
@@ -92,7 +120,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
         }
         AppCenter.setEnabled(onlineMode);
-        Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
+        Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
 
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
@@ -103,6 +131,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             });
 
         }
+
 
         myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
         imgPic = findViewById(R.id.img_telpo);
@@ -202,25 +231,35 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-        if (!License.activateLicense(this)) {
-            String message = getResources().getString(R.string.active_failed);
-            Logger.error(TAG, message);
-            //TODO: alternate license activation
-            Util.openDialogactivate(this, message, "");
-        }else if (!onlineMode) {
-            startActivity(new Intent(this, IrCameraActivity.class));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!License.activateLicense(GuideActivity.this)) {
+                    String message = getResources().getString(R.string.active_failed);
+                    Log.e(TAG, message);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Util.openDialogactivate(GuideActivity.this, message, "");
+                        }
+                    });
+                } else if (!onlineMode) {
+                    startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
 
-        } else {
-            //TODO: This dialog is required when the connection fails to API server
-            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+                } else {
+                    //TODO: This dialog is required when the connection fails to API server
+                    //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
 
-            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
-            if (Util.isNetworkOff(GuideActivity.this)) {
-                new Handler().postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
-                return;
+                    //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+                    if (Util.isNetworkOff(GuideActivity.this)) {
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                        return;
+                    }
+                    Util.activateApplication(GuideActivity.this, GuideActivity.this);
+                }
+
             }
-            Util.activateApplication(this, this);
-        }
+        }).start();
     }
 
     @Override
@@ -233,11 +272,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
+                onSettingsUpdated();
                 return;
             }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
-
+            onSettingsUpdated();
         } catch (Exception e) {
+            onSettingsUpdated();
             Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
         }
 
@@ -253,24 +294,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
             startHealthCheckService();
-            startMemberSyncService();
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
-    }
-
-    @Override
-    public void onActiveEngineCallback(Boolean activeStatus, String status, JSONObject req) {
-        Logger.debug(TAG, "onActiveEngineCallback()", "Active status:" + activeStatus);
-        if (activeStatus) {
-            License.copyLicense(getApplicationContext());
-            Util.switchRgbOrIrActivity(GuideActivity.this, true);
-        } else if ("Offline".equals(status)) {
-            String activityKey = ActiveEngine.readExcelFileFromAssets(GuideActivity.this, Util.getSNCode());
-            ActiveEngine.activeEngine(GuideActivity.this, sharedPreferences, activityKey, GuideActivity.this);
-        } else
-            Toast.makeText(GuideActivity.this, getResources().getString(R.string.active_failed), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -298,11 +325,25 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)) {
-                    startService(new Intent(GuideActivity.this, MemberSyncService.class));
+
+                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                    || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                    if (!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+                        startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
                 }
             }
         }, 100);
+    }
+
+    /**
+     * Method that processes next steps after the App settings are updated in the SharedPref on app launch
+     */
+    private void onSettingsUpdated() {
+        if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
+            Util.switchRgbOrIrActivity(this, true);
+            Util.setTokenRequestName("");
+        }
+        startMemberSyncService();
     }
 }

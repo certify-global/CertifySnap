@@ -19,6 +19,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
@@ -69,6 +70,8 @@ import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.telpo.tps550.api.DeviceAlreadyOpenException;
+import com.telpo.tps550.api.serial.Serial;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -77,15 +80,25 @@ import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 import static com.certify.snap.common.Util.getnumberString;
 
-public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback, MemberListCallback, MemberIDCallback {
+public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback,
+        MemberListCallback, MemberIDCallback {
 
-    protected static final String LOG = "Management Activity ";
+    protected static final String TAG = ManagementActivity.class.getSimpleName();
     private EditText msearch;
     private TextView mCountTv;
     private RecyclerView recyclerView, failed_recyclerView;
@@ -126,6 +139,11 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     int listPosition;
     int count=0;
 
+    private Serial serial;
+    private InputStream inputStream;
+    private OutputStream outputStream;
+    private boolean readTerminal = false;
+
     private Runnable searchRun = new Runnable() {
         @Override
         public void run() {
@@ -135,7 +153,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         }
     };
 
-    private String TAG = "management---";
     public String OFFLINE_FAILED_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "offline/failed/";
 
     @Override
@@ -218,14 +235,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         String UID = Util.bytesToHexString(ID);
         if (UID == null) return;
         String id = bytearray2Str(hexStringToBytes(UID.substring(2)), 0, 4, 10);
-        if (updateMember != null) {
-            updateMember.setAccessid(id);
-            //Update UI
-            maccessid.setText(id);
-            return;
-        }
-        registerAccessid.setText(id);
-        popupEnrollBtn.setVisibility(View.GONE);
+        onRfidScan(id);
+        if (popupEnrollBtn != null)
+            popupEnrollBtn.setVisibility(View.GONE);
     }
 
     public synchronized void onmemberclick(View v) {
@@ -233,11 +245,13 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
-                    Util.getmemberList(this, this);
-                    count=0;
-                    testCount = 1;
-                    mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&&!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
 
+                        count = 0;
+                        testCount = 1;
+                        mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                        Util.getmemberList(this, this);
+                    }
                 }
                 break;
             case R.id.register:
@@ -531,9 +545,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             return;
                         }
 
-                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
-//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! pls wait...");
+//                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
 //                        }else{
 //                            Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_dateerror));
@@ -555,7 +569,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                 obj.put("memberType", 1);
                                 new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                             } catch (Exception e) {
-                                Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                                Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
                             localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
@@ -719,7 +733,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                     obj.put("memberType", 1);
                                     new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                                 } catch (Exception e) {
-                                    Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                                    Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                                 }
                                 }
 
@@ -865,7 +879,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                             obj.put("memberType", 1);
                             new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                         } catch (Exception e) {
-                            Logger.error(LOG + "AsyncJSONObjectMemberManage", e.getMessage());
+                            Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
                         localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
@@ -1289,20 +1303,30 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     }
 
     private void initNfc() {
+        Log.v(TAG, "initNfc");
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
     private void enableNfc() {
-        if (mNfcAdapter != null) {
+        Log.v(TAG, "enableNfc");
+        if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+        } else {
+            if (initHidReader()) {
+                Log.d(TAG, "HID Start reading");
+                startHidReading();
+            }
         }
     }
 
     private void disableNfc() {
-        if (mNfcAdapter != null) {
+        Log.v(TAG, "disableNfc");
+        if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.disableForegroundDispatch(this);
+        } else {
+            closeHidReader();
         }
     }
 
@@ -1433,7 +1457,10 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 //                if (reportInfo.getString("Message").contains("token expired"))
 //                    Util.getToken(ManagementActivity.this, this);
             } else {
-                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.isNull("responseCode")) {
+                    mloadingprogress.dismiss();
+                    return;
+                }
                 if (reportInfo.getString("responseCode").equals("1")) {
                     JSONArray memberList = reportInfo.getJSONArray("responseData");
                     totalMemberCount = memberList.length();
@@ -1462,6 +1489,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
 
                 } else {
+                    DismissProgressDialog(mloadingprogress);
                     Logger.toast(this, "Something went wrong please try again");
                 }
             }
@@ -1536,10 +1564,123 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                     }
                 } catch (Exception e) {
                     DismissProgressDialog(mloadingprogress);
-                    Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+                    Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
                     //initData(true);
                 }
             }
         });
+    }
+
+    public void onRfidScan(String cardId) {
+        if(updateMember != null) updateMember.setAccessid(cardId);
+        runOnUiThread(()->{
+            if (updateMember != null) {
+                maccessid.setText(cardId);
+            }else{
+                registerAccessid.setText(cardId);
+            }
+
+        });
+        if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+            closeHidReader();
+            if (initHidReader()) {
+                startHidReading();
+            }
+        }
+    }
+
+    /**
+     * Method that initiates the serial port
+     */
+    private boolean initHidReader() {
+        boolean result = false;
+        try {
+            serial = new Serial("/dev/ttyS0", 9600, 0);
+        } catch (DeviceAlreadyOpenException | IOException e) {
+            Log.e(TAG, "HID Exception while instantiating Serial port");
+        }
+        if (serial != null) {
+            inputStream = serial.getInputStream();
+            outputStream = serial.getOutputStream();
+            readTerminal = true;
+            result = true;
+            Log.d(TAG, "HID Port initialized successfully");
+        }
+        return result;
+    }
+
+    /**
+     * Method that starts listening to the HID port
+     */
+    public void startHidReading() {
+        Observable
+                .create((ObservableOnSubscribe<String>) emitter -> {
+                    while(readTerminal) {
+                        if (inputStream != null) {
+                            int size = 0;
+                            byte[] buffer = new byte[64];
+                            try {
+                                size = inputStream.available();
+                                if (size > 0) {
+                                    size = inputStream.read(buffer);
+                                    if (size > 0) {
+                                        String cardData = new String(buffer, 0, size, "UTF-8");
+                                        Log.d(TAG, "HID Card data " + cardData);
+                                        readTerminal = false;
+                                        emitter.onNext(cardData);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
+                                emitter.onNext("");
+                            }
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    Disposable hidReaderDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        hidReaderDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(String cardId) {
+                        onRfidScan(cardId);
+                        hidReaderDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "HID Error in reading from the serial port");
+                        hidReaderDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    /**
+     * Method that closes HID serial port
+     */
+    private void closeHidReader() {
+        readTerminal = false;
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (outputStream != null) {
+                outputStream.close();
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "HID Error in closing the serial port stream");
+        }
+        if (serial != null) serial.close();
     }
 }

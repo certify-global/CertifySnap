@@ -40,6 +40,7 @@ public class Requestor {
         try {
             if (EndPoints.deployment == EndPoints.Mode.Demo)
                 Logger.debug("urlStr", urlStr);
+            Logger.debug("urlSreq", reqPing.toString());
             HttpPost httpost = new HttpPost(urlStr);
              httpost.addHeader("Content-type", "application/json");
             if (device_sn.equals("device_sn"))
@@ -70,8 +71,8 @@ public class Requestor {
                     String value = reqPing.optString(key);
                     properties.put(key, value);
                 }
-                properties.put("URL:", urlStr);
-                properties.put("Response:", responseStr);
+                //properties.put("URL:", urlStr);
+                //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
 
             } else {
@@ -178,8 +179,8 @@ public class Requestor {
                     String value = reqPing.optString(key);
                     properties.put(key, value);
                 }
-                properties.put("URL:", urlStr);
-                properties.put("Response:", responseStr);
+                //properties.put("URL:", urlStr);
+                //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
             } else {
                 responseStr = EntityUtils

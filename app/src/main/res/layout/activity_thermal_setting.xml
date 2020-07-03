@@ -1,95 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:orientation="horizontal"
+        android:background="@color/bg_green"
         android:gravity="center_vertical"
-        android:background="@color/bg_green">
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="5dp"
             android:background="@mipmap/back"
-            android:onClick="onParamterback"
-            />
+            android:onClick="onParamterback" />
 
         <TextView
             android:id="@+id/titles"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:gravity="left|center"
+            android:onClick="onParamterback"
             android:text="@string/thermal_view"
             android:textColor="#ffffff"
-            android:textSize="22sp"
-            android:layout_marginLeft="10dp"
-            android:onClick="onParamterback" />
+            android:textSize="22sp" />
+
         <TextView
             android:id="@+id/btn_exit"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginRight="10dp"
             android:gravity="right|center"
             android:text="@string/save"
             android:textColor="#ffffff"
-            android:textSize="22sp"
-            android:layout_marginRight="10dp"
-            android:onClick="onclick"/>
+            android:textSize="22sp" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_welcome"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/welcome_thermal"
-        android:gravity="center"
-        android:layout_marginTop="50dp"
-        android:textSize="22dp"></TextView>
 
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
+        <CheckBox
+            android:id="@+id/cb_enable_home"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_20"
+            android:text="@string/enable_home_screen"
+            android:textSize="@dimen/text_18"
+            android:checked="true"
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edittext_title"
+            />
+
+        <TextView
+            android:id="@+id/tv_welcome"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:hint="@string/enter_title"
-            android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"/>
+            android:layout_height="wrap_content"
+            android:text="@string/welcome_thermal"
+            android:textSize="@dimen/text_18" />
 
-    </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_subtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edittext_subtitle"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_title"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/enter_subtitle"
-            android:background="@drawable/edittextbackground"
-            android:paddingLeft="05dp"
-            android:singleLine="true"
-            android:maxLength="30"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edittext_title"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/enter_title"
+                android:paddingLeft="05dp" />
 
+        </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edittext_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/enter_subtitle"
+                android:maxLength="30"
+                android:paddingLeft="05dp"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tv_time_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_20"
+            android:text="@string/screen_delay"
+            android:textSize="@dimen/text_18" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_below"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_display_home_time"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/screen_delay"
+                android:inputType="number"
+                android:paddingLeft="05dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/cb_enable_text_only"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_20"
+            android:text="@string/enable_text_only_screen"
+            android:textSize="@dimen/text_18"
+
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_text_only"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_text_only"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/enable_text_only_hint"
+                android:padding="@dimen/margin_05" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

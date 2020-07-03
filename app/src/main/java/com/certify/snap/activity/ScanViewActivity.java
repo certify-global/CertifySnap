@@ -1,15 +1,9 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -18,8 +12,9 @@ import android.widget.TextView;
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.google.android.material.textfield.TextInputLayout;
 
-public class ScanViewActivity extends Activity {
+public class ScanViewActivity extends SettingBaseActivity {
 
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low;
@@ -29,12 +24,15 @@ public class ScanViewActivity extends Activity {
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
     RadioButton radio_no_mask;
+    private TextView scanProximityView;
+    private RadioGroup scanProximityRg;
+    private RadioButton scanProximityYes;
+    private RadioButton scanProximityNo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             setContentView(R.layout.activity_scan_view);
@@ -57,6 +55,7 @@ public class ScanViewActivity extends Activity {
             RadioGroup radio_group_sound_high = findViewById(R.id.radio_group_sound_high);
             RadioButton radio_yes_sound_high = findViewById(R.id.radio_yes_sound_high);
             RadioButton radio_no_sound_high = findViewById(R.id.radio_no_sound_high);
+
             tv_sound_high = findViewById(R.id.tv_sound_high);
             et_screen_delay = findViewById(R.id.et_screen_delay);
             text_input_low_temp = findViewById(R.id.text_input_low_temp);
@@ -73,6 +72,10 @@ public class ScanViewActivity extends Activity {
             tv_scan = findViewById(R.id.titles);
             tv_temp_details = findViewById(R.id.tv_temp_details);
             tv_mask = findViewById(R.id.tv_mask);
+            scanProximityView = findViewById(R.id.tv_scan_proximity);
+            scanProximityRg = findViewById(R.id.scan_proximity_rg);
+            scanProximityYes = findViewById(R.id.radio_yes_scan_proximity);
+            scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
             tv_delay.setTypeface(rubiklight);
             tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
@@ -82,6 +85,7 @@ public class ScanViewActivity extends Activity {
             tv_reg.setTypeface(rubiklight);
             tv_mask.setTypeface(rubiklight);
             tv_sound_high.setTypeface(rubiklight);
+            scanProximityView.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
@@ -113,6 +117,9 @@ public class ScanViewActivity extends Activity {
             }
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
             editTextDialogUserInput_low.setText(sp.getString(GlobalParameters.TEMP_TEST_LOW, "93.2"));
+
+            setDefaultScanProximity();
+            setScanProximityClickListener();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -187,6 +194,7 @@ public class ScanViewActivity extends Activity {
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
                     Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
+                    saveScanProximity();
                     finish();
                 }
             });
@@ -195,8 +203,36 @@ public class ScanViewActivity extends Activity {
         }
     }
 
-    public void onParamterback(View view) {
-        startActivity(new Intent(ScanViewActivity.this,SettingActivity.class));
-        finish();
+    private void setDefaultScanProximity() {
+        if (sp.getBoolean(GlobalParameters.ScanProximity, false)) {
+            scanProximityYes.setChecked(true);
+            scanProximityNo.setChecked(false);
+        } else {
+            scanProximityNo.setChecked(true);
+            scanProximityYes.setChecked(false);
+        }
+    }
+
+    private void setScanProximityClickListener() {
+        scanProximityRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.radio_scanmode_easy) {
+                    scanProximityYes.setChecked(true);
+                    scanProximityNo.setChecked(false);
+                } else if (checkedId == R.id.radio_scanmode_strict) {
+                    scanProximityNo.setChecked(true);
+                    scanProximityYes.setChecked(false);
+                }
+            }
+        });
+    }
+
+    private void saveScanProximity() {
+        if (scanProximityYes.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.ScanProximity, true);
+        } else if(scanProximityNo.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.ScanProximity, false);
+        }
     }
 }

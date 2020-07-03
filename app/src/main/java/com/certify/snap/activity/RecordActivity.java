@@ -254,7 +254,7 @@ public class RecordActivity extends AppCompatActivity {
 
     private void export(String starttime,String endtime){
         try {
-            mprogressDialog = ProgressDialog.show(RecordActivity.this, "Export", "Export file! pls wait...");
+            mprogressDialog = ProgressDialog.show(RecordActivity.this, "Export", "Export file! Please wait...");
             Log.e("export---",stringToDate(starttime,"yyyy-MM")+"-"+
                     stringToDate(endtime,"yyyy-MM")+"-"+System.currentTimeMillis());
 
@@ -320,7 +320,7 @@ public class RecordActivity extends AppCompatActivity {
                         export(starttime,endtime);
                     }
                 }else{
-                    Toast.makeText(RecordActivity.this,"pls input full date!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RecordActivity.this,"Please input full date!",Toast.LENGTH_SHORT).show();
                 }
 
             }
