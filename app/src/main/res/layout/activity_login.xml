@@ -54,25 +54,48 @@
         android:visibility="gone"></TextView>
 
 
-    <com.google.android.material.textfield.TextInputLayout
+<!--    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/text_input_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textview_name"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp">-->
+    <TextView
+        android:id="@+id/text_enter_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_name"
+        android:textColor="@color/skyblue"
+        android:text="Enter Password"
+        android:textSize="13sp"
+        android:layout_marginLeft="22dp"
         android:layout_marginRight="20dp">
-
-        <com.google.android.material.textfield.TextInputEditText
+    </TextView>
+        <EditText
             android:id="@+id/edittext_login"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@drawable/edittextbackground"
-            android:hint="@string/enter_login"
             android:inputType="numberPassword"
-            android:paddingLeft="@dimen/margin_05" />
+            android:paddingLeft="@dimen/margin_05"
+            android:layout_below="@+id/textview_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="20dp"/>
+    <TextView
+        android:id="@+id/text_input_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edittext_login"
+        android:textColor="@color/red"
+        android:textSize="13sp"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="20dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
+    </TextView>
+    <!--    </com.google.android.material.textfield.TextInputLayout>-->
 
     <TextView
         android:id="@+id/tv_pwd_error"
@@ -81,7 +104,7 @@
         android:layout_below="@+id/text_input_login"
         android:text="@string/invalid_pwd"
         android:gravity="center"
-        android:layout_marginTop="@dimen/font_10"
+        android:layout_marginTop="10dp"
         android:textSize="@dimen/margin_20"
         android:textColor="@color/red"
         android:visibility="gone"></TextView>

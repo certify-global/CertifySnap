@@ -703,10 +703,9 @@ public class Util {
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
                 obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
             }
-            JSONObject deviceObject = new JSONObject();
-            deviceObject.put("temperatureCompensationValue", sp.getFloat(GlobalParameters.COMPENSATION, 0));
+            String deviceParametersValue = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
             obj.put("deviceData", MobileDetails(context));
-            obj.put("deviceParameters", deviceObject);
+            obj.put("deviceParameters", deviceParametersValue);
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", data.exceedsThreshold);
 
@@ -754,30 +753,25 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static JSONObject FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
-        JSONObject obj = new JSONObject();
-        try {
-            SharedPreferences sp = Util.getSharedPreferences(context);
-            if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
-                String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
-                int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-                String value = "thresholdValue:" + thresholdvalue + ", " +
+    public static String FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
+        String value = "";
+        SharedPreferences sp = Util.getSharedPreferences(context);
+        if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
+            String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
+            int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
+            value = "thresholdValue:" + thresholdvalue + ", " +
                         "faceScore:" + data.faceScore;
-                FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
-                if (faceParameters != null) {
-                    value = value + ", " + "age:" + faceParameters.age + ", " +
-                            "gender:" + faceParameters.gender + ", " +
-                            "maskStatus:" + faceParameters.maskStatus + ", " +
-                            "faceShelter:" + faceParameters.faceShelter + ", " +
-                            "face3DAngle:" + faceParameters.face3DAngle + ", " +
-                            "liveness:" + faceParameters.liveness;
-                }
-                obj.put("faceParameters", value);
+            FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
+            if (faceParameters != null) {
+                value = value + ", " + "age:" + faceParameters.age + ", " +
+                        "gender:" + faceParameters.gender + ", " +
+                        "maskStatus:" + faceParameters.maskStatus + ", " +
+                        "faceShelter:" + faceParameters.faceShelter + ", " +
+                        "face3DAngle:" + faceParameters.face3DAngle + ", " +
+                        "liveness:" + faceParameters.liveness;
             }
-        } catch (Exception e) {
-            Log.e(LOG + "FaceParamData ", e.getMessage());
         }
-        return obj;
+        return value;
     }
 
     private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {

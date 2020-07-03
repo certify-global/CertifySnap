@@ -25,10 +25,9 @@ public class LoginActivity extends Activity {
     EditText etPassword;
     SharedPreferences sp;
     Button btn_confirm;
-    TextView textview_name,tv_version,tv_serial_no,tv_pwd_error;
+    TextView textview_name,tv_version,tv_serial_no,tv_pwd_error,text_input_login;
     Typeface rubiklight;
     int count=10;
-    TextInputLayout text_input_login;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +53,7 @@ public class LoginActivity extends Activity {
 
                     if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
                         if (etPassword.getText().toString().isEmpty()) {
-                            text_input_login.setError("Password should not be empty");
+                            text_input_login.setText("Password should not be empty");
                             return;
                         }
                         if (!sp.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()) {
@@ -79,7 +78,7 @@ public class LoginActivity extends Activity {
                             lastsixDigits = input;
                         }
                         if (etPassword.getText().toString().isEmpty()) {
-                            text_input_login.setError("Password should not be empty");
+                            text_input_login.setText("Password should not be empty");
                         } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
                             if (sp.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
