@@ -315,6 +315,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private InputStream inputStream;
     private OutputStream outputStream;
     private boolean readTerminal = false;
+    private ImageView internetIndicatorImg;
 
     private void instanceStart() {
         try {
@@ -438,6 +439,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
+
+        if (!Util.isNetworkOff(IrCameraActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            internetIndicatorImg.setVisibility(View.GONE);
+        } else {
+            internetIndicatorImg.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initQRCode() {
@@ -633,7 +640,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvOnlyText.setTypeface(rubiklight);
         tvDisplayTimeOnly.setTypeface(rubiklight);
         tvVersionOnly.setTypeface(rubiklight);
-        tv_message = findViewById(R.id.tv_message);
+        internetIndicatorImg = findViewById(R.id.img_internet_indicator);
+
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
             @Override

@@ -7,6 +7,15 @@
     <!--<include layout="@layout/titlebar" />-->
 
     <ImageView
+        android:id="@+id/img_internet_indicator"
+        android:layout_width="@dimen/margin_40"
+        android:layout_height="@dimen/margin_40"
+        android:src="@drawable/red_circle"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/margin_15"
+        android:visibility="visible"/>
+
+    <ImageView
         android:id="@+id/img_telpo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

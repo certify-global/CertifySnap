@@ -76,6 +76,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             "libarcsoft_face.so",
             "libarcsoft_image_util.so",
     };
+    private ImageView internetIndicatorImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +115,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
+        internetIndicatorImage = findViewById(R.id.img_internet_indicator);
         try {
             onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
         } catch (Exception ex) {
@@ -142,6 +144,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+
+        if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            internetIndicatorImage.setVisibility(View.GONE);
+        } else {
+            internetIndicatorImage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

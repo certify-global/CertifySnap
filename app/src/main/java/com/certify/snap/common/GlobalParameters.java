@@ -130,6 +130,6 @@ public class GlobalParameters {
     public static final String Firebase_Token = "firebase_token";
     public static final String Generate_Token_Command = "generate_token_command";
     public static final String MEMBER_SYNC_DO_NOT ="member_sync_do_not";
-
+    public static final String Internet_Indicator ="internet_indicator";
 
 }
