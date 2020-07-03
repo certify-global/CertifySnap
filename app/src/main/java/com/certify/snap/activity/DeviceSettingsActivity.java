@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -38,10 +39,8 @@ import com.certify.snap.service.MemberSyncService;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
-import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
-
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
-    private static String LOG = "DeviceSettingsActivity -> ";
+    private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
     private TextView btn_save, tvSettingsName, activateStatus, not_activate, tv_device_activation_status;
@@ -164,7 +163,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                             Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, etPassword.getText().toString().trim());
                         }
                     } catch (Exception e) {
-                        Logger.error(LOG + "etPassword --> afterTextChanged", e.getMessage());
+                        Log.e(TAG, e.getMessage());
 
                     }
                 }
@@ -197,7 +196,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 }
             });
         } catch (Exception e) {
-            Logger.error(LOG + "onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
     }
@@ -296,7 +295,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 not_activate.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            Logger.error(LOG + "onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -308,7 +307,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.error(LOG + "startHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+            Logger.error(TAG, "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
 

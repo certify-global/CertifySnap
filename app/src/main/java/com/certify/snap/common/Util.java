@@ -730,10 +730,9 @@ public class Util {
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
                 obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
             }
-            JSONObject deviceObject = new JSONObject();
-            deviceObject.put("temperatureCompensationValue", sp.getFloat(GlobalParameters.COMPENSATION, 0));
+            String deviceParametersValue = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
             obj.put("deviceData", MobileDetails(context));
-            obj.put("deviceParameters", deviceObject);
+            obj.put("deviceParameters", deviceParametersValue);
             obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
             obj.put("exceedThreshold", data.exceedsThreshold);
 
@@ -774,7 +773,6 @@ public class Util {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
             new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
-            Logger.debug("deep comp",""+obj);
 
         } catch (Exception e) {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
@@ -782,28 +780,25 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static JSONObject FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
-        JSONObject obj = new JSONObject();
-        try {
-            SharedPreferences sp = Util.getSharedPreferences(context);
+    public static String FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
+        String value = "";
+        SharedPreferences sp = Util.getSharedPreferences(context);
+        if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
             String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-            String value = "thresholdValue:" + thresholdvalue + ", " +
-                            "faceScore:" + data.faceScore;
+            value = "thresholdValue:" + thresholdvalue + ", " +
+                        "faceScore:" + data.faceScore;
             FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
             if (faceParameters != null) {
                 value = value + ", " + "age:" + faceParameters.age + ", " +
-                                      "gender:" + faceParameters.gender + ", " +
-                                      "maskStatus:" + faceParameters.maskStatus + ", " +
-                                      "faceShelter:" + faceParameters.faceShelter + ", " +
-                                      "face3DAngle:" + faceParameters.face3DAngle + ", " +
-                                      "liveness:" + faceParameters.liveness;
+                        "gender:" + faceParameters.gender + ", " +
+                        "maskStatus:" + faceParameters.maskStatus + ", " +
+                        "faceShelter:" + faceParameters.faceShelter + ", " +
+                        "face3DAngle:" + faceParameters.face3DAngle + ", " +
+                        "liveness:" + faceParameters.liveness;
             }
-            obj.put("faceParameters", value);
-        } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
         }
-        return obj;
+        return value;
     }
 
     private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
@@ -829,7 +824,7 @@ public class Util {
                 level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             return level;
         } catch (Exception e) {
-            Logger.error(LOG + "getBatteryLevel()", e.getMessage());
+            Log.e(LOG + "getBatteryLevel()", e.getMessage());
             return -1;
         }
     }
@@ -874,7 +869,7 @@ public class Util {
 
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+            Log.e(LOG + "MobileDetailsData ", e.getMessage());
 
         }
         return obj;
@@ -931,7 +926,7 @@ public class Util {
             }
         } catch (SocketException ex) {
             ex.printStackTrace();
-            Logger.error("getLocalIpAddress()", ex.getMessage());
+            Log.e("getLocalIpAddress()", ex.getMessage());
         }
         return null;
     }
@@ -948,7 +943,7 @@ public class Util {
                     Util.writeString(sp, GlobalParameters.MOBILE_NUMBER, tMgr.getLine1Number());
             }
         } catch (Exception e) {
-            Logger.error(LOG + "getNumberVersion()", e.getMessage());
+            Log.e(LOG + "getNumberVersion()", e.getMessage());
         }
     }
 
@@ -1016,7 +1011,7 @@ public class Util {
 //            android.os.Process.killProcess(android.os.Process.myPid());
 
         } catch (Exception e) {
-            Logger.error(LOG + "KillApp()", e.getMessage());
+            Log.e(LOG + "KillApp()", e.getMessage());
         }
     }
 
@@ -1041,7 +1036,7 @@ public class Util {
             serverTime.setTimeInMillis(System.currentTimeMillis());
             return serverTime.getTimeInMillis() / 1000 * 1000;
         } catch (Exception e) {
-            Logger.error(LOG + "getCurrentTime()", e.getMessage());
+            Log.e(LOG + "getCurrentTime()", e.getMessage());
             return 0;
         }
     }
@@ -1307,7 +1302,7 @@ public class Util {
                 Logger.toast(context, "Something went wrong please try again");
             }
         } catch (Exception e) {
-            Logger.error("retrieveSetting(JSONObject reportInfo)", e.getMessage());
+            Logger.error(LOG + "retrieveSetting(JSONObject reportInfo)", e.getMessage());
             Logger.toast(context, "Retrieving Settings failed.");
         }
 
@@ -1346,8 +1341,9 @@ public class Util {
                         Util.switchRgbOrIrActivity(context, true);
                     }*/
                     Util.getToken((JSONObjectCallback) context, context);
+
                 } else if (json1.getString("responseSubCode").equals("104")) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    //Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                    // openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
                     context.startActivity(new Intent(context,AddDeviceActivity.class));
 
@@ -1373,7 +1369,7 @@ public class Util {
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);
-            Logger.error("getTokenActivate(String reportInfo,String status,Context context)", e.getMessage());
+            Logger.error(LOG, "getTokenActivate(String reportInfo,String status,Context context)", e.getMessage());
         }
     }
 
@@ -1429,7 +1425,7 @@ public class Util {
                 }
             });
         } catch (Exception e) {
-            Logger.error(" beepSound(Context context,String tempVal) ", e.getMessage());
+            Log.e(LOG, e.getMessage());
         }
 
 

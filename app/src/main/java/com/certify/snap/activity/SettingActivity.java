@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -56,6 +57,7 @@ import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
 
 public class SettingActivity extends Activity implements JSONObjectCallback, SettingCallback {
 
+    private static final String TAG = SettingActivity.class.getSimpleName();
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
@@ -163,7 +165,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 switch_activate.setChecked(false);
             }
         } catch (Exception e) {
-            Logger.error("Setting  onCreate(Bundle savedInstanceState) ", e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
     }
@@ -516,7 +518,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG,"onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -540,7 +542,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             }
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -559,7 +561,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.error("SettingActivity", "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
 

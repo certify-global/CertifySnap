@@ -76,6 +76,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             "libarcsoft_face.so",
             "libarcsoft_image_util.so",
     };
+    private ImageView internetIndicatorImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +104,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 // Get new Instance ID token
                 String token = task.getResult().getToken();
                 Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                Logger.debug("firebase token",token);
+                Logger.verbose(TAG,"firebase token",token);
 
             }
         });
@@ -114,13 +115,14 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
+        internetIndicatorImage = findViewById(R.id.img_internet_indicator);
         try {
             onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
         } catch (Exception ex) {
             Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
         }
         AppCenter.setEnabled(onlineMode);
-        Logger.debug(TAG, "onCreate()", "Online mode value is " + String.format("onCreate onlineMode: %b", onlineMode));
+        Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
 
         if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
             runOnUiThread(new Runnable() {
@@ -142,6 +144,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+
+        if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            internetIndicatorImage.setVisibility(View.GONE);
+        } else {
+            internetIndicatorImage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -236,7 +244,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void run() {
                 if (!License.activateLicense(GuideActivity.this)) {
                     String message = getResources().getString(R.string.active_failed);
-                    Logger.error(TAG, message);
+                    Log.e(TAG, message);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

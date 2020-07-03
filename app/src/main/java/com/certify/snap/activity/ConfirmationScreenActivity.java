@@ -34,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ConfirmationScreenActivity extends Activity {
+    private static final String TAG = ConfirmationScreenActivity.class.getSimpleName();
     Typeface rubiklight;
     TextView tv_title, tv_subtitle, user_name, face_score;
     private SharedPreferences sp;
@@ -44,9 +45,8 @@ public class ConfirmationScreenActivity extends Activity {
     ImageView user_img;
     CompareResult compareResultValues;
 
-    private String confirm_title,
-            confirm_subtitle ;
-
+    private String confirm_title, confirm_subtitle ;
+    private ImageView internetIndicatorImg;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,6 +68,7 @@ public class ConfirmationScreenActivity extends Activity {
             user_img = findViewById(R.id.iv_item_head_img);
             user_name = findViewById(R.id.tv_item_name);
             face_score = findViewById(R.id.facial_score);
+            internetIndicatorImg = findViewById(R.id.img_internet_indicator);
 
             if (compareResultValues != null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 user_img.setVisibility(View.VISIBLE);
@@ -106,7 +107,13 @@ public class ConfirmationScreenActivity extends Activity {
             Log.d("delay milli seconds", "" + delayMilli);
 
         } catch (Exception e) {
-            Logger.error(" onCreate(@Nullable Bundle savedInstanceState)", e.getMessage());
+            Log.e(TAG, e.getMessage());
+        }
+
+        if (!Util.isNetworkOff(ConfirmationScreenActivity.this) && sp.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            internetIndicatorImg.setVisibility(View.GONE);
+        } else {
+            internetIndicatorImg.setVisibility(View.VISIBLE);
         }
     }
 
@@ -127,7 +134,7 @@ public class ConfirmationScreenActivity extends Activity {
             });
             CameraController.getInstance().setCompareResult(null);
         } catch (Exception e) {
-            Logger.error(" compare result", e.getMessage());
+            Log.e(TAG, e.getMessage());
             CameraController.getInstance().setCompareResult(null);
         }
 

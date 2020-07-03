@@ -69,8 +69,8 @@ public class Requestor {
                     String value = reqPing.optString(key);
                     properties.put(key, value);
                 }
-                properties.put("URL:", urlStr);
-                properties.put("Response:", responseStr);
+                //properties.put("URL:", urlStr);
+                //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
 
             } else {
@@ -177,8 +177,8 @@ public class Requestor {
                     String value = reqPing.optString(key);
                     properties.put(key, value);
                 }
-                properties.put("URL:", urlStr);
-                properties.put("Response:", responseStr);
+                //properties.put("URL:", urlStr);
+                //properties.put("Response:", responseStr);
                 Analytics.trackEvent(endPoint[1], properties);
             } else {
                 responseStr = EntityUtils

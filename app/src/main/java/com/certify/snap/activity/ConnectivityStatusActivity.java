@@ -35,6 +35,7 @@ import java.util.List;
 
 public class ConnectivityStatusActivity extends SettingBaseActivity implements JSONObjectCallback{
 
+    private static final String TAG = ConnectivityStatusActivity.class.getSimpleName();
     LinearLayout mRelativeConnectivity;
     private TextView mMacTv, mIPAddress, mNetmaskTv, mGatewayTv, mDns1Tv, mDns2Tv, mEthernetIpTv, mSsidTv, mNetworkAvailableTv;
     private RadioButton mRbInternetConnectivity, mRbcloudConnectivity;
@@ -307,7 +308,7 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
             }
 
         } catch (Exception e) {
-            Logger.error("onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG,"onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
     }
 }
