@@ -116,7 +116,7 @@ public class BluetoothLeService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        close();
+        //close();
         return super.onUnbind(intent);
     }
 
@@ -301,6 +301,9 @@ public class BluetoothLeService extends Service {
         }
     }
 
-
-
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        stopSelf();
+    }
 }

@@ -37,6 +37,7 @@ import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
+import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
@@ -597,6 +598,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                             finishAffinity();
                             stopHealthCheckService();
+                            stopBLEService();
                             //stopMemberSyncService();
                         }
                     })
@@ -641,6 +643,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvOnlyText.setTypeface(rubiklight);
         tvDisplayTimeOnly.setTypeface(rubiklight);
         tvVersionOnly.setTypeface(rubiklight);
+        tv_message = findViewById(R.id.tv_message);
         internetIndicatorImg = findViewById(R.id.img_internet_indicator);
 
         tTimer = new Timer();
@@ -896,13 +899,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(true, text, tempString, false, data);
                             faceAndRelayEnabledForHighTemperature();
-                            bleLightForHighTemperature();
-
+                            BLEController.getInstance().setLightOnHighTemperature();
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false, data);
                             faceAndRelayEnabledForNormalTemperature();
-                            bleLightForNormalTemperature();
+                            BLEController.getInstance().setLightOnNormalTemperature();
                         }
 
                     } catch (Exception e) {
@@ -915,12 +917,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }).start();
 
         }
-    }
-    private void bleLightForNormalTemperature(){
-        BLEController.getInstance().bleLightColor(-16711936);
-    }
-    private void bleLightForHighTemperature(){
-        BLEController.getInstance().bleLightColor(0xffff0000);
     }
 
     private void faceAndRelayEnabledForNormalTemperature(){
@@ -980,12 +976,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                         TemperatureCallBackUISetup(true, text, tempString, false, data);
                         faceAndRelayEnabledForHighTemperature();
-                        bleLightForHighTemperature();
+                        BLEController.getInstance().setLightOnHighTemperature();
                     } else {
                         text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                         TemperatureCallBackUISetup(false, text, tempString, false, data);
                         faceAndRelayEnabledForNormalTemperature();
-                        bleLightForNormalTemperature();
+                        BLEController.getInstance().setLightOnNormalTemperature();
                     }
                     emitter.onNext(temperature);
                 })
@@ -2483,6 +2479,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
         CameraController.getInstance().setScanCloseProximityEnabled(sharedPreferences.getBoolean(GlobalParameters.ScanProximity, false));
         getAccessControlSettings();
+        getAudioVisualSettings();
     }
 
     /**
@@ -2497,6 +2494,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         AccessCardController.getInstance().setEnableWeigan(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableWeigand, false));
         AccessCardController.getInstance().setRelayTime(Util.getSharedPreferences(this).getInt(GlobalParameters.RelayTime, Constants.DEFAULT_RELAY_TIME));
         AccessCardController.getInstance().setWeiganControllerFormat(Util.getSharedPreferences(this).getInt(GlobalParameters.WeiganFormatMessage, Constants.DEFAULT_WEIGAN_CONTROLLER_FORMAT));
+    }
+
+    private void getAudioVisualSettings(){
+        BLEController.getInstance().setHighTempLightEnabled(Util.getSharedPreferences(this).getBoolean(GlobalParameters.BLE_LIGHT_HIGH, false));
+        BLEController.getInstance().setNormalTempLightEnabled(Util.getSharedPreferences(this).getBoolean(GlobalParameters.BLE_LIGHT_NORMAL, false));
     }
 
     /**
@@ -3383,6 +3385,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Log.e(TAG, "HID Error in closing the serial port stream");
         }
         if (serial != null) serial.close();
+    }
+
+    private void stopBLEService() {
+        Intent intent = new Intent(this, BluetoothLeService.class);
+        stopService(intent);
     }
 
 }

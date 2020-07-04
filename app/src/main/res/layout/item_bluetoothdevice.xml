@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/white"
     android:paddingTop="15dp"
     android:padding="15dp">
 
@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="deviced id"
-        android:textColor="#ffffff"
+        android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
@@ -19,7 +19,7 @@
         android:id="@+id/item_bluetoothdevice_tv_uuid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ffffff"
+        android:textColor="@color/black"
         android:layout_below="@+id/item_bluetoothdevice_tv_deviceid"
         android:text="uuid" />
 

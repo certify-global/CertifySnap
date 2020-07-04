@@ -42,12 +42,15 @@ import com.certify.snap.bluetooth.bleCommunication.BusProvider;
 import com.certify.snap.bluetooth.bleCommunication.DeviceChangedEvent;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.BLEController;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+
+import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
 public class AudioVisualActivity extends SettingBaseActivity {
 
@@ -88,8 +91,8 @@ public class AudioVisualActivity extends SettingBaseActivity {
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
         // connect ble device
-        if (mBluetoothLeService != null)
-            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+       /* if (mBluetoothLeService != null)
+            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());*/
     }
 
     private void initView(){
@@ -163,10 +166,10 @@ public class AudioVisualActivity extends SettingBaseActivity {
         RadioButton radio_yes_light_high = findViewById(R.id.radio_yes_light_high);
         RadioButton radio_no_light_high = findViewById(R.id.radio_no_light_high);
 
-        if(sp.getBoolean(GlobalParameters.CAPTURE_LIGHT_LOW,false))
+        if(sp.getBoolean(GlobalParameters.BLE_LIGHT_NORMAL,false))
             radio_yes_light.setChecked(true);
         else radio_no_light.setChecked(true);
-        if(sp.getBoolean(GlobalParameters.CAPTURE_LIGHT_HIGH,false))
+        if(sp.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false))
             radio_yes_light_high.setChecked(true);
         else radio_no_light_high.setChecked(true);
 
@@ -174,16 +177,16 @@ public class AudioVisualActivity extends SettingBaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId==R.id.radio_yes_light)
-                    Util.writeBoolean(sp, GlobalParameters.CAPTURE_LIGHT_LOW, true);
-                else Util.writeBoolean(sp, GlobalParameters.CAPTURE_LIGHT_LOW, false);
+                    Util.writeBoolean(sp, GlobalParameters.BLE_LIGHT_NORMAL, true);
+                else Util.writeBoolean(sp, GlobalParameters.BLE_LIGHT_NORMAL, false);
             }
         });
         radio_group_light_high.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId==R.id.radio_yes_light_high)
-                    Util.writeBoolean(sp, GlobalParameters.CAPTURE_LIGHT_HIGH, true);
-                else Util.writeBoolean(sp, GlobalParameters.CAPTURE_LIGHT_HIGH, false);
+                    Util.writeBoolean(sp, GlobalParameters.BLE_LIGHT_HIGH, true);
+                else Util.writeBoolean(sp, GlobalParameters.BLE_LIGHT_HIGH, false);
             }
         });
     }
@@ -204,8 +207,8 @@ public class AudioVisualActivity extends SettingBaseActivity {
                 Toast.makeText(getBaseContext(), R.string.ble_not_find, Toast.LENGTH_SHORT).show();
                 finish();
             }
-            //BLEController.getInstance().setmBluetoothLeService(mBluetoothLeService);
-            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+            BLEController.getInstance().setBluetoothLeService(mBluetoothLeService);
+            //mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
         }
 
         @Override
@@ -325,8 +328,6 @@ public class AudioVisualActivity extends SettingBaseActivity {
         Log.e(TAG, "Not founded characteristic");
         return false;
     }
-
-    public static final int MEASURED_STATE_MASK = 0xff000000;
 
     public void btn_Bluetooth(View v) {
         Intent intent = new Intent(this, SelectDeviceActivity.class);

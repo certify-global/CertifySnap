@@ -42,14 +42,14 @@ public class Application extends android.app.Application {
     public static boolean member=false;
     private List<Activity> activityList = new LinkedList();
     private ThermalImageUtil temperatureUtil;
-    private static SimplePreference preference;
+    //private static SimplePreference preference;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         LitePal.initialize(this);
-        preference = new SimplePreference(this);
+        //preference = new SimplePreference(this);
         mInstance = this;
 
         novate = new Novate.Builder(this).baseUrl(GlobalParameters.BASEURL).addLog(true)
@@ -85,9 +85,9 @@ public class Application extends android.app.Application {
         crashHandler.init(this);
     }
 
-    public static SimplePreference getPreference() {
+/*    public static SimplePreference getPreference() {
         return preference;
-    }
+    }*/
 
     public static synchronized Application getInstance() {
         return mInstance;

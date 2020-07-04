@@ -65,23 +65,13 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/ble_device_list"
-        android:textColor="@color/black"
-        android:gravity="center"
-        android:textSize="15sp"
-        android:layout_marginTop="10dp"
-        android:background="@color/bg_blue" />
-
         <ListView
             android:id="@+id/bluetoothlist_listview_devices"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/blue"
+            android:divider="@color/lightgray"
             android:dividerHeight="1dp"
             android:scrollbarSize="2dp"
-            android:scrollbarThumbVertical="@color/colorAccent" />
+            android:scrollbarThumbVertical="@color/white" />
     </LinearLayout>
 </LinearLayout>

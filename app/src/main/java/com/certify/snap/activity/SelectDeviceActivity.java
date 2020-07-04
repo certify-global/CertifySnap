@@ -146,15 +146,10 @@ public class SelectDeviceActivity extends SettingBaseActivity {
         public void onItemClick(AdapterView<?> adapterView, View clickedView, int pos, long id) {
             try {
                 BluetoothDevice device = mLeDeviceListAdapter.getDevice(pos);
-                Log.d("TAG", "Naga......onItemClick.... device : "+device);
-
                 if (device == null) return;
-
                 DeviceInfoManager manager = DeviceInfoManager.getInstance();
                 manager.setDeviceInfo(device);
                 BusProvider.getInstance().post(new DeviceChangedEvent());
-
-
 
                 Toast.makeText(getBaseContext(), R.string.ble_selected, Toast.LENGTH_SHORT).show();
                 finish();

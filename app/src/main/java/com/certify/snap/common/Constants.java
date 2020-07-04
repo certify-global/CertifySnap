@@ -29,5 +29,8 @@ public class Constants {
     public static final int FACE_MIN_THRESHOLD_RETRY = 50;
 
     public static final int FACIAL_DETECT_THRESHOLD = 80;
+
+    public static final int MEASURED_STATE_MASK = 0xff000000;
+
 }
 

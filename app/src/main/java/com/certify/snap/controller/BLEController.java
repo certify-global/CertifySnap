@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 
 import com.certify.snap.bluetooth.bleCommunication.BluetoothGattAttributes;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
@@ -16,12 +17,21 @@ import com.certify.snap.bluetooth.data.DeviceInfoManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
 public class BLEController {
     private static BLEController bleServiceInstance = null;
-    private boolean mConnected = false;
     private BluetoothLeService mBluetoothLeService;
     private byte[] ledrgb = new byte[3];
+    private int mRelayTime = 3;
+    private Timer mRelayTimer;
+    private boolean isNormalTempLightEnabled =false;
+    private boolean isHighTempLightEnabled = false;
+    private int NORMAL_TEMP_COLOR =-16711936;
+    private int HIGH_TEMP_COLOR = 0xffff0000;
 
     public static BLEController getInstance() {
         if (bleServiceInstance == null)
@@ -30,74 +40,58 @@ public class BLEController {
         return bleServiceInstance;
     }
 
-    public BluetoothLeService getmBluetoothLeService() {
-        return mBluetoothLeService;
-    }
-
-    public void setmBluetoothLeService(BluetoothLeService mBluetoothLeService) {
+    public void setBluetoothLeService(BluetoothLeService mBluetoothLeService) {
         this.mBluetoothLeService = mBluetoothLeService;
     }
 
-    /**
-     * receive connection state
-     */
-    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
+    public boolean isNormalTempLightEnabled() {
+        return isNormalTempLightEnabled;
+    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final Intent mIntent = intent;
-            final String action = intent.getAction();
+    public void setNormalTempLightEnabled(boolean normalTempLightEnabled) {
+        isNormalTempLightEnabled = normalTempLightEnabled;
+    }
 
-            // connected
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                Log.e("TAG", "BroadcastReceiver : Connected!");
-                mConnected = true;
-                //Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
+    public boolean isHighTempLightEnabled() {
+        return isHighTempLightEnabled;
+    }
+
+    public void setHighTempLightEnabled(boolean highTempLightEnabled) {
+        isHighTempLightEnabled = highTempLightEnabled;
+    }
+
+    private void startBleLightTimer() {
+        mRelayTimer = new Timer();
+        mRelayTimer.schedule(new TimerTask() {
+            public void run() {
+                bleLightOff();
+                this.cancel();
             }
-            // disconnected
-            else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                Log.e("TAG", "BroadcastReceiver : Disconnected!");
-                mConnected = false;
-                //Toast.makeText(getBaseContext(), R.string.ble_disconnected, Toast.LENGTH_SHORT).show();
-            }
-            // found GATT service
-            else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                Log.e("TAG", "BroadcastReceiver : Found GATT!");
-            }
-        }
-    };
+        }, mRelayTime * 1000);
+    }
 
-    /**
-     * bluetooth service connection
-     */
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                //Toast.makeText( R.string.ble_not_find, Toast.LENGTH_SHORT).show();
-            }
-            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
-        }
+    public void setLightOnNormalTemperature() {
+        if (isNormalTempLightEnabled)
+            bleLightColor(NORMAL_TEMP_COLOR);
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
-        }
-    };
-
-
+    public void setLightOnHighTemperature() {
+        if (isHighTempLightEnabled)
+            bleLightColor(HIGH_TEMP_COLOR);
+    }
     /**
      * Red Value--> 0xffff0000
      * Green Value --->-16711936
      * Blue light value ---> -16776961
      */
-    public void bleLightColor(int colorValue) {
+    private void bleLightColor(int colorValue) {
         int val = setColorLight(colorValue, 0.0f);
         byte[] rgb = {6, 1, intToByte(Color.red(val)), intToByte(Color.green(val)), intToByte(Color.blue(val))};
         controlLed(rgb);
         for (int i = 0; i < 3; i++)
             ledrgb[i] = rgb[i + 1];
+
+        startBleLightTimer();
     }
 
     public static byte intToByte(int i) {
@@ -113,7 +107,7 @@ public class BLEController {
         this.colorDataList.add(bArr1);
     }
 
-    public void data(){
+    public void data() {
         byte[] bArr = new byte[(this.colorDataList.size() * 5)];
         int i = 0;
         for (byte[] bArr2 : this.colorDataList) {
@@ -142,24 +136,32 @@ public class BLEController {
 
     /**
      * send rgb byte array to ble device
+     *
      * @param rgb
      * @return
      */
     private boolean controlLed(byte[] rgb) {
-        // get bluetoothGattCharacteristic
+        if(mBluetoothLeService == null)
+            return false;
         BluetoothGattCharacteristic characteristic = mBluetoothLeService.getGattCharacteristic(BluetoothGattAttributes.LED_CHARACTERISTIC);
-
+        Log.d("TAG", "controlLed: " + characteristic);
         if (characteristic != null) {
-            // check connection
-            if (!mConnected) {
-                //Toast.makeText(this, R.string.ble_not_connected, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            // send characteristic data
-            mBluetoothLeService.sendDataCharacteristic(characteristic,rgb );
+            mBluetoothLeService.sendDataCharacteristic(characteristic, rgb);
             return true;
         }
         Log.e("TAG", "Not founded characteristic");
         return false;
     }
+
+    public void bleLightOff() {
+        byte[] rgb = {6, 1, intToByte(Color.red(MEASURED_STATE_MASK)), intToByte(Color.green(MEASURED_STATE_MASK)), intToByte(Color.blue(MEASURED_STATE_MASK))};
+        controlLed(rgb);
+        for (int i = 0; i < 3; i++)
+            ledrgb[i] = rgb[i + 1];
+    }
+
+    private void  clearData(){
+        mBluetoothLeService = null;
+    }
+
 }
