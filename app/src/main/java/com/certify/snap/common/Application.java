@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.certify.snap.BuildConfig;
-import com.certify.snap.bluetooth.data.SimplePreference;
 import com.certify.snap.service.AlarmReceiver;
 import com.common.thermalimage.ThermalImageUtil;
 import com.microsoft.appcenter.AppCenter;
@@ -37,19 +36,18 @@ public class Application extends android.app.Application {
     private static final String TAG = Application.class.getSimpleName();
     private static Application mInstance;
     private Novate novate;
-//    private MyOkHttp mMyOkHttp;
-   // private DownloadMgr mDownloadMgr;
+    //    private MyOkHttp mMyOkHttp;
+    // private DownloadMgr mDownloadMgr;
     public static boolean member=false;
     private List<Activity> activityList = new LinkedList();
     private ThermalImageUtil temperatureUtil;
-    //private static SimplePreference preference;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         LitePal.initialize(this);
-        //preference = new SimplePreference(this);
+
         mInstance = this;
 
         novate = new Novate.Builder(this).baseUrl(GlobalParameters.BASEURL).addLog(true)
@@ -84,10 +82,6 @@ public class Application extends android.app.Application {
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(this);
     }
-
-/*    public static SimplePreference getPreference() {
-        return preference;
-    }*/
 
     public static synchronized Application getInstance() {
         return mInstance;
@@ -145,12 +139,12 @@ public class Application extends android.app.Application {
     }
 
     private void initAppCenter() {
-        /*setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
+        setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
         AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",
-                Analytics.class, Crashes.class);
+    Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
-        Crashes.setEnabled(true);*/
-    }
+        Crashes.setEnabled(true);
+}
 
     private void setAppCenterCrashListener() {
         AbstractCrashesListener crashesListener = new AbstractCrashesListener() {

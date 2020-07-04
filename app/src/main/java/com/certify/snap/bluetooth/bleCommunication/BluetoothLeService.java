@@ -175,7 +175,6 @@ public class BluetoothLeService extends Service {
         Log.e(TAG, "Trying to create a new connection.");
 
         mBluetoothDeviceAddress = address;
-        Log.d(TAG, "naga bluetooth device Address"+ mBluetoothDeviceAddress);
 
         mConnectionState = STATE_CONNECTING;
 
@@ -267,21 +266,12 @@ public class BluetoothLeService extends Service {
      * @return
      */
     public BluetoothGattCharacteristic getGattCharacteristic(String CharName) {
-        //Log.d(TAG, "naga getGattCharacteristic parameter "+ CharName);
-        //Log.d(TAG, "naga mGattCharacteristics  "+ mGattCharacteristics.size());
 
         BluetoothGattCharacteristic characteristic = null;
-        for(int i=0; i<mGattCharacteristics.size(); i++) {
-            //Log.d(TAG, "naga mGattCharacteristics i "+ mGattCharacteristics.size());
-            for(int k=0; k<mGattCharacteristics.get(i).size(); k++) {
-               /* Log.d(TAG, "naga mGattCharacteristics k "+ mGattCharacteristics.get(i).size());
-                Log.d(TAG, "naga UUID.fromString(CharName) "+ UUID.fromString(CharName));
-                Log.d(TAG, "naga mGattCharacteristics.get(i).get(k).getUuid() "+ mGattCharacteristics.get(i).get(k).getUuid());
-*/
-                if(UUID.fromString(CharName).equals(mGattCharacteristics.get(i).get(k).getUuid())) {
+        for (int i = 0; i < mGattCharacteristics.size(); i++) {
+            for (int k = 0; k < mGattCharacteristics.get(i).size(); k++) {
+                if (UUID.fromString(CharName).equals(mGattCharacteristics.get(i).get(k).getUuid())) {
                     characteristic = mGattCharacteristics.get(i).get(k);
-                    //Log.d(TAG, "naga mGattCharacteristics.get(i).get(k).getUuid() "+ mGattCharacteristics.get(i).get(k).getUuid());
-
                     break;
                 }
             }

@@ -69,7 +69,6 @@ public class AudioVisualActivity extends SettingBaseActivity {
     private static final int RESULT_LOAD_IMAGE = 8001;
 
     private byte[] ledrgb = new byte[3];
-    private byte ledbright = (byte)0XFF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,17 +229,20 @@ public class AudioVisualActivity extends SettingBaseActivity {
             // connected
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 Log.e(TAG, "BroadcastReceiver : Connected!");
+                Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
                 mConnected = true;
                 tv_ble_connect_btn.setText("DISCONNECT");
                 tv_ble_status.setText("Connected");
                 tv_ble_status.setTextColor(getResources().getColor(R.color.green));
-                Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
             }
             // disconnected
             else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 Log.e(TAG, "BroadcastReceiver : Disconnected!");
-                mConnected = false;
                 Toast.makeText(getBaseContext(), R.string.ble_disconnected, Toast.LENGTH_SHORT).show();
+                mConnected = false;
+                tv_ble_connect_btn.setText("CONNECT");
+                tv_ble_status.setText("Not Connected");
+                tv_ble_status.setTextColor(getResources().getColor(R.color.red));
             }
             // found GATT service
             else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -330,8 +332,12 @@ public class AudioVisualActivity extends SettingBaseActivity {
     }
 
     public void btn_Bluetooth(View v) {
-        Intent intent = new Intent(this, SelectDeviceActivity.class);
-        startActivity(intent);
+        if (!mConnected) {
+            Intent intent = new Intent(this, SelectDeviceActivity.class);
+            startActivity(intent);
+        } else {
+            mBluetoothLeService.disconnect();
+        }
     }
 
     /**
