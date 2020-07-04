@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.certify.snap">
 
+    <uses-sdk tools:overrideLibrary="           androidx.camera.camera2, androidx.camera.core,           androidx.camera.view, androidx.camera.lifecycle" />
+
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,8 +16,13 @@
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
     <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission
         android:name="android.permission.READ_LOGS"
         tools:ignore="ProtectedPermissions" /> <!-- Push service -->
@@ -26,22 +33,19 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
-    <uses-sdk
-        tools:overrideLibrary="
-          androidx.camera.camera2, androidx.camera.core,
-          androidx.camera.view, androidx.camera.lifecycle" />
-
     <application
-        tools:replace="android:appComponentFactory"
-        android:appComponentFactory="whateverString"
         android:name=".common.Application"
         android:allowBackup="true"
+        android:appComponentFactory="whateverString"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:appComponentFactory">
+        <activity android:name=".bluetooth.SelectDeviceActivity"></activity>
+        <activity android:name=".activity.AudioVisualActivity" />
         <activity
             android:name=".activity.NFCCardActivity"
             android:launchMode="singleTask"
@@ -91,10 +95,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.AccessControlActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity android:name=".activity.DeviceSettingsActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.DeviceSettingsActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.InitializationActivity"
             android:launchMode="singleTask" />
@@ -142,29 +146,35 @@
             </intent-filter>
         </receiver>
 
-        <service android:name = ".service.DeviceHealthService" android:stopWithTask="false" />
-        <service android:name = ".service.MemberSyncService" android:stopWithTask="false" />
-        <service android:name=".service.AccessTokenJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" ></service>
-        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        <service
+            android:name=".service.DeviceHealthService"
+            android:stopWithTask="false" />
+        <service
+            android:name=".service.MemberSyncService"
+            android:stopWithTask="false" />
+        <service
+            android:name=".service.AccessTokenJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode,face,ocr,ica"/>
+            android:value="barcode,face,ocr,ica" />
 
         <service
             android:name=".service.DeviceHealthService"
             android:stopWithTask="false" />
 
-
-
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/final_logo" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
@@ -176,10 +186,16 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="com.certify.snap.bluetooth.bleCommunication.BluetoothLeService"
+            android:enabled="true" />
+
+
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="default_channel_id"/>
-
+            android:value="default_channel_id" />
     </application>
 
 </manifest>

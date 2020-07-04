@@ -64,7 +64,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             thermal_check_setting, scan_setting, confirmation_setting, guide_setting, qr_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management, tv_visual_settings;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -201,6 +201,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
         tv_member_management = findViewById(R.id.member_management_setting);
+        tv_visual_settings = findViewById(R.id.visual_setting);
         tv_guide_setting = findViewById(R.id.tv_guide_setting);
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
         accessControl = findViewById(R.id.access_control);
@@ -222,6 +223,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
         tv_member_management.setTypeface(rubiklight);
+        tv_visual_settings.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_qr_setting.setTypeface(rubiklight);
         tvDeviceOnline.setTypeface(rubiklight);
@@ -344,6 +346,10 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             case R.id.management_setting:
                 Intent memberIntent = new Intent(SettingActivity.this, ManagementActivity.class);
                 startActivity(memberIntent);
+                break;
+            case R.id.audio_visual_setting:
+                Intent visualIntent = new Intent(SettingActivity.this, AudioVisualActivity.class);
+                startActivity(visualIntent);
                 break;
             case R.id.btn_exit:
                 Util.switchRgbOrIrActivity(SettingActivity.this, true);

@@ -43,11 +43,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
-    private TextView btn_save, tvSettingsName, activateStatus, not_activate, tv_device_activation_status;
+    private TextView btn_save, tvSettingsName, activateStatus, tv_device_activation_status;
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
-    private Button tvClearData;
+    private Button tvClearData, not_activate;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
     private String url_end;

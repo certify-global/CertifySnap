@@ -37,6 +37,7 @@ import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
+import com.certify.snap.bluetooth.BLEController;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
 
@@ -895,10 +896,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(true, text, tempString, false, data);
                             faceAndRelayEnabledForHighTemperature();
+                            bleLightForHighTemperature();
+
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false, data);
                             faceAndRelayEnabledForNormalTemperature();
+                            bleLightForNormalTemperature();
                         }
 
                     } catch (Exception e) {
@@ -911,6 +915,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }).start();
 
         }
+    }
+    private void bleLightForNormalTemperature(){
+        BLEController.getInstance().bleLightColor(-16711936);
+    }
+    private void bleLightForHighTemperature(){
+        BLEController.getInstance().bleLightColor(0xffff0000);
     }
 
     private void faceAndRelayEnabledForNormalTemperature(){
@@ -970,10 +980,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         text = getString(R.string.temperature_anormaly) + tempString + temperatureFormat;
                         TemperatureCallBackUISetup(true, text, tempString, false, data);
                         faceAndRelayEnabledForHighTemperature();
+                        bleLightForHighTemperature();
                     } else {
                         text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                         TemperatureCallBackUISetup(false, text, tempString, false, data);
                         faceAndRelayEnabledForNormalTemperature();
+                        bleLightForNormalTemperature();
                     }
                     emitter.onNext(temperature);
                 })

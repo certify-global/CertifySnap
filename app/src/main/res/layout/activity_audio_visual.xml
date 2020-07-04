@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.ScanViewActivity">
-
+    tools:context=".activity.AudioVisualActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +22,8 @@
                 android:layout_height="30dp"
                 android:layout_margin="5dp"
                 android:background="@mipmap/back"
-                android:onClick="onParamterback" />
+                android:onClick="onParamterback"
+                tools:ignore="OnClick" />
 
             <TextView
                 android:id="@+id/titles"
@@ -33,9 +32,10 @@
                 android:layout_marginLeft="10dp"
                 android:gravity="left|center"
                 android:onClick="onParamterback"
-                android:text="@string/scan_view"
+                android:text="@string/audio_visual_view"
                 android:textColor="#ffffff"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                tools:ignore="OnClick" />
 
             <TextView
                 android:id="@+id/btn_exit"
@@ -44,23 +44,24 @@
                 android:layout_marginRight="10dp"
                 android:gravity="right|center"
                 android:text="@string/save"
+                android:onClick="saveAudioSettings"
                 android:textColor="#ffffff"
                 android:textSize="22sp" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_temp_details"
+            android:id="@+id/tv_sound_low"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="10dp"
-            android:text="@string/display_temperature"
+            android:layout_marginTop="@dimen/margin_15"
+            android:text="@string/enable_sound"
             android:textColor="@color/black"
             android:textSize="@dimen/font_18" />
 
         <RadioGroup
-            android:id="@+id/radio_group_tempe"
+            android:id="@+id/radio_group_sound"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
@@ -68,7 +69,7 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radio_yes_temp"
+                android:id="@+id/radio_yes_sound"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_30"
@@ -78,7 +79,7 @@
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton
-                android:id="@+id/radio_no_temp"
+                android:id="@+id/radio_no_sound"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/living_type_0"
@@ -89,25 +90,26 @@
         </RadioGroup>
 
         <TextView
-            android:id="@+id/tv_temp_all"
+            android:id="@+id/tv_sound_high"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/Capture_all"
+            android:text="@string/enable_sound_high"
             android:textColor="@color/black"
             android:textSize="@dimen/font_18" />
 
         <RadioGroup
-            android:id="@+id/radio_group_capture_all"
+            android:id="@+id/radio_group_sound_high"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radio_yes_capture_all"
+                android:id="@+id/radio_yes_sound_high"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_30"
@@ -117,7 +119,98 @@
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton
-                android:id="@+id/radio_no_capture_all"
+                android:id="@+id/radio_no_sound_high"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_15"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_ble_connect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:drawablePadding="5dp"
+                android:text="@string/ble_connect_status"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_ble_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="4dp"
+                android:text="Not Connected"
+                android:textColor="@color/red"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/tv_ble_connection_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:background="@color/bg_blue"
+                android:onClick="btn_Bluetooth"
+                android:padding="10dp"
+                android:text="@string/ble_connect"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue" />
+
+        <TextView
+            android:id="@+id/tv_light_low"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_15"
+            android:text="@string/enable_light"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_light"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_yes_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/radio_no_light"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/living_type_0"
@@ -128,26 +221,26 @@
         </RadioGroup>
 
         <TextView
-            android:id="@+id/tv_capture_image"
+            android:id="@+id/tv_light_high"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_20"
+            android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_15"
-            android:layout_marginEnd="@dimen/margin_20"
-            android:text="@string/capture_images"
+            android:text="@string/enable_light_high"
             android:textColor="@color/black"
             android:textSize="@dimen/font_18" />
 
         <RadioGroup
-            android:id="@+id/radio_group_capture"
+            android:id="@+id/radio_group_light_high"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_20"
+            android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radio_yes_capture"
+                android:id="@+id/radio_yes_light_high"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_30"
@@ -157,7 +250,7 @@
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton
-                android:id="@+id/radio_no_capture"
+                android:id="@+id/radio_no_light_high"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/living_type_0"
@@ -167,180 +260,52 @@
 
         </RadioGroup>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue" />
 
-        <TextView
-            android:id="@+id/tv_mask"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/enable_mask"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_mask"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/radio_yes_mask"
+            <TextView
+                android:id="@+id/tv_ble_test"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/living_type_1"
+                android:drawablePadding="5dp"
+                android:text="@string/ble_light_test"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
+                android:textSize="20sp" />
 
-            <RadioButton
-                android:id="@+id/radio_no_mask"
+            <Button
+                android:id="@+id/light_On"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
+                android:layout_marginLeft="25dp"
+                android:background="@color/green"
+                android:onClick="bleLightOn"
+                android:padding="10dp"
+                android:text="Light On"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
 
-        </RadioGroup>
-
-        <TextView
-            android:id="@+id/tv_reg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_15"
-            android:layout_marginRight="@dimen/margin_20"
-            android:text="@string/allow_low"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_reg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_yes_reg"
+            <Button
+                android:id="@+id/light_off"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/living_type_1"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-            <RadioButton
-                android:id="@+id/radio_no_reg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-        </RadioGroup>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_input_low_temp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:visibility="gone">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextDialogUserInput_low"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/edittextbackground"
-                android:hint="@string/temperature_threshold"
-                android:inputType="numberDecimal" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/tv_delay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/screen_delay"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_input_delay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_screen_delay"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginRight="20dp"
-                android:background="@drawable/edittextbackground"
-                android:hint="@string/screen_delay"
-                android:inputType="number"
-                android:maxLength="25"
-                android:paddingStart="@dimen/margin_5"
-                android:singleLine="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/tv_scan_proximity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/allow_scan_proximity"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <RadioGroup
-            android:id="@+id/scan_proximity_rg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_yes_scan_proximity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/living_type_1"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:checked="true"
-                android:theme="@style/MyCheckBox" />
-
-            <RadioButton
-                android:id="@+id/radio_no_scan_proximity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-        </RadioGroup>
+                android:layout_marginLeft="15dp"
+                android:background="@color/red"
+                android:onClick="bleLightOff"
+                android:padding="10dp"
+                android:text="Light OFF"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+        </LinearLayout>
 
     </LinearLayout>
-
 </LinearLayout>

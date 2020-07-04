@@ -223,16 +223,20 @@
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound on normal temperature</string>
     <string name="enable_sound_high">Enable sound on temperature above threshold</string>
+    <string name="enable_light">Enable light on normal temperature</string>
+    <string name="enable_light_high">Enable light on temperature above threshold</string>
     <string name="enable_mask">Enable Mask Detection</string>
     <string name="enable_facial">Enable Facial Recognition</string>
-    <string name="screen_delay">Screen display time (seconds)</string>
+    <string name="screen_delay">Screen display time (seconds)</string>s
     <string name="tv_confirmation_setting">Confirmation View Settings</string>
     <string name="member_management_setting">Member Management</string>
+    <string name="audio_visual_setting">Audio and Visual Settings </string>
     <string name="confirmation_view">Confirmation View</string>
     <string name="enable_temperature">Enable</string>
     <string name="confirmation_text_below">Confirmation for temperature below threshold</string>
     <string name="confirmation_text_above">Confirmation for temperature above threshold</string>
     <string name="scan_view">Scan View</string>
+    <string name="audio_visual_view">Audio and Visual</string>
     <string name="thermal_view">Home View</string>
     <string name="enter_title_main">Enter Main Text</string>
     <string name="enter_subtitle_sub">Enter Sub Text</string>
@@ -398,5 +402,26 @@
     <string name="active">Active</string>
     <string name="in_active">Inactive</string>
     <string name="status">Status</string>
+
+    <!--audio and visual page-->
+    <string name="ble_not_supported">This device not support bluetooth service</string>
+    <string name="ble_startfind">Searching devices...</string>
+    <string name="ble_canceldfind">Canceled searching</string>
+    <string name="ble_not_find">No bluetooth devices found</string>
+    <string name="ble_canceled">You need to turn on the bluetooth service</string>
+    <string name="ble_not_connected">Not connected with any bulbs</string>
+    <string name="ble_selected">You have set up a Bluetooth connection device</string>
+    <string name="ble_connect_success">Connected successful</string>
+    <string name="ble_disconnected">Disconnected from device</string>
+    <string name="ble_device_list">Connectable device list</string>
+    <string name="unknown_service">unknown service</string>
+    <string name="unknown_characteristic">unknown_characteristic</string>
+    <string name="permission_request">The permission is required to run this app</string>
+    <string name="permission_canceled">The permission is required to run this app</string>
+    <string name="ble_connect_status">BLE Connect Status : </string>
+    <string name="ble_light_test">BLE Light Test : </string>
+
+    <string name="ble_connect"><u>Connect</u></string>
+    <string name="not_connected"><u>Not Connected</u></string>
 
 </resources>
