@@ -37,7 +37,7 @@ import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
-import com.certify.snap.bluetooth.BLEController;
+import com.certify.snap.controller.BLEController;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
 

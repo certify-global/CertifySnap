@@ -1,6 +1,4 @@
-package com.certify.snap.bluetooth;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -21,21 +19,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.certify.snap.R;
+import com.certify.snap.adapter.DeviceListAdapter;
 import com.certify.snap.bluetooth.data.DeviceInfoManager;
-import com.certify.snap.bluetooth.otto.BusProvider;
-import com.certify.snap.bluetooth.otto.DeviceChangedEvent;
+import com.certify.snap.bluetooth.bleCommunication.BusProvider;
+import com.certify.snap.bluetooth.bleCommunication.DeviceChangedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 
-public class SelectDeviceActivity extends AppCompatActivity {
+public class SelectDeviceActivity extends SettingBaseActivity {
 
     public boolean mScanning;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
-    private LeDeviceListAdapter mLeDeviceListAdapter;
+    private DeviceListAdapter mLeDeviceListAdapter;
 
     private ArrayList<String> deviceList;
 
@@ -71,7 +70,7 @@ public class SelectDeviceActivity extends AppCompatActivity {
         else {
             // initialize list view adapter
             deviceList = new ArrayList();
-            mLeDeviceListAdapter = new LeDeviceListAdapter(this, R.layout.item_bluetoothdevice);
+            mLeDeviceListAdapter = new DeviceListAdapter(this, R.layout.item_bluetoothdevice);
             listView_BluetoothList.setAdapter(mLeDeviceListAdapter);
             listView_BluetoothList.setOnItemClickListener(new ListViewItemClickListener());
             scanLeDevice(true);
@@ -196,5 +195,10 @@ public class SelectDeviceActivity extends AppCompatActivity {
             startActivity(intent);
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void onParamterback(View view) {
+        startActivity(new Intent(this, AudioVisualActivity.class));
+        finish();
     }
 }

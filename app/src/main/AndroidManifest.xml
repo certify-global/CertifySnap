@@ -44,7 +44,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".bluetooth.SelectDeviceActivity"></activity>
+        <activity android:name=".activity.SelectDeviceActivity"></activity>
         <activity android:name=".activity.AudioVisualActivity" />
         <activity
             android:name=".activity.NFCCardActivity"

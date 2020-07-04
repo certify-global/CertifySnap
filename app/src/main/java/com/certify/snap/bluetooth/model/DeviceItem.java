@@ -1,9 +1,5 @@
 package com.certify.snap.bluetooth.model;
 
-/**
- * Created by skydoves on 2017-07-01.
- */
-
 public class DeviceItem {
     private String deivceName;
     private String deviceAddress;

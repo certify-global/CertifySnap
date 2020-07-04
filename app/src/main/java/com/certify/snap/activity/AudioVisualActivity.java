@@ -35,13 +35,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.BLEController;
-import com.certify.snap.bluetooth.SelectDeviceActivity;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothGattAttributes;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.bluetooth.data.DeviceInfoManager;
-import com.certify.snap.bluetooth.otto.BusProvider;
-import com.certify.snap.bluetooth.otto.DeviceChangedEvent;
+import com.certify.snap.bluetooth.bleCommunication.BusProvider;
+import com.certify.snap.bluetooth.bleCommunication.DeviceChangedEvent;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.squareup.otto.Subscribe;
@@ -231,7 +229,6 @@ public class AudioVisualActivity extends SettingBaseActivity {
                 Log.e(TAG, "BroadcastReceiver : Connected!");
                 mConnected = true;
                 tv_ble_connect_btn.setText("DISCONNECT");
-                tv_ble_connect_btn.setBackgroundColor(getResources().getColor(R.color.red));
                 tv_ble_status.setText("Connected");
                 tv_ble_status.setTextColor(getResources().getColor(R.color.green));
                 Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();

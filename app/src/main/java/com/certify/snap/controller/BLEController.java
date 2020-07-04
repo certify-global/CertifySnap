@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth;
+package com.certify.snap.controller;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;

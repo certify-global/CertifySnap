@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth;
+package com.certify.snap.adapter;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -14,13 +14,13 @@ import com.certify.snap.bluetooth.model.DeviceItem;
 import java.util.ArrayList;
 
 
-public class LeDeviceListAdapter extends BaseAdapter {
+public class DeviceListAdapter extends BaseAdapter {
     private ArrayList<BluetoothDevice> mLeDevices;
     private ArrayList<DeviceItem> data;
     private LayoutInflater mInflator;
     private int layout;
 
-    public LeDeviceListAdapter(Context context, int layout) {
+    public DeviceListAdapter(Context context, int layout) {
         this.mLeDevices = new ArrayList<BluetoothDevice>();
         this.mInflator = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.layout = layout;
