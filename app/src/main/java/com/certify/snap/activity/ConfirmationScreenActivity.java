@@ -117,11 +117,13 @@ public class ConfirmationScreenActivity extends Activity {
                 @Override
                 public void run() {
                     File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResultValues.getUserName() + FaceServer.IMG_SUFFIX);
-                    Glide.with(ConfirmationScreenActivity.this)
-                            .load(imgFile)
-                            .skipMemoryCache(true)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .into(user_img);
+                    if (imgFile.exists()) {
+                        Glide.with(ConfirmationScreenActivity.this)
+                                .load(imgFile)
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .into(user_img);
+                    }
                     user_name.setText(compareResultValues.getMessage());
                     face_score.setText(compareResultValues.getFacialScore());
                 }
@@ -137,11 +139,16 @@ public class ConfirmationScreenActivity extends Activity {
     private void onAccessCardMatch() {
         RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
         if (matchedMember != null) {
-            Glide.with(ConfirmationScreenActivity.this)
-                    .load(matchedMember.getImage())
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(user_img);
+            if (!matchedMember.getImage().isEmpty()) {
+                File file = new File(matchedMember.getImage());
+                if (file.exists()) {
+                    Glide.with(ConfirmationScreenActivity.this)
+                            .load(matchedMember.getImage())
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .into(user_img);
+                }
+            }
             user_name.setText(matchedMember.getFirstname());
         }else {
             user_img.setVisibility(View.GONE);
