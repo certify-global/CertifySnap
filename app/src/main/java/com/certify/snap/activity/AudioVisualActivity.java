@@ -22,10 +22,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,7 +57,7 @@ import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 public class AudioVisualActivity extends SettingBaseActivity {
 
     private SharedPreferences sp;
-    TextView tv_sound_high,tv_sound, btn_save , tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status;
+    TextView tv_sound_high,tv_sound, btn_save , tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status, title_audio_alert, title_visual_alert, tv_ble_connection;
     Button tv_ble_connect_btn, light_on, light_off;
     Typeface rubiklight;
 
@@ -108,6 +110,9 @@ public class AudioVisualActivity extends SettingBaseActivity {
         tv_ble_test = findViewById(R.id.tv_ble_test);
         tv_ble_connect = findViewById(R.id.tv_ble_connect);
         tv_ble_status = findViewById(R.id.tv_ble_status);
+        title_audio_alert = findViewById(R.id.title_audio_alert);
+        title_visual_alert = findViewById(R.id.title_visual_alert);
+        tv_ble_connection = findViewById(R.id.tv_ble_connection);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -122,6 +127,15 @@ public class AudioVisualActivity extends SettingBaseActivity {
         light_off.setTypeface(rubiklight);
         tv_ble_connect.setTypeface(rubiklight);
         tv_ble_status.setTypeface(rubiklight);
+        title_audio_alert.setTypeface(rubiklight);
+        title_visual_alert.setTypeface(rubiklight);
+        tv_ble_connection.setTypeface(rubiklight);
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
+        if (Build.VERSION.SDK_INT >= 24) {
+            tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            tv_ble_connection.setText(Html.fromHtml(text));
+        }
     }
 
     private void audioCheck(){
@@ -231,18 +245,14 @@ public class AudioVisualActivity extends SettingBaseActivity {
                 Log.e(TAG, "BroadcastReceiver : Connected!");
                 Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
                 mConnected = true;
-                tv_ble_connect_btn.setText("DISCONNECT");
-                tv_ble_status.setText("Connected");
-                tv_ble_status.setTextColor(getResources().getColor(R.color.green));
+                uiConnect();
             }
             // disconnected
             else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 Log.e(TAG, "BroadcastReceiver : Disconnected!");
                 Toast.makeText(getBaseContext(), R.string.ble_disconnected, Toast.LENGTH_SHORT).show();
                 mConnected = false;
-                tv_ble_connect_btn.setText("CONNECT");
-                tv_ble_status.setText("Not Connected");
-                tv_ble_status.setTextColor(getResources().getColor(R.color.red));
+                uiDisConnect();
             }
             // found GATT service
             else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -250,6 +260,39 @@ public class AudioVisualActivity extends SettingBaseActivity {
             }
         }
     };
+
+    private void uiConnect(){
+        //tv_ble_connect_btn.setText("CLEAR");
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Clear</a>";
+        if (Build.VERSION.SDK_INT >= 24) {
+            tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            tv_ble_connection.setText(Html.fromHtml(text));
+        }
+        String deviceInfo = DeviceInfoManager.getInstance().getDeviceName() + " " + DeviceInfoManager.getInstance().getDeviceAddress();
+        tv_ble_status.setText(deviceInfo);
+        tv_ble_status.setTextColor(getResources().getColor(R.color.green));
+        light_on.setEnabled(true);
+        light_off.setEnabled(true);
+        light_on.setBackgroundColor(getResources().getColor(R.color.bg_blue));
+        light_off.setBackgroundColor(getResources().getColor(R.color.bg_blue));
+    }
+
+    private void uiDisConnect(){
+        //tv_ble_connect_btn.setText("CONNECT");
+        tv_ble_status.setText("NONE");
+        tv_ble_status.setTextColor(getResources().getColor(R.color.red));
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
+        if (Build.VERSION.SDK_INT >= 24) {
+            tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            tv_ble_connection.setText(Html.fromHtml(text));
+        }
+        light_on.setEnabled(false);
+        light_off.setEnabled(false);
+        light_on.setBackgroundColor(getResources().getColor(R.color.gray));
+        light_off.setBackgroundColor(getResources().getColor(R.color.gray));
+    }
 
     /**
      * get broadcast intent-filter
@@ -331,7 +374,7 @@ public class AudioVisualActivity extends SettingBaseActivity {
         return false;
     }
 
-    public void btn_Bluetooth(View v) {
+    public void selectBleDevice(View v) {
         if (!mConnected) {
             Intent intent = new Intent(this, SelectDeviceActivity.class);
             startActivity(intent);
