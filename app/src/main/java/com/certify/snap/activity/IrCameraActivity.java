@@ -598,7 +598,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                             finishAffinity();
                             stopHealthCheckService();
-                            stopBLEService();
                             //stopMemberSyncService();
                         }
                     })
@@ -3387,9 +3386,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (serial != null) serial.close();
     }
 
-    private void stopBLEService() {
+ /*   private void stopBLEService() {
         Intent intent = new Intent(this, BluetoothLeService.class);
         stopService(intent);
-    }
+    }*/
 
 }
