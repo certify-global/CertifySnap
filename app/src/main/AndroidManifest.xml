@@ -188,7 +188,8 @@
         </service>
 
         <service
-            android:name="com.certify.snap.bluetooth.bleCommunication.BluetoothLeService"/>
+            android:name="com.certify.snap.bluetooth.bleCommunication.BluetoothLeService"
+            android:stopWithTask="false"/>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

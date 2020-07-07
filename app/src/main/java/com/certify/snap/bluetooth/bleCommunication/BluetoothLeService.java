@@ -281,6 +281,9 @@ public class BluetoothLeService extends Service {
 
     // send characteristic data
     public void sendDataCharacteristic(BluetoothGattCharacteristic characteristic, byte[] value) {
+        //Log.d(TAG, "naga sendDataCharacteristic value "+ value);
+        //Log.d(TAG, "naga sendDataCharacteristic  characteristic"+ characteristic);
+
         final BluetoothGattCharacteristic mBluetoothGattCharacteristic = characteristic;
         if(UUID.fromString(BluetoothGattAttributes.LED_CHARACTERISTIC).equals(characteristic.getUuid())) {
             mBluetoothGattCharacteristic.setValue(value);
@@ -288,9 +291,9 @@ public class BluetoothLeService extends Service {
         }
     }
 
-/*    @Override
+    @Override
     public void onTaskRemoved(Intent rootIntent) {
         super.onTaskRemoved(rootIntent);
-        //stopSelf();
-    }*/
+        stopSelf();
+    }
 }
