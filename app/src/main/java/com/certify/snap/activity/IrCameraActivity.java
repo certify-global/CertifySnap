@@ -2542,6 +2542,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 //  rl_header.setVisibility(View.GONE);
+                if (outerCircle != null)
+                    outerCircle.setBackgroundResource(R.drawable.border_shape);
                 logo.setVisibility(View.GONE);
                 relative_main.setVisibility(View.GONE);
                 changeVerifyBackground(R.color.transparency, true);
