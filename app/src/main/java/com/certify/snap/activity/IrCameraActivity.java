@@ -2548,7 +2548,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 clearQrCodePreview();
             }
         }, 400); //Add delay for white screen
-        //setCameraPreviewTimer();
+        setCameraPreviewTimer();
     }
 
     private void setCameraPreviewTimer() {

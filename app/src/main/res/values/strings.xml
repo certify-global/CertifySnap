@@ -381,5 +381,6 @@
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
+    <string name="screen_timeout_msg">Please input Screen timeout for scan to 5 or above</string>
 
 </resources>
