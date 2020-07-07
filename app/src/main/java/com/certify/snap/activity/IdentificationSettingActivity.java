@@ -22,6 +22,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class IdentificationSettingActivity extends SettingBaseActivity {
     private static String TAG = IdentificationSettingActivity.class.getSimpleName();
@@ -40,6 +41,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     EditText editTextDialogUserInput;
     TextView tv_display;
     TextView mAnonymousTv;
+    TextInputLayout text_input_timeout;
     private TextView scanMode;
     private RadioGroup scanModeRg;
     private RadioButton scanModeRbEasy;
@@ -93,6 +95,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             rAnonymousNoRb = findViewById(R.id.radio_no_anonymous);
             radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
             parentLayout = findViewById(R.id.parent_view_layout);
+            text_input_timeout = findViewById(R.id.text_input_timeout);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
@@ -309,9 +312,12 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (charSequence.toString().isEmpty()) return;
+                if (charSequence.toString().isEmpty()) {
+                    text_input_timeout.setError("");
+                    return;
+                }
                 if (Integer.parseInt(charSequence.toString()) < 5) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.screen_timeout_msg), Toast.LENGTH_SHORT).show();
+                    text_input_timeout.setError(getResources().getString(R.string.screen_timeout_msg));
                 }
             }
 
