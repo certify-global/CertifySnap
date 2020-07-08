@@ -1,27 +1,28 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.certify.snap.R;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class IdentificationSettingActivity extends SettingBaseActivity {
     private static String TAG = IdentificationSettingActivity.class.getSimpleName();
@@ -40,12 +41,14 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     EditText editTextDialogUserInput;
     TextView tv_display;
     TextView mAnonymousTv;
+    TextInputLayout text_input_timeout;
     private TextView scanMode;
     private RadioGroup scanModeRg;
     private RadioButton scanModeRbEasy;
     private RadioButton scanModeRbFirm;
     private boolean isHomeScreenViewEnabled;
     private LinearLayout parentLayout;
+    private boolean isHomeScreenTextOnlyEnabled;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,6 +95,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             rAnonymousNoRb = findViewById(R.id.radio_no_anonymous);
             radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
             parentLayout = findViewById(R.id.parent_view_layout);
+            text_input_timeout = findViewById(R.id.text_input_timeout);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
@@ -106,6 +110,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             setScanModeDefault();
             setScanModeClickListener();
             getHomeScreenEnabledStatus();
+            setEditTextTimeOutListener();
 
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -175,6 +180,10 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (!isRfidCodeTimeOutInRange()) {
+                        Toast.makeText(getApplicationContext(), getString(R.string.screen_timeout_msg), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     saveRfidSettings();
                     startActivity(new Intent(IdentificationSettingActivity.this, SettingActivity.class));
                     Util.showToast(IdentificationSettingActivity.this, getString(R.string.save_success));
@@ -233,7 +242,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int id) {
                 if (id == R.id.radio_yes_rfid) {
-                    if (!isHomeScreenViewEnabled) {
+                    if (!isHomeScreenViewEnabled && !isHomeScreenTextOnlyEnabled) {
                         showSnackBarMessage(getString(R.string.enable_home_view_msg));
                         rfidNoRb.setChecked(true);
                         return;
@@ -287,9 +296,45 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
 
     private void getHomeScreenEnabledStatus() {
         isHomeScreenViewEnabled = sp.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true);
+        isHomeScreenTextOnlyEnabled = sp.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
     }
 
     private void showSnackBarMessage(String message) {
         Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void setEditTextTimeOutListener() {
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().isEmpty()) {
+                    text_input_timeout.setError("");
+                    return;
+                }
+                if (Integer.parseInt(charSequence.toString()) < 5) {
+                    text_input_timeout.setError(getResources().getString(R.string.screen_timeout_msg));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
+        editTextDialogTimeout.addTextChangedListener(textWatcher);
+    }
+
+    private boolean isRfidCodeTimeOutInRange() {
+        boolean result = false;
+        if (editTextDialogTimeout.getText().toString().isEmpty()) return false;
+        if (Integer.parseInt(editTextDialogTimeout.getText().toString()) >= 5) {
+            result = true;
+        }
+        return result;
     }
 }
