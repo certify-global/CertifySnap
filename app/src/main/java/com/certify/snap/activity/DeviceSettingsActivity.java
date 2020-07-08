@@ -171,6 +171,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (!isValidUrl()) {
+                        return;
+                    }
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(etEndUrl.getText().toString().trim())) {
                         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
@@ -191,8 +194,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvClearData.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    deleteAppData();
-                    restartApp();
+                    if (isValidUrl()) {
+                        deleteAppData();
+                        restartApp();
+                    }
                 }
             });
         } catch (Exception e) {
@@ -356,5 +361,27 @@ private void setUIData(){
         } catch (Exception e) {
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isValidUrl()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onParamterback(View view) {
+        if (isValidUrl()) {
+            super.onParamterback(view);
+        }
+    }
+
+    private boolean isValidUrl() {
+        if (etEndUrl.getText().toString().isEmpty()) {
+            etEndUrl.setError("Please input valid url");
+            return false;
+        }
+        return true;
     }
 }
