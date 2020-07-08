@@ -1041,8 +1041,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isFaceIdentified = false;
 
                     if (maskDetectBitmap == null && maskEnabled) {
-                        maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
-                        processImageAndGetMaskStatus(maskDetectBitmap);
+                        if (rgbBitmap != null) {
+                            maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
+                            processImageAndGetMaskStatus(maskDetectBitmap);
+                        }
                     }
                     countTempError = 0;
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
@@ -3080,6 +3082,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceEngineHelper.getFrEngine().getMask(maskInfoList);
                             if (maskInfoList.size() > 0) {
                                 faceParameters.maskStatus = maskInfoList.get(0).getMask();
+                                maskStatus = faceParameters.maskStatus;
                             }
 
                             List<FaceShelterInfo> shelterInfoList = new ArrayList<>();
