@@ -29,6 +29,8 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 
+import static com.tamic.novate.Novate.TAG;
+
 public class SelectDeviceActivity extends SettingBaseActivity {
 
     public boolean mScanning;
@@ -155,7 +157,7 @@ public class SelectDeviceActivity extends SettingBaseActivity {
                 finish();
             }
             catch (Exception e){
-                Log.d("TAG", "Naga......onItemClick.... e : "+e.toString());
+                Log.e(TAG, "onItemClick: " + e.toString());
             }
         }
     };

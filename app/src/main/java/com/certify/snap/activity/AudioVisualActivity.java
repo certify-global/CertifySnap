@@ -1,8 +1,5 @@
 package com.certify.snap.activity;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -36,12 +33,15 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothGattAttributes;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
-import com.certify.snap.bluetooth.data.DeviceInfoManager;
 import com.certify.snap.bluetooth.bleCommunication.BusProvider;
 import com.certify.snap.bluetooth.bleCommunication.DeviceChangedEvent;
+import com.certify.snap.bluetooth.data.DeviceInfoManager;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
@@ -49,6 +49,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 
@@ -91,11 +92,16 @@ public class AudioVisualActivity extends SettingBaseActivity {
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        // connect ble device
-       /* if (mBluetoothLeService != null)
-            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());*/
-    }
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
+        // connect ble device
+        if  (mBluetoothLeService != null)
+            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+    }
     private void initView(){
 
         tv_ble_connect_btn = findViewById(R.id.tv_ble_connection_btn);
@@ -220,8 +226,8 @@ public class AudioVisualActivity extends SettingBaseActivity {
                 Toast.makeText(getBaseContext(), R.string.ble_not_find, Toast.LENGTH_SHORT).show();
                 finish();
             }
+            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
             BLEController.getInstance().setBluetoothLeService(mBluetoothLeService);
-            //mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
         }
 
         @Override
