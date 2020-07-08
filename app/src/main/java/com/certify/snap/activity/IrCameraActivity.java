@@ -1040,12 +1040,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (faceFeature != null) {
                     isFaceIdentified = false;
 
-                    if (maskDetectBitmap == null && maskEnabled) {
-                        if (rgbBitmap != null) {
-                            maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
-                            processImageAndGetMaskStatus(maskDetectBitmap);
-                        }
-                    }
                     countTempError = 0;
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
@@ -3204,6 +3198,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         cancelPreviewIdleTimer();
         disableNfc();
         enableLedPower();
+
+        if (maskEnabled && !faceDetectEnabled) {
+            if (maskDetectBitmap == null && rgbBitmap != null) {
+                maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
+                processImageAndGetMaskStatus(maskDetectBitmap);
+            }
+        }
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
