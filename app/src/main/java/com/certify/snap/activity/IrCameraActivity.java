@@ -1619,7 +1619,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void changeVerifyBackground(int id, boolean isVisible) {
-        if (outerCircle == null || innerCircle == null)
+        if (outerCircle == null || innerCircle == null || relativeLayout == null)
             return;
 
         //outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
@@ -2547,8 +2547,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 //  rl_header.setVisibility(View.GONE);
                 if (outerCircle != null)
                     outerCircle.setBackgroundResource(R.drawable.border_shape);
-                logo.setVisibility(View.GONE);
-                relative_main.setVisibility(View.GONE);
+                if (logo != null) {
+                    logo.setVisibility(View.GONE);
+                }
+                if (relative_main != null) {
+                    relative_main.setVisibility(View.GONE);
+                }
                 changeVerifyBackground(R.color.transparency, true);
                 clearQrCodePreview();
             }
