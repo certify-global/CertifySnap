@@ -381,5 +381,8 @@
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
+    <string name="endpoint_api">Api</string>
+    <string name="protocol_text">https://</string>
+    <string name="hostname">.certify.me</string>
 
 </resources>
