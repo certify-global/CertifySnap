@@ -311,9 +311,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
 
-    private Serial serial;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private Serial serial = null;
+    private InputStream inputStream = null;
+    private OutputStream outputStream = null;
     private boolean readTerminal = false;
 
     private void instanceStart() {
@@ -802,8 +802,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             cameraHelperIr.release();
             cameraHelperIr = null;
         }
-        if (faceEngineHelper != null)
-            faceEngineHelper.unInitEngine();
+        if (faceEngineHelper != null) {
+            try {
+                faceEngineHelper.unInitEngine();
+            } catch (Exception e) {
+                Log.e(TAG, "Exception when releasing Face Engine");
+            }
+        }
 
         if (getFeatureDelayedDisposables != null) {
             getFeatureDelayedDisposables.clear();
@@ -2450,10 +2455,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     public void initCameraPreview() {
-        faceEngineHelper.initEngine(this);
-        initRgbCamera();
-        initIrCamera();
-        setCameraPreview();
+        if (faceEngineHelper != null) {
+            faceEngineHelper.initEngine(this);
+            initRgbCamera();
+            initIrCamera();
+            setCameraPreview();
+        }
     }
 
     private void getAppSettings() {
@@ -2842,9 +2849,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "Snap Compare result Error ");
-//                        runTemperature(); // Register member photo is not there, Still find temperature
+                        runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0)); // Register member photo is not there, Still find temperature
                         faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
-                        retryRecognizeDelayed(requestId);
+                        //retryRecognizeDelayed(requestId);
                         searchMemberDisposable.dispose();
                     }
 
@@ -2883,7 +2890,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        if (cardId.isEmpty()) return;
+        if (cardId.isEmpty()) {
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+                closeHidReader();
+                if (initHidReader()) {
+                    startHidReading();
+                }
+            }
+            return;
+        }
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
             && AccessCardController.getInstance().isEnableRelay()) {
@@ -3330,7 +3345,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             byte[] buffer = new byte[64];
                             try {
                                 size = inputStream.available();
-                                if (size > 0) {
+                                if (size > 0 && size <= 64) {
                                     size = inputStream.read(buffer);
                                     if (size > 0) {
                                         String cardData = new String(buffer, 0, size, "UTF-8");
@@ -3341,6 +3356,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 }
                             } catch (Exception e) {
                                 Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
+                                Log.e(TAG, "HID Size " + size);
+                                readTerminal = false;
                                 emitter.onNext("");
                             }
                         }
@@ -3358,8 +3375,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(String cardId) {
-                        onRfidScan(cardId);
-                        hidReaderDisposable.dispose();
+                        if (!cardId.isEmpty()) {
+                            onRfidScan(cardId);
+                            hidReaderDisposable.dispose();
+                        } else {
+                            hidReaderDisposable.dispose();
+                            onRfidScan("");
+                        }
                     }
 
                     @Override
@@ -3390,7 +3412,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } catch (IOException e) {
             Log.e(TAG, "HID Error in closing the serial port stream");
         }
-        if (serial != null) serial.close();
+        try {
+            if (serial != null) {
+                serial.close();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "HID Error in closing the serial port");
+        }
     }
 
 }
