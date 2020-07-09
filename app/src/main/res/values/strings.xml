@@ -420,8 +420,8 @@
     <string name="unknown_characteristic">unknown_characteristic</string>
     <string name="permission_request">The permission is required to run this app</string>
     <string name="permission_canceled">The permission is required to run this app</string>
-    <string name="ble_connect_status">BLE Connect Status : </string>
-    <string name="ble_light_test">BLE Light Test : </string>
+    <string name="ble_connect_status">Connected BLE Light : </string>
+    <string name="ble_light_test">Test : </string>
 
     <string name="ble_connect"><u>Connect</u></string>
     <string name="not_connected"><u>Not Connected</u></string>
