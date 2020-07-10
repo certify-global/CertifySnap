@@ -3,6 +3,8 @@ package com.certify.snap.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -2155,12 +2157,30 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
                         boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true) && !aboveThreshold;
                         if (confirmAboveScreen || confirmBelowScreen) {
-                            Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (tv_message != null) tv_message.setVisibility(View.GONE);
+                                    if(tvErrorMessage!=null) tvErrorMessage.setVisibility(View.GONE);
+                                    if(temperature_image!= null) temperature_image.setVisibility(View.GONE);
+                                    if(mask_message!=null) mask_message.setVisibility(View.GONE);
+                                    // Create new fragment and transaction
+                                    Fragment newFragment = new ConfirmationScreenFragment();
+                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                    transaction.replace(R.id.dynamic_fragment_frame_layout, newFragment);
+                                    transaction.addToBackStack(null);
+                                    transaction.commit();
+                                }
+                            });
+
+
+                            /*Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
                             intent.putExtra("tempVal", aboveThreshold ? "high" : "");
-                            startActivity(intent);
+                            startActivity(intent);*/
                             ConfirmationBoolean = true;
                             MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
-                            finish();
+                            //finish();
                             compareResultList.clear();
                             data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
