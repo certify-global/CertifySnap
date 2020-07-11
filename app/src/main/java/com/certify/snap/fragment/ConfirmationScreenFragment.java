@@ -170,9 +170,9 @@ public class ConfirmationScreenFragment extends Fragment {
         time.schedule(new TimerTask() {
             @Override
             public void run() {
-                getActivity().getFragmentManager().beginTransaction().remove(ConfirmationScreenFragment.this).commitAllowingStateLoss();
-                IrCameraActivity activity = (IrCameraActivity) getActivity();
-                if (activity != null) {
+                if (getActivity() != null) {
+                    getActivity().getFragmentManager().beginTransaction().remove(ConfirmationScreenFragment.this).commitAllowingStateLoss();
+                    IrCameraActivity activity = (IrCameraActivity) getActivity();
                     activity.resumeScan();
                 }
             }

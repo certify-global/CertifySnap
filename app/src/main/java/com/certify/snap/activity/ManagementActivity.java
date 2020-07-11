@@ -1574,10 +1574,12 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     public void onRfidScan(String cardId) {
         if(updateMember != null) updateMember.setAccessid(cardId);
         runOnUiThread(()->{
-            if (updateMember != null) {
+            if (updateMember != null && maccessid != null) {
                 maccessid.setText(cardId);
-            }else{
-                registerAccessid.setText(cardId);
+            } else {
+                if (registerAccessid != null) {
+                    registerAccessid.setText(cardId);
+                }
             }
 
         });

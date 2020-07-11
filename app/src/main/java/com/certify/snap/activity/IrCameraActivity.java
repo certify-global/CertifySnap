@@ -200,6 +200,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private CompositeDisposable getFeatureDelayedDisposables = new CompositeDisposable();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
     private CompositeDisposable temperatureRetryDisposable = new CompositeDisposable();
+    private CompositeDisposable hidReaderDisposable = new CompositeDisposable();
 
     private static final int MAX_DETECT_NUM = 10;
 
@@ -318,7 +319,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private Serial serial = null;
     private InputStream inputStream = null;
     private OutputStream outputStream = null;
-    private boolean readTerminal = false;
+    private boolean readTerminal = true;
 
     private void instanceStart() {
         try {
@@ -849,6 +850,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
+        }
+        if (hidReaderDisposable != null) {
+            hidReaderDisposable.clear();
         }
     }
 
@@ -1731,6 +1735,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isTemperatureIdentified = false;*/
                     clearData();
                     resetHomeScreen();
+                    resetRfid();
                 }
             });
             Logger.verbose(TAG, "ShowLauncherView() isTemperatureIdentified :", isTemperatureIdentified);
@@ -2550,6 +2555,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        thermalImageCallback = null;
                         clearData();
                         resetHomeScreen();
                         resetRfid();
@@ -3348,7 +3354,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
                                 Log.e(TAG, "HID Size " + size);
                                 readTerminal = false;
-                                emitter.onNext("");
+                                emitter.onError(new Throwable());
                             }
                         }
                     }
@@ -3356,25 +3362,31 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<String>() {
-                    Disposable hidReaderDisposable;
+                    Disposable hidDisposable;
 
                     @Override
                     public void onSubscribe(Disposable d) {
-                        hidReaderDisposable = d;
+                        hidDisposable = d;
+                        temperatureRetryDisposable.add(d);
                     }
 
                     @Override
                     public void onNext(String cardId) {
-                        //if (!cardId.isEmpty()) {
+                        if (!cardId.isEmpty()) {
                             onRfidScan(cardId);
-                            hidReaderDisposable.dispose();
-                        //}
+                            //hidDisposable.dispose();
+                        }
+                        hidReaderDisposable.remove(hidDisposable);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "HID Error in reading from the serial port");
-                        hidReaderDisposable.dispose();
+                        if (e != null) {
+                            Log.e(TAG, "HID Error in reading from the serial port " + e.getMessage());
+                        }
+                        //hidDisposable.dispose();
+                        hidReaderDisposable.remove(hidDisposable);
+                        onRfidScan("");
                     }
 
                     @Override
@@ -3441,16 +3453,25 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (qrCodeEnable) {
             return;
         }
-        if (faceDetectEnabled) {
-            resumeCameraScan();
-        }
+        resumeCameraScan();
     }
 
     private void resetRfid() {
         if (rfIdEnable) {
+            hidReaderDisposable.clear();
             enableNfc();
             isReadyToScan = false;
             readTerminal = true;
+            //Close the input stream to clear the data buffer for taps happening during temperature scan
+            //or when confirmation screen is displayed
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            inputStream = serial.getInputStream();
             startHidReading();
         }
     }
