@@ -295,7 +295,7 @@
     <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
     <string name="access_control_card_format">Message Format</string>
     <string name="access_control_enroll">Enroll</string>
-    <string name="access_granted">Access granted</string>
+    <string name="access_granted">Access Granted</string>
     <string name="access_denied">Access denied!</string>
     <string name="access_failed">User cannot be identified. Please enroll</string>
     <string name="automatic_door_access">Enable Relay</string>

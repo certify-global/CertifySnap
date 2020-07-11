@@ -314,7 +314,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isNfcFDispatchEnabled = false;
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
-    private static boolean isReadyToScan = false;
+    private boolean isReadyToScan = true;
 
     private Serial serial = null;
     private InputStream inputStream = null;
@@ -2488,6 +2488,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      */
     private void initAccessControl() {
         if (!rfIdEnable) return;
+        if (!faceDetectEnabled) {
+            isReadyToScan = false;
+        }
         AccessCardController.getInstance().init();
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
         mNfcAdapter = M1CardUtils.isNfcAble(this);
@@ -3462,7 +3465,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (rfIdEnable) {
             hidReaderDisposable.clear();
             enableNfc();
-            isReadyToScan = false;
+            if (!faceDetectEnabled) {
+                isReadyToScan = false;
+            }
             readTerminal = true;
             //Close the input stream to clear the data buffer for taps happening during temperature scan
             //or when confirmation screen is displayed
@@ -3487,12 +3492,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    public void resumeCameraScan() {
+    private void resumeCameraScan() {
         if (cameraHelper != null && cameraHelper.isStopped()) {
             cameraHelper.start();
         }
         if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
             cameraHelperIr.start();
         }
+    }
+
+    public void onHomeDisabled() {
+        resumeCameraScan();
     }
 }
