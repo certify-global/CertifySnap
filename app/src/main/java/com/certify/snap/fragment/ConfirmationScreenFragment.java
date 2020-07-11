@@ -173,7 +173,7 @@ public class ConfirmationScreenFragment extends Fragment {
                 getActivity().getFragmentManager().beginTransaction().remove(ConfirmationScreenFragment.this).commitAllowingStateLoss();
                 IrCameraActivity activity = (IrCameraActivity) getActivity();
                 if (activity != null) {
-                    activity.resumeUI();
+                    activity.resumeScan();
                 }
             }
         }, delayMilli * 1000);

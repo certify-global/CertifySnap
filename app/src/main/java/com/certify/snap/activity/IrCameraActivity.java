@@ -330,7 +330,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void instanceStop() {
         try {
-            faceEngineHelper = null;
+            /*faceEngineHelper = null;
             irData = null;
             rubiklight = null;
             temperature_image = null;
@@ -358,7 +358,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             rgbBitmap = null;
             tv_scan = null;
             imageqr = null;
-            qr_main = null;
+            qr_main = null;*/
 
         } catch (Exception e) {
             Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
@@ -710,6 +710,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         isActivityResumed = true;
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
         enableNfc();
+        enableHidReader();
         startCameraSource();
         homeScreenTimeOut = sharedPreferences.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2);
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "1");
@@ -1727,6 +1728,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     mask_message.setVisibility(View.GONE);
                     final Activity that = IrCameraActivity.this;
                     isTemperatureIdentified = false;*/
+                    clearData();
                     resetHomeScreen();
                 }
             });
@@ -2493,10 +2495,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 && isActivityResumed) {
                 isNfcFDispatchEnabled = true;
                 mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-            } else {
-                if (initHidReader()) {
-                    startHidReading();
-                }
             }
         }
     }
@@ -2506,8 +2504,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
-        } else {
-            closeHidReader();
+        }
+    }
+
+    private void enableHidReader() {
+        if (rfIdEnable) {
+            if (initHidReader()) {
+                startHidReading();
+            }
         }
     }
 
@@ -2543,10 +2547,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        pauseCameraScan();
+                        clearData();
+                        resetHomeScreen();
+                        resetRfid();
+                        /*pauseCameraScan();
                         thermalImageCallback = null;
                         homeDisplayView();
-                        isReadyToScan = false;
+                        isReadyToScan = false;*/
                     }
                 });
                 this.cancel();
@@ -2831,7 +2838,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void onError(Throwable e) {
                         Log.d(TAG, "Snap Compare result Error ");
                         runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0)); // Register member photo is not there, Still find temperature
-                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        if (faceHelperIr != null) {
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        }
                         //retryRecognizeDelayed(requestId);
                         searchMemberDisposable.dispose();
                     }
@@ -3018,14 +3027,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (faceDetectEnabled) {
                     new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
                 } else {
-                    if (cameraHelper != null) {
-                        cameraHelper.stop();
-                    }
-                    if (cameraHelperIr != null) {
-                        cameraHelperIr.stop();
-                    }
+                    pauseCameraScan();
                     thermalImageCallback = null;
-
                 }
                 return;
             }
@@ -3192,7 +3195,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         cancelPreviewIdleTimer();
-        //disableNfc();
+        disableNfc();
         enableLedPower();
 
         if (maskEnabled && !faceDetectEnabled) {
@@ -3242,7 +3245,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             clearData(); //Clear the data on timeout
                             retryFaceOnTimeout(requestId); //Retry again on timeout
                             disableLedPower();
-                            isReadyToScan = false;
+                            resetRfid();
                         }
                     });
                     this.cancel();
@@ -3320,7 +3323,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Observable
                 .create((ObservableOnSubscribe<String>) emitter -> {
                     while(readTerminal) {
-                        if (inputStream != null && !isReadyToScan) {
+                        if (inputStream != null) {
                             int size = 0;
                             byte[] buffer = new byte[64];
                             try {
@@ -3331,6 +3334,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                         isReadyToScan = true;
                                         String cardData = new String(buffer, 0, size, "UTF-8");
                                         Log.d(TAG, "HID Card data " + cardData);
+                                        if (cardData.contains("\r")) {
+                                            cardData = cardData.replace("\r", "");
+                                        }
                                         /*new Thread(() -> runOnUiThread(() -> {
                                             onRfidScan(cardData);
                                         })).start();*/
@@ -3426,20 +3432,30 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         isTemperatureIdentified = false;
         pauseCameraScan();
-        clearData();
+        cancelImageTimer();
         clearLeftFace(null);
         thermalImageCallback = null;
         homeDisplayView();
     }
 
-    public void resumeUI() {
-        if (rfIdEnable || qrCodeEnable) {
-            readTerminal = true;
-            startHidReading();
+    public void resumeScan() {
+        clearData();
+        resetRfid();
+        if (qrCodeEnable) {
             return;
         }
-        isReadyToScan = false;
-        resumeCameraScan();
+        if (faceDetectEnabled) {
+            resumeCameraScan();
+        }
+    }
+
+    private void resetRfid() {
+        if (rfIdEnable) {
+            enableNfc();
+            isReadyToScan = false;
+            readTerminal = true;
+            startHidReading();
+        }
     }
 
     private void pauseCameraScan() {
