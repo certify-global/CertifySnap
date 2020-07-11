@@ -767,6 +767,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             preview.stop();
         }
         disableNfc();
+        closeHidReader();
         if (cameraHelper != null) {
             cameraHelper.stop();
         }
@@ -2509,8 +2510,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void enableHidReader() {
         if (rfIdEnable) {
-            if (initHidReader()) {
-                startHidReading();
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+                if (initHidReader()) {
+                    startHidReading();
+                }
             }
         }
     }
@@ -2881,12 +2884,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty()) {
-            /*if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
                 closeHidReader();
                 if (initHidReader()) {
                     startHidReading();
                 }
-            }*/
+            }
             return;
         }
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
@@ -2904,12 +2907,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             showSnackBarMessage(getString(R.string.access_denied));
             //If Access denied, stop the reader and start again
             //Optimize: Not to close the stream
-            /*if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-                closeHidReader();
-                if (initHidReader()) {
-                    startHidReading();
-                }
-            }*/
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+                resetRfid();
+            }
             return;
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
@@ -3365,13 +3365,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onNext(String cardId) {
-                        if (!cardId.isEmpty()) {
+                        //if (!cardId.isEmpty()) {
                             onRfidScan(cardId);
                             hidReaderDisposable.dispose();
-                        } else {
-                            hidReaderDisposable.dispose();
-                            onRfidScan("");
-                        }
+                        //}
                     }
 
                     @Override

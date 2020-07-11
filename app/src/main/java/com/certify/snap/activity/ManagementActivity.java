@@ -1625,6 +1625,9 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
                                     size = inputStream.read(buffer);
                                     if (size > 0) {
                                         String cardData = new String(buffer, 0, size, "UTF-8");
+                                        if (cardData.contains("\r")) {
+                                            cardData = cardData.replace("\r", "");
+                                        }
                                         Log.d(TAG, "HID Card data " + cardData);
                                         readTerminal = false;
                                         emitter.onNext(cardData);
