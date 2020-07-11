@@ -3354,7 +3354,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
                                 Log.e(TAG, "HID Size " + size);
                                 readTerminal = false;
-                                emitter.onError(new Throwable());
+                                emitter.onNext("");
                             }
                         }
                     }
@@ -3375,8 +3375,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (!cardId.isEmpty()) {
                             onRfidScan(cardId);
                             //hidDisposable.dispose();
+                            hidReaderDisposable.remove(hidDisposable);
+                        } else {
+                            hidReaderDisposable.remove(hidDisposable);
+                            onRfidScan("");
                         }
-                        hidReaderDisposable.remove(hidDisposable);
                     }
 
                     @Override
@@ -3386,7 +3389,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                         //hidDisposable.dispose();
                         hidReaderDisposable.remove(hidDisposable);
-                        onRfidScan("");
                     }
 
                     @Override
@@ -3485,11 +3487,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void resumeCameraScan() {
-        if (cameraHelper != null) {
+    public void resumeCameraScan() {
+        if (cameraHelper != null && cameraHelper.isStopped()) {
             cameraHelper.start();
         }
-        if (cameraHelperIr != null) {
+        if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
             cameraHelperIr.start();
         }
     }
