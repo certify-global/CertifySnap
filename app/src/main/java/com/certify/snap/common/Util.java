@@ -1145,6 +1145,8 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, doNotSyncMembers.equals("1"));
                     String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
                     Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
+                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "0" :  jsonDeviceSettings.getString("navigationBar");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("0"));
                 }
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");

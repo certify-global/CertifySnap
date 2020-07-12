@@ -344,6 +344,15 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
         }
+        initNavigationBar();
         startMemberSyncService();
+    }
+
+    private void initNavigationBar() {
+        if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true)) {
+            sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+        } else {
+            sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+        }
     }
 }
