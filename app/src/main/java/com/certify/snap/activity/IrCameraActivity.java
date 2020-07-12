@@ -2552,6 +2552,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     relative_main.setVisibility(View.GONE);
                 }
                 changeVerifyBackground(R.color.transparency, true);
+                isReadyToScan = true;
         }, 300);
         setCameraPreviewTimer();
     }
@@ -3524,6 +3525,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void resetQrCode() {
         if (qrCodeEnable) {
+            isReadyToScan = false;
             clearQrCodePreview();
             runOnUiThread(() -> {
                 initQRCode();
