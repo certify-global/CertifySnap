@@ -2843,6 +2843,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             if (mFaceMatchRetry == Constants.FACE_MATCH_MAX_RETRY) {
                                 CameraController.getInstance().setFaceNotMatchedOnRetry(true);
                                 runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue));
+                                mFaceMatchRetry = 0;
                             }
                             mFaceMatchRetry++;
                             runOnUiThread(new Runnable() {
@@ -3286,6 +3287,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (temperatureRetryDisposable != null) {
             temperatureRetryDisposable.clear();
         }
+        mFaceMatchRetry = 0;
     }
 
     private void setPreviewIdleTimer() {
