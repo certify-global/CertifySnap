@@ -100,6 +100,8 @@ public class CameraController {
         isFaceVisible = false;
         compareResult = null;
         isFaceNotMatchedOnRetry = false;
-        faceParameters = null;
+        if (faceParameters != null) {
+            faceParameters.clear();
+        }
     }
 }

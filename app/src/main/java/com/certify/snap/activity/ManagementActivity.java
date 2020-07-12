@@ -3,8 +3,11 @@ package com.certify.snap.activity;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -20,11 +23,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 
+import com.certify.snap.service.HIDService;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -70,8 +75,6 @@ import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
-import com.telpo.tps550.api.DeviceAlreadyOpenException;
-import com.telpo.tps550.api.serial.Serial;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,18 +83,9 @@ import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.Util.getnumberString;
 
@@ -138,11 +132,7 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     Snackbar snackbar;
     int listPosition;
     int count=0;
-
-    private Serial serial;
-    private InputStream inputStream;
-    private OutputStream outputStream;
-    private boolean readTerminal = false;
+    private BroadcastReceiver hidReceiver;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -166,6 +156,8 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
 
         Application.getInstance().addActivity(this);
         sharedPreferences = Util.getSharedPreferences(this);
+        initHidReceiver();
+
         try {
             db = LitePal.getDatabase();
         } catch (Exception e) {
@@ -217,12 +209,16 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     protected void onResume() {
         super.onResume();
         enableNfc();
+        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         disableNfc();
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+        }
     }
 
     @Override
@@ -1313,11 +1309,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         Log.v(TAG, "enableNfc");
         if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-        } else {
-            if (initHidReader()) {
-                Log.d(TAG, "HID Start reading");
-                startHidReading();
-            }
         }
     }
 
@@ -1325,8 +1316,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
         Log.v(TAG, "disableNfc");
         if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
             mNfcAdapter.disableForegroundDispatch(this);
-        } else {
-            closeHidReader();
         }
     }
 
@@ -1583,109 +1572,41 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
             }
 
         });
-        if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-            closeHidReader();
-            if (initHidReader()) {
-                startHidReading();
+    }
+
+    private void enableHidReader() {
+        if (sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+                startHidService();
             }
         }
     }
 
-    /**
-     * Method that initiates the serial port
-     */
-    private boolean initHidReader() {
-        boolean result = false;
-        try {
-            serial = new Serial("/dev/ttyS0", 9600, 0);
-        } catch (DeviceAlreadyOpenException | IOException e) {
-            Log.e(TAG, "HID Exception while instantiating Serial port");
-        }
-        if (serial != null) {
-            inputStream = serial.getInputStream();
-            outputStream = serial.getOutputStream();
-            readTerminal = true;
-            result = true;
-            Log.d(TAG, "HID Port initialized successfully");
-        }
-        return result;
+    private void startHidService() {
+        Intent msgIntent = new Intent(this, HIDService.class);
+        startService(msgIntent);
     }
 
-    /**
-     * Method that starts listening to the HID port
-     */
-    public void startHidReading() {
-        Observable
-                .create((ObservableOnSubscribe<String>) emitter -> {
-                    while(readTerminal) {
-                        if (inputStream != null) {
-                            int size = 0;
-                            byte[] buffer = new byte[64];
-                            try {
-                                size = inputStream.available();
-                                if (size > 0) {
-                                    size = inputStream.read(buffer);
-                                    if (size > 0) {
-                                        String cardData = new String(buffer, 0, size, "UTF-8");
-                                        if (cardData.contains("\r")) {
-                                            cardData = cardData.replace("\r", "");
-                                        }
-                                        Log.d(TAG, "HID Card data " + cardData);
-                                        readTerminal = false;
-                                        emitter.onNext(cardData);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
-                                emitter.onNext("");
-                            }
+    private void initHidReceiver() {
+        hidReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null && intent.getAction().equals(HIDService.HID_BROADCAST_ACTION)) {
+                    String data = intent.getStringExtra(HIDService.HID_DATA);
+                    runOnUiThread(() -> {
+                        if (!data.equals(HIDService.HID_RESTART_SERVICE)) {
+                            Log.d(TAG, "HID Card Id UI " + data);
+                            onRfidScan(data);
+                            return;
                         }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    Disposable hidReaderDisposable;
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        hidReaderDisposable = d;
-                    }
-
-                    @Override
-                    public void onNext(String cardId) {
-                        onRfidScan(cardId);
-                        hidReaderDisposable.dispose();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "HID Error in reading from the serial port");
-                        hidReaderDisposable.dispose();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //do noop
-                    }
-                });
-    }
-
-    /**
-     * Method that closes HID serial port
-     */
-    private void closeHidReader() {
-        readTerminal = false;
-        try {
-            if (inputStream != null) {
-                inputStream.close();
+                        HIDService.readTerminal = false;
+                        new Handler().postDelayed(() -> {
+                            Log.d(TAG, "HID Restarting Service");
+                            enableHidReader();
+                        }, 200);
+                    });
+                }
             }
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "HID Error in closing the serial port stream");
-        }
-        if (serial != null) serial.close();
+        };
     }
 }

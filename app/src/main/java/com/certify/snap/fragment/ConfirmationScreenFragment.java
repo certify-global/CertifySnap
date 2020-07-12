@@ -1,11 +1,11 @@
 package com.certify.snap.fragment;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
-import com.certify.snap.activity.ConfirmationScreenActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -42,6 +41,9 @@ public class ConfirmationScreenFragment extends Fragment {
     private ImageView user_img;
     private CompareResult compareResultValues;
     private String confirm_title, confirm_subtitle;
+    private int count = 1;
+    private int countDownInterval = 1000;
+    private CountDownTimer countDownTimer = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -166,6 +168,35 @@ public class ConfirmationScreenFragment extends Fragment {
     }
 
     private void setHomeScreenTimer() {
+        if (delayMilli == 1) {
+            countDownInterval = 500;
+        }
+
+        if (!Util.getSharedPreferences(getContext()).getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) &&
+                !Util.getSharedPreferences(getContext()).getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
+            countDownTimer = new CountDownTimer(delayMilli * 1000, countDownInterval) {
+                @Override
+                public void onTick(long longMilliSeconds) {
+                    if (count == (delayMilli - 1)) {
+                        IrCameraActivity activity = (IrCameraActivity) getActivity();
+                        if (activity != null) {
+                            activity.onHomeDisabled();
+                            onFinish();
+                        }
+                    }
+                    count++;
+                }
+
+                @Override
+                public void onFinish() {
+                    //do noop
+                }
+            };
+        }
+
+        if (countDownTimer != null) {
+            countDownTimer.start();
+        }
         Timer time = new Timer();
         time.schedule(new TimerTask() {
             @Override
@@ -177,5 +208,14 @@ public class ConfirmationScreenFragment extends Fragment {
                 }
             }
         }, delayMilli * 1000);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
     }
 }

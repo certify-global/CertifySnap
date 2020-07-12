@@ -70,9 +70,12 @@ import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.arcsoft.face.ErrorInfo;
+import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.FaceInfo;
+import com.arcsoft.face.FaceShelterInfo;
+import com.arcsoft.face.GenderInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
@@ -80,6 +83,7 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
@@ -114,11 +118,10 @@ import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.HIDService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.telpo.tps550.api.DeviceAlreadyOpenException;
-import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -132,8 +135,6 @@ import org.litepal.exceptions.LitePalSupportException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -316,10 +317,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isActivityResumed = false;
     private boolean isReadyToScan = true;
 
-    private Serial serial = null;
-    private InputStream inputStream = null;
-    private OutputStream outputStream = null;
-    private boolean readTerminal = true;
+    private BroadcastReceiver hidReceiver;
 
     private void instanceStart() {
         try {
@@ -443,6 +441,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
+        initHidReceiver();
     }
 
     private void initQRCode() {
@@ -591,11 +590,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-
-
                             finishAffinity();
                             stopHealthCheckService();
-                            //stopMemberSyncService();
+                            stopHidService();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -711,6 +708,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         super.onResume();
         isActivityResumed = true;
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         enableNfc();
         enableHidReader();
         startCameraSource();
@@ -769,7 +767,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             preview.stop();
         }
         disableNfc();
-        closeHidReader();
         if (cameraHelper != null) {
             cameraHelper.stop();
         }
@@ -854,6 +851,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         if (hidReaderDisposable != null) {
             hidReaderDisposable.clear();
+        }
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
         }
     }
 
@@ -1386,6 +1386,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
+            if (qrCodeEnable) {
+                faceEngineHelper.initEngine(this);
+                return;
+            }
             faceEngineHelper.initEngine(this);
             initRgbCamera();
             initIrCamera();
@@ -2159,6 +2163,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         if (confirmAboveScreen || confirmBelowScreen) {
                             runOnUiThread(() -> {
                                 launchConfirmationFragment(aboveThreshold);
+                                pauseCameraScan();
                                 resetHomeScreen();
                             });
                             ConfirmationBoolean = true;
@@ -2527,9 +2532,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void enableHidReader() {
         if (rfIdEnable) {
             if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-                if (initHidReader()) {
-                    startHidReading();
-                }
+                startHidService();
             }
         }
     }
@@ -2901,15 +2904,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        if (cardId.isEmpty()) {
-            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-                closeHidReader();
-                if (initHidReader()) {
-                    startHidReading();
-                }
-            }
-            return;
-        }
+        if (cardId.isEmpty()) return;
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
             && AccessCardController.getInstance().isEnableRelay()) {
@@ -3172,7 +3167,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (faceDetectEnabled) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                 !isFaceIdentified) {
-                    Log.d(TAG, "Deep FaceRecognition");
+                    Log.d(TAG, "FaceRecognition");
                     showCameraPreview(faceFeature, requestId, rgb, ir);
                 }
                 searchFace(faceFeature, requestId, rgb, ir);
@@ -3315,127 +3310,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    /**
-     * Method that initiates the serial port
-     */
-    private boolean initHidReader() {
-        boolean result = false;
-        try {
-            serial = new Serial("/dev/ttyS0", 9600, 0);
-        } catch (DeviceAlreadyOpenException | IOException e) {
-            Log.e(TAG, "HID Exception while instantiating Serial port");
-        }
-        if (serial != null) {
-            inputStream = serial.getInputStream();
-            outputStream = serial.getOutputStream();
-            readTerminal = true;
-            result = true;
-            Log.d(TAG, "HID Port initialized successfully");
-        }
-        return result;
-    }
-
-    /**
-     * Method that starts listening to the HID port
-     */
-    public void startHidReading() {
-        Observable
-                .create((ObservableOnSubscribe<String>) emitter -> {
-                    while(readTerminal) {
-                        if (inputStream != null) {
-                            int size = 0;
-                            byte[] buffer = new byte[64];
-                            try {
-                                size = inputStream.available();
-                                if (size > 0 && size <= 64) {
-                                    size = inputStream.read(buffer);
-                                    if (size > 0) {
-                                        isReadyToScan = true;
-                                        String cardData = new String(buffer, 0, size, "UTF-8");
-                                        Log.d(TAG, "HID Card data " + cardData);
-                                        if (cardData.contains("\r")) {
-                                            cardData = cardData.replace("\r", "");
-                                        }
-                                        /*new Thread(() -> runOnUiThread(() -> {
-                                            onRfidScan(cardData);
-                                        })).start();*/
-                                        readTerminal = false;
-                                        emitter.onNext(cardData);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
-                                Log.e(TAG, "HID Size " + size);
-                                readTerminal = false;
-                                emitter.onNext("");
-                            }
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    Disposable hidDisposable;
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        hidDisposable = d;
-                        temperatureRetryDisposable.add(d);
-                    }
-
-                    @Override
-                    public void onNext(String cardId) {
-                        if (!cardId.isEmpty()) {
-                            onRfidScan(cardId);
-                            //hidDisposable.dispose();
-                            hidReaderDisposable.remove(hidDisposable);
-                        } else {
-                            hidReaderDisposable.remove(hidDisposable);
-                            onRfidScan("");
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (e != null) {
-                            Log.e(TAG, "HID Error in reading from the serial port " + e.getMessage());
-                        }
-                        //hidDisposable.dispose();
-                        hidReaderDisposable.remove(hidDisposable);
-                        onRfidScan("");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //do noop
-                    }
-                });
-    }
-
-    /**
-     * Method that closes HID serial port
-     */
-    private void closeHidReader() {
-        readTerminal = false;
-        try {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "HID Error in closing the serial port stream");
-        }
-        try {
-            if (serial != null) {
-                serial.close();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "HID Error in closing the serial port");
-        }
-    }
-
     private void launchConfirmationFragment(boolean aboveThreshold) {
         Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
         Bundle bundle = new Bundle();
@@ -3456,7 +3330,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             outerCircle.setBackgroundResource(R.drawable.border_shape);
         }
         isTemperatureIdentified = false;
-        pauseCameraScan();
         cancelImageTimer();
         clearLeftFace(null);
         thermalImageCallback = null;
@@ -3480,18 +3353,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (!faceDetectEnabled) {
                 isReadyToScan = false;
             }
-            readTerminal = true;
-            //Close the input stream to clear the data buffer for taps happening during temperature scan
-            //or when confirmation screen is displayed
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Error in closing the input stream");
-                }
-            }
-            inputStream = serial.getInputStream();
-            startHidReading();
         }
     }
 
@@ -3538,5 +3399,43 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 startCameraSource();
             });
         }
+    }
+
+    private void startHidService() {
+        if (!Util.isServiceRunning(HIDService.class, this)) {
+            Intent msgIntent = new Intent(this, HIDService.class);
+            startService(msgIntent);
+        }
+    }
+
+    private void initHidReceiver() {
+        hidReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null && intent.getAction().equals(HIDService.HID_BROADCAST_ACTION)) {
+                    String data = intent.getStringExtra(HIDService.HID_DATA);
+                    runOnUiThread(() -> {
+                        if (!data.equals(HIDService.HID_RESTART_SERVICE)) {
+                            if (rfIdEnable) {
+                                if (!isReadyToScan || faceDetectEnabled) {
+                                    Log.d(TAG, "HID Card Id UI " + data);
+                                    onRfidScan(data);
+                                }
+                            }
+                            return;
+                        }
+                        HIDService.readTerminal = false;
+                        new Handler().postDelayed(() -> {
+                            Log.d(TAG, "HID Restarting Service");
+                            enableHidReader();
+                        }, 200);
+                    });
+                }
+            }
+        };
+    }
+
+    private void stopHidService() {
+        HIDService.readTerminal = false;
     }
 }
