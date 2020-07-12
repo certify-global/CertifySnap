@@ -101,6 +101,7 @@ public class LoginActivity extends Activity {
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
+        etPassword.getText().clear();
     }
 
     private  void validatePassword(){
