@@ -42,8 +42,6 @@ public class ConfirmationScreenFragment extends Fragment {
     private CompareResult compareResultValues;
     private String confirm_title, confirm_subtitle;
     private int count = 1;
-    private int countDownInterval = 1000;
-    private CountDownTimer countDownTimer = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -168,35 +166,6 @@ public class ConfirmationScreenFragment extends Fragment {
     }
 
     private void setHomeScreenTimer() {
-        if (delayMilli == 1) {
-            countDownInterval = 500;
-        }
-
-        if (!Util.getSharedPreferences(getContext()).getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) &&
-                !Util.getSharedPreferences(getContext()).getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
-            countDownTimer = new CountDownTimer(delayMilli * 1000, countDownInterval) {
-                @Override
-                public void onTick(long longMilliSeconds) {
-                    if (count == (delayMilli - 1)) {
-                        IrCameraActivity activity = (IrCameraActivity) getActivity();
-                        if (activity != null) {
-                            activity.onHomeDisabled();
-                            onFinish();
-                        }
-                    }
-                    count++;
-                }
-
-                @Override
-                public void onFinish() {
-                    //do noop
-                }
-            };
-        }
-
-        if (countDownTimer != null) {
-            countDownTimer.start();
-        }
         Timer time = new Timer();
         time.schedule(new TimerTask() {
             @Override
@@ -208,14 +177,5 @@ public class ConfirmationScreenFragment extends Fragment {
                 }
             }
         }, delayMilli * 1000);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (countDownTimer != null) {
-            countDownTimer.cancel();
-        }
-
     }
 }
