@@ -2336,7 +2336,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                 clearQrCodePreview();
-                resetCameraView();
                 setCameraPreview();
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
@@ -2414,7 +2413,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
                     clearQrCodePreview();
-                    resetCameraView();
                     setCameraPreview();
                 } else {
                     preview.stop();
@@ -2533,11 +2531,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void setCameraPreview() {
-        if (cameraHelper != null && cameraHelper.isStopped()) {
-            cameraHelper.start();
-        }
-        if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
-            cameraHelperIr.start();
+        if (qrCodeEnable) {
+            resetCameraView();
+        } else {
+            if (cameraHelper != null && cameraHelper.isStopped()) {
+                cameraHelper.start();
+            }
+            if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
+                cameraHelperIr.start();
+            }
         }
         enableLedPower();
         new Handler().postDelayed(() -> {
