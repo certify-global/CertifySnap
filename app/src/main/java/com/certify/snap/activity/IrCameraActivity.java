@@ -1736,6 +1736,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     clearData();
                     resetHomeScreen();
                     resetRfid();
+                    resetQrCode();
                 }
             });
             Logger.verbose(TAG, "ShowLauncherView() isTemperatureIdentified :", isTemperatureIdentified);
@@ -2334,6 +2335,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                clearQrCodePreview();
+                resetCameraView();
                 setCameraPreview();
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
@@ -2410,6 +2413,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (reportInfo.getString("responseCode").equals("1")) {
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
+                    clearQrCodePreview();
+                    resetCameraView();
                     setCameraPreview();
                 } else {
                     preview.stop();
@@ -2544,7 +2549,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     relative_main.setVisibility(View.GONE);
                 }
                 changeVerifyBackground(R.color.transparency, true);
-                clearQrCodePreview();
         }, 300);
         setCameraPreviewTimer();
     }
@@ -2562,10 +2566,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         clearData();
                         resetHomeScreen();
                         resetRfid();
-                        /*pauseCameraScan();
-                        thermalImageCallback = null;
-                        homeDisplayView();
-                        isReadyToScan = false;*/
+                        resetQrCode();
                     }
                 });
                 this.cancel();
@@ -3255,6 +3256,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             retryFaceOnTimeout(requestId); //Retry again on timeout
                             disableLedPower();
                             resetRfid();
+                            resetQrCode();
                         }
                     });
                     this.cancel();
@@ -3456,6 +3458,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         clearData();
         resetRfid();
         if (qrCodeEnable) {
+            resetQrCode();
             return;
         }
         resumeCameraScan();
@@ -3503,5 +3506,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void onHomeDisabled() {
         resumeCameraScan();
+    }
+
+    private void resetCameraView() {
+        if (cameraHelper != null) {
+            cameraHelper.release();
+        }
+        if (cameraHelperIr != null) {
+            cameraHelperIr.release();
+        }
+        initRgbCamera();
+        initIrCamera();
+    }
+
+    private void resetQrCode() {
+        if (qrCodeEnable) {
+            clearQrCodePreview();
+            runOnUiThread(() -> {
+                initQRCode();
+                startCameraSource();
+            });
+        }
     }
 }
