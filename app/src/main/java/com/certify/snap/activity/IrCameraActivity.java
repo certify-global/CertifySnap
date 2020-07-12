@@ -484,6 +484,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
+                isReadyToScan = false;
             } else {
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -2410,10 +2411,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             } else {
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                    preview.stop();
-                    clearQrCodePreview();
-                    setCameraPreview();
+                    runOnUiThread(() ->  {
+                        if (isReadyToScan) return;
+                        Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
+                        preview.stop();
+                        clearQrCodePreview();
+                        setCameraPreview();
+                    });
                 } else {
                     preview.stop();
                     img_qr.setVisibility(View.VISIBLE);
@@ -2542,6 +2546,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }
         enableLedPower();
+        isReadyToScan = true;
         new Handler().postDelayed(() -> {
                 if (outerCircle != null)
                     outerCircle.setBackgroundResource(R.drawable.border_shape);
@@ -2552,7 +2557,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     relative_main.setVisibility(View.GONE);
                 }
                 changeVerifyBackground(R.color.transparency, true);
-                isReadyToScan = true;
         }, 300);
         setCameraPreviewTimer();
     }
@@ -3398,6 +3402,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                         //hidDisposable.dispose();
                         hidReaderDisposable.remove(hidDisposable);
+                        onRfidScan("");
                     }
 
                     @Override
@@ -3482,7 +3487,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Error in closing the input stream");
                 }
             }
             inputStream = serial.getInputStream();
@@ -3528,6 +3533,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             isReadyToScan = false;
             clearQrCodePreview();
             runOnUiThread(() -> {
+                img_qr.setVisibility(View.GONE);
                 initQRCode();
                 startCameraSource();
             });
