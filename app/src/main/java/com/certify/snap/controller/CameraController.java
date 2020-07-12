@@ -18,6 +18,7 @@ public class CameraController {
     private boolean isScanCloseProximityEnabled = false;
     public int CAMERA_PREVIEW_HEIGHT = 1208;
     private FaceParameters faceParameters;
+    private boolean isCameraOnForRfid = false;
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -81,6 +82,14 @@ public class CameraController {
 
     public FaceParameters getFaceParameters() {
         return faceParameters;
+    }
+
+    public boolean isCameraOnRfid() {
+        return isCameraOnForRfid;
+    }
+
+    public void setCameraOnRfid(boolean cameraOn) {
+        isCameraOnForRfid = cameraOn;
     }
 
     public float getOnlyTextSize(int length) {

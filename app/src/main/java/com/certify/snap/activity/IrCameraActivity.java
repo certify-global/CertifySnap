@@ -2548,6 +2548,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 cameraHelperIr.start();
             }
         }
+        CameraController.getInstance().setCameraOnRfid(true);
         enableLedPower();
         isReadyToScan = true;
         new Handler().postDelayed(() -> {
@@ -3355,6 +3356,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (!faceDetectEnabled) {
                 isReadyToScan = false;
             }
+            CameraController.getInstance().setCameraOnRfid(false);
         }
     }
 
@@ -3374,10 +3376,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
             cameraHelperIr.start();
         }
-    }
-
-    public void onHomeDisabled() {
-        resumeCameraScan();
     }
 
     private void resetCameraView() {
@@ -3419,7 +3417,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     runOnUiThread(() -> {
                         if (!data.equals(HIDService.HID_RESTART_SERVICE)) {
                             if (rfIdEnable) {
-                                if (!isReadyToScan || faceDetectEnabled) {
+                                if (!isReadyToScan
+                                    || !CameraController.getInstance().isCameraOnRfid()) {
                                     Log.d(TAG, "HID Card Id UI " + data);
                                     onRfidScan(data);
                                 }
