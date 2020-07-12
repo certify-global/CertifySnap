@@ -2568,6 +2568,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     relative_main.setVisibility(View.GONE);
                 }
                 changeVerifyBackground(R.color.transparency, true);
+                disableNfc();
         }, 300);
         setCameraPreviewTimer();
     }
@@ -3217,7 +3218,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         cancelPreviewIdleTimer();
-        disableNfc();
         enableLedPower();
 
         if (maskEnabled && !faceDetectEnabled) {
