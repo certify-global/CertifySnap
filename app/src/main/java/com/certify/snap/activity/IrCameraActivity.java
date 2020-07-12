@@ -1221,6 +1221,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 
     private synchronized void processPreviewData(byte[] rgbData) {
+        if (!isHomeViewEnabled && !isReadyToScan) return;
         if (rgbData != null && irData != null) {
             byte[] cloneNv21Rgb;
             if (scanMode == 1) {
@@ -2162,8 +2163,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true) && !aboveThreshold;
                         if (confirmAboveScreen || confirmBelowScreen) {
                             runOnUiThread(() -> {
+                                if(isDestroyed()) return;
                                 launchConfirmationFragment(aboveThreshold);
-                                pauseCameraScan();
+                                if (isHomeViewEnabled) {
+                                    pauseCameraScan();
+                                }
+                                else {
+                                    isReadyToScan = false;
+                                }
                                 resetHomeScreen();
                             });
                             ConfirmationBoolean = true;
@@ -3345,6 +3352,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             resetQrCode();
             return;
         }
+        if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
     }
 
