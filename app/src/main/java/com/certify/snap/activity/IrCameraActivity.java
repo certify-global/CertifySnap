@@ -201,7 +201,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private CompositeDisposable getFeatureDelayedDisposables = new CompositeDisposable();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
     private CompositeDisposable temperatureRetryDisposable = new CompositeDisposable();
-    private CompositeDisposable hidReaderDisposable = new CompositeDisposable();
+    private CompositeDisposable alignedFacesDisposable = new CompositeDisposable();
+    private CompositeDisposable searchFaceDisposable = new CompositeDisposable();
+    private CompositeDisposable maskDetectDisposable = new CompositeDisposable();
 
     private static final int MAX_DETECT_NUM = 10;
 
@@ -807,19 +809,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             cameraHelperIr.release();
             cameraHelperIr = null;
         }
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+        }
+        clearDisposables();
         if (faceEngineHelper != null) {
             try {
                 faceEngineHelper.unInitEngine();
             } catch (Exception e) {
                 Log.e(TAG, "Exception when releasing Face Engine");
             }
-        }
-
-        if (getFeatureDelayedDisposables != null) {
-            getFeatureDelayedDisposables.clear();
-        }
-        if (delayFaceTaskCompositeDisposable != null) {
-            delayFaceTaskCompositeDisposable.clear();
         }
 
         if (faceHelperIr != null) {
@@ -842,18 +841,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         thermalImageCallback = null;
         searchFaceInfoList.clear();
         cancelPreviewIdleTimer();
-        if (temperatureRetryDisposable != null) {
-            temperatureRetryDisposable.clear();
-        }
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
-        }
-        if (hidReaderDisposable != null) {
-            hidReaderDisposable.clear();
-        }
-        if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
         }
     }
 
@@ -2661,18 +2651,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onSubscribe(Disposable d) {
                         maskDisposable = d;
+                        maskDetectDisposable.add(d);
                     }
 
                     @Override
                     public void onNext(Integer maskStat) {
                         Log.d(TAG, "Call Mask Status " + maskStat);
                         maskStatus = maskStat;
-                        maskDisposable.dispose();
+                        //maskDisposable.dispose();
+                        maskDetectDisposable.remove(maskDisposable);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Error in getting the mask status");
+                        maskDetectDisposable.remove(maskDisposable);
                     }
 
                     @Override
@@ -2741,6 +2734,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onSubscribe(Disposable d) {
                         searchMemberDisposable = d;
+                        searchFaceDisposable.add(d);
                     }
 
                     @Override
@@ -2865,7 +2859,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
-                        searchMemberDisposable.dispose();
+                        //searchMemberDisposable.dispose();
+                        searchFaceDisposable.remove(searchMemberDisposable);
                     }
 
                     @Override
@@ -2876,7 +2871,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                         }
                         //retryRecognizeDelayed(requestId);
-                        searchMemberDisposable.dispose();
+                        searchFaceDisposable.remove(searchMemberDisposable);
                     }
 
                     @Override
@@ -3141,19 +3136,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onSubscribe(Disposable d) {
                         faceDisposable = d;
+                        alignedFacesDisposable.add(d);
                     }
 
                     @Override
                     public void onNext(List<FaceInfo> resultList) {
                         Log.d(TAG, "SearchFaceInfoList = " + resultList.size());
                         searchFaceInfoList.addAll(resultList);
-                        faceDisposable.dispose();
+                        //faceDisposable.dispose();
+                        alignedFacesDisposable.remove(faceDisposable);
                         checkFaceCloseness(searchFaceInfoList, requestId);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Error in getting the face properties");
+                        alignedFacesDisposable.remove(faceDisposable);
                     }
 
                     @Override
@@ -3359,7 +3357,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void resetRfid() {
         if (rfIdEnable) {
-            hidReaderDisposable.clear();
             enableNfc();
             if (!faceDetectEnabled) {
                 isReadyToScan = false;
@@ -3446,5 +3443,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void stopHidService() {
         HIDService.readTerminal = false;
+    }
+
+    private void clearDisposables() {
+        if (getFeatureDelayedDisposables != null) {
+            getFeatureDelayedDisposables.clear();
+        }
+        if (delayFaceTaskCompositeDisposable != null) {
+            delayFaceTaskCompositeDisposable.clear();
+        }
+        if (temperatureRetryDisposable != null) {
+            temperatureRetryDisposable.clear();
+        }
+        if (alignedFacesDisposable != null) {
+            alignedFacesDisposable.clear();
+        }
+        if (searchFaceDisposable != null) {
+            searchFaceDisposable.clear();
+        }
+        if (maskDetectDisposable != null) {
+            maskDetectDisposable.clear();
+        }
     }
 }
