@@ -319,7 +319,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
     private boolean isReadyToScan = true;
-    private ProgressDialog progressDialog;
     private BroadcastReceiver hidReceiver;
 
     private void instanceStart() {
@@ -408,13 +407,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(progressDialog != null && progressDialog.isShowing()) return;
-                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Launching Settings, Please wait...");
+                Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
+                startActivity(loginIt);
                 finish();
-                new Handler().postDelayed(() -> {
-                    Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
-                    startActivity(loginIt);
-                }, 1000);
             }
         });
 
@@ -784,6 +779,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             soundPool.release();
             soundPool = null;
         }
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+        }
     }
 
     @Override
@@ -813,9 +811,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cameraHelperIr != null) {
             cameraHelperIr.release();
             cameraHelperIr = null;
-        }
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
         }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
