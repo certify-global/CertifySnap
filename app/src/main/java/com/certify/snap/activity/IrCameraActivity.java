@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -318,7 +319,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
     private boolean isReadyToScan = true;
-
+    private ProgressDialog progressDialog;
     private BroadcastReceiver hidReceiver;
 
     private void instanceStart() {
@@ -407,9 +408,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
-                startActivity(loginIt);
-                finish();
+                if(progressDialog != null && progressDialog.isShowing()) return;
+                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Clearing task and launching Login. Please wait...");
+                new Handler().postDelayed(() -> {
+                    Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
+                    startActivity(loginIt);
+                    finish();
+                }, 1000);
             }
         });
 
@@ -592,9 +597,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            finishAffinity();
-                            stopHealthCheckService();
-                            stopHidService();
+                            if(progressDialog != null && progressDialog.isShowing()) return;
+                            progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Clearing task and closing Application. Please wait...");
+                            new Handler().postDelayed(() -> {
+                                finishAffinity();
+                                stopHealthCheckService();
+                                stopHidService();
+                            }, 1000);
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -844,6 +853,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
+        }
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
     }
 
