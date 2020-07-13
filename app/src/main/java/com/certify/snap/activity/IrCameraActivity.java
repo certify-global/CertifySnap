@@ -410,10 +410,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             public void onClick(View v) {
                 if(progressDialog != null && progressDialog.isShowing()) return;
                 progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Launching Settings, Please wait...");
+                finish();
                 new Handler().postDelayed(() -> {
                     Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                     startActivity(loginIt);
-                    finish();
                 }, 1000);
             }
         });
@@ -597,13 +597,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            if(progressDialog != null && progressDialog.isShowing()) return;
-                            progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Closing Application, Please wait...");
-                            new Handler().postDelayed(() -> {
-                                finishAffinity();
-                                stopHealthCheckService();
-                                stopHidService();
-                            }, 1000);
+                            finishAffinity();
+                            stopHealthCheckService();
+                            stopHidService();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -818,6 +814,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             cameraHelperIr.release();
             cameraHelperIr = null;
         }
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
         }
@@ -853,9 +852,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
-        }
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
         }
     }
 
