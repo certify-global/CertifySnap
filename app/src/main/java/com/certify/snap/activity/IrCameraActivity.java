@@ -409,7 +409,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void onClick(View v) {
                 if(progressDialog != null && progressDialog.isShowing()) return;
-                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Clearing task and launching Login. Please wait...");
+                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Launching Settings, Please wait...");
                 new Handler().postDelayed(() -> {
                     Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                     startActivity(loginIt);
@@ -598,7 +598,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             if(progressDialog != null && progressDialog.isShowing()) return;
-                            progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Clearing task and closing Application. Please wait...");
+                            progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Closing Application, Please wait...");
                             new Handler().postDelayed(() -> {
                                 finishAffinity();
                                 stopHealthCheckService();
