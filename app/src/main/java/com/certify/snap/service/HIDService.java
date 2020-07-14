@@ -39,10 +39,10 @@ public class HIDService extends IntentService {
         while(readTerminal) {
             if (inputStream != null) {
                 int size = 0;
-                byte[] buffer = new byte[64];
                 try {
                     size = inputStream.available();
                     if (size > 0 && size <= 64) {
+                        byte[] buffer = new byte[64];
                         size = inputStream.read(buffer);
                         if (size > 0) {
                             String cardData = new String(buffer, 0, size, "UTF-8");

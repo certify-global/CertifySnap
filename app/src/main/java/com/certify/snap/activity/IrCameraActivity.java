@@ -2144,6 +2144,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
                 }
+                MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                 if (lanchTimer != null)
                     lanchTimer.cancel();
                 lanchTimer = new Timer();
@@ -2167,7 +2168,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 resetHomeScreen();
                             });
                             ConfirmationBoolean = true;
-                            MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                             compareResultList.clear();
                             data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
@@ -2538,8 +2538,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void setCameraPreview() {
+        long delay  = 300;
         if (qrCodeEnable) {
             resetCameraView();
+            if (rfIdEnable) {
+                delay = 2 * 1000; //With both Qr and Rfid enabled, taking time to init Camera on Non-HID devices
+            }
         } else {
             if (cameraHelper != null && cameraHelper.isStopped()) {
                 cameraHelper.start();
@@ -2562,7 +2566,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
                 changeVerifyBackground(R.color.transparency, true);
                 disableNfc();
-        }, 300);
+        }, delay);
         setCameraPreviewTimer();
     }
 
@@ -2915,7 +2919,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cardId.isEmpty()) return;
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
-            && AccessCardController.getInstance().isEnableRelay()) {
+            && (AccessCardController.getInstance().isEnableRelay() ||
+                AccessCardController.getInstance().isWeigandEnabled())) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
@@ -3290,6 +3295,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void clearData() {
         CameraController.getInstance().clearData();
+        AccessCardController.getInstance().clearData();
         searchFaceInfoList.clear();
         compareResultList.clear();
         resetMaskStatus();
@@ -3393,8 +3399,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cameraHelperIr != null) {
             cameraHelperIr.release();
         }
-        initRgbCamera();
-        initIrCamera();
+        new Handler().post(() -> {
+            initRgbCamera();
+            initIrCamera();
+        });
     }
 
     private void resetQrCode() {

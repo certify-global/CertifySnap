@@ -66,6 +66,10 @@ public class AccessCardController  {
         this.mStopRelayOnHighTemp = mStopRelayOnHighTemp;
     }
 
+    public boolean isWeigandEnabled() {
+        return mEnableWeigan;
+    }
+
     public void setEnableWeigan(boolean mEnableWeigan) {
         this.mEnableWeigan = mEnableWeigan;
     }
@@ -181,5 +185,11 @@ public class AccessCardController  {
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
         }
+    }
+
+    public void clearData() {
+        AccessControlModel.getInstance().clearData();
+        mAccessCardID = "";
+        mAccessIdDb = "";
     }
 }
