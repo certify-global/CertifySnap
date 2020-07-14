@@ -7,7 +7,11 @@ import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.FaceInfo;
+import com.arcsoft.face.FaceShelterInfo;
+import com.arcsoft.face.LandmarkInfo;
 import com.arcsoft.face.LivenessInfo;
+import com.arcsoft.face.MaskInfo;
+import com.arcsoft.face.enums.ExtractType;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.TrackUtil;
 
@@ -54,6 +58,10 @@ public class FaceHelper {
     private Camera.Size previewSize;
 
     private List<FaceInfo> faceInfoList = new ArrayList<>();
+
+    private List<FaceShelterInfo> faceShelterInfoList = new ArrayList<>();
+    private List<MaskInfo> maskInfoList = new ArrayList<>();
+    private List<LandmarkInfo> landmarkList = new ArrayList<>();
     /**
      * 特征提取线程池
      */
@@ -143,6 +151,16 @@ public class FaceHelper {
         }
     }
 
+    public void requestFaceFeature(byte[] nv21, FaceInfo faceInfo, int mask, int width, int height, int format, Integer trackId) {
+        if (faceListener != null) {
+            if (frEngine != null && frThreadQueue.remainingCapacity() > 0) {
+                frExecutor.execute(new FaceRecognizeRunnable(nv21, faceInfo, mask, width, height, format, trackId));
+            } else {
+                faceListener.onFaceFeatureInfoGet(null, trackId, ERROR_BUSY);
+            }
+        }
+    }
+
     /**
      * 请求获取活体检测结果，需要传入活体的参数，以下参数同
      *
@@ -215,12 +233,28 @@ public class FaceHelper {
                 /*
                  * 若需要多人脸搜索，删除此行代码
                  */
-                TrackUtil.keepMaxFace(faceInfoList);
+//                TrackUtil.keepMaxFace(faceInfoList);
                 refreshTrackId(faceInfoList);
+
+
+                int processCode = ftEngine.process(nv21, previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21, faceInfoList, FaceEngine.ASF_MASK_DETECT | FaceEngine.ASF_FACE_SHELTER| FaceEngine.ASF_FACELANDMARK);
+                if (processCode == ErrorInfo.MOK) {
+                    ftEngine.getFaceShelter(faceShelterInfoList);
+                    ftEngine.getMask(maskInfoList);
+                    ftEngine.getFaceLandmark(landmarkList);
+                    for (LandmarkInfo landmarkInfo : landmarkList) {
+                        Log.i(TAG, "onPreviewFrame: " + Arrays.asList(landmarkInfo.getLandmarks()));
+                    }
+                }
+
             }
             facePreviewInfoList.clear();
-            for (int i = 0; i < faceInfoList.size(); i++) {
-                facePreviewInfoList.add(new FacePreviewInfo(faceInfoList.get(i), currentTrackIdList.get(i)));
+            if (faceShelterInfoList.size() == maskInfoList.size() && faceShelterInfoList.size() == faceInfoList.size()) {
+                for (int i = 0; i < faceInfoList.size(); i++) {
+                    facePreviewInfoList.add(new FacePreviewInfo(faceInfoList.get(i),
+                            landmarkList.get(i), faceShelterInfoList.get(i).getFaceShelter(),
+                            maskInfoList.get(i).getMask(), currentTrackIdList.get(i)));
+                }
             }
 
             return facePreviewInfoList;
@@ -238,6 +272,7 @@ public class FaceHelper {
         private int width;
         private int height;
         private int format;
+        private int mask;
         private Integer trackId;
         private byte[] nv21Data;
 
@@ -248,6 +283,20 @@ public class FaceHelper {
             this.nv21Data = nv21Data;
             this.faceInfo = new FaceInfo(faceInfo);
             this.width = width;
+            this.mask = 0;
+            this.height = height;
+            this.format = format;
+            this.trackId = trackId;
+        }
+
+        private FaceRecognizeRunnable(byte[] nv21Data, FaceInfo faceInfo, int mask, int width, int height, int format, Integer trackId) {
+            if (nv21Data == null) {
+                return;
+            }
+            this.nv21Data = nv21Data;
+            this.faceInfo = new FaceInfo(faceInfo);
+            this.width = width;
+            this.mask = mask;
             this.height = height;
             this.format = format;
             this.trackId = trackId;
@@ -261,7 +310,9 @@ public class FaceHelper {
                     long frStartTime = System.currentTimeMillis();
                     int frCode;
                     synchronized (frEngine) {
-                        frCode = frEngine.extractFaceFeature(nv21Data, width, height, format, faceInfo, faceFeature);
+                        long start = System.currentTimeMillis();
+                        frCode = frEngine.extractFaceFeature(nv21Data, width, height, format, faceInfo, ExtractType.RECOGNIZE, mask, faceFeature);
+                        Log.i(TAG, "run:  " + (System.currentTimeMillis() - start));
                     }
                     if (frCode == ErrorInfo.MOK) {
 //                        Log.i(TAG, "run: fr costTime = " + (System.currentTimeMillis() - frStartTime) + "ms");

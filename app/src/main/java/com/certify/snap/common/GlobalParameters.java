@@ -137,5 +137,15 @@ public class GlobalParameters {
     public static final String Temp_ACCESS_TOKEN = "Temp_access_token";
 
 
-
+    public static final String Temperature = "temperature";
+    public static final String Temphint = "temphint";
+    public static final String OpenDoor = "opendoor";
+    public static final String Host = "host";
+    public static final String Port = "port";
+    public static final String Fromadd = "fromadd";
+    public static final String Frompwd = "frompwd";
+    public static final String type = "type";
+    public static final String MaskMode = "maskMode";
+    public static final String Centigrades = "centigrade";
+    public static final String Fahrenheits = "fahrenheit";
 }

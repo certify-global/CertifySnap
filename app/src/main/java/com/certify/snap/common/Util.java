@@ -55,6 +55,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
@@ -90,6 +91,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -169,13 +171,13 @@ public class Util {
         if (context == null)
             return;
         if (getSharedPreferences(context).getInt(GlobalParameters.CameraType, 0) == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, ProIrCameraActivity.class));
             else
-                context.startActivity(new Intent(context, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
-            if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, ProIrCameraActivity.class));
             else
-                context.startActivity(new Intent(context, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
 //        if(isActivity) context.startActivity(new Intent(context, RgbCameraActivity.class));
@@ -612,9 +614,10 @@ public class Util {
         }
         return null;
     }
+
     public static JSONObject getJSONObjectLogin(String req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJsonLogin(url, req,"");
+            String responseTemp = Requestor.postJsonLogin(url, req, "");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -671,6 +674,7 @@ public class Util {
         }
         return null;
     }
+
     public static JSONObject getJSONObjectAddDevice(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJsonAdmin(url, req, context);
@@ -787,7 +791,7 @@ public class Util {
             String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             value = "thresholdValue:" + thresholdvalue + ", " +
-                        "faceScore:" + data.faceScore;
+                    "faceScore:" + data.faceScore;
             FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
             if (faceParameters != null) {
                 value = value + ", " + "age:" + faceParameters.age + ", " +
@@ -881,7 +885,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"MissingPermission", "HardwareIds"})
-        public static void getDeviceUUid(Context context) {
+    public static void getDeviceUUid(Context context) {
         SharedPreferences sp = Util.getSharedPreferences(context);
 
         if (!sp.getString(GlobalParameters.UUID, "").isEmpty())
@@ -1172,7 +1176,7 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, doNotSyncMembers.equals("1"));
                     String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
                     Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
-                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "0" :  jsonDeviceSettings.getString("navigationBar");
+                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "0" : jsonDeviceSettings.getString("navigationBar");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("0"));
                 }
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
@@ -1346,8 +1350,8 @@ public class Util {
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
                     //Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                   // openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
-                    context.startActivity(new Intent(context,AddDeviceActivity.class));
+                    // openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                    context.startActivity(new Intent(context, AddDeviceActivity.class));
 
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
@@ -1725,5 +1729,44 @@ public class Util {
 
     public final static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static boolean isUsualTemperature(Context context, float temperature) {
+        boolean isUnusual;
+        SharedPreferences sp = getSharedPreferences(context);
+        if (sp.getInt(GlobalParameters.Temperature, 0) == 0) {
+            float centigrade = sp.getFloat(GlobalParameters.Centigrades, (float) 37.3);
+            isUnusual = (temperature > centigrade) ? true : false;
+//            Log.e("centigrade---",centigrade+"-"+isUnusual);
+        } else {
+            float fahrenheit = sp.getFloat(GlobalParameters.Fahrenheits, (float) 99.14);
+            isUnusual = (celsiusToFahrenheit(temperature) > fahrenheit) ? true : false;
+//            Log.e("fahrenheit---",fahrenheit+"-"+isUnusual);
+        }
+        return isUnusual;
+    }
+
+    public static double celsiusToFahrenheit(float temperature) {
+        BigDecimal b = new BigDecimal(temperature * 1.8 + 32);
+        return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    public static String toHexString(byte[] data) {
+        if (data == null) {
+            return "";
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < data.length; ++i) {
+                String string = Integer.toHexString(data[i] & 255);
+                if (string.length() == 1) {
+                    stringBuilder.append("0");
+                }
+
+                stringBuilder.append(string.toUpperCase());
+            }
+
+            return stringBuilder.toString();
+        }
     }
 }

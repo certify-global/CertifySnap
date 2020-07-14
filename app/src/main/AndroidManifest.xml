@@ -16,10 +16,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -46,6 +44,7 @@
         tools:replace="android:appComponentFactory">
         <activity android:name=".activity.SelectDeviceActivity"></activity>
         <activity android:name=".activity.AudioVisualActivity" />
+        <activity android:name=".activity.ProIrCameraActivity"></activity>
         <activity
             android:name=".activity.NFCCardActivity"
             android:launchMode="singleTask"

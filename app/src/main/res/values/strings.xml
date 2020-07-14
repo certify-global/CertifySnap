@@ -426,4 +426,7 @@
     <string name="ble_connect"><u>Connect</u></string>
     <string name="not_connected"><u>Not Connected</u></string>
 
+    <string name="centigrade" translatable="false">&#160;℃</string>
+    <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
+
 </resources>

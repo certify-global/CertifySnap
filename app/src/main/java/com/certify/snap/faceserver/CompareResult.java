@@ -8,6 +8,7 @@ public class CompareResult implements Serializable {
     private float similar;
     private int trackId;
     private String memberId;
+    private String temperature;
 
     public String getFacialScore() {
         return facialScore;
@@ -65,6 +66,14 @@ public class CompareResult implements Serializable {
 
     public void setMemberId(String memberId) {
         this.memberId = memberId;
+    }
+
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
     }
 
     @Override
