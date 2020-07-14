@@ -10,6 +10,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -32,6 +34,8 @@ public class LoginActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_login);
             etPassword = findViewById(R.id.edittext_login);
             btn_confirm = findViewById(R.id.btn_login);
@@ -101,6 +105,7 @@ public class LoginActivity extends Activity {
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
+        etPassword.getText().clear();
     }
 
     private  void validatePassword(){

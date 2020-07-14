@@ -3,7 +3,10 @@ package com.certify.snap.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,6 +42,7 @@ import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.controller.BLEController;
+import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.qrscan.CameraSource;
 
@@ -79,6 +83,7 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
@@ -113,11 +118,10 @@ import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.HIDService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
-import com.telpo.tps550.api.DeviceAlreadyOpenException;
-import com.telpo.tps550.api.serial.Serial;
 
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -131,8 +135,6 @@ import org.litepal.exceptions.LitePalSupportException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -199,6 +201,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private CompositeDisposable getFeatureDelayedDisposables = new CompositeDisposable();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
     private CompositeDisposable temperatureRetryDisposable = new CompositeDisposable();
+    private CompositeDisposable alignedFacesDisposable = new CompositeDisposable();
+    private CompositeDisposable searchFaceDisposable = new CompositeDisposable();
+    private CompositeDisposable maskDetectDisposable = new CompositeDisposable();
 
     private static final int MAX_DETECT_NUM = 10;
 
@@ -312,12 +317,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isNfcFDispatchEnabled = false;
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
-
-    private Serial serial;
-    private InputStream inputStream;
-    private OutputStream outputStream;
-    private boolean readTerminal = false;
     private ImageView internetIndicatorImg;
+    private boolean isReadyToScan = true;
+    private BroadcastReceiver hidReceiver;
 
     private void instanceStart() {
         try {
@@ -329,7 +331,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void instanceStop() {
         try {
-            faceEngineHelper = null;
+            /*faceEngineHelper = null;
             irData = null;
             rubiklight = null;
             temperature_image = null;
@@ -357,7 +359,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             rgbBitmap = null;
             tv_scan = null;
             imageqr = null;
-            qr_main = null;
+            qr_main = null;*/
 
         } catch (Exception e) {
             Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
@@ -441,12 +443,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
         //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
-
         if (!Util.isNetworkOff(IrCameraActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
             internetIndicatorImg.setVisibility(View.GONE);
         } else {
             internetIndicatorImg.setVisibility(View.VISIBLE);
         }
+        initHidReceiver();
+
     }
 
     private void initQRCode() {
@@ -488,6 +491,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
+                isReadyToScan = false;
             } else {
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -594,12 +598,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     .setCancelable(false)
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-
-
                             finishAffinity();
                             stopHealthCheckService();
                             stopBLEService();
                             //stopMemberSyncService();
+                            stopHidService();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -717,7 +720,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         super.onResume();
         isActivityResumed = true;
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         enableNfc();
+        enableHidReader();
         startCameraSource();
         homeScreenTimeOut = sharedPreferences.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2);
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "1");
@@ -784,6 +789,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             soundPool.release();
             soundPool = null;
         }
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+        }
     }
 
     @Override
@@ -814,14 +822,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             cameraHelperIr.release();
             cameraHelperIr = null;
         }
-        if (faceEngineHelper != null)
-            faceEngineHelper.unInitEngine();
-
-        if (getFeatureDelayedDisposables != null) {
-            getFeatureDelayedDisposables.clear();
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
         }
-        if (delayFaceTaskCompositeDisposable != null) {
-            delayFaceTaskCompositeDisposable.clear();
+        clearDisposables();
+        if (faceEngineHelper != null) {
+            try {
+                faceEngineHelper.unInitEngine();
+            } catch (Exception e) {
+                Log.e(TAG, "Exception when releasing Face Engine");
+            }
         }
 
         if (faceHelperIr != null) {
@@ -844,9 +854,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         thermalImageCallback = null;
         searchFaceInfoList.clear();
         cancelPreviewIdleTimer();
-        if (temperatureRetryDisposable != null) {
-            temperatureRetryDisposable.clear();
-        }
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
@@ -1221,6 +1228,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
 
     private synchronized void processPreviewData(byte[] rgbData) {
+        if (!isHomeViewEnabled && !isReadyToScan) return;
         if (rgbData != null && irData != null) {
             byte[] cloneNv21Rgb;
             if (scanMode == 1) {
@@ -1386,18 +1394,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            if (isHomeViewEnabled) {
-                if (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) {
-                    return;
-                }
-                if (rfIdEnable) {
-                    if (faceDetectEnabled) {
-                        faceEngineHelper.initEngine(this);
-                        initRgbCamera();
-                        initIrCamera();
-                    }
-                    return;
-                }
+            if (qrCodeEnable) {
+                faceEngineHelper.initEngine(this);
+                return;
             }
             faceEngineHelper.initEngine(this);
             initRgbCamera();
@@ -1630,7 +1629,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void changeVerifyBackground(int id, boolean isVisible) {
-        if (outerCircle == null || innerCircle == null)
+        if (outerCircle == null || innerCircle == null || relativeLayout == null)
             return;
 
         //outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
@@ -1740,14 +1739,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
 
-                    tv_message.setVisibility(View.GONE);
+                    /*tv_message.setVisibility(View.GONE);
                     tvErrorMessage.setVisibility(View.GONE);
                     temperature_image.setVisibility(View.GONE);
                     homeDisplayView();
                     mask_message.setVisibility(View.GONE);
                     final Activity that = IrCameraActivity.this;
-                    isTemperatureIdentified = false;
-                    recreate();
+                    isTemperatureIdentified = false;*/
+                    clearData();
+                    resetHomeScreen();
+                    resetRfid();
+                    resetQrCode();
                 }
             });
             Logger.verbose(TAG, "ShowLauncherView() isTemperatureIdentified :", isTemperatureIdentified);
@@ -1822,6 +1824,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
+            if ((rfIdEnable || qrCodeEnable) && !isReadyToScan) return;
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -2155,6 +2158,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
                 }
+                MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
                 if (lanchTimer != null)
                     lanchTimer.cancel();
                 lanchTimer = new Timer();
@@ -2166,16 +2170,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
                         boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true) && !aboveThreshold;
                         if (confirmAboveScreen || confirmBelowScreen) {
-                            Intent intent = new Intent(IrCameraActivity.this, ConfirmationScreenActivity.class);
-                            intent.putExtra("tempVal", aboveThreshold ? "high" : "");
-                            startActivity(intent);
+                            runOnUiThread(() -> {
+                                if(isDestroyed()) return;
+                                launchConfirmationFragment(aboveThreshold);
+                                if (isHomeViewEnabled) {
+                                    pauseCameraScan();
+                                }
+                                else {
+                                    isReadyToScan = false;
+                                }
+                                resetHomeScreen();
+                            });
                             ConfirmationBoolean = true;
-                            MemberSyncDataModel.getInstance().syncDbErrorList(IrCameraActivity.this);
-                            finish();
                             compareResultList.clear();
                             data.compareResult = null;  //Make the compare result null to avoid update again
                         } else {
-
                             ShowLauncherView();
                         }
                     }
@@ -2346,7 +2355,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-                initCameraPreview();
+                clearQrCodePreview();
+                setCameraPreview();
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
                 img_qr.setVisibility(View.VISIBLE);
@@ -2420,9 +2430,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             } else {
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                    preview.stop();
-                    initCameraPreview();
+                    runOnUiThread(() ->  {
+                        if (isReadyToScan) return;
+                        Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
+                        preview.stop();
+                        clearQrCodePreview();
+                        setCameraPreview();
+                    });
                 } else {
                     preview.stop();
                     img_qr.setVisibility(View.VISIBLE);
@@ -2465,16 +2479,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    public void initCameraPreview() {
-        faceEngineHelper.initEngine(this);
-        initRgbCamera();
-        initIrCamera();
-        setCameraPreview();
-    }
-
     private void getAppSettings() {
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
-        qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false);
+        qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
+                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
         delayMilliTimeOut = sharedPreferences.getString(GlobalParameters.Timeout, "5");
         ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
@@ -2513,6 +2521,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      */
     private void initAccessControl() {
         if (!rfIdEnable) return;
+        if (!faceDetectEnabled) {
+            isReadyToScan = false;
+        }
         AccessCardController.getInstance().init();
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
         mNfcAdapter = M1CardUtils.isNfcAble(this);
@@ -2526,10 +2537,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 && isActivityResumed) {
                 isNfcFDispatchEnabled = true;
                 mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-            } else {
-                if (initHidReader()) {
-                    startHidReading();
-                }
             }
         }
     }
@@ -2539,35 +2546,47 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
-        } else {
-            closeHidReader();
         }
     }
 
-    private void startIrCamera() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initCameraPreview();
+    private void enableHidReader() {
+        if (rfIdEnable) {
+            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+                startHidService();
             }
-        }, 50);
+        }
     }
 
     private void setCameraPreview() {
+        long delay  = 300;
+        if (qrCodeEnable) {
+            resetCameraView();
+            if (rfIdEnable) {
+                delay = 2 * 1000; //With both Qr and Rfid enabled, taking time to init Camera on Non-HID devices
+            }
+        } else {
+            if (cameraHelper != null && cameraHelper.isStopped()) {
+                cameraHelper.start();
+            }
+            if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
+                cameraHelperIr.start();
+            }
+        }
+        CameraController.getInstance().setCameraOnRfid(true);
         enableLedPower();
-        disableNfc();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //  rl_header.setVisibility(View.GONE);
+        isReadyToScan = true;
+        new Handler().postDelayed(() -> {
                 if (outerCircle != null)
                     outerCircle.setBackgroundResource(R.drawable.border_shape);
-                logo.setVisibility(View.GONE);
-                relative_main.setVisibility(View.GONE);
+                if (logo != null) {
+                    logo.setVisibility(View.GONE);
+                }
+                if (relative_main != null) {
+                    relative_main.setVisibility(View.GONE);
+                }
                 changeVerifyBackground(R.color.transparency, true);
-                clearQrCodePreview();
-            }
-        }, 400); //Add delay for white screen
+                disableNfc();
+        }, delay);
         setCameraPreviewTimer();
     }
 
@@ -2580,7 +2599,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        recreate();
+                        thermalImageCallback = null;
+                        clearData();
+                        resetHomeScreen();
+                        resetRfid();
+                        resetQrCode();
                     }
                 });
                 this.cancel();
@@ -2655,18 +2678,21 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onSubscribe(Disposable d) {
                         maskDisposable = d;
+                        maskDetectDisposable.add(d);
                     }
 
                     @Override
                     public void onNext(Integer maskStat) {
                         Log.d(TAG, "Call Mask Status " + maskStat);
                         maskStatus = maskStat;
-                        maskDisposable.dispose();
+                        //maskDisposable.dispose();
+                        maskDetectDisposable.remove(maskDisposable);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Error in getting the mask status");
+                        maskDetectDisposable.remove(maskDisposable);
                     }
 
                     @Override
@@ -2735,6 +2761,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onSubscribe(Disposable d) {
                         searchMemberDisposable = d;
+                        searchFaceDisposable.add(d);
                     }
 
                     @Override
@@ -2846,6 +2873,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             if (mFaceMatchRetry == Constants.FACE_MATCH_MAX_RETRY) {
                                 CameraController.getInstance().setFaceNotMatchedOnRetry(true);
                                 runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue));
+                                mFaceMatchRetry = 0;
                             }
                             mFaceMatchRetry++;
                             runOnUiThread(new Runnable() {
@@ -2858,16 +2886,19 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
-                        searchMemberDisposable.dispose();
+                        //searchMemberDisposable.dispose();
+                        searchFaceDisposable.remove(searchMemberDisposable);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.d(TAG, "Snap Compare result Error ");
-//                        runTemperature(); // Register member photo is not there, Still find temperature
-                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
-                        retryRecognizeDelayed(requestId);
-                        searchMemberDisposable.dispose();
+                        runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0)); // Register member photo is not there, Still find temperature
+                        if (faceHelperIr != null) {
+                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+                        }
+                        //retryRecognizeDelayed(requestId);
+                        searchFaceDisposable.remove(searchMemberDisposable);
                     }
 
                     @Override
@@ -2908,11 +2939,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (cardId.isEmpty()) return;
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
         if (!AccessCardController.getInstance().isAllowAnonymous()
-            && AccessCardController.getInstance().isEnableRelay()) {
+            && (AccessCardController.getInstance().isEnableRelay() ||
+                AccessCardController.getInstance().isWeigandEnabled())) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 showSnackBarMessage(getString(R.string.access_granted));
-                startIrCamera();
+                setCameraPreview();
                 if (soundPool == null) {
                     initSound(); //when access card is recognized, onPause is getting called and resetting the sound
                 }
@@ -2922,16 +2954,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             //If Access denied, stop the reader and start again
             //Optimize: Not to close the stream
             if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-                closeHidReader();
-                if (initHidReader()) {
-                    startHidReading();
-                }
+                resetRfid();
             }
             return;
         }
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
-        startIrCamera();
+        setCameraPreview();
         if (soundPool == null) {
             initSound(); //when access card is recognized, onPause is getting called and resetting the sound
         }
@@ -3044,14 +3073,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (faceDetectEnabled) {
                     new Handler().postDelayed(() -> requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY), 3 * 1000);
                 } else {
-                    if (cameraHelper != null) {
-                        cameraHelper.stop();
-                    }
-                    if (cameraHelperIr != null) {
-                        cameraHelperIr.stop();
-                    }
+                    pauseCameraScan();
                     thermalImageCallback = null;
-
                 }
                 return;
             }
@@ -3141,19 +3164,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     @Override
                     public void onSubscribe(Disposable d) {
                         faceDisposable = d;
+                        alignedFacesDisposable.add(d);
                     }
 
                     @Override
                     public void onNext(List<FaceInfo> resultList) {
                         Log.d(TAG, "SearchFaceInfoList = " + resultList.size());
                         searchFaceInfoList.addAll(resultList);
-                        faceDisposable.dispose();
+                        //faceDisposable.dispose();
+                        alignedFacesDisposable.remove(faceDisposable);
                         checkFaceCloseness(searchFaceInfoList, requestId);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Log.e(TAG, "Error in getting the face properties");
+                        alignedFacesDisposable.remove(faceDisposable);
                     }
 
                     @Override
@@ -3177,7 +3203,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (faceDetectEnabled) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                 !isFaceIdentified) {
-                    Log.d(TAG, "Deep FaceRecognition");
+                    Log.d(TAG, "FaceRecognition");
                     showCameraPreview(faceFeature, requestId, rgb, ir);
                 }
                 searchFace(faceFeature, requestId, rgb, ir);
@@ -3218,7 +3244,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         cancelPreviewIdleTimer();
-        disableNfc();
         enableLedPower();
 
         if (maskEnabled && !faceDetectEnabled) {
@@ -3268,8 +3293,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             clearData(); //Clear the data on timeout
                             retryFaceOnTimeout(requestId); //Retry again on timeout
                             disableLedPower();
-                            enableNfc();
-
+                            resetRfid();
+                            resetQrCode();
                         }
                     });
                     this.cancel();
@@ -3290,12 +3315,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void clearData() {
         CameraController.getInstance().clearData();
+        AccessCardController.getInstance().clearData();
         searchFaceInfoList.clear();
         compareResultList.clear();
         resetMaskStatus();
         if (temperatureRetryDisposable != null) {
             temperatureRetryDisposable.clear();
         }
+        mFaceMatchRetry = 0;
     }
 
     private void setPreviewIdleTimer() {
@@ -3320,99 +3347,101 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    /**
-     * Method that initiates the serial port
-     */
-    private boolean initHidReader() {
-        boolean result = false;
-        try {
-            serial = new Serial("/dev/ttyS0", 9600, 0);
-        } catch (DeviceAlreadyOpenException | IOException e) {
-            Log.e(TAG, "HID Exception while instantiating Serial port");
-        }
-        if (serial != null) {
-            inputStream = serial.getInputStream();
-            outputStream = serial.getOutputStream();
-            readTerminal = true;
-            result = true;
-            Log.d(TAG, "HID Port initialized successfully");
-        }
-        return result;
+    private void launchConfirmationFragment(boolean aboveThreshold) {
+        Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("tempVal", aboveThreshold ? "high" : "");
+        confirmationScreenFragment.setArguments(bundle);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.dynamic_fragment_frame_layout, confirmationScreenFragment, "ConfirmationScreenFragment");
+        transaction.addToBackStack("ConfirmationScreenFragment");
+        transaction.commitAllowingStateLoss();
     }
 
-    /**
-     * Method that starts listening to the HID port
-     */
-    public void startHidReading() {
-        Observable
-                .create((ObservableOnSubscribe<String>) emitter -> {
-                    while(readTerminal) {
-                        if (inputStream != null) {
-                            int size = 0;
-                            byte[] buffer = new byte[64];
-                            try {
-                                size = inputStream.available();
-                                if (size > 0) {
-                                    size = inputStream.read(buffer);
-                                    if (size > 0) {
-                                        String cardData = new String(buffer, 0, size, "UTF-8");
-                                        Log.d(TAG, "HID Card data " + cardData);
-                                        readTerminal = false;
-                                        emitter.onNext(cardData);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                Logger.warn(TAG, "HID Reading data from port exception " + e.getMessage());
-                                emitter.onNext("");
-                            }
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    Disposable hidReaderDisposable;
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        hidReaderDisposable = d;
-                    }
-
-                    @Override
-                    public void onNext(String cardId) {
-                        onRfidScan(cardId);
-                        hidReaderDisposable.dispose();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, "HID Error in reading from the serial port");
-                        hidReaderDisposable.dispose();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //do noop
-                    }
-                });
+    private void resetHomeScreen() {
+        if (tv_message != null) tv_message.setVisibility(View.GONE);
+        if (tvErrorMessage != null) tvErrorMessage.setVisibility(View.GONE);
+        if (temperature_image != null) temperature_image.setVisibility(View.GONE);
+        if (mask_message != null) mask_message.setVisibility(View.GONE);
+        if (outerCircle != null) {
+            outerCircle.setBackgroundResource(R.drawable.border_shape);
+        }
+        isTemperatureIdentified = false;
+        cancelImageTimer();
+        clearLeftFace(null);
+        thermalImageCallback = null;
+        homeDisplayView();
     }
 
-    /**
-     * Method that closes HID serial port
-     */
-    private void closeHidReader() {
-        readTerminal = false;
-        try {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "HID Error in closing the serial port stream");
+    public void resumeScan() {
+        clearData();
+        resetRfid();
+        if (qrCodeEnable) {
+            resetQrCode();
+            return;
         }
-        if (serial != null) serial.close();
+        if (!isHomeViewEnabled) isReadyToScan = true;
+        resumeCameraScan();
+    }
+
+    private void resetRfid() {
+        if (rfIdEnable) {
+            enableNfc();
+            if (!faceDetectEnabled) {
+                isReadyToScan = false;
+            }
+            CameraController.getInstance().setCameraOnRfid(false);
+        }
+    }
+
+    private void pauseCameraScan() {
+        if (cameraHelper != null) {
+            cameraHelper.stop();
+        }
+        if (cameraHelperIr != null) {
+            cameraHelperIr.stop();
+        }
+    }
+
+    private void resumeCameraScan() {
+        if (cameraHelper != null && cameraHelper.isStopped()) {
+            cameraHelper.start();
+        }
+        if (cameraHelperIr != null && cameraHelperIr.isStopped()) {
+            cameraHelperIr.start();
+        }
+    }
+
+    private void resetCameraView() {
+        if (cameraHelper != null) {
+            cameraHelper.release();
+        }
+        if (cameraHelperIr != null) {
+            cameraHelperIr.release();
+        }
+        new Handler().post(() -> {
+            initRgbCamera();
+            initIrCamera();
+        });
+    }
+
+    private void resetQrCode() {
+        if (qrCodeEnable) {
+            isReadyToScan = false;
+            clearQrCodePreview();
+            runOnUiThread(() -> {
+                img_qr.setVisibility(View.GONE);
+                initQRCode();
+                startCameraSource();
+            });
+        }
+    }
+
+    private void startHidService() {
+        if (!Util.isServiceRunning(HIDService.class, this)) {
+            Intent msgIntent = new Intent(this, HIDService.class);
+            startService(msgIntent);
+        }
     }
 
     private void stopBLEService() {
@@ -3420,4 +3449,56 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         stopService(intent);
     }
 
+    private void initHidReceiver() {
+        hidReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null && intent.getAction().equals(HIDService.HID_BROADCAST_ACTION)) {
+                    String data = intent.getStringExtra(HIDService.HID_DATA);
+                    runOnUiThread(() -> {
+                        if (!data.equals(HIDService.HID_RESTART_SERVICE)) {
+                            if (rfIdEnable) {
+                                if (!isReadyToScan
+                                    || !CameraController.getInstance().isCameraOnRfid()) {
+                                    Log.d(TAG, "HID Card Id UI " + data);
+                                    onRfidScan(data);
+                                }
+                            }
+                            return;
+                        }
+                        HIDService.readTerminal = false;
+                        new Handler().postDelayed(() -> {
+                            Log.d(TAG, "HID Restarting Service");
+                            enableHidReader();
+                        }, 200);
+                    });
+                }
+            }
+        };
+    }
+
+    private void stopHidService() {
+        HIDService.readTerminal = false;
+    }
+
+    private void clearDisposables() {
+        if (getFeatureDelayedDisposables != null) {
+            getFeatureDelayedDisposables.clear();
+        }
+        if (delayFaceTaskCompositeDisposable != null) {
+            delayFaceTaskCompositeDisposable.clear();
+        }
+        if (temperatureRetryDisposable != null) {
+            temperatureRetryDisposable.clear();
+        }
+        if (alignedFacesDisposable != null) {
+            alignedFacesDisposable.clear();
+        }
+        if (searchFaceDisposable != null) {
+            searchFaceDisposable.clear();
+        }
+        if (maskDetectDisposable != null) {
+            maskDetectDisposable.clear();
+        }
+    }
 }

@@ -18,6 +18,7 @@ public class CameraController {
     private boolean isScanCloseProximityEnabled = false;
     public int CAMERA_PREVIEW_HEIGHT = 1208;
     private FaceParameters faceParameters;
+    private boolean isCameraOnForRfid = false;
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -83,6 +84,14 @@ public class CameraController {
         return faceParameters;
     }
 
+    public boolean isCameraOnRfid() {
+        return isCameraOnForRfid;
+    }
+
+    public void setCameraOnRfid(boolean cameraOn) {
+        isCameraOnForRfid = cameraOn;
+    }
+
     public float getOnlyTextSize(int length) {
         Log.i("getOnlyTextSize  ", "" + length);
         if (length > 2000)
@@ -100,6 +109,8 @@ public class CameraController {
         isFaceVisible = false;
         compareResult = null;
         isFaceNotMatchedOnRetry = false;
-        faceParameters = null;
+        if (faceParameters != null) {
+            faceParameters.clear();
+        }
     }
 }

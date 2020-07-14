@@ -279,7 +279,7 @@
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="enable_anonymous">Enable Anonymous QR Code / Bar Code</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
-    <string name="grant_access">Access granted</string>
+    <string name="grant_access">Access Granted</string>
     <string name="device_not_register">  is not registered on your certify.me account. Please make sure the device is connected to Internet and device is added to your cloud account under Devices.\n
    \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="invalid_qr">Invalid QRCode</string>
@@ -300,7 +300,7 @@
     <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
     <string name="access_control_card_format">Message Format</string>
     <string name="access_control_enroll">Enroll</string>
-    <string name="access_granted">Access granted</string>
+    <string name="access_granted">Access Granted</string>
     <string name="access_denied">Access denied!</string>
     <string name="access_failed">User cannot be identified. Please enroll</string>
     <string name="automatic_door_access">Enable Relay</string>

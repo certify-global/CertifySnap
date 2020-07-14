@@ -326,7 +326,6 @@ public class MemberSyncDataModel {
      */
     private void updateDbSyncErrorMap(RegisteredMembers member) {
         if (dbSyncErrorMemberList.isEmpty()) return;
-        dbSyncErrorMap.put(member, true);
     }
 
     /**
