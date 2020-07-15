@@ -1748,7 +1748,7 @@ public class Util {
 
     public static double celsiusToFahrenheit(float temperature) {
         BigDecimal b = new BigDecimal(temperature * 1.8 + 32);
-        return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public static String toHexString(byte[] data) {

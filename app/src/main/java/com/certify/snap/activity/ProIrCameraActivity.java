@@ -12,8 +12,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
-import android.media.AudioManager;
-import android.media.SoundPool;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
@@ -65,6 +63,7 @@ import com.certify.snap.arcface.util.face.RequestFeatureStatus;
 import com.certify.snap.arcface.util.face.RequestLivenessStatus;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.arcface.widget.ShowFaceInfoAdapter;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.Constants;
@@ -185,7 +184,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     TextView txt_guest, tv_mask;
     String message;
 
-    private SoundPool soundPool;
     private HashMap<Integer, Integer> spMap;
     public static final String WALLPAPER_CHANGE = "com.telpo.telpo_face_system_wallpaper";
 
@@ -228,9 +226,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
+
+        AppSettings.getInstance().getSettingsFromSharedPref(this);
+
         initView();
 
-        soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
         spMap = new HashMap<Integer, Integer>();
 
         processHandler = new ProcessHandler(ProIrCameraActivity.this);
@@ -827,8 +827,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     private void getTemperature(final List<FacePreviewInfo> facePreviewInfoList) {
         isTemperature = true;
-//        mailName = "";
-//        mailWorkNum = "";
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -905,10 +903,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                         for (int i = 0; i < maxInRectInfo.size(); i++) {
                                             int trackId = temperatureRectList.get(i).getTrackId();
                                             temp = maxInRectInfo.get(i)[3];
-                                            Log.d(TAG, "naga........: temp" + temp);
-                                            faceHelperIr.setName(trackId, sp.getInt(GlobalParameters.Temperature, 0) == 0 ?
-                                                    temp + "" : Util.celsiusToFahrenheit(temp) + "");
-                                            //temp = (float) Util.celsiusToFahrenheit(temp);
+
+                                            String temperatureUnit = AppSettings.getfToC();
+                                            if(temperatureUnit.equals("F")) {
+                                                temp = (float) Util.celsiusToFahrenheit(temp);
+                                            }
+                                            faceHelperIr.setName(trackId, String.valueOf(temp));
+
                                             if (temperatureMap.get(trackId) == null) {
                                                 temperatureMap.put(trackId, temp);
                                                 temperatureStatusMap.put(trackId, TemperatureStatus.SUCCEED);
@@ -1155,10 +1156,12 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                                 float temperature = temperatureMap.get(requestId) == null ? 0 : temperatureMap.get(requestId);
                                 String temperatureResult;
-                                if (sp.getInt(GlobalParameters.Temperature, 0) == 0) {
-                                    temperatureResult = temperature + getString(R.string.centigrade);
+
+                                String temperatureUnit = AppSettings.getfToC();
+                                if(temperatureUnit.equals("F")) {
+                                    temperatureResult = temperature + getString(R.string.Fahrenheit_temp);
                                 } else {
-                                    temperatureResult = Util.celsiusToFahrenheit(temperature) + getString(R.string.Fahrenheit_temp);
+                                    temperatureResult = temperature + getString(R.string.centigrade);
                                 }
                                 compareResult.setTemperature(temperatureResult);
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
@@ -1171,7 +1174,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                     if (status.equals("1")) {
                                         if ((!TextUtils.isEmpty(GlobalParameters.Access_limit) && compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit)))
                                                 || TextUtils.isEmpty(GlobalParameters.Access_limit)) {
-                                            // 符合条件开门 在限制时间内
                                             message = name;
 
                                             mailName = name;
@@ -1545,14 +1547,5 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             return null;
         }
         return Util.toHexString(tag.getId());
-    }
-
-    public void playSounds(int sound, int number) {
-        AudioManager am = (AudioManager) this.getSystemService(this.AUDIO_SERVICE);
-        float audioMaxVolumn = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        float audioCurrentVolumn = am.getStreamVolume(AudioManager.STREAM_MUSIC);
-        float volumnRatio = audioCurrentVolumn / audioMaxVolumn;
-
-        soundPool.play(spMap.get(sound), volumnRatio, volumnRatio, 1, number, 1);
     }
 }
