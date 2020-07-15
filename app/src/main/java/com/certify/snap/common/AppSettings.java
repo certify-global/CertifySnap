@@ -26,6 +26,7 @@ public class AppSettings {
     private static boolean confirmScreenAbove = false;
     private static boolean confirmScreenBelow = false;
     private static String confirmScreenDelayValue = "";
+    private static boolean facialDetect = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -53,6 +54,7 @@ public class AppSettings {
         confirmScreenAbove = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
         confirmScreenBelow = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
         confirmScreenDelayValue = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "3");
+        facialDetect = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true);
     }
 
     public static String getThermalScanTitle() {
@@ -121,5 +123,13 @@ public class AppSettings {
 
     public static String getConfirmScreenDelayValue() {
         return confirmScreenDelayValue;
+    }
+
+    public static boolean isFacialDetect() {
+        return facialDetect;
+    }
+
+    public static void setFacialDetect(boolean facialDetect) {
+        AppSettings.facialDetect = facialDetect;
     }
 }

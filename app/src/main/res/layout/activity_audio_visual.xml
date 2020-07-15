@@ -258,7 +258,10 @@
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginRight="4dp"
+                android:maxLines="1"
                 android:text="NONE"
+                android:maxLength="25"
+                android:ellipsize="end"
                 android:textColor="@color/red"
                 android:textSize="20sp" />
 

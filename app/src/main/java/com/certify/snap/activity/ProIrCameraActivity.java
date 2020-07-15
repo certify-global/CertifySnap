@@ -217,11 +217,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_pro_ir_camera);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
             attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             getWindow().setAttributes(attributes);
-        }
+        }*/
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
@@ -507,11 +507,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 if (faceFeature != null) {
                     Integer liveness = livenessMap.get(requestId);
                     if (!livenessDetect) {
-                        searchFace(faceFeature, requestId);
+                        if (AppSettings.isFacialDetect())
+                            searchFace(faceFeature, requestId);
                     }
                     else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.e("liveness---", "LivenessInfo.ALIVE---" + isTemperature);
-                       searchFace(faceFeature, requestId);
+                        if(AppSettings.isFacialDetect())
+                            searchFace(faceFeature, requestId);
                     }
                     else {
 
@@ -758,7 +760,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 cancelImageTimer();
 //                openled();
                 for (int i = 0; i < facePreviewInfoList.size(); i++) {
-                    // 注意：这里虽然使用的是IR画面活体检测，RGB画面特征提取，但是考虑到成像接近，所以只用了RGB画面的图像质量检测
                     int trackId = facePreviewInfoList.get(i).getTrackId();
                     Integer status = requestFeatureStatusMap.get(trackId);
                     if (status != null && status == RequestFeatureStatus.SUCCEED) {
@@ -802,7 +803,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         if (liveness == null
                                 || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
                             livenessMap.put(facePreviewInfoList.get(i).getTrackId(), RequestLivenessStatus.ANALYZING);
-                            // IR数据偏移
                             FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
                             faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
                             faceHelperIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
@@ -903,10 +903,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                         for (int i = 0; i < maxInRectInfo.size(); i++) {
                                             int trackId = temperatureRectList.get(i).getTrackId();
                                             temp = maxInRectInfo.get(i)[3];
+                                            temp = (float) Util.celsiusToFahrenheit(temp);
 
                                             String temperatureUnit = AppSettings.getfToC();
-                                            if(temperatureUnit.equals("F")) {
-                                                temp = (float) Util.celsiusToFahrenheit(temp);
+                                            if(temperatureUnit.equals("C")) {
+                                                temp = maxInRectInfo.get(i)[3];
                                             }
                                             faceHelperIr.setName(trackId, String.valueOf(temp));
 
@@ -1113,7 +1114,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         Log.d(TAG, "Naga........onNext: ");
                         if (compareResult == null || compareResult.getUserName() == null) {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-//                            faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
                             return;
                         }
                         Integer temperatureStatus = temperatureStatusMap.get(requestId);
@@ -1122,12 +1122,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             return;
                         }
 
-//                        Log.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
                         if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-//                                faceHelperIr.setName(requestId, getString(R.string.VISITOR) + requestId);
                                 return;
                             }
                             for (CompareResult compareResult1 : compareResultList) {
@@ -1138,7 +1136,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             }
                             Log.e("onnext2---", "searchface---" + isTemperature + ",isAdd:" + isAdded);
                             if (!isAdded) {
-                                //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
                                     compareResultList.remove(0);
                                     adapter.notifyItemRemoved(0);
@@ -1192,7 +1189,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                             showResult(compareResult, requestId, message, false);
                                         }
                                     } else if (!status.equals("1")) {
-                                        //不符合条件
                                         message = getString(R.string.text_nopermission);
                                         showResult(compareResult, requestId, message, false);
                                     }
@@ -1201,19 +1197,16 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             }
                             if (faceHelperIr != null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
-//                                faceHelperIr.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
                             }
 
                             if (!isTemperature) {
                                 Log.e("retry----", "istemperature=" + isTemperature);
                                 if (faceHelperIr != null) {
-//                                    faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                                     retryRecognizeDelayed(requestId);
                                 }
                             }
                         } else {
                             if (faceHelperIr != null) {
-//                                faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                                 retryRecognizeDelayed(requestId);
                             }
                         }
@@ -1222,7 +1215,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     @Override
                     public void onError(Throwable e) {
                         if (faceHelperIr != null) {
-//                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }
                     }
@@ -1235,7 +1227,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     }
 
     private void showResult(CompareResult compareResult, int requestId, String message, final boolean isdoor) {
-        //添加显示人员时，保存其trackId
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
         compareResultList.add(compareResult);

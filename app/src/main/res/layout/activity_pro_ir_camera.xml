@@ -20,13 +20,15 @@
     <com.certify.snap.arcface.widget.FaceRectView
         android:id="@+id/single_camera_face_rect_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_person"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_measure_area"
+        android:layout_alignParentBottom="true"
         android:background="@color/half_transparent" />
 
     <ImageView
