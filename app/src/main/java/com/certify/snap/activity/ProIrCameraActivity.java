@@ -14,7 +14,6 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -180,7 +179,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private AlertDialog.Builder builder;
 
     private int relaytimenumber = 5;
-    ImageView  img_temperature, img_guest, img_thermalImage, exit;
+    ImageView img_temperature, img_guest, img_thermalImage, exit;
     TextView txt_guest, tv_mask;
     String message;
 
@@ -241,7 +240,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         sp = Util.getSharedPreferences(this);
         relaytimenumber = sp.getInt(GlobalParameters.RelayTime, 5);
         livenessDetect = sp.getBoolean(GlobalParameters.LivingType, true);
-        mask = sp.getBoolean(GlobalParameters.MaskMode,false);
+        mask = sp.getBoolean(GlobalParameters.MaskMode, false);
         tempRect = new Rect(sp.getInt("rect_left", 24), sp.getInt("rect_top", 30),
                 sp.getInt("rect_right", 28), sp.getInt("rect_bottom", 40));
 
@@ -509,13 +508,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     if (!livenessDetect) {
                         if (AppSettings.isFacialDetect())
                             searchFace(faceFeature, requestId);
-                    }
-                    else if (liveness != null && liveness == LivenessInfo.ALIVE) {
+                    } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
                         Log.e("liveness---", "LivenessInfo.ALIVE---" + isTemperature);
-                        if(AppSettings.isFacialDetect())
+                        if (AppSettings.isFacialDetect())
                             searchFace(faceFeature, requestId);
-                    }
-                    else {
+                    } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
                             Observable.timer(WAIT_LIVENESS_INTERVAL, TimeUnit.MILLISECONDS)
@@ -546,8 +543,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         }
                     }
 
-                }
-                else {
+                } else {
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
                         String msg;
@@ -703,8 +699,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 .previewOn(previewViewIr)
                 .cameraListener(irCameraListener)
                 .isMirror(cameraIrId != null && Camera.CameraInfo.CAMERA_FACING_FRONT == cameraIrId)
-//                .previewSize(new Point(1280, 960)) //相机预览大小设置，RGB与IR需使用相同大小
-//                .additionalRotation(270) //额外旋转角度
+//                .previewSize(new Point(1280, 960))
+//                .additionalRotation(270)
                 .build();
         cameraHelperIr.init();
         try {
@@ -906,7 +902,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                             temp = (float) Util.celsiusToFahrenheit(temp);
 
                                             String temperatureUnit = AppSettings.getfToC();
-                                            if(temperatureUnit.equals("C")) {
+                                            if (temperatureUnit.equals("C")) {
                                                 temp = maxInRectInfo.get(i)[3];
                                             }
                                             faceHelperIr.setName(trackId, String.valueOf(temp));
@@ -1028,11 +1024,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         }
     }
 
-    /**
-     * 删除已经离开的人脸
-     *
-     * @param facePreviewInfoList 人脸和trackId列表
-     */
     private void clearLeftFace(List<FacePreviewInfo> facePreviewInfoList) {
         if (compareResultList != null) {
             for (int i = compareResultList.size() - 1; i >= 0; i--) {
@@ -1087,7 +1078,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
         Log.d(TAG, "Naga........searchFace: ");
-        if(faceHelperIr==null) {
+        if (faceHelperIr == null) {
             return;
         }
 
@@ -1104,6 +1095,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<CompareResult>() {
                     Disposable searchMemberDisposable;
+
                     @Override
                     public void onSubscribe(Disposable d) {
                         searchMemberDisposable = d;
@@ -1155,7 +1147,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 String temperatureResult;
 
                                 String temperatureUnit = AppSettings.getfToC();
-                                if(temperatureUnit.equals("F")) {
+                                if (temperatureUnit.equals("F")) {
                                     temperatureResult = temperature + getString(R.string.Fahrenheit_temp);
                                 } else {
                                     temperatureResult = temperature + getString(R.string.centigrade);
@@ -1259,7 +1251,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             Integer recognizeStatus = requestFeatureStatusMap.get(trackId);
 
             int sheltered = isSheltered(trackId, facePreviewInfoList.get(i).getFaceShelter());
-            // 根据识别结果和活体结果设置颜色
 //            int color = RecognizeColor.COLOR_UNKNOWN;
             int color = Color.YELLOW;
 //            color = sheltered == FaceShelterInfo.NOT_SHELTERED || facePreviewInfoList.get(i).getMask() == MaskInfo.NOT_WORN ? Color.RED : Color.YELLOW;
@@ -1289,9 +1280,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 //        drawHelper.drawLandmarkInfo(faceLandmarkView, drawLandmarkInfo);
     }
 
-    /**
-     * 在{@link #previewViewRgb}第一次布局完成后，去除该监听，并且进行引擎和相机的初始化
-     */
     @Override
     public void onGlobalLayout() {
         previewViewRgb.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -1304,13 +1292,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         }
     }
 
-    /**
-     * 将map中key对应的value增1回传
-     *
-     * @param countMap map
-     * @param key      key
-     * @return 增1后的value
-     */
     public int increaseAndGetValue(Map<Integer, Integer> countMap, int key) {
         if (countMap == null) {
             return 0;
@@ -1323,11 +1304,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         return value;
     }
 
-    /**
-     * 延迟 FAIL_RETRY_INTERVAL 重新进行活体检测
-     *
-     * @param requestId 人脸ID
-     */
     private void retryLivenessDetectDelayed(final Integer requestId) {
         Observable.timer(FAIL_RETRY_INTERVAL, TimeUnit.MILLISECONDS)
                 .subscribe(new Observer<Long>() {
@@ -1351,7 +1327,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                     @Override
                     public void onComplete() {
-                        // 将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
                         if (livenessDetect) {
 //                            faceHelperIr.setName(requestId, Integer.toString(requestId));
                         }
@@ -1361,11 +1336,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 });
     }
 
-    /**
-     * 延迟 FAIL_RETRY_INTERVAL 重新进行人脸识别
-     *
-     * @param requestId 人脸ID
-     */
     private void retryRecognizeDelayed(final Integer requestId) {
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
         Observable.timer(FAIL_RETRY_INTERVAL, TimeUnit.MILLISECONDS)
@@ -1390,7 +1360,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                     @Override
                     public void onComplete() {
-                        // 将该人脸特征提取状态置为FAILED，帧回调处理时会重新进行活体检测
 //                        faceHelperIr.setName(requestId, Integer.toString(requestId));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                         delayFaceTaskCompositeDisposable.remove(disposable);
@@ -1494,8 +1463,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         img_temperature.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
-
-    //获取所有限制时间段的数组
     public String[] processLimitedTime(String data) {
         if (data.contains(";")) {
             return data.split(";");
@@ -1504,7 +1471,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         }
     }
 
-    //比较所有限制时间段
     public boolean compareAllLimitedTime(String compareTime, String[] limitedTimes) {
         if (compareTime == null || limitedTimes == null) {
             return false;
@@ -1516,7 +1482,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         return result;
     }
 
-    //比较具体一个时间段的方法
     public boolean compareLimitedTime(String compareTime, String limitedStartTime, String limitedEndTime) {
         if (compareTime == null || limitedStartTime == null || limitedEndTime == null) return false;
         boolean result = false;
