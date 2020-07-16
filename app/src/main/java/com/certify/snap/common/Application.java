@@ -79,7 +79,7 @@ public class Application extends android.app.Application {
         temperatureUtil = new ThermalImageUtil(this);
 
         if (BuildConfig.BUILD_TYPE != "debug") {
-            //initAppCenter();
+            initAppCenter();
         }
 
         CrashHandler crashHandler = CrashHandler.getInstance();
