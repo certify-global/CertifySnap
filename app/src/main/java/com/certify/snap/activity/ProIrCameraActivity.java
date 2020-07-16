@@ -761,7 +761,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     if (rect.top < 300 || rect.bottom > 850) {
                         continue;
                     }
-                    if (mask) {
+/*                    if (mask) {
                         int mask = facePreviewInfoList.get(i).getMask();
                         int faceShelter = isSheltered(facePreviewInfoList.get(i).getTrackId(), facePreviewInfoList.get(i).getFaceShelter());// ? FaceShelterInfo.SHELTERED : FaceShelterInfo.NOT_SHELTERED;
 
@@ -785,10 +785,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 //                                showMaskTip("",getResources().getColor(R.color.skyblue));
                                 break;
                         }
-                            /*if (!canAnalyze) {
+                            *//*if (!canAnalyze) {
                                 continue;
-                            }*/
-                    }
+                            }*//*
+                    }*/
 
                     if (livenessDetect) {
                         Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
@@ -805,7 +805,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     if (status == null || status == RequestFeatureStatus.TO_RETRY) {
                         Log.e(TAG, "start to requestFaceFeature");
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
-                        faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(), facePreviewInfoList.get(i).getMask(),
+                        faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
                                 facePreviewInfoList.get(i).getTrackId());
                     }
@@ -1246,7 +1246,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             Integer liveness = livenessMap.get(trackId);
             Integer recognizeStatus = requestFeatureStatusMap.get(trackId);
 
-            int sheltered = isSheltered(trackId, facePreviewInfoList.get(i).getFaceShelter());
+            //int sheltered = isSheltered(trackId, facePreviewInfoList.get(i).getFaceShelter());
 //            int color = RecognizeColor.COLOR_UNKNOWN;
             int color = Color.YELLOW;
 //            color = sheltered == FaceShelterInfo.NOT_SHELTERED || facePreviewInfoList.get(i).getMask() == MaskInfo.NOT_WORN ? Color.RED : Color.YELLOW;
