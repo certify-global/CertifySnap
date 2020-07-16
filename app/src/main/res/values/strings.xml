@@ -404,6 +404,7 @@
     <string name="in_active">Inactive</string>
     <string name="status">Status</string>
     <string name="screen_timeout_msg">Please input Screen timeout for scan to 5 or above</string>
+    <string name="record">Record</string>
 
     <!--audio and visual page-->
     <string name="ble_not_supported">This device not support bluetooth service</string>

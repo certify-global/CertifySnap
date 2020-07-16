@@ -2190,16 +2190,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
                 }, delayMilli * 1000);
                 showMaskStatus();
-                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
-                    boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
-                    data.exceedsThreshold = aboveThreshold;
-                    data.temperature = tempValue;
-                    data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
-                    data.thermal = temperatureBitmap;
-                    data.maskStatus = String.valueOf(maskStatus);
-                    data.triggerType = mTriggerType;
-                    Util.recordUserTemperature(null, IrCameraActivity.this, data);
-                }
+                boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
+                data.exceedsThreshold = aboveThreshold;
+                data.temperature = tempValue;
+                data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
+                data.thermal = temperatureBitmap;
+                data.maskStatus = String.valueOf(maskStatus);
+                data.triggerType = mTriggerType;
+                Util.recordUserTemperature(null, IrCameraActivity.this, data);
             }
         });
     }
@@ -2858,6 +2856,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     }
                                 } else {
                                     Log.e(TAG, "Snap Compare result database no match " + isAdded);
+                                    if (Util.isNetworkOff(IrCameraActivity.this)) {
+                                        runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
+                                    }
                                 }
                             } else {
                                 Log.d(TAG, "Snap Compare result, isAdded condition failed " + isAdded);
@@ -2988,7 +2989,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void initiateFaceSearch(FaceFeature faceFeature, int requestId, Integer liveness, Bitmap rgb, Bitmap ir) {
         Log.v(TAG, String.format("initiateFaceSearch faceDetectEnabled: %s, isSearchFace: %s", faceDetectEnabled, isSearchFace));
-        if (faceDetectEnabled) {
+        if (faceDetectEnabled || Util.isNetworkOff(IrCameraActivity.this)) {
             if (GlobalParameters.livenessDetect) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
                     startFaceSearch(faceFeature, requestId, rgb, ir);

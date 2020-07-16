@@ -74,7 +74,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     Switch switch_activate;
     private RelativeLayout accessControl;
     private TextView accessControlTv, tvDeviceOnline, tvDeviceName, tvDeviceSettings, tvDeviceMode;
-    private TextView mConnectivityStatus;
+    private TextView mConnectivityStatus, tvRecord;
+    private View recordDivider;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -183,6 +184,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         confirmation_setting = findViewById(R.id.confirmation_setting);
         card = findViewById(R.id.setting_activate_card);
         record = findViewById(R.id.setting_record);
+        tvRecord = findViewById(R.id.tv_record);
         setting_temperature = findViewById(R.id.setting_temperature);
         setting_upload = findViewById(R.id.setting_upload);
         setting_access_password = findViewById(R.id.setting_access_password);
@@ -211,6 +213,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tvDeviceSettings = findViewById(R.id.tv_device_setting);
         tvDeviceMode = findViewById(R.id.tv_device_model);
         mConnectivityStatus = findViewById(R.id.tv_connectivity_status);
+        recordDivider = findViewById(R.id.record_divider);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -230,6 +233,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tvDeviceName.setTypeface(rubiklight);
         tvDeviceSettings.setTypeface(rubiklight);
         tvDeviceMode.setTypeface(rubiklight);
+        tvRecord.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
         accessControlTv.setTypeface(rubiklight);
@@ -247,6 +251,13 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     @Override
     protected void onResume() {
         super.onResume();
+        if (Util.isNetworkOff(SettingActivity.this)) {
+            record.setVisibility(View.VISIBLE);
+            recordDivider.setVisibility(View.VISIBLE);
+        }else {
+            record.setVisibility(View.GONE);
+            recordDivider.setVisibility(View.GONE);
+        }
         setData();
     }
 
