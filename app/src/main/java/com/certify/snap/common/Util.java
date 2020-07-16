@@ -170,14 +170,18 @@ public class Util {
     public static void switchRgbOrIrActivity(Context context, Boolean isActivity) {
         if (context == null)
             return;
+        Class<?> activity = IrCameraActivity.class;
+        if(isDeviceProModel()){
+            activity = ProIrCameraActivity.class;
+        }
         if (getSharedPreferences(context).getInt(GlobalParameters.CameraType, 0) == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            if (isActivity) context.startActivity(new Intent(context, ProIrCameraActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, activity));
             else
-                context.startActivity(new Intent(context, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
-            if (isActivity) context.startActivity(new Intent(context, ProIrCameraActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
             else
-                context.startActivity(new Intent(context, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
 //        if(isActivity) context.startActivity(new Intent(context, RgbCameraActivity.class));
@@ -1768,5 +1772,10 @@ public class Util {
 
             return stringBuilder.toString();
         }
+    }
+
+    public static boolean isDeviceProModel() {
+        int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+        return mode == Constants.PRO_MODEL_TEMPERATURE_MODULE;
     }
 }
