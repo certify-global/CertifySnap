@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,6 +40,7 @@ import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
@@ -83,14 +83,12 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.callback.RecordTemperatureCallback;
-import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.MemberSyncDataModel;
-import com.certify.snap.model.QrCodeData;
 import com.certify.snap.qrscan.BarcodeScannerProcessor;
 import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
@@ -2202,52 +2200,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
             }
         });
-    }
-
-    public class UserExportedData {
-        public Bitmap rgb;
-        public Bitmap ir;
-        public Bitmap thermal;
-        public RegisteredMembers member;
-        public int faceScore;
-        public String temperature;
-        public boolean sendImages;
-        public boolean exceedsThreshold;
-        public String maskStatus;
-        public CompareResult compareResult;
-        private QrCodeData qrCodeData;  //TODO1: Optimize
-        public String triggerType = "";
-
-        public UserExportedData() {
-            this.member = new RegisteredMembers();
-        }
-
-        public UserExportedData(Bitmap rgb, Bitmap ir, RegisteredMembers member, int faceScore) {
-            this.rgb = rgb;
-            this.ir = ir;
-            this.member = member;
-            this.faceScore = faceScore;
-        }
-
-        public QrCodeData getQrCodeData() {
-            return qrCodeData;
-        }
-
-        public void setQrCodeData(QrCodeData qrCodeData) {
-            this.qrCodeData = qrCodeData;
-        }
-
-        @Override
-        public String toString() {
-            return "UserExportedData{" +
-                    "member=" + member +
-                    ", faceScore=" + faceScore +
-                    ", temperature='" + temperature + '\'' +
-                    ", sendImages=" + sendImages +
-                    ", exceedsThreshold=" + exceedsThreshold +
-                    ", maskStatus='" + maskStatus + '\'' +
-                    '}';
-        }
     }
 
     //Optimize this can move to Utils

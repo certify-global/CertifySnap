@@ -716,7 +716,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             IrCameraActivity.UserExportedData data) {
+                                             UserExportedData data) {
         Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
             if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
@@ -788,7 +788,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static String FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
+    public static String FaceParameters(Context context, UserExportedData data) {
         String value = "";
         SharedPreferences sp = Util.getSharedPreferences(context);
         if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
@@ -809,7 +809,7 @@ public class Util {
         return value;
     }
 
-    private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
+    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data) {
         try {
             if (data.member == null) data.member = new RegisteredMembers();
             obj.put("id", data.member.getUniqueid());

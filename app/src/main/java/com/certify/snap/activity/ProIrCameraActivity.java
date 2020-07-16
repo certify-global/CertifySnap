@@ -68,7 +68,9 @@ import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.TemperatureStatus;
+import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredMembers;
@@ -168,7 +170,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private FaceHelper faceHelperIr;
     private List<CompareResult> compareResultList;
     private ShowFaceInfoAdapter adapter;
-    SharedPreferences sp;
+    private SharedPreferences sharedPreferences;
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -208,6 +210,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     List<RegisteredMembers> registeredMemberslist;
     RelativeLayout rl_header;
     ImageView logo;
+    private float temperature = 0;
+    private List<FacePreviewInfo> facePreviewInfoList;
+    private Bitmap irBitmap;
+    private Bitmap rgbBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,6 +231,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
+        TemperatureController.getInstance().init(this);
 
         AppSettings.getInstance().getSettingsFromSharedPref(this);
 
@@ -237,12 +244,12 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        sp = Util.getSharedPreferences(this);
-        relaytimenumber = sp.getInt(GlobalParameters.RelayTime, 5);
-        livenessDetect = sp.getBoolean(GlobalParameters.LivingType, true);
-        mask = sp.getBoolean(GlobalParameters.MaskMode, false);
-        tempRect = new Rect(sp.getInt("rect_left", 24), sp.getInt("rect_top", 30),
-                sp.getInt("rect_right", 28), sp.getInt("rect_bottom", 40));
+        sharedPreferences = Util.getSharedPreferences(this);
+        relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
+        livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
+        mask = sharedPreferences.getBoolean(GlobalParameters.MaskMode, false);
+        tempRect = new Rect(sharedPreferences.getInt("rect_left", 24), sharedPreferences.getInt("rect_top", 30),
+                sharedPreferences.getInt("rect_right", 28), sharedPreferences.getInt("rect_bottom", 40));
 
         logo = findViewById(R.id.logo);
         rl_header = findViewById(R.id.rl_header);
@@ -503,11 +510,20 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
             @Override
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
+
+                Bitmap rgbBitmapClone = null, irBitmapClone = null;
+                if(rgbBitmap != null) {
+                    rgbBitmapClone = rgbBitmap.copy(rgbBitmap.getConfig(), false);
+                }
+                if(irBitmap!=null) {
+                    irBitmapClone = irBitmap.copy(irBitmap.getConfig(), false);
+                }
+
                 if (faceFeature != null) {
                     Integer liveness = livenessMap.get(requestId);
                     if (!livenessDetect || liveness != null) {
                         if (AppSettings.isFacialDetect())
-                            searchFace(faceFeature, requestId);
+                            searchFace(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                     } else {
 
                         if (requestFeatureStatusMap.containsKey(requestId)) {
@@ -617,6 +633,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     Log.e("issavefile---",isSaveFile+"-save guest jpg");
                 }*/
                 rgbData = nv21;
+                rgbBitmap = Util.convertYuvByteArrayToBitmap(nv21, camera);
                 processPreviewData();
             }
 
@@ -640,7 +657,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         };
         cameraHelper = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewViewRgb.getMeasuredHeight()))
-                .rotation(sp.getInt(GlobalParameters.Orientation, 0))
+                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
                 .cameraListener(rgbCameraListener)
@@ -656,8 +673,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     private void initIrCamera() {
         CameraListener irCameraListener = new CameraListener() {
+            private Camera.Parameters cameraParameters;
             @Override
             public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
+                cameraParameters = camera.getParameters();
                 previewSizeIr = camera.getParameters().getPreviewSize();
                 drawHelperIr = new DrawHelper(previewSizeIr.width, previewSizeIr.height, previewViewIr.getWidth(), previewViewIr.getHeight(), displayOrientation,
                         cameraId, isMirror, false, false);
@@ -667,6 +686,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             @Override
             public void onPreview(final byte[] nv21, Camera camera) {
                 irData = nv21;
+                irBitmap = Util.convertYuvByteArrayToBitmap(nv21, cameraParameters);
             }
 
             @Override
@@ -690,7 +710,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
         cameraHelperIr = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewViewIr.getMeasuredHeight()))
-                .rotation(sp.getInt(GlobalParameters.Orientation, 0))
+                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)
                 .cameraListener(irCameraListener)
@@ -737,10 +757,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 }, 3 * 1000);//20秒
             }
 
-            List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
+            facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
 
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && !isTemperature) {
-                getTemperature(facePreviewInfoList);
+                if (!AppSettings.isFacialDetect())
+                    getTemperature(facePreviewInfoList, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
             }
             if (facePreviewInfoList != null && faceRectView != null && drawHelperRgb != null) {
                 drawPreviewInfo(facePreviewInfoList);
@@ -817,7 +838,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     }
 
-    private void getTemperature(final List<FacePreviewInfo> facePreviewInfoList) {
+    private void getTemperature(final List<FacePreviewInfo> facePreviewInfoList, UserExportedData data) {
         isTemperature = true;
         new Thread(new Runnable() {
             @Override
@@ -890,25 +911,29 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                     } else {
                                         img_thermalImage.setImageBitmap(null);
                                     }
-                                    float temp;
                                     if (maxInRectInfo != null) {
                                         for (int i = 0; i < maxInRectInfo.size(); i++) {
                                             int trackId = temperatureRectList.get(i).getTrackId();
-                                            temp = maxInRectInfo.get(i)[3];
-                                            temp = (float) Util.celsiusToFahrenheit(temp);
+                                            temperature = maxInRectInfo.get(i)[3];
+                                            temperature = (float) Util.celsiusToFahrenheit(temperature);
 
                                             String temperatureUnit = AppSettings.getfToC();
                                             if (temperatureUnit.equals("C")) {
-                                                temp = maxInRectInfo.get(i)[3];
+                                                temperature = maxInRectInfo.get(i)[3];
                                             }
-                                            faceHelperIr.setName(trackId, String.valueOf(temp));
+                                            faceHelperIr.setName(trackId, String.valueOf(temperature));
 
                                             if (temperatureMap.get(trackId) == null) {
-                                                temperatureMap.put(trackId, temp);
+                                                temperatureMap.put(trackId, temperature);
                                                 temperatureStatusMap.put(trackId, TemperatureStatus.SUCCEED);
-
-                                            } else if (temp > temperatureMap.get(trackId)) {
-                                                temperatureMap.put(trackId, temp);
+                                                data.temperature = String.valueOf(temperature);
+                                                data.sendImages = AppSettings.isCaptureImagesAll() || AppSettings.isCaptureImagesAboveThreshold();
+                                                data.rgb = rgbBitmap;
+                                                data.ir = irBitmap;
+                                                data.thermal = bitmap;
+                                                TemperatureController.getInstance().updateTemperatureMap(trackId, data);
+                                            } else if (temperature > temperatureMap.get(trackId)) {
+                                                temperatureMap.put(trackId, temperature);
                                             }
                                             Log.e(TAG, "trackId : " + trackId + " Body temperature : " + temperatureMap.get(trackId) + "-" + temperatureStatusMap.get(trackId));
                                         }
@@ -979,10 +1004,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             tempRect.top = top;
             tempRect.right = right;
             tempRect.bottom = bottom;
-            sp.edit().putInt("rect_left", left).apply();
-            sp.edit().putInt("rect_top", top).apply();
-            sp.edit().putInt("rect_right", right).apply();
-            sp.edit().putInt("rect_bottom", bottom).apply();
+            sharedPreferences.edit().putInt("rect_left", left).apply();
+            sharedPreferences.edit().putInt("rect_top", top).apply();
+            sharedPreferences.edit().putInt("rect_right", right).apply();
+            sharedPreferences.edit().putInt("rect_bottom", bottom).apply();
             Toast.makeText(this, "Adjust success", Toast.LENGTH_SHORT).show();
             if (dialog != null && dialog.isShowing()) {
                 dialog.dismiss();
@@ -1072,7 +1097,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private static final float SIMILAR_THRESHOLD = 0.7F;
     private static DecimalFormat df = new DecimalFormat("0.00");
 
-    private void searchFace(final FaceFeature frFace, final Integer requestId) {
+    private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
         Log.d(TAG, "Naga........searchFace: ");
         if (faceHelperIr == null) {
             return;
@@ -1109,7 +1134,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                             return;
                         }
-
+                        float similarValue = compareResult.getSimilar() * 100;
                         if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
                             boolean isAdded = false;
                             if (compareResultList == null) {
@@ -1151,6 +1176,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 compareResult.setTemperature(temperatureResult);
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
+                                    UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
+                                    getTemperature(facePreviewInfoList, data);
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
