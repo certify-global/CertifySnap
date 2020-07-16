@@ -505,11 +505,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             public void onFaceFeatureInfoGet(@Nullable final FaceFeature faceFeature, final Integer requestId, final Integer errorCode) {
                 if (faceFeature != null) {
                     Integer liveness = livenessMap.get(requestId);
-                    if (!livenessDetect) {
-                        if (AppSettings.isFacialDetect())
-                            searchFace(faceFeature, requestId);
-                    } else if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                        Log.e("liveness---", "LivenessInfo.ALIVE---" + isTemperature);
+                    if (!livenessDetect || liveness != null) {
                         if (AppSettings.isFacialDetect())
                             searchFace(faceFeature, requestId);
                     } else {
