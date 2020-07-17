@@ -430,4 +430,8 @@
     <string name="centigrade" translatable="false">&#160;℃</string>
     <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
 
+    <string name="endpoint_api">Api</string>
+    <string name="protocol_text">https://</string>
+    <string name="hostname">.certify.me</string>
+
 </resources>
