@@ -44,6 +44,7 @@ import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.qrscan.CameraSource;
 
 import androidx.core.app.ActivityCompat;
@@ -119,6 +120,7 @@ import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.HIDService;
+import com.certify.snap.service.OfflineRecordSyncService;
 import com.common.thermalimage.HotImageCallback;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
@@ -449,7 +451,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             internetIndicatorImg.setVisibility(View.VISIBLE);
         }
         initHidReceiver();
-
+        initRecordUserTempService();
     }
 
     private void initQRCode() {
@@ -3500,6 +3502,27 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         if (maskDetectDisposable != null) {
             maskDetectDisposable.clear();
+        }
+    }
+
+    private void initRecordUserTempService() {
+        if (!Util.isNetworkOff(IrCameraActivity.this)){
+            if (LitePal.getDatabase() != null) {
+                try {
+                    if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {
+                        OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                        if (firstMember != null) {
+                            startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
+                        }
+                    }
+                } catch (LitePalSupportException exception) {
+                    Log.e(TAG, "Exception occurred while querying for first member from db");
+                }
+            }else if (LitePal.isExist(OfflineRecordTemperatureMembers.class)){
+                OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                if (firstMember == null)
+                    stopService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
+            }
         }
     }
 }
