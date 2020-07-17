@@ -78,6 +78,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             cbDoSyc = findViewById(R.id.cb_enable_do_not_sync);
             sharedPreferences = Util.getSharedPreferences(this);
             tvClearData = findViewById(R.id.tv_clear_cache);
+            tvResetSnap = findViewById(R.id.tv_reset_snap);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             activateStatus.setTypeface(rubiklight);
