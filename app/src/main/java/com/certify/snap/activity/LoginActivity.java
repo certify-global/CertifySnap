@@ -115,14 +115,15 @@ public class LoginActivity extends Activity {
         tv_pwd_error.setText("Invalid Password, Try Again");
     }
     public void onParamterback(View view) {
-       startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
-        finish();
+       //startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+       Util.switchRgbOrIrActivity(LoginActivity.this, true);
+       finish();
     }
 
     @Override
     public void onBackPressed() {
-
-        startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        //startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        Util.switchRgbOrIrActivity(LoginActivity.this, true);
         finish();
     }
 

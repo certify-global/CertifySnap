@@ -32,5 +32,6 @@ public class Constants {
 
     public static final int MEASURED_STATE_MASK = 0xff000000;
 
+    public static final int PRO_MODEL_TEMPERATURE_MODULE = 25;
 }
 

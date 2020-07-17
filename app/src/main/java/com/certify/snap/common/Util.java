@@ -55,6 +55,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
@@ -91,6 +92,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -169,14 +171,18 @@ public class Util {
     public static void switchRgbOrIrActivity(Context context, Boolean isActivity) {
         if (context == null)
             return;
+        Class<?> activity = IrCameraActivity.class;
+        if(isDeviceProModel()){
+            activity = ProIrCameraActivity.class;
+        }
         if (getSharedPreferences(context).getInt(GlobalParameters.CameraType, 0) == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, activity));
             else
-                context.startActivity(new Intent(context, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
             if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
             else
-                context.startActivity(new Intent(context, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
 //        if(isActivity) context.startActivity(new Intent(context, RgbCameraActivity.class));
@@ -709,7 +715,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             IrCameraActivity.UserExportedData data) {
+                                             UserExportedData data) {
         Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
             if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
@@ -784,7 +790,7 @@ public class Util {
         }
     }
 
-    private static void saveOfflineTempRecord(JSONObject obj, Context context, IrCameraActivity.UserExportedData data) {
+    private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data) {
         try {
             JSONObject jsonObject = new JSONObject();
             OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
@@ -828,7 +834,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static String FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
+    public static String FaceParameters(Context context, UserExportedData data) {
         String value = "";
         SharedPreferences sp = Util.getSharedPreferences(context);
         if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
@@ -849,7 +855,7 @@ public class Util {
         return value;
     }
 
-    private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
+    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data) {
         try {
             if (data.member == null) data.member = new RegisteredMembers();
             obj.put("id", data.member.getUniqueid());
@@ -1773,5 +1779,49 @@ public class Util {
 
     public final static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static boolean isUsualTemperature(Context context, float temperature) {
+        boolean isUnusual;
+        SharedPreferences sp = getSharedPreferences(context);
+        if (sp.getInt(GlobalParameters.Temperature, 0) == 0) {
+            float centigrade = sp.getFloat(GlobalParameters.Centigrades, (float) 37.3);
+            isUnusual = (temperature > centigrade) ? true : false;
+//            Log.e("centigrade---",centigrade+"-"+isUnusual);
+        } else {
+            float fahrenheit = sp.getFloat(GlobalParameters.Fahrenheits, (float) 99.14);
+            isUnusual = (celsiusToFahrenheit(temperature) > fahrenheit) ? true : false;
+//            Log.e("fahrenheit---",fahrenheit+"-"+isUnusual);
+        }
+        return isUnusual;
+    }
+
+    public static double celsiusToFahrenheit(float temperature) {
+        BigDecimal b = new BigDecimal(temperature * 1.8 + 32);
+        return b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    public static String toHexString(byte[] data) {
+        if (data == null) {
+            return "";
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < data.length; ++i) {
+                String string = Integer.toHexString(data[i] & 255);
+                if (string.length() == 1) {
+                    stringBuilder.append("0");
+                }
+
+                stringBuilder.append(string.toUpperCase());
+            }
+
+            return stringBuilder.toString();
+        }
+    }
+
+    public static boolean isDeviceProModel() {
+        int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+        return mode == Constants.PRO_MODEL_TEMPERATURE_MODULE;
     }
 }

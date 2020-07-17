@@ -23,7 +23,6 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
     private List<CompareResult> compareResultList;
     private LayoutInflater inflater;
     private Context mContext;
-    private Animation animation;
 
     public ShowFaceInfoAdapter(List<CompareResult> compareResultList, Context context) {
         inflater = LayoutInflater.from(context);
@@ -36,9 +35,9 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
     public CompareResultHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.item_head, parent, false);
         CompareResultHolder compareResultHolder = new CompareResultHolder(itemView);
-        compareResultHolder.textView = itemView.findViewById(R.id.tv_item_name);
+        compareResultHolder.tv_name = itemView.findViewById(R.id.tv_item_name);
+        compareResultHolder.tv_temperature = itemView.findViewById(R.id.tv_item_temperature);
         compareResultHolder.imageView = itemView.findViewById(R.id.iv_item_head_img);
-//        compareResultHolder.img_ring = itemView.findViewById(R.id.iv_ring);
         return compareResultHolder;
     }
 
@@ -53,12 +52,8 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
                 .skipMemoryCache(true) // 不使用内存缓存
                 .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
                 .into(holder.imageView);
-        holder.textView.setText(compareResultList.get(position).getMessage());
-//        animation = AnimationUtils.loadAnimation(mContext,R.anim.dialog_initialize_wait_rotate);
-//        animation.setDuration(1500);
-//        LinearInterpolator linearInterpolator = new LinearInterpolator();
-//        animation.setInterpolator(linearInterpolator);
-//        holder.img_ring.startAnimation(animation);
+        holder.tv_name.setText(compareResultList.get(position).getMessage());
+        holder.tv_temperature.setText(compareResultList.get(position).getTemperature());
     }
 
     @Override
@@ -68,18 +63,11 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
 
     class CompareResultHolder extends RecyclerView.ViewHolder {
 
-        TextView textView;
+        TextView tv_name,tv_temperature;
         ImageView imageView;
-        ImageView img_ring;
 
         CompareResultHolder(@NonNull View itemView) {
             super(itemView);
-        }
-    }
-
-    public void stopAnimation(){
-        if(animation!=null){
-            animation.cancel();
         }
     }
 }

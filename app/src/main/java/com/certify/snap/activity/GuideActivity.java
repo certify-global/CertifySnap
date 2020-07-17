@@ -252,7 +252,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                         }
                     });
                 } else if (!onlineMode) {
-                    startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
+                    //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
+                    Util.switchRgbOrIrActivity(GuideActivity.this, true);
                 } else {
                     //TODO: This dialog is required when the connection fails to API server
                     //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");

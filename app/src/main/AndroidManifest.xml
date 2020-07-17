@@ -60,6 +60,8 @@
         <activity
             android:name=".activity.IrCameraActivity"
             android:launchMode="singleTask" />
+        <activity android:name=".activity.ProIrCameraActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.ParameterActivity"
             android:launchMode="singleTask" />
