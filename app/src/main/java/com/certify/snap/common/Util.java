@@ -1822,7 +1822,10 @@ public class Util {
     }
 
     public static boolean isDeviceProModel() {
-        int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
-        return mode == Constants.PRO_MODEL_TEMPERATURE_MODULE;
+        if (Application.getInstance().getTemperatureUtil().getUsingModule() != null) {
+            int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+            return mode == Constants.PRO_MODEL_TEMPERATURE_MODULE;
+        }
+        return false;
     }
 }
