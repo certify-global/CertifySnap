@@ -760,8 +760,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
 
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && !isTemperature) {
-                if (!AppSettings.isFacialDetect())
-                    getTemperature(facePreviewInfoList, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
+                //if (!AppSettings.isFacialDetect())
+                getTemperature(facePreviewInfoList, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
             }
             if (facePreviewInfoList != null && faceRectView != null && drawHelperRgb != null) {
                 drawPreviewInfo(facePreviewInfoList);
@@ -1098,7 +1098,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        Log.d(TAG, "Naga........searchFace: ");
         if (faceHelperIr == null) {
             return;
         }
@@ -1245,7 +1244,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
         compareResultList.add(compareResult);
-        processHandler.postDelayed(new Runnable() {
+        /*processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (isdoor) {
@@ -1261,7 +1260,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }
-        }, 100);
+        }, 100);*/
     }
 
     private void drawPreviewInfo(List<FacePreviewInfo> facePreviewInfoList) {
