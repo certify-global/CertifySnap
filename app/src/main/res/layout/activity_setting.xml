@@ -861,7 +861,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="18dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/btn_shape"
                 android:onClick="onclick"
@@ -871,7 +871,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/margin_30"
+                android:layout_marginTop="@dimen/margin_20"
                 android:layout_marginBottom="@dimen/margin_5">
 
 
@@ -944,7 +944,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/margin_10"
-        android:layout_marginBottom="@dimen/margin_10"
+        android:layout_marginBottom="13dp"
         android:paddingStart="@dimen/margin_20"
         android:text="@string/connectivity_status"
         android:textSize="@dimen/font_18" />

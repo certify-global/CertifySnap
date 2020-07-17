@@ -141,6 +141,8 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             index++;
             if(index < datalist.size()) {
                 uploadRecordData(datalist, index);
+            } else {
+                stopService(new Intent(context, OfflineRecordSyncService.class));
             }
             if (reportInfo.getString("Message").contains("token expired"))
                 Util.getToken((JSONObjectCallback) this, this);
