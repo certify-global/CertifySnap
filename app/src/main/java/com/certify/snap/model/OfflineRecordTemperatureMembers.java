@@ -1,5 +1,9 @@
 package com.certify.snap.model;
 
+import android.util.Log;
+
+import org.litepal.LitePal;
+import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 public class OfflineRecordTemperatureMembers extends LitePalSupport {
@@ -11,6 +15,16 @@ public class OfflineRecordTemperatureMembers extends LitePalSupport {
     String deviceTime;
     String imagepath;
     String jsonObj;
+    @Column(unique = true)
+    Long primaryid;
+
+    public Long getPrimaryid() {
+        return primaryid;
+    }
+
+    public void setPrimaryid(Long primaryid) {
+        this.primaryid = primaryid;
+    }
 
     public String getJsonObj() {
         return jsonObj;
@@ -68,9 +82,23 @@ public class OfflineRecordTemperatureMembers extends LitePalSupport {
         this.deviceTime = deviceTime;
     }
 
+    public static Long lastPrimaryId() {
+        Log.d("OfflineRecordTemp", "pId........... @lastPrimaryId");
+
+        OfflineRecordTemperatureMembers offlineRecord = LitePal.findLast(OfflineRecordTemperatureMembers.class);
+        if (offlineRecord != null) {
+            Log.d("OfflineRecordTemp", "pId...........offlineRecord not null" + offlineRecord.getPrimaryid() + 1);
+            return offlineRecord.getPrimaryid() + 1;
+        }
+        Log.d("OfflineRecordTemp", "pId........... @lastPrimaryId" + 0L);
+
+        return 1L;
+    }
+
     @Override
     public String toString() {
         return "TemperatureMembers{" +
+                "primaryid='" + primaryid + '\'' +
                 " firstname='" + firstName + '\'' +
                 " lastname='" + lastName + '\'' +
                 ", memberId='" + memberId + '\'' +

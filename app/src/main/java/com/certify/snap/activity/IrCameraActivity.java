@@ -3468,15 +3468,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
                         if (firstMember != null) {
                             startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
+                        } else {
+                            stopService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
                         }
                     }
                 } catch (LitePalSupportException exception) {
                     Log.e(TAG, "Exception occurred while querying for first member from db");
                 }
-            }else if (LitePal.isExist(OfflineRecordTemperatureMembers.class)){
-                OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
-                if (firstMember == null)
-                    stopService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
             }
         }
     }

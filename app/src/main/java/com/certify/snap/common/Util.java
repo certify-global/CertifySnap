@@ -817,6 +817,7 @@ public class Util {
             offlineRecordTemperatureMembers.setJsonObj(jsonObject.toString());
             offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
             offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
+            offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
             if (data.member.getFirstname() != null){
                 jsonObject.put("accessId",obj.getString("accessId"));
                 offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());

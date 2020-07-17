@@ -5,13 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
-import com.certify.snap.activity.IrCameraActivity;
-import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.common.EndPoints;
@@ -24,12 +23,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
+import org.litepal.exceptions.LitePalSupportException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-public class OfflineRecordSyncService extends Service implements RecordTemperatureCallback{
+public class OfflineRecordSyncService extends Service implements RecordTemperatureCallback {
 
     private static final String TAG = OfflineRecordSyncService.class.getSimpleName();
     private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
@@ -37,6 +37,8 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
     private SharedPreferences sp;
     private final Object obj = new Object();
     private Context context;
+    private Long primaryid;
+    private int index = 0;
 
     @Nullable
     @Override
@@ -56,7 +58,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                 public void onFinish(List<OfflineRecordTemperatureMembers> list) {
                     datalist = list;
                     if (datalist != null) {
-                        uploadRecordData(datalist);
+                        uploadRecordData(datalist, index);
                     }
 
                 }
@@ -65,54 +67,45 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void uploadRecordData(List<OfflineRecordTemperatureMembers> list) {
+    private void uploadRecordData(List<OfflineRecordTemperatureMembers> list, int i) {
         JSONObject jsonObject = new JSONObject();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (obj) {
-                    try {
-                        for (int i = 0; i < list.size(); i++) {
-                            jsonObject.put("firstName", list.get(i).getFirstName());
-                            jsonObject.put("lastName", list.get(i).getLastName());
-                            jsonObject.put("memberId", list.get(i).getMemberId());
-                            jsonObject.put("temperature", list.get(i).getTemperature());
-                            jsonObject.put("deviceTime", list.get(i).getDeviceTime());
-                            JSONObject json = new JSONObject(list.get(i).getJsonObj());
-                            jsonObject.put("deviceId",json.getString("deviceId"));
-                            jsonObject.put("institutionId",json.getString("institutionId"));
-                            jsonObject.put("facilityId",json.getString("facilityId"));
-                            jsonObject.put("locationId",json.getString("locationId"));
-                            jsonObject.put("trigger",json.getString("trigger"));
-                            jsonObject.put("temperatureFormat",json.getString("temperatureFormat"));
-                            jsonObject.put("exceedThreshold",json.getString("exceedThreshold"));
-                            jsonObject.put("deviceParameters",json.getString("deviceParameters"));
-                            jsonObject.put("trqStatus",json.getString("trqStatus"));
-                            jsonObject.put("maskStatus",json.getString("maskStatus"));
-                            jsonObject.put("faceScore",json.getString("faceScore"));
-                            jsonObject.put("faceParameters",json.getString("faceParameters"));
-                            jsonObject.put("qrCodeId",json.getString("qrCodeId"));
-                            jsonObject.put("accessId",json.getString("accessId"));
-                            jsonObject.put("deviceData",json.getString("deviceData"));
-                            if (taskExecutorService != null) {
-                                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).executeOnExecutor(taskExecutorService);
-                            } else {
-                                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
-                            }
-
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+        try {
+            jsonObject.put("firstName", list.get(i).getFirstName());
+            jsonObject.put("lastName", list.get(i).getLastName());
+            jsonObject.put("memberId", list.get(i).getMemberId());
+            jsonObject.put("temperature", list.get(i).getTemperature());
+            jsonObject.put("deviceTime", list.get(i).getDeviceTime());
+            JSONObject json = new JSONObject(list.get(i).getJsonObj());
+            jsonObject.put("deviceId", json.getString("deviceId"));
+            jsonObject.put("institutionId", json.getString("institutionId"));
+            jsonObject.put("facilityId", json.getString("facilityId"));
+            jsonObject.put("locationId", json.getString("locationId"));
+            jsonObject.put("trigger", json.getString("trigger"));
+            jsonObject.put("temperatureFormat", json.getString("temperatureFormat"));
+            jsonObject.put("exceedThreshold", json.getString("exceedThreshold"));
+            jsonObject.put("deviceParameters", json.getString("deviceParameters"));
+            jsonObject.put("trqStatus", json.getString("trqStatus"));
+            jsonObject.put("maskStatus", json.getString("maskStatus"));
+            jsonObject.put("faceScore", json.getString("faceScore"));
+            jsonObject.put("faceParameters", json.getString("faceParameters"));
+            jsonObject.put("qrCodeId", json.getString("qrCodeId"));
+            try {
+                if (json.getString("accessId") != null) {
+                    jsonObject.put("accessId", json.getString("accessId"));
                 }
+            } catch (JSONException e) {
+                Log.d(TAG, "JsonException " + e);
             }
-        }).start();
+            jsonObject.put("deviceData", json.getString("deviceData"));
+            primaryid = list.get(i).getPrimaryid();
+            if (taskExecutorService != null) {
+                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).executeOnExecutor(taskExecutorService);
+            } else {
+                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -131,7 +124,24 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.isNull("Message")) return;
+            if (reportInfo.getString("responseCode").equals("1")) {
+                try {
+                    if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {
+                        OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                        if (firstMember != null) {
+                            LitePal.deleteAll(OfflineRecordTemperatureMembers.class, "primaryid = ?", String.valueOf(primaryid));
+                        } else {
+                            stopService(new Intent(context, OfflineRecordSyncService.class));
+                        }
+                    }
+                } catch (LitePalSupportException exception) {
+                    Log.e(TAG, "Exception occurred while querying for first member from db");
+                }
+            }
+            index++;
+            if(index < datalist.size()) {
+                uploadRecordData(datalist, index);
+            }
             if (reportInfo.getString("Message").contains("token expired"))
                 Util.getToken((JSONObjectCallback) this, this);
 
