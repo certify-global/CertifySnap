@@ -323,6 +323,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ImageView internetIndicatorImg;
     private boolean isReadyToScan = true;
     private BroadcastReceiver hidReceiver;
+    private ProgressDialog progressDialog;
 
     private void instanceStart() {
         try {
@@ -410,6 +411,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(progressDialog != null && progressDialog.isShowing()) return;
+                CameraController.getInstance().setAppExitTriggered(true);
+                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Launching Settings, Please wait...");
+                if (CameraController.getInstance().getScanState() == CameraController.ScanState.FACIAL_SCAN) {
+                    return;
+                }
                 Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                 startActivity(loginIt);
                 finish();
@@ -867,7 +874,16 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void runTemperature(final UserExportedData data) {
         Log.v(TAG, "runTemperature");
-        if (!CameraController.getInstance().isFaceVisible()) return;
+        if (!CameraController.getInstance().isFaceVisible() &&
+                ((CameraController.getInstance().getScanState() == CameraController.ScanState.THERMAL_SCAN) ||
+                        (CameraController.getInstance().getScanState() == CameraController.ScanState.COMPLETE))) return;
+        CameraController.getInstance().setScanState(CameraController.ScanState.THERMAL_SCAN);
+        if (CameraController.getInstance().isAppExitTriggered()) {
+            if (handler != null) {
+                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
+            }
+            return;
+        }
         isTemperature = false;
         isSearch = false;
         time1 = time2 = 0;
@@ -910,11 +926,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             TemperatureCallBackUISetup(true, text, tempString, false, data);
                             faceAndRelayEnabledForHighTemperature();
                             BLEController.getInstance().setLightOnHighTemperature();
+                            CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false, data);
                             faceAndRelayEnabledForNormalTemperature();
                             BLEController.getInstance().setLightOnNormalTemperature();
+                            CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
                         }
 
                     } catch (Exception e) {
@@ -3215,6 +3233,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             @Override
             public void run() {
                 if (rl_header == null) return;//TODO: post destroy calls
+                CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
                 changeVerifyBackground(R.color.transparency, true);
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
@@ -3233,6 +3252,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            if (CameraController.getInstance().isAppExitTriggered()) {
+                                if (handler != null) {
+                                    handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
+                                }
+                                return;
+                            }
+
                             isSearch = true;
                             Logger.debug(TAG, "showCameraPreview", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
                             //  tvDisplayingCount.setVisibility(View.GONE);
@@ -3478,4 +3504,24 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         }
     }
+
+    Handler handler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message message) {
+            if (message.what == CameraController.IMAGE_PROCESS_COMPLETE) {
+                if (CameraController.getInstance().isAppExitTriggered()) {
+                    Log.d(TAG, "App exit triggered, Launch Login");
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                        Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
+                        startActivity(loginIt);
+                        finish();
+                    }
+                }
+                CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
+                CameraController.getInstance().setAppExitTriggered(false);
+            }
+            return false;
+        }
+    });
 }
