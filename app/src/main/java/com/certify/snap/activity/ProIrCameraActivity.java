@@ -55,7 +55,7 @@ import com.certify.snap.arcface.model.TemperatureRect;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.arcface.util.camera.CameraListener;
 import com.certify.snap.arcface.util.camera.DualCameraHelper;
-import com.certify.snap.arcface.util.face.FaceHelper;
+import com.certify.snap.arcface.util.face.FaceHelperPro;
 import com.certify.snap.arcface.util.face.FaceListener;
 import com.certify.snap.arcface.util.face.LivenessType;
 import com.certify.snap.arcface.util.face.RequestFeatureStatus;
@@ -167,7 +167,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private int frInitCode = -1;
     private int flInitCode = -1;
 
-    private FaceHelper faceHelperIr;
+    private FaceHelperPro faceHelperProIr;
     private List<CompareResult> compareResultList;
     private ShowFaceInfoAdapter adapter;
     private SharedPreferences sharedPreferences;
@@ -430,10 +430,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             delayFaceTaskCompositeDisposable.clear();
         }
 
-        if (faceHelperIr != null) {
-            ConfigUtil.setTrackedFaceCount(this, faceHelperIr.getTrackedFaceCount());
-            faceHelperIr.release();
-            faceHelperIr = null;
+        if (faceHelperProIr != null) {
+            ConfigUtil.setTrackedFaceCount(this, faceHelperProIr.getTrackedFaceCount());
+            faceHelperProIr.release();
+            faceHelperProIr = null;
         }
 
         FaceServer.getInstance().unInit();
@@ -564,7 +564,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         } else {
                             msg = getString(R.string.ExtractCode) + errorCode;
                         }
-//                        faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
+//                        faceHelperProIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                         retryRecognizeDelayed(requestId);
                     } else {
@@ -579,8 +579,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     int liveness = livenessInfo.getLiveness();
                     livenessMap.put(requestId, liveness);
                     if (liveness == LivenessInfo.NOT_ALIVE) {
-                        if (faceHelperIr != null) {
-//                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
+                        if (faceHelperProIr != null) {
+//                            faceHelperProIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
                             retryLivenessDetectDelayed(requestId);
                         }
                     }
@@ -593,8 +593,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         } else {
                             msg = getString(R.string.ProcessCode) + errorCode;
                         }
-                        if (faceHelperIr != null) {
-//                            faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
+                        if (faceHelperProIr != null) {
+//                            faceHelperProIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         }
                         livenessMap.put(requestId, LivenessInfo.NOT_ALIVE);
                         retryLivenessDetectDelayed(requestId);
@@ -611,8 +611,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 previewSize = camera.getParameters().getPreviewSize();
                 drawHelperRgb = new DrawHelper(previewSize.width, previewSize.height, previewViewRgb.getWidth(), previewViewRgb.getHeight(), displayOrientation,
                         cameraId, isMirror, true, false);
-                if (faceHelperIr == null) {
-                    faceHelperIr = new FaceHelper.Builder()
+                if (faceHelperProIr == null) {
+                    faceHelperProIr = new FaceHelperPro.Builder()
                             .ftEngine(ftEngine)
                             .frEngine(frEngine)
                             .flEngine(flEngine)
@@ -757,7 +757,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 }, 3 * 1000);//20秒
             }
 
-            facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
+            facePreviewInfoList = faceHelperProIr.onPreviewFrame(cloneNv21Rgb);
 
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && !isTemperature) {
                 //if (!AppSettings.isFacialDetect())
@@ -782,7 +782,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     if (rect.top < 300 || rect.bottom > 850) {
                         continue;
                     }
-/*                    if (mask) {
+                    if (mask) {
                         int mask = facePreviewInfoList.get(i).getMask();
                         int faceShelter = isSheltered(facePreviewInfoList.get(i).getTrackId(), facePreviewInfoList.get(i).getFaceShelter());// ? FaceShelterInfo.SHELTERED : FaceShelterInfo.NOT_SHELTERED;
 
@@ -791,25 +791,25 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         switch (combined) {
                             case 0:
                             case 1:
-//                                faceHelperIr.setMask(trackId, 1);
+//                                faceHelperProIr.setMask(trackId, 1);
 //                                showMaskTip(getString(R.string.mask_no),getResources().getColor(R.color.red));
                                 break;
                             case 0b10:
-//                                faceHelperIr.setMask(trackId, 0b10);
+//                                faceHelperProIr.setMask(trackId, 0b10);
 //                                showMaskTip(getString(R.string.mask_error),getResources().getColor(R.color.red));
                             case 0b11:
 //                                    canAnalyze = true;
-//                                faceHelperIr.setMask(trackId, 0b11);
+//                                faceHelperProIr.setMask(trackId, 0b11);
 //                                showMaskTip(getString(R.string.mask_detect),getResources().getColor(R.color.skyblue));
                                 break;
                             default:
 //                                showMaskTip("",getResources().getColor(R.color.skyblue));
                                 break;
                         }
-                            *//*if (!canAnalyze) {
+                            /*if (!canAnalyze) {
                                 continue;
-                            }*//*
-                    }*/
+                            }*/
+                    }
 
                     if (livenessDetect) {
                         Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
@@ -818,7 +818,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             livenessMap.put(facePreviewInfoList.get(i).getTrackId(), RequestLivenessStatus.ANALYZING);
                             FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
                             faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
-                            faceHelperIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
+                            faceHelperProIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
                                     FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId(), LivenessType.IR);
                         }
                     }
@@ -826,7 +826,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     if (status == null || status == RequestFeatureStatus.TO_RETRY) {
                         Log.e(TAG, "start to requestFaceFeature");
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
-                        faceHelperIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(),
+                        faceHelperProIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(), facePreviewInfoList.get(i).getMask(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
                                 facePreviewInfoList.get(i).getTrackId());
                     }
@@ -881,7 +881,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             Log.e(TAG, newRect.toString());
                             temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect));
                         } else {
-                            faceHelperIr.setName(facePreviewInfoList.get(i).getTrackId(), "");
+                            faceHelperProIr.setName(facePreviewInfoList.get(i).getTrackId(), "");
                         }
                     }
                     if (temperatureRectList.size() == 0) {
@@ -921,7 +921,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                             if (temperatureUnit.equals("C")) {
                                                 temperature = maxInRectInfo.get(i)[3];
                                             }
-                                            faceHelperIr.setName(trackId, String.valueOf(temperature));
+                                            faceHelperProIr.setName(trackId, String.valueOf(temperature));
 
                                             if (temperatureMap.get(trackId) == null) {
                                                 temperatureMap.put(trackId, temperature);
@@ -1098,7 +1098,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        if (faceHelperIr == null) {
+        if (faceHelperProIr == null) {
             return;
         }
 
@@ -1209,18 +1209,18 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 }
 
                             }
-                            if (faceHelperIr != null) {
+                            if (faceHelperProIr != null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             }
 
                             if (!isTemperature) {
                                 Log.e("retry----", "istemperature=" + isTemperature);
-                                if (faceHelperIr != null) {
+                                if (faceHelperProIr != null) {
                                     retryRecognizeDelayed(requestId);
                                 }
                             }
                         } else {
-                            if (faceHelperIr != null) {
+                            if (faceHelperProIr != null) {
                                 retryRecognizeDelayed(requestId);
                             }
                         }
@@ -1228,7 +1228,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                     @Override
                     public void onError(Throwable e) {
-                        if (faceHelperIr != null) {
+                        if (faceHelperProIr != null) {
                             retryRecognizeDelayed(requestId);
                         }
                     }
@@ -1244,7 +1244,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
         compareResultList.add(compareResult);
-        /*processHandler.postDelayed(new Runnable() {
+        processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (isdoor) {
@@ -1260,7 +1260,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }
-        }, 100);*/
+        }, 100);
     }
 
     private void drawPreviewInfo(List<FacePreviewInfo> facePreviewInfoList) {
@@ -1268,7 +1268,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 //        List<PointF[]> drawLandmarkInfo = new ArrayList<>();
         for (int i = 0; i < facePreviewInfoList.size(); i++) {
             int trackId = facePreviewInfoList.get(i).getTrackId();
-            String name = faceHelperIr.getName(trackId);
+            String name = faceHelperProIr.getName(trackId);
             Integer liveness = livenessMap.get(trackId);
             Integer recognizeStatus = requestFeatureStatusMap.get(trackId);
 
@@ -1350,7 +1350,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     @Override
                     public void onComplete() {
                         if (livenessDetect) {
-//                            faceHelperIr.setName(requestId, Integer.toString(requestId));
+//                            faceHelperProIr.setName(requestId, Integer.toString(requestId));
                         }
                         livenessMap.put(requestId, LivenessInfo.UNKNOWN);
                         delayFaceTaskCompositeDisposable.remove(disposable);
@@ -1382,7 +1382,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                     @Override
                     public void onComplete() {
-//                        faceHelperIr.setName(requestId, Integer.toString(requestId));
+//                        faceHelperProIr.setName(requestId, Integer.toString(requestId));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                         delayFaceTaskCompositeDisposable.remove(disposable);
                     }
