@@ -915,11 +915,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                         for (int i = 0; i < maxInRectInfo.size(); i++) {
                                             int trackId = temperatureRectList.get(i).getTrackId();
                                             temperature = maxInRectInfo.get(i)[3];
-                                            temperature = (float) Util.celsiusToFahrenheit(temperature);
 
                                             String temperatureUnit = AppSettings.getfToC();
-                                            if (temperatureUnit.equals("C")) {
-                                                temperature = maxInRectInfo.get(i)[3];
+                                            if (temperatureUnit.equals("F")) {
+                                                temperature = (float) Util.celsiusToFahrenheit(temperature);
                                             }
                                             faceHelperProIr.setName(trackId, String.valueOf(temperature));
 
