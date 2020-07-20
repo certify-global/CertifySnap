@@ -772,8 +772,6 @@ public class Util {
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
             obj.put("faceParameters", FaceParameters(context, data));
-            obj.put("utcOfflineDateTime", "");
-            obj.put("offlineSync", 0);
 
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());

@@ -2221,7 +2221,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 data.triggerType = mTriggerType;
                 userData = data;
                 int syncStatus;
-                if (Util.isNetworkOff(IrCameraActivity.this)) {
+                if (Util.isOfflineMode(IrCameraActivity.this)) {
                     syncStatus = 1;
                 } else {
                     syncStatus = -1;
@@ -2273,8 +2273,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null || !reportInfo.getString("responseCode").equals("1")) {
-                int syncStatus = 0;
-                Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, syncStatus);
+                Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
             if (reportInfo.isNull("Message")) return;
@@ -3186,10 +3185,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     tvErrorMessage.setVisibility(View.GONE);
                 }
             });
-            if (faceDetectEnabled) {
+            if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                 !isFaceIdentified) {
                     Log.d(TAG, "FaceRecognition");
+                    showCameraPreview(faceFeature, requestId, rgb, ir);
+                } else if (Util.isOfflineMode(IrCameraActivity.this)) {
                     showCameraPreview(faceFeature, requestId, rgb, ir);
                 }
                 searchFace(faceFeature, requestId, rgb, ir);
@@ -3251,7 +3252,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 showAnimation();
 
                 // Log.e("runTemperature---","isIdentified="+isIdentified);
-                if (isFindTemperature()) {
+                if (isFindTemperature() && !Util.isOfflineMode(IrCameraActivity.this)) {
                     runTemperature(new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
                 }
 
