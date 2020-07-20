@@ -60,6 +60,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private Boolean isOnline;
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
+    private View pro_settings_border;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvResetSnap = findViewById(R.id.tv_reset_snap);
             pro_settings = findViewById(R.id.pro_settings);
             pro_layout = findViewById(R.id.pro_layout);
+            pro_settings_border= findViewById(R.id.pro_settings_border);
 
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -431,10 +433,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private void enableProDevice() {
         if (isDeviceProModel()) {
-            pro_settings.setVisibility(View.VISIBLE);
+            pro_layout.setVisibility(View.VISIBLE);
+            pro_settings_border.setVisibility(View.VISIBLE);
         }
         else {
-            pro_settings.setVisibility(View.GONE);
+            pro_layout.setVisibility(View.GONE);
+            pro_settings_border.setVisibility(View.GONE);
         }
     }
 }

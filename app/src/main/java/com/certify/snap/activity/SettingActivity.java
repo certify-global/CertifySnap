@@ -305,6 +305,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 break;
             case R.id.rl_device_setting:
                 startActivity(new Intent(SettingActivity.this, DeviceSettingsActivity.class));
+                finish();
                 break;
             case R.id.setting_init:
                 if (isopen)
