@@ -43,8 +43,7 @@
         android:id="@+id/iv_thermalImage"
         android:layout_width="250dp"
         android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:onClick="adjustRect" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/mask"
