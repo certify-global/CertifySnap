@@ -253,7 +253,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
         logo = findViewById(R.id.logo);
         rl_header = findViewById(R.id.rl_header);
-        logo.setOnClickListener(new View.OnClickListener() {
+        rl_header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent loginIt = new Intent(ProIrCameraActivity.this, LoginActivity.class);
