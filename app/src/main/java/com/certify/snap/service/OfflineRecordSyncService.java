@@ -48,6 +48,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "OfflineRecord Service started");
         context = this;
         sp = Util.getSharedPreferences(this);
         AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
@@ -70,33 +71,33 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
     private void uploadRecordData(List<OfflineRecordTemperatureMembers> list, int i) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("firstName", list.get(i).getFirstName());
-            jsonObject.put("lastName", list.get(i).getLastName());
-            jsonObject.put("memberId", list.get(i).getMemberId());
-            jsonObject.put("temperature", list.get(i).getTemperature());
-            jsonObject.put("deviceTime", list.get(i).getDeviceTime());
             JSONObject json = new JSONObject(list.get(i).getJsonObj());
             jsonObject.put("deviceId", json.getString("deviceId"));
+            jsonObject.put("temperature", list.get(i).getTemperature());
             jsonObject.put("institutionId", json.getString("institutionId"));
             jsonObject.put("facilityId", json.getString("facilityId"));
             jsonObject.put("locationId", json.getString("locationId"));
+            jsonObject.put("deviceTime", list.get(i).getDeviceTime());
             jsonObject.put("trigger", json.getString("trigger"));
+
+            //images
+
+            //jsonObject.put("deviceData", json.getString("deviceData"));
+            jsonObject.put("deviceParameters", json.getString("deviceParameters"));
             jsonObject.put("temperatureFormat", json.getString("temperatureFormat"));
             jsonObject.put("exceedThreshold", json.getString("exceedThreshold"));
-            jsonObject.put("deviceParameters", json.getString("deviceParameters"));
             jsonObject.put("trqStatus", json.getString("trqStatus"));
+            jsonObject.put("qrCodeId", json.getString("qrCodeId"));
+            if (json.has("accessId")) {
+                jsonObject.put("accessId", json.getString("accessId"));
+            }
+            jsonObject.put("firstName", list.get(i).getFirstName());
+            jsonObject.put("lastName", list.get(i).getLastName());
+            jsonObject.put("memberId", list.get(i).getMemberId());
             jsonObject.put("maskStatus", json.getString("maskStatus"));
             jsonObject.put("faceScore", json.getString("faceScore"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
-            jsonObject.put("qrCodeId", json.getString("qrCodeId"));
-            try {
-                if (json.getString("accessId") != null) {
-                    jsonObject.put("accessId", json.getString("accessId"));
-                }
-            } catch (JSONException e) {
-                Log.d(TAG, "JsonException " + e);
-            }
-            jsonObject.put("deviceData", json.getString("deviceData"));
+
             primaryid = list.get(i).getPrimaryid();
             if (taskExecutorService != null) {
                 new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).executeOnExecutor(taskExecutorService);
@@ -113,6 +114,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "OfflineRecord Service stopped");
         if (taskExecutorService != null) {
             taskExecutorService = null;
         }
@@ -129,13 +131,14 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                     if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {
                         OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
                         if (firstMember != null) {
+                            Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
                             LitePal.deleteAll(OfflineRecordTemperatureMembers.class, "primaryid = ?", String.valueOf(primaryid));
                         } else {
                             stopService(new Intent(context, OfflineRecordSyncService.class));
                         }
                     }
                 } catch (LitePalSupportException exception) {
-                    Log.e(TAG, "Exception occurred while querying for first member from db");
+                    Log.e(TAG, "OfflineRecord Exception occurred while querying for first member from db");
                 }
             }
             index++;
@@ -144,9 +147,6 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             } else {
                 stopService(new Intent(context, OfflineRecordSyncService.class));
             }
-            if (reportInfo.getString("Message").contains("token expired"))
-                Util.getToken((JSONObjectCallback) this, this);
-
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }

@@ -1104,7 +1104,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (CameraController.getInstance().isScanCloseProximityEnabled()) {
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                     } else if (!isFaceIdentified) {
-                        showCameraPreview(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        if (!Util.isOfflineMode(IrCameraActivity.this)) {
+                            showCameraPreview(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        }
                     }
 
                     Integer liveness = livenessMap.get(requestId);
@@ -2831,7 +2833,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     }
                                 } else {
                                     Log.e(TAG, "Snap Compare result database no match " + isAdded);
-                                    if (Util.isNetworkOff(IrCameraActivity.this)) {
+                                    if (Util.isOfflineMode(IrCameraActivity.this)) {
                                         runTemperature(new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
                                     }
                                 }
@@ -2964,7 +2966,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void initiateFaceSearch(FaceFeature faceFeature, int requestId, Integer liveness, Bitmap rgb, Bitmap ir) {
         Log.v(TAG, String.format("initiateFaceSearch faceDetectEnabled: %s, isSearchFace: %s", faceDetectEnabled, isSearchFace));
-        if (faceDetectEnabled || Util.isNetworkOff(IrCameraActivity.this)) {
+        if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
             if (GlobalParameters.livenessDetect) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
                     startFaceSearch(faceFeature, requestId, rgb, ir);
@@ -3487,7 +3489,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void initRecordUserTempService() {
-        if (!Util.isNetworkOff(IrCameraActivity.this)){
+        if (!Util.isOfflineMode(IrCameraActivity.this)){
             if (LitePal.getDatabase() != null) {
                 try {
                     if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {

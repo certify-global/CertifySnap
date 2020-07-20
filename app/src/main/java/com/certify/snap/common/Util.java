@@ -779,7 +779,7 @@ public class Util {
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
-            if (isNetworkOff(context)) {
+            if (isOfflineMode(context)) {
                 saveOfflineTempRecord(obj, context, data);
             } else{
                 new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
@@ -792,34 +792,13 @@ public class Util {
 
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data) {
         try {
-            JSONObject jsonObject = new JSONObject();
             OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
-            jsonObject.put("deviceId",obj.getString("deviceId"));
-            jsonObject.put("institutionId",obj.getString("institutionId"));
-            jsonObject.put("facilityId",obj.getInt("facilityId"));
-            jsonObject.put("locationId",obj.getInt("locationId"));
-            jsonObject.put("trigger",obj.getString("trigger"));
-            if (data.sendImages){
-                jsonObject.put("irTemplate",obj.getString("irTemplate"));
-                jsonObject.put("rgbTemplate",obj.getString("rgbTemplate"));
-                jsonObject.put("thermalTemplate",obj.getString("thermalTemplate"));
-            }
-            jsonObject.put("temperatureFormat",obj.getString("temperatureFormat"));
-            jsonObject.put("exceedThreshold",obj.getString("exceedThreshold"));
-            jsonObject.put("deviceData", MobileDetails(context));
-            jsonObject.put("deviceParameters",obj.getString("deviceParameters"));
-            jsonObject.put("trqStatus",obj.getString("trqStatus"));
-            jsonObject.put("maskStatus",obj.getString("maskStatus"));
-            jsonObject.put("faceScore",obj.getInt("faceScore"));
-            jsonObject.put("faceParameters",obj.getString("faceParameters"));
-            jsonObject.put("qrCodeId",obj.getString("qrCodeId"));
             offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
-            offlineRecordTemperatureMembers.setJsonObj(jsonObject.toString());
+            offlineRecordTemperatureMembers.setJsonObj(obj.toString());
             offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
             offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
             offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
             if (data.member.getFirstname() != null){
-                jsonObject.put("accessId",obj.getString("accessId"));
                 offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
                 offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
                 offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
@@ -1827,5 +1806,9 @@ public class Util {
             return mode == Constants.PRO_MODEL_TEMPERATURE_MODULE;
         }
         return false;
+    }
+
+    public static boolean isOfflineMode(Context context) {
+        return isNetworkOff(context);
     }
 }
