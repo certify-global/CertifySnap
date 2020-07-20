@@ -2923,6 +2923,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 AccessCardController.getInstance().isWeigandEnabled())) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
+                enableLedPower();
                 showSnackBarMessage(getString(R.string.access_granted));
                 setCameraPreview();
                 if (soundPool == null) {
@@ -2938,6 +2939,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             return;
         }
+        enableLedPower();
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
         setCameraPreview();
