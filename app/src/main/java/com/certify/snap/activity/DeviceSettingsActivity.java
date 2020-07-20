@@ -59,6 +59,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private String url;
     private Boolean isOnline;
     private LinearLayout pro_layout;
+    private TextView tvProtocol, tvHostName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,9 +104,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             pro_settings.setTypeface(rubiklight);
-
             proSettings();
-
+            tvProtocol = findViewById(R.id.tv_protocol);
+            tvHostName = findViewById(R.id.tv_hostName);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             setUIData();
 
@@ -148,6 +149,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     url = etEndUrl.getText().toString().trim();
                     if (url.endsWith("/"))
                         url = url.substring(0, url.length() - 1);
+                    url = getString(R.string.protocol_text) + url + getString(R.string.hostname);
                     Util.writeString(sharedPreferences, GlobalParameters.URL, url);
                 }
             });
@@ -184,9 +186,6 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!isValidUrl()) {
-                        return;
-                    }
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(etEndUrl.getText().toString().trim())) {
                         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
@@ -207,10 +206,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvClearData.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (isValidUrl()) {
-                        deleteAppData();
-                        restartApp();
-                    }
+                    deleteAppData();
+                    restartApp();
                 }
             });
 
@@ -252,9 +249,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private void setUIData() {
         try {
             url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
-            etEndUrl.setText(url_end);
-            if (url_end != null && url_end.length() > 0)
-                etEndUrl.setSelection(url_end.length());
+            String removeHttps = url_end.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)","");
+            String endApiString = removeHttps.replace(getString(R.string.hostname),"");
+            etEndUrl.setText(endApiString);
+            if (endApiString != null && endApiString.length() > 0)
+                etEndUrl.setSelection(endApiString.length());
             etDeviceName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
             tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {

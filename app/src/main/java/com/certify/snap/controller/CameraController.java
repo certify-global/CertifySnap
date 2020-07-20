@@ -19,6 +19,16 @@ public class CameraController {
     public int CAMERA_PREVIEW_HEIGHT = 1208;
     private FaceParameters faceParameters;
     private boolean isCameraOnForRfid = false;
+    private boolean isAppExitTriggered = false;
+    public static int IMAGE_PROCESS_COMPLETE = 1;
+    public ScanState scanState = ScanState.IDLE;
+
+    public enum ScanState {
+        IDLE,
+        FACIAL_SCAN,
+        THERMAL_SCAN,
+        COMPLETE
+    }
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -92,6 +102,22 @@ public class CameraController {
         isCameraOnForRfid = cameraOn;
     }
 
+    public ScanState getScanState() {
+        return scanState;
+    }
+
+    public void setScanState(ScanState scanState) {
+        this.scanState = scanState;
+    }
+
+    public boolean isAppExitTriggered() {
+        return isAppExitTriggered;
+    }
+
+    public void setAppExitTriggered(boolean appExitTriggered) {
+        isAppExitTriggered = appExitTriggered;
+    }
+
     public float getOnlyTextSize(int length) {
         Log.i("getOnlyTextSize  ", "" + length);
         if (length > 2000)
@@ -112,5 +138,7 @@ public class CameraController {
         if (faceParameters != null) {
             faceParameters.clear();
         }
+        isAppExitTriggered = false;
+        scanState = ScanState.IDLE;
     }
 }

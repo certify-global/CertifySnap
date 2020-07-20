@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.certify.snap.adapter.RecordAdapter;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.R;
 import org.apache.poi.ss.usermodel.Cell;
@@ -51,8 +52,8 @@ public class RecordActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RecordAdapter recordAdapter;
-    private List<OfflineVerifyMembers> datalist = new ArrayList<>();
-    private List<OfflineVerifyMembers> exportlist = new ArrayList<>();
+    private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
+    private List<OfflineRecordTemperatureMembers> exportlist = new ArrayList<>();
     public SQLiteDatabase db;
     private ProgressDialog mprogressDialog;
     private AlertDialog mSelectDialog;
@@ -79,9 +80,9 @@ public class RecordActivity extends AppCompatActivity {
     public void initdata(final boolean isNeedInit){
         try {
             if (db != null) {
-                LitePal.findAllAsync(OfflineVerifyMembers.class).listen(new FindMultiCallback<OfflineVerifyMembers>() {
+                LitePal.findAllAsync(OfflineRecordTemperatureMembers.class).listen(new FindMultiCallback<OfflineRecordTemperatureMembers>() {
                     @Override
-                    public void onFinish(List<OfflineVerifyMembers> list) {
+                    public void onFinish(List<OfflineRecordTemperatureMembers> list) {
                         datalist = list;
                         if (isNeedInit) {
                             initMember();
@@ -97,7 +98,7 @@ public class RecordActivity extends AppCompatActivity {
         }
     }
 
-    private void refreshMemberList(List<OfflineVerifyMembers> list) {
+    private void refreshMemberList(List<OfflineRecordTemperatureMembers> list) {
         Log.e("refreshRecordList---", "start");
         datalist = list;
         recordAdapter.refresh(datalist);

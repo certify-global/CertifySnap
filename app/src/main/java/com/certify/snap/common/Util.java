@@ -65,6 +65,7 @@ import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
@@ -775,11 +776,38 @@ public class Util {
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
-            new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+            if (isOfflineMode(context)) {
+                saveOfflineTempRecord(obj, context, data);
+            } else{
+                new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+            }
 
         } catch (Exception e) {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
+    }
+
+    private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data) {
+        try {
+            OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
+            offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
+            offlineRecordTemperatureMembers.setJsonObj(obj.toString());
+            offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
+            offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
+            offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
+            if (data.member.getFirstname() != null){
+                offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
+                offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
+                offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
+            } else {
+                offlineRecordTemperatureMembers.setFirstName("Anonymous");
+                offlineRecordTemperatureMembers.setLastName("");
+            }
+            offlineRecordTemperatureMembers.save();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -1770,7 +1798,14 @@ public class Util {
     }
 
     public static boolean isDeviceProModel() {
-        int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
-        return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
+        if (Application.getInstance().getTemperatureUtil().getUsingModule() != null) {
+            int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+            return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
+        }
+        return false;
+    }
+
+    public static boolean isOfflineMode(Context context) {
+        return isNetworkOff(context);
     }
 }

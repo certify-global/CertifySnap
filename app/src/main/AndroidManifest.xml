@@ -44,7 +44,7 @@
         tools:replace="android:appComponentFactory">
         <activity android:name=".activity.SelectDeviceActivity"></activity>
         <activity android:name=".activity.AudioVisualActivity" />
-        <activity android:name=".activity.ProIrCameraActivity"></activity>
+
         <activity
             android:name=".activity.NFCCardActivity"
             android:launchMode="singleTask"
@@ -58,6 +58,9 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.IrCameraActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.ProIrCameraActivity"
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.ParameterActivity"
@@ -150,6 +153,9 @@
             android:stopWithTask="false" />
         <service
             android:name=".service.MemberSyncService"
+            android:stopWithTask="false" />
+        <service
+            android:name=".service.OfflineRecordSyncService"
             android:stopWithTask="false" />
         <service
             android:name=".service.AccessTokenJobService"
