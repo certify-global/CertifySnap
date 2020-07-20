@@ -41,7 +41,7 @@ public class TemperatureController {
     private void sendTemperatureRecord(Context context) {
         for (Map.Entry entry : temperatureMap.entrySet()) {
             UserExportedData data = (UserExportedData) entry.getValue();
-            Util.recordUserTemperature(null, context, data);
+            Util.recordUserTemperature(null, context, data, -1);
         }
         clearData();
     }

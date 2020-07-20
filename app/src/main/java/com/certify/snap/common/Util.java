@@ -712,7 +712,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             UserExportedData data) {
+                                             UserExportedData data, int offlineSyncStatus) {
         Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
             if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
@@ -772,12 +772,14 @@ public class Util {
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
             obj.put("faceParameters", FaceParameters(context, data));
+            obj.put("utcOfflineDateTime", "");
+            obj.put("offlineSync", 0);
 
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
-            if (isOfflineMode(context)) {
-                saveOfflineTempRecord(obj, context, data);
+            if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
+                saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
             } else{
                 new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
             }
@@ -787,7 +789,7 @@ public class Util {
         }
     }
 
-    private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data) {
+    private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
         try {
             OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
             offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
@@ -795,6 +797,7 @@ public class Util {
             offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
             offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
             offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
+            offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
             if (data.member.getFirstname() != null){
                 offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
                 offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());

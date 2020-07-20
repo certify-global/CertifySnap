@@ -17,6 +17,15 @@ public class OfflineRecordTemperatureMembers extends LitePalSupport {
     String jsonObj;
     @Column(unique = true)
     Long primaryid;
+    int offlineSync;
+
+    public int getOfflineSync() {
+        return offlineSync;
+    }
+
+    public void setOfflineSync(int offlineSync) {
+        this.offlineSync = offlineSync;
+    }
 
     public Long getPrimaryid() {
         return primaryid;
@@ -104,6 +113,7 @@ public class OfflineRecordTemperatureMembers extends LitePalSupport {
                 ", deviceTime='"+ deviceTime +'\'' +
                 ", jsonObj='"+ jsonObj +'\'' +
                 ", imagepath='" + imagepath + '\'' +
+                ", syncoffline='" + offlineSync + '\'' +
                 '}';
     }
 

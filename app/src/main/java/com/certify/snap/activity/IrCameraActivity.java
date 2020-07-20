@@ -322,6 +322,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean isReadyToScan = true;
     private BroadcastReceiver hidReceiver;
     private ProgressDialog progressDialog;
+    private UserExportedData userData;
 
     private void instanceStart() {
         try {
@@ -2218,7 +2219,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 data.thermal = temperatureBitmap;
                 data.maskStatus = String.valueOf(maskStatus);
                 data.triggerType = mTriggerType;
-                Util.recordUserTemperature(null, IrCameraActivity.this, data);
+                userData = data;
+                int syncStatus;
+                if (Util.isNetworkOff(IrCameraActivity.this)) {
+                    syncStatus = 1;
+                } else {
+                    syncStatus = -1;
+                }
+                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
             }
         });
     }
@@ -2264,7 +2272,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null) {
+            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1")) {
+                int syncStatus = 0;
+                Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, syncStatus);
                 return;
             }
             if (reportInfo.isNull("Message")) return;

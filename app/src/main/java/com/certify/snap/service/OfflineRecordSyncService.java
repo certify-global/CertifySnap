@@ -97,6 +97,12 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("maskStatus", json.getString("maskStatus"));
             jsonObject.put("faceScore", json.getString("faceScore"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
+            jsonObject.put("offlineSync", list.get(i).getOfflineSync());
+            if (list.get(i).getOfflineSync() ==1){
+                jsonObject.put("utcOfflineDateTime", list.get(i).getDeviceTime());
+            } else {
+                jsonObject.put("utcOfflineDateTime", "");
+            }
 
             primaryid = list.get(i).getPrimaryid();
             if (taskExecutorService != null) {
