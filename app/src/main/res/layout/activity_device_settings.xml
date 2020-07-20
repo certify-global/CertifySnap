@@ -258,6 +258,58 @@
         android:layout_height="1dp"
         android:background="@color/blue" />
 
+    <LinearLayout
+        android:id="@+id/pro_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_5">
+
+        <TextView
+            android:id="@+id/pro_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_05"
+            android:layout_marginTop="@dimen/margin_15"
+            android:text="Enable Pro Settings"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_pro_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_yes_pro_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_30"
+            android:text="@string/living_type_1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+        <RadioButton
+            android:id="@+id/radio_no_pro_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/living_type_0"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+    </RadioGroup>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
     <TextView
         android:id="@+id/tv_device_manage"
         android:layout_width="match_parent"
@@ -282,10 +334,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/margin_5"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
 
-        <TextView android:id="@+id/tv_reset_snap"
+        <TextView
+            android:id="@+id/tv_reset_snap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_10"
@@ -301,14 +354,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_10"
-            android:layout_weight="1"
             android:layout_marginTop="@dimen/margin_50"
+            android:layout_weight="1"
+            android:background="#D6D6D6"
             android:drawablePadding="5dp"
             android:gravity="center_vertical|center_horizontal"
             android:padding="@dimen/margin_10"
             android:text="@string/clear_cache_app"
             android:textColor="@color/white"
-            android:textSize="20sp"
-            android:background="#D6D6D6"/>
+            android:textSize="20sp" />
     </LinearLayout>
 </LinearLayout>

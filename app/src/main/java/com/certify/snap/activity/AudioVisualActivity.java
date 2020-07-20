@@ -28,6 +28,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -42,6 +43,7 @@ import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.bluetooth.bleCommunication.BusProvider;
 import com.certify.snap.bluetooth.bleCommunication.DeviceChangedEvent;
 import com.certify.snap.bluetooth.data.DeviceInfoManager;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
@@ -61,6 +63,7 @@ public class AudioVisualActivity extends SettingBaseActivity {
     TextView tv_sound_high,tv_sound, btn_save , tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status, title_audio_alert, title_visual_alert, tv_ble_connection;
     Button tv_ble_connect_btn, light_on, light_off;
     Typeface rubiklight;
+    LinearLayout visul_alert_layout;
 
     private final String TAG = AudioVisualActivity.this.getClass().getSimpleName();
 
@@ -101,6 +104,8 @@ public class AudioVisualActivity extends SettingBaseActivity {
         // connect ble device
         if  (mBluetoothLeService != null)
             mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+
+        proAudioAndVisulSettings();
     }
     private void initView(){
 
@@ -119,6 +124,7 @@ public class AudioVisualActivity extends SettingBaseActivity {
         title_audio_alert = findViewById(R.id.title_audio_alert);
         title_visual_alert = findViewById(R.id.title_visual_alert);
         tv_ble_connection = findViewById(R.id.tv_ble_connection);
+        visul_alert_layout = findViewById(R.id.visul_alert_layout);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -529,4 +535,13 @@ public class AudioVisualActivity extends SettingBaseActivity {
 
     public static int mColor = -1;
     private static float mPer;
+
+    private void proAudioAndVisulSettings(){
+        if (AppSettings.isProSettings()) {
+            visul_alert_layout.setVisibility(View.GONE);
+        }
+        else {
+            visul_alert_layout.setVisibility(View.VISIBLE);
+        }
+    }
 }

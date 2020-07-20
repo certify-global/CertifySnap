@@ -14,6 +14,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.License;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -75,6 +76,9 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     private RelativeLayout accessControl;
     private TextView accessControlTv, tvDeviceOnline, tvDeviceName, tvDeviceSettings, tvDeviceMode;
     private TextView mConnectivityStatus;
+    private View temperature_setting_view,upload_logo_setting_view, home_view_setting_view, scan_view_setting_view,
+            confirmation_screen_setting_view, guide_setting_view, member_management_setting_view, audio_visual_setting_view,
+            identification_setting_view, access_control_setting_view;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -164,6 +168,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             } else {
                 switch_activate.setChecked(false);
             }
+            proSettings();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
@@ -211,6 +216,17 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tvDeviceSettings = findViewById(R.id.tv_device_setting);
         tvDeviceMode = findViewById(R.id.tv_device_model);
         mConnectivityStatus = findViewById(R.id.tv_connectivity_status);
+        temperature_setting_view = findViewById(R.id.temperature_setting_view);
+        upload_logo_setting_view = findViewById(R.id.upload_logo_setting_view);
+        home_view_setting_view = findViewById(R.id.home_view_setting_view);
+        scan_view_setting_view = findViewById(R.id.scan_view_setting_view);
+        confirmation_screen_setting_view = findViewById(R.id.confirmation_screen_setting_view);
+        guide_setting_view = findViewById(R.id.guide_setting_view);
+        member_management_setting_view = findViewById(R.id.member_management_setting_view);
+        audio_visual_setting_view = findViewById(R.id.audio_visual_setting_view);
+        identification_setting_view = findViewById(R.id.identification_setting_view);
+        access_control_setting_view = findViewById(R.id.access_control_setting_view);
+
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -578,5 +594,36 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     private void stopHealthCheckService() {
         Intent intent = new Intent(this, DeviceHealthService.class);
         stopService(intent);
+    }
+
+    private void proSettings(){
+        if (AppSettings.isProSettings()) {
+            Log.d(TAG, "proSettings: true");
+            setting_upload.setVisibility(View.GONE);
+            thermal_check_setting.setVisibility(View.GONE);
+            confirmation_setting.setVisibility(View.GONE);
+            accessControl.setVisibility(View.GONE);
+            guide_setting.setVisibility(View.GONE);
+
+            upload_logo_setting_view.setVisibility(View.GONE);
+            home_view_setting_view.setVisibility(View.GONE);
+            confirmation_screen_setting_view.setVisibility(View.GONE);
+            access_control_setting_view.setVisibility(View.GONE);
+            guide_setting_view.setVisibility(View.GONE);
+        }
+        else {
+            Log.d(TAG, "proSettings: false");
+            setting_upload.setVisibility(View.VISIBLE);
+            thermal_check_setting.setVisibility(View.VISIBLE);
+            confirmation_setting.setVisibility(View.VISIBLE);
+            accessControl.setVisibility(View.VISIBLE);
+            guide_setting.setVisibility(View.VISIBLE);
+
+            upload_logo_setting_view.setVisibility(View.VISIBLE);
+            home_view_setting_view.setVisibility(View.VISIBLE);
+            confirmation_screen_setting_view.setVisibility(View.VISIBLE);
+            access_control_setting_view.setVisibility(View.VISIBLE);
+            guide_setting_view.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -144,195 +144,201 @@
             android:layout_height="1dp"
             android:background="@color/blue" />
 
-        <TextView
-            android:id="@+id/title_visual_alert"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_15"
-            android:text="Visual Alerts"
-            android:textColor="@color/black"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/tv_light_low"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/enable_light"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_light"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_yes_light"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/living_type_1"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-            <RadioButton
-                android:id="@+id/radio_no_light"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-        </RadioGroup>
-
-        <TextView
-            android:id="@+id/tv_light_high"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_15"
-            android:text="@string/enable_light_high"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-
-        <RadioGroup
-            android:id="@+id/radio_group_light_high"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_yes_light_high"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/living_type_1"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-            <RadioButton
-                android:id="@+id/radio_no_light_high"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
-
-        </RadioGroup>
-
         <LinearLayout
+            android:id="@+id/visul_alert_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_ble_connect"
-                android:layout_width="wrap_content"
+                android:id="@+id/title_visual_alert"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:drawablePadding="5dp"
-                android:text="@string/ble_connect_status"
+                android:layout_marginLeft="@dimen/margin_5"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="Visual Alerts"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="22sp" />
 
             <TextView
-                android:id="@+id/tv_ble_status"
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_light_low"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginRight="4dp"
-                android:maxLines="1"
-                android:text="NONE"
-                android:maxLength="25"
-                android:ellipsize="end"
-                android:textColor="@color/red"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/tv_ble_connection_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:background="@color/bg_blue"
-                android:onClick="selectBleDevice"
-                android:padding="10dp"
-                android:text="@string/ble_connect"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tv_ble_connection"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="@dimen/margin_10"
-                android:onClick="selectBleDevice"
-                android:text="@string/ble_connect"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_ble_test"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="5dp"
-                android:text="@string/ble_light_test"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="@string/enable_light"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="@dimen/font_18" />
 
-            <Button
-                android:id="@+id/light_On"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/radio_group_light"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:background="@color/gray"
-                android:enabled="false"
-                android:onClick="bleLightOn"
-                android:padding="10dp"
-                android:text="Light On"
-                android:textColor="@color/white"
-                android:textSize="15sp" />
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/light_off"
-                android:layout_width="wrap_content"
+                <RadioButton
+                    android:id="@+id/radio_yes_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_no_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/tv_light_high"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:background="@color/gray"
-                android:onClick="bleLightOff"
-                android:padding="10dp"
-                android:text="Light OFF"
-                android:enabled="false"
-                android:textColor="@color/white"
-                android:textSize="15sp" />
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="@string/enable_light_high"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_light_high"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_yes_light_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_no_light_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_ble_connect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:drawablePadding="5dp"
+                    android:text="@string/ble_connect_status"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_ble_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="4dp"
+                    android:ellipsize="end"
+                    android:maxLength="25"
+                    android:maxLines="1"
+                    android:text="NONE"
+                    android:textColor="@color/red"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/tv_ble_connection_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/bg_blue"
+                    android:onClick="selectBleDevice"
+                    android:padding="10dp"
+                    android:text="@string/ble_connect"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_ble_connection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="@dimen/margin_10"
+                    android:onClick="selectBleDevice"
+                    android:text="@string/ble_connect"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_ble_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:text="@string/ble_light_test"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/light_On"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:background="@color/gray"
+                    android:enabled="false"
+                    android:onClick="bleLightOn"
+                    android:padding="10dp"
+                    android:text="Light On"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/light_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:background="@color/gray"
+                    android:enabled="false"
+                    android:onClick="bleLightOff"
+                    android:padding="10dp"
+                    android:text="Light OFF"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
 </LinearLayout>

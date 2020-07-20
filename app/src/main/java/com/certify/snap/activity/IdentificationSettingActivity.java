@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.certify.snap.R;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -42,6 +43,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     TextView tv_display;
     TextView mAnonymousTv;
     TextInputLayout text_input_timeout;
+    LinearLayout qr_scanner_layout, anonymous_qr_bar_code_layout, rfid_layout, display_image_layout;
     private TextView scanMode;
     private RadioGroup scanModeRg;
     private RadioButton scanModeRbEasy;
@@ -96,6 +98,10 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
             parentLayout = findViewById(R.id.parent_view_layout);
             text_input_timeout = findViewById(R.id.text_input_timeout);
+            qr_scanner_layout = findViewById(R.id.qr_scanner_layout);
+            anonymous_qr_bar_code_layout = findViewById(R.id.anonymous_qr_bar_code_layout);
+            rfid_layout = findViewById(R.id.rfid_layout);
+            display_image_layout = findViewById(R.id.display_image_layout);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
@@ -193,6 +199,8 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     finish();
                 }
             });
+
+            proIdentificationSettings();
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
@@ -336,5 +344,24 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             result = true;
         }
         return result;
+    }
+
+    private void proIdentificationSettings(){
+        if (AppSettings.isProSettings()) {
+            Log.d(TAG, "proSettings: true");
+            qr_scanner_layout.setVisibility(View.GONE);
+            anonymous_qr_bar_code_layout.setVisibility(View.GONE);
+            rfid_layout.setVisibility(View.GONE);
+            display_image_layout.setVisibility(View.GONE);
+            text_input_timeout.setVisibility(View.GONE);
+        }
+        else {
+            Log.d(TAG, "proSettings: false");
+            qr_scanner_layout.setVisibility(View.VISIBLE);
+            anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
+            rfid_layout.setVisibility(View.VISIBLE);
+            display_image_layout.setVisibility(View.VISIBLE);
+            text_input_timeout.setVisibility(View.VISIBLE);
+        }
     }
 }

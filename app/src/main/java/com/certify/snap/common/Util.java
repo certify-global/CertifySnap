@@ -32,7 +32,6 @@ import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -72,10 +71,6 @@ import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
@@ -1776,6 +1771,6 @@ public class Util {
 
     public static boolean isDeviceProModel() {
         int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
-        return mode == Constants.PRO_MODEL_TEMPERATURE_MODULE;
+        return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
     }
 }

@@ -43,6 +43,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/qr_scanner_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -87,6 +88,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/anonymous_qr_bar_code_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -134,6 +136,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/rfid_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -296,17 +299,23 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/display_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        android:paddingTop="20dp">
+
+        <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_10"
-        android:layout_marginTop="@dimen/margin_15"
         android:text="@string/display"
         android:textColor="@color/black"
         android:textSize="@dimen/margin_20" />
 
-    <RadioGroup
+        <RadioGroup
         android:id="@+id/radio_group_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -334,5 +343,5 @@
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
-
+    </LinearLayout>
 </LinearLayout>

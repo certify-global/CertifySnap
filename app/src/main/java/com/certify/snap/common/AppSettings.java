@@ -29,6 +29,7 @@ public class AppSettings {
     private static boolean facialDetect = false;
     private static boolean captureImagesAll = false;
     private static boolean captureImagesAboveThreshold = false;
+    private static boolean proSettings = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -59,6 +60,7 @@ public class AppSettings {
         facialDetect = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         captureImagesAll = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false);
         captureImagesAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, false);
+        proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false);
     }
 
     public static String getThermalScanTitle() {
@@ -133,15 +135,15 @@ public class AppSettings {
         return facialDetect;
     }
 
-    public static void setFacialDetect(boolean facialDetect) {
-        AppSettings.facialDetect = facialDetect;
-    }
-
     public static boolean isCaptureImagesAll() {
         return captureImagesAll;
     }
 
     public static boolean isCaptureImagesAboveThreshold() {
         return captureImagesAboveThreshold;
+    }
+
+    public static boolean isProSettings() {
+        return proSettings;
     }
 }

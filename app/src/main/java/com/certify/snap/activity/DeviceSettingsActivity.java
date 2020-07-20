@@ -18,6 +18,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -39,11 +42,13 @@ import com.certify.snap.service.MemberSyncService;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import static com.certify.snap.common.Util.isDeviceProModel;
+
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
-    private TextView btn_save, tvSettingsName, activateStatus, tv_device_activation_status;
+    private TextView btn_save, tvSettingsName, activateStatus, tv_device_activation_status, pro_settings;
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
@@ -53,6 +58,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private String url_end;
     private String url;
     private Boolean isOnline;
+    private LinearLayout pro_layout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +84,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             sharedPreferences = Util.getSharedPreferences(this);
             tvClearData = findViewById(R.id.tv_clear_cache);
             tvResetSnap = findViewById(R.id.tv_reset_snap);
+            pro_settings = findViewById(R.id.pro_settings);
+            pro_layout = findViewById(R.id.pro_layout);
+
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             activateStatus.setTypeface(rubiklight);
@@ -93,6 +102,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tv_device_activation_status.setTypeface(rubiklight);
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
+            pro_settings.setTypeface(rubiklight);
+
+            proSettings();
+
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             setUIData();
 
@@ -200,9 +213,39 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     }
                 }
             });
+
+            enableProDevice();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
+
+    }
+
+    private void proSettings() {
+        RadioGroup radio_group_pro = findViewById(R.id.radio_group_pro_settings);
+        RadioButton radio_yes_pro = findViewById(R.id.radio_yes_pro_settings);
+        RadioButton radio_no_pro = findViewById(R.id.radio_no_pro_settings);
+
+        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false))
+            radio_yes_pro.setChecked(true);
+        else radio_no_pro.setChecked(true);
+
+        radio_group_pro.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_pro_settings) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, true);
+                    Util.switchRgbOrIrActivity(DeviceSettingsActivity.this, true);
+                    finish();
+                }
+                else {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, false);
+                    Util.switchRgbOrIrActivity(DeviceSettingsActivity.this, true);
+                    finish();
+                }
+            }
+
+        });
 
     }
 
@@ -385,5 +428,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             return false;
         }
         return true;
+    }
+
+    private void enableProDevice() {
+        if (isDeviceProModel()) {
+            pro_settings.setVisibility(View.VISIBLE);
+        }
+        else {
+            pro_settings.setVisibility(View.GONE);
+        }
     }
 }
