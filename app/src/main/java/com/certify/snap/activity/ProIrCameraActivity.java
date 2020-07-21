@@ -214,6 +214,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private List<FacePreviewInfo> facePreviewInfoList;
     private Bitmap irBitmap;
     private Bitmap rgbBitmap;
+    private Bitmap thermalBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -904,6 +905,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             // which records the temperature measurement information of the rect of each face
                             final float envirTem = temperatureBigData.getEmvirTem();//Ambient temperature
                             final Bitmap bitmap = util.TP53createBitmap(rects, maxInRectInfo, originData, R.drawable.image4v);
+                            thermalBitmap = bitmap;
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     if (bitmap != null) {
@@ -925,12 +927,14 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                             if (temperatureMap.get(trackId) == null) {
                                                 temperatureMap.put(trackId, temperature);
                                                 temperatureStatusMap.put(trackId, TemperatureStatus.SUCCEED);
-                                                data.temperature = String.valueOf(temperature);
-                                                data.sendImages = AppSettings.isCaptureImagesAll() || AppSettings.isCaptureImagesAboveThreshold();
-                                                data.rgb = rgbBitmap;
-                                                data.ir = irBitmap;
-                                                data.thermal = bitmap;
-                                                TemperatureController.getInstance().updateTemperatureMap(trackId, data);
+                                                if (!AppSettings.isFacialDetect()) {
+                                                    data.temperature = String.valueOf(temperature);
+                                                    data.sendImages = AppSettings.isCaptureImagesAll() || AppSettings.isCaptureImagesAboveThreshold();
+                                                    data.rgb = rgbBitmap;
+                                                    data.ir = irBitmap;
+                                                    data.thermal = bitmap;
+                                                    TemperatureController.getInstance().updateTemperatureMap(trackId, data);
+                                                }
                                             } else if (temperature > temperatureMap.get(trackId)) {
                                                 temperatureMap.put(trackId, temperature);
                                             }
@@ -1175,7 +1179,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
-                                    getTemperature(facePreviewInfoList, data);
+                                    //getTemperature(facePreviewInfoList, data);
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
@@ -1195,6 +1199,9 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                                 } else {
                                                     showResult(compareResult, requestId, message, true);
                                                 }
+                                                data.member = registeredMembers;
+                                                updateExportData(data, temperature);
+                                                TemperatureController.getInstance().updateTemperatureMap(requestId, data);
                                             }
 
                                         } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
@@ -1205,8 +1212,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                         message = getString(R.string.text_nopermission);
                                         showResult(compareResult, requestId, message, false);
                                     }
+                                } else {
+                                    if (temperature > 0) {
+                                        UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
+                                        updateExportData(data, temperature);
+                                        TemperatureController.getInstance().updateTemperatureMap(requestId, data);
+                                    }
                                 }
-
                             }
                             if (faceHelperProIr != null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
@@ -1524,5 +1536,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             return null;
         }
         return Util.toHexString(tag.getId());
+    }
+
+    private void updateExportData(UserExportedData data, float temperature) {
+        data.temperature = String.valueOf(temperature);
+        data.sendImages = AppSettings.isCaptureImagesAll() || AppSettings.isCaptureImagesAboveThreshold();
+        data.rgb = rgbBitmap;
+        data.ir = irBitmap;
+        data.thermal = thermalBitmap;
     }
 }
