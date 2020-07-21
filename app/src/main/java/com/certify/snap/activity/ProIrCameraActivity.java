@@ -290,7 +290,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         compareResultList = new ArrayList<>();
         adapter = new ShowFaceInfoAdapter(compareResultList, this);
         LinearLayoutManager layoutManager
-                = new LinearLayoutManager(this);
+                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true);
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
         recyclerShowFaceInfo.setLayoutManager(layoutManager);
@@ -1262,7 +1262,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             @Override
             public void run() {
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
-                adapter.notifyItemInserted(compareResultList.size() - 1);
+                adapter.notifyItemInserted(compareResultList.size());
             }
         }, 100);
     }
