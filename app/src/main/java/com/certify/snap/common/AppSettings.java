@@ -30,6 +30,7 @@ public class AppSettings {
     private static boolean captureImagesAll = false;
     private static boolean captureImagesAboveThreshold = false;
     private static boolean proSettings = false;
+    private static boolean displayInfoConfirmScreen = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -61,6 +62,8 @@ public class AppSettings {
         captureImagesAll = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false);
         captureImagesAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, false);
         proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true);
+        displayInfoConfirmScreen = sharedPreferences.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
+
     }
 
     public static String getThermalScanTitle() {
@@ -149,5 +152,9 @@ public class AppSettings {
 
     public static void setProSettings(boolean proSettings) {
         AppSettings.proSettings = proSettings;
+    }
+
+    public static boolean isDisplayInfoConfirmScreen() {
+        return displayInfoConfirmScreen;
     }
 }

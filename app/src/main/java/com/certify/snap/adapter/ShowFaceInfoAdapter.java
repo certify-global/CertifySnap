@@ -1,7 +1,6 @@
-package com.certify.snap.arcface.widget;
+package com.certify.snap.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapter.CompareResultHolder> {
@@ -43,7 +41,7 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
         compareResultHolder.tv_temperature = itemView.findViewById(R.id.tv_item_temperature);
         compareResultHolder.imageView = itemView.findViewById(R.id.iv_item_head_img);
         compareResultHolder.tv_last_name = itemView.findViewById(R.id.tv_item_last_name);
-        compareResultHolder.item_layout = itemView.findViewById(R.id.item_layout);
+        compareResultHolder.item_layout = itemView.findViewById(R.id.face_info_parent_layout);
         return compareResultHolder;
     }
 
@@ -52,28 +50,39 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
         if (compareResultList == null) {
             return;
         }
-        File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResultList.get(position).getUserName() + FaceServer.IMG_SUFFIX);
-        Glide.with(mContext)
-                .load(imgFile)
-                .skipMemoryCache(true) // 不使用内存缓存
-                .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
-                .into(holder.imageView);
-        holder.tv_name.setText(compareResultList.get(position).getMessage());
 
-        String temperatureUnit = AppSettings.getfToC();
-        if (temperatureUnit.equals("F")) {
-            holder.tv_temperature.setText(compareResultList.get(position).getTemperature() +mContext.getString(R.string.Fahrenheit_temp));
-        } else {
-            holder.tv_temperature.setText(compareResultList.get(position).getTemperature() +mContext.getString(R.string.centigrade));
+        if (AppSettings.isDisplayInfoConfirmScreen()) {
+            File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResultList.get(position).getUserName() + FaceServer.IMG_SUFFIX);
+            Glide.with(mContext)
+                    .load(imgFile)
+                    .skipMemoryCache(true) // 不使用内存缓存
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // 不使用磁盘缓存
+                    .into(holder.imageView);
+            holder.tv_name.setText(compareResultList.get(position).getMessage());
+            holder.tv_last_name.setText(compareResultList.get(position).getLastName());
         }
 
-        holder.tv_last_name.setText(compareResultList.get(position).getLastName());
-
-        if (!(Float.parseFloat(compareResultList.get(position).getTemperature()) > Float.parseFloat(AppSettings.getTemperatureThreshold()))) {
-            holder.item_layout.setBackgroundColor(mContext.getColor(R.color.green));
-        } else {
-            holder.item_layout.setBackgroundColor(mContext.getColor(R.color.red));
+        if (AppSettings.isCaptureTemperature()) {
+            String temperatureUnit = AppSettings.getfToC();
+            if (temperatureUnit.equals("F")) {
+                holder.tv_temperature.setText(compareResultList.get(position).getTemperature() + mContext.getString(R.string.Fahrenheit_temp));
+            } else {
+                holder.tv_temperature.setText(compareResultList.get(position).getTemperature() + mContext.getString(R.string.centigrade));
+            }
         }
+
+        if (AppSettings.isDisplayInfoConfirmScreen() || AppSettings.isCaptureTemperature()) {
+            holder.item_layout.setVisibility(View.VISIBLE);
+            if (!(Float.parseFloat(compareResultList.get(position).getTemperature()) > Float.parseFloat(AppSettings.getTemperatureThreshold()))) {
+                holder.item_layout.setBackgroundColor(mContext.getColor(R.color.green));
+            } else {
+                holder.item_layout.setBackgroundColor(mContext.getColor(R.color.red));
+            }
+        }
+        else{
+            holder.item_layout.setVisibility(View.GONE);
+        }
+
     }
 
     @Override

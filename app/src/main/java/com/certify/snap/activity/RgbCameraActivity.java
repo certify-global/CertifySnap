@@ -62,7 +62,7 @@ import com.certify.snap.arcface.util.face.FaceListener;
 import com.certify.snap.arcface.util.face.LivenessType;
 import com.certify.snap.arcface.util.face.RequestFeatureStatus;
 import com.certify.snap.arcface.util.face.RequestLivenessStatus;
-import com.certify.snap.arcface.widget.ShowFaceInfoAdapter;
+import com.certify.snap.adapter.ShowFaceInfoAdapter;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.GlobalParameters;

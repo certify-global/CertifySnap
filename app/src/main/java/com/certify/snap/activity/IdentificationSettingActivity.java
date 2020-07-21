@@ -352,7 +352,6 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             qr_scanner_layout.setVisibility(View.GONE);
             anonymous_qr_bar_code_layout.setVisibility(View.GONE);
             rfid_layout.setVisibility(View.GONE);
-            display_image_layout.setVisibility(View.GONE);
             text_input_timeout.setVisibility(View.GONE);
         }
         else {
@@ -360,7 +359,6 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             qr_scanner_layout.setVisibility(View.VISIBLE);
             anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
             rfid_layout.setVisibility(View.VISIBLE);
-            display_image_layout.setVisibility(View.VISIBLE);
             text_input_timeout.setVisibility(View.VISIBLE);
         }
     }

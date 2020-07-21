@@ -36,7 +36,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -63,7 +62,7 @@ import com.certify.snap.arcface.util.face.LivenessType;
 import com.certify.snap.arcface.util.face.RequestFeatureStatus;
 import com.certify.snap.arcface.util.face.RequestLivenessStatus;
 import com.certify.snap.arcface.widget.FaceRectView;
-import com.certify.snap.arcface.widget.ShowFaceInfoAdapter;
+import com.certify.snap.adapter.ShowFaceInfoAdapter;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
@@ -76,7 +75,6 @@ import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.view.MyGridLayoutManager;
 import com.common.thermalimage.TemperatureBigData;
 import com.common.thermalimage.ThermalImageUtil;
 
