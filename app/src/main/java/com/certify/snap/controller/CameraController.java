@@ -2,6 +2,7 @@ package com.certify.snap.controller;
 
 import android.util.Log;
 
+import com.certify.snap.common.Application;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
@@ -22,6 +23,7 @@ public class CameraController {
     private boolean isAppExitTriggered = false;
     public static int IMAGE_PROCESS_COMPLETE = 1;
     public ScanState scanState = ScanState.IDLE;
+    private  int deviceMode =0;
 
     public enum ScanState {
         IDLE,
@@ -118,6 +120,16 @@ public class CameraController {
         isAppExitTriggered = appExitTriggered;
     }
 
+    public void initDeviceMode() {
+        if (Application.getInstance().getTemperatureUtil().getUsingModule() != null) {
+            deviceMode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+        }
+    }
+
+    public int getDeviceMode() {
+        return deviceMode;
+    }
+
     public float getOnlyTextSize(int length) {
         Log.i("getOnlyTextSize  ", "" + length);
         if (length > 2000)
@@ -141,4 +153,5 @@ public class CameraController {
         isAppExitTriggered = false;
         scanState = ScanState.IDLE;
     }
+
 }

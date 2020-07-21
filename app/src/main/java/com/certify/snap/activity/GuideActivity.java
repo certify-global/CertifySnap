@@ -35,6 +35,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
@@ -348,6 +349,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      * Method that processes next steps after the App settings are updated in the SharedPref on app launch
      */
     private void onSettingsUpdated() {
+        CameraController.getInstance().initDeviceMode();
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");

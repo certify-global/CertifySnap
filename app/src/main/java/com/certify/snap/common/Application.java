@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Handler;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -85,8 +86,6 @@ public class Application extends android.app.Application {
 
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(this);
-
-        initDeviceMode();
     }
 
     public static SimplePreference getPreference() {
@@ -184,16 +183,6 @@ public class Application extends android.app.Application {
             }
         };
         Crashes.setListener(crashesListener);
-    }
-
-    public void initDeviceMode() {
-        if (temperatureUtil != null && temperatureUtil.getUsingModule() != null) {
-            deviceMode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
-        }
-    }
-
-    public int getDeviceMode() {
-        return deviceMode;
     }
 
 }

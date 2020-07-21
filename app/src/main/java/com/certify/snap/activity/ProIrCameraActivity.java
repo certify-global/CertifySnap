@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.arcsoft.face.AgeInfo;
@@ -288,7 +289,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         compareResultList = new ArrayList<>();
         adapter = new ShowFaceInfoAdapter(compareResultList, this);
         recyclerShowFaceInfo.setAdapter(adapter);
-        recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 3));
+        recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, true));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
 
     }
@@ -1110,7 +1111,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     @Override
                     public void subscribe(ObservableEmitter<CompareResult> emitter) {
                         CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
-                        Log.d(TAG, "Naga........compareResult: " + compareResult);
                         emitter.onNext(compareResult);
                     }
                 })
@@ -1167,14 +1167,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
                                 float temperature = temperatureMap.get(requestId) == null ? 0 : temperatureMap.get(requestId);
-                                String temperatureResult;
+                                String temperatureResult = String.valueOf(temperature);
 
-                                String temperatureUnit = AppSettings.getfToC();
-                                if (temperatureUnit.equals("F")) {
-                                    temperatureResult = temperature + getString(R.string.Fahrenheit_temp);
-                                } else {
-                                    temperatureResult = temperature + getString(R.string.centigrade);
-                                }
                                 compareResult.setTemperature(temperatureResult);
                                 registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
                                 if (registeredMemberslist.size() > 0) {
@@ -1183,6 +1177,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
+                                    String lastname = registeredMembers.getLastname();
                                     String image = registeredMembers.getImage();
 
                                     if (status.equals("1")) {
@@ -1195,9 +1190,9 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                             if (temperature > 0) {
                                                 if (Util.isUsualTemperature(ProIrCameraActivity.this, temperature)) {
                                                     Log.e("temp---", temperature + "");
-                                                    showResult(compareResult, requestId, message, false);
+                                                    showResult(compareResult, requestId, message, lastname, false);
                                                 } else {
-                                                    showResult(compareResult, requestId, message, true);
+                                                    showResult(compareResult, requestId, message, lastname,true);
                                                 }
                                                 data.member = registeredMembers;
                                                 updateExportData(data, temperature);
@@ -1206,11 +1201,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                                         } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                                             message = getString(R.string.text_notpasstime);
-                                            showResult(compareResult, requestId, message, false);
+                                            showResult(compareResult, requestId, message, lastname,false);
                                         }
                                     } else if (!status.equals("1")) {
                                         message = getString(R.string.text_nopermission);
-                                        showResult(compareResult, requestId, message, false);
+                                        showResult(compareResult, requestId, message, lastname,false);
                                     }
                                 } else {
                                     if (temperature > 0) {
@@ -1232,7 +1227,12 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             }
                         } else {
                             if (faceHelperProIr != null) {
-                                retryRecognizeDelayed(requestId);
+                                //retryRecognizeDelayed(requestId);
+                                if (temperature > 0) {
+                                    UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
+                                    updateExportData(data, temperature);
+                                    TemperatureController.getInstance().updateTemperatureMap(requestId, data);
+                                }
                             }
                         }
                     }
@@ -1251,23 +1251,14 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 });
     }
 
-    private void showResult(CompareResult compareResult, int requestId, String message, final boolean isdoor) {
+    private void showResult(CompareResult compareResult, int requestId, String message, String lastName, final boolean isdoor) {
         compareResult.setTrackId(requestId);
         compareResult.setMessage(message);
+        compareResult.setLastName(lastName);
         compareResultList.add(compareResult);
         processHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (isdoor) {
-                    Util.setRelayPower(1);
-                    pTimer = new Timer();
-                    pTimer.schedule(new TimerTask() {
-                        public void run() {
-                            Util.setRelayPower(0);
-                            this.cancel();
-                        }
-                    }, relaytimenumber * 1000);
-                }
                 sendMessageToStopAnimation(HIDE_VERIFY_UI);
                 adapter.notifyItemInserted(compareResultList.size() - 1);
             }

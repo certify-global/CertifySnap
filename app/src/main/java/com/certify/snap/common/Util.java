@@ -1799,7 +1799,7 @@ public class Util {
     }
 
     public static boolean isDeviceProModel() {
-        int mode = Application.getInstance().getDeviceMode();
+        int mode = CameraController.getInstance().getDeviceMode();
         return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
     }
 

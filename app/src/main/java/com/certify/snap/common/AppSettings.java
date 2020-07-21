@@ -17,7 +17,7 @@ public class AppSettings {
     private static boolean allowAll = false;
     private static String tempTestLow = "";
     private static String fToC = "";
-    private static String tempTest = "";
+    private static String temperatureThreshold = "";
     private static boolean guideScreen = false;
     private static String guideText1 = "";
     private static String guideText2 = "";
@@ -48,7 +48,7 @@ public class AppSettings {
         allowAll = sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false);
         tempTestLow = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
         fToC = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
-        tempTest = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
+        temperatureThreshold = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
         guideScreen = sharedPreferences.getBoolean(GlobalParameters.GUIDE_SCREEN, true);
         guideText1 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, context.getString(R.string.text_value1));
         guideText2 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, context.getString(R.string.text_value2));
@@ -95,8 +95,8 @@ public class AppSettings {
         return fToC;
     }
 
-    public static String getTempTest() {
-        return tempTest;
+    public static String getTemperatureThreshold() {
+        return temperatureThreshold;
     }
 
     public static boolean isGuideScreen() {

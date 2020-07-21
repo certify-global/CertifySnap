@@ -9,6 +9,7 @@ public class CompareResult implements Serializable {
     private int trackId;
     private String memberId;
     private String temperature;
+    private String lastName;
 
     public String getFacialScore() {
         return facialScore;
@@ -70,6 +71,14 @@ public class CompareResult implements Serializable {
 
     public String getTemperature() {
         return temperature;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setTemperature(String temperature) {
