@@ -42,8 +42,6 @@ import com.certify.snap.service.MemberSyncService;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
-import static com.certify.snap.common.Util.isDeviceProModel;
-
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
@@ -432,11 +430,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void enableProDevice() {
-        if (isDeviceProModel()) {
+        if (Util.isDeviceProModel()) {
             pro_layout.setVisibility(View.VISIBLE);
             pro_settings_border.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             pro_layout.setVisibility(View.GONE);
             pro_settings_border.setVisibility(View.GONE);
         }

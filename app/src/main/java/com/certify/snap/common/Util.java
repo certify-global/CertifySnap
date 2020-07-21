@@ -1799,11 +1799,8 @@ public class Util {
     }
 
     public static boolean isDeviceProModel() {
-        if (Application.getInstance().getTemperatureUtil().getUsingModule() != null) {
-            int mode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
-            return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
-        }
-        return false;
+        int mode = Application.getInstance().getDeviceMode();
+        return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
     }
 
     public static boolean isOfflineMode(Context context) {

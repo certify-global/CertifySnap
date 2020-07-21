@@ -43,6 +43,7 @@ public class Application extends android.app.Application {
     private List<Activity> activityList = new LinkedList();
     private ThermalImageUtil temperatureUtil;
     private static SimplePreference preference;
+    private int deviceMode = 0;
 
     @Override
     public void onCreate() {
@@ -84,6 +85,8 @@ public class Application extends android.app.Application {
 
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(this);
+
+        initDeviceMode();
     }
 
     public static SimplePreference getPreference() {
@@ -182,4 +185,15 @@ public class Application extends android.app.Application {
         };
         Crashes.setListener(crashesListener);
     }
+
+    public void initDeviceMode() {
+        if (temperatureUtil != null && temperatureUtil.getUsingModule() != null) {
+            deviceMode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+        }
+    }
+
+    public int getDeviceMode() {
+        return deviceMode;
+    }
+
 }
