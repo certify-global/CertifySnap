@@ -37,6 +37,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.arcsoft.face.AgeInfo;
@@ -288,10 +289,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         RecyclerView recyclerShowFaceInfo = findViewById(R.id.recycler_view_person);
         compareResultList = new ArrayList<>();
         adapter = new ShowFaceInfoAdapter(compareResultList, this);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this);
         recyclerShowFaceInfo.setAdapter(adapter);
-        recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, true));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
-
+        recyclerShowFaceInfo.setLayoutManager(layoutManager);
     }
 
     private boolean checkPermissions(String[] neededPermissions) {
