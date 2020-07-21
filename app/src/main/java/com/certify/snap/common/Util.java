@@ -167,7 +167,7 @@ public class Util {
         if (context == null)
             return;
         Class<?> activity = IrCameraActivity.class;
-        if(isDeviceProModel()){
+        if (isDeviceProModel() && getSharedPreferences(context).getBoolean(GlobalParameters.PRO_SETTINGS, true)) {
             activity = ProIrCameraActivity.class;
         }
         if (getSharedPreferences(context).getInt(GlobalParameters.CameraType, 0) == Camera.CameraInfo.CAMERA_FACING_BACK) {

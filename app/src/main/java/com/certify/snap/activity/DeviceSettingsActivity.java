@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -187,7 +188,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onClick(View v) {
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
-                    if (!TextUtils.isEmpty(url_end) && !url_end.equals(etEndUrl.getText().toString().trim())) {
+                    if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
                         deleteAppData();
                         Util.writeString(sharedPreferences, GlobalParameters.URL, url);
@@ -223,7 +224,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         RadioButton radio_yes_pro = findViewById(R.id.radio_yes_pro_settings);
         RadioButton radio_no_pro = findViewById(R.id.radio_no_pro_settings);
 
-        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false))
+        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true))
             radio_yes_pro.setChecked(true);
         else radio_no_pro.setChecked(true);
 
@@ -232,13 +233,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.radio_yes_pro_settings) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, true);
-                    Util.switchRgbOrIrActivity(DeviceSettingsActivity.this, true);
-                    finish();
-                }
-                else {
+                    AppSettings.setProSettings(true);
+                } else {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, false);
-                    Util.switchRgbOrIrActivity(DeviceSettingsActivity.this, true);
-                    finish();
+                    AppSettings.setProSettings(false);
                 }
             }
 

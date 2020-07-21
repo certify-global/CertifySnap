@@ -169,7 +169,6 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             } else {
                 switch_activate.setChecked(false);
             }
-            proSettings();
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
@@ -265,6 +264,12 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        proSettings();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (Util.isNetworkOff(SettingActivity.this)) {
@@ -305,7 +310,6 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 break;
             case R.id.rl_device_setting:
                 startActivity(new Intent(SettingActivity.this, DeviceSettingsActivity.class));
-                finish();
                 break;
             case R.id.setting_init:
                 if (isopen)
@@ -380,7 +384,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 startActivity(visualIntent);
                 break;
             case R.id.btn_exit:
-                Util.switchRgbOrIrActivity(SettingActivity.this, true);
+                launchCameraScreen();
                 finish();
                 break;
         }
@@ -490,7 +494,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Util.switchRgbOrIrActivity(SettingActivity.this, true);
+        launchCameraScreen();
         finish();
     }
 
@@ -609,19 +613,33 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     }
 
     private void proSettings(){
-        if (AppSettings.isProSettings()) {
+        if (Util.isDeviceProModel()) {
             Log.d(TAG, "proSettings: true");
-            setting_upload.setVisibility(View.GONE);
-            thermal_check_setting.setVisibility(View.GONE);
-            confirmation_setting.setVisibility(View.GONE);
-            accessControl.setVisibility(View.GONE);
-            guide_setting.setVisibility(View.GONE);
+            if (AppSettings.isProSettings()) {
+                setting_upload.setVisibility(View.GONE);
+                thermal_check_setting.setVisibility(View.GONE);
+                confirmation_setting.setVisibility(View.GONE);
+                accessControl.setVisibility(View.GONE);
+                guide_setting.setVisibility(View.GONE);
 
-            upload_logo_setting_view.setVisibility(View.GONE);
-            home_view_setting_view.setVisibility(View.GONE);
-            confirmation_screen_setting_view.setVisibility(View.GONE);
-            access_control_setting_view.setVisibility(View.GONE);
-            guide_setting_view.setVisibility(View.GONE);
+                upload_logo_setting_view.setVisibility(View.GONE);
+                home_view_setting_view.setVisibility(View.GONE);
+                confirmation_screen_setting_view.setVisibility(View.GONE);
+                access_control_setting_view.setVisibility(View.GONE);
+                guide_setting_view.setVisibility(View.GONE);
+            } else {
+                setting_upload.setVisibility(View.VISIBLE);
+                thermal_check_setting.setVisibility(View.VISIBLE);
+                confirmation_setting.setVisibility(View.VISIBLE);
+                accessControl.setVisibility(View.VISIBLE);
+                guide_setting.setVisibility(View.VISIBLE);
+
+                upload_logo_setting_view.setVisibility(View.VISIBLE);
+                home_view_setting_view.setVisibility(View.VISIBLE);
+                confirmation_screen_setting_view.setVisibility(View.VISIBLE);
+                access_control_setting_view.setVisibility(View.VISIBLE);
+                guide_setting_view.setVisibility(View.VISIBLE);
+            }
         }
         else {
             Log.d(TAG, "proSettings: false");
@@ -636,6 +654,18 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             confirmation_screen_setting_view.setVisibility(View.VISIBLE);
             access_control_setting_view.setVisibility(View.VISIBLE);
             guide_setting_view.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void launchCameraScreen() {
+        if (Util.isDeviceProModel()) {
+            if (!AppSettings.isProSettings()) {
+                startActivity(new Intent(this, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } else {
+                startActivity(new Intent(this, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        } else {
+            Util.switchRgbOrIrActivity(SettingActivity.this, true);
         }
     }
 }

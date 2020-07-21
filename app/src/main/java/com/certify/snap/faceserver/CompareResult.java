@@ -31,6 +31,8 @@ public class CompareResult implements Serializable {
 
     private String message;
 
+    public CompareResult() {}
+
     public CompareResult(String userName, float similar) {
         this.userName = userName;
         this.similar = similar;
