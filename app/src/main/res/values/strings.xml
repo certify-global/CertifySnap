@@ -386,6 +386,8 @@
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
+    <string name="clear_members">Reset Members</string>
+    <string name="clear_members_button">CLEAR ALL MEMBERS</string>
     <string name="add_device">Login to add the device</string>
     <string name="not_configure">This device is not configure to work online.</string>
     <string name="cloud">If you already have a cloud account,</string>

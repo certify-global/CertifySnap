@@ -337,7 +337,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_10"
-        android:layout_marginTop="@dimen/margin_50"
+        android:layout_marginTop="@dimen/margin_10"
         android:drawablePadding="5dp"
         android:text="@string/data_management"
         android:textColor="@color/black"
@@ -352,7 +352,51 @@
         android:layoutDirection="rtl"
         android:text="@string/do_not_sync"
         android:textSize="@dimen/text_18" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
+
+        <TextView
+            android:id="@+id/tv_reset_members"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_10"
+            android:layout_marginTop="@dimen/margin_10"
+            android:layout_marginBottom="@dimen/margin_10"
+            android:layout_weight="1"
+            android:drawablePadding="5dp"
+            android:text="@string/clear_members"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/tv_clear_members"
+            android:layout_width="275dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_10"
+            android:layout_marginTop="@dimen/margin_10"
+            android:layout_marginBottom="@dimen/margin_10"
+            android:layout_weight="1"
+            android:background="#D6D6D6"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:padding="@dimen/margin_10"
+            android:text="@string/clear_members_button"
+            android:textColor="@color/white"
+            android:onClick="clearDatabase"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -364,7 +408,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_10"
-            android:layout_marginTop="@dimen/margin_50"
+            android:layout_marginTop="@dimen/margin_10"
             android:layout_weight="1"
             android:drawablePadding="5dp"
             android:text="@string/local_data"
@@ -373,10 +417,10 @@
 
         <Button
             android:id="@+id/tv_clear_cache"
-            android:layout_width="wrap_content"
+            android:layout_width="275dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_10"
-            android:layout_marginTop="@dimen/margin_50"
+            android:layout_marginTop="@dimen/margin_10"
             android:layout_weight="1"
             android:background="#D6D6D6"
             android:drawablePadding="5dp"

@@ -50,7 +50,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private TextView btn_save, tvSettingsName, activateStatus, tv_device_activation_status, pro_settings;
     private RelativeLayout ll;
     private Switch switch_activate;
-    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap;
+    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members;
     private Button tvClearData, not_activate;
     private CheckBox cbDoSyc;
     private Typeface rubiklight;
@@ -88,6 +88,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             pro_settings = findViewById(R.id.pro_settings);
             pro_layout = findViewById(R.id.pro_layout);
             pro_settings_border= findViewById(R.id.pro_settings_border);
+            tv_reset_members = findViewById(R.id.tv_reset_members);
+            tv_clear_members = findViewById(R.id.tv_clear_members);
 
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -105,6 +107,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvEnd.setTypeface(rubiklight);
             cbDoSyc.setTypeface(rubiklight);
             pro_settings.setTypeface(rubiklight);
+            tv_reset_members.setTypeface(rubiklight);
+            tv_clear_members.setTypeface(rubiklight);
             proSettings();
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -436,4 +440,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             pro_settings_border.setVisibility(View.GONE);
         }
     }
+
+    public void clearDatabase(View view) {
+        LitePal.deleteDatabase("telpo_face");
+        Toast.makeText(this, "All Members Cleared", Toast.LENGTH_LONG).show();
+    }
+
 }
