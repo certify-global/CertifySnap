@@ -55,6 +55,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
@@ -70,6 +72,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private SharedPreferences sharedPreferences;
     private boolean onlineMode = true;
     boolean libraryExists = true;
+    private Timer mActivationTimer;
     // Demo
     private static final String[] LIBRARIES = new String[]{
             "libarcsoft_face_engine.so",
@@ -152,6 +155,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception e) {
             e.printStackTrace();
         }
+        cancelActivationTimer();
     }
 
     private boolean isInstalled(Context context, String packageName) {
@@ -256,6 +260,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                         return;
                     }
                     Util.activateApplication(GuideActivity.this, GuideActivity.this);
+                    startActivationTimer();
                 }
 
             }
@@ -290,6 +295,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
+            cancelActivationTimer();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
@@ -355,5 +361,28 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         }
+    }
+
+    private void startActivationTimer() {
+        cancelActivationTimer();
+        mActivationTimer = new Timer();
+        mActivationTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                    }
+                });
+                this.cancel();
+            }
+        }, 10 * 1000);
+    }
+
+    private void cancelActivationTimer() {
+       if(mActivationTimer != null){
+           mActivationTimer.cancel();
+       }
     }
 }
