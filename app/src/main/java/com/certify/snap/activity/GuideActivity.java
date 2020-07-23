@@ -295,6 +295,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             }
             startHealthCheckService();
         } catch (Exception e) {
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 

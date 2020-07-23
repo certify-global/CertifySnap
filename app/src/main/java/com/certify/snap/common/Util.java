@@ -1324,7 +1324,16 @@ public class Util {
                     openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);
                 }
             } else {
-                if (json1.isNull("access_token")) return;
+                if (json1.isNull("access_token")) {
+                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
+                    Util.switchRgbOrIrActivity(context, true);
+                    return;
+                }
+                if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
+                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
+                    Util.switchRgbOrIrActivity(context, true);
+                    return;
+                }
                 String access_token = json1.getString("access_token");
                 String token_type = json1.getString("token_type");
                 String institutionId = json1.getString("InstitutionID");
