@@ -1961,7 +1961,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     tvErrorMessage.setVisibility(View.GONE);
                                 //   }
                             }
-                            if (error.contains("face out of range or for head too low") || error.contains("wrong tem , too cold") || error.contains("not enough validData , get tem fail"))
+                            if ((error.contains("face out of range or for head too low") || error.contains("wrong tem , too cold") || error.contains("not enough validData , get tem fail"))&& !tempServiceClose)
                                 outerCircle.setBackgroundResource(R.drawable.border_shape_red);
 //                            ++countTempError;
                             if (countTempError >= 10) {
@@ -3268,6 +3268,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             tv_message.setVisibility(View.GONE);
                             tvErrorMessage.setVisibility(View.GONE);
                             temperature_image.setVisibility(View.GONE);
+                            if (outerCircle != null)
+                                outerCircle.setBackgroundResource(R.drawable.border_shape);
                             homeDisplayView();
                             mask_message.setText("");
                             mask_message.setVisibility(View.GONE);
