@@ -3358,6 +3358,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     public void resumeScan() {
+        runOnUiThread(() -> {
+            if (temperature_image != null) {
+                temperature_image.setVisibility(View.GONE);
+            }
+            if (tvErrorMessage != null) {
+                tvErrorMessage.setVisibility(View.GONE);
+            }
+        });
         clearData();
         resetRfid();
         if (qrCodeEnable) {
