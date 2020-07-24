@@ -449,12 +449,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            frameLayout = findViewById(R.id.barcode_scanner);
-            preview = findViewById(R.id.firePreview);
-            imageqr = findViewById(R.id.imageView);
-            tv_scan = findViewById(R.id.tv_scan);
-            img_qr = findViewById(R.id.img_qr);
-            qr_main = findViewById(R.id.qr_main);
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -634,6 +628,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvVersionIr = findViewById(R.id.tv_version_ir);
         tvVersionIr.setText(Util.getVersionBuild());
         tvVersionOnly.setText(Util.getVersionBuild());
+        frameLayout = findViewById(R.id.barcode_scanner);
+        preview = findViewById(R.id.firePreview);
+        imageqr = findViewById(R.id.imageView);
+        tv_scan = findViewById(R.id.tv_scan);
+        img_qr = findViewById(R.id.img_qr);
+        qr_main = findViewById(R.id.qr_main);
         tv_display_time.setTypeface(rubiklight);
         tvOnlyText.setTypeface(rubiklight);
         tvDisplayTimeOnly.setTypeface(rubiklight);
