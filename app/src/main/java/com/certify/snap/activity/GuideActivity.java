@@ -235,36 +235,30 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!License.activateLicense(GuideActivity.this)) {
-                    String message = getResources().getString(R.string.active_failed);
-                    Log.e(TAG, message);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Util.openDialogactivate(GuideActivity.this, message, "");
-                        }
-                    });
-                } else if (!onlineMode) {
-                    startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
-
-                } else {
-                    //TODO: This dialog is required when the connection fails to API server
-                    //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
-
-                    //If the network is off still launch the IRActivity and allow temperature scan in offline mode
-                    if (Util.isNetworkOff(GuideActivity.this)) {
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
-                        return;
-                    }
-                    Util.activateApplication(GuideActivity.this, GuideActivity.this);
-                    startActivationTimer();
+        if (!License.activateLicense(GuideActivity.this)) {
+            String message = getResources().getString(R.string.active_failed);
+            Log.e(TAG, message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Util.openDialogactivate(GuideActivity.this, message, "");
                 }
+            });
+        } else if (!onlineMode) {
+            startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
 
+        } else {
+            //TODO: This dialog is required when the connection fails to API server
+            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
+
+            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+            if (Util.isNetworkOff(GuideActivity.this)) {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                return;
             }
-        }).start();
+            Util.activateApplication(GuideActivity.this, GuideActivity.this);
+            startActivationTimer();
+        }
     }
 
     @Override
