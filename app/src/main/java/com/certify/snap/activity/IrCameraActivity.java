@@ -63,6 +63,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -324,6 +325,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private BroadcastReceiver hidReceiver;
     private ProgressDialog progressDialog;
     private UserExportedData userData;
+    private Button qrSkipButton;
 
     private void instanceStart() {
         try {
@@ -500,8 +502,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 params.addRule(RelativeLayout.CENTER_IN_PARENT);
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.VISIBLE);
+                qrSkipButton.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
                 isReadyToScan = false;
+                qrSkipButton.setText(sharedPreferences.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
             } else {
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -509,6 +513,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 params.setMargins(0, 230, 0, 0);
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.GONE);
+                qrSkipButton.setVisibility(View.GONE);
 
             }
         } catch (Exception e) {
@@ -658,7 +663,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvVersionOnly.setTypeface(rubiklight);
         tv_message = findViewById(R.id.tv_message);
         internetIndicatorImg = findViewById(R.id.img_internet_indicator);
-
+        qrSkipButton = findViewById(R.id.qr_skip_button);
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
             @Override
@@ -3547,4 +3552,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return false;
         }
     });
+
+    public void skipQr(View view) {
+        preview.stop();
+        clearQrCodePreview();
+        setCameraPreview();
+    }
 }

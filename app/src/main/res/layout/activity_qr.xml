@@ -135,6 +135,24 @@
 
     </LinearLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_QR_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextQRButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edittextbackground"
+            android:hint="@string/qr_button_heading"
+            android:paddingLeft="05dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <LinearLayout
         android:id="@+id/rfid_layout"
         android:layout_width="match_parent"

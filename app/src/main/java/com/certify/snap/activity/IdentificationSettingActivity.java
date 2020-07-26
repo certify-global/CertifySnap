@@ -39,10 +39,10 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     RadioButton radio_no_facial, rAnonymousNoRb;
     RadioButton rbguideyes,radio_yes_display,radio_no_display;
     RadioButton rbguideno;
-    EditText editTextDialogUserInput;
+    EditText editTextDialogUserInput, editTextQRButton;
     TextView tv_display;
     TextView mAnonymousTv;
-    TextInputLayout text_input_timeout;
+    TextInputLayout text_input_timeout, text_input_qr_button;
     LinearLayout qr_scanner_layout, anonymous_qr_bar_code_layout, rfid_layout, display_image_layout;
     private TextView scanMode;
     private RadioGroup scanModeRg;
@@ -65,6 +65,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             rbguideno = findViewById(R.id.radio_no_qr);
             editTextDialogTimeout = findViewById(R.id.editTextDialogTimeout);
             editTextDialogUserInput = findViewById(R.id.editTextDialogUserInput);
+            editTextQRButton = findViewById(R.id.editTextQRButton);
             btn_save = findViewById(R.id.btn_exit);
             qr_screen = findViewById(R.id.qr_screen);
             titles = findViewById(R.id.titles);
@@ -98,6 +99,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
             parentLayout = findViewById(R.id.parent_view_layout);
             text_input_timeout = findViewById(R.id.text_input_timeout);
+            text_input_qr_button = findViewById(R.id.text_input_QR_button);
             qr_scanner_layout = findViewById(R.id.qr_scanner_layout);
             anonymous_qr_bar_code_layout = findViewById(R.id.anonymous_qr_bar_code_layout);
             rfid_layout = findViewById(R.id.rfid_layout);
@@ -105,6 +107,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
+            editTextQRButton.setText(sp.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);
@@ -195,6 +198,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     Util.showToast(IdentificationSettingActivity.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.QR_BUTTON_TEXT, editTextQRButton.getText().toString().trim());
                     saveScanModeSetting();
                     finish();
                 }
