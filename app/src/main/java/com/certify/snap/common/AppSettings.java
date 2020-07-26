@@ -31,6 +31,8 @@ public class AppSettings {
     private static boolean captureImagesAboveThreshold = false;
     private static boolean proSettings = false;
     private static boolean displayInfoConfirmScreen = false;
+    private static boolean qrSoundValid = false;
+    private static  boolean qrSoundInvalid = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -63,6 +65,8 @@ public class AppSettings {
         captureImagesAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, false);
         proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true);
         displayInfoConfirmScreen = sharedPreferences.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
+        qrSoundValid = sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_VALID, false);
+        qrSoundInvalid= sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);
 
     }
 
@@ -156,5 +160,13 @@ public class AppSettings {
 
     public static boolean isDisplayInfoConfirmScreen() {
         return displayInfoConfirmScreen;
+    }
+
+    public static boolean isQrSoundValid() {
+        return qrSoundValid;
+    }
+
+    public static boolean isQrSoundInvalid() {
+        return qrSoundInvalid;
     }
 }

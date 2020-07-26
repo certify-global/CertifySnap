@@ -60,7 +60,7 @@ import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 public class AudioVisualActivity extends SettingBaseActivity {
 
     private SharedPreferences sp;
-    TextView tv_sound_high,tv_sound, btn_save , tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status, title_audio_alert, title_visual_alert, tv_ble_connection;
+    TextView tv_sound_high,tv_sound, btn_save , tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status, title_audio_alert, title_visual_alert, tv_ble_connection, tv_qr_sound_valid,tv_qr_sound_invalid;
     Button tv_ble_connect_btn, light_on, light_off;
     Typeface rubiklight;
     LinearLayout visul_alert_layout;
@@ -85,8 +85,9 @@ public class AudioVisualActivity extends SettingBaseActivity {
         sp = Util.getSharedPreferences(this);
 
         initView();
-        audioCheck();
+        temperatureAudioCheck();
         visualCheck();
+        qrAudioCheck();
 
         // request ble permission
         requestPermission();
@@ -125,6 +126,8 @@ public class AudioVisualActivity extends SettingBaseActivity {
         title_visual_alert = findViewById(R.id.title_visual_alert);
         tv_ble_connection = findViewById(R.id.tv_ble_connection);
         visul_alert_layout = findViewById(R.id.visul_alert_layout);
+        tv_qr_sound_valid = findViewById(R.id.tv_qr_sound_valid);
+        tv_qr_sound_invalid = findViewById(R.id.tv_qr_sound_invalid);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -142,6 +145,9 @@ public class AudioVisualActivity extends SettingBaseActivity {
         title_audio_alert.setTypeface(rubiklight);
         title_visual_alert.setTypeface(rubiklight);
         tv_ble_connection.setTypeface(rubiklight);
+        tv_qr_sound_valid.setTypeface(rubiklight);
+        tv_qr_sound_invalid.setTypeface(rubiklight);
+
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
@@ -150,7 +156,7 @@ public class AudioVisualActivity extends SettingBaseActivity {
         }
     }
 
-    private void audioCheck(){
+    private void temperatureAudioCheck(){
         RadioGroup radio_group_sound = findViewById(R.id.radio_group_sound);
         RadioButton radio_yes_sound = findViewById(R.id.radio_yes_sound);
         RadioButton radio_no_sound = findViewById(R.id.radio_no_sound);
@@ -158,10 +164,10 @@ public class AudioVisualActivity extends SettingBaseActivity {
         RadioButton radio_yes_sound_high = findViewById(R.id.radio_yes_sound_high);
         RadioButton radio_no_sound_high = findViewById(R.id.radio_no_sound_high);
 
-        if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false))
+        if(sp.getBoolean(GlobalParameters.TEMPERATURE_SOUND_NORMAL,false))
             radio_yes_sound.setChecked(true);
         else radio_no_sound.setChecked(true);
-        if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH,false))
+        if(sp.getBoolean(GlobalParameters.TEMPERATURE_SOUND_HIGH,false))
             radio_yes_sound_high.setChecked(true);
         else radio_no_sound_high.setChecked(true);
 
@@ -169,16 +175,49 @@ public class AudioVisualActivity extends SettingBaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId==R.id.radio_yes_sound)
-                    Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, true);
-                else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, false);
+                    Util.writeBoolean(sp, GlobalParameters.TEMPERATURE_SOUND_NORMAL, true);
+                else Util.writeBoolean(sp, GlobalParameters.TEMPERATURE_SOUND_NORMAL, false);
             }
         });
         radio_group_sound_high.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId==R.id.radio_yes_sound_high)
-                    Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND_HIGH, true);
-                else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND_HIGH, false);
+                    Util.writeBoolean(sp, GlobalParameters.TEMPERATURE_SOUND_HIGH, true);
+                else Util.writeBoolean(sp, GlobalParameters.TEMPERATURE_SOUND_HIGH, false);
+            }
+        });
+    }
+
+    private void qrAudioCheck(){
+        RadioGroup qr_valid_radio_group_sound = findViewById(R.id.qr_radio_group_sound_valid);
+        RadioButton qr_radio_yes_sound_valid = findViewById(R.id.qr_radio_yes_sound_valid);
+        RadioButton qr_radio_no_sound_valid = findViewById(R.id.qr_radio_no_sound_valid);
+        RadioGroup qr_radio_group_sound_invalid = findViewById(R.id.qr_radio_group_sound_invalid);
+        RadioButton qr_radio_yes_sound_invalid = findViewById(R.id.qr_radio_yes_sound_invalid);
+        RadioButton qr_radio_no_sound_invalid = findViewById(R.id.qr_radio_no_sound_invalid);
+
+        if(sp.getBoolean(GlobalParameters.QR_SOUND_VALID,false))
+            qr_radio_yes_sound_valid.setChecked(true);
+        else qr_radio_no_sound_valid.setChecked(true);
+        if(sp.getBoolean(GlobalParameters.QR_SOUND_INVALID,false))
+            qr_radio_yes_sound_invalid.setChecked(true);
+        else qr_radio_no_sound_invalid.setChecked(true);
+
+        qr_valid_radio_group_sound.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.qr_radio_yes_sound_valid)
+                    Util.writeBoolean(sp, GlobalParameters.QR_SOUND_VALID, true);
+                else Util.writeBoolean(sp, GlobalParameters.QR_SOUND_VALID, false);
+            }
+        });
+        qr_radio_group_sound_invalid.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.qr_radio_yes_sound_invalid)
+                    Util.writeBoolean(sp, GlobalParameters.QR_SOUND_INVALID, true);
+                else Util.writeBoolean(sp, GlobalParameters.QR_SOUND_INVALID, false);
             }
         });
     }

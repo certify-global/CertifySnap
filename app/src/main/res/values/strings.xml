@@ -223,6 +223,8 @@
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound on normal temperature</string>
     <string name="enable_sound_high">Enable sound on temperature above threshold</string>
+    <string name="enable_qr_sound_valid">Enable sound for valid qr code</string>
+    <string name="enable_qr_sound_invalid">Enable sound for invalid qr code</string>
     <string name="enable_light">Enable light on normal temperature</string>
     <string name="enable_light_high">Enable light on temperature above threshold</string>
     <string name="enable_mask">Enable Mask Detection</string>

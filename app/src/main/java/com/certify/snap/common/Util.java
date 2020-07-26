@@ -1256,8 +1256,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnNormalTemperature.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND_HIGH, enableSoundOnHighTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_NORMAL, enableSoundOnNormalTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_HIGH, enableSoundOnHighTemperature.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
                 Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
@@ -1805,5 +1805,40 @@ public class Util {
 
     public static boolean isOfflineMode(Context context) {
         return isNetworkOff(context);
+    }
+
+    public static void qrSoundPool(Context context, SoundPool soundPool, Boolean validQRCode ) {
+        if (soundPool == null) return;
+        try {
+
+            if (validQRCode) {
+                File file = new File(Environment.getExternalStorageDirectory() + "/Audio/Valid.mp3");
+                if (file.exists()) {
+                    soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/Valid.mp3", 1);
+                } else {
+                    soundPool.load(context, R.raw.valid, 1);
+                }
+            } else {
+                File file = new File(Environment.getExternalStorageDirectory() + "/Audio/Invalid.mp3");
+                if (file.exists()) {
+                    soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/Invalid.mp3", 1);
+                } else {
+                    soundPool.load(context, R.raw.invalid, 1);
+                }
+            }
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                int lastStreamId = -1;
+
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    //soundPool.release();
+                    lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(LOG, e.getMessage());
+        }
+
+
     }
 }

@@ -41,6 +41,7 @@ import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
@@ -2170,12 +2171,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
-                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH, false)) {
+                if (sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_SOUND_HIGH, false)) {
                     if (aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "high", soundPool);
                     }
                 }
-                if (sharedPreferences.getBoolean(GlobalParameters.CAPTURE_SOUND, false)) {
+                if (sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_SOUND_NORMAL, false)) {
                     if (!aboveThreshold) {
                         Util.soundPool(IrCameraActivity.this, "normal", soundPool);
                     }
@@ -2339,6 +2340,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                 clearQrCodePreview();
                 setCameraPreview();
+                if (AppSettings.isQrSoundValid()) {
+                    Util.qrSoundPool(IrCameraActivity.this,  soundPool, true);
+                }
             } else {
                 tv_scan.setText(R.string.tv_qr_validating);
                 img_qr.setVisibility(View.VISIBLE);
@@ -2418,6 +2422,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         preview.stop();
                         clearQrCodePreview();
                         setCameraPreview();
+                        if (AppSettings.isQrSoundValid()) {
+                            Util.qrSoundPool(IrCameraActivity.this,  soundPool, true);
+                        }
                     });
                 } else {
                     preview.stop();
@@ -2439,6 +2446,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             imageqr.setBackgroundColor(getResources().getColor(R.color.white));
                         }
                     }, 2000);
+
+                    if (AppSettings.isQrSoundInvalid()) {
+                        Util.qrSoundPool(IrCameraActivity.this,  soundPool, false);
+                    }
                 }
             }
 
@@ -2462,6 +2473,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void getAppSettings() {
+        AppSettings.getInstance().getSettingsFromSharedPref(IrCameraActivity.this);
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);

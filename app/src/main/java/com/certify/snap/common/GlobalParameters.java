@@ -79,8 +79,10 @@ public class GlobalParameters {
     public static final String CAPTURE_IMAGES_ABOVE = "c_m_above";
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
-    public static final String CAPTURE_SOUND = "c_m_sound";
-    public static final String CAPTURE_SOUND_HIGH = "c_sound_high";
+    public static final String TEMPERATURE_SOUND_NORMAL = "c_m_sound";
+    public static final String TEMPERATURE_SOUND_HIGH = "c_sound_high";
+    public static final String QR_SOUND_VALID = "qr_sound_valid";
+    public static final String QR_SOUND_INVALID = "qr_sound_invalid";
     public static final String BLE_LIGHT_NORMAL = "BleLightNormal";
     public static final String BLE_LIGHT_HIGH = "BleLightHigh";
     public static final String MASK_DETECT = "mask_detect";
