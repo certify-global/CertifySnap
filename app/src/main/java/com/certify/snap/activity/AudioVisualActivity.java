@@ -576,10 +576,13 @@ public class AudioVisualActivity extends SettingBaseActivity {
     private static float mPer;
 
     private void proAudioAndVisulSettings(){
-        if (AppSettings.isProSettings()) {
-            visul_alert_layout.setVisibility(View.GONE);
-        }
-        else {
+        if (Util.isDeviceProModel()) {
+            if (AppSettings.isProSettings()) {
+                visul_alert_layout.setVisibility(View.GONE);
+            } else {
+                visul_alert_layout.setVisibility(View.VISIBLE);
+            }
+        }else {
             visul_alert_layout.setVisibility(View.VISIBLE);
         }
     }

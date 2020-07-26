@@ -347,15 +347,21 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     }
 
     private void proIdentificationSettings(){
-        if (AppSettings.isProSettings()) {
-            Log.d(TAG, "proSettings: true");
-            qr_scanner_layout.setVisibility(View.GONE);
-            anonymous_qr_bar_code_layout.setVisibility(View.GONE);
-            rfid_layout.setVisibility(View.GONE);
-            text_input_timeout.setVisibility(View.GONE);
-        }
-        else {
-            Log.d(TAG, "proSettings: false");
+        if (Util.isDeviceProModel()) {
+            if (AppSettings.isProSettings()) {
+                Log.d(TAG, "proSettings: true");
+                qr_scanner_layout.setVisibility(View.GONE);
+                anonymous_qr_bar_code_layout.setVisibility(View.GONE);
+                rfid_layout.setVisibility(View.GONE);
+                text_input_timeout.setVisibility(View.GONE);
+            } else {
+                Log.d(TAG, "proSettings: false");
+                qr_scanner_layout.setVisibility(View.VISIBLE);
+                anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
+                rfid_layout.setVisibility(View.VISIBLE);
+                text_input_timeout.setVisibility(View.VISIBLE);
+            }
+        }else {
             qr_scanner_layout.setVisibility(View.VISIBLE);
             anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
             rfid_layout.setVisibility(View.VISIBLE);
