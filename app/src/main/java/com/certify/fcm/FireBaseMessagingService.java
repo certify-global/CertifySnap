@@ -1,8 +1,10 @@
 package com.certify.fcm;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +23,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.MemberSyncDataModel;
+import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -28,9 +31,12 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.util.Map;
 import java.util.Random;
+
+import static androidx.core.app.ActivityCompat.finishAffinity;
 
 public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
@@ -85,7 +91,20 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 }else if(command.equals("MEMBER")){
                     String CertifyId=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
                     Util.getMemberID(this,CertifyId);
-
+                }else if(command.equals("RESET")){
+                  Util.deleteAppData(this);
+                }else if(command.equals("RESTART")){
+                    Util.restartApp(this);
+                }else if(command.equals("DEACTIVATE")){
+                    Util.deleteAppData(this);
+                    Util.writeBoolean(sharedPreferences,GlobalParameters.ONLINE_MODE,false);
+                }else if(command.equals("CHECK HEALTH")){
+                    if(!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+                        startService(new Intent(this, DeviceHealthService.class));
+                        Application.StartService(this);
+                    } else{
+                        Logger.toast(this,"Please check your internet connection");
+                    }
                 }
 
 
@@ -168,4 +187,6 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
     }
+
+
 }

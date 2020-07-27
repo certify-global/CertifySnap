@@ -4,7 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -32,6 +34,7 @@ import android.os.Debug;
 import android.os.Environment;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -53,6 +56,7 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
+import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
@@ -70,12 +74,18 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
+import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -614,10 +624,9 @@ public class Util {
         }
         return null;
     }
-
     public static JSONObject getJSONObjectLogin(String req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJsonLogin(url, req, "");
+            String responseTemp = Requestor.postJsonLogin(url, req,"");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -674,7 +683,6 @@ public class Util {
         }
         return null;
     }
-
     public static JSONObject getJSONObjectAddDevice(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJsonAdmin(url, req, context);
@@ -1802,6 +1810,30 @@ public class Util {
         int mode = CameraController.getInstance().getDeviceMode();
         return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
     }
+
+    public static void deleteAppData(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().clear().apply();
+        }
+        LitePal.deleteDatabase("telpo_face");
+    }
+
+    public static void stopMemberSyncService(Context context) {
+        Intent intent = new Intent(context, MemberSyncService.class);
+        context.stopService(intent);
+    }
+
+    public static void restartApp(Context context) {
+        stopMemberSyncService(context);
+        Intent intent = new Intent(context, GuideActivity.class);
+        int mPendingIntentId = 111111;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
+
+
 
     public static boolean isOfflineMode(Context context) {
         return isNetworkOff(context);
