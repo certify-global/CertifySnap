@@ -33,6 +33,8 @@ public class AppSettings {
     private static boolean displayInfoConfirmScreen = false;
     private static boolean qrSoundValid = false;
     private static  boolean qrSoundInvalid = false;
+    private static boolean bleLightNormalTemperature = false;
+    private static boolean bleLightHighTemperature = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -67,6 +69,8 @@ public class AppSettings {
         displayInfoConfirmScreen = sharedPreferences.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
         qrSoundValid = sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_VALID, false);
         qrSoundInvalid= sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);
+        bleLightNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_NORMAL,false);
+        bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
 
     }
 
@@ -168,5 +172,13 @@ public class AppSettings {
 
     public static boolean isQrSoundInvalid() {
         return qrSoundInvalid;
+    }
+
+    public static boolean isBleLightNormalTemperature() {
+        return bleLightNormalTemperature;
+    }
+
+    public static boolean isBleLightHighTemperature() {
+        return bleLightHighTemperature;
     }
 }

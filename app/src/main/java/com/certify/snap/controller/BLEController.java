@@ -10,7 +10,9 @@ import android.graphics.Color;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothGattAttributes;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.bluetooth.data.DeviceInfoManager;
@@ -23,6 +25,7 @@ import java.util.TimerTask;
 import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
 public class BLEController {
+    private static final String TAG = BLEController.class.getSimpleName();
     private static BLEController bleServiceInstance = null;
     private BluetoothLeService mBluetoothLeService;
     private byte[] ledrgb = new byte[3];
@@ -32,8 +35,9 @@ public class BLEController {
     private boolean isHighTempLightEnabled = false;
     private int NORMAL_TEMP_COLOR =-16711936;
     private int HIGH_TEMP_COLOR = 0xffff0000;
+    public ServiceConnection mServiceConnection;
 
-    public static BLEController getInstance() {
+        public static BLEController getInstance() {
         if (bleServiceInstance == null)
             bleServiceInstance = new BLEController();
 
@@ -158,6 +162,24 @@ public class BLEController {
         controlLed(rgb);
         for (int i = 0; i < 3; i++)
             ledrgb[i] = rgb[i + 1];
+    }
+
+    public void initServiceConnection() {
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder service) {
+                mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+                if (!mBluetoothLeService.initialize()) {
+                    Log.d(TAG, "onServiceConnected: No BLE Device");
+                }
+                mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mBluetoothLeService = null;
+            }
+        };
     }
 
     private void  clearData(){
