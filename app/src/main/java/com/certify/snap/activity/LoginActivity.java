@@ -180,7 +180,7 @@ public class LoginActivity extends Activity {
         mLoginScreenTimer = new Timer();
         mLoginScreenTimer.schedule(new TimerTask() {
             public void run() {
-                startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+                launchHomeScreen();
                 finish();
                 this.cancel();
             }
