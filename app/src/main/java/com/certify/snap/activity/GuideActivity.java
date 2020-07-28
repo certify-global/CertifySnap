@@ -60,6 +60,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
@@ -75,6 +77,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private SharedPreferences sharedPreferences;
     private boolean onlineMode = true;
     boolean libraryExists = true;
+    private Timer mActivationTimer;
     // Demo
     private static final String[] LIBRARIES = new String[]{
             "libarcsoft_face_engine.so",
@@ -172,6 +175,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception e) {
             Log.e(TAG, "BLE unbind Error");
         }
+        cancelActivationTimer();
     }
 
     private boolean isInstalled(Context context, String packageName) {
@@ -251,36 +255,31 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!License.activateLicense(GuideActivity.this)) {
-                    String message = getResources().getString(R.string.active_failed);
-                    Log.e(TAG, message);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Util.openDialogactivate(GuideActivity.this, message, "");
-                        }
-                    });
-                } else if (!onlineMode) {
-                    //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
-                    Util.switchRgbOrIrActivity(GuideActivity.this, true);
-                } else {
-                    //TODO: This dialog is required when the connection fails to API server
-                    //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
-
-                    //If the network is off still launch the IRActivity and allow temperature scan in offline mode
-                    if (Util.isNetworkOff(GuideActivity.this)) {
-                        startBLEService();
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
-                        return;
-                    }
-                    Util.activateApplication(GuideActivity.this, GuideActivity.this);
+        if (!License.activateLicense(GuideActivity.this)) {
+            String message = getResources().getString(R.string.active_failed);
+            Log.e(TAG, message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Util.openDialogactivate(GuideActivity.this, message, "");
                 }
+            });
+        } else if (!onlineMode) {
+            //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
+        } else {
+            //TODO: This dialog is required when the connection fails to API server
+            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
 
+            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+            if (Util.isNetworkOff(GuideActivity.this)) {
+                startBLEService();
+                new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
+                return;
             }
-        }).start();
+            Util.activateApplication(GuideActivity.this, GuideActivity.this);
+            startActivationTimer();
+        }
     }
 
     @Override
@@ -311,11 +310,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
+            cancelActivationTimer();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
             startHealthCheckService();
         } catch (Exception e) {
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
@@ -399,5 +400,28 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception e) {
             Log.d(TAG, "startBLEService: exception" + e.toString());
         }
+    }
+
+    private void startActivationTimer() {
+        cancelActivationTimer();
+        mActivationTimer = new Timer();
+        mActivationTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                    }
+                });
+                this.cancel();
+            }
+        }, 10 * 1000);
+    }
+
+    private void cancelActivationTimer() {
+       if (mActivationTimer != null) {
+           mActivationTimer.cancel();
+       }
     }
 }

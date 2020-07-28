@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -21,6 +23,9 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class LoginActivity extends Activity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -30,6 +35,7 @@ public class LoginActivity extends Activity {
     TextView textview_name,tv_version,tv_serial_no,tv_pwd_error,text_input_login;
     Typeface rubiklight;
     int count=10;
+    private Timer mLoginScreenTimer;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +112,15 @@ public class LoginActivity extends Activity {
             Log.e(TAG,e.getMessage());
         }
         etPassword.getText().clear();
+
+        setEditTextTimeOutListener();
+        startLoginScreenTimer();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cancelLoginScreenTimer();
     }
 
     private  void validatePassword(){
@@ -137,5 +152,42 @@ public class LoginActivity extends Activity {
             startActivity(intent);
             finish();
         }
+    }
+
+    private void setEditTextTimeOutListener() {
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (mLoginScreenTimer != null)
+                    mLoginScreenTimer.cancel();
+                startLoginScreenTimer();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        };
+        etPassword.addTextChangedListener(textWatcher);
+    }
+
+    private void startLoginScreenTimer() {
+        cancelLoginScreenTimer();
+        mLoginScreenTimer = new Timer();
+        mLoginScreenTimer.schedule(new TimerTask() {
+            public void run() {
+                startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+                finish();
+                this.cancel();
+            }
+        }, 10 * 1000);
+    }
+
+    private void cancelLoginScreenTimer() {
+        if (mLoginScreenTimer != null)
+            mLoginScreenTimer.cancel();
     }
 }

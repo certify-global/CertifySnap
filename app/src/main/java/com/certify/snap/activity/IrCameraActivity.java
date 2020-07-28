@@ -467,12 +467,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            frameLayout = findViewById(R.id.barcode_scanner);
-            preview = findViewById(R.id.firePreview);
-            imageqr = findViewById(R.id.imageView);
-            tv_scan = findViewById(R.id.tv_scan);
-            img_qr = findViewById(R.id.img_qr);
-            qr_main = findViewById(R.id.qr_main);
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -657,6 +651,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         tvVersionIr = findViewById(R.id.tv_version_ir);
         tvVersionIr.setText(Util.getVersionBuild());
         tvVersionOnly.setText(Util.getVersionBuild());
+        frameLayout = findViewById(R.id.barcode_scanner);
+        preview = findViewById(R.id.firePreview);
+        imageqr = findViewById(R.id.imageView);
+        tv_scan = findViewById(R.id.tv_scan);
+        img_qr = findViewById(R.id.img_qr);
+        qr_main = findViewById(R.id.qr_main);
         tv_display_time.setTypeface(rubiklight);
         tvOnlyText.setTypeface(rubiklight);
         tvDisplayTimeOnly.setTypeface(rubiklight);
@@ -2003,7 +2003,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     tvErrorMessage.setVisibility(View.GONE);
                                 //   }
                             }
-                            if (error.contains("face out of range or for head too low") || error.contains("wrong tem , too cold") || error.contains("not enough validData , get tem fail"))
+                            if ((error.contains("face out of range or for head too low") || error.contains("wrong tem , too cold") || error.contains("not enough validData , get tem fail"))&& !tempServiceClose)
                                 outerCircle.setBackgroundResource(R.drawable.border_shape_red);
 //                            ++countTempError;
                             if (countTempError >= 10) {
@@ -2945,6 +2945,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 AccessCardController.getInstance().isWeigandEnabled())) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
+                enableLedPower();
                 showSnackBarMessage(getString(R.string.access_granted));
                 setCameraPreview();
                 if (soundPool == null) {
@@ -2960,6 +2961,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             return;
         }
+        enableLedPower();
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
         setCameraPreview();
@@ -3298,6 +3300,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             tv_message.setVisibility(View.GONE);
                             tvErrorMessage.setVisibility(View.GONE);
                             temperature_image.setVisibility(View.GONE);
+                            if (outerCircle != null)
+                                outerCircle.setBackgroundResource(R.drawable.border_shape);
                             homeDisplayView();
                             mask_message.setText("");
                             mask_message.setVisibility(View.GONE);
@@ -3386,6 +3390,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     public void resumeScan() {
+        runOnUiThread(() -> {
+            if (temperature_image != null) {
+                temperature_image.setVisibility(View.GONE);
+            }
+            if (tvErrorMessage != null) {
+                tvErrorMessage.setVisibility(View.GONE);
+            }
+        });
         clearData();
         resetRfid();
         if (qrCodeEnable) {
