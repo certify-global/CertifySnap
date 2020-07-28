@@ -384,7 +384,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 startActivity(visualIntent);
                 break;
             case R.id.btn_exit:
-                launchCameraScreen();
+                launchHomeScreen();
                 finish();
                 break;
         }
@@ -494,7 +494,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        launchCameraScreen();
+        launchHomeScreen();
         finish();
     }
 
@@ -657,7 +657,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         }
     }
 
-    private void launchCameraScreen() {
+    private void launchHomeScreen() {
         if (Util.isDeviceProModel()) {
             if (!AppSettings.isProSettings()) {
                 startActivity(new Intent(this, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import com.certify.snap.common.AppSettings;
 import com.google.android.material.textfield.TextInputLayout;
 
 import android.text.Editable;
@@ -131,14 +133,14 @@ public class LoginActivity extends Activity {
     }
     public void onParamterback(View view) {
        //startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
-        Util.switchRgbOrIrActivity(LoginActivity.this, true);
+        launchHomeScreen();
         finish();
     }
 
     @Override
     public void onBackPressed() {
         //startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
-        Util.switchRgbOrIrActivity(LoginActivity.this, true);
+        launchHomeScreen();
         finish();
     }
 
@@ -188,5 +190,17 @@ public class LoginActivity extends Activity {
     private void cancelLoginScreenTimer() {
         if (mLoginScreenTimer != null)
             mLoginScreenTimer.cancel();
+    }
+
+    private void launchHomeScreen() {
+        if (Util.isDeviceProModel()) {
+            if (!AppSettings.isProSettings()) {
+                startActivity(new Intent(this, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } else {
+                startActivity(new Intent(this, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        } else {
+            Util.switchRgbOrIrActivity(LoginActivity.this, true);
+        }
     }
 }
