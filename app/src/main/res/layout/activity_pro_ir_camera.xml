@@ -29,8 +29,7 @@
         android:id="@+id/recycler_view_person"
         android:layout_width="match_parent"
         android:layout_height="240dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/half_transparent" />
+        android:layout_alignParentBottom="true" />
 
     <ImageView
         android:id="@+id/img_temperature"
@@ -42,9 +41,10 @@
 
     <ImageView
         android:id="@+id/iv_thermalImage"
+        android:layout_marginStart="-20dp"
+        android:layout_marginTop="25dp"
         android:layout_width="250dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="200dp"/>
 
     <TextView
         android:id="@+id/mask"
@@ -60,7 +60,8 @@
         android:layout_width="match_parent"
         android:layout_height="550px"
         android:layout_marginTop="300px"
-        android:background="@drawable/measure_rect" />
+        android:background="@drawable/measure_rect"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_message"

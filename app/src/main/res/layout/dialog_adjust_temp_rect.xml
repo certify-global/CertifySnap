@@ -5,17 +5,18 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/tv_default_rect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Default rect : Rect(24,30-28,40)"/>
+        android:text="Default rect : Rect(23,32-26,38)"/>
 
     <TextView
         android:id="@+id/tv_current_rect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Current rect : Rect(24,30-28,40)"/>
+        android:text="Current rect : Rect(23,32-26,38)"/>
 
     <TextView
         android:layout_width="wrap_content"

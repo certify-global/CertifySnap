@@ -18,11 +18,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
@@ -75,6 +77,7 @@ import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredMembers;
+import com.common.thermalimage.GuideDataCallBack;
 import com.common.thermalimage.TemperatureBigData;
 import com.common.thermalimage.ThermalImageUtil;
 
@@ -196,7 +199,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private String mailName, mailWorkNum;
     private AlertDialog dialog;
     private EditText edit_rect_left, edit_rect_top, edit_rect_right, edit_rect_bottom;
-    private TextView tv_current_rect;
+    private TextView tv_measure_area, tv_current_rect, tv_default_rect;
     Map<String, String> distanceInfo = null;
     byte lastCheckSum = 0x00;
     ThermalImageUtil util = Application.getInstance().getTemperatureUtil();
@@ -237,6 +240,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         AppSettings.getInstance().getSettingsFromSharedPref(this);
 
         initView();
+        new InitTemperatureThread().start();
 
         spMap = new HashMap<Integer, Integer>();
 
@@ -277,6 +281,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         faceRectView = findViewById(R.id.single_camera_face_rect_view);
 
         img_thermalImage = findViewById(R.id.iv_thermalImage);
+        tv_measure_area = findViewById(R.id.tv_measure_area);
 
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
 
@@ -364,14 +369,14 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent != null)
+        /*if (intent != null)
             mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 startDetectCard();
             }
-        }).start();
+        }).start();*/
     }
 
 
@@ -403,6 +408,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         if (nfcDialog != null && nfcDialog.isShowing()) {
             nfcDialog.dismiss();
             nfcDialog = null;
@@ -440,7 +446,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
         FaceServer.getInstance().unInit();
         cancelImageTimer();
-        super.onDestroy();
+        if (util!=null) {
+            util.stopGetGuideData();
+            util.release();
+        }
     }
 
     private void openled() {
@@ -739,14 +748,14 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 faceRectView.clearFaceInfo();
             }
 
-            if (imageTimer == null) {
+            if(imageTimer == null){
                 imageTimer = new Timer();
                 imageTimer.schedule(new TimerTask() {
                     public void run() {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("imagetimer---", "start");
+                                Log.e("imagetimer---","start");
 //                                    isSearch = true;
 //                                    tv_message.setText("");
 //                                    img_temperature.setVisibility(View.GONE);
@@ -756,14 +765,17 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
                         this.cancel();
                     }
-                }, 3 * 1000);//20秒
+                }, 3* 1000);//20秒
             }
 
             facePreviewInfoList = faceHelperProIr.onPreviewFrame(cloneNv21Rgb);
 
-            if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && !isTemperature) {
-                //if (!AppSettings.isFacialDetect())
-                getTemperature(facePreviewInfoList, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
+            if(facePreviewInfoList != null && facePreviewInfoList.size() > 0 && module!=0 && !isTemperature){
+                if(module == 25){
+                    getTemperature(facePreviewInfoList, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
+                }else if(module == 27){
+                    setRect(facePreviewInfoList);
+                }
             }
             if (facePreviewInfoList != null && faceRectView != null && drawHelperRgb != null) {
                 drawPreviewInfo(facePreviewInfoList);
@@ -775,14 +787,17 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 cancelImageTimer();
 //                openled();
                 for (int i = 0; i < facePreviewInfoList.size(); i++) {
+                    // 注意：这里虽然使用的是IR画面活体检测，RGB画面特征提取，但是考虑到成像接近，所以只用了RGB画面的图像质量检测
                     int trackId = facePreviewInfoList.get(i).getTrackId();
                     Integer status = requestFeatureStatusMap.get(trackId);
                     if (status != null && status == RequestFeatureStatus.SUCCEED) {
                         continue;
                     }
-                    Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
-                    if (rect.top < 300 || rect.bottom > 850) {
-                        continue;
+                    if (module == 25) {
+                        Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
+                        if(rect.top < 300 || rect.bottom> 850){
+                            continue;
+                        }
                     }
                     if (mask) {
                         int mask = facePreviewInfoList.get(i).getMask();
@@ -793,15 +808,15 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         switch (combined) {
                             case 0:
                             case 1:
-//                                faceHelperProIr.setMask(trackId, 1);
+//                                faceHelperIr.setMask(trackId, 1);
 //                                showMaskTip(getString(R.string.mask_no),getResources().getColor(R.color.red));
                                 break;
                             case 0b10:
-//                                faceHelperProIr.setMask(trackId, 0b10);
+//                                faceHelperIr.setMask(trackId, 0b10);
 //                                showMaskTip(getString(R.string.mask_error),getResources().getColor(R.color.red));
                             case 0b11:
 //                                    canAnalyze = true;
-//                                faceHelperProIr.setMask(trackId, 0b11);
+//                                faceHelperIr.setMask(trackId, 0b11);
 //                                showMaskTip(getString(R.string.mask_detect),getResources().getColor(R.color.skyblue));
                                 break;
                             default:
@@ -818,15 +833,14 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         if (liveness == null
                                 || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
                             livenessMap.put(facePreviewInfoList.get(i).getTrackId(), RequestLivenessStatus.ANALYZING);
+                            // IR数据偏移
                             FaceInfo faceInfo = facePreviewInfoList.get(i).getFaceInfo().clone();
                             faceInfo.getRect().offset(Constants.HORIZONTAL_OFFSET, Constants.VERTICAL_OFFSET);
                             faceHelperProIr.requestFaceLiveness(irData.clone(), faceInfo, previewSize.width, previewSize.height,
                                     FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId(), LivenessType.IR);
                         }
                     }
-
                     if (status == null || status == RequestFeatureStatus.TO_RETRY) {
-                        Log.e(TAG, "start to requestFaceFeature");
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
                         faceHelperProIr.requestFaceFeature(cloneNv21Rgb, facePreviewInfoList.get(i).getFaceInfo(), facePreviewInfoList.get(i).getMask(),
                                 previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21,
@@ -840,6 +854,161 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     }
 
+    private int module;
+    private class InitTemperatureThread extends Thread{
+        @Override
+        public void run() {
+            //确保测温服务正常连接
+            while (util.getUsingModule() == null) {
+                try {
+                    sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                module = util.getUsingModule()[0];
+                Log.e(TAG,"temperature module : " + module);
+                if (module == 25) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(tv_measure_area!=null){
+                                tv_measure_area.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                    tempRect = new Rect(sharedPreferences.getInt("rect_left",21),sharedPreferences.getInt("rect_top",32),
+                            sharedPreferences.getInt("rect_right",27),sharedPreferences.getInt("rect_bottom",38));
+                }else if(module == 27){
+                    tempRect = new Rect(sharedPreferences.getInt("rect_left",120),sharedPreferences.getInt("rect_top",115),
+                            sharedPreferences.getInt("rect_right",160),sharedPreferences.getInt("rect_bottom",155));
+                    startTempMeasure();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    long lastBitmapTime;
+    long lastDataTime;
+    private Map<Integer, Integer> temperatureProcessCountMap = new ConcurrentHashMap();
+    private void startTempMeasure(){
+        util.getGuideData(new GuideDataCallBack.Stub() {
+            @Override
+            public void callBackBitmap(final Bitmap bitmap) throws RemoteException {
+                long nowTime = System.currentTimeMillis();
+                Log.d(TAG, "bitmapTime["+(nowTime - lastBitmapTime)+"]");
+                lastBitmapTime = nowTime;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (bitmap != null) {
+                            img_thermalImage.setImageBitmap(bitmap);
+                        } else {
+                            img_thermalImage.setImageBitmap(null);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void callBackData(TemperatureBigData temperatureBigData) throws RemoteException {
+                try {
+                    long nowTime = System.currentTimeMillis();
+                    long costTime = nowTime - lastDataTime;
+                    Log.d(TAG, "aadataTime["+ costTime +"]");
+                    lastDataTime = nowTime;
+                    if(costTime > 300) {
+                        isTemperature = false;
+                        Log.d(TAG, "out of time");
+                        return;
+                    }
+                    if(isTemperature){
+                        final List<float[]> maxInRectInfo = temperatureBigData.getTemInfoList();//The length of the List is the number of rects,
+                        // which records the temperature measurement information of the rect of each face
+                        final float envirTem = temperatureBigData.getEmvirTem();//Ambient temperature
+                        if(maxInRectInfo == null || temperatureRectList == null || temperatureRectList.size() <= 0 || maxInRectInfo.size()!=temperatureRectList.size()){
+                            isTemperature = false;
+                            Log.d(TAG, "error data");
+                            return;
+                        }
+                        float temp;
+                        for (int i = 0; i < maxInRectInfo.size(); i++) {
+                            int trackId = temperatureRectList.get(i).getTrackId();
+                            temperature = maxInRectInfo.get(i)[3];
+
+                            String temperatureUnit = AppSettings.getfToC();
+                            if (temperatureUnit.equals("F")) {
+                                temperature = (float) Util.celsiusToFahrenheit(temperature);
+                            }
+                            faceHelperProIr.setName(trackId, String.valueOf(temperature));
+
+                            if (temperatureMap.get(trackId) == null) {
+                                temperatureMap.put(trackId, temperature);
+                                temperatureStatusMap.put(trackId, TemperatureStatus.SUCCEED);
+                            } else if (temperature > temperatureMap.get(trackId)) {
+                                temperatureMap.put(trackId, temperature);
+                            }
+                            Log.e(TAG, "trackId : " + trackId + " Body temperature : " + temperatureMap.get(trackId) + "-" + temperatureStatusMap.get(trackId));
+                        }
+                        isTemperature = false;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    isTemperature = false;
+                }
+            }
+        });
+    }
+
+    List<TemperatureRect> temperatureRectList = new ArrayList<>();
+    private void setRect(final List<FacePreviewInfo> facePreviewInfoList){
+        isTemperature = true;
+        temperatureRectList.clear();
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < facePreviewInfoList.size(); i++) {
+            Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
+            float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
+            float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
+            Rect newRect = new Rect(tempRect);
+            int horizontalOffset2 = (int)(horizontalOffset / 580 * 270);
+            int verticalOffset2 = (int)(verticalOffset / 720 * 360);
+            newRect.left += verticalOffset2;
+            newRect.right += verticalOffset2;
+            newRect.top += horizontalOffset2;
+            newRect.bottom += horizontalOffset2;
+            if(newRect.left > 360 || newRect.right < 0 || newRect.top > 270 || newRect.bottom < 0){
+                continue;
+            }
+            if(newRect.left < 0){
+                newRect.left = 0;
+            }
+            if(newRect.right > 360){
+                newRect.right = 360;
+            }
+            if(newRect.top < 0){
+                newRect.top = 0;
+            }
+            if(newRect.bottom > 270){
+                newRect.bottom = 270;
+            }
+//            Log.e(TAG,"set rect :" + newRect.toString());
+            temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect));
+        }
+        if (temperatureRectList.size() == 0) {
+            isTemperature = false;
+            return;
+        }
+        final Rect[] rects = new Rect[temperatureRectList.size()];
+        for(int i = 0; i < temperatureRectList.size();i++){
+            rects[i] = temperatureRectList.get(i).getRect();
+        }
+        util.setGuideRect(rects,0);
+    }
+
+
     private void getTemperature(final List<FacePreviewInfo> facePreviewInfoList, UserExportedData data) {
         isTemperature = true;
         new Thread(new Runnable() {
@@ -850,40 +1019,32 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     distanceInfo = util.getDistanceInfo();
                     final int distance_tp53 = distanceInfo != null ? Integer.valueOf(distanceInfo.get("distance")) : 0;//get distance ,unit cm
 //                    Log.e(TAG, "distance: " + distance_tp53);
-                    final List<TemperatureRect> temperatureRectList = new ArrayList<>();
+                    temperatureRectList = new ArrayList<>();
                     temperatureRectList.clear();
                     for (int i = 0; i < facePreviewInfoList.size(); i++) {
                         Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
                         //For the detection range of the RGB camera and the temperature module is different,
                         // it is necessary to filter out the face frame outside the detection range of the temperature module
-                        if (rect.top > 300 && rect.bottom < 850) {
+                        Log.e(TAG,"rect width diff:" + (rect.right - rect.left));
+                        if (rect.top > 300 && rect.bottom < 850 && (rect.right - rect.left) > 80 && (rect.right - rect.left) < 160) {
                             //Adjust the size of rect according to the distance ,and adjust the rect according to the offset of the face rect
                             //It is just a simple reference method of forehead positioning, which can be modified or selected according to the actual demand scenario.
                             float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
                             float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
-                            Rect newRect;
-                            if (distance_tp53 <= 100) {
-                                newRect = new Rect(tempRect);
-                            } else if (distance_tp53 <= 150) {
-                                newRect = new Rect(tempRect.left + 1, tempRect.top + 2, tempRect.right, tempRect.bottom - 2);
-                            } else if (distance_tp53 <= 200) {
-                                newRect = new Rect(tempRect.left + 2, tempRect.top + 4, tempRect.right, tempRect.bottom - 2);
-                            } else {
-                                newRect = new Rect(tempRect.left + 2, tempRect.top + 4, tempRect.right, tempRect.bottom - 4);
-                            }
-                            int horizontalOffset2 = (int) (horizontalOffset / 300 * 40);
-                            int verticalOffset2 = (int) (verticalOffset / 275 * 32);
+                            Rect newRect = new Rect(tempRect);
+                            int horizontalOffset2 = (int)(horizontalOffset / 310 * 40);
+                            int verticalOffset2 = (int)(verticalOffset / 220 * 32);
                             newRect.left += verticalOffset2;
                             newRect.right += verticalOffset2;
                             newRect.top += horizontalOffset2;
                             newRect.bottom += horizontalOffset2;
-                            if (newRect.left < 0 || newRect.top < 0) {
+                            if(newRect.left < 0 || newRect.top < 0){
                                 continue;
                             }
-                            Log.e(TAG, newRect.toString());
+                            Log.e(TAG,newRect.toString());
                             temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect));
-                        } else {
-                            faceHelperProIr.setName(facePreviewInfoList.get(i).getTrackId(), "");
+                        }else {
+                            faceHelperProIr.setName(facePreviewInfoList.get(i).getTrackId(),"");
                         }
                     }
                     if (temperatureRectList.size() == 0) {
@@ -963,27 +1124,46 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     }
 
-    public void adjustRect(View view) {
-        if (tempRect == null) {
+    public void adjustRect(View view){
+        if(tempRect == null){
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View contentView = View.inflate(this, R.layout.dialog_adjust_temp_rect, null);
+        View contentView = View.inflate(this,R.layout.dialog_adjust_temp_rect,null);
+        tv_default_rect = contentView.findViewById(R.id.tv_default_rect);
+        if(module == 25){
+            tv_default_rect.setText("Default rect : " + "Rect(21,32-27,38)");
+        }else if(module == 27){
+            tv_default_rect.setText("Default rect : " + "Rect(120,115-160,155)");
+        }
         tv_current_rect = contentView.findViewById(R.id.tv_current_rect);
         tv_current_rect.setText("Current rect : " + tempRect.toString());
         edit_rect_left = contentView.findViewById(R.id.edit_rect_left);
         edit_rect_top = contentView.findViewById(R.id.edit_rect_top);
         edit_rect_right = contentView.findViewById(R.id.edit_rect_right);
         edit_rect_bottom = contentView.findViewById(R.id.edit_rect_bottom);
-        edit_rect_left.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        edit_rect_top.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        edit_rect_right.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
-        edit_rect_bottom.setFilters(new InputFilter[]{new InputFilter.LengthFilter(2)});
+        edit_rect_left.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+        edit_rect_top.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+        edit_rect_right.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+        edit_rect_bottom.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
         builder.setView(contentView);
         builder.setCancelable(false);
-        if (dialog == null) {
+        if(dialog == null){
             dialog = builder.create();
             dialog.show();
+            dialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            dialog.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int visibility) {
+                    int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                    dialog.getWindow().getDecorView().setSystemUiVisibility(uiOptions);
+                }
+            });
         }
     }
 
