@@ -60,7 +60,7 @@ public class LoginActivity extends Activity {
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    cancelLoginScreenTimer();
                     if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
                         if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setText("Password should not be empty");
@@ -163,7 +163,6 @@ public class LoginActivity extends Activity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (mLoginScreenTimer != null)
                     mLoginScreenTimer.cancel();
-                startLoginScreenTimer();
             }
 
             @Override
