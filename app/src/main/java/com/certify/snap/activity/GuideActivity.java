@@ -15,26 +15,23 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
-import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
-import com.certify.snap.common.ClassicFileServerExample;
+import com.certify.snap.common.SnapLocalServer;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
@@ -50,48 +47,16 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 import com.tamic.novate.Novate;
 
-import org.apache.hc.core5.http.ClassicHttpRequest;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ConnectionClosedException;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.EndpointDetails;
-import org.apache.hc.core5.http.ExceptionListener;
-import org.apache.hc.core5.http.HttpConnection;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpException;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.Method;
-import org.apache.hc.core5.http.MethodNotSupportedException;
-import org.apache.hc.core5.http.impl.bootstrap.HttpServer;
-import org.apache.hc.core5.http.impl.bootstrap.ServerBootstrap;
-import org.apache.hc.core5.http.io.HttpRequestHandler;
-import org.apache.hc.core5.http.io.SocketConfig;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.FileEntity;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.apache.hc.core5.http.protocol.HttpContext;
-import org.apache.hc.core5.http.protocol.HttpCoreContext;
-import org.apache.hc.core5.io.CloseMode;
-import org.apache.hc.core5.ssl.SSLContexts;
-import org.apache.hc.core5.util.TimeValue;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLContext;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
@@ -140,8 +105,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                 // Get new Instance ID token
                 String token = task.getResult().getToken();
-                Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                Logger.debug(TAG,"firebase token",token);
+                Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, token);
+                Logger.debug(TAG, "firebase token", token);
 
             }
         });
@@ -184,7 +149,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
 
-        if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+        if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)) {
             internetIndicatorImage.setVisibility(View.GONE);
         } else {
             internetIndicatorImage.setVisibility(View.VISIBLE);
@@ -382,7 +347,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void run() {
 
                 if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                    || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
                     if (!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
                         startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
@@ -439,9 +404,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         @Override
         protected String doInBackground(String[] params) {
-            ClassicFileServerExample classicFileServerExample=new ClassicFileServerExample();
+            SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
-                classicFileServerExample.main(null);
+                snapLocalServer.main(null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -450,7 +415,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         @Override
         protected void onPostExecute(String message) {
-            //process message
         }
     }
-    }
+}

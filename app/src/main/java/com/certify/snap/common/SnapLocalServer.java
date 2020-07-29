@@ -66,36 +66,19 @@ import org.apache.hc.core5.util.TimeValue;
 /**
  * Example of embedded HTTP/1.1 file server using classic I/O.
  */
-public class ClassicFileServerExample {
+public class SnapLocalServer {
+    private static HttpServer server;
+    private static String TAG = "SnapLocalServer";
 
     public static void main(final String[] args) throws Exception {
-       /* if (args.length < 1) {
-           Logger.debug("ClassicFileServerExample","Please specify document root directory");
-            System.exit(1);
-        }*/
-        // Document root directory
-       // final String docRoot = args[0];
         int port = 8080;
 
-/*
-        SSLContext sslContext = null;
-        if (port == 8443) {
-            // Initialize SSL context
-            final URL url = ClassicFileServerExample.class.getResource("/my.keystore");
-            if (url == null) {
-              Logger.debug("ClassicFileServerExample","Keystore not found");
-                System.exit(1);
-            }
-            sslContext = SSLContexts.custom()
-                    .loadKeyMaterial(url, "secret".toCharArray(), "secret".toCharArray())
-                    .build();
-        }*/
         final SocketConfig socketConfig = SocketConfig.custom()
                 .setSoTimeout(80, TimeUnit.SECONDS)
                 .setTcpNoDelay(true)
                 .build();
 
-        final HttpServer server = ServerBootstrap.bootstrap()
+        server = ServerBootstrap.bootstrap()
                 .setListenerPort(port)
                 .setLocalAddress(InetAddress.getLoopbackAddress())
                 .setSocketConfig(socketConfig)
@@ -105,47 +88,60 @@ public class ClassicFileServerExample {
                     @Override
                     public void onError(final Exception ex) {
                         ex.printStackTrace();
-                        Logger.debug("ClassiconError",ex.getMessage());
+                        Logger.debug(TAG, ex.getMessage());
 
                     }
 
                     @Override
                     public void onError(final HttpConnection conn, final Exception ex) {
                         if (ex instanceof SocketTimeoutException) {
-                            Logger.debug("ClassicSocketTimeoutException",ex.getMessage());
+                            Logger.debug(TAG, ex.getMessage());
                         } else if (ex instanceof ConnectionClosedException) {
-                           Logger.debug("ClassicConnectionClosedException",ex.getMessage());
+                            Logger.debug(TAG, ex.getMessage());
                         } else {
                             ex.printStackTrace();
                         }
                     }
 
                 })
-              //  .register("*", new HttpFileHandler(docRoot))
+                .register("*", new HttpFileHandler())
                 .create();
-
-        server.start();
+        startServer();
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
                 server.close(CloseMode.GRACEFUL);
-                Logger.debug("ClassicFileServerExample","server close");
 
             }
         });
-       Logger.debug("ClassicFileServerExample","Listening on port " + port);
+        Logger.debug(TAG, "Listening on port " + port);
 
         server.awaitTermination(TimeValue.MAX_VALUE);
 
     }
 
-    public static class HttpFileHandler implements HttpRequestHandler  {
+    private static void startServer() {
+        try {
+            server.start();
+        } catch (Exception e) {
+            Logger.error(TAG, e.getMessage());
+        }
 
-        private final String docRoot;
+    }
 
-        public HttpFileHandler(final String docRoot) {
+    private static void stopServer() {
+        try {
+            server.stop();
+        } catch (Exception e) {
+            Logger.error(TAG, e.getMessage());
+        }
+
+    }
+
+    public static class HttpFileHandler implements HttpRequestHandler {
+
+        public HttpFileHandler() {
             super();
-            this.docRoot = docRoot;
         }
 
         @Override
@@ -157,15 +153,13 @@ public class ClassicFileServerExample {
             final String method = request.getMethod();
             if (!Method.GET.isSame(method) && !Method.HEAD.isSame(method) && !Method.POST.isSame(method)) {
                 throw new MethodNotSupportedException(method + " method not supported");
-
-
             } else {
                 final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
                 final EndpointDetails endpoint = coreContext.getEndpointDetails();
                 response.setCode(HttpStatus.SC_OK);
-                StringEntity stringEntity=new StringEntity("hello",ContentType.DEFAULT_TEXT);
+                StringEntity stringEntity = new StringEntity("Welcome to certify local server", ContentType.DEFAULT_TEXT);
                 response.setEntity(stringEntity);
-               Logger.debug("ClassicFileServerExampleresponse",response.toString());
+                Logger.debug(TAG, response.toString());
             }
         }
 
