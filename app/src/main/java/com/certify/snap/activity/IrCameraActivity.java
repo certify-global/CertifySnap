@@ -2332,14 +2332,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     public void onBarcodeData(String guid) {
         try {
-
             mTriggerType = CameraController.triggerValue.CODEID.toString();
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
-            if (Util.isNumeric(guid)) {
+            if (Util.isNumeric(guid) || Util.isQRCodeWithPrefix(guid)) {
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);

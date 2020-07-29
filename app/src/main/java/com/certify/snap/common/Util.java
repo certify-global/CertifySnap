@@ -1847,7 +1847,15 @@ public class Util {
         } catch (Exception e) {
             Log.e(LOG, e.getMessage());
         }
+    }
 
-
+    public static boolean isQRCodeWithPrefix(String code) {
+       if(code != null) {
+           if (code.isEmpty()) {
+               return false;
+           }
+           return code.toLowerCase().startsWith("tr");
+       }
+       return false;
     }
 }
