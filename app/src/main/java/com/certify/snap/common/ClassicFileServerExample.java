@@ -29,6 +29,7 @@ package com.certify.snap.common;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -90,12 +91,13 @@ public class ClassicFileServerExample {
                     .build();
         }*/
         final SocketConfig socketConfig = SocketConfig.custom()
-                .setSoTimeout(15, TimeUnit.SECONDS)
+                .setSoTimeout(80, TimeUnit.SECONDS)
                 .setTcpNoDelay(true)
                 .build();
 
         final HttpServer server = ServerBootstrap.bootstrap()
                 .setListenerPort(port)
+                .setLocalAddress(InetAddress.getLoopbackAddress())
                 .setSocketConfig(socketConfig)
                 //.setSslContext(sslContext)
                 .setExceptionListener(new ExceptionListener() {
@@ -103,12 +105,14 @@ public class ClassicFileServerExample {
                     @Override
                     public void onError(final Exception ex) {
                         ex.printStackTrace();
+                        Logger.debug("ClassiconError",ex.getMessage());
+
                     }
 
                     @Override
                     public void onError(final HttpConnection conn, final Exception ex) {
                         if (ex instanceof SocketTimeoutException) {
-                            Logger.debug("ClassicSocketTimeoutException","Connection timed out");
+                            Logger.debug("ClassicSocketTimeoutException",ex.getMessage());
                         } else if (ex instanceof ConnectionClosedException) {
                            Logger.debug("ClassicConnectionClosedException",ex.getMessage());
                         } else {
@@ -125,6 +129,8 @@ public class ClassicFileServerExample {
             @Override
             public void run() {
                 server.close(CloseMode.GRACEFUL);
+                Logger.debug("ClassicFileServerExample","server close");
+
             }
         });
        Logger.debug("ClassicFileServerExample","Listening on port " + port);

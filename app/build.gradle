@@ -14,6 +14,7 @@ def keyStore = new Properties()
 def baseFileName = "CertifySnap"
 keyStore.load(new FileInputStream("$userHome/certifysnap/keystore.properties"))
 android {
+    useLibrary 'org.apache.http.legacy'
 
     signingConfigs {
         Snap {
