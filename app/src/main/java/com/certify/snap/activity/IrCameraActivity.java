@@ -496,7 +496,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 params.addRule(RelativeLayout.CENTER_IN_PARENT);
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.VISIBLE);
-                qrSkipButton.setVisibility(View.VISIBLE);
+                //qrSkipButton.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
                 isReadyToScan = false;
                 qrSkipButton.setText(sharedPreferences.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
@@ -507,7 +507,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 params.setMargins(0, 230, 0, 0);
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.GONE);
-                qrSkipButton.setVisibility(View.GONE);
+                //qrSkipButton.setVisibility(View.GONE);
 
             }
         } catch (Exception e) {

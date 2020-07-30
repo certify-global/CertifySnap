@@ -280,6 +280,7 @@
     <string name="tv_bar_validating">Validating Bar Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="enable_anonymous">Enable Anonymous QR Code / Bar Code</string>
+    <string name="enable_skip_button">Enable Skip code(Requires touch of screen)</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
     <string name="grant_access">Access Granted</string>
     <string name="device_not_register">  is not registered on your certify.me account. Please make sure the device is connected to Internet and device is added to your cloud account under Devices.\n

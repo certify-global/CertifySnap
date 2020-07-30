@@ -41,7 +41,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     RadioButton rbguideno;
     EditText editTextDialogUserInput, editTextQRButton;
     TextView tv_display;
-    TextView mAnonymousTv;
+    TextView mAnonymousTv, qr_skip_button_enable_text;
     TextInputLayout text_input_timeout, text_input_qr_button;
     LinearLayout qr_scanner_layout, anonymous_qr_bar_code_layout, rfid_layout, display_image_layout;
     private TextView scanMode;
@@ -104,6 +104,8 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             anonymous_qr_bar_code_layout = findViewById(R.id.anonymous_qr_bar_code_layout);
             rfid_layout = findViewById(R.id.rfid_layout);
             display_image_layout = findViewById(R.id.display_image_layout);
+            qr_skip_button_enable_text = findViewById(R.id.qr_skip_button_enable_text);
+            qr_skip_button_enable_text.setTypeface(rubiklight);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
@@ -120,6 +122,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             setScanModeClickListener();
             getHomeScreenEnabledStatus();
             setEditTextTimeOutListener();
+            qrSkipCode();
 
             radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -348,6 +351,25 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             result = true;
         }
         return result;
+    }
+
+    private void qrSkipCode() {
+        RadioGroup qr_skip_button_radio_group = findViewById(R.id.qr_skip_button_radio_group);
+        RadioButton qr_skip_button_radio_enable = findViewById(R.id.qr_skip_button_radio_yes);
+        RadioButton qr_skip_button_radio_disable = findViewById(R.id.qr_skip_button_radio_no);
+
+        if (sp.getBoolean(GlobalParameters.QR_SKIP_BUTTON_ENABLE_DISABLE, false))
+            qr_skip_button_radio_enable.setChecked(true);
+        else qr_skip_button_radio_disable.setChecked(true);
+
+        qr_skip_button_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.qr_skip_button_radio_yes)
+                    Util.writeBoolean(sp, GlobalParameters.QR_SKIP_BUTTON_ENABLE_DISABLE, true);
+                else Util.writeBoolean(sp, GlobalParameters.QR_SKIP_BUTTON_ENABLE_DISABLE, false);
+            }
+        });
     }
 
     private void proIdentificationSettings(){
