@@ -35,6 +35,7 @@ public class AppSettings {
     private static  boolean qrSoundInvalid = false;
     private static boolean bleLightNormalTemperature = false;
     private static boolean bleLightHighTemperature = false;
+    private static boolean anonymousQREnable = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -71,6 +72,7 @@ public class AppSettings {
         qrSoundInvalid= sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);
         bleLightNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_NORMAL,false);
         bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
+        anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
 
     }
 
@@ -180,5 +182,9 @@ public class AppSettings {
 
     public static boolean isBleLightHighTemperature() {
         return bleLightHighTemperature;
+    }
+
+    public static boolean isAnonymousQREnable() {
+        return anonymousQREnable;
     }
 }
