@@ -409,6 +409,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         logo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                Logger.debug(TAG, "onLongClick", "Launch Login activity");
                 Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                 startActivity(loginIt);
                 finish();
@@ -851,6 +852,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
         }
+
+        Util.enableLedPower(0);
     }
 
     long time1, time2;
@@ -3039,6 +3042,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
             } else {
+                temperature_image.setVisibility(View.GONE);
+                mask_message.setVisibility(View.GONE);
                 relative_main.setVisibility(View.VISIBLE);
                 HomeTextOnlyText();
                 rl_header.setVisibility(View.VISIBLE);

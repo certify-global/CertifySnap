@@ -145,6 +145,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
         sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+
+        Util.enableLedPower(0);
     }
 
     @Override

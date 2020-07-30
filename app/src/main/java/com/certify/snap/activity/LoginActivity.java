@@ -6,10 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputLayout;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -111,10 +108,8 @@ public class LoginActivity extends Activity {
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
-        etPassword.getText().clear();
-
-        setEditTextTimeOutListener();
         startLoginScreenTimer();
+        Logger.debug(TAG, "onCreate", "Init complete");
     }
 
     @Override
@@ -130,7 +125,7 @@ public class LoginActivity extends Activity {
         tv_pwd_error.setText("Invalid Password, Try Again");
     }
     public void onParamterback(View view) {
-       startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
         finish();
     }
 
@@ -153,27 +148,8 @@ public class LoginActivity extends Activity {
         }
     }
 
-    private void setEditTextTimeOutListener() {
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (mLoginScreenTimer != null)
-                    mLoginScreenTimer.cancel();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        };
-        etPassword.addTextChangedListener(textWatcher);
-    }
-
     private void startLoginScreenTimer() {
-        cancelLoginScreenTimer();
+       cancelLoginScreenTimer();
         mLoginScreenTimer = new Timer();
         mLoginScreenTimer.schedule(new TimerTask() {
             public void run() {
@@ -188,4 +164,18 @@ public class LoginActivity extends Activity {
         if (mLoginScreenTimer != null)
             mLoginScreenTimer.cancel();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        etPassword.getText().clear();
+    }
+
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        cancelLoginScreenTimer();
+        Logger.debug(TAG, "onUserInteraction", "User action occurred");
+    }
+
 }
