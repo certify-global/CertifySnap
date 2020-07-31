@@ -70,23 +70,37 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             JSONObject jsonObject = new JSONObject(messageBody);
             sharedPreferences=Util.getSharedPreferences(this);
 
-            String command=jsonObject.isNull("Command") ? "":jsonObject.getString("Command");
-            String Value1=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
+            String command=jsonObject.isNull("command") ? "":jsonObject.getString("command");
+            String Value1=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
 
 
-                if(command.equals("SETTINGS")){
-                    Util.getSettings(this,this);
-                }else if(command.equals("ALLMEMBER")){
-                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)
-                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
-                        startService(new Intent(this, MemberSyncService.class));
-                        Application.StartService(this);
-                    }
-                }else if(command.equals("MEMBER")){
-                    String CertifyId=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
-                    Util.getMemberID(this,CertifyId);
+            if(command.equals("SETTINGS")){
+                Util.getSettings(this,this);
+            }else if(command.equals("ALLMEMBER")){
+                startService(new Intent(this, MemberSyncService.class));
+                Application.StartService(this);
+            }else if(command.equals("MEMBER")){
+                String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+                Util.getMemberID(this,CertifyId);
+            }else if(command.equals("RESET")){
+                Util.deleteAppData(this);
+            }else if(command.equals("RESTART")){
+                Util.restartApp(this);
+            }else if(command.equals("DEACTIVATE")){
+                Util.deleteAppData(this);
+                Util.writeBoolean(sharedPreferences,GlobalParameters.ONLINE_MODE,false);
+            }else if(command.equals("CHECKHEALTH")){
+                //   if(!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
+//                        startService(new Intent(this, DeviceHealthService.class));
+//                        Application.StartService(this);
+                // this.startService(new Intent(this, DeviceHealthService.class));
 
-                }
+                Util.getDeviceHealthCheck(FireBaseMessagingService.this, FireBaseMessagingService.this);
+
+//                    } else{
+//                        Logger.toast(this,"Please check your internet connection");
+//                    }
+            }
 
 
         } catch (Exception e) {
