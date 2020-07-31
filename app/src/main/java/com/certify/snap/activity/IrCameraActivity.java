@@ -163,7 +163,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
-    ImageView logo, scan, outerCircle, innerCircle, exit;
+    ImageView scan, outerCircle, innerCircle, exit;
+    Button logo;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
 
@@ -408,20 +409,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             e.printStackTrace();
         }
 
-        logo = findViewById(R.id.logo);
+        logo = findViewById(R.id.loginLogo);
         rl_header = findViewById(R.id.rl_header);
-        rl_header.setOnClickListener(new View.OnClickListener() {
+        logo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                if(progressDialog != null && progressDialog.isShowing()) return;
+            public boolean onLongClick(View v) {
+                if(progressDialog != null && progressDialog.isShowing()) return false;
                 CameraController.getInstance().setAppExitTriggered(true);
+                Logger.debug(TAG, "onLongClick", "Launch Login activity");
                 progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Launching Settings, Please wait...");
                 if (CameraController.getInstance().getScanState() == CameraController.ScanState.FACIAL_SCAN) {
-                    return;
+                    return false;
                 }
                 Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
                 startActivity(loginIt);
                 finish();
+                return true;
             }
         });
 
@@ -873,6 +876,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
         }
+
+        Util.enableLedPower(0);
     }
 
     long time1, time2;
@@ -2156,7 +2161,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 //   temperature_image.setImageBitmap(rgbBitmap);
                 if (tempServiceClose) {
                     relative_main.setVisibility(View.GONE);
-                    logo.setVisibility(View.GONE);
+                    //logo.setVisibility(View.GONE);
                     // rl_header.setVisibility(View.GONE);
                 }
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
@@ -2576,9 +2581,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         new Handler().postDelayed(() -> {
                 if (outerCircle != null)
                     outerCircle.setBackgroundResource(R.drawable.border_shape);
-                if (logo != null) {
+                /*if (logo != null) {
                     logo.setVisibility(View.GONE);
-                }
+                }*/
                 if (relative_main != null) {
                     relative_main.setVisibility(View.GONE);
                 }
@@ -3020,7 +3025,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     public void HomeTextOnlyText() {
         try {
             if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
-                logo.setVisibility(View.GONE);
+                //logo.setVisibility(View.GONE);
                 tv_thermal.setVisibility(View.GONE);
                 tv_thermal_subtitle.setVisibility(View.GONE);
                 img_logo.setVisibility(View.GONE);
@@ -3030,7 +3035,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_display_time.setVisibility(View.GONE);
                 tvVersionIr.setVisibility(View.GONE);
             } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
-                logo.setVisibility(View.VISIBLE);
+                //logo.setVisibility(View.VISIBLE);
                 tv_thermal.setVisibility(View.VISIBLE);
                 tv_thermal_subtitle.setVisibility(View.VISIBLE);
                 tvOnlyText.setVisibility(View.GONE);
@@ -3041,7 +3046,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_display_time.setVisibility(View.VISIBLE);
             } else {
                 new Handler().postDelayed(() -> {
-                    logo.setVisibility(View.GONE);
+                    //logo.setVisibility(View.GONE);
                     relative_main.setVisibility(View.GONE);
                     changeVerifyBackground(R.color.transparency, true);
                 }, 150);
@@ -3057,6 +3062,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
             } else {
+                temperature_image.setVisibility(View.GONE);
+                mask_message.setVisibility(View.GONE);
                 relative_main.setVisibility(View.VISIBLE);
                 HomeTextOnlyText();
                 rl_header.setVisibility(View.VISIBLE);
@@ -3266,7 +3273,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 changeVerifyBackground(R.color.transparency, true);
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
-                logo.setVisibility(View.GONE);
+                //logo.setVisibility(View.GONE);
                 showAnimation();
 
                 // Log.e("runTemperature---","isIdentified="+isIdentified);
