@@ -616,7 +616,6 @@ public class Util {
                 return new String(responseTemp);
             }
         } catch (Exception e) {
-
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
                     + ", url = " + url, e.getMessage());
             return null;
@@ -1826,6 +1825,7 @@ public class Util {
 
     public static void restartApp(Context context) {
         stopMemberSyncService(context);
+        Application.getInstance().exit();
         Intent intent = new Intent(context, GuideActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);

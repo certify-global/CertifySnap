@@ -276,6 +276,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                         return;
                     }
                     Util.activateApplication(GuideActivity.this, GuideActivity.this);
+                  //  Util.switchRgbOrIrActivity(GuideActivity.this, true);
+
                 }
 
             }

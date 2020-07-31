@@ -120,7 +120,7 @@ public class SnapLocalServer {
 
     }
 
-    private static void startServer() {
+    public static void startServer() {
         try {
             server.start();
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class SnapLocalServer {
 
     }
 
-    private static void stopServer() {
+    public static void stopServer() {
         try {
             server.stop();
         } catch (Exception e) {
