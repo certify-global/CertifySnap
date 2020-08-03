@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
+import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
@@ -32,7 +33,7 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.Random;
 
-public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback {
+public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback, PushCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
@@ -71,7 +72,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             sharedPreferences=Util.getSharedPreferences(this);
 
             String command=jsonObject.isNull("command") ? "":jsonObject.getString("command");
-            String Value1=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+            String certifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+            String commandGUID=jsonObject.isNull("commandGUID") ? "":jsonObject.getString("commandGUID");
+            String uniqueDeviceId=jsonObject.isNull("uniqueDeviceId") ? "":jsonObject.getString("uniqueDeviceId");
+            String eventTypeId=jsonObject.isNull("eventTypeId") ? "":jsonObject.getString("eventTypeId");
+            String institutionId=jsonObject.isNull("institutionId") ? "":jsonObject.getString("institutionId");
 
 
             if(command.equals("SETTINGS")){
@@ -90,18 +95,15 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Util.deleteAppData(this);
                 Util.writeBoolean(sharedPreferences,GlobalParameters.ONLINE_MODE,false);
             }else if(command.equals("CHECKHEALTH")){
-                //   if(!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE,true)) {
-//                        startService(new Intent(this, DeviceHealthService.class));
-//                        Application.StartService(this);
-                // this.startService(new Intent(this, DeviceHealthService.class));
-
                 Util.getDeviceHealthCheck(FireBaseMessagingService.this, FireBaseMessagingService.this);
-
-//                    } else{
-//                        Logger.toast(this,"Please check your internet connection");
-//                    }
+            }else if(command.equals("NAVBARON")){
+                boolean navigationBar =true;
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            }else if(command.equals("NAVBAROFF")){
+                boolean navigationBar = false;
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
             }
-
 
         } catch (Exception e) {
             Logger.error(TAG + "sendNotification()", e.getMessage());
@@ -180,6 +182,17 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
 
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerPush(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+        } catch (Exception e) {
+            Logger.error(TAG, "onJSONObjectListenerPush()", "Exception occurred while processing API response callback with Push command response api" + e.getMessage());
         }
     }
 }

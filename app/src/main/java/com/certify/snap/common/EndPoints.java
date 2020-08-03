@@ -7,7 +7,7 @@ public class EndPoints {
 
     public enum Mode {Prod, Demo}
     public static final Mode deployment = Mode.Demo;
-    public static String prod_url = BuildConfig.ENDPOINT_URL;//BuildConfig.ENDPOINT_URL;
+    public static String prod_url ="https://apidev.certify.me";//BuildConfig.ENDPOINT_URL;
     public static String dev_url = "https://apidev.certify.me";
 
 
@@ -33,5 +33,6 @@ public class EndPoints {
     public static final String GetMemberById = domainUrl + "GetMemberById";
     public static final String Token = domainUrl + "token";
     public static final String RegisterDevice = domainUrl + "RegisterDevice";
+    public static final String PushCommandResponse = domainUrl + "PushCommandResponse";
 
 }
