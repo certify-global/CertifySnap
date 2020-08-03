@@ -860,7 +860,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void runTemperature(final UserExportedData data) {
         Log.v(TAG, "runTemperature");
-        if (!CameraController.getInstance().isFaceVisible()) return;
+        if (!CameraController.getInstance().isFaceVisible() || isTemperatureIdentified) return;
         isTemperature = false;
         isSearch = false;
         time1 = time2 = 0;
@@ -944,6 +944,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      * @param data data
      */
     private void retryTemperature(UserExportedData data) {
+        if (!CameraController.getInstance().isFaceVisible() || isTemperatureIdentified) return;
         temperatureRetryDisposable.clear();
         Observable
                 .create((ObservableOnSubscribe<Float>) emitter -> {
@@ -1258,6 +1259,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
             } else {
                 CameraController.getInstance().setFaceVisible(false);
+                thermalImageCallback = null;
+                temperatureRetryDisposable.clear();
             }
             irData = null;
         }
@@ -1739,6 +1742,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     final Activity that = IrCameraActivity.this;
                     isTemperatureIdentified = false;*/
                     clearData();
+                    isTemperatureIdentified = false;
                     resetHomeScreen();
                     resetRfid();
                     resetQrCode();
@@ -2587,6 +2591,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     public void run() {
                         thermalImageCallback = null;
                         clearData();
+                        isTemperatureIdentified = false;
                         resetHomeScreen();
                         resetRfid();
                         resetQrCode();
@@ -2900,24 +2905,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private boolean isFindTemperature() {
-        if (faceDetectEnabled) {
-            boolean result = true;
-            //TODO1: Optimize
-            if (LitePal.getDatabase() != null) {
-                try {
-                    if (LitePal.isExist(RegisteredMembers.class)) {
-                        RegisteredMembers firstMember = LitePal.findFirst(RegisteredMembers.class);
-                        if (firstMember != null) {
-                            result = false;
-                        }
-                    }
-                } catch (LitePalSupportException exception) {
-                    Log.e(TAG, "Exception occurred while querying for first member from db");
-                }
-            }
-            return  result;
-        }
-        return true;
+        return !faceDetectEnabled;
     }
 
     public void onRfidScan(String cardId) {
@@ -3315,6 +3303,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             temperatureRetryDisposable.clear();
         }
         mFaceMatchRetry = 0;
+        mTriggerType = CameraController.triggerValue.CAMERA.toString();
     }
 
     private void setPreviewIdleTimer() {
@@ -3358,7 +3347,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (outerCircle != null) {
             outerCircle.setBackgroundResource(R.drawable.border_shape);
         }
-        isTemperatureIdentified = false;
         cancelImageTimer();
         clearLeftFace(null);
         thermalImageCallback = null;
@@ -3366,6 +3354,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     public void resumeScan() {
+        isTemperatureIdentified = false;
         runOnUiThread(() -> {
             if (temperature_image != null) {
                 temperature_image.setVisibility(View.GONE);
