@@ -159,6 +159,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             internetIndicatorImage.setVisibility(View.VISIBLE);
         }
         AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+        Util.enableLedPower(0);
     }
 
     @Override
