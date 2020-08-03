@@ -162,7 +162,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
-    ImageView scan, outerCircle, innerCircle;
+    ImageView outerCircle, innerCircle;
     Button logo;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
@@ -417,7 +417,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         });
 
-        scan = findViewById(R.id.scan);
         tv_thermal = findViewById(R.id.tv_thermal);
         tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
         tv_thermal.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN"));
