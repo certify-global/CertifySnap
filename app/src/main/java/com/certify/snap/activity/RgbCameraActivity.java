@@ -290,7 +290,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     @Override
     public void onBackPressed() {
-        Application.getInstance().exit();
     }
 
     private void initView() {
@@ -380,7 +379,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                 if (etPassword.getText().toString().equals(sp.getString("device_password", "123456"))) {
                                     sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                                     sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-                                    Application.getInstance().exit();
                                 } else {
                                     Toast.makeText(RgbCameraActivity.this, getString(R.string.toast_rgbir_pwderror)
                                             , Toast.LENGTH_LONG).show();
@@ -423,8 +421,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             public void onClick(View v) {
                 sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                 sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-
-                Application.getInstance().exit();
             }
         });
 

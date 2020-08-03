@@ -104,18 +104,6 @@ public class Application extends android.app.Application {
 //        activityList.add(activity);
     }
 
-    // Activity finish
-    public void exit() {
-        for (Activity activity : activityList) {
-            if(activity!=null && !activity.isFinishing()) {
-                Log.e("exit---", activity.getLocalClassName());
-                activity.finish();
-            }
-        }
-        System.exit(0);
-    }
-
-
     public static void StartService(Context context) {
 
         Intent myIntent = new Intent(context, AlarmReceiver.class);
