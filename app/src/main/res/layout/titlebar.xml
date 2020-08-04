@@ -16,27 +16,4 @@
         android:layout_gravity="center_vertical"
         android:background="@color/transparency"/>
 
-
-    <ImageView
-        android:id="@+id/exit"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center_vertical"
-        android:src="@mipmap/exit1"
-        android:visibility="gone"/>
-
-    <ImageView
-        android:id="@+id/scan"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_toLeftOf="@+id/exit"
-        android:layout_marginRight="5dp"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="center_vertical"
-        android:src="@mipmap/scan"
-        android:visibility="gone"/>
-
 </RelativeLayout>
