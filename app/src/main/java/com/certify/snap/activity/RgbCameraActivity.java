@@ -109,7 +109,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     private Toast toast = null;
     private static final String TAG = "RgbCameraActivity";
-    ImageView logo, loaddialog, scan, outerCircle, innerCircle, exit;
+    ImageView logo, loaddialog, outerCircle, innerCircle;
     private ObjectAnimator outerCircleAnimator, innerCircleAnimator;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
@@ -290,7 +290,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     @Override
     public void onBackPressed() {
-        Application.getInstance().exit();
     }
 
     private void initView() {
@@ -380,7 +379,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                 if (etPassword.getText().toString().equals(sp.getString("device_password", "123456"))) {
                                     sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                                     sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-                                    Application.getInstance().exit();
                                 } else {
                                     Toast.makeText(RgbCameraActivity.this, getString(R.string.toast_rgbir_pwderror)
                                             , Toast.LENGTH_LONG).show();
@@ -396,35 +394,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 builder.create().show();
 
                 return true;
-            }
-        });
-
-        scan = findViewById(R.id.scan);
-        final PackageManager packageManager = getPackageManager();
-        scan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClassName("com.telpo.tps550.api", "com.telpo.tps550.api.barcode.Capture");
-                try {
-                    if (intent.resolveActivityInfo(packageManager, PackageManager.MATCH_DEFAULT_ONLY) != null) {
-                        startActivityForResult(intent, GUEST_QR_CODE);
-                    } else
-                        Toast.makeText(RgbCameraActivity.this, getString(R.string.toast_ocrnotinstall), Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        exit = findViewById(R.id.exit);
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
-                sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-
-                Application.getInstance().exit();
             }
         });
 

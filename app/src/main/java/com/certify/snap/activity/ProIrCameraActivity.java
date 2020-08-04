@@ -272,7 +272,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     @Override
     public void onBackPressed() {
-        Application.getInstance().exit();
+        //Application.getInstance().exit();
     }
 
     private void initView() {
@@ -452,7 +452,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         }
     }
 
-    private void openled() {
+    private void  openled() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
