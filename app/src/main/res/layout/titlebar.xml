@@ -8,15 +8,13 @@
 
     <!--android:background="#6871ac"-->
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="8dp"
+    <Button
+        android:id="@+id/loginLogo"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_vertical"
-        android:src="@drawable/settings"
-        android:visibility="gone"/>
+        android:background="@color/transparency"/>
 
 
     <ImageView
