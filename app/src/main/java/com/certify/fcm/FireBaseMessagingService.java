@@ -89,6 +89,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Util.getMemberID(this,CertifyId);
             }else if(command.equals("RESET")){
                 Util.deleteAppData(this);
+                Util.restartApp(this);
             }else if(command.equals("RESTART")){
                 Util.restartApp(this);
             }else if(command.equals("DEACTIVATE")){
