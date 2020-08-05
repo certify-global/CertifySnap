@@ -44,6 +44,7 @@ import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
+import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -160,7 +161,7 @@ import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
-        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback {
+        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -348,11 +349,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         homeIcon(path);
 
+        getAppSettings();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
+        initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
         CameraController.getInstance().init();
-        getAppSettings();
+
         initAccessControl();
         try {
             processHandler = new ProcessHandler(this);
@@ -821,6 +824,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             return;
         }
+
+        if (Util.isDeviceProModel()) {
+            TemperatureController.getInstance().setTemperatureRecordData(data);
+            TemperatureController.getInstance().setTemperatureListener(this);
+            TemperatureController.getInstance().startTemperatureMeasure();
+            return;
+        }
+
         isTemperature = false;
         time1 = time2 = 0;
         time1 = System.currentTimeMillis();
@@ -3417,5 +3428,40 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         preview.stop();
         clearQrCodePreview();
         setCameraPreview();
+    }
+
+    private void initTemperature() {
+        if (Util.isDeviceProModel()) {
+            TemperatureController.getInstance().init(this);
+            TemperatureController.getInstance().setTemperatureListener(this);
+        }
+    }
+
+    @Override
+    public void onThermalImage(Bitmap bitmap) {
+        runOnUiThread(() -> {
+            if (bitmap != null) {
+                temperature_image.setVisibility(View.VISIBLE);
+                temperature_image.setImageBitmap(bitmap);
+            }
+        });
+    }
+
+    @Override
+    public void onTemperatureRead(float temperature) {
+        String tempString = String.valueOf(temperature);
+        String text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
+            text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+            faceAndRelayEnabledForHighTemperature();
+            BLEController.getInstance().setLightOnHighTemperature();
+            TemperatureController.getInstance().clearData();
+            return;
+        }
+        TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+        faceAndRelayEnabledForNormalTemperature();
+        BLEController.getInstance().setLightOnNormalTemperature();
+        TemperatureController.getInstance().clearData();
     }
 }
