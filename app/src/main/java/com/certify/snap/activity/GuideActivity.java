@@ -274,6 +274,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
+                CameraController.getInstance().initDeviceMode();
                 startBLEService();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
                 return;
