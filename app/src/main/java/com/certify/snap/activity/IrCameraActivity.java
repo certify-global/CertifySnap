@@ -186,7 +186,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync,tvDisplayTimeOnly,tvVersionOnly;
 
-    Timer tTimer, pTimer, imageTimer, cameraTimer, lanchTimer;
+    Timer tTimer, pTimer, imageTimer, lanchTimer;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
 
@@ -230,7 +230,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private FaceHelper faceHelperIr;
     private List<CompareResult> compareResultList;
     private SharedPreferences sharedPreferences;
-    protected static final String LOG = "IRCamera Activity - ";
     private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
@@ -239,24 +238,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    private AlertDialog.Builder builder;
-
     private int relaytimenumber = 5;
     ImageView img_guest, temperature_image, img_logo;
     TextView txt_guest;
-    public static final String WALLPAPER_CHANGE = "com.telpo.telpo_face_system_wallpaper";
 
     private volatile byte[] irData;
-    private boolean takePicRgb = false;
-    private boolean takePicIr = false;
     private Bitmap irBitmap;
     private Bitmap rgbBitmap;
     private Bitmap temperatureBitmap = null;
-    private int tempretrynum = 0;
-    private int retrytemp = 0;
-    private boolean isCalibrating = true;
     private boolean isTemperature = true;
-    private boolean isSearch = true;
     private final Object obj = new Object();
     private float temperature = 0;
     private float lowTempValue = 0;
@@ -304,8 +294,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private boolean faceDetectEnabled = false;
     private boolean isSearchFace = true;
     private BroadcastReceiver mMessageReceiver = null;
-    public static final int TOAST_START = 111;
-    public static final int TOAST_STOP = 100;
     private AutofitTextView tvOnlyText;
     private int homeScreenTimeOut = 0;
     int memberCount;
@@ -333,43 +321,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             faceEngineHelper = new FaceEngineHelper();
         } catch (Exception e) {
             Logger.error(TAG, "instanceStart()", "Exception occurred in instantiating FaceEngineHelper:" + e.getMessage());
-        }
-    }
-
-    private void instanceStop() {
-        try {
-            /*faceEngineHelper = null;
-            irData = null;
-            rubiklight = null;
-            temperature_image = null;
-            rl_header = null;
-            temperatureBitmap = null;
-            img_guest = null;
-            logo = null;
-            nfcDialog = null;
-            soundPool = null;
-            tvErrorMessage = null;
-            tv_thermal = null;
-            tv_thermal_subtitle = null;
-            tvOnlyText = null;
-            relativeLayout = null;
-            tv_message = null;
-            tv_display_time = null;
-            outerCircle = null;
-            img_logo = null;
-            scan = null;
-            exit = null;
-            innerCircle = null;
-            previewViewIr = null;
-            previewViewRgb = null;
-            irBitmap = null;
-            rgbBitmap = null;
-            tv_scan = null;
-            imageqr = null;
-            qr_main = null;*/
-
-        } catch (Exception e) {
-            Logger.error(TAG, "instanceStop()", "Exception occurred in instanceStop:" + e.getMessage());
         }
     }
 
@@ -853,7 +804,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         FaceServer.getInstance().unInit();
         stopAnimation();
         cancelImageTimer();
-        instanceStop();
         temperatureBitmap = null;
         clearQrCodePreview();
         resetMaskStatus();
@@ -882,7 +832,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         isTemperature = false;
-        isSearch = false;
         time1 = time2 = 0;
         time1 = System.currentTimeMillis();
         temperature = 0;
@@ -903,8 +852,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             return;
                         }
                         String text = "";
-                        takePicIr = false;
-                        takePicRgb = false;
                         String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
                         String temperatureFormat = temperaturePreference.equals("F")
                                 ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
@@ -983,8 +930,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         return;
                     }
                     String text = "";
-                    takePicIr = false;
-                    takePicRgb = false;
                     String temperaturePreference = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
                     String temperatureFormat = temperaturePreference.equals("F")
                             ? getString(R.string.fahrenheit_symbol) : getString(R.string.centi);
@@ -1040,27 +985,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 });
     }
 
-    private void retry(int retryNumber) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                tv_message.setVisibility(View.GONE);
-//
-//            }
-//        });
-        if (retryNumber < 3) {
-            Logger.verbose(TAG, "retry()", "Retry num is less than 3, Retry temp and number is " + retrytemp + tempretrynum);
-            runTemperature(new UserExportedData());
-            retryNumber++;
-            // showTip(getString(R.string.temperature_retry), false);
-        } else {
-            showTip(getString(R.string.temperature_failresult), false);
-            Logger.verbose(TAG, "retry()", "Temperature fetch failed, Retry temp and number is " + retrytemp + tempretrynum);
-            isSearch = true;
-        }
-    }
-
-
     private void initRgbCamera() {
         final Activity that = this;
         DisplayMetrics metrics = new DisplayMetrics();
@@ -1086,8 +1010,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + isTemperatureIdentified + ",tempServiceColes " + tempServiceClose);
                     if (isTemperatureIdentified) return;
                     tempServiceClose = false;
-                    takePicRgb = true;
-                    takePicIr = true;
                     // isIdentified = false;
                     if (compareResultList != null) {
                         for (int i = compareResultList.size() - 1; i >= 0; i--) {
@@ -1661,8 +1583,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void showAnimation() {
-        tempretrynum = 0;
-        retrytemp = 0;
         isTemperature = true;
 //        temperature_image.setVisibility(View.GONE);
 //        tv_message.setText("");
@@ -2188,8 +2108,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 lanchTimer = new Timer();
                 lanchTimer.schedule(new TimerTask() {
                     public void run() {
-                        takePicRgb = true;
-                        takePicIr = true;
                         disableLedPower();
                         boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
                         boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true) && !aboveThreshold;
@@ -2376,7 +2294,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
                         }
                     } catch (Exception e) {
-                        Logger.error(LOG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
+                        Logger.error(TAG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
                     }
                     if (i == 0) {
                         break;
@@ -3270,7 +3188,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 return;
                             }
 
-                            isSearch = true;
                             Logger.debug(TAG, "showCameraPreview", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
                             //  tvDisplayingCount.setVisibility(View.GONE);
                             /*if (isTemperatureIdentified || !takePicRgb)
