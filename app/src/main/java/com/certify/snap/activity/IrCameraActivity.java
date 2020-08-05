@@ -873,9 +873,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     public void runTemperature(final UserExportedData data) {
         Log.v(TAG, "runTemperature");
-        if (!CameraController.getInstance().isFaceVisible() &&
-                ((CameraController.getInstance().getScanState() == CameraController.ScanState.THERMAL_SCAN) ||
-                        (CameraController.getInstance().getScanState() == CameraController.ScanState.COMPLETE))) return;
+        if (!CameraController.getInstance().isFaceVisible() || isTemperatureIdentified) return;
         CameraController.getInstance().setScanState(CameraController.ScanState.THERMAL_SCAN);
         if (CameraController.getInstance().isAppExitTriggered()) {
             if (handler != null) {
@@ -883,7 +881,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             return;
         }
-        if (!CameraController.getInstance().isFaceVisible() || isTemperatureIdentified) return;
         isTemperature = false;
         isSearch = false;
         time1 = time2 = 0;
