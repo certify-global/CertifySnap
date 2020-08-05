@@ -89,7 +89,7 @@ import java.util.List;
 
 import static com.certify.snap.common.Util.getnumberString;
 
-public class ManagementActivity extends AppCompatActivity implements ManageMemberCallback,
+public class ManagementActivity extends SettingBaseActivity implements ManageMemberCallback,
         MemberListCallback, MemberIDCallback {
 
     protected static final String TAG = ManagementActivity.class.getSimpleName();
@@ -148,8 +148,6 @@ public class ManagementActivity extends AppCompatActivity implements ManageMembe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_management);
         relative_management = findViewById(R.id.relative_management);
         mCountTv = findViewById(R.id.count_tv);
