@@ -237,6 +237,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         FaceServer.getInstance().init(this);//init FaceServer;
         TemperatureController.getInstance().init(this);
 
+        sharedPreferences = Util.getSharedPreferences(this);
         AppSettings.getInstance().getSettingsFromSharedPref(this);
 
         initView();
@@ -249,7 +250,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        sharedPreferences = Util.getSharedPreferences(this);
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
         livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
         mask = sharedPreferences.getBoolean(GlobalParameters.MaskMode, false);
@@ -268,6 +268,12 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         });
 
         img_temperature = findViewById(R.id.img_temperature);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //new InitTemperatureThread().start();
     }
 
     @Override
@@ -448,7 +454,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         cancelImageTimer();
         if (util!=null) {
             util.stopGetGuideData();
-            util.release();
+            //util.release();
         }
     }
 
@@ -876,13 +882,19 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             if(tv_measure_area!=null){
                                 tv_measure_area.setVisibility(View.VISIBLE);
                             }
+                            if (img_thermalImage != null) {
+                                ViewGroup.LayoutParams params = img_thermalImage.getLayoutParams();
+                                params.width = 400;
+                                params.height = 320;
+                                img_thermalImage.setLayoutParams(params);
+                            }
                         }
                     });
-                    tempRect = new Rect(sharedPreferences.getInt("rect_left",21),sharedPreferences.getInt("rect_top",32),
-                            sharedPreferences.getInt("rect_right",27),sharedPreferences.getInt("rect_bottom",38));
+                    tempRect = new Rect(sharedPreferences.getInt("rect_left", 23), sharedPreferences.getInt("rect_top", 30),
+                            sharedPreferences.getInt("rect_right", 33), sharedPreferences.getInt("rect_bottom", 40));
                 }else if(module == 27){
-                    tempRect = new Rect(sharedPreferences.getInt("rect_left",120),sharedPreferences.getInt("rect_top",115),
-                            sharedPreferences.getInt("rect_right",160),sharedPreferences.getInt("rect_bottom",155));
+                    tempRect = new Rect(sharedPreferences.getInt("rect_left", 140), sharedPreferences.getInt("rect_top", 105),
+                            sharedPreferences.getInt("rect_right", 200), sharedPreferences.getInt("rect_bottom", 165));
                     startTempMeasure();
                 }
             } catch (Exception e) {
@@ -894,6 +906,9 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     long lastBitmapTime;
     long lastDataTime;
     private Map<Integer, Integer> temperatureProcessCountMap = new ConcurrentHashMap();
+    List<DrawInfo> drawInfos = new ArrayList<>();
+    boolean hasFever;
+
     private void startTempMeasure(){
         util.getGuideData(new GuideDataCallBack.Stub() {
             @Override
@@ -904,7 +919,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (bitmap != null) {
+                        if (bitmap != null && img_thermalImage != null) {
                             img_thermalImage.setImageBitmap(bitmap);
                         } else {
                             img_thermalImage.setImageBitmap(null);
@@ -925,87 +940,141 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                         Log.d(TAG, "out of time");
                         return;
                     }
-                    if(isTemperature){
-                        final List<float[]> maxInRectInfo = temperatureBigData.getTemInfoList();//The length of the List is the number of rects,
-                        // which records the temperature measurement information of the rect of each face
-                        final float envirTem = temperatureBigData.getEmvirTem();//Ambient temperature
-                        if(maxInRectInfo == null || temperatureRectList == null || temperatureRectList.size() <= 0 || maxInRectInfo.size()!=temperatureRectList.size()){
+                    if(isTemperature) {
+                        synchronized (this) {
+                            final List<float[]> maxInRectInfo = temperatureBigData.getTemInfoList();//The length of the List is the number of rects,
+                            // which records the temperature measurement information of the rect of each face
+                            final float envirTem = temperatureBigData.getEmvirTem();//Ambient temperature
+                            if (maxInRectInfo == null || temperatureRectList == null || temperatureRectList.size() <= 0 || maxInRectInfo.size() != temperatureRectList.size()) {
+                                isTemperature = false;
+                                Log.d(TAG, "error data");
+                                return;
+                            }
+                            drawInfos.clear();
+                            float temp = 0;
+                            temperature = 0;
+                            boolean isFever;
+                            hasFever = false;
+                            for (int i = 0; i < maxInRectInfo.size(); i++) {
+                                int trackId = temperatureRectList.get(i).getTrackId();
+                                temperature = maxInRectInfo.get(i)[3];
+                                if (temperature < 0) continue;
+                                String temperatureUnit = AppSettings.getfToC();
+                                if (temperatureUnit.equals("F")) {
+                                    temperature = (float) Util.celsiusToFahrenheit(temperature);
+                                }
+                                faceHelperProIr.setName(trackId, String.valueOf(temperature));
+                                isFever = Util.isUsualTemperature(ProIrCameraActivity.this, temp);
+                                drawInfos.add(new DrawInfo(originRectList.get(i).getRect(),
+                                        GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE,
+                                        livenessMap.get(trackId) == null ? LivenessInfo.UNKNOWN : livenessMap.get(trackId), isFever ? Color.RED : Color.GREEN,
+                                        faceHelperProIr.getName(trackId) == null ? "" : faceHelperProIr.getName(trackId)));
+                                int processCount = increaseAndGetValue(temperatureProcessCountMap, trackId);
+                                if (processCount == 3) {
+                                    if (temperatureMap.get(trackId) == null) {
+                                        temperatureMap.put(trackId, temperature);
+                                        temperatureStatusMap.put(trackId, TemperatureStatus.SUCCEED);
+                                    } else if (temperature > temperatureMap.get(trackId)) {
+                                        temperatureMap.put(trackId, temperature);
+                                    }
+                                    hasFever |= isFever;
+                                }
+                                Log.e(TAG, "trackId : " + trackId + " Body temperature : " + temperatureMap.get(trackId) + "-" + temperatureStatusMap.get(trackId));
+                            }
+                            if (hasFever) {
+                                /*drawHelperRgb.drawPreviewInfo(faceRectView, drawInfos);
+                                saveBitmapFile(captureView(faceRectView));
+                                soundPool.stop(spMap.get(3));
+                                playSounds(3, 0);*/
+                            }
                             isTemperature = false;
-                            Log.d(TAG, "error data");
-                            return;
                         }
-                        float temp;
-                        for (int i = 0; i < maxInRectInfo.size(); i++) {
-                            int trackId = temperatureRectList.get(i).getTrackId();
-                            temperature = maxInRectInfo.get(i)[3];
-
-                            String temperatureUnit = AppSettings.getfToC();
-                            if (temperatureUnit.equals("F")) {
-                                temperature = (float) Util.celsiusToFahrenheit(temperature);
-                            }
-                            faceHelperProIr.setName(trackId, String.valueOf(temperature));
-
-                            if (temperatureMap.get(trackId) == null) {
-                                temperatureMap.put(trackId, temperature);
-                                temperatureStatusMap.put(trackId, TemperatureStatus.SUCCEED);
-                            } else if (temperature > temperatureMap.get(trackId)) {
-                                temperatureMap.put(trackId, temperature);
-                            }
-                            Log.e(TAG, "trackId : " + trackId + " Body temperature : " + temperatureMap.get(trackId) + "-" + temperatureStatusMap.get(trackId));
-                        }
-                        isTemperature = false;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     isTemperature = false;
                 }
             }
+
+            @Override
+            public void callBackError(String s) throws RemoteException {
+
+            }
         });
     }
 
+    private float getDistance(Rect rect) {
+        int h = rect.bottom - rect.top;
+        int w = rect.right - rect.left;
+        int v = h + w;
+        return 80 * (310f / (float) v);
+    }
+
     List<TemperatureRect> temperatureRectList = new ArrayList<>();
-    private void setRect(final List<FacePreviewInfo> facePreviewInfoList){
+    List<TemperatureRect> originRectList = new ArrayList<>();
+    List<Integer> distanceList = new ArrayList<>();
+    private void setRect(final List<FacePreviewInfo> facePreviewInfoList) {
         isTemperature = true;
         temperatureRectList.clear();
+        originRectList.clear();
+        distanceList.clear();
         long startTime = System.currentTimeMillis();
+        int distance = 0;
         for (int i = 0; i < facePreviewInfoList.size(); i++) {
             Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
+            float fix = getDistance(rect);
             float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
             float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
-            Rect newRect = new Rect(tempRect);
-            int horizontalOffset2 = (int)(horizontalOffset / 580 * 270);
-            int verticalOffset2 = (int)(verticalOffset / 720 * 360);
+            Rect newRect;
+            if(fix > 100) {
+                newRect = new Rect(tempRect.left - 10, tempRect.top + 20, tempRect.right - 50, tempRect.bottom - 20);
+            }else if (fix > 60) {
+                newRect = new Rect(tempRect.left - 10, tempRect.top + 15, tempRect.right - 40, tempRect.bottom - 15);
+            } else if (fix > 30) {
+                newRect = new Rect(tempRect.left, tempRect.top + 10, tempRect.right - 20, tempRect.bottom - 10);
+            } else {
+                newRect = new Rect(tempRect);
+            }
+            int horizontalOffset2 = (int) (horizontalOffset / 580 * 270);
+            int verticalOffset2 = (int) (verticalOffset / 720 * 360);
             newRect.left += verticalOffset2;
             newRect.right += verticalOffset2;
             newRect.top += horizontalOffset2;
             newRect.bottom += horizontalOffset2;
-            if(newRect.left > 360 || newRect.right < 0 || newRect.top > 270 || newRect.bottom < 0){
+            if (newRect.left > 360 || newRect.right < 0 || newRect.top > 270 || newRect.bottom < 0) {
                 continue;
             }
-            if(newRect.left < 0){
+            if (newRect.left < 0) {
                 newRect.left = 0;
             }
-            if(newRect.right > 360){
+            if (newRect.right > 360) {
                 newRect.right = 360;
             }
-            if(newRect.top < 0){
+            if (newRect.top < 0) {
                 newRect.top = 0;
             }
-            if(newRect.bottom > 270){
+            if (newRect.bottom > 270) {
                 newRect.bottom = 270;
             }
 //            Log.e(TAG,"set rect :" + newRect.toString());
-            temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect));
+            temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect , fix));
+            originRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), rect , fix));
+            distanceList.add((int)fix);
         }
-        if (temperatureRectList.size() == 0) {
+        if (temperatureRectList.size() == 0 || originRectList.size() == 0 || distanceList.size() == 0) {
             isTemperature = false;
             return;
         }
         final Rect[] rects = new Rect[temperatureRectList.size()];
-        for(int i = 0; i < temperatureRectList.size();i++){
+        for (int i = 0; i < temperatureRectList.size(); i++) {
             rects[i] = temperatureRectList.get(i).getRect();
         }
-        util.setGuideRect(rects,0);
+        int[] distances = new int[distanceList.size()];
+        for(int i = 0; i < distanceList.size(); i++){
+            distances[i] = distanceList.get(i);
+        }
+        util.setGuideRect(rects, distances);
+        Log.e(TAG,"distance :" + distance);
     }
 
 
@@ -1042,7 +1111,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 continue;
                             }
                             Log.e(TAG,newRect.toString());
-                            temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect));
+                            temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect, 0));
                         }else {
                             faceHelperProIr.setName(facePreviewInfoList.get(i).getTrackId(),"");
                         }
