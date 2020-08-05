@@ -1086,13 +1086,14 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void getDeviceHealthCheck(JSONObjectCallback callback, Context context) {
         try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            SharedPreferences sharedPreferences = getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("lastUpdateDateTime", Util.getUTCDate(""));
-            obj.put("deviceSN", Util.getSNCode());
+            obj.put("lastUpdateDateTime", getUTCDate(""));
+            obj.put("deviceSN", getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("appState", getAppState() );
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -1100,6 +1101,13 @@ public class Util {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
 
         }
+    }
+
+    private static String getAppState(){
+        String appState = "Foreground";
+        if(ApplicationLifecycleHandler.isInBackground)
+            appState = "Background";
+        return appState;
     }
 
     public static boolean activeEngineOffline(Context context) {
