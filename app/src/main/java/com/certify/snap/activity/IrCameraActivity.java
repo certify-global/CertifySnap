@@ -474,15 +474,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     }
 
-    private void showTip(final String msg, final boolean isplaysound) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                tv_message.setText(msg);
-            }
-        });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -802,7 +793,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
 
         FaceServer.getInstance().unInit();
-        stopAnimation();
         cancelImageTimer();
         temperatureBitmap = null;
         clearQrCodePreview();
@@ -1251,7 +1241,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     tv_message.setText("");
                     tv_message.setVisibility(View.GONE);
                     //   tvDisplayingCount.setVisibility(View.GONE);
-                    stopAnimation();
 
                     temperature_image.setVisibility(View.GONE);
                     tvErrorMessage.setVisibility(View.GONE);
@@ -1589,26 +1578,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 //        tv_message.setVisibility(View.GONE);
     }
 
-    private void stopAnimation() {
-//        if (animatorSet != null) {
-//            animatorSet.cancel();
-//            outerCircleAnimator = null;
-//            innerCircleAnimator = null;
-//            animatorSet = null;
-//        }
-    }
-
-    private void showWallpaper() {
-//        if (sp.getBoolean("wallpaper", false)) {
-//            Glide.with(IrCameraActivity.this)
-//                    .load(GuideService.WALLPAPER_DIR + File.separator + "wallpaper.png")
-//                    .error(R.mipmap.telpo)
-//                    .skipMemoryCache(true)
-//                    .diskCacheStrategy(DiskCacheStrategy.NONE);
-//            //.into(relativeLayout);
-        //}
-    }
-
     public String[] processLimitedTime(String data) {
         if (data.contains(";")) {
             return data.split(";");
@@ -1682,13 +1651,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     isTemperatureIdentified = true;
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
 
-                    /*tv_message.setVisibility(View.GONE);
-                    tvErrorMessage.setVisibility(View.GONE);
-                    temperature_image.setVisibility(View.GONE);
-                    homeDisplayView();
-                    mask_message.setVisibility(View.GONE);
-                    final Activity that = IrCameraActivity.this;
-                    isTemperatureIdentified = false;*/
                     clearData();
                     isTemperatureIdentified = false;
                     resetHomeScreen();
@@ -1803,8 +1765,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             tvErrorMessage.setVisibility(View.GONE);
             countTempError = 0;
             String text = "";
-//            tackPickIr = false;
-//            tackPickRgb = false;
             if (sharedPreferences.getString(GlobalParameters.F_TO_C, "F").equals("F")) {
                 temperature = Util.FahrenheitToCelcius(temperatureInput);
             } else {
@@ -1949,7 +1909,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
                 });
             }
-//            retry(tempretrynum);
         }
 
         @Override
@@ -2539,10 +2498,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private String registerpath = "";
-    private String model = Build.MODEL;
-    //static int inc;
-
     public void processImageAndGetMaskStatus(Bitmap maskDetectBitmap) {
         Observable
                 .create((ObservableOnSubscribe<Integer>) emitter -> {
@@ -2627,7 +2582,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Without Mask");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-//                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "0");
                     }
                     break;
                     case 1: {
@@ -2635,8 +2589,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Mask Detected");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-//                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "1");
-
                     }
                     break;
                     case -1: {
@@ -2644,8 +2596,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         mask_message.setText("Unable to detect Mask");
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.white));
-//                        Util.writeString(sharedPreferences, GlobalParameters.MASK_VALUE, "-1");
-
                     }
                     break;
                 }
@@ -3193,7 +3143,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             /*if (isTemperatureIdentified || !takePicRgb)
                                 return;*/
 
-                            stopAnimation();
                             tv_message.setText("");
                             tv_message.setVisibility(View.GONE);
                             tvErrorMessage.setVisibility(View.GONE);
