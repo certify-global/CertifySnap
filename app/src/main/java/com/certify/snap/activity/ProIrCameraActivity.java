@@ -774,7 +774,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 }, 3* 1000);//20秒
             }
 
-            facePreviewInfoList = faceHelperProIr.onPreviewFrame(cloneNv21Rgb);
+            List<FacePreviewInfo> facePreviewInfoList = faceHelperProIr.onPreviewFrame(cloneNv21Rgb);
+            this.facePreviewInfoList = facePreviewInfoList;
 
             if(facePreviewInfoList != null && facePreviewInfoList.size() > 0 && module!=0 && !isTemperature){
                 if(module == 25){
