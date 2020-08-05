@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -212,7 +213,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private boolean isMeasured = false;
     List<RegisteredMembers> registeredMemberslist;
     RelativeLayout rl_header;
-    ImageView logo;
+    Button logo;
     private float temperature = 0;
     private List<FacePreviewInfo> facePreviewInfoList;
     private Bitmap irBitmap;
@@ -256,15 +257,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         tempRect = new Rect(sharedPreferences.getInt("rect_left", 24), sharedPreferences.getInt("rect_top", 30),
                 sharedPreferences.getInt("rect_right", 28), sharedPreferences.getInt("rect_bottom", 40));
 
-        logo = findViewById(R.id.logo);
+        logo = findViewById(R.id.loginLogo);
         rl_header = findViewById(R.id.rl_header);
-        rl_header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent loginIt = new Intent(ProIrCameraActivity.this, LoginActivity.class);
-                startActivity(loginIt);
-                finish();
-            }
+        logo.setOnLongClickListener(v -> {
+            Intent loginIt = new Intent(ProIrCameraActivity.this, LoginActivity.class);
+            startActivity(loginIt);
+            finish();
+            return true;
         });
 
         img_temperature = findViewById(R.id.img_temperature);
