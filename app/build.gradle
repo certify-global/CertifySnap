@@ -112,6 +112,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //  api project(path: ':myokhttp')
     implementation files('libs/core-3.1.0.jar')
@@ -120,7 +122,7 @@ dependencies {
     implementation files('libs/arcsoft_image_util.jar')
     implementation files('libs/arcsoft_face.jar')
     implementation files('libs/pushservice-6.5.0.75.jar')
-    implementation files('libs/telpo_temperature_v1.1.2.jar')
+    implementation files('libs/telpo_temperature_v1.1.4.jar')
 //    implementation files('libs/poi-3.12-android-a.jar')
 //    implementation files('libs/poi-ooxml-schemas-3.12-20150511-a.jar')
     def appCenterSdkVersion = '3.2.1'

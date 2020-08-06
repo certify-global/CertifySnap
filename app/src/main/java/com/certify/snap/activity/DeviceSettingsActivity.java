@@ -50,9 +50,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private TextView btn_save, tvSettingsName, activateStatus, tv_device_activation_status, pro_settings;
     private RelativeLayout ll;
     private Switch switch_activate;
-    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members;
+    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members, navigation_bar_textview, sync_online_members_textview;
     private Button tvClearData, not_activate;
-    private CheckBox cbDoSyc;
     private Typeface rubiklight;
     private String url_end;
     private String url;
@@ -60,6 +59,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
     private View pro_settings_border;
+    RadioGroup sync_member_radio_group;
+    RadioButton sync_member_radio_yes, sync_member_radio_no;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +82,6 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvDeviceName = findViewById(R.id.tv_device_name_dev);
             tvPass = findViewById(R.id.tv_password_device);
             tvSettingStr = findViewById(R.id.tv_device_settings_str);
-            cbDoSyc = findViewById(R.id.cb_enable_do_not_sync);
             sharedPreferences = Util.getSharedPreferences(this);
             tvClearData = findViewById(R.id.tv_clear_cache);
             tvResetSnap = findViewById(R.id.tv_reset_snap);
@@ -90,6 +90,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             pro_settings_border= findViewById(R.id.pro_settings_border);
             tv_reset_members = findViewById(R.id.tv_reset_members);
             tv_clear_members = findViewById(R.id.tv_clear_members);
+            navigation_bar_textview = findViewById(R.id.navigation_bar_textview);
+            sync_online_members_textview = findViewById(R.id.sync_online_members_textview);
 
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -105,11 +107,16 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             not_activate.setTypeface(rubiklight);
             tv_device_activation_status.setTypeface(rubiklight);
             tvEnd.setTypeface(rubiklight);
-            cbDoSyc.setTypeface(rubiklight);
             pro_settings.setTypeface(rubiklight);
             tv_reset_members.setTypeface(rubiklight);
             tv_clear_members.setTypeface(rubiklight);
+            navigation_bar_textview.setTypeface(rubiklight);
+            sync_online_members_textview.setTypeface(rubiklight);
+
             proSettings();
+            navigationBarSettings();
+            syncMemberSettings();
+
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -202,12 +209,6 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     }
                 }
             });
-            cbDoSyc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, isChecked);
-                }
-            });
             tvClearData.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -248,11 +249,67 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     }
 
+    private void navigationBarSettings() {
+        RadioGroup  radio_group_navigationbar = findViewById(R.id.navigation_bar_radio_group);
+        RadioButton radio_navigationbar_enable = findViewById(R.id.navigation_bar_radio_enable);
+        RadioButton radio_navigationbar_disable = findViewById(R.id.navigation_bar_radio_disable);
+        boolean navigationBar = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,true);
+
+        if (navigationBar){
+            radio_navigationbar_enable.setChecked(true);
+            sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+        }else {
+            radio_navigationbar_disable.setChecked(true);
+            sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+        }
+
+        radio_group_navigationbar.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.navigation_bar_radio_enable:
+                        Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
+                        sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+                        break;
+                    case R.id.navigation_bar_radio_disable:
+                        Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
+                        sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                        break;
+                }
+            }
+        });
+
+    }
+
+    private void syncMemberSettings() {
+
+        sync_member_radio_group = findViewById(R.id.sync_online_members_radio_group);
+        sync_member_radio_yes = findViewById(R.id.sync_online_members_radio_enable);
+        sync_member_radio_no = findViewById(R.id.sync_online_members_radio_disable);
+
+        if (sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+            sync_member_radio_yes.setChecked(true);
+        else sync_member_radio_no.setChecked(true);
+
+        sync_member_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.sync_online_members_radio_enable) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, true);
+                } else {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, false);
+                }
+            }
+
+        });
+
+    }
+
     private void setUIData() {
         try {
             url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
-            String removeHttps = url_end.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)","");
-            String endApiString = removeHttps.replace(getString(R.string.hostname),"");
+            String removeHttps = url_end.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "");
+            String endApiString = removeHttps.replace(getString(R.string.hostname), "");
             etEndUrl.setText(endApiString);
             if (endApiString != null && endApiString.length() > 0)
                 etEndUrl.setSelection(endApiString.length());
@@ -268,7 +325,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 not_activate.setText("Activate");
                 tvSettingsName.setText("Local");
             }
-            cbDoSyc.setChecked(sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false));
+            syncMemberSettings();
             deviceAccessPassword();
         } catch (Exception e) {
 

@@ -56,7 +56,7 @@ import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
 import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
 import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
 
-public class SettingActivity extends Activity implements JSONObjectCallback, SettingCallback {
+public class SettingActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
 
     private static final String TAG = SettingActivity.class.getSimpleName();
     private FaceEngine faceEngine = new FaceEngine();
@@ -86,8 +86,6 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_setting);
             Util.getNumberVersion(SettingActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),

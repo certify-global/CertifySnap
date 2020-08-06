@@ -315,34 +315,7 @@ public class ParameterActivity extends SettingBaseActivity {
                 }
             }
         });
-        radio_group_navigationbar = findViewById(R.id.radio_group_navigationbar);
-        radio_navigationbar_show = findViewById(R.id.radio_navigation_show);
-        radio_navigationbar_hide = findViewById(R.id.radio_navigation_hide);
-        boolean navigationbar = sp.getBoolean(GlobalParameters.NavigationBar,true);
 
-        if (navigationbar){
-            radio_navigationbar_show.setChecked(true);
-            sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-        }else {
-            radio_navigationbar_hide.setChecked(true);
-            sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-        }
-
-        radio_group_navigationbar.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radio_navigation_show:
-                        Util.writeBoolean(sp,GlobalParameters.NavigationBar,true);
-                        sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-                        break;
-                    case R.id.radio_navigation_hide:
-                        Util.writeBoolean(sp,GlobalParameters.NavigationBar,false);
-                        sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-                        break;
-                }
-            }
-        });
         relaytime = findViewById(R.id.edit_relaytime);
         int relaytimeresult = sp.getInt(GlobalParameters.RelayTime,5);
         if(relaytimeresult > 0){
