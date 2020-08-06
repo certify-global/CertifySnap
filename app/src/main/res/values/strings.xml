@@ -394,8 +394,8 @@
     <string name="local_data">Reset Local Data</string>
     <string name="clear_members">Reset Members</string>
     <string name="clear_members_button">CLEAR ALL MEMBERS</string>
-    <string name="add_device">Login to add the device</string>
-    <string name="not_configure">This device is not configure to work online.</string>
+    <string name="add_device">Login to register the device</string>
+    <string name="not_configure">This device is not configured to work online.</string>
     <string name="cloud">If you already have a cloud account,</string>
     <string name="device_added">If you have already added the device SL NO:   on the portal,go to settings and activate.</string>
     <string name="activation_again">Try Activation Again</string>
