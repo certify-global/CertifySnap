@@ -25,6 +25,7 @@ import android.provider.MediaStore;
 
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
 import com.google.android.material.snackbar.Snackbar;
@@ -243,6 +244,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
                         count = 0;
                         testCount = 1;
+                        activeMemberCount = totalMemberCount = 0;
                         datalist.clear();
                         mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
                         Util.getmemberList(this, this);
@@ -528,11 +530,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             Log.e("updateimgpath---", updateimagePath);
                         }
 
-                        if (!idstr.equals(updateMember.getMemberid()) && isMemberExist(idstr)) {
+                        if (!idstr.equals(updateMember.getMemberid()) && DatabaseController.getInstance().isMemberExist(idstr)) {
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (!accessstr.equals(null) && !accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
+                        if (!accessstr.equals(null) && !accessstr.equals(updateMember.getAccessid()) &&
+                                DatabaseController.getInstance().isAccessIdExist(accessstr)) {
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -840,11 +843,11 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
                 if (!TextUtils.isEmpty(memberidstr)) {
-                    if (isMemberExist(memberidstr)) {
+                    if (DatabaseController.getInstance().isMemberExist(memberidstr)) {
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (isAccessIdExist(accessstr) && !accessstr.equals(null)) {
+                    if (DatabaseController.getInstance().isAccessIdExist(accessstr) && !accessstr.equals(null)) {
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -896,30 +899,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         Util.showToast(ManagementActivity.this, data);
     }
 
-    private boolean isMemberExist(String memberId) {
-        List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
-        if (membersList != null && membersList.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isAccessIdExist(String accessId) {
-        List<RegisteredMembers> membersList = LitePal.where("accessid = ?", accessId).find(RegisteredMembers.class);
-        if (membersList == null && membersList.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isCertifyIdExist(String uniqueID) {
-        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
-        if (membersList != null && membersList.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
     private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath, String sync) {
         String data = "";
         Log.d(TAG, "Snap Member id : " + id);
@@ -949,7 +928,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
     public void localUpdate(String oldId, String fistname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imagePath) {
         String data = "";
-        List<RegisteredMembers> list = LitePal.where("memberid = ?", oldId).find(RegisteredMembers.class);
+        List<RegisteredMembers> list = DatabaseController.getInstance().findMember(oldId);
         if (list != null && list.size() > 0) {
 
             DismissProgressDialog(mprogressDialog);
@@ -1035,12 +1014,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     }
 
     public boolean deleteDatabase(String name, String id) {
-        List<RegisteredMembers> list = LitePal.where("memberid = ?", id).find(RegisteredMembers.class);
+        List<RegisteredMembers> list = DatabaseController.getInstance().findMember(id);
         if (list != null && list.size() > 0) {
             FaceServer.getInstance().deleteInfo(name + "-" + id);
             String featurePath = list.get(0).getFeatures();
             String imgPath = list.get(0).getImage();
-            int line = LitePal.deleteAll(RegisteredMembers.class, "memberid = ?", id);
+            int line = DatabaseController.getInstance().deleteMember(id);
             Log.e("tag", "line---" + line);
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);
