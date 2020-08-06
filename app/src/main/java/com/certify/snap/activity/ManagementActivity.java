@@ -23,12 +23,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 
+import com.certify.snap.api.response.MemberListData;
+import com.certify.snap.api.response.MemberListResponse;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,8 +43,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -70,13 +70,14 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
-import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -90,7 +91,7 @@ import java.util.List;
 import static com.certify.snap.common.Util.getnumberString;
 
 public class ManagementActivity extends SettingBaseActivity implements ManageMemberCallback,
-        MemberListCallback, MemberIDCallback {
+        MemberListCallback, MemberIDCallback, MemberSyncDataModel.SyncDataCallBackListener {
 
     protected static final String TAG = ManagementActivity.class.getSimpleName();
     private EditText msearch;
@@ -133,6 +134,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     int listPosition;
     int count=0;
     private BroadcastReceiver hidReceiver;
+    private int activeMemberCount = 0;
+    private int totalMemberCount = 0;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -200,7 +203,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
         initData(true);
         initNfc();
-
+        initMemberSync();
     }
 
     @Override
@@ -310,13 +313,10 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     }
 
     private void initMember() {
-        if(totalMemberCount==totalMemberLastcount){
-            mCountTv.setText(String.valueOf(datalist.size()));
-        }else{
-            mCountTv.setText(testCount++ + " / " + totalMemberCount);
-        }
-        if(memberAdapter == null)
+        mCountTv.setText(String.valueOf(datalist.size()));
+        if (memberAdapter == null) {
             memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(memberAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -898,52 +898,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         Util.showToast(ManagementActivity.this, data);
     }
 
-    private boolean processImg(String name, String imgpath, String id) {
-        if (imgpath.isEmpty()) return false;
-        Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
-        bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
-        if (bitmap == null) {
-            Log.e("tag", "fail to translate bitmap");
-            showResult(getString(R.string.toast_translateBitmapfail));
-            return false;
-        }
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-        }
-        boolean success = FaceServer.getInstance().registerBgr24(ManagementActivity.this, bgr24, bitmap.getWidth(),
-                bitmap.getHeight(), name, id);
-        return success;
-    }
-
-    public boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {
-        try {
-            String username = firstname + "-" + id;
-            String image = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username + FaceServer.IMG_SUFFIX;
-            String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
-            Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
-
-        RegisteredMembers registeredMembers = new RegisteredMembers();
-        registeredMembers.setFirstname(firstname);
-        registeredMembers.setLastname(lastname);
-        registeredMembers.setMobile(mobile);
-        registeredMembers.setStatus("1");
-        registeredMembers.setMemberid(id);
-        registeredMembers.setEmail(email);
-        registeredMembers.setAccessid(accessid);
-        registeredMembers.setUniqueid(uniqueid);
-//      registeredMembers.setExpire_time(time);
-        registeredMembers.setImage(image);
-        registeredMembers.setFeatures(feature);
-        boolean result = registeredMembers.save();
-        return result;
-        }catch (Exception e){
-            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
-        }
-        return false;
-    }
-
-
     private boolean isMemberExist(String memberId) {
         List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
         if (membersList != null && membersList.size() > 0) {
@@ -972,8 +926,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         String data = "";
         Log.d(TAG, "Snap Member id : " + id);
         File imageFile = new File(imgpath);
-        if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
-            if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
+        if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + id, imgpath, id, this) || !imageFile.exists()) {
+            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid, this)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -1004,7 +958,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             File file = new File(imagePath);
             String filepath = Environment.getExternalStorageDirectory() + "/pic/update.jpg";
             if (file.exists() && filepath.equalsIgnoreCase(imagePath)) {
-                if (processImg(fistname + "-" + id, imagePath, oldId)) {
+                if (MemberSyncDataModel.getInstance().processImg(fistname + "-" + id, imagePath, oldId, this)) {
                     RegisteredMembers Members = list.get(0);
                     Members.setFirstname(fistname);
                     Members.setLastname(lastname);
@@ -1277,25 +1231,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         }
     };
 
-    private boolean ProcessPic(File picfile) {
-        Bitmap bitmap = BitmapFactory.decodeFile(picfile.getAbsolutePath());
-        if (bitmap == null) {
-            Log.e("tag", "fail to get bitmap--");
-            return false;
-        }
-        bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
-        if (bitmap == null) {
-            Log.e("tag", "fail to translate bitmap");
-            return false;
-        }
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-        }
-        boolean success = FaceServer.getInstance().registerBgr24Test(ManagementActivity.this, bgr24, bitmap.getWidth(), bitmap.getHeight());
-        return success;
-    }
-
     private void initNfc() {
         Log.v(TAG, "initNfc");
         mNfcAdapter = M1CardUtils.isNfcAble(this);
@@ -1321,6 +1256,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     protected void onDestroy() {
         super.onDestroy();
         FaceServer.getInstance().unInit();
+        MemberSyncDataModel.getInstance().setListener(null);
+        MemberSyncDataModel.getInstance().clear();
     }
 
     private static String bytearray2Str(byte[] data, int start, int length, int targetLength) {
@@ -1433,129 +1370,63 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         updateMember = null;
     }
 
-    private int totalMemberCount,totalMemberLastcount;
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            if (!reportInfo.isNull("Message")) {
-//                if (reportInfo.getString("Message").contains("token expired"))
-//                    Util.getToken(ManagementActivity.this, this);
-            } else {
-                if (reportInfo.isNull("responseCode")) {
-                    mloadingprogress.dismiss();
-                    return;
-                }
-                if (reportInfo.getString("responseCode").equals("1")) {
-                    JSONArray memberList = reportInfo.getJSONArray("responseData");
-                    totalMemberCount = memberList.length();
-                    totalMemberLastcount = memberList.length()-1;
-                   // System.out.println("NagaTest onJSONObjectListenerMemberList memberList.size: " + memberList.length() );
-                    for (int i = 0; i < memberList.length(); i++) {
-                        JSONObject c = memberList.getJSONObject(i);
-
-                        String certifyId = c.getString("id");
-                        String memberId = c.getString("memberId");
-                        String accessId = c.getString("accessId");
-
-                       // System.out.println("NagaTest onJSONObjectListenerMemberList memberList: " + i + "/" + memberList.length());
-                        JSONObject obj = new JSONObject();
-                        obj.put("id", certifyId);
-
-                        //Intent intent = new Intent(this, MemberDataService.class);
-                        //intent.putExtra()
-                        //startService(intent);
-                        new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                                EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
-
-                        //Toast.makeText(this, "Loading: "+count++ +" out of "+memberList.length(), Toast.LENGTH_SHORT).show();
-                        //updateRecordMsg(i, memberList.length());
-
+        if (reportInfo != null) {
+            Gson gson = new Gson();
+            MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
+            if (response.responseCode != null && response.responseCode.equals("1")) {
+                List<MemberListData> memberList = response.memberList;
+                Log.d(TAG, "MemberList Size " + memberList.size());
+                MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
+                for (int i = 0; i < memberList.size(); i++) {
+                    if (memberList.get(i).status) {
+                        activeMemberCount++;
+                        getMemberID(memberList.get(i).id);
                     }
-
-                } else {
-                    DismissProgressDialog(mloadingprogress);
-                    Logger.toast(this, "Something went wrong please try again");
                 }
+                totalMemberCount = activeMemberCount;
+                MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
+            } else {
+                //DismissProgressDialog(mloadingprogress);
             }
-
-        } catch (Exception e) {
-            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+            Log.e(TAG, "MemberList response = " + response.responseCode);
         }
-
+        Log.e(TAG, "MemberList null response");
     }
 
-    private int testCount=1;
+    private void getMemberID(String certifyId) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("id", certifyId);
+            /*if (taskExecutorService != null) {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
+            } else {*/
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+            //}
+        } catch (Exception e) {
+            Logger.error(TAG, " getMemberID()",e.getMessage());
+        }
+    }
+
+    private int testCount=0;
     public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (reportInfo == null) {
-                        return;
-                    }
-                    if (!reportInfo.isNull("Message")) {
-//                if (reportInfo.getString("Message").contains("token expired"))
-//                    Util.getToken(ManagementActivity.this, this);
-                    } else {
-                        if (reportInfo.isNull("responseCode")) return;
-                        if (reportInfo.getString("responseCode").equals("1")) {
-                            JSONArray memberList = reportInfo.getJSONArray("responseData");
-                            for (int i = 0; i < memberList.length(); i++) {
-                                JSONObject c = memberList.getJSONObject(i);
-
-                                String certifyId = c.getString("id");
-                                String memberId = c.getString("memberId").replaceAll("[-+.^:,]","");
-                                if (memberId.isEmpty()) {
-                                    memberId = certifyId;
-                                }
-                                String accessId = c.getString("accessId");
-                                String firstName = c.getString("firstName");
-                                String lastName = c.getString("lastName");
-                                String email = c.getString("email");
-                                String phoneNumber = c.getString("phoneNumber");
-                                String faceTemplate = c.getString("faceTemplate");
-                                Boolean statusVal = c.getBoolean("status");
-                                String accountId = c.getString("accountId");
-                                String memberType = c.getString("memberType");
-
-                                String imagePath = MemberUtilData.getImagePath(faceTemplate);
-
-
-                                if (statusVal){
-                                   // Thread.sleep(200);
-
-                                    if (isCertifyIdExist(certifyId)) {
-                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
-                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-
-                                    } else {
-                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
-                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                                    }
-                                    initData(true);
-                                }else {
-                                    totalMemberCount--;
-                                    totalMemberLastcount--;
-
-                                }
-                            }
-                            DismissProgressDialog(mloadingprogress);
-                           // initData(true);
-                        } else {
-                            DismissProgressDialog(mloadingprogress);
-                            Logger.toast(ManagementActivity.this, "Something went wrong please try again");
-                        }
-                    }
-                } catch (Exception e) {
-                    DismissProgressDialog(mloadingprogress);
-                    Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
-                    //initData(true);
+        try {
+            if (reportInfo.isNull("responseCode"))  {
+                return;
+            }
+            if (reportInfo.getString("responseCode").equals("1")) {
+                JSONArray memberList = reportInfo.getJSONArray("responseData");
+                if (memberList != null) {
+                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
                 }
             }
-        });
+        } catch (JSONException e) {
+            DismissProgressDialog(mloadingprogress);
+            Log.e(TAG, "Get Member Id resposne, Error is fetching the data");
+        }
     }
 
     public void onRfidScan(String cardId) {
@@ -1568,7 +1439,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     registerAccessid.setText(cardId);
                 }
             }
-
         });
     }
 
@@ -1606,5 +1476,23 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 }
             }
         };
+    }
+
+    private void initMemberSync() {
+        MemberSyncDataModel.getInstance().init(this);
+        MemberSyncDataModel.getInstance().setListener(this);
+    }
+
+    @Override
+    public void onMemberAddedToDb() {
+        runOnUiThread(() -> {
+            DismissProgressDialog(mloadingprogress);
+            if (testCount == totalMemberCount) {
+                mCountTv.setText(String.valueOf(datalist.size() + 1));
+            } else {
+                mCountTv.setText(testCount++ + " / " + totalMemberCount);
+            }
+            initData(false);
+        });
     }
 }

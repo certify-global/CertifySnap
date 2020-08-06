@@ -43,6 +43,10 @@ public class MemberSyncDataModel {
     private static final String SYNCING_MESSAGE = "Syncing...";
     private static final String SYNCING_COMPLETED = "Sync completed";
     private int NUM_OF_RECORDS = 0;
+    private SyncDataCallBackListener listener = null;
+    public interface SyncDataCallBackListener {
+        void onMemberAddedToDb();
+    }
 
     public static MemberSyncDataModel getInstance() {
         if (mInstance == null) {
@@ -154,6 +158,9 @@ public class MemberSyncDataModel {
                                     member.getImage(), "sync", context, member);
                         }
                     }
+                    if (listener != null) {
+                        listener.onMemberAddedToDb();
+                    }
                 }
                 if (dbSyncErrorMemberList.isEmpty()) {
                     doSendBroadcast(SYNCING_COMPLETED, 0, 0);
@@ -226,7 +233,7 @@ public class MemberSyncDataModel {
      * @param context context
      * @return true or false accordingly
      */
-    private boolean processImg(String name, String imgpath, String id,Context context) {
+    public boolean processImg(String name, String imgpath, String id,Context context) {
         if (imgpath.isEmpty()) return false;
         Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
         bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
@@ -256,7 +263,7 @@ public class MemberSyncDataModel {
      * @param context context
      * @return true or false accordingly
      */
-    private boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, Context context) {
+    public boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, Context context) {
         try {
             String username = firstname + "-" + id;
             String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
@@ -365,9 +372,17 @@ public class MemberSyncDataModel {
     }
 
     /**
+     * Method that set the callback listner
+     * @param callBackListener callbackListener
+     */
+    public void setListener(SyncDataCallBackListener callBackListener) {
+        this.listener = callBackListener;
+    }
+
+    /**
      * Method that clears the data model
      */
-    private void clear() {
+    public void clear() {
         Log.d(TAG, "SnapXT Clear Data model");
         membersList.clear();
         dbSyncErrorMemberList.clear();
