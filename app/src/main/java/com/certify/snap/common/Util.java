@@ -907,7 +907,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-
+            obj.put("appState", getAppState());
 
         } catch (Exception e) {
             Log.e(LOG + "MobileDetailsData ", e.getMessage());
@@ -1095,11 +1095,11 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void getDeviceHealthCheck(JSONObjectCallback callback, Context context) {
         try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            SharedPreferences sharedPreferences = getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("lastUpdateDateTime", Util.getUTCDate(""));
-            obj.put("deviceSN", Util.getSNCode());
+            obj.put("lastUpdateDateTime", getUTCDate(""));
+            obj.put("deviceSN", getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
 
@@ -1109,6 +1109,13 @@ public class Util {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
 
         }
+    }
+
+    private static String getAppState(){
+        String appState = "Foreground";
+        if(ApplicationLifecycleHandler.isInBackground)
+            appState = "Background";
+        return appState;
     }
 
     public static boolean activeEngineOffline(Context context) {
@@ -1213,8 +1220,8 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, doNotSyncMembers.equals("1"));
                     String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
                     Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
-                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "0" : jsonDeviceSettings.getString("navigationBar");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("0"));
+                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "1" : jsonDeviceSettings.getString("navigationBar");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("1"));
                 }
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
