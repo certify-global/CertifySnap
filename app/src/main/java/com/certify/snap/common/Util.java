@@ -898,7 +898,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-
+            obj.put("appState", getAppState());
 
         } catch (Exception e) {
             Log.e(LOG + "MobileDetailsData ", e.getMessage());
@@ -1093,7 +1093,6 @@ public class Util {
             obj.put("deviceSN", getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("appState", getAppState() );
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
