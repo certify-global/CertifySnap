@@ -54,9 +54,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.arcsoft.imageutil.ArcSoftImageFormat;
-import com.arcsoft.imageutil.ArcSoftImageUtil;
-import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.callback.ManageMemberCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
@@ -246,6 +243,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
                         count = 0;
                         testCount = 1;
+                        datalist.clear();
                         mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
                         Util.getmemberList(this, this);
                     }
@@ -1479,12 +1477,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     }
 
     private void initMemberSync() {
-        MemberSyncDataModel.getInstance().init(this);
+        MemberSyncDataModel.getInstance().init(this, MemberSyncDataModel.DatabaseAddType.SERIAL);
         MemberSyncDataModel.getInstance().setListener(this);
     }
 
     @Override
-    public void onMemberAddedToDb() {
+    public void onMemberAddedToDb(RegisteredMembers addedMember) {
         runOnUiThread(() -> {
             DismissProgressDialog(mloadingprogress);
             if (testCount == totalMemberCount) {
@@ -1492,7 +1490,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             } else {
                 mCountTv.setText(testCount++ + " / " + totalMemberCount);
             }
-            initData(false);
+            datalist.add(addedMember);
+            refreshMemberList(datalist);
         });
     }
 }

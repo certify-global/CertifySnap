@@ -28,7 +28,6 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -44,8 +43,15 @@ public class MemberSyncDataModel {
     private static final String SYNCING_COMPLETED = "Sync completed";
     private int NUM_OF_RECORDS = 0;
     private SyncDataCallBackListener listener = null;
+    private DatabaseAddType dbAddType = DatabaseAddType.SCALE;
+
     public interface SyncDataCallBackListener {
-        void onMemberAddedToDb();
+        void onMemberAddedToDb(RegisteredMembers member);
+    }
+
+    public enum DatabaseAddType {
+        SERIAL,
+        SCALE
     }
 
     public static MemberSyncDataModel getInstance() {
@@ -61,6 +67,17 @@ public class MemberSyncDataModel {
     public void init(Context ctx) {
         this.context = ctx;
         clear();
+    }
+
+    /**
+     * Method for initialization with parameter
+     * @param ctx context
+     * @param type database add type Serial or Scale
+     */
+    public void init(Context ctx, DatabaseAddType type) {
+        this.context = ctx;
+        clear();
+        dbAddType = type;
     }
 
     /**
@@ -114,9 +131,7 @@ public class MemberSyncDataModel {
                         Log.d(TAG, "SnapXT Add API response Member added " + membersList.size());
 
                         //Add records fetched from server, add it to the database
-                        if (membersList.size() == NUM_OF_RECORDS) {
-                            addToDatabase(context);
-                        }
+                        addToDatabase();
                         addMemberDisposable.dispose();
                     }
 
@@ -158,15 +173,47 @@ public class MemberSyncDataModel {
                                     member.getImage(), "sync", context, member);
                         }
                     }
-                    if (listener != null) {
-                        listener.onMemberAddedToDb();
-                    }
                 }
                 if (dbSyncErrorMemberList.isEmpty()) {
                     doSendBroadcast(SYNCING_COMPLETED, 0, 0);
                 }
                 isSyncing = false;
         }).start();
+    }
+
+    /**
+     * Method that initiates process of adding to the database
+     * @param context context
+     */
+    private synchronized void addToDatabaseSerial(Context context) {
+        Log.d(TAG, "SnapXT Add to database Serial, number of records: " + membersList.size());
+        for (int i = 0; i < membersList.size(); i++) {
+            RegisteredMembers member = membersList.get(i);
+            if (member.getStatus().equalsIgnoreCase("true") ||
+                    member.getStatus().equalsIgnoreCase("1")) {
+                if (isMemberExistsInDb(member.getUniqueid())) {
+                    Log.d(TAG, "SnapXT Member already exist, delete and update " +i);
+                    MemberUtilData.deleteDatabaseCertifyId(member.firstname, member.getUniqueid());
+                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                            member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                            member.getImage(), "sync", context, member);
+                    if (listener != null) {
+                        listener.onMemberAddedToDb(member);
+                    }
+                    membersList.remove(member);
+                } else {
+                    Log.d(TAG, "SnapXT New member update " +i);
+                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                            member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                            member.getImage(), "sync", context, member);
+                    if (listener != null) {
+                        listener.onMemberAddedToDb(member);
+                    }
+                    membersList.remove(member);
+                }
+            }
+        }
+        isSyncing = false;
     }
 
     /**
@@ -371,6 +418,22 @@ public class MemberSyncDataModel {
         this.NUM_OF_RECORDS = value;
     }
 
+    private void addToDatabase() {
+        switch (dbAddType) {
+            case SCALE: {
+                if (membersList.size() == NUM_OF_RECORDS) {
+                    addToDatabase(context);
+                }
+            }
+            break;
+
+            case SERIAL: {
+                addToDatabaseSerial(context);
+            }
+            break;
+        }
+    }
+
     /**
      * Method that set the callback listner
      * @param callBackListener callbackListener
@@ -387,5 +450,6 @@ public class MemberSyncDataModel {
         membersList.clear();
         dbSyncErrorMemberList.clear();
         dbSyncErrorMap.clear();
+        dbAddType = DatabaseAddType.SCALE;
     }
 }
