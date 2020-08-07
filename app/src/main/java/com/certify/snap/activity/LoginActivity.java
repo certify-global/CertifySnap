@@ -19,6 +19,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.AppStatusInfo;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -60,6 +61,7 @@ public class LoginActivity extends Activity {
                     if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
                         if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setText("Password should not be empty");
+                            updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
                             return;
                         }
                         if (!sp.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()) {
@@ -85,6 +87,7 @@ public class LoginActivity extends Activity {
                         }
                         if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setText("Password should not be empty");
+                            updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
                         } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
                             if (sp.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
@@ -94,11 +97,13 @@ public class LoginActivity extends Activity {
                                 Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                                 startActivity(intent);
                                 finish();
+                                updateAppStatusInfo("LOGIN SUCCESS", AppStatusInfo.LOGIN_SUCCESS);
                             }
                         } else {
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
                             tv_pwd_error.setText("Invalid Password, Try Again");
+                            updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
 //
                         }
                     }
@@ -145,6 +150,7 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
             startActivity(intent);
             finish();
+            updateAppStatusInfo("LOGIN SUCCESS", AppStatusInfo.LOGIN_SUCCESS);
         }
     }
 
@@ -188,6 +194,14 @@ public class LoginActivity extends Activity {
         super.onUserInteraction();
         cancelLoginScreenTimer();
         Logger.debug(TAG, "onUserInteraction", "User action occurred");
+    }
+
+    private void updateAppStatusInfo(String key, String value) {
+        if (value.equals(AppStatusInfo.LOGIN_SUCCESS))
+            AppStatusInfo.getInstance().setLoginSuccess(value);
+        else if (value.equals(AppStatusInfo.LOGIN_FAILED))
+            AppStatusInfo.getInstance().setLoginFailed(value);
+        Logger.debug(TAG, key, value);
     }
 
 }

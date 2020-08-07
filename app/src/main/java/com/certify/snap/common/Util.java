@@ -58,6 +58,7 @@ import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.LoginActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
@@ -68,6 +69,7 @@ import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -905,7 +907,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-
+            obj.put("appState", getAppState());
 
         } catch (Exception e) {
             Log.e(LOG + "MobileDetailsData ", e.getMessage());
@@ -1906,7 +1908,13 @@ public class Util {
             obj.put("commandGuid", guid);
             obj.put("deviceUUID",uniqueID);
             obj.put("eventTypeId",eventTypeID);
-            obj.put("response", response_msg+"push success");
+            obj.put("response", response_msg+" push success");
+            obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
+            obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
+            obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
+            obj.put("LOGINFAILED", AppStatusInfo.getInstance().getLoginFailed());
+            obj.put("DEVICESETTINGS", AppStatusInfo.getInstance().getDeviceSettings());
+
 
             new AsyncJSONObjectPush(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.PushCommandResponse, context).execute();
 
