@@ -1906,7 +1906,7 @@ public class Util {
             obj.put("commandGuid", guid);
             obj.put("deviceUUID",uniqueID);
             obj.put("eventTypeId",eventTypeID);
-            obj.put("response", response_msg+"Success");
+            obj.put("response", response_msg+"push success");
 
             new AsyncJSONObjectPush(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.PushCommandResponse, context).execute();
 

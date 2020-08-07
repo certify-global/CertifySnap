@@ -78,7 +78,6 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             String eventTypeId=jsonObject.isNull("eventTypeId") ? "":jsonObject.getString("eventTypeId");
             String institutionId=jsonObject.isNull("institutionId") ? "":jsonObject.getString("institutionId");
 
-
             if(command.equals("SETTINGS")){
                 Util.getSettings(this,this);
             }else if(command.equals("ALLMEMBER")){
@@ -103,8 +102,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             }else if(command.equals("NAVBAROFF")){
                 boolean navigationBar = false;
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-                Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
             }
+            Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
+
 
         } catch (Exception e) {
             Logger.error(TAG + "sendNotification()", e.getMessage());
