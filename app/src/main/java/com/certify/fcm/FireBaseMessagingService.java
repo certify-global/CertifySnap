@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
+import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
@@ -32,7 +33,7 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.Random;
 
-public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback {
+public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback, PushCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
@@ -70,23 +71,39 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             JSONObject jsonObject = new JSONObject(messageBody);
             sharedPreferences=Util.getSharedPreferences(this);
 
-            String command=jsonObject.isNull("Command") ? "":jsonObject.getString("Command");
-            String Value1=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
+            String command=jsonObject.isNull("command") ? "":jsonObject.getString("command");
+            String certifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+            String commandGUID=jsonObject.isNull("commandGUID") ? "":jsonObject.getString("commandGUID");
+            String uniqueDeviceId=jsonObject.isNull("uniqueDeviceId") ? "":jsonObject.getString("uniqueDeviceId");
+            String eventTypeId=jsonObject.isNull("eventTypeId") ? "":jsonObject.getString("eventTypeId");
+            String institutionId=jsonObject.isNull("institutionId") ? "":jsonObject.getString("institutionId");
 
-
-                if(command.equals("SETTINGS")){
-                    Util.getSettings(this,this);
-                }else if(command.equals("ALLMEMBER")){
-                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)
-                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
-                        startService(new Intent(this, MemberSyncService.class));
-                        Application.StartService(this);
-                    }
-                }else if(command.equals("MEMBER")){
-                    String CertifyId=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
-                    Util.getMemberID(this,CertifyId);
-
-                }
+            if(command.equals("SETTINGS")){
+                Util.getSettings(this,this);
+            }else if(command.equals("ALLMEMBER")){
+                startService(new Intent(this, MemberSyncService.class));
+                Application.StartService(this);
+            }else if(command.equals("MEMBER")){
+                String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+                Util.getMemberID(this,CertifyId);
+            }else if(command.equals("RESET")){
+                Util.deleteAppData(this);
+                Util.restartApp(this);
+            }else if(command.equals("RESTART")){
+                Util.restartApp(this);
+            }else if(command.equals("DEACTIVATE")){
+                Util.deleteAppData(this);
+                Util.writeBoolean(sharedPreferences,GlobalParameters.ONLINE_MODE,false);
+            }else if(command.equals("CHECKHEALTH")){
+                Util.getDeviceHealthCheck(FireBaseMessagingService.this, FireBaseMessagingService.this);
+            }else if(command.equals("NAVBARON")){
+                boolean navigationBar =true;
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            }else if(command.equals("NAVBAROFF")){
+                boolean navigationBar = false;
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            }
+            Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
 
 
         } catch (Exception e) {
@@ -166,6 +183,17 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
 
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerPush(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+        } catch (Exception e) {
+            Logger.error(TAG, "onJSONObjectListenerPush()", "Exception occurred while processing API response callback with Push command response api" + e.getMessage());
         }
     }
 }

@@ -54,11 +54,55 @@
             android:paddingLeft="@dimen/margin_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_input_sno"
+
+    <LinearLayout
+        android:id="@+id/serial_number_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/text_input_device_name"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/text_serial_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="SERIAL NUMBER:"
+            android:textSize="@dimen/margin_20"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/imei_number_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/serial_number_layout"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/text_imei_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="IMEI NUMBER:"
+            android:textSize="@dimen/margin_20"
+            android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:visibility="gone"
+        android:id="@+id/text_input_sno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imei_number_layout"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="20dp">
@@ -74,6 +118,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
+        android:visibility="gone"
         android:id="@+id/text_input_imei"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -92,7 +137,8 @@
             android:paddingLeft="@dimen/margin_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
-    <TextView
+   <TextView
+       android:visibility="gone"
         android:id="@+id/tv_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -105,6 +151,7 @@
         android:layout_marginRight="20dp"/>
 
     <RadioGroup
+        android:visibility="gone"
         android:id="@+id/radio_group_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -137,7 +184,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/radio_group_status"
+        android:layout_below="@+id/imei_number_layout"
         android:layout_marginTop="40dp"
         android:orientation="horizontal"
         android:weightSum="2">
@@ -172,6 +219,7 @@
 </LinearLayout>
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/tv_serial_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -40,6 +40,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -91,6 +92,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
+        initAppStatusInfo();
         try {
             Util.createAudioDirectory();
         } catch (IOException e) {
@@ -165,6 +167,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        updateAppStatusInfo("APPCLOSED", AppStatusInfo.APP_CLOSED);
         try {
             FaceServer.getInstance().unInit();
         } catch (Exception e) {
@@ -372,6 +375,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         initNavigationBar();
         startMemberSyncService();
         startBLEService();
+        updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
     }
 
     private void initNavigationBar() {
@@ -425,5 +429,20 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
        if (mActivationTimer != null) {
            mActivationTimer.cancel();
        }
+    }
+
+    private void initAppStatusInfo(){
+        AppStatusInfo.getInstance().clear();
+        updateAppStatusInfo("APPSTARTED", AppStatusInfo.APP_STARTED);
+    }
+
+    private void updateAppStatusInfo(String key, String message) {
+        if (message.equals(AppStatusInfo.APP_STARTED))
+            AppStatusInfo.getInstance().setAppStarted(message);
+        else if (message.equals(AppStatusInfo.APP_CLOSED))
+            AppStatusInfo.getInstance().setAppClosed(message);
+        else if(message.equals(AppStatusInfo.DEVICE_SETTINGS))
+            AppStatusInfo.getInstance().setDeviceSettings(message);
+        Logger.debug(TAG, key, message);
     }
 }

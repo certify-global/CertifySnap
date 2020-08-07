@@ -31,19 +31,20 @@ import org.json.JSONObject;
 
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
-public class RegisterDeviceActivity extends Activity implements AddDeviceCallback {
+public class RegisterDeviceActivity extends SettingBaseActivity implements AddDeviceCallback {
     private static String TAG = "RegisterDeviceActivity -> ";
 
     EditText edittext_device_name,edittext_sno,edittext_imei;
     SharedPreferences sharedPreferences;
     Button btn_close,btn_save;
-    TextView textview_name,tv_version,tv_serial_no,tv_status;
+    TextView textview_name,tv_version,tv_serial_no, tv_status, text_serial_number, text_imei_number;
     Typeface rubiklight;
     TextInputLayout text_input_device_name,text_input_sno;
     RadioGroup rg_status;
     RadioButton rb_active,rb_inactive;
     Boolean rbstatus=true;
     private ProgressDialog mprogressDialog;
+    private String imeiNumber = "";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,20 +64,28 @@ public class RegisterDeviceActivity extends Activity implements AddDeviceCallbac
             rg_status = findViewById(R.id.radio_group_status);
             rb_active = findViewById(R.id.radio_active);
             rb_inactive = findViewById(R.id.radio_inactive);
+            text_serial_number = findViewById(R.id.text_serial_number);
+            text_imei_number = findViewById(R.id.text_imei_number);
+
             sharedPreferences = Util.getSharedPreferences(RegisterDeviceActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             textview_name.setTypeface(rubiklight);
-            tv_status.setTypeface(rubiklight);
+            text_serial_number.setTypeface(rubiklight);
+            text_imei_number.setTypeface(rubiklight);
+
             tv_version.setText(Util.getVersionBuild());
             tv_serial_no.setText("Serial No: " + Util.getSNCode());
+            text_serial_number.setText("SERIAL NUMBER: " + Util.getSNCode());
+            imeiNumber = Util.getUniqueIMEIId(this);
+            text_imei_number.setText("IMEI NUMBER: " + imeiNumber);
             rb_active.setChecked(true);
             edittext_sno.setText(Util.getSNCode());
             rg_status.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     if (checkedId == R.id.radio_active) {
-                            rbstatus=true;
+                        rbstatus=true;
                     }
                     else
                         rbstatus=false;
@@ -88,12 +97,8 @@ public class RegisterDeviceActivity extends Activity implements AddDeviceCallbac
                 public void onClick(View v) {
                     if (edittext_device_name.getText().toString().isEmpty()) {
                         text_input_device_name.setError("Device Name should not be empty");
-                        text_input_sno.setError(null);
-                    }else if (edittext_sno.getText().toString().isEmpty()) {
-                            text_input_sno.setError("Serial Number should not be empty");
-                        text_input_device_name.setError(null);
                     }else{
-                        sendReqAddDevice(edittext_device_name.getText().toString(),edittext_sno.getText().toString(),edittext_imei.getText().toString(),rbstatus);
+                        sendReqAddDevice(edittext_device_name.getText().toString(), Util.getSNCode(), imeiNumber,rbstatus);
                     }
 
                 }

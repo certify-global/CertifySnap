@@ -4,7 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -33,6 +35,7 @@ import android.os.Environment;
 import android.provider.Settings;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.telephony.TelephonyManager;
@@ -47,22 +50,27 @@ import android.widget.Toast;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
+import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
+import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.LoginActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
+import com.certify.snap.async.AsyncJSONObjectPush;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -70,12 +78,14 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
+import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -898,7 +908,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-
+            obj.put("appState", getAppState());
 
         } catch (Exception e) {
             Log.e(LOG + "MobileDetailsData ", e.getMessage());
@@ -1866,4 +1876,92 @@ public class Util {
        }
        return false;
     }
+
+    public static void deleteAppData(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().clear().apply();
+        }
+        LitePal.deleteDatabase("telpo_face");
+    }
+
+    public static void stopMemberSyncService(Context context) {
+        Intent intent = new Intent(context, MemberSyncService.class);
+        context.stopService(intent);
+    }
+
+    public static void restartApp(Context context) {
+        stopMemberSyncService(context);
+        Intent intent = new Intent(context, GuideActivity.class);
+        int mPendingIntentId = 111111;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
+
+
+    public static void getPushresponse(PushCallback callback, Context context,String guid,String uniqueID,String response_msg,String eventTypeID) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+            obj.put("commandGuid", guid);
+            obj.put("deviceUUID",uniqueID);
+            obj.put("eventTypeId",eventTypeID);
+            obj.put("response", response_msg+" push success");
+            obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
+            obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
+            obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
+            obj.put("LOGINFAILED", AppStatusInfo.getInstance().getLoginFailed());
+            obj.put("DEVICESETTINGS", AppStatusInfo.getInstance().getDeviceSettings());
+
+
+            new AsyncJSONObjectPush(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.PushCommandResponse, context).execute();
+
+        } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
+            Logger.error(LOG + "getPushresponse", e.getMessage());
+
+        }
+    }
+
+
+    public static JSONObject getJSONObjectPush(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectPush " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static String getUniqueIMEIId(Context context) {
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return "";
+            }
+            String imei = telephonyManager.getDeviceId();
+            if (imei != null && !imei.isEmpty()) {
+                return imei;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }
