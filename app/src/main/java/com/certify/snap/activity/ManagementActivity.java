@@ -25,6 +25,7 @@ import android.provider.MediaStore;
 
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
+import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
@@ -85,6 +86,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import static com.certify.snap.common.Util.getnumberString;
 
@@ -134,6 +136,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private BroadcastReceiver hidReceiver;
     private int activeMemberCount = 0;
     private int totalMemberCount = 0;
+    private ExecutorService taskExecutorService;
 
     private Runnable searchRun = new Runnable() {
         @Override
@@ -333,22 +336,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             @Override
             public void onItemLongClick(View view, int position) {
                 showDeleteDialog(datalist.get(position));
-            }
-        });
-    }
-
-    private void initFailedMember() {
-        memberfailedAdapter = new MemberFailedAdapter(ManagementActivity.this, faillist);
-        failed_recyclerView.setNestedScrollingEnabled(false);
-        failed_recyclerView.setHasFixedSize(true);
-        failed_recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        failed_recyclerView.setAdapter(memberfailedAdapter);
-        failed_recyclerView.setItemAnimator(new DefaultItemAnimator());
-        memberfailedAdapter.notifyDataSetChanged();
-        memberfailedAdapter.setOnItemClickListener(new MemberFailedAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_photoerror));
             }
         });
     }
@@ -1376,13 +1363,13 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         try {
             JSONObject obj = new JSONObject();
             obj.put("id", certifyId);
-            /*if (taskExecutorService != null) {
+            if (taskExecutorService != null) {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
-            } else {*/
+            } else {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
-            //}
+            }
         } catch (Exception e) {
             Logger.error(TAG, " getMemberID()",e.getMessage());
         }
@@ -1458,6 +1445,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private void initMemberSync() {
         MemberSyncDataModel.getInstance().init(this, MemberSyncDataModel.DatabaseAddType.SERIAL);
         MemberSyncDataModel.getInstance().setListener(this);
+        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+        taskExecutorService = executorService.getExecutorService();
     }
 
     @Override
