@@ -101,8 +101,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private MemberFailedAdapter memberfailedAdapter;
     private List<RegisteredMembers> datalist = new ArrayList<>();
     private List<RegisteredFailedMembers> faillist = new ArrayList<>();
-    private Handler mhandler = new Handler();
-    private String searchtext = "";
     private AlertDialog mUpdateDialog, mDeleteDialog;
     private String updateimagePath = "";
     private PopupWindow mpopupwindow, mpopupwindowUpdate;
@@ -130,23 +128,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private EditText registerAccessid;
     private SharedPreferences sharedPreferences;
     private RelativeLayout relative_management;
-    Snackbar snackbar;
     int listPosition;
     int count=0;
     private BroadcastReceiver hidReceiver;
     private int activeMemberCount = 0;
     private int totalMemberCount = 0;
     private ExecutorService taskExecutorService;
-
-    private Runnable searchRun = new Runnable() {
-        @Override
-        public void run() {
-            Log.e("searchRun---", "start Run: " + searchtext);
-            searchData(searchtext);
-            Util.hideSoftKeyboard(ManagementActivity.this);
-        }
-    };
-
     public String OFFLINE_FAILED_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "offline/failed/";
 
     @Override
@@ -189,15 +176,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (searchRun != null) {
-                    mhandler.removeCallbacks(searchRun);
-                }
-                searchtext = s.toString();
-                if (!TextUtils.isEmpty(searchtext)) mhandler.postDelayed(searchRun, 1000);
-
-                if (TextUtils.isEmpty(searchtext) && searchtext != null) {
-                    refresh();
-                   Util.hideSoftKeyboard(ManagementActivity.this);
+                if (memberAdapter != null) {
+                    memberAdapter.getFilter().filter(s.toString());
                 }
             }
         });
@@ -340,55 +320,10 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         });
     }
 
-    private void searchData(String searchstr) {
-        try {
-            List<RegisteredMembers> resultlist = LitePal.where("firstname like ? or memberid like ?", searchstr + "%", searchstr + "%")
-                    .order("firstname asc").find(RegisteredMembers.class);
-            if (resultlist != null && resultlist.size() > 0) {
-                Log.e("search result----", resultlist.toString());
-                refreshMemberList(resultlist);
-            }
-
-            List<RegisteredFailedMembers> memberfaillist = getFailedList();
-            if (memberfaillist != null && memberfaillist.size() > 0) {
-                Log.e("search fail result----", memberfaillist.toString());
-                refresMemberFailList(memberfaillist);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     private void refreshMemberList(List<RegisteredMembers> memberlist) {
         Log.e("refreshMemberList---", "start-" + memberlist.toString());
         datalist = memberlist;
         memberAdapter.refresh(datalist);
-    }
-
-    private void refresMemberFailList(List<RegisteredFailedMembers> failedlist) {
-        Log.e("refresMemberFailList---", "start---");
-        faillist = failedlist;
-        memberfailedAdapter.refresh(faillist);
-    }
-
-    private List<RegisteredFailedMembers> getFailedList() {
-        List<RegisteredFailedMembers> list = new ArrayList<>();
-        File faildir = new File(OFFLINE_FAILED_DIR);
-        if (!faildir.exists()) faildir.mkdirs();
-
-        File[] filelist = faildir.listFiles();
-        if (filelist != null && filelist.length > 0) {
-            Log.e(TAG, "fail file length >0");
-            for (File file : filelist) {
-                RegisteredFailedMembers fail = new RegisteredFailedMembers();
-                fail.setName(file.getName());
-                fail.setImage(file.getAbsolutePath());
-                list.add(fail);
-            }
-        }
-        return list;
     }
 
     ImageView mfaceimg;
