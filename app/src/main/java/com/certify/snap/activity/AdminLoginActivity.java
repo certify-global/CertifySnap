@@ -32,7 +32,7 @@ import java.util.List;
 
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
-public class AdminLoginActivity extends Activity implements JSONObjectCallbackLogin {
+public class AdminLoginActivity extends SettingBaseActivity implements JSONObjectCallbackLogin {
     private static String TAG = "AdminLoginActivity -> ";
     EditText etPassword,etEmail;
     SharedPreferences sharedPreferences;
