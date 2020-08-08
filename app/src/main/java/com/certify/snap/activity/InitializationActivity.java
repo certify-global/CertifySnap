@@ -27,6 +27,8 @@ import android.widget.TextView;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.bean.ImageInfo;
 import com.certify.snap.bean.Members;
@@ -243,8 +245,8 @@ public class InitializationActivity extends Activity {
         //registeredMembers.setExpire_time(time);
         registeredMembers.setImage(image);
         registeredMembers.setFeatures(feature);
-        boolean result = registeredMembers.save();
-        return result;
+//        boolean result = registeredMembers.save();
+        return true;
     }
 
     private void writeToFaillDir(File source, String failpath,String name){

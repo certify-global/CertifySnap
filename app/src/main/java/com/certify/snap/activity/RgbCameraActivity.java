@@ -68,6 +68,8 @@ import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
@@ -1097,7 +1099,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         offlineVerifyMembers.setImagepath(image);
         offlineVerifyMembers.setVerify_time(verify_time);
         if(temperature >0) offlineVerifyMembers.setTemperature(""+temperature);
-        offlineVerifyMembers.save();
+        //offlineVerifyMembers.save();
+      //  databaseStore.insertOfflineVerifyMember(offlineVerifyMembers);
     }
 
 
@@ -1433,7 +1436,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                     OfflineGuestMembers offlineGuestMembers = new OfflineGuestMembers();
                                     offlineGuestMembers.setUserId(guestMembers.get(0).getUserId());
                                     offlineGuestMembers.setVerify_time(verify_time);
-                                    offlineGuestMembers.save();
+                                    //offlineGuestMembers.save();
+                                    //databaseStore.insertOfflineGuestMember(offlineGuestMembers);
                                     Log.e("tag", "offlineGuestMembers userId----" + guestMembers.get(0).getUserId());
                                 } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(compareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                                     restoreCameraAfterScan(true);

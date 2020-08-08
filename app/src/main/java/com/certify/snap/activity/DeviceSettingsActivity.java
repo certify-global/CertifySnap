@@ -422,7 +422,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         if (sharedPreferences != null) {
             sharedPreferences.edit().clear().apply();
         }
-        LitePal.deleteDatabase("telpo_face");
+        //LitePal.deleteDatabase("telpo_face");
     }
 
     private void stopMemberSyncService() {

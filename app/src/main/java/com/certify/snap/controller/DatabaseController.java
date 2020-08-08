@@ -1,14 +1,17 @@
 package com.certify.snap.controller;
 
-import com.certify.snap.model.RegisteredMembers;
+import android.content.Context;
 
-import org.litepal.LitePal;
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
+import com.certify.snap.model.RegisteredMembers;
 
 import java.util.List;
 
 public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
+    private static DatabaseStore databaseStore;
 
     public static DatabaseController getInstance() {
         if (mInstance == null) {
@@ -17,21 +20,33 @@ public class DatabaseController {
         return mInstance;
     }
 
+    public void init(Context context){
+        databaseStore = Database.create(context).databaseStore();
+    }
+
     public boolean isMemberExist(String memberId) {
-        List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
+        List<RegisteredMembers> membersList = databaseStore.findMemberOnMemberId(memberId);
         return membersList != null && membersList.size() > 0;
     }
 
     public boolean isAccessIdExist(String accessId) {
-        List<RegisteredMembers> membersList = LitePal.where("accessid = ?", accessId).find(RegisteredMembers.class);
-        return membersList == null && membersList.size() > 0;
+        List<RegisteredMembers> membersList = databaseStore.findMemberOnAccessId(accessId);
+        return membersList != null && membersList.size() > 0;
     }
 
     public List<RegisteredMembers> findMember(String memberId) {
-        return LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
+        return databaseStore.findMemberOnMemberId(memberId);
     }
 
     public int deleteMember(String memberId) {
-        return LitePal.deleteAll(RegisteredMembers.class, "memberid = ?", memberId);
+        return databaseStore.deleteMember(memberId);
+    }
+
+    public List<RegisteredMembers> isUniqueIdExit(String uniqueID) {
+        return databaseStore.findMemberExist(uniqueID);
+    }
+
+    public void insertToDB(RegisteredMembers member){
+        databaseStore.insertMember(member);
     }
 }

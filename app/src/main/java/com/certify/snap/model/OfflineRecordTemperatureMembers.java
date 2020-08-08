@@ -2,12 +2,18 @@ package com.certify.snap.model;
 
 import android.util.Log;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import org.litepal.LitePal;
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
-public class OfflineRecordTemperatureMembers extends LitePalSupport {
+@Entity(tableName = "OfflineRecordTemperatureMembers")
+public class OfflineRecordTemperatureMembers {
 
+    @PrimaryKey(autoGenerate = false)
+    private int id;
     String firstName;
     String lastName;
     String memberId;
@@ -19,6 +25,13 @@ public class OfflineRecordTemperatureMembers extends LitePalSupport {
     Long primaryid;
     int offlineSync;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public int getOfflineSync() {
         return offlineSync;
     }

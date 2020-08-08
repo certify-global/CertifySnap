@@ -13,6 +13,8 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
 import com.google.gson.Gson;
 import com.tamic.novate.Novate;
 import com.tamic.novate.Throwable;
@@ -431,13 +433,13 @@ public class GuideService extends Service {
                                             updateGuestMember.setMobile(guest.getMobile());
                                             updateGuestMember.setExpire_time(guest.getExpire_time());
                                             updateGuestMember.setQrcode(guest.getQrcode());
-                                            if (updateGuestMember.save()) {
+                                           /* if (telpoDatabaseStore.insertGuestMembers(updateGuestMember)) {
                                                 updateGuestSuccessResult = true;
                                                 Log.e("tag", "update guest info success");
                                             } else {
                                                 updateGuestFailResult = false;
                                                 Log.e("tag", "update guest info fail");
-                                            }
+                                            }*/
                                         } else {
                                             GuestMembers guestMembers = new GuestMembers();
                                             guestMembers.setUserId(id);
@@ -445,13 +447,13 @@ public class GuideService extends Service {
                                             guestMembers.setMobile(guest.getMobile());
                                             guestMembers.setExpire_time(guest.getExpire_time());
                                             guestMembers.setQrcode(guest.getQrcode());
-                                            if (guestMembers.save()) {
+                                          /*  if (telpoDatabaseStore.insertGuestMembers(guestMembers)) {
                                                 updateGuestSuccessResult = true;
                                                 Log.e("tag", "save guest info success");
                                             } else {
                                                 updateGuestFailResult = false;
                                                 Log.e("tag", "save guest info fail");
-                                            }
+                                            }*/
                                         }
                                     }
                                 });

@@ -407,7 +407,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             internetIndicatorImg.setVisibility(View.VISIBLE);
         }
         initHidReceiver();
-        initRecordUserTempService();
+        //initRecordUserTempService();
     }
 
     private void initQRCode() {
@@ -516,7 +516,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     OfflineGuestMembers offlineGuestMembers = new OfflineGuestMembers();
                                     offlineGuestMembers.setUserId(guestMembers.get(0).getUserId());
                                     offlineGuestMembers.setVerify_time(verify_time);
-                                    offlineGuestMembers.save();
+                                    //offlineGuestMembers.save();
                                     Logger.verbose(TAG, "offlineGuestMembers userId----", guestMembers.get(0).getUserId());
                                 } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                                     restoreCameraAfterScan(true);
@@ -1329,7 +1329,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         offlineVerifyMembers.setImagepath(image);
         offlineVerifyMembers.setVerify_time(verify_time);
         if (temperature > 0) offlineVerifyMembers.setTemperature("" + temperature);
-        offlineVerifyMembers.save();
+        //offlineVerifyMembers.save();
     }
 
 

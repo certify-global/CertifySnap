@@ -10,6 +10,8 @@ import android.util.Log;
 
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.data.SimplePreference;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.database.Database;
 import com.certify.snap.service.AlarmReceiver;
 import com.common.thermalimage.ThermalImageUtil;
 import com.microsoft.appcenter.AppCenter;
@@ -50,7 +52,8 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
-        LitePal.initialize(this);
+        //LitePal.initialize(this);
+        DatabaseController.getInstance().init(this);
         preference = new SimplePreference(this);
 
         mInstance = this;
@@ -81,7 +84,7 @@ public class Application extends android.app.Application {
         temperatureUtil = new ThermalImageUtil(this);
 
         if (BuildConfig.BUILD_TYPE != "debug") {
-            initAppCenter();
+            //initAppCenter();
         }
 
         CrashHandler crashHandler = CrashHandler.getInstance();

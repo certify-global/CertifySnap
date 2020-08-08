@@ -12,11 +12,13 @@ import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.snap.common.MemberUtilData;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.litepal.LitePal;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -223,7 +225,8 @@ public class MemberSyncDataModel {
      */
     private boolean isMemberExistsInDb(String uniqueID) {
         boolean result = false;
-        List<RegisteredMembers> list = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
+        //List<RegisteredMembers> list = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
+        List<RegisteredMembers> list = DatabaseController.getInstance().findMember(uniqueID);
         if (list != null && list.size() > 0) {
             result = true;
         }
@@ -330,8 +333,9 @@ public class MemberSyncDataModel {
             //registeredMembers.setExpire_time(time);
             registeredMembers.setImage(image);
             registeredMembers.setFeatures(feature);
-            boolean result = registeredMembers.save();
-            return result;
+            DatabaseController.getInstance().insertToDB(registeredMembers);
+            //boolean result = registeredMembers.save();
+            return true;
         } catch (Exception e) {
             Log.e(TAG, "SnapXT Exception while saving to Database");
         }

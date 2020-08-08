@@ -147,11 +147,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         sharedPreferences = Util.getSharedPreferences(this);
         initHidReceiver();
 
-        try {
-            db = LitePal.getDatabase();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         ROOT_PATH_STRING = this.getFilesDir().getAbsolutePath();
         FaceServer.getInstance().init(this);//init FaceServer;
 
@@ -253,7 +248,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
     private void initData(final boolean isNeedInit) {
         try {
-            if (db != null) {
+            initMember();
+            /*if (db != null) {
                 LitePal.findAllAsync(RegisteredMembers.class).listen(new FindMultiCallback<RegisteredMembers>() {
                     @Override
                     public void onFinish(List<RegisteredMembers> list) {
@@ -277,7 +273,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     }
                 });
 
-             /*   List<RegisteredFailedMembers> list = getFailedList();
+             *//*   List<RegisteredFailedMembers> list = getFailedList();
                 if (list != null) {
                     Log.e("faillist---", list.size() + "-" + list.toString());
                     faillist = list;
@@ -287,9 +283,9 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         refresMemberFailList(list);
                         failed_recyclerView.scrollToPosition(0);
                     }
-                }*/
+                }*//*
 
-            }
+            }*/
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -870,7 +866,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setStatus(Members.getStatus());
                     Members.setImage(Members.getImage());
                     Members.setFeatures(Members.getFeatures());
-                    Members.save();
+                    //Members.save();
 
                     file.delete();
                     updateimagePath = "";
@@ -906,7 +902,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 Members.setStatus(Members.getStatus());
                 Members.setImage(newimage);
                 Members.setFeatures(newfeature);
-                Members.save();
+                //Members.save();
 
                 dismissUpdateDialog();
                 data = getString(R.string.Update_success);
