@@ -21,7 +21,7 @@ public interface DatabaseStore {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMember(RegisteredMembers registeredMembers);
 
-    /*@Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOfflineVerifyMember(OfflineVerifyMembers offlineVerifyMembers);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -34,11 +34,11 @@ public interface DatabaseStore {
     void insertRegisteredFailedMember(RegisteredFailedMembers... registeredFailedMembers);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertGuestMembers(GuestMembers guestMembers);*/
+    void insertGuestMembers(GuestMembers guestMembers);
 
     @Transaction
     @Query("SELECT * FROM registeredmembers WHERE uniqueid=:uniqueID")
-    List<RegisteredMembers> findMemberExist(String uniqueID);
+    List<RegisteredMembers> findMemberOnUniqueId(String uniqueID);
 
     @Transaction
     @Query("SELECT * FROM registeredmembers WHERE memberid=:memberId")

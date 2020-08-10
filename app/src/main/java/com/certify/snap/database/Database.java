@@ -16,8 +16,7 @@ import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
-//@androidx.room.Database(entities = {RegisteredMembers.class, RegisteredFailedMembers.class, OfflineVerifyMembers.class, OfflineRecordTemperatureMembers.class, OfflineGuestMembers.class, GuestMembers.class}, version = 1, exportSchema = false)
-@androidx.room.Database(entities = RegisteredMembers.class, version = 1, exportSchema = false)
+@androidx.room.Database(entities = {RegisteredMembers.class, RegisteredFailedMembers.class, OfflineVerifyMembers.class, OfflineRecordTemperatureMembers.class, OfflineGuestMembers.class, GuestMembers.class}, version = 1, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class Database extends RoomDatabase {
     public abstract DatabaseStore databaseStore();

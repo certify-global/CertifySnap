@@ -69,6 +69,7 @@ import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.model.AccessControlModel;
@@ -817,7 +818,7 @@ public class Util {
                 offlineRecordTemperatureMembers.setLastName("");
             }
             //offlineRecordTemperatureMembers.save();
-          //  databaseStore.insertOfflineRecordTemperatureMembers(offlineRecordTemperatureMembers);
+            DatabaseController.getInstance().insertOfflineMemberIntoDB(offlineRecordTemperatureMembers);
         } catch (JSONException e) {
             e.printStackTrace();
         }

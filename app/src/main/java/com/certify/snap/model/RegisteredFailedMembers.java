@@ -1,17 +1,18 @@
 package com.certify.snap.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import org.litepal.crud.LitePalSupport;
-
-@Entity(tableName = "RegisteredFailedMembers")
+@Entity(indices={@Index(value="id", unique=true)})
 public class RegisteredFailedMembers {
 
-    @PrimaryKey(autoGenerate = false)
-    private int id;
-    String name;
-    String image;
+    @PrimaryKey
+    @NonNull
+    public int id;
+    public String name;
+    public String image;
 
     public int getId() {
         return id;

@@ -16,6 +16,7 @@ import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.snap.activity.InitializationActivity;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
 import com.google.gson.Gson;
@@ -709,7 +710,7 @@ public class UpdateService extends Service {
                                     registeredFailedMembers.setName(failedName);
                                    // registeredFailedMembers.setUserId(failedId);
                                     //result = registeredFailedMembers.save();
-                                  //  databaseStore.insertRegisteredFailedMember(registeredFailedMembers);
+                                    DatabaseController.getInstance().insertRegisterFailMember(registeredFailedMembers);
                                     result = true;
                                     if (result) {
                                         updateProcessFailCount++;
@@ -722,13 +723,10 @@ public class UpdateService extends Service {
                                    // registeredFailedMembers.setUserId(member.getUserId());
                                     registeredFailedMembers.setImage(InitializationActivity.REGISTERED_FAILED_DIR + File.separator + failedPathName);
 //                                    result = registeredFailedMembers.save();
-                                   // databaseStore.insertRegisteredFailedMember(registeredFailedMembers);
-                                    result = true;
+                                    DatabaseController.getInstance().insertRegisterFailMember(registeredFailedMembers);
                                     Log.e("tag", "registeredFailedMembers_name---" + member.getName() + "---id---" + member.getUserId());
-                                    if (result) {
                                         updateProcessFailCount++;
                                         updateSuccessCount++;
-                                    }
                                 }
                                 break;
                             }
@@ -761,7 +759,7 @@ public class UpdateService extends Service {
                                 registeredMembers.setImage(image);
                                 registeredMembers.setFeatures(feature);
                                 //result = registeredMembers.save();
-                                //databaseStore.insertMember(registeredMembers);
+                                DatabaseController.getInstance().insertMemberToDB(registeredMembers);
                                 result = true;
                                 if (result) {
                                     //如果失败列表中含有该条信息，则删除原来失败列表中该条人员信息
@@ -817,7 +815,7 @@ public class UpdateService extends Service {
                                    // registeredFailedMembers.setUserId(failedId);
                                     registeredFailedMembers.setImage(InitializationActivity.REGISTERED_FAILED_DIR + File.separator + failedPathName);
 //                                    result = registeredFailedMembers.save();
-                                   // databaseStore.insertRegisteredFailedMember(registeredFailedMembers);
+                                    DatabaseController.getInstance().insertRegisterFailMember(registeredFailedMembers);
                                     result = true;
                                     Log.e("tag", "registeredFailedMembers_name---" + member.getName() + "---id---" + member.getUserId());
                                     if (result) {
@@ -877,7 +875,7 @@ public class UpdateService extends Service {
                                     registeredMembers.setImage(image);
                                     registeredMembers.setFeatures(feature);
 //                                    result = registeredMembers.save();
-                                    //databaseStore.insertMember(registeredMembers);
+                                    DatabaseController.getInstance().insertMemberToDB(registeredMembers);
                                     result = true;
                                     if (result) {
                                         updateSuccessCount++;

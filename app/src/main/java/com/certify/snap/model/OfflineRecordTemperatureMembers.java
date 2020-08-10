@@ -2,28 +2,30 @@ package com.certify.snap.model;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import org.litepal.LitePal;
 import org.litepal.annotation.Column;
-import org.litepal.crud.LitePalSupport;
 
-@Entity(tableName = "OfflineRecordTemperatureMembers")
+@Entity(indices={@Index(value="id", unique=true)})
 public class OfflineRecordTemperatureMembers {
 
-    @PrimaryKey(autoGenerate = false)
-    private int id;
-    String firstName;
-    String lastName;
-    String memberId;
-    String temperature;
-    String deviceTime;
-    String imagepath;
-    String jsonObj;
+    @PrimaryKey
+    @NonNull
+    public int id;
+    public String firstName;
+    public String lastName;
+    public String memberId;
+    public String temperature;
+    public String deviceTime;
+    public String imagepath;
+    public String jsonObj;
     @Column(unique = true)
-    Long primaryid;
-    int offlineSync;
+    public Long primaryid;
+    public int offlineSync;
 
     public int getId() {
         return id;

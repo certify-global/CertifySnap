@@ -867,6 +867,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setImage(Members.getImage());
                     Members.setFeatures(Members.getFeatures());
                     //Members.save();
+                    DatabaseController.getInstance().insertMemberToDB(Members);
 
                     file.delete();
                     updateimagePath = "";

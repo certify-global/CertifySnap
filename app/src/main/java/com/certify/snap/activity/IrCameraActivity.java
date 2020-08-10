@@ -44,6 +44,7 @@ import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
@@ -2702,7 +2703,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
-                                registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
+                                //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
+                                registeredMemberslist = DatabaseController.getInstance().findMember(split[1]);
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 

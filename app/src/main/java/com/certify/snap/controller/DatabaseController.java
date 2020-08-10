@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.util.List;
@@ -43,10 +45,18 @@ public class DatabaseController {
     }
 
     public List<RegisteredMembers> isUniqueIdExit(String uniqueID) {
-        return databaseStore.findMemberExist(uniqueID);
+        return databaseStore.findMemberOnUniqueId(uniqueID);
     }
 
-    public void insertToDB(RegisteredMembers member){
+    public void insertMemberToDB(RegisteredMembers member){
         databaseStore.insertMember(member);
+    }
+
+    public void insertOfflineMemberIntoDB(OfflineRecordTemperatureMembers offlineRecordTemperatureMembers){
+        databaseStore.insertOfflineRecordTemperatureMembers(offlineRecordTemperatureMembers);
+    }
+
+    public void insertRegisterFailMember(RegisteredFailedMembers registeredFailedMembers){
+        databaseStore.insertRegisteredFailedMember(registeredFailedMembers);
     }
 }

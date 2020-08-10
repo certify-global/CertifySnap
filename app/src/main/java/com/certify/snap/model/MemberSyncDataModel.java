@@ -13,8 +13,6 @@ import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.controller.DatabaseController;
-import com.certify.snap.database.Database;
-import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
 
 import org.json.JSONArray;
@@ -333,7 +331,7 @@ public class MemberSyncDataModel {
             //registeredMembers.setExpire_time(time);
             registeredMembers.setImage(image);
             registeredMembers.setFeatures(feature);
-            DatabaseController.getInstance().insertToDB(registeredMembers);
+            DatabaseController.getInstance().insertMemberToDB(registeredMembers);
             //boolean result = registeredMembers.save();
             return true;
         } catch (Exception e) {

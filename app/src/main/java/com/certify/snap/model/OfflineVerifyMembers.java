@@ -1,21 +1,22 @@
 package com.certify.snap.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
-
-import org.litepal.crud.LitePalSupport;
 
 import java.util.Date;
 
-@Entity(tableName = "OfflineVerifyMembers")
+@Entity(indices={@Index(value="id", unique=true)})
 public class OfflineVerifyMembers {
-    @PrimaryKey(autoGenerate = false)
-    private int id;
-    String name;
-    String mobile;
-    String imagepath;
-    String temperature;
-    Date verify_time;
+    @PrimaryKey
+    @NonNull
+    public int id;
+    public String name;
+    public String mobile;
+    public String imagepath;
+    public String temperature;
+    public Date verify_time;
 
     public int getId() {
         return id;
