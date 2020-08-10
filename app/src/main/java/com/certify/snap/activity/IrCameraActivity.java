@@ -872,12 +872,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceAndRelayEnabledForHighTemperature();
                             BLEController.getInstance().setLightOnHighTemperature();
                             CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
+                            RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                            AccessCardController.getInstance().accessCardLog(IrCameraActivity.this,registeredMembers,temperature);
+
                         } else {
                             text = getString(R.string.temperature_normal) + tempString + temperatureFormat;
                             TemperatureCallBackUISetup(false, text, tempString, false, data);
                             faceAndRelayEnabledForNormalTemperature();
                             BLEController.getInstance().setLightOnNormalTemperature();
                             CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
+                            RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                            AccessCardController.getInstance().accessCardLog(IrCameraActivity.this,registeredMembers,temperature);
+
                         }
 
                     } catch (Exception e) {
@@ -2812,6 +2818,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 return;
             }
             showSnackBarMessage(getString(R.string.access_denied));
+            //Access Log api call
+            RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+            AccessCardController.getInstance().accessCardLog(this,registeredMembers,temperature);
+
             //If Access denied, stop the reader and start again
             //Optimize: Not to close the stream
             if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {

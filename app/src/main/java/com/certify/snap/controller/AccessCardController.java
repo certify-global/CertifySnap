@@ -1,14 +1,29 @@
 package com.certify.snap.controller;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.callback.AccessCallback;
+import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncJSONObjectAccessLog;
+import com.certify.snap.async.AsyncJSONObjectPush;
+import com.certify.snap.common.EndPoints;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
+import com.certify.snap.common.UserExportedData;
+import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AppStatusInfo;
+import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
+
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AccessCardController  {
+public class AccessCardController implements AccessCallback {
     private static final String TAG = AccessCardController.class.getSimpleName();
     private static AccessCardController mInstance = null;
     private boolean mEnableRelay = false;
@@ -191,5 +206,62 @@ public class AccessCardController  {
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
+    }
+
+    public void accessCardLog(Context context, RegisteredMembers  registeredMembers,float temperature) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+            obj.put("id", 0);
+            obj.put("FirstName", registeredMembers.getFirstname());
+            obj.put("LastName", registeredMembers.getLastname());
+            obj.put("Temperature",temperature);
+            obj.put("MemberId", registeredMembers.getMemberid());
+            obj.put("AccessId", registeredMembers.getAccessid());
+            obj.put("QrCodeId", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
+            obj.put("DeviceId", Util.getSNCode());
+            obj.put("DeviceName", "");
+            obj.put("InstitutionId",  sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("FacilityId", 0);
+            obj.put("LocationId", 0);
+            obj.put("FacilityName", "");
+            obj.put("LocationName", "");
+            obj.put("DeviceTime", Util.getMMDDYYYYDate());
+            obj.put("SourceIP", Util.getLocalIpAddress());
+            obj.put("deviceData", Util.MobileDetails(context));
+            obj.put("Guid", "");
+            obj.put("FaceParameters", "");
+            obj.put("EventType", "");
+            obj.put("EvenStatus", "");
+            obj.put("UtcRecordDate", Util.getUTCDate(""));
+
+
+            new AsyncJSONObjectAccessLog(obj,this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+
+        } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
+            Logger.error(TAG + "accessCardLog", e.getMessage());
+
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+
+                } else {
+                    Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed");
+                }
+
+        } catch (Exception e) {
+            Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
+        }
+
     }
 }
