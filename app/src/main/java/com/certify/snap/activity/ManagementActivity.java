@@ -273,26 +273,15 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
                   @Override
                   public void onNext(List<RegisteredMembers> list) {
-                      {
-                          Log.e("NagaTest list---", list.size() + "");
-                          if (list != null) {
-                              datalist = list;
-//                            if(list.size() == 34){
-//                                Toast.makeText(ManagementActivity.this, getString(R.string.records_sync_completed), Toast.LENGTH_LONG).show();
-//
-//                            }
-                              if (isNeedInit) {
-                                  initMember();
-                              } else {
-                                  refreshMemberList(list);
-                                  //Util.showToast(ManagementActivity.this, getString(R.string.records_sync_completed));
-                                  // recyclerView.scrollToPosition(0);
-                              }
-
+                      if (list != null) {
+                          datalist = list;
+                          if (isNeedInit) {
+                              initMember();
+                          } else {
+                              refreshMemberList(list);
                           }
-
                       }
-
+                      disposable.dispose();
                   }
 
                   @Override
@@ -814,7 +803,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate());
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -836,12 +825,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         Util.showToast(ManagementActivity.this, data);
     }
 
-    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath, String sync) {
+    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime) {
         String data = "";
         Log.d(TAG, "Snap Member id : " + id);
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + id, imgpath, id, this) || !imageFile.exists()) {
-            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid, this)) {
+            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid, this, dateTime)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -885,6 +874,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setStatus(Members.getStatus());
                     Members.setImage(Members.getImage());
                     Members.setFeatures(Members.getFeatures());
+                    Members.setDateTime(Util.currentDate());
                     //Members.save();
                     DatabaseController.getInstance().insertMemberToDB(Members);
 
@@ -1239,7 +1229,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         localDelete(members);
                         isDeleted = false;
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate());
                     }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -1317,8 +1307,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             if (taskExecutorService != null) {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
-            }
-            else {
+            } else {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
             }
@@ -1329,19 +1318,21 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
     private int testCount=0;
     public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo.isNull("responseCode"))  {
-                return;
-            }
-            if (reportInfo.getString("responseCode").equals("1")) {
-                JSONArray memberList = reportInfo.getJSONArray("responseData");
-                if (memberList != null) {
-                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
+        if (reportInfo != null) {
+            try {
+                if (reportInfo.isNull("responseCode")) {
+                    return;
                 }
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    JSONArray memberList = reportInfo.getJSONArray("responseData");
+                    if (memberList != null) {
+                        MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
+                    }
+                }
+            } catch (JSONException e) {
+                DismissProgressDialog(mloadingprogress);
+                Log.e(TAG, "Get Member Id resposne, Error is fetching the data");
             }
-        } catch (JSONException e) {
-            DismissProgressDialog(mloadingprogress);
-            Log.e(TAG, "Get Member Id resposne, Error is fetching the data");
         }
     }
 

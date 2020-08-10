@@ -27,6 +27,8 @@ public class RegisteredMembers {
     public String email;
     public String accessid;
     public String uniqueid;
+    public String memberType;
+    public String dateTime;
 
     public int getId() {
         return id;
@@ -121,6 +123,22 @@ public class RegisteredMembers {
 
     public void setUniqueid(String uniqueid) {
         this.uniqueid = uniqueid;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(String memberType) {
+        this.memberType = memberType;
     }
 
     @Override
