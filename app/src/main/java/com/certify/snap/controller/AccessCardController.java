@@ -210,34 +210,38 @@ public class AccessCardController implements AccessCallback {
 
     public void accessCardLog(Context context, RegisteredMembers  registeredMembers,float temperature) {
         try {
+
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            if ( sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !AccessCardController.getInstance().isAllowAnonymous()
+                    && (AccessCardController.getInstance().isEnableRelay() ||
+                    AccessCardController.getInstance().isWeigandEnabled())) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", 0);
+                obj.put("firstName", registeredMembers.getFirstname());
+                obj.put("lastName", registeredMembers.getLastname());
+                obj.put("temperature", temperature);
+                obj.put("memberId", registeredMembers.getMemberid());
+                obj.put("accessId", registeredMembers.getAccessid());
+                obj.put("qrCodeId", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
+                obj.put("deviceId", Util.getSNCode());
+                obj.put("deviceName", "");
+                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                obj.put("facilityId", 0);
+                obj.put("locationId", 0);
+                obj.put("facilityName", "");
+                obj.put("locationName", "");
+                obj.put("deviceTime", Util.getMMDDYYYYDate());
+                obj.put("sourceIP", Util.getLocalIpAddress());
+                obj.put("deviceData", Util.MobileDetails(context));
+                obj.put("guid", "");
+                obj.put("faceParameters", "");
+                obj.put("eventType", "");
+                obj.put("evenStatus", "");
+                obj.put("utcRecordDate", Util.getUTCDate(""));
 
-            JSONObject obj = new JSONObject();
-            obj.put("id", 0);
-            obj.put("FirstName", registeredMembers.getFirstname());
-            obj.put("LastName", registeredMembers.getLastname());
-            obj.put("Temperature",temperature);
-            obj.put("MemberId", registeredMembers.getMemberid());
-            obj.put("AccessId", registeredMembers.getAccessid());
-            obj.put("QrCodeId", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
-            obj.put("DeviceId", Util.getSNCode());
-            obj.put("DeviceName", "");
-            obj.put("InstitutionId",  sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("FacilityId", 0);
-            obj.put("LocationId", 0);
-            obj.put("FacilityName", "");
-            obj.put("LocationName", "");
-            obj.put("DeviceTime", Util.getMMDDYYYYDate());
-            obj.put("SourceIP", Util.getLocalIpAddress());
-            obj.put("deviceData", Util.MobileDetails(context));
-            obj.put("Guid", "");
-            obj.put("FaceParameters", "");
-            obj.put("EventType", "");
-            obj.put("EvenStatus", "");
-            obj.put("UtcRecordDate", Util.getUTCDate(""));
 
-
-            new AsyncJSONObjectAccessLog(obj,this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+            }
 
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);
