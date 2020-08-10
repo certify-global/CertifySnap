@@ -88,6 +88,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 import static com.certify.snap.common.Util.getnumberString;
 
 public class ManagementActivity extends SettingBaseActivity implements ManageMemberCallback,
@@ -248,44 +256,55 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
     private void initData(final boolean isNeedInit) {
         try {
-            initMember();
-            /*if (db != null) {
-                LitePal.findAllAsync(RegisteredMembers.class).listen(new FindMultiCallback<RegisteredMembers>() {
-                    @Override
-                    public void onFinish(List<RegisteredMembers> list) {
-                        Log.e("NagaTest list---", list.size() + "");
-                        if (list != null) {
-                            datalist = list;
+            Observable.create(new ObservableOnSubscribe<List<RegisteredMembers>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<RegisteredMembers>> emitter) throws Exception {
+                    List<RegisteredMembers> membersList = DatabaseController.getInstance().findAll();
+                    emitter.onNext(membersList);
+                }
+            }).subscribeOn(Schedulers.computation())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(new Observer<List<RegisteredMembers>>() {
+                  Disposable disposable;
+                  @Override
+                  public void onSubscribe(Disposable d) {
+                      disposable = d;
+                  }
+
+                  @Override
+                  public void onNext(List<RegisteredMembers> list) {
+                      {
+                          Log.e("NagaTest list---", list.size() + "");
+                          if (list != null) {
+                              datalist = list;
 //                            if(list.size() == 34){
 //                                Toast.makeText(ManagementActivity.this, getString(R.string.records_sync_completed), Toast.LENGTH_LONG).show();
 //
 //                            }
-                            if (isNeedInit) {
-                                initMember();
-                            } else {
-                                refreshMemberList(list);
-                                //Util.showToast(ManagementActivity.this, getString(R.string.records_sync_completed));
-                               // recyclerView.scrollToPosition(0);
-                            }
+                              if (isNeedInit) {
+                                  initMember();
+                              } else {
+                                  refreshMemberList(list);
+                                  //Util.showToast(ManagementActivity.this, getString(R.string.records_sync_completed));
+                                  // recyclerView.scrollToPosition(0);
+                              }
 
-                        }
+                          }
 
-                    }
-                });
+                      }
 
-             *//*   List<RegisteredFailedMembers> list = getFailedList();
-                if (list != null) {
-                    Log.e("faillist---", list.size() + "-" + list.toString());
-                    faillist = list;
-                    if (isNeedInit) {
-                        initFailedMember();
-                    } else {
-                        refresMemberFailList(list);
-                        failed_recyclerView.scrollToPosition(0);
-                    }
-                }*//*
+                  }
 
-            }*/
+                  @Override
+                  public void onError(Throwable e) {
+                      Log.e(TAG, "Error in adding the member to data model from database");
+                  }
+
+                  @Override
+                  public void onComplete() {
+                      disposable.dispose();
+                  }
+              });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1298,7 +1317,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             if (taskExecutorService != null) {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
-            } else {
+            }
+            else {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
             }

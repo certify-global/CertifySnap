@@ -18,22 +18,22 @@ import java.util.List;
 @Dao
 public interface DatabaseStore {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertMember(RegisteredMembers registeredMembers);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertOfflineVerifyMember(OfflineVerifyMembers offlineVerifyMembers);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertOfflineGuestMember(OfflineGuestMembers... offlineGuestMembers);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertOfflineRecordTemperatureMembers(OfflineRecordTemperatureMembers... offlineRecordTemperatureMembers);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertRegisteredFailedMember(RegisteredFailedMembers... registeredFailedMembers);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertGuestMembers(GuestMembers guestMembers);
 
     @Transaction
@@ -54,6 +54,10 @@ public interface DatabaseStore {
     @Query("DELETE FROM registeredmembers WHERE memberid =:memberId")
     int deleteMember(String memberId);
 
-    /*@Query("SELECT * FROM registeredmembers")
-    void findAllRegisterMemberAsync();*/
+    @Query("SELECT * FROM registeredmembers")
+    List<RegisteredMembers> findAllRegisterMembersList();
+
+    /*@Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid DESC LIMIT 1")
+    void Off
+*/
 }

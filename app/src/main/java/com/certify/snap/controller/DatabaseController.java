@@ -59,4 +59,8 @@ public class DatabaseController {
     public void insertRegisterFailMember(RegisteredFailedMembers registeredFailedMembers){
         databaseStore.insertRegisteredFailedMember(registeredFailedMembers);
     }
+
+    public List<RegisteredMembers> findAll(){
+        return databaseStore.findAllRegisterMembersList();
+    }
 }

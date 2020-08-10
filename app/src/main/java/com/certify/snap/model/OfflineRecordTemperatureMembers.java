@@ -8,9 +8,8 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import org.litepal.LitePal;
-import org.litepal.annotation.Column;
 
-@Entity(indices={@Index(value="id", unique=true)})
+@Entity(indices={@Index(value="primaryid", unique=true)})
 public class OfflineRecordTemperatureMembers {
 
     @PrimaryKey
@@ -23,7 +22,6 @@ public class OfflineRecordTemperatureMembers {
     public String deviceTime;
     public String imagepath;
     public String jsonObj;
-    @Column(unique = true)
     public Long primaryid;
     public int offlineSync;
 

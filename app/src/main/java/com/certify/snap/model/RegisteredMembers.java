@@ -9,11 +9,10 @@ import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 
-@Entity(indices={@Index(value="id", unique=true)})
+@Entity(indices={@Index(value="memberid", unique=true)})
 public class RegisteredMembers {
 
-    @PrimaryKey
-    @NonNull
+
     public int id;
     public String firstname;
     public String lastname;
@@ -22,6 +21,8 @@ public class RegisteredMembers {
     public String mobile;
     public String image;
     public String features;
+    @PrimaryKey
+    @NonNull
     public String memberid;
     public String email;
     public String accessid;
