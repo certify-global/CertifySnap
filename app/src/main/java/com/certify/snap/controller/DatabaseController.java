@@ -63,4 +63,8 @@ public class DatabaseController {
     public List<RegisteredMembers> findAll(){
         return databaseStore.findAllRegisterMembersList();
     }
+
+    public OfflineRecordTemperatureMembers getLastPrimaryId(){
+        return databaseStore.OfflineRecordTemperatureMembers();
+    }
 }

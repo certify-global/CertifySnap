@@ -57,7 +57,6 @@ public interface DatabaseStore {
     @Query("SELECT * FROM registeredmembers")
     List<RegisteredMembers> findAllRegisterMembersList();
 
-    /*@Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid DESC LIMIT 1")
-    void Off
-*/
+    @Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid DESC LIMIT 1")
+    OfflineRecordTemperatureMembers OfflineRecordTemperatureMembers();
 }

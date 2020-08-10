@@ -7,13 +7,11 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import org.litepal.LitePal;
+import com.certify.snap.controller.DatabaseController;
 
 @Entity(indices={@Index(value="primaryid", unique=true)})
 public class OfflineRecordTemperatureMembers {
 
-    @PrimaryKey
-    @NonNull
     public int id;
     public String firstName;
     public String lastName;
@@ -22,6 +20,8 @@ public class OfflineRecordTemperatureMembers {
     public String deviceTime;
     public String imagepath;
     public String jsonObj;
+    @PrimaryKey
+    @NonNull
     public Long primaryid;
     public int offlineSync;
 
@@ -105,7 +105,8 @@ public class OfflineRecordTemperatureMembers {
     }
 
     public static Long lastPrimaryId() {
-        OfflineRecordTemperatureMembers offlineRecord = LitePal.findLast(OfflineRecordTemperatureMembers.class);
+        //OfflineRecordTemperatureMembers offlineRecord = LitePal.findLast(OfflineRecordTemperatureMembers.class);
+        OfflineRecordTemperatureMembers offlineRecord = DatabaseController.getInstance().getLastPrimaryId();
         if (offlineRecord != null) {
             Log.d("OfflineRecordTemp", "primaryId offlineRecord " + (offlineRecord.getPrimaryid() + 1));
             return offlineRecord.getPrimaryid() + 1;
