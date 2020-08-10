@@ -185,6 +185,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             }
         });
 
+        initMember();
         initData(true);
         initNfc();
         initMemberSync();
@@ -275,11 +276,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                   public void onNext(List<RegisteredMembers> list) {
                       if (list != null) {
                           datalist = list;
-                          if (isNeedInit) {
-                              initMember();
-                          } else {
-                              refreshMemberList(list);
-                          }
+                          refreshMemberList(list);
                       }
                       disposable.dispose();
                   }
