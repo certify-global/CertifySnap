@@ -44,6 +44,7 @@ public class GlobalParameters {
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
     public static final String ScanMode = "ScanMode";
     public static final String ScanProximity = "ScanProximity";
+    public static final String PRAGMA_KEY = "pragmakey";
 
     public static String Access_token = "";
     public static String channelID = "";

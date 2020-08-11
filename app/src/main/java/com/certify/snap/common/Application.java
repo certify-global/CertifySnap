@@ -6,9 +6,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import com.certify.snap.BuildConfig;
+import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.Database;
@@ -24,6 +26,8 @@ import com.tamic.novate.Novate;
 
 import org.litepal.LitePal;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -47,11 +51,15 @@ public class Application extends android.app.Application {
     private ThermalImageUtil temperatureUtil;
     private static SimplePreference preference;
     private int deviceMode = 0;
+    WifiManager wifi;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        String password = getPragmaKey(this);
+        SharedPreferences sp = Util.getSharedPreferences(this);
+        Util.writeString(sp, GlobalParameters.PRAGMA_KEY, password);
         DatabaseController.getInstance().init(this);
         preference = new SimplePreference(this);
 
@@ -177,6 +185,35 @@ public class Application extends android.app.Application {
             }
         };
         Crashes.setListener(crashesListener);
+    }
+
+    public String getPragmaKey(Context context){
+        wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
+        String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
+        String deviceSerialNo = Util.getSNCode();
+        return getSha256Hash(deviceSerialNo + macAddress);
+    }
+
+    private String getSha256Hash(String password) {
+        try {
+            MessageDigest digest = null;
+            try {
+                digest = MessageDigest.getInstance("SHA-256");
+            } catch (NoSuchAlgorithmException e1) {
+                e1.printStackTrace();
+            }
+            digest.reset();
+            return bin2hex(digest.digest(password.getBytes()));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private String bin2hex(byte[] data) {
+        StringBuilder hex = new StringBuilder(data.length * 2);
+        for (byte b : data)
+            hex.append(String.format("%02x", b & 0xFF));
+        return hex.toString();
     }
 
 }
