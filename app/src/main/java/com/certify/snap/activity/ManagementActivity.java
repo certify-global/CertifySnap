@@ -143,7 +143,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private int totalMemberCount = 0;
     private ExecutorService taskExecutorService;
     public String OFFLINE_FAILED_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "offline/failed/";
-    private int deleteMemberPosition;
+    private RegisteredMembers clickMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,6 +277,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                   public void onNext(List<RegisteredMembers> list) {
                       if (list != null) {
                           datalist = list;
+                          mCountTv.setText(String.valueOf(datalist.size()));
                           refreshMemberList(list);
                       }
                       disposable.dispose();
@@ -309,16 +310,17 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         memberAdapter.notifyDataSetChanged();
         memberAdapter.setOnItemClickListener(new MemberAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
-                showUpdateDialog(datalist.get(position));
-                listPosition = position;
+            public void onItemClick(RegisteredMembers member) {
+                clickMember = member;
+                showUpdateDialog(member);
+                //listPosition = position;
             }
         });
         memberAdapter.setOnItemLongClickListener(new MemberAdapter.OnItemLongClickListener() {
             @Override
-            public void onItemLongClick(View view, int position) {
-                deleteMemberPosition = position;
-                showDeleteDialog(datalist.get(position));
+            public void onItemLongClick(RegisteredMembers member) {
+                clickMember = member;
+                showDeleteDialog(member);
             }
         });
     }
@@ -492,7 +494,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
-                            localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId());
+                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId());
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
@@ -851,7 +853,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         }
     }
 
-    public void localUpdate(String oldId, String fistname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imagePath, long primaryId) {
+    public void localUpdate(String fistname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId) {
         String data = "";
         List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
         if (list != null && list.size() > 0) {
@@ -865,7 +867,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setFirstname(fistname);
                     Members.setLastname(lastname);
                     Members.setMobile(mobile);
-                    Members.setMemberid(id);
+                    Members.setMemberid(memberId);
                     Members.setEmail(email);
                     Members.setAccessid(accessid);
                     Members.setUniqueid(uniqueid);
@@ -893,8 +895,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 //if(!oldmobile.equals(mobile)){
                 String oldimage = Members.getImage();
                 String oldfeature = Members.getFeatures();
-                newimage = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname + "-" + id + FaceServer.IMG_SUFFIX;
-                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname + "-" + id;
+                newimage = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname + "-" + primaryId + FaceServer.IMG_SUFFIX;
+                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname + "-" + primaryId;
                 renameFile(oldimage, newimage);
                 renameFile(oldfeature, newfeature);
 //                }else{
@@ -905,7 +907,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 Members.setLastname(lastname);
                 Members.setMobile(mobile);
                 Members.setEmail(email);
-                Members.setMemberid(id);
+                Members.setMemberid(memberId);
                 Members.setAccessid(accessid);
                 Members.setUniqueid(uniqueid);
                 //Members.setExpire_time(time);
@@ -1213,7 +1215,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     String statusStr = responseData.getString("status");
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
-                        localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, datalist.get(listPosition).getPrimaryId());
+                        localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId());
                     } else if (isDeleted) {
                         RegisteredMembers members = new RegisteredMembers();
                         members.setFirstname(firstnamestr);
@@ -1225,7 +1227,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         members.setUniqueid(uniquestr);
                         members.setImage(image);
                         members.setStatus(statusStr);
-                        members.setPrimaryId(datalist.get(deleteMemberPosition).getPrimaryId());
+                        if (clickMember != null)
+                        members.setPrimaryId(clickMember.getPrimaryId());
 
                         localDelete(members);
                         isDeleted = false;

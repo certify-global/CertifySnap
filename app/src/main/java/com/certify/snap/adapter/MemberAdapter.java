@@ -41,7 +41,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public OnItemClickListener mOnItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(RegisteredMembers member);
     }
 
     public void setOnItemClickListener(OnItemClickListener OnItemClickListener) {
@@ -51,7 +51,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public OnItemLongClickListener mOnItemLongClickListener;
 
     public interface OnItemLongClickListener {
-        void onItemLongClick(View view, int position);
+        void onItemLongClick(RegisteredMembers member);
     }
 
     public void setOnItemLongClickListener(OnItemLongClickListener OnItemLongClickListener) {
@@ -98,7 +98,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             @Override
             public void onClick(View v) {
                 if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(holder.itemView, position);
+                    mOnItemClickListener.onItemClick(mlist.get(position));
                 }
             }
         });
@@ -106,7 +106,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             @Override
             public boolean onLongClick(View v) {
                 if (mOnItemLongClickListener != null) {
-                    mOnItemLongClickListener.onItemLongClick(holder.itemView, position);
+                    mOnItemLongClickListener.onItemLongClick(mlist.get(position));
                 }
                 return true;
             }
