@@ -15,7 +15,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -37,6 +36,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
@@ -203,6 +203,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
                         deleteAppData();
                         Util.writeString(sharedPreferences, GlobalParameters.URL, url);
+                        ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
                         finish();
@@ -307,7 +308,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private void setUIData() {
         try {
-            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            if (ApplicationController.getInstance().getEndPointUrl().isEmpty()) {
+                url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            } else {
+                url_end = ApplicationController.getInstance().getEndPointUrl();
+            }
             String removeHttps = url_end.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "");
             String endApiString = removeHttps.replace(getString(R.string.hostname), "");
             etEndUrl.setText(endApiString);
