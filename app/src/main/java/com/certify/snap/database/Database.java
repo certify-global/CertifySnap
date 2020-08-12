@@ -27,19 +27,13 @@ public abstract class Database extends RoomDatabase {
     static final String DB_NAME = "telpo_face.db";
     private static volatile Database INSTANCE=null;
 
-    public static Database create(Context ctxt) {
+    public static Database create(Context ctxt, String passphrase) {
         RoomDatabase.Builder<Database> b;
 
         b=Room.databaseBuilder(ctxt.getApplicationContext(), Database.class, DB_NAME);
 
-        b.openHelperFactory(SafeHelperFactory.fromUser(new SpannableStringBuilder(getDbPassphrase(ctxt.getApplicationContext()))));
+        b.openHelperFactory(SafeHelperFactory.fromUser(new SpannableStringBuilder(passphrase)));
         b.allowMainThreadQueries();
         return(b.build());
-    }
-
-    public static String getDbPassphrase(Context context){
-        SharedPreferences sp = Util.getSharedPreferences(context);
-        String input = sp.getString(GlobalParameters.PRAGMA_KEY, "");
-        return input;
     }
 }

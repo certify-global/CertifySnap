@@ -36,13 +36,13 @@ import androidx.sqlite.db.SupportSQLiteStatement;
  * A SupportSQLiteDatabase implementation that delegates to a SQLCipher
  * for Android implementation of SQLiteDatabase
  */
-class Database implements SupportSQLiteDatabase {
+class SafeDatabase implements SupportSQLiteDatabase {
   private static final String[] CONFLICT_VALUES = new String[]
     {"", " OR ROLLBACK ", " OR ABORT ", " OR FAIL ", " OR IGNORE ", " OR REPLACE "};
 
   private final net.sqlcipher.database.SQLiteDatabase safeDb;
 
-  Database(net.sqlcipher.database.SQLiteDatabase safeDb) {
+  SafeDatabase(net.sqlcipher.database.SQLiteDatabase safeDb) {
     this.safeDb=safeDb;
   }
 

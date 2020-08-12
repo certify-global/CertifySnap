@@ -69,5 +69,5 @@ public interface DatabaseStore {
     RegisteredMembers getLastMember();
 
     @Update
-    void update(RegisteredMembers registeredMember);
+    void updateMember(RegisteredMembers registeredMember);
 }

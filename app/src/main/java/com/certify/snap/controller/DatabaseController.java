@@ -24,8 +24,8 @@ public class DatabaseController {
         return mInstance;
     }
 
-    public void init(Context context){
-        databaseStore = Database.create(context).databaseStore();
+    public void init(Context context, String passphrase){
+        databaseStore = Database.create(context, passphrase).databaseStore();
     }
 
     public boolean isMemberExist(long primaryId) {
@@ -131,7 +131,7 @@ public class DatabaseController {
 
     public void updateMember(RegisteredMembers registermember){
         if (databaseStore != null){
-            databaseStore.update(registermember);
+            databaseStore.updateMember(registermember);
         }
     }
 }

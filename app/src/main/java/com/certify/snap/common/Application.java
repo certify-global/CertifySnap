@@ -58,9 +58,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         String password = getPragmaKey(this);
-        SharedPreferences sp = Util.getSharedPreferences(this);
-        Util.writeString(sp, GlobalParameters.PRAGMA_KEY, password);
-        DatabaseController.getInstance().init(this);
+        DatabaseController.getInstance().init(this, password);
         preference = new SimplePreference(this);
 
         mInstance = this;

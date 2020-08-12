@@ -46,7 +46,7 @@ class Helper implements SupportSQLiteOpenHelper {
 
   private OpenHelper createDelegate(Context context, String name,
                                     final Callback callback, SafeHelperFactory.Options options) {
-    final Database[] dbRef = new Database[1];
+    final SafeDatabase[] dbRef = new SafeDatabase[1];
 
     return(new OpenHelper(context, name, dbRef, callback, options));
   }
@@ -131,11 +131,11 @@ class Helper implements SupportSQLiteOpenHelper {
   }
 
   static class OpenHelper extends SQLiteOpenHelper {
-    private final Database[] dbRef;
+    private final SafeDatabase[] dbRef;
     private volatile Callback callback;
     private volatile boolean migrated;
 
-    OpenHelper(Context context, String name, Database[] dbRef, Callback callback,
+    OpenHelper(Context context, String name, SafeDatabase[] dbRef, Callback callback,
                SafeHelperFactory.Options options) {
       super(context, name, null, callback.version, new SQLiteDatabaseHook() {
         @Override
@@ -154,7 +154,7 @@ class Helper implements SupportSQLiteOpenHelper {
       }, new DatabaseErrorHandler() {
         @Override
         public void onCorruption(SQLiteDatabase dbObj) {
-          Database db = dbRef[0];
+          SafeDatabase db = dbRef[0];
 
           if (db != null) {
             callback.onCorruption(db);
@@ -179,11 +179,11 @@ class Helper implements SupportSQLiteOpenHelper {
       return getWrappedDb(db);
     }
 
-    synchronized Database getWrappedDb(SQLiteDatabase db) {
-      Database wrappedDb = dbRef[0];
+    synchronized SafeDatabase getWrappedDb(SQLiteDatabase db) {
+      SafeDatabase wrappedDb = dbRef[0];
 
       if (wrappedDb == null) {
-        wrappedDb = new Database(db);
+        wrappedDb = new SafeDatabase(db);
         dbRef[0] = wrappedDb;
       }
 

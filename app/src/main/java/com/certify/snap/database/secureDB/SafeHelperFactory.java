@@ -99,8 +99,8 @@ public class SafeHelperFactory implements SupportSQLiteOpenHelper.Factory {
    * @param passphrase the new passphrase to use
    */
   public static void rekey(SupportSQLiteDatabase db, char[] passphrase) {
-    if (db instanceof Database) {
-      ((Database)db).rekey(passphrase);
+    if (db instanceof SafeDatabase) {
+      ((SafeDatabase)db).rekey(passphrase);
     }
     else {
       throw new IllegalArgumentException("Database is not from CWAC-SafeRoom");
@@ -118,8 +118,8 @@ public class SafeHelperFactory implements SupportSQLiteOpenHelper.Factory {
    * @param editor source of passphrase, presumably from a user
    */
   public static void rekey(SupportSQLiteDatabase db, Editable editor) {
-    if (db instanceof Database) {
-      ((Database)db).rekey(editor);
+    if (db instanceof SafeDatabase) {
+      ((SafeDatabase)db).rekey(editor);
     }
     else {
       throw new IllegalArgumentException("Database is not from CWAC-SafeRoom");
