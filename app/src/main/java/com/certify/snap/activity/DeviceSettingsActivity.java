@@ -259,9 +259,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         if (navigationBar){
             radio_navigationbar_enable.setChecked(true);
             sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
         }else {
             radio_navigationbar_disable.setChecked(true);
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
         }
 
         radio_group_navigationbar.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -271,10 +273,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     case R.id.navigation_bar_radio_enable:
                         Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
                         sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+                        sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                         break;
                     case R.id.navigation_bar_radio_disable:
                         Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
                         sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                        sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
                         break;
                 }
             }

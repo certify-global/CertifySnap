@@ -99,10 +99,12 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             }else if(command.equals("NAVBARON")){
                 boolean navigationBar =true;
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
                 Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
             }else if(command.equals("NAVBAROFF")){
                 boolean navigationBar = false;
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
                 Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
             }
             Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
