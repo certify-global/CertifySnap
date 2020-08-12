@@ -160,7 +160,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             internetIndicatorImage.setVisibility(View.VISIBLE);
         }
-        AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
         Util.enableLedPower(0);
     }
 
@@ -278,6 +277,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
                 new Handler().postDelayed(() -> CameraController.getInstance().initDeviceMode(), 1000);
+                AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 startBLEService();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
@@ -301,6 +301,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
+            AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
             onSettingsUpdated();
         } catch (Exception e) {
             onSettingsUpdated();

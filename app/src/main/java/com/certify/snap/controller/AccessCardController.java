@@ -5,21 +5,19 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.certify.callback.AccessCallback;
-import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
-import com.certify.snap.async.AsyncJSONObjectPush;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
-import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
-import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
 
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,6 +36,7 @@ public class AccessCardController implements AccessCallback {
 
     private String mAccessCardID = "";
     private String mAccessIdDb = "";
+    private Context context;
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -46,8 +45,8 @@ public class AccessCardController implements AccessCallback {
         return mInstance;
     }
 
-    public void init() {
-        //mNfcAdapter = M1CardUtils.isNfcAble(context);
+    public void init(Context context) {
+        this.context = context;
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
@@ -202,15 +201,28 @@ public class AccessCardController implements AccessCallback {
         }
     }
 
-    public void clearData() {
-        AccessControlModel.getInstance().clearData();
-        mAccessCardID = "";
-        mAccessIdDb = "";
+    public void processUnlockDoor(List<RegisteredMembers> membersList) {
+        if (AppSettings.isFacialDetect()) {
+            if (membersList != null && membersList.size() > 0 ) {
+                unlockDoor();
+            }
+            return;
+        }
+        unlockDoor();
+    }
+
+    public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
+        if (AppSettings.isFacialDetect()) {
+            if (membersList != null && membersList.size() > 0 ) {
+                unlockDoorOnHighTemp();
+            }
+            return;
+        }
+        unlockDoorOnHighTemp();
     }
 
     public void accessCardLog(Context context, RegisteredMembers  registeredMembers,float temperature) {
         try {
-
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             if ( sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !AccessCardController.getInstance().isAllowAnonymous()
                     && (AccessCardController.getInstance().isEnableRelay() ||
@@ -239,14 +251,10 @@ public class AccessCardController implements AccessCallback {
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
 
-
                 new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
             }
-
         } catch (Exception e) {
-            Util.switchRgbOrIrActivity(context, true);
             Logger.error(TAG + "accessCardLog", e.getMessage());
-
         }
     }
 
@@ -256,16 +264,18 @@ public class AccessCardController implements AccessCallback {
             if (reportInfo == null) {
                 return;
             }
-                if (reportInfo.isNull("responseCode")) return;
-                if (reportInfo.getString("responseCode").equals("1")) {
-
-                } else {
-                    Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed");
-                }
-
+            if (reportInfo.isNull("responseCode")) return;
+            if (!reportInfo.getString("responseCode").equals("1")) {
+                Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed");
+            }
         } catch (Exception e) {
             Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
         }
+    }
 
+    public void clearData() {
+        AccessControlModel.getInstance().clearData();
+        mAccessCardID = "";
+        mAccessIdDb = "";
     }
 }

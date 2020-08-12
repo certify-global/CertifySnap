@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
-import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
@@ -239,7 +238,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         TemperatureController.getInstance().init(this);
 
         sharedPreferences = Util.getSharedPreferences(this);
-        AppSettings.getInstance().getSettingsFromSharedPref(this);
 
         initView();
         new InitTemperatureThread().start();

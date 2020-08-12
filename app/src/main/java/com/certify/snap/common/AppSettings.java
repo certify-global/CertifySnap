@@ -14,7 +14,7 @@ public class AppSettings {
     private static boolean livenessDetect = false;
     private static String imageIcon = "";
     private static boolean captureTemperature = false;
-    private static boolean allowAll = false;
+    private static boolean allowLow = false;
     private static String tempTestLow = "";
     private static String fToC = "";
     private static String temperatureThreshold = "";
@@ -51,7 +51,7 @@ public class AppSettings {
         livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
         imageIcon = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         captureTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
-        allowAll = sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false);
+        allowLow = sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false);
         tempTestLow = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
         fToC = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
         temperatureThreshold = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
@@ -96,8 +96,8 @@ public class AppSettings {
         return captureTemperature;
     }
 
-    public static boolean isAllowAll() {
-        return allowAll;
+    public static boolean isAllowLow() {
+        return allowLow;
     }
 
     public static String getTempTestLow() {
