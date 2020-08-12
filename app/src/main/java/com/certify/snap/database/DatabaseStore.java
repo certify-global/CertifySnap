@@ -24,7 +24,7 @@ public interface DatabaseStore {
     @Insert
     void insertOfflineVerifyMember(OfflineVerifyMembers offlineVerifyMembers);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     void insertOfflineGuestMember(OfflineGuestMembers... offlineGuestMembers);
 
     @Insert
@@ -37,26 +37,33 @@ public interface DatabaseStore {
     void insertGuestMembers(GuestMembers guestMembers);
 
     @Transaction
-    @Query("SELECT * FROM registeredmembers WHERE uniqueid=:uniqueID")
-    List<RegisteredMembers> findMemberOnUniqueId(String uniqueID);
+    @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
+    List<RegisteredMembers> findMemberByUniqueId(String uniqueID);
 
     @Transaction
-    @Query("SELECT * FROM registeredmembers WHERE memberid=:memberId")
-    List<RegisteredMembers> findMemberOnMemberId(String memberId);
+    @Query("SELECT * FROM RegisteredMembers WHERE primaryid=:primaryId")
+    List<RegisteredMembers> findMemberByPrimaryId(long primaryId);
 
     @Transaction
-    @Query("SELECT * FROM registeredmembers WHERE accessid=:accessId")
-    List<RegisteredMembers> findMemberOnAccessId(String accessId);
+    @Query("SELECT * FROM RegisteredMembers WHERE memberid=:memberId")
+    List<RegisteredMembers> findMemberByMemberId(String memberId);
 
-    @Query("DELETE FROM registeredmembers")
+    @Transaction
+    @Query("SELECT * FROM RegisteredMembers WHERE accessid=:accessId")
+    List<RegisteredMembers> findMemberByAccessId(String accessId);
+
+    @Query("DELETE FROM RegisteredMembers")
     void deleteAll();
 
-    @Query("DELETE FROM registeredmembers WHERE memberid =:memberId")
-    int deleteMember(String memberId);
+    @Query("DELETE FROM RegisteredMembers WHERE primaryid =:primaryId")
+    int deleteMember(long primaryId);
 
-    @Query("SELECT * FROM registeredmembers")
+    @Query("SELECT * FROM RegisteredMembers")
     List<RegisteredMembers> findAllRegisterMembersList();
 
     @Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid DESC LIMIT 1")
     OfflineRecordTemperatureMembers OfflineRecordTemperatureMembers();
+
+    @Query("SELECT * FROM RegisteredMembers ORDER BY primaryid DESC LIMIT 1")
+    RegisteredMembers getLastMember();
 }

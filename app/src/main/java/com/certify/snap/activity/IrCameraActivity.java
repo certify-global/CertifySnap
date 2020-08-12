@@ -2704,7 +2704,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
                                 //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
-                                registeredMemberslist = DatabaseController.getInstance().findMember(split[1]);
+                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 

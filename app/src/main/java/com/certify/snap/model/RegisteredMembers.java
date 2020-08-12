@@ -1,19 +1,24 @@
 package com.certify.snap.model;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.certify.snap.controller.DatabaseController;
+
 import org.litepal.annotation.Column;
 import org.litepal.crud.LitePalSupport;
 
 
-@Entity(indices={@Index(value="memberid", unique=true)})
+@Entity(indices={@Index(value="primaryid", unique=true)})
 public class RegisteredMembers {
 
-
-    public int id;
+    @PrimaryKey
+    @NonNull
+    public long primaryid;
     public String firstname;
     public String lastname;
     public String expiretime;
@@ -21,8 +26,6 @@ public class RegisteredMembers {
     public String mobile;
     public String image;
     public String features;
-    @PrimaryKey
-    @NonNull
     public String memberid;
     public String email;
     public String accessid;
@@ -30,12 +33,12 @@ public class RegisteredMembers {
     public String memberType;
     public String dateTime;
 
-    public int getId() {
-        return id;
+    public long getPrimaryId() {
+        return primaryid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPrimaryId(long primaryId) {
+        this.primaryid = primaryId;
     }
     public String getFirstname() {
         return firstname;

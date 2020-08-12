@@ -72,8 +72,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
             holder.lastname.setText(mlist.get(position).getLastname());
             holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
-            if(!mlist.get(position).getMemberid().isEmpty()) {
-                holder.id.setText("Id: " + mlist.get(position).getMemberid());
+            if(mlist.get(position).getPrimaryId() != 0) {
+                holder.id.setText("Id: " + mlist.get(position).getPrimaryId());
             }else{
                 holder.id.setText("Id: "+mlist.get(position).getAccessid());
             }

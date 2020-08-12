@@ -37,6 +37,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
@@ -499,7 +500,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     public void clearDatabase(View view) {
-        LitePal.deleteDatabase("telpo_face");
+        //LitePal.deleteDatabase("telpo_face");
+        DatabaseController.getInstance().deleteAllMember();
         Toast.makeText(this, "All Members Cleared", Toast.LENGTH_LONG).show();
     }
 
