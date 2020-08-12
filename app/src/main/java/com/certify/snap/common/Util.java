@@ -1967,5 +1967,18 @@ public class Util {
         }
         return "";
     }
+    public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectAccessLog " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
 
+        }
+        return null;
+    }
 }

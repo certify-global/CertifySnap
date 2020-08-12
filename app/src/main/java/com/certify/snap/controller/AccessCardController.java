@@ -1,14 +1,29 @@
 package com.certify.snap.controller;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.callback.AccessCallback;
+import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncJSONObjectAccessLog;
+import com.certify.snap.async.AsyncJSONObjectPush;
+import com.certify.snap.common.EndPoints;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
+import com.certify.snap.common.UserExportedData;
+import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AppStatusInfo;
+import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
+
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AccessCardController  {
+public class AccessCardController implements AccessCallback {
     private static final String TAG = AccessCardController.class.getSimpleName();
     private static AccessCardController mInstance = null;
     private boolean mEnableRelay = false;
@@ -191,5 +206,66 @@ public class AccessCardController  {
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
+    }
+
+    public void accessCardLog(Context context, RegisteredMembers  registeredMembers,float temperature) {
+        try {
+
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            if ( sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !AccessCardController.getInstance().isAllowAnonymous()
+                    && (AccessCardController.getInstance().isEnableRelay() ||
+                    AccessCardController.getInstance().isWeigandEnabled())) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", 0);
+                obj.put("firstName", registeredMembers.getFirstname());
+                obj.put("lastName", registeredMembers.getLastname());
+                obj.put("temperature", temperature);
+                obj.put("memberId", registeredMembers.getMemberid());
+                obj.put("accessId", registeredMembers.getAccessid());
+                obj.put("qrCodeId", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
+                obj.put("deviceId", Util.getSNCode());
+                obj.put("deviceName", "");
+                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                obj.put("facilityId", 0);
+                obj.put("locationId", 0);
+                obj.put("facilityName", "");
+                obj.put("locationName", "");
+                obj.put("deviceTime", Util.getMMDDYYYYDate());
+                obj.put("sourceIP", Util.getLocalIpAddress());
+                obj.put("deviceData", Util.MobileDetails(context));
+                obj.put("guid", "");
+                obj.put("faceParameters", "");
+                obj.put("eventType", "");
+                obj.put("evenStatus", "");
+                obj.put("utcRecordDate", Util.getUTCDate(""));
+
+
+                new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+            }
+
+        } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
+            Logger.error(TAG + "accessCardLog", e.getMessage());
+
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+                if (reportInfo.isNull("responseCode")) return;
+                if (reportInfo.getString("responseCode").equals("1")) {
+
+                } else {
+                    Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed");
+                }
+
+        } catch (Exception e) {
+            Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
+        }
+
     }
 }
