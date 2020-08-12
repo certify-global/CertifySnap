@@ -128,4 +128,10 @@ public class DatabaseController {
             databaseStore.deleteAll();
         }
     }
+
+    public void updateMember(RegisteredMembers registermember){
+        if (databaseStore != null){
+            databaseStore.update(registermember);
+        }
+    }
 }

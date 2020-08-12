@@ -5,6 +5,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
@@ -66,4 +67,7 @@ public interface DatabaseStore {
 
     @Query("SELECT * FROM RegisteredMembers ORDER BY primaryid DESC LIMIT 1")
     RegisteredMembers getLastMember();
+
+    @Update
+    void update(RegisteredMembers registeredMember);
 }

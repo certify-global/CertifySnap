@@ -878,7 +878,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setDateTime(Util.currentDate());
                     Members.setPrimaryId(primaryId);
                     //Members.save();
-                    DatabaseController.getInstance().insertMemberToDB(Members);
+                    DatabaseController.getInstance().updateMember(Members);
 
                     file.delete();
                     updateimagePath = "";
@@ -914,7 +914,9 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 Members.setStatus(Members.getStatus());
                 Members.setImage(newimage);
                 Members.setFeatures(newfeature);
+                Members.setPrimaryId(primaryId);
                 //Members.save();
+                DatabaseController.getInstance().updateMember(Members);
 
                 dismissUpdateDialog();
                 data = getString(R.string.Update_success);
