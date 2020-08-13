@@ -204,7 +204,7 @@ public class TemperatureController {
      * @param requestId Request id
      */
     public void startTemperatureMeasure(int requestId) {
-        Log.d(TAG, "Deep Temp startTemperatureMeasure " + trackIdMap.isEmpty());
+        Log.d(TAG, "Temp startTemperatureMeasure " + trackIdMap.isEmpty());
         if (thermalImageUtil == null || isTemperatureInProcess) return;
         isTemperatureInProcess = true;
         temperature = 0;
@@ -213,11 +213,10 @@ public class TemperatureController {
             return;
         }
         if (trackIdMap.containsKey(requestId)) {
-            Log.d(TAG, "Deep Track Id already exist");
+            Log.d(TAG, "Track Id already exist");
             return;
         }
         trackIdMap.put(requestId, "Measure Temperature");
-        Log.d(TAG, "Deep Track Id added "+ requestId);
         startTemperature(requestId);
     }
 
@@ -363,7 +362,7 @@ public class TemperatureController {
         private void updateGuideMsgOnTemperatureFail(String errorCode) {
             GuideMessage value = GuideMessage.GENERIC_ERROR;
             if (AppSettings.isGuideScreen()) {
-                Log.e(TAG, "Deep SnapXT Temperature updateGuideMsgOnTemperatureFail " + errorCode);
+                Log.e(TAG, "SnapXT Temperature updateGuideMsgOnTemperatureFail " + errorCode);
                 if (errorCode.contains("face out of range or for head too low") ||
                         errorCode.contains("face out of range or forhead too low")) {
                     value = GuideMessage.FACE_OUT_OF_RANGE;
@@ -385,7 +384,7 @@ public class TemperatureController {
          */
         private void updateAllowLowOnTemperatureFail(String errorCode, float tempNoCorrect) {
             if (AppSettings.isAllowLow()) {
-                Log.e(TAG, "Deep SnapXT Temperature updateAllowLowOnTemperatureFail " + tempNoCorrect);
+                Log.e(TAG, "SnapXT Temperature updateAllowLowOnTemperatureFail " + tempNoCorrect);
                 if (errorCode.contains("wrong tem , too cold") && tempNoCorrect > 0) {
                     float lowTemperatureSetting = Float.parseFloat(AppSettings.getTempTestLow());
                     float lowTemperature = tempNoCorrect;
@@ -411,7 +410,7 @@ public class TemperatureController {
      * @param membersList Members list
      */
     public void updateControllersOnNormalTempRead(List<RegisteredMembers> membersList) {
-        Log.d(TAG, "Deep updateControllers on Normal Temperature");
+        Log.d(TAG, "updateControllers on Normal Temperature");
         CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
         CameraController.getInstance().setFaceVisible(false);
         SoundController.getInstance().playNormalTemperatureSound();
@@ -427,7 +426,7 @@ public class TemperatureController {
      * @param membersList Members list
      */
     public void updateControllersOnHighTempRead(List<RegisteredMembers> membersList) {
-        Log.d(TAG, "Deep updateControllers on High Temperature");
+        Log.d(TAG, "updateControllers on High Temperature");
         CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
         CameraController.getInstance().setFaceVisible(false);
         SoundController.getInstance().playHighTemperatureSound();

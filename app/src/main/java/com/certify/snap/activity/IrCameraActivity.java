@@ -756,12 +756,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             return;
         }
-        Log.d(TAG, "Deep runTemperature");
+        Log.d(TAG, "runTemperature");
         CameraController.getInstance().setScanState(CameraController.ScanState.THERMAL_SCAN);
         TemperatureController.getInstance().setTemperatureRecordData(data);
         TemperatureController.getInstance().setTemperatureListener(this);
         TemperatureController.getInstance().startTemperatureMeasure(requestId);
-        //TemperatureController.getInstance().clearTrackId();
     }
 
     private void initRgbCamera() {
@@ -978,7 +977,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (status == null
                             || status == RequestFeatureStatus.TO_RETRY) {
                         if (CameraController.getInstance().getScanState() == CameraController.ScanState.THERMAL_SCAN) {
-                            Log.d(TAG, "Deep Scan state is Thermal scan");
+                            Log.d(TAG, "Scan state is Thermal scan");
                             return;
                         }
                         CameraController.getInstance().setFaceVisible(true);
@@ -2097,7 +2096,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private static DecimalFormat df = new DecimalFormat("0.00");
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
-        Log.d(TAG, String.format("Deep Snap searchFace requestId: %s", requestId));
+        Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2247,7 +2246,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "Deep Snap Compare result Error ");
+                        Log.d(TAG, "Snap Compare result Error ");
                         runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0)); // Register member photo is not there, Still find temperature
                         if (faceHelperIr != null) {
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
@@ -2522,7 +2521,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
         if (searchFaceList.size() > 0 && isFaceClose(searchFaceList.get(0))) {
-            Log.d(TAG, "Deep Face is close, Initiate search");
+            Log.d(TAG, "Face is close, Initiate search");
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
             return;
         }
@@ -2914,6 +2913,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
         });
         TemperatureController.getInstance().clearData();
+        CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
         TemperatureController.getInstance().setTemperatureListener(this);
         clearLeftFace(null);
     }
