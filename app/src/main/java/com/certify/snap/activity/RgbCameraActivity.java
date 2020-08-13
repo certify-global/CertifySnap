@@ -68,6 +68,7 @@ import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
@@ -82,8 +83,6 @@ import com.google.zxing.other.BeepManager;
 import com.certify.snap.R;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.view.MyGridLayoutManager;
-
-import org.litepal.LitePal;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -984,7 +983,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
                                     Log.e("——人脸来", compareResult.getUserName() + "-" + requestId + "-" + mobile + "-" + verify_time);
 
-                                    registeredMemberslist = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
+//                                    registeredMemberslist = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
+                                    registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
                                     if (registeredMemberslist.size() > 0) {
                                         RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                         String expire_time = registeredMembers.getExpiretime();
@@ -1404,8 +1404,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             if (resultCode == 0 && data != null) {
                 String qrCode = data.getStringExtra("qrCode");
                 if (qrCode != null) {
-                    List<GuestMembers> guestMembers = LitePal.where("qrcode = ?", qrCode).find(GuestMembers.class);
-                    if (guestMembers != null && guestMembers.size() > 0) {
+//                    List<GuestMembers> guestMembers = LitePal.where("qrcode = ?", qrCode).find(GuestMembers.class);
+                    /*if (guestMembers != null && guestMembers.size() > 0) {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date curDate = new Date(System.currentTimeMillis());
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
@@ -1452,7 +1452,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                 }
                             }
                         } else restoreCameraAfterScan(true);
-                    } else restoreCameraAfterScan(true);
+                    } else restoreCameraAfterScan(true);*/
                 } else restoreCameraAfterScan(true);
             } else restoreCameraAfterScan(false);
         }

@@ -74,6 +74,7 @@ import com.certify.snap.common.TemperatureStatus;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.CameraController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
@@ -81,8 +82,6 @@ import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.GuideDataCallBack;
 import com.common.thermalimage.TemperatureBigData;
 import com.common.thermalimage.ThermalImageUtil;
-
-import org.litepal.LitePal;
 
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
@@ -1428,7 +1427,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 String temperatureResult = String.valueOf(temperature);
 
                                 compareResult.setTemperature(temperatureResult);
-                                registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
+                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
                                 if (registeredMemberslist.size() > 0) {
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     //getTemperature(facePreviewInfoList, data);
@@ -1653,7 +1652,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         try {
             String cardid = parseCardId(mTag);
             if (cardid != null) {
-                if (LitePal.isExist(RegisteredMembers.class, "card = ?", cardid)) {
+//                if (LitePal.isExist(RegisteredMembers.class, "card = ?", cardid)) {
                     Date curDate = new Date(System.currentTimeMillis());
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                     String compareTime = simpleDateFormat.format(curDate);
@@ -1672,9 +1671,10 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                             && !compareAllLimitedTime(compareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                         processResult(TIME_ERROR, cardid);
                     }
-                } else {
+//                }
+               /* else {
                     processResult(CARD_ID_ERROR, null);
-                }
+                }*/
             } else {
                 processResult(CARD_ID_ERROR, null);
             }

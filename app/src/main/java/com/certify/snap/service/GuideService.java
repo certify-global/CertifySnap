@@ -13,8 +13,6 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.certify.snap.database.Database;
-import com.certify.snap.database.DatabaseStore;
 import com.google.gson.Gson;
 import com.tamic.novate.Novate;
 import com.tamic.novate.Throwable;
@@ -30,22 +28,13 @@ import com.certify.snap.bean.Secret;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
-import com.certify.snap.model.GuestMembers;
-import com.certify.snap.model.OfflineGuestMembers;
-import com.certify.snap.model.OfflineVerifyMembers;
-
-import org.litepal.LitePal;
-import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -117,11 +106,11 @@ public class GuideService extends Service {
         super.onCreate();
         mnovate = Application.getInstance().getNovate();
         sp = Util.getSharedPreferences(this);
-        try {
+        /*try {
             db = LitePal.getDatabase();
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
         Log.d(TAG, "onCreate() executed");
         getSecretBroadcastReceiver = new GetSecretBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -320,7 +309,7 @@ public class GuideService extends Service {
     //上报考勤记录
     private void uploadOfflineverify() {
 
-        LitePal.findAllAsync(OfflineVerifyMembers.class).listen(new FindMultiCallback<OfflineVerifyMembers>() {
+        /*LitePal.findAllAsync(OfflineVerifyMembers.class).listen(new FindMultiCallback<OfflineVerifyMembers>() {
             @Override
             public void onFinish(List<OfflineVerifyMembers> list) {
                 final List<OfflineVerifyMembers> mlist = list;
@@ -355,7 +344,7 @@ public class GuideService extends Service {
 
                 }
             }
-        });
+        });*/
 
 
     }
@@ -424,7 +413,7 @@ public class GuideService extends Service {
                             for (int i = 0; i < guestList.size(); i++) {
                                 final Guest guest = guestList.get(i);
                                 final String id = guest.getUserId();
-                                LitePal.where("userId = ?", id).findAsync(GuestMembers.class).listen(new FindMultiCallback<GuestMembers>() {
+                                /*LitePal.where("userId = ?", id).findAsync(GuestMembers.class).listen(new FindMultiCallback<GuestMembers>() {
                                     @Override
                                     public void onFinish(List<GuestMembers> list) {
                                         if (list != null && list.size() != 0) {
@@ -433,13 +422,13 @@ public class GuideService extends Service {
                                             updateGuestMember.setMobile(guest.getMobile());
                                             updateGuestMember.setExpire_time(guest.getExpire_time());
                                             updateGuestMember.setQrcode(guest.getQrcode());
-                                           /* if (telpoDatabaseStore.insertGuestMembers(updateGuestMember)) {
+                                           *//* if (telpoDatabaseStore.insertGuestMembers(updateGuestMember)) {
                                                 updateGuestSuccessResult = true;
                                                 Log.e("tag", "update guest info success");
                                             } else {
                                                 updateGuestFailResult = false;
                                                 Log.e("tag", "update guest info fail");
-                                            }*/
+                                            }*//*
                                         } else {
                                             GuestMembers guestMembers = new GuestMembers();
                                             guestMembers.setUserId(id);
@@ -447,16 +436,16 @@ public class GuideService extends Service {
                                             guestMembers.setMobile(guest.getMobile());
                                             guestMembers.setExpire_time(guest.getExpire_time());
                                             guestMembers.setQrcode(guest.getQrcode());
-                                          /*  if (telpoDatabaseStore.insertGuestMembers(guestMembers)) {
+                                          *//*  if (telpoDatabaseStore.insertGuestMembers(guestMembers)) {
                                                 updateGuestSuccessResult = true;
                                                 Log.e("tag", "save guest info success");
                                             } else {
                                                 updateGuestFailResult = false;
                                                 Log.e("tag", "save guest info fail");
-                                            }*/
+                                            }*//*
                                         }
                                     }
-                                });
+                                });*/
                             }
                             if (updateGuestSuccessResult & updateGuestFailResult) {
                                 sp.edit().putLong("guestTimeStamp", serverTime).apply();
@@ -489,7 +478,7 @@ public class GuideService extends Service {
 
     //上报访客信息
     private void uploadGuestRecord() {
-        LitePal.findAllAsync(OfflineGuestMembers.class).listen(new FindMultiCallback<OfflineGuestMembers>() {
+        /*LitePal.findAllAsync(OfflineGuestMembers.class).listen(new FindMultiCallback<OfflineGuestMembers>() {
             @Override
             public void onFinish(final List<OfflineGuestMembers> list) {
                 if (list != null && list.size() > 0) {
@@ -512,7 +501,7 @@ public class GuideService extends Service {
                     }).start();
                 }
             }
-        });
+        });*/
     }
 
     private void uploadGuest(final Map<String, Object> parameters) {
@@ -524,7 +513,7 @@ public class GuideService extends Service {
                 if (code == 1) {
                     Log.e("tag", "upload guest record success");
                     try {
-                        LitePal.deleteAll(OfflineGuestMembers.class, "verify_time = ?", parameters.get("verify_time").toString());
+                        //LitePal.deleteAll(OfflineGuestMembers.class, "verify_time = ?", parameters.get("verify_time").toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -548,7 +537,7 @@ public class GuideService extends Service {
             @Override
             public void run() {
                 Log.e("tag", "start to delete expired guest data");
-                List<GuestMembers> guestMembersList = LitePal.findAll(GuestMembers.class);
+                /*List<GuestMembers> guestMembersList = LitePal.findAll(GuestMembers.class);
                 if (guestMembersList != null && guestMembersList.size() > 0) {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date curDate = new Date(System.currentTimeMillis());
@@ -560,10 +549,10 @@ public class GuideService extends Service {
                         guestMembers = (GuestMembers) listIterator.next();
                         expire_time = guestMembers.getExpire_time();
                         if (!Util.isDateOneBigger(expire_time, currentTime)) {
-                            LitePal.deleteAll(GuestMembers.class, "userId = ?", guestMembers.getUserId());
+                            //LitePal.deleteAll(GuestMembers.class, "userId = ?", guestMembers.getUserId());
                         }
                     }
-                }
+                }*/
             }
         }).start();
     }

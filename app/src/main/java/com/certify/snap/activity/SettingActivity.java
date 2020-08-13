@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.DatabaseController;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.text.Html;
@@ -51,7 +52,6 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
-import org.litepal.LitePal;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -420,7 +420,8 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                                 // get user input and set it to result
                                 // edit text
                                 if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())) {
-                                    LitePal.deleteAll(RegisteredMembers.class);
+                                    //LitePal.deleteAll(RegisteredMembers.class);
+                                    DatabaseController.getInstance().deleteAllMember();
                                     Util.clearAllSharedPreferences(sharedPreferences);
                                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
                                 }

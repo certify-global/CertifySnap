@@ -5,8 +5,6 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import org.litepal.crud.LitePalSupport;
-
 @Entity(indices={@Index(value="id", unique=true)})
 public class GuestMembers {
     @PrimaryKey

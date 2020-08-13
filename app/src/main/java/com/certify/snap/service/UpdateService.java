@@ -35,8 +35,6 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
-import org.litepal.LitePal;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -606,7 +604,7 @@ public class UpdateService extends Service {
         List<RegisteredMembers> list;
         for (Members member : updateMembersList) {
             id = member.getUserId();
-            list = LitePal.where("userId=?", id).find(RegisteredMembers.class);
+            /*list = LitePal.where("userId=?", id).find(RegisteredMembers.class);
             if (list != null && list.size() > 0) {
                 // if(compareMember())....//如果待更新的信息与数据库中的一样，不执行重复更新
                 if (updateId != null && updateId.equals(id)) {
@@ -625,7 +623,7 @@ public class UpdateService extends Service {
                     break;
                 }
                 registerList.add(member);
-            }
+            }*/
         }
         if (updateList.size() > 0) {
             Log.e("tag", "update member---");
@@ -702,7 +700,7 @@ public class UpdateService extends Service {
                         failedId = failedPathName.substring(failedPathName.lastIndexOf("-") + 1, failedPathName.lastIndexOf("."));
                         for (Members member : list) {
                             if (member.getUserId().equals(failedId)) {
-                                registeredFailedMembersList = LitePal.where("userId = ?", failedId).find(RegisteredFailedMembers.class);
+                                /*registeredFailedMembersList = LitePal.where("userId = ?", failedId).find(RegisteredFailedMembers.class);
                                 if (registeredFailedMembersList.size() > 0) {
                                     //update
                                     registeredFailedMembers = registeredFailedMembersList.get(0);
@@ -727,7 +725,7 @@ public class UpdateService extends Service {
                                     Log.e("tag", "registeredFailedMembers_name---" + member.getName() + "---id---" + member.getUserId());
                                         updateProcessFailCount++;
                                         updateSuccessCount++;
-                                }
+                                }*/
                                 break;
                             }
                         }
@@ -763,7 +761,7 @@ public class UpdateService extends Service {
                                 result = true;
                                 if (result) {
                                     //如果失败列表中含有该条信息，则删除原来失败列表中该条人员信息
-                                    registeredFailedMembersList = LitePal.where("userId = ?", userId).find(RegisteredFailedMembers.class);
+                                    /*registeredFailedMembersList = LitePal.where("userId = ?", userId).find(RegisteredFailedMembers.class);
                                     if (registeredFailedMembersList != null && registeredFailedMembersList.size() > 0) {
                                         int line = LitePal.deleteAll(RegisteredFailedMembers.class, "userId = ?", userId);
                                         if (line > 0) {
@@ -786,13 +784,13 @@ public class UpdateService extends Service {
                                     } else {
                                         updateSuccessCount++;
                                         Log.e("tag", "register success");
-                                    }
+                                    }*/
                                 }
                                 break;
                             }
                         }
                     }
-                    Log.e("tag", "registeredMembesr_size--" + LitePal.findAll(RegisteredMembers.class).size());
+                    //Log.e("tag", "registeredMembesr_size--" + LitePal.findAll(RegisteredMembers.class).size());
                 }
             } else {
                 if (list != null && list.size() > 0 && !isSuccess) {
@@ -808,7 +806,7 @@ public class UpdateService extends Service {
                         final String failedId = failedPathName.substring(failedPathName.lastIndexOf("-") + 1, failedPathName.lastIndexOf("."));
                         for (Members member : list) {
                             if (member.getUserId().equals(failedId)) {
-                                registeredFailedMembersList = LitePal.where("userId = ?", failedId).find(RegisteredFailedMembers.class);
+                                /*registeredFailedMembersList = LitePal.where("userId = ?", failedId).find(RegisteredFailedMembers.class);
                                 if (registeredFailedMembersList.size() == 0) {
                                     registeredFailedMembers = new RegisteredFailedMembers();
                                     registeredFailedMembers.setName(failedName);
@@ -843,7 +841,7 @@ public class UpdateService extends Service {
                                             }
                                         }
                                     }
-                                }
+                                }*/
                                 break;
                             }
                         }
@@ -862,7 +860,7 @@ public class UpdateService extends Service {
                         String userId = pathName.substring(pathName.lastIndexOf("-") + 1, pathName.lastIndexOf("."));
                         String image = InitializationActivity.REGISTERED_IMAGE_DIR + File.separator + pathName;
                         String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + pathName.substring(0, pathName.lastIndexOf("."));
-                        registeredMembersList = LitePal.where("userId = ?", userId).find(RegisteredMembers.class);
+                        /*registeredMembersList = LitePal.where("userId = ?", userId).find(RegisteredMembers.class);
                         if (registeredMembersList != null && registeredMembersList.size() > 0) {
                             //update
                             for (Members member : list) {
@@ -883,7 +881,7 @@ public class UpdateService extends Service {
                                     break;
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
             }
@@ -975,7 +973,7 @@ public class UpdateService extends Service {
             for (Members member : deleteMembersList) {
                 name = member.getName();
                 id = member.getUserId();
-                list = LitePal.where("userId = ?", id).find(RegisteredMembers.class);
+                /*list = LitePal.where("userId = ?", id).find(RegisteredMembers.class);
                 if (list != null && list.size() > 0) {
                     FaceServer.getInstance().deleteInfo(name + "-" + id);
                     isExist = true;
@@ -1019,7 +1017,7 @@ public class UpdateService extends Service {
                             }
                         }
                     }
-                }
+                }*/
             }
             if (isExist) {
                 if (isDeleted) {

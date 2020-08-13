@@ -59,6 +59,9 @@ public interface DatabaseStore {
     @Query("DELETE FROM RegisteredMembers WHERE primaryid =:primaryId")
     int deleteMember(long primaryId);
 
+    @Query("DELETE FROM RegisteredMembers WHERE uniqueid =:certifyId")
+    int deleteMemberByCertifyId(String certifyId);
+
     @Query("SELECT * FROM RegisteredMembers")
     List<RegisteredMembers> findAllRegisterMembersList();
 
