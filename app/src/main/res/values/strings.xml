@@ -227,6 +227,7 @@
     <string name="enable_qr_sound_invalid">Enable sound for invalid qr code</string>
     <string name="enable_light">Enable light on normal temperature</string>
     <string name="enable_light_high">Enable light on temperature above threshold</string>
+    <string name="enable_printer">Enable print for visitors</string>
     <string name="enable_mask">Enable Mask Detection</string>
     <string name="enable_facial">Enable Facial Recognition</string>
     <string name="screen_delay">Screen display time (seconds)</string>s
@@ -434,6 +435,9 @@
 
     <string name="ble_connect"><u>Connect</u></string>
     <string name="not_connected"><u>Not Connected</u></string>
+
+    <string name="bluetooth_printer_connect_status">Connected Printer : </string>
+
 
     <string name="centigrade" translatable="false">&#160;℃</string>
     <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
