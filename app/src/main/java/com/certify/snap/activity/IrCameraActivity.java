@@ -681,14 +681,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
                 mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 if (mTag != null) {
-                    byte[] ID = new byte[20];
+                    byte[] ID = new byte[64];
                     ID = mTag.getId();
                     String UID = Util.bytesToHexString(ID);
                     if (UID == null) {
                         Toast.makeText(getApplicationContext(), "Error! Card cannot be recognized", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
+                    byte[] hexToByteValue = Util.hexStringToBytes(UID.substring(2, UID.length()));
+                    mNfcIdString = Util.bytearray2Str(hexToByteValue, 0, hexToByteValue.length, 10);
                     onRfidScan(mNfcIdString);
                     return;
                 }
