@@ -151,7 +151,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/protocol_text"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/font_18"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/et_end_url"
@@ -167,7 +168,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/hostname"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/font_18"
+                android:visibility="gone"/>
         </LinearLayout>
     </LinearLayout>
 
