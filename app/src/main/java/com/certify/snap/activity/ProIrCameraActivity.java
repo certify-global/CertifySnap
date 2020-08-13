@@ -451,7 +451,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         cancelImageTimer();
         if (util!=null) {
             util.stopGetGuideData();
-            util.reset();
+            //util.reset();
             //util.release();
         }
     }
