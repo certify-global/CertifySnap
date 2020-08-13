@@ -150,6 +150,78 @@ public class MemberSyncDataModel {
     }
 
     /**
+     * Method that processes the Json response from the API and updates the data to the local data model
+     * @param memberList Member Info
+     */
+    public void createMemberDataAndUpdate(JSONArray memberList) {
+        isSyncing = true;
+        Observable
+                .create((ObservableOnSubscribe<RegisteredMembers>) emitter -> {
+                    RegisteredMembers member = new RegisteredMembers();
+                    try {
+                        for (int i = 0; i < memberList.length(); i++) {
+                            JSONObject c = memberList.getJSONObject(i);
+                            String certifyId = c.getString("id");
+                            String memberId = c.getString("memberId");
+                            String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
+                            member.setFirstname(c.getString("firstName"));
+                            member.setLastname(c.getString("lastName"));
+                            member.setAccessid(c.getString("accessId"));
+                            member.setUniqueid(c.getString("id"));
+                            member.setMemberid(memberId);
+                            member.setEmail(c.getString("email"));
+                            member.setMobile(c.getString("phoneNumber"));
+                            member.setImage(imagePath);
+                            member.setStatus(String.valueOf(c.getBoolean("status")));
+                            member.setDateTime(Util.currentDate());
+
+                            List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+                            if (membersList != null && memberList.length() > 0) {
+                                member.setPrimaryId(membersList.get(0).getPrimaryId());
+                                emitter.onNext(member);
+                            } else {
+                                emitter.onNext(null);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "SnapXT Exception while adding API response member to the model");
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<RegisteredMembers>() {
+                    Disposable addMemberDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addMemberDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(RegisteredMembers member) {
+                        if (member != null) {
+                            membersList.add(member);
+                            Log.d(TAG, "SnapXT Add API response Member added to List " + membersList.size());
+
+                            //Add records fetched from server, add it to the database
+                            addToDatabase();
+                        }
+                        addMemberDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in adding the member to data model from server");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    /**
      * Method that initiates process of adding to the database
      * @param context context
      */

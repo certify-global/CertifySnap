@@ -86,7 +86,6 @@ import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.litepal.LitePal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -1884,7 +1883,7 @@ public class Util {
         if (sharedPreferences != null) {
             sharedPreferences.edit().clear().apply();
         }
-        LitePal.deleteDatabase("telpo_face");
+        DatabaseController.getInstance().deleteAllMember();
         // Saving the token, after clearing the sharedPreference
         Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
     }

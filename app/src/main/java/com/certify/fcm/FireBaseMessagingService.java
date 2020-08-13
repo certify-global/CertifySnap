@@ -166,8 +166,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
-                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                   // doSendBroadcast("start", activeMemberCount, count++);
+                    MemberSyncDataModel.getInstance().createMemberDataAndUpdate(memberList);
                 }
             }
         } catch (JSONException e) {
