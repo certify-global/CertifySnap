@@ -7,11 +7,6 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import com.certify.snap.controller.DatabaseController;
-
-import org.litepal.annotation.Column;
-import org.litepal.crud.LitePalSupport;
-
 
 @Entity(indices={@Index(value="primaryid", unique=true)})
 public class RegisteredMembers {

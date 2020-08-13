@@ -161,4 +161,11 @@ public class DatabaseController {
         }
         return 0;
     }
+
+    public int deleteMemberByCertifyId(String certifyId){
+        if (databaseStore != null){
+            return databaseStore.deleteMemberByCertifyId(certifyId);
+        }
+        return 0;
+    }
 }

@@ -3,15 +3,7 @@ package com.certify.snap.common;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.certify.snap.controller.DatabaseController;
-import com.certify.snap.faceserver.FaceServer;
-import com.certify.snap.model.RegisteredMembers;
-
-import org.litepal.LitePal;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class MemberUtilData {
     private static String LOG = MemberUtilData.class.getSimpleName();

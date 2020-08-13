@@ -134,8 +134,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import org.json.JSONObject;
-import org.litepal.LitePal;
-import org.litepal.exceptions.LitePalSupportException;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -485,7 +483,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (resultCode == 0 && data != null) {
                 String qrCode = data.getStringExtra("qrCode");
                 if (qrCode != null) {
-                    List<GuestMembers> guestMembers = LitePal.where("qrcode = ?", qrCode).find(GuestMembers.class);
+                    //List<GuestMembers> guestMembers = LitePal.where("qrcode = ?", qrCode).find(GuestMembers.class);
+                    List<GuestMembers> guestMembers = null;
                     if (guestMembers != null && guestMembers.size() > 0) {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date curDate = new Date(System.currentTimeMillis());
@@ -3408,7 +3407,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             stopService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
                         }
                     }
-                } catch (LitePalSupportException exception) {
+                } catch (Exception exception) {
                     Log.e(TAG, "Exception occurred while querying for first member from db");
                 }
         }

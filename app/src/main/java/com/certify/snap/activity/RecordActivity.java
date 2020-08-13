@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.os.Environment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,14 +27,10 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.R;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.litepal.LitePal;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -188,62 +183,6 @@ public class RecordActivity extends AppCompatActivity {
         return value;
     }
 
-    private void exportXlsx(List<OfflineVerifyMembers> list,String name) {
-        long startTime = System.currentTimeMillis();
-        String path = Environment.getExternalStorageDirectory() + "/offline/record/";
-        File file = new File(path);
-        if (!file.exists()) file.mkdirs();
-        String filePath = path + name + ".xlsx";
-        SXSSFWorkbook sxssfWorkbook = null;
-        BufferedOutputStream outputStream = null;
-        try {
-            sxssfWorkbook = new SXSSFWorkbook(getXSSFWorkbook(filePath), 100);
-            SXSSFSheet sheet = (SXSSFSheet) sxssfWorkbook.getSheetAt(0);
-            for(int z=0;z<6;z++){
-                sheet.setColumnWidth(z,25*256);
-            }
-            for (int i = 0; i < list.size()+1; i++) {
-                SXSSFRow row = (SXSSFRow) sheet.createRow(i);
-                for(int j=0;j<6;j++) {
-                    if (i == 0) {
-                        Cell cell = row.createCell(j);
-                        cell.setCellValue(selectValue(j));
-                        cell.setCellStyle(getcellstyle(sxssfWorkbook));
-                    } else if(i>=1){
-                        Cell cell = row.createCell(j);
-                        cell.setCellValue(selectValue(j,list.get(i-1)));
-                        cell.setCellStyle(getcellstyle1(sxssfWorkbook));
-                    }
-                }
-
-            }
-            outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
-            sxssfWorkbook.write(outputStream);
-            outputStream.flush();
-            sxssfWorkbook.dispose();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        long endTime = System.currentTimeMillis();
-        Log.e("time---", "write time= " + (endTime - startTime) + "ms");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                DismissProgressDialog(mprogressDialog);
-                Toast.makeText(RecordActivity.this,"Export finish! File path : /sdcard/offline/record/",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
     /**
      * 先创建一个XSSFWorkbook对象
      *
@@ -280,36 +219,6 @@ public class RecordActivity extends AppCompatActivity {
         return date.getTime();
     }
 
-    private void export(String starttime,String endtime){
-        try {
-            mprogressDialog = ProgressDialog.show(RecordActivity.this, "Export", "Export file! Please wait...");
-            Log.e("export---",stringToDate(starttime,"yyyy-MM")+"-"+
-                    stringToDate(endtime,"yyyy-MM")+"-"+System.currentTimeMillis());
-
-            final List<OfflineVerifyMembers> resultlist = LitePal.where(
-                    "verify_time >="+ stringToDate(starttime,"yyyy-MM")
-                            +" and verify_time <="+ stringToDate(endtime,"yyyy-MM")+"")
-                    .order("verify_time asc").find(OfflineVerifyMembers.class);
-            if (resultlist != null && resultlist.size()>0) {
-                Log.e("search result---",resultlist.size()+"-"+resultlist.get(0).toString());
-                final String date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-                singleThreadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        exportXlsx(resultlist,"Record-"+date);
-                    }
-                });
-            }else{
-                Toast.makeText(RecordActivity.this,"Data is null!",Toast.LENGTH_SHORT).show();
-                DismissProgressDialog(mprogressDialog);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            DismissProgressDialog(mprogressDialog);
-        }
-    }
-
     private void DismissProgressDialog(ProgressDialog progress) {
         if (progress != null && progress.isShowing())
             progress.dismiss();
@@ -344,9 +253,6 @@ public class RecordActivity extends AppCompatActivity {
                     String endtime = endyearstr +"-"+ endmonthstr;
                     Log.e("exportdate---",starttime+"-"+endtime);
                     Log.e("isvaliddate---", Util.isValidDate(starttime,"yyyy-MM")+"-"+ Util.isValidDate(endtime,"yyyy-MM"));
-                    if(Util.isValidDate(starttime,"yyyy-MM") && Util.isValidDate(endtime,"yyyy-MM")){
-                        export(starttime,endtime);
-                    }
                 }else{
                     Toast.makeText(RecordActivity.this,"Please input full date!",Toast.LENGTH_SHORT).show();
                 }

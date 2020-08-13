@@ -39,8 +39,6 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
-import org.litepal.LitePal;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -112,11 +110,11 @@ public class InitializationActivity extends Activity {
         sp = Util.getSharedPreferences(this);
 
         ROOT_PATH_STRING = this.getFilesDir().getAbsolutePath();
-        try {
+       /* try {
             db = LitePal.getDatabase();
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
 
     }
 
@@ -233,7 +231,7 @@ public class InitializationActivity extends Activity {
         Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
         RegisteredMembers registeredMembers;
-        List<RegisteredMembers> list = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
+        /*List<RegisteredMembers> list = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
         if (list != null && list.size() > 0) {
             registeredMembers = list.get(0);
         }else{
@@ -244,7 +242,7 @@ public class InitializationActivity extends Activity {
         registeredMembers.setStatus("1");
         //registeredMembers.setExpire_time(time);
         registeredMembers.setImage(image);
-        registeredMembers.setFeatures(feature);
+        registeredMembers.setFeatures(feature);*/
 //        boolean result = registeredMembers.save();
         return true;
     }
@@ -370,9 +368,9 @@ public class InitializationActivity extends Activity {
                             deleteDirFile(OFFLINE_REGISTER_DIR);
                             deleteDirFile(OFFLINE_FAILED_DIR);
 
-                            LitePal.deleteAll(RegisteredMembers.class);
+                            /*LitePal.deleteAll(RegisteredMembers.class);
                             LitePal.deleteAll(RegisteredFailedMembers.class);
-                            LitePal.deleteAll(OfflineVerifyMembers.class);
+                            LitePal.deleteAll(OfflineVerifyMembers.class);*/
 
                             int deleteCount = FaceServer.getInstance().clearAllFaces(InitializationActivity.this);
                             Util.showToast(InitializationActivity.this, deleteCount + getString(R.string.toast_init_deleteinfo));
