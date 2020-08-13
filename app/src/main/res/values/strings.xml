@@ -431,15 +431,14 @@
     <string name="permission_canceled">The permission is required to run this app</string>
     <string name="ble_connect_status">Connected BLE Light : </string>
     <string name="ble_light_test">Test : </string>
-
     <string name="ble_connect"><u>Connect</u></string>
     <string name="not_connected"><u>Not Connected</u></string>
 
     <string name="centigrade" translatable="false">&#160;℃</string>
     <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
-
     <string name="endpoint_api">Api</string>
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
+    <string name="scanner_time_msg">Scanner initializing, Please wait… \nTime Remaining: %d mins</string>
 
 </resources>

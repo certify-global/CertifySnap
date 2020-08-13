@@ -21,13 +21,14 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("开机广播--- logs::", intent.getAction());
+        Log.d(TAG, "Received Boot completed action" + intent.getAction());
 
         /**
          * 如果 系统 启动的消息，则启动 APP 主页活动
          */
         if (ACTION_BOOT.equals(intent.getAction())) {
             Intent guideintent = new Intent(context, GuideActivity.class);
+            guideintent.putExtra("DEVICE_BOOT", "BootCompleted");
             guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(guideintent);
             Logger.info(TAG,"bootcompleted", "After booting up start the application!");

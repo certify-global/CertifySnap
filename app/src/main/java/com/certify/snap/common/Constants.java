@@ -39,5 +39,8 @@ public class Constants {
 
     public static final int PRO_MODEL_TEMPERATURE_MODULE_2 = 27;
 
+    public static final int PRO_SCANNER_INIT_TIME = 660000;
+
+    public static final int PRO_SCANNER_INIT_INTERVAL = 60000;
 }
 

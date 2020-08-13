@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,11 +11,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,13 +27,13 @@ import androidx.annotation.NonNull;
 
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
-import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
@@ -47,18 +48,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
-import com.tamic.novate.Novate;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.Timer;
@@ -70,15 +66,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public static Activity mActivity;
     private ImageView imgPic;
     private Animation myAnimation;
-    private FaceEngine faceEngine = new FaceEngine();
-    private Novate mnovate;
-    HashMap<String, String> map = new HashMap<String, String>();
-    Gson gson = new Gson();
-    private boolean isRunService = false;
     private SharedPreferences sharedPreferences;
     private boolean onlineMode = true;
     boolean libraryExists = true;
     private Timer mActivationTimer;
+    private CountDownTimer startUpCountDownTimer;
+
     // Demo
     private static final String[] LIBRARIES = new String[]{
             "libarcsoft_face_engine.so",
@@ -92,32 +85,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
-        initAppStatusInfo();
-        try {
-            Util.createAudioDirectory();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WindowManager.LayoutParams attributes = getWindow().getAttributes();
-            attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            getWindow().setAttributes(attributes);
-        }
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "getInstanceId failed", task.getException());
-                    return;
-                }
-
-                // Get new Instance ID token
-                String token = task.getResult().getToken();
-                Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                Logger.verbose(TAG,"firebase token",token);
-
-            }
-        });
 
         mActivity = this;
         Application.getInstance().addActivity(this);
@@ -125,42 +92,23 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         sharedPreferences = Util.getSharedPreferences(this);
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
-        internetIndicatorImage = findViewById(R.id.img_internet_indicator);
-        try {
-            onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
-        } catch (Exception ex) {
-            Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
-        }
-        AppCenter.setEnabled(onlineMode);
-        Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
 
-        if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
-                }
-            });
-
-        }
-
-
-        myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
-        imgPic = findViewById(R.id.img_telpo);
-        imgPic.startAnimation(myAnimation);
-        checkStatus();
-        boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
-        boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
-
-        sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-        sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
-
-        if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
-            internetIndicatorImage.setVisibility(View.GONE);
-        } else {
-            internetIndicatorImage.setVisibility(View.VISIBLE);
-        }
         Util.enableLedPower(0);
+
+        Intent intent = getIntent();
+        String value = intent.getStringExtra("DEVICE_BOOT");
+
+        //Delay of 1 second for the Thermal module to get initialized
+        new Handler().postDelayed(() -> {
+            CameraController.getInstance().initDeviceMode();
+            if (value != null && value.equals("BootCompleted")) {
+                if (Util.isDeviceProModel()) {
+                    startProDeviceInitTimer();
+                    return;
+                }
+            }
+            initApp();
+        }, 1000);
     }
 
     @Override
@@ -179,6 +127,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             Log.e(TAG, "BLE unbind Error");
         }
         cancelActivationTimer();
+        if (startUpCountDownTimer != null) {
+            startUpCountDownTimer.cancel();
+        }
     }
 
     private boolean isInstalled(Context context, String packageName) {
@@ -276,7 +227,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
-                new Handler().postDelayed(() -> CameraController.getInstance().initDeviceMode(), 1000);
                 startBLEService();
                 AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
@@ -367,7 +317,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      * Method that processes next steps after the App settings are updated in the SharedPref on app launch
      */
     private void onSettingsUpdated() {
-        CameraController.getInstance().initDeviceMode();
         AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
@@ -445,5 +394,80 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         else if(message.equals(AppStatusInfo.DEVICE_SETTINGS))
             AppStatusInfo.getInstance().setDeviceSettings(message);
         Logger.debug(TAG, key, message);
+    }
+
+    private void initApp() {
+        runOnUiThread(() -> {
+            initAppStatusInfo();
+            try {
+                Util.createAudioDirectory();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WindowManager.LayoutParams attributes = getWindow().getAttributes();
+                attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                getWindow().setAttributes(attributes);
+            }
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "getInstanceId failed", task.getException());
+                        return;
+                    }
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+                    Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+                    Logger.verbose(TAG,"firebase token",token);
+
+                }
+            });
+            internetIndicatorImage = findViewById(R.id.img_internet_indicator);
+            try {
+                onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
+            } catch (Exception ex) {
+                Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
+            }
+            AppCenter.setEnabled(onlineMode);
+            Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
+
+            myAnimation = AnimationUtils.loadAnimation(GuideActivity.this, R.anim.alpha);
+            imgPic = findViewById(R.id.img_telpo);
+            imgPic.startAnimation(myAnimation);
+            checkStatus();
+            boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
+            boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
+
+            sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+
+            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+                internetIndicatorImage.setVisibility(View.GONE);
+            } else {
+                internetIndicatorImage.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void startProDeviceInitTimer() {
+        ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
+            @Override
+            public void onTick(long remTime) {
+                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), (remTime/1000)/60));
+            }
+
+            @Override
+            public void onFinish() {
+                startUpCountDownTimer.cancel();
+                if (progressDialog != null) {
+                    progressDialog.dismiss();
+                }
+                initApp();
+            }
+        };
+        startUpCountDownTimer.start();
     }
 }
