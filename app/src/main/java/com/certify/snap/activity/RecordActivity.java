@@ -76,11 +76,6 @@ public class RecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         Application.getInstance().addActivity(this);
-      /*  try {
-            db = LitePal.getDatabase();
-        }catch (Exception e){
-            e.printStackTrace();
-        }*/
         recyclerView = findViewById(R.id.recyclerview_record);
 
         initdata(true);
