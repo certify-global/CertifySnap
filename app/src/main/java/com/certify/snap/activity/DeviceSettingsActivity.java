@@ -15,7 +15,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -38,11 +37,11 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
-import org.litepal.LitePal;
 
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
@@ -204,6 +203,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
                         deleteAppData();
                         Util.writeString(sharedPreferences, GlobalParameters.URL, url);
+                        ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
                         finish();
@@ -259,9 +259,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         if (navigationBar){
             radio_navigationbar_enable.setChecked(true);
             sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
         }else {
             radio_navigationbar_disable.setChecked(true);
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
         }
 
         radio_group_navigationbar.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -271,10 +273,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     case R.id.navigation_bar_radio_enable:
                         Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
                         sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+                        sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                         break;
                     case R.id.navigation_bar_radio_disable:
                         Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
                         sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                        sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
                         break;
                 }
             }
@@ -308,7 +312,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private void setUIData() {
         try {
-            url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            if (ApplicationController.getInstance().getEndPointUrl().isEmpty()) {
+                url_end = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            } else {
+                url_end = ApplicationController.getInstance().getEndPointUrl();
+            }
             String removeHttps = url_end.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "");
             String endApiString = removeHttps.replace(getString(R.string.hostname), "");
             etEndUrl.setText(endApiString);
