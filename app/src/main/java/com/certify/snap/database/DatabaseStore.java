@@ -65,9 +65,21 @@ public interface DatabaseStore {
     @Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid DESC LIMIT 1")
     OfflineRecordTemperatureMembers OfflineRecordTemperatureMembers();
 
+    @Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid ASC LIMIT 1")
+    OfflineRecordTemperatureMembers OfflineRecordTempFirstMember();
+
+    @Query("DELETE FROM OfflineRecordTemperatureMembers WHERE primaryid =:primaryId")
+    void deleteOfflineRecord(long primaryId);
+
+    @Query("SELECT COUNT (*) FROM OfflineRecordTemperatureMembers")
+    int countOfflineRecord();
+
     @Query("SELECT * FROM RegisteredMembers ORDER BY primaryid DESC LIMIT 1")
     RegisteredMembers getLastMember();
 
     @Update
     void updateMember(RegisteredMembers registeredMember);
+
+    @Query("SELECT * FROM OfflineRecordTemperatureMembers")
+    List<OfflineRecordTemperatureMembers> findAllOfflineRecordTempMember();
 }

@@ -134,4 +134,31 @@ public class DatabaseController {
             databaseStore.updateMember(registermember);
         }
     }
+
+    public List<OfflineRecordTemperatureMembers> findAllOfflineRecord() {
+        if (databaseStore != null) {
+            return databaseStore.findAllOfflineRecordTempMember();
+        }
+        return new ArrayList<>();
+    }
+
+    public OfflineRecordTemperatureMembers getFirstOfflineRecord() {
+        if (databaseStore != null) {
+            return databaseStore.OfflineRecordTempFirstMember();
+        }
+        return null;
+    }
+
+    public void deleteOfflineRecord(long primaryId){
+        if (databaseStore != null){
+            databaseStore.deleteOfflineRecord(primaryId);
+        }
+    }
+
+    public int countOfflineTempRecord(){
+        if (databaseStore != null){
+             return databaseStore.countOfflineRecord();
+        }
+        return 0;
+    }
 }

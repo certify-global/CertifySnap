@@ -408,7 +408,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             internetIndicatorImg.setVisibility(View.VISIBLE);
         }
         initHidReceiver();
-        //initRecordUserTempService();
+        initRecordUserTempService();
     }
 
     private void initQRCode() {
@@ -3398,10 +3398,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void initRecordUserTempService() {
         if (!Util.isOfflineMode(IrCameraActivity.this)){
-            if (LitePal.getDatabase() != null) {
                 try {
-                    if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {
-                        OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                    if (DatabaseController.getInstance().countOfflineTempRecord()>0) {
+                        //OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                        OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
                         if (firstMember != null) {
                             startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
                         } else {
@@ -3411,7 +3411,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } catch (LitePalSupportException exception) {
                     Log.e(TAG, "Exception occurred while querying for first member from db");
                 }
-            }
         }
     }
 
