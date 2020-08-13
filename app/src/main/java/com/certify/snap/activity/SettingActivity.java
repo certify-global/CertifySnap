@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,6 +52,13 @@ import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
 import org.litepal.LitePal;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
 import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
@@ -382,7 +390,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 startActivity(visualIntent);
                 break;
             case R.id.btn_exit:
-                launchHomeScreen();
+                initiateLaunchHomeScreen();
                 finish();
                 break;
         }
@@ -491,9 +499,8 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        launchHomeScreen();
-        finish();
+        //super.onBackPressed();
+        initiateLaunchHomeScreen();
     }
 
     @Override
@@ -653,6 +660,44 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             access_control_setting_view.setVisibility(View.VISIBLE);
             guide_setting_view.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void initiateLaunchHomeScreen() {
+        ProgressDialog.show(this, "", "Launching Home Screen, Please wait...");
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    AppSettings.getInstance().getSettingsFromSharedPref(SettingActivity.this);
+                    emitter.onNext(true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable settingDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        settingDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        launchHomeScreen();
+                        finish();
+                        settingDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in fetching settings from the server");
+                        launchHomeScreen();
+                        finish();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
     }
 
     private void launchHomeScreen() {

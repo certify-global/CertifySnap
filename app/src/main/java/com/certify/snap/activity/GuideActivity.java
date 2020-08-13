@@ -277,8 +277,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
                 new Handler().postDelayed(() -> CameraController.getInstance().initDeviceMode(), 1000);
-                AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 startBLEService();
+                AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -301,7 +301,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
-            AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
             onSettingsUpdated();
         } catch (Exception e) {
             onSettingsUpdated();
@@ -369,6 +368,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      */
     private void onSettingsUpdated() {
         CameraController.getInstance().initDeviceMode();
+        AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
