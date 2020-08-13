@@ -123,8 +123,8 @@ public class ManageMemberHelper {
 //      registeredMembers.setExpire_time(time);
             registeredMembers.setImage(image);
             registeredMembers.setFeatures(feature);
-            boolean result = registeredMembers.save();
-            return result;
+//            boolean result = registeredMembers.save();
+            return true;
         }catch (Exception e){
             Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
         }

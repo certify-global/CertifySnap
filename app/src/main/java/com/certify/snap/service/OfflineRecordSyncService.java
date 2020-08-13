@@ -9,7 +9,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.async.AsyncTaskExecutorService;
@@ -17,17 +16,22 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.litepal.LitePal;
-import org.litepal.crud.callback.FindMultiCallback;
-import org.litepal.exceptions.LitePalSupportException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class OfflineRecordSyncService extends Service implements RecordTemperatureCallback {
 
@@ -53,17 +57,43 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
         sp = Util.getSharedPreferences(this);
         AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
         taskExecutorService = executorService.getExecutorService();
-        if (LitePal.getDatabase() != null) {
-            LitePal.findAllAsync(OfflineRecordTemperatureMembers.class).listen(new FindMultiCallback<OfflineRecordTemperatureMembers>() {
+        try {
+            Observable.create(new ObservableOnSubscribe<List<OfflineRecordTemperatureMembers>>() {
                 @Override
-                public void onFinish(List<OfflineRecordTemperatureMembers> list) {
-                    datalist = list;
-                    if (datalist != null) {
-                        uploadRecordData(datalist, index);
-                    }
-
+                public void subscribe(ObservableEmitter<List<OfflineRecordTemperatureMembers>> emitter) throws Exception {
+                    List<OfflineRecordTemperatureMembers> offlineRecordList = DatabaseController.getInstance().findAllOfflineRecord();
+                    emitter.onNext(offlineRecordList);
                 }
-            });
+            }).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<OfflineRecordTemperatureMembers>>() {
+                        Disposable disposable;
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
+                        }
+
+                        @Override
+                        public void onNext(List<OfflineRecordTemperatureMembers> list) {
+                            datalist = list;
+                            if (datalist != null) {
+                                uploadRecordData(datalist, index);
+                            }
+                            disposable.dispose();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Error in adding the member to data model from database");
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            disposable.dispose();
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -132,16 +162,16 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             }
             if (reportInfo.getString("responseCode").equals("1")) {
                 try {
-                    if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {
-                        OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                        OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
+                        //OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
                         if (firstMember != null) {
                             Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
-                            LitePal.deleteAll(OfflineRecordTemperatureMembers.class, "primaryid = ?", String.valueOf(primaryid));
+                            //LitePal.deleteAll(OfflineRecordTemperatureMembers.class, "primaryid = ?", String.valueOf(primaryid));
+                            DatabaseController.getInstance().deleteOfflineRecord(primaryid);
                         } else {
                             stopService(new Intent(context, OfflineRecordSyncService.class));
                         }
-                    }
-                } catch (LitePalSupportException exception) {
+                } catch (Exception e) {
                     Log.e(TAG, "OfflineRecord Exception occurred while querying for first member from db");
                 }
             }

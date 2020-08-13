@@ -208,7 +208,7 @@
     <string name="not_activated"><u>Not Activated</u></string>
     <string name="activate"><u>Activate</u></string>
     <string name="activated"><u>Activate</u></string>
-    <string name="endpoint">Endpoint URL</string>
+    <string name="endpoint">Endpoint Name</string>
     <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Home View Settings</string>

@@ -1,14 +1,30 @@
 package com.certify.snap.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import org.litepal.crud.LitePalSupport;
 
-public class GuestMembers extends LitePalSupport {
-    private String userId;
-    private String name;
-    private String expire_time;
-    private String mobile;
-    private String qrcode;
+@Entity(indices={@Index(value="id", unique=true)})
+public class GuestMembers {
+    @PrimaryKey
+    @NonNull
+    public int id;
+    public String userId;
+    public String name;
+    public String expire_time;
+    public String mobile;
+    public String qrcode;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getUserId() {
         return userId;
     }

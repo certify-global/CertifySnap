@@ -59,7 +59,6 @@ import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
-import com.certify.snap.activity.LoginActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
@@ -69,6 +68,8 @@ import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
@@ -85,7 +86,6 @@ import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.litepal.LitePal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -814,7 +814,8 @@ public class Util {
                 offlineRecordTemperatureMembers.setFirstName("Anonymous");
                 offlineRecordTemperatureMembers.setLastName("");
             }
-            offlineRecordTemperatureMembers.save();
+            //offlineRecordTemperatureMembers.save();
+            DatabaseController.getInstance().insertOfflineMemberIntoDB(offlineRecordTemperatureMembers);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1882,7 +1883,9 @@ public class Util {
         if (sharedPreferences != null) {
             sharedPreferences.edit().clear().apply();
         }
-        LitePal.deleteDatabase("telpo_face");
+        DatabaseController.getInstance().deleteAllMember();
+        // Saving the token, after clearing the sharedPreference
+        Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
     }
 
     public static void stopMemberSyncService(Context context) {
@@ -1900,21 +1903,22 @@ public class Util {
     }
 
 
-    public static void getPushresponse(PushCallback callback, Context context,String guid,String uniqueID,String response_msg,String eventTypeID) {
+    public static void getPushresponse(PushCallback callback, Context context,String guid,String uniqueID,String response_msg,String eventType) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
             obj.put("commandGuid", guid);
             obj.put("deviceUUID",uniqueID);
-            obj.put("eventTypeId",eventTypeID);
+            obj.put("eventType",eventType);
             obj.put("response", response_msg+" push success");
-            obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
-            obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
-            obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
-            obj.put("LOGINFAILED", AppStatusInfo.getInstance().getLoginFailed());
-            obj.put("DEVICESETTINGS", AppStatusInfo.getInstance().getDeviceSettings());
-
+            if(guid == null) {
+                obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
+                obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
+                obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
+                obj.put("LOGINFAILED", AppStatusInfo.getInstance().getLoginFailed());
+                obj.put("DEVICESETTINGS", AppStatusInfo.getInstance().getDeviceSettings());
+            }
 
             new AsyncJSONObjectPush(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.PushCommandResponse, context).execute();
 

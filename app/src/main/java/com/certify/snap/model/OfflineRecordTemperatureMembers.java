@@ -2,23 +2,36 @@ package com.certify.snap.model;
 
 import android.util.Log;
 
-import org.litepal.LitePal;
-import org.litepal.annotation.Column;
-import org.litepal.crud.LitePalSupport;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-public class OfflineRecordTemperatureMembers extends LitePalSupport {
+import com.certify.snap.controller.DatabaseController;
 
-    String firstName;
-    String lastName;
-    String memberId;
-    String temperature;
-    String deviceTime;
-    String imagepath;
-    String jsonObj;
-    @Column(unique = true)
-    Long primaryid;
-    int offlineSync;
+@Entity(indices={@Index(value="primaryid", unique=true)})
+public class OfflineRecordTemperatureMembers {
 
+    public int id;
+    public String firstName;
+    public String lastName;
+    public String memberId;
+    public String temperature;
+    public String deviceTime;
+    public String imagepath;
+    public String jsonObj;
+    @PrimaryKey
+    @NonNull
+    public Long primaryid;
+    public int offlineSync;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public int getOfflineSync() {
         return offlineSync;
     }
@@ -92,7 +105,8 @@ public class OfflineRecordTemperatureMembers extends LitePalSupport {
     }
 
     public static Long lastPrimaryId() {
-        OfflineRecordTemperatureMembers offlineRecord = LitePal.findLast(OfflineRecordTemperatureMembers.class);
+        //OfflineRecordTemperatureMembers offlineRecord = LitePal.findLast(OfflineRecordTemperatureMembers.class);
+        OfflineRecordTemperatureMembers offlineRecord = DatabaseController.getInstance().getLastPrimaryId();
         if (offlineRecord != null) {
             Log.d("OfflineRecordTemp", "primaryId offlineRecord " + (offlineRecord.getPrimaryid() + 1));
             return offlineRecord.getPrimaryid() + 1;

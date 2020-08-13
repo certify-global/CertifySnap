@@ -23,12 +23,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 
+import com.certify.snap.api.response.MemberListData;
+import com.certify.snap.api.response.MemberListResponse;
+import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,8 +45,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -54,9 +56,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.arcsoft.imageutil.ArcSoftImageFormat;
-import com.arcsoft.imageutil.ArcSoftImageUtil;
-import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.callback.ManageMemberCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
@@ -70,13 +69,14 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.M1CardUtils;
-import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -86,11 +86,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.Util.getnumberString;
 
 public class ManagementActivity extends SettingBaseActivity implements ManageMemberCallback,
-        MemberListCallback, MemberIDCallback {
+        MemberListCallback, MemberIDCallback, MemberSyncDataModel.SyncDataCallBackListener {
 
     protected static final String TAG = ManagementActivity.class.getSimpleName();
     private EditText msearch;
@@ -100,8 +109,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private MemberFailedAdapter memberfailedAdapter;
     private List<RegisteredMembers> datalist = new ArrayList<>();
     private List<RegisteredFailedMembers> faillist = new ArrayList<>();
-    private Handler mhandler = new Handler();
-    private String searchtext = "";
     private AlertDialog mUpdateDialog, mDeleteDialog;
     private String updateimagePath = "";
     private PopupWindow mpopupwindow, mpopupwindowUpdate;
@@ -129,21 +136,14 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private EditText registerAccessid;
     private SharedPreferences sharedPreferences;
     private RelativeLayout relative_management;
-    Snackbar snackbar;
     int listPosition;
     int count=0;
     private BroadcastReceiver hidReceiver;
-
-    private Runnable searchRun = new Runnable() {
-        @Override
-        public void run() {
-            Log.e("searchRun---", "start Run: " + searchtext);
-            searchData(searchtext);
-            Util.hideSoftKeyboard(ManagementActivity.this);
-        }
-    };
-
+    private int activeMemberCount = 0;
+    private int totalMemberCount = 0;
+    private ExecutorService taskExecutorService;
     public String OFFLINE_FAILED_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "offline/failed/";
+    private RegisteredMembers clickMember;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,11 +156,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         sharedPreferences = Util.getSharedPreferences(this);
         initHidReceiver();
 
-        try {
-            db = LitePal.getDatabase();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         ROOT_PATH_STRING = this.getFilesDir().getAbsolutePath();
         FaceServer.getInstance().init(this);//init FaceServer;
 
@@ -185,22 +180,16 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (searchRun != null) {
-                    mhandler.removeCallbacks(searchRun);
-                }
-                searchtext = s.toString();
-                if (!TextUtils.isEmpty(searchtext)) mhandler.postDelayed(searchRun, 1000);
-
-                if (TextUtils.isEmpty(searchtext) && searchtext != null) {
-                    refresh();
-                   Util.hideSoftKeyboard(ManagementActivity.this);
+                if (memberAdapter != null) {
+                    memberAdapter.getFilter().filter(s.toString());
                 }
             }
         });
 
+        initMember();
         initData(true);
         initNfc();
-
+        initMemberSync();
     }
 
     @Override
@@ -243,6 +232,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
                         count = 0;
                         testCount = 1;
+                        activeMemberCount = totalMemberCount = 0;
+                        datalist.clear();
                         mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
                         Util.getmemberList(this, this);
                     }
@@ -267,56 +258,51 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
     private void initData(final boolean isNeedInit) {
         try {
-            if (db != null) {
-                LitePal.findAllAsync(RegisteredMembers.class).listen(new FindMultiCallback<RegisteredMembers>() {
-                    @Override
-                    public void onFinish(List<RegisteredMembers> list) {
-                        Log.e("NagaTest list---", list.size() + "");
-                        if (list != null) {
-                            datalist = list;
-//                            if(list.size() == 34){
-//                                Toast.makeText(ManagementActivity.this, getString(R.string.records_sync_completed), Toast.LENGTH_LONG).show();
-//
-//                            }
-                            if (isNeedInit) {
-                                initMember();
-                            } else {
-                                refreshMemberList(list);
-                                //Util.showToast(ManagementActivity.this, getString(R.string.records_sync_completed));
-                               // recyclerView.scrollToPosition(0);
-                            }
+            Observable.create(new ObservableOnSubscribe<List<RegisteredMembers>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<RegisteredMembers>> emitter) throws Exception {
+                    List<RegisteredMembers> membersList = DatabaseController.getInstance().findAll();
+                    emitter.onNext(membersList);
+                }
+            }).subscribeOn(Schedulers.computation())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(new Observer<List<RegisteredMembers>>() {
+                  Disposable disposable;
+                  @Override
+                  public void onSubscribe(Disposable d) {
+                      disposable = d;
+                  }
 
-                        }
+                  @Override
+                  public void onNext(List<RegisteredMembers> list) {
+                      if (list != null) {
+                          datalist = list;
+                          mCountTv.setText(String.valueOf(datalist.size()));
+                          refreshMemberList(list);
+                      }
+                      disposable.dispose();
+                  }
 
-                    }
-                });
+                  @Override
+                  public void onError(Throwable e) {
+                      Log.e(TAG, "Error in adding the member to data model from database");
+                  }
 
-             /*   List<RegisteredFailedMembers> list = getFailedList();
-                if (list != null) {
-                    Log.e("faillist---", list.size() + "-" + list.toString());
-                    faillist = list;
-                    if (isNeedInit) {
-                        initFailedMember();
-                    } else {
-                        refresMemberFailList(list);
-                        failed_recyclerView.scrollToPosition(0);
-                    }
-                }*/
-
-            }
+                  @Override
+                  public void onComplete() {
+                      disposable.dispose();
+                  }
+              });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void initMember() {
-        if(totalMemberCount==totalMemberLastcount){
-            mCountTv.setText(String.valueOf(datalist.size()));
-        }else{
-            mCountTv.setText(testCount++ + " / " + totalMemberCount);
-        }
-        if(memberAdapter == null)
+        mCountTv.setText(String.valueOf(datalist.size()));
+        if (memberAdapter == null) {
             memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
+        }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(memberAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -324,84 +310,25 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         memberAdapter.notifyDataSetChanged();
         memberAdapter.setOnItemClickListener(new MemberAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
-                showUpdateDialog(datalist.get(position));
-                listPosition = position;
+            public void onItemClick(RegisteredMembers member) {
+                clickMember = member;
+                showUpdateDialog(member);
+                //listPosition = position;
             }
         });
         memberAdapter.setOnItemLongClickListener(new MemberAdapter.OnItemLongClickListener() {
             @Override
-            public void onItemLongClick(View view, int position) {
-                showDeleteDialog(datalist.get(position));
+            public void onItemLongClick(RegisteredMembers member) {
+                clickMember = member;
+                showDeleteDialog(member);
             }
         });
-    }
-
-    private void initFailedMember() {
-        memberfailedAdapter = new MemberFailedAdapter(ManagementActivity.this, faillist);
-        failed_recyclerView.setNestedScrollingEnabled(false);
-        failed_recyclerView.setHasFixedSize(true);
-        failed_recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        failed_recyclerView.setAdapter(memberfailedAdapter);
-        failed_recyclerView.setItemAnimator(new DefaultItemAnimator());
-        memberfailedAdapter.notifyDataSetChanged();
-        memberfailedAdapter.setOnItemClickListener(new MemberFailedAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Util.showToast(ManagementActivity.this, getString(R.string.toast_manage_photoerror));
-            }
-        });
-    }
-
-    private void searchData(String searchstr) {
-        try {
-            List<RegisteredMembers> resultlist = LitePal.where("firstname like ? or memberid like ?", searchstr + "%", searchstr + "%")
-                    .order("firstname asc").find(RegisteredMembers.class);
-            if (resultlist != null && resultlist.size() > 0) {
-                Log.e("search result----", resultlist.toString());
-                refreshMemberList(resultlist);
-            }
-
-            List<RegisteredFailedMembers> memberfaillist = getFailedList();
-            if (memberfaillist != null && memberfaillist.size() > 0) {
-                Log.e("search fail result----", memberfaillist.toString());
-                refresMemberFailList(memberfaillist);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     private void refreshMemberList(List<RegisteredMembers> memberlist) {
         Log.e("refreshMemberList---", "start-" + memberlist.toString());
         datalist = memberlist;
         memberAdapter.refresh(datalist);
-    }
-
-    private void refresMemberFailList(List<RegisteredFailedMembers> failedlist) {
-        Log.e("refresMemberFailList---", "start---");
-        faillist = failedlist;
-        memberfailedAdapter.refresh(faillist);
-    }
-
-    private List<RegisteredFailedMembers> getFailedList() {
-        List<RegisteredFailedMembers> list = new ArrayList<>();
-        File faildir = new File(OFFLINE_FAILED_DIR);
-        if (!faildir.exists()) faildir.mkdirs();
-
-        File[] filelist = faildir.listFiles();
-        if (filelist != null && filelist.length > 0) {
-            Log.e(TAG, "fail file length >0");
-            for (File file : filelist) {
-                RegisteredFailedMembers fail = new RegisteredFailedMembers();
-                fail.setName(file.getName());
-                fail.setImage(file.getAbsolutePath());
-                list.add(fail);
-            }
-        }
-        return list;
     }
 
     ImageView mfaceimg;
@@ -530,11 +457,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             Log.e("updateimgpath---", updateimagePath);
                         }
 
-                        if (!idstr.equals(updateMember.getMemberid()) && isMemberExist(idstr)) {
+                        if (!idstr.equals(updateMember.getMemberid()) && DatabaseController.getInstance().isMemberIdExist(idstr)) {
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (!accessstr.equals(null) && !accessstr.equals(updateMember.getAccessid()) && isAccessIdExist(accessstr)) {
+                        if (!accessstr.equals(null) && !accessstr.equals(updateMember.getAccessid()) &&
+                                DatabaseController.getInstance().isAccessIdExist(accessstr)) {
                             Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -566,7 +494,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
-                            localUpdate(member.getMemberid(), firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath);
+                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId());
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
@@ -842,11 +770,11 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
                 if (!TextUtils.isEmpty(memberidstr)) {
-                    if (isMemberExist(memberidstr)) {
+                    if (DatabaseController.getInstance().isMemberIdExist(memberidstr)) {
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (isAccessIdExist(accessstr) && !accessstr.equals(null)) {
+                    if (DatabaseController.getInstance().isAccessIdExist(accessstr) && !accessstr.equals(null)) {
                         Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -876,7 +804,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember());
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -898,82 +826,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         Util.showToast(ManagementActivity.this, data);
     }
 
-    private boolean processImg(String name, String imgpath, String id) {
-        if (imgpath.isEmpty()) return false;
-        Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
-        bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
-        if (bitmap == null) {
-            Log.e("tag", "fail to translate bitmap");
-            showResult(getString(R.string.toast_translateBitmapfail));
-            return false;
-        }
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-        }
-        boolean success = FaceServer.getInstance().registerBgr24(ManagementActivity.this, bgr24, bitmap.getWidth(),
-                bitmap.getHeight(), name, id);
-        return success;
-    }
-
-    public boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {
-        try {
-            String username = firstname + "-" + id;
-            String image = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username + FaceServer.IMG_SUFFIX;
-            String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
-            Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
-
-        RegisteredMembers registeredMembers = new RegisteredMembers();
-        registeredMembers.setFirstname(firstname);
-        registeredMembers.setLastname(lastname);
-        registeredMembers.setMobile(mobile);
-        registeredMembers.setStatus("1");
-        registeredMembers.setMemberid(id);
-        registeredMembers.setEmail(email);
-        registeredMembers.setAccessid(accessid);
-        registeredMembers.setUniqueid(uniqueid);
-//      registeredMembers.setExpire_time(time);
-        registeredMembers.setImage(image);
-        registeredMembers.setFeatures(feature);
-        boolean result = registeredMembers.save();
-        return result;
-        }catch (Exception e){
-            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
-        }
-        return false;
-    }
-
-
-    private boolean isMemberExist(String memberId) {
-        List<RegisteredMembers> membersList = LitePal.where("memberid = ?", memberId).find(RegisteredMembers.class);
-        if (membersList != null && membersList.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isAccessIdExist(String accessId) {
-        List<RegisteredMembers> membersList = LitePal.where("accessid = ?", accessId).find(RegisteredMembers.class);
-        if (membersList == null && membersList.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isCertifyIdExist(String uniqueID) {
-        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
-        if (membersList != null && membersList.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private void localRegister(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imgpath, String sync) {
+    private void localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId) {
         String data = "";
-        Log.d(TAG, "Snap Member id : " + id);
+        Log.d(TAG, "Snap Primary id : " + primaryId);
         File imageFile = new File(imgpath);
-        if (processImg(firstname + "-" + id, imgpath, id) || !imageFile.exists()) {
-            if (registerDatabase(firstname, lastname, mobile, id, email, accessid, uniqueid)) {
+        if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
+            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -995,21 +853,21 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         }
     }
 
-    public void localUpdate(String oldId, String fistname, String lastname, String mobile, String id, String email, String accessid, String uniqueid, String imagePath) {
+    public void localUpdate(String fistname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId) {
         String data = "";
-        List<RegisteredMembers> list = LitePal.where("memberid = ?", oldId).find(RegisteredMembers.class);
+        List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
         if (list != null && list.size() > 0) {
 
             DismissProgressDialog(mprogressDialog);
             File file = new File(imagePath);
             String filepath = Environment.getExternalStorageDirectory() + "/pic/update.jpg";
             if (file.exists() && filepath.equalsIgnoreCase(imagePath)) {
-                if (processImg(fistname + "-" + id, imagePath, oldId)) {
+                if (MemberSyncDataModel.getInstance().processImg(fistname + "-" + primaryId, imagePath, String.valueOf(primaryId), this)) {
                     RegisteredMembers Members = list.get(0);
                     Members.setFirstname(fistname);
                     Members.setLastname(lastname);
                     Members.setMobile(mobile);
-                    Members.setMemberid(id);
+                    Members.setMemberid(memberId);
                     Members.setEmail(email);
                     Members.setAccessid(accessid);
                     Members.setUniqueid(uniqueid);
@@ -1017,7 +875,10 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setStatus(Members.getStatus());
                     Members.setImage(Members.getImage());
                     Members.setFeatures(Members.getFeatures());
-                    Members.save();
+                    Members.setDateTime(Util.currentDate());
+                    Members.setPrimaryId(primaryId);
+                    //Members.save();
+                    DatabaseController.getInstance().updateMember(Members);
 
                     file.delete();
                     updateimagePath = "";
@@ -1034,8 +895,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 //if(!oldmobile.equals(mobile)){
                 String oldimage = Members.getImage();
                 String oldfeature = Members.getFeatures();
-                newimage = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname + "-" + id + FaceServer.IMG_SUFFIX;
-                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname + "-" + id;
+                newimage = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + fistname + "-" + primaryId + FaceServer.IMG_SUFFIX;
+                newfeature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + fistname + "-" + primaryId;
                 renameFile(oldimage, newimage);
                 renameFile(oldfeature, newfeature);
 //                }else{
@@ -1046,14 +907,16 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 Members.setLastname(lastname);
                 Members.setMobile(mobile);
                 Members.setEmail(email);
-                Members.setMemberid(id);
+                Members.setMemberid(memberId);
                 Members.setAccessid(accessid);
                 Members.setUniqueid(uniqueid);
                 //Members.setExpire_time(time);
                 Members.setStatus(Members.getStatus());
                 Members.setImage(newimage);
                 Members.setFeatures(newfeature);
-                Members.save();
+                Members.setPrimaryId(primaryId);
+                //Members.save();
+                DatabaseController.getInstance().updateMember(Members);
 
                 dismissUpdateDialog();
                 data = getString(R.string.Update_success);
@@ -1082,13 +945,13 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         handler.obtainMessage(UPDATE).sendToTarget();
     }
 
-    public boolean deleteDatabase(String name, String id) {
-        List<RegisteredMembers> list = LitePal.where("memberid = ?", id).find(RegisteredMembers.class);
+    public boolean deleteDatabase(String name, long primaryId) {
+        List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
         if (list != null && list.size() > 0) {
-            FaceServer.getInstance().deleteInfo(name + "-" + id);
+            FaceServer.getInstance().deleteInfo(name + "-" + primaryId);
             String featurePath = list.get(0).getFeatures();
             String imgPath = list.get(0).getImage();
-            int line = LitePal.deleteAll(RegisteredMembers.class, "memberid = ?", id);
+            int line = DatabaseController.getInstance().deleteMember(primaryId);
             Log.e("tag", "line---" + line);
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);
@@ -1113,7 +976,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private void localDelete(RegisteredMembers members) {
         String data = "";
         DismissProgressDialog(mdeleteprogressDialog);
-        if (deleteDatabase(members.getFirstname(), members.getMemberid())) {
+        if (deleteDatabase(members.getFirstname(), members.getPrimaryId())) {
             DismissDialog(mDeleteDialog);
             data = getString(R.string.Delete_success);
             refresh();
@@ -1277,25 +1140,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         }
     };
 
-    private boolean ProcessPic(File picfile) {
-        Bitmap bitmap = BitmapFactory.decodeFile(picfile.getAbsolutePath());
-        if (bitmap == null) {
-            Log.e("tag", "fail to get bitmap--");
-            return false;
-        }
-        bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
-        if (bitmap == null) {
-            Log.e("tag", "fail to translate bitmap");
-            return false;
-        }
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-        }
-        boolean success = FaceServer.getInstance().registerBgr24Test(ManagementActivity.this, bgr24, bitmap.getWidth(), bitmap.getHeight());
-        return success;
-    }
-
     private void initNfc() {
         Log.v(TAG, "initNfc");
         mNfcAdapter = M1CardUtils.isNfcAble(this);
@@ -1321,6 +1165,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     protected void onDestroy() {
         super.onDestroy();
         FaceServer.getInstance().unInit();
+        MemberSyncDataModel.getInstance().setListener(null);
+        MemberSyncDataModel.getInstance().clear();
     }
 
     private static String bytearray2Str(byte[] data, int start, int length, int targetLength) {
@@ -1371,7 +1217,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     String statusStr = responseData.getString("status");
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
-                        localUpdate(datalist.get(listPosition).getMemberid(), firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath);
+                        localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId());
                     } else if (isDeleted) {
                         RegisteredMembers members = new RegisteredMembers();
                         members.setFirstname(firstnamestr);
@@ -1383,11 +1229,13 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         members.setUniqueid(uniquestr);
                         members.setImage(image);
                         members.setStatus(statusStr);
+                        if (clickMember != null)
+                        members.setPrimaryId(clickMember.getPrimaryId());
 
                         localDelete(members);
                         isDeleted = false;
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember());
                     }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -1433,129 +1281,65 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         updateMember = null;
     }
 
-    private int totalMemberCount,totalMemberLastcount;
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            if (!reportInfo.isNull("Message")) {
-//                if (reportInfo.getString("Message").contains("token expired"))
-//                    Util.getToken(ManagementActivity.this, this);
+        if (reportInfo != null) {
+            Gson gson = new Gson();
+            MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
+            if (response.responseCode != null && response.responseCode.equals("1")) {
+                List<MemberListData> memberList = response.memberList;
+                Log.d(TAG, "MemberList Size " + memberList.size());
+                MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
+                for (int i = 0; i < memberList.size(); i++) {
+                    if (memberList.get(i).status) {
+                        activeMemberCount++;
+                        getMemberID(memberList.get(i).id);
+                    }
+                }
+                totalMemberCount = activeMemberCount;
+                MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
             } else {
+                //DismissProgressDialog(mloadingprogress);
+            }
+            Log.e(TAG, "MemberList response = " + response.responseCode);
+        }
+        Log.e(TAG, "MemberList null response");
+    }
+
+    private void getMemberID(String certifyId) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("id", certifyId);
+            if (taskExecutorService != null) {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
+            } else {
+                new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
+                        EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+            }
+        } catch (Exception e) {
+            Logger.error(TAG, " getMemberID()",e.getMessage());
+        }
+    }
+
+    private int testCount=0;
+    public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
+        if (reportInfo != null) {
+            try {
                 if (reportInfo.isNull("responseCode")) {
-                    mloadingprogress.dismiss();
                     return;
                 }
                 if (reportInfo.getString("responseCode").equals("1")) {
                     JSONArray memberList = reportInfo.getJSONArray("responseData");
-                    totalMemberCount = memberList.length();
-                    totalMemberLastcount = memberList.length()-1;
-                   // System.out.println("NagaTest onJSONObjectListenerMemberList memberList.size: " + memberList.length() );
-                    for (int i = 0; i < memberList.length(); i++) {
-                        JSONObject c = memberList.getJSONObject(i);
-
-                        String certifyId = c.getString("id");
-                        String memberId = c.getString("memberId");
-                        String accessId = c.getString("accessId");
-
-                       // System.out.println("NagaTest onJSONObjectListenerMemberList memberList: " + i + "/" + memberList.length());
-                        JSONObject obj = new JSONObject();
-                        obj.put("id", certifyId);
-
-                        //Intent intent = new Intent(this, MemberDataService.class);
-                        //intent.putExtra()
-                        //startService(intent);
-                        new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                                EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
-
-                        //Toast.makeText(this, "Loading: "+count++ +" out of "+memberList.length(), Toast.LENGTH_SHORT).show();
-                        //updateRecordMsg(i, memberList.length());
-
+                    if (memberList != null) {
+                        MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
                     }
-
-                } else {
-                    DismissProgressDialog(mloadingprogress);
-                    Logger.toast(this, "Something went wrong please try again");
                 }
+            } catch (JSONException e) {
+                DismissProgressDialog(mloadingprogress);
+                Log.e(TAG, "Get Member Id resposne, Error is fetching the data");
             }
-
-        } catch (Exception e) {
-            Logger.error("onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
-
-    }
-
-    private int testCount=1;
-    public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (reportInfo == null) {
-                        return;
-                    }
-                    if (!reportInfo.isNull("Message")) {
-//                if (reportInfo.getString("Message").contains("token expired"))
-//                    Util.getToken(ManagementActivity.this, this);
-                    } else {
-                        if (reportInfo.isNull("responseCode")) return;
-                        if (reportInfo.getString("responseCode").equals("1")) {
-                            JSONArray memberList = reportInfo.getJSONArray("responseData");
-                            for (int i = 0; i < memberList.length(); i++) {
-                                JSONObject c = memberList.getJSONObject(i);
-
-                                String certifyId = c.getString("id");
-                                String memberId = c.getString("memberId").replaceAll("[-+.^:,]","");
-                                if (memberId.isEmpty()) {
-                                    memberId = certifyId;
-                                }
-                                String accessId = c.getString("accessId");
-                                String firstName = c.getString("firstName");
-                                String lastName = c.getString("lastName");
-                                String email = c.getString("email");
-                                String phoneNumber = c.getString("phoneNumber");
-                                String faceTemplate = c.getString("faceTemplate");
-                                Boolean statusVal = c.getBoolean("status");
-                                String accountId = c.getString("accountId");
-                                String memberType = c.getString("memberType");
-
-                                String imagePath = MemberUtilData.getImagePath(faceTemplate);
-
-
-                                if (statusVal){
-                                   // Thread.sleep(200);
-
-                                    if (isCertifyIdExist(certifyId)) {
-                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
-                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-
-                                    } else {
-                                        MemberUtilData.deleteDatabaseCertifyId(firstName, certifyId);
-                                        localRegister(firstName, lastName, phoneNumber, memberId, email, accessId, certifyId, imagePath, "sync");
-                                    }
-                                    initData(true);
-                                }else {
-                                    totalMemberCount--;
-                                    totalMemberLastcount--;
-
-                                }
-                            }
-                            DismissProgressDialog(mloadingprogress);
-                           // initData(true);
-                        } else {
-                            DismissProgressDialog(mloadingprogress);
-                            Logger.toast(ManagementActivity.this, "Something went wrong please try again");
-                        }
-                    }
-                } catch (Exception e) {
-                    DismissProgressDialog(mloadingprogress);
-                    Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
-                    //initData(true);
-                }
-            }
-        });
     }
 
     public void onRfidScan(String cardId) {
@@ -1568,7 +1352,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     registerAccessid.setText(cardId);
                 }
             }
-
         });
     }
 
@@ -1606,5 +1389,26 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 }
             }
         };
+    }
+
+    private void initMemberSync() {
+        MemberSyncDataModel.getInstance().init(this, MemberSyncDataModel.DatabaseAddType.SERIAL);
+        MemberSyncDataModel.getInstance().setListener(this);
+        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+        taskExecutorService = executorService.getExecutorService();
+    }
+
+    @Override
+    public void onMemberAddedToDb(RegisteredMembers addedMember) {
+        runOnUiThread(() -> {
+            DismissProgressDialog(mloadingprogress);
+            if (testCount == totalMemberCount) {
+                mCountTv.setText(String.valueOf(datalist.size() + 1));
+            } else {
+                mCountTv.setText(testCount++ + " / " + totalMemberCount);
+            }
+            datalist.add(addedMember);
+            refreshMemberList(datalist);
+        });
     }
 }

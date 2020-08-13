@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.certify.snap.adapter.RecordAdapter;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.R;
@@ -35,7 +36,6 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.litepal.LitePal;
-import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -48,8 +48,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class RecordActivity extends AppCompatActivity {
 
+    protected static final String TAG = RecordActivity.class.getSimpleName();
     private RecyclerView recyclerView;
     private RecordAdapter recordAdapter;
     private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
@@ -67,11 +76,6 @@ public class RecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         Application.getInstance().addActivity(this);
-        try {
-            db = LitePal.getDatabase();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         recyclerView = findViewById(R.id.recyclerview_record);
 
         initdata(true);
@@ -79,20 +83,43 @@ public class RecordActivity extends AppCompatActivity {
 
     public void initdata(final boolean isNeedInit){
         try {
-            if (db != null) {
-                LitePal.findAllAsync(OfflineRecordTemperatureMembers.class).listen(new FindMultiCallback<OfflineRecordTemperatureMembers>() {
-                    @Override
-                    public void onFinish(List<OfflineRecordTemperatureMembers> list) {
-                        datalist = list;
-                        if (isNeedInit) {
-                            initMember();
-                        } else {
-                            refreshMemberList(datalist);
-                            recyclerView.scrollToPosition(0);
+            Observable.create(new ObservableOnSubscribe<List<OfflineRecordTemperatureMembers>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<OfflineRecordTemperatureMembers>> emitter) throws Exception {
+                    List<OfflineRecordTemperatureMembers> offlineRecordList = DatabaseController.getInstance().findAllOfflineRecord();
+                    emitter.onNext(offlineRecordList);
+                }
+            }).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<OfflineRecordTemperatureMembers>>() {
+                        Disposable disposable;
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
                         }
-                    }
-                });
-            }
+
+                        @Override
+                        public void onNext(List<OfflineRecordTemperatureMembers> list) {
+                            datalist = list;
+                            if (isNeedInit) {
+                                initMember();
+                            } else {
+                                refreshMemberList(datalist);
+                                recyclerView.scrollToPosition(0);
+                            }
+                            disposable.dispose();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Error in fetching the data model from database");
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            disposable.dispose();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }

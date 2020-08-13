@@ -16,6 +16,9 @@ import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.snap.activity.InitializationActivity;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
 import com.google.gson.Gson;
 import com.tamic.novate.Novate;
 import com.tamic.novate.Throwable;
@@ -706,7 +709,9 @@ public class UpdateService extends Service {
                                     registeredFailedMembers.setImage(InitializationActivity.REGISTERED_FAILED_DIR + File.separator + failedPathName);
                                     registeredFailedMembers.setName(failedName);
                                    // registeredFailedMembers.setUserId(failedId);
-                                    result = registeredFailedMembers.save();
+                                    //result = registeredFailedMembers.save();
+                                    DatabaseController.getInstance().insertRegisterFailMember(registeredFailedMembers);
+                                    result = true;
                                     if (result) {
                                         updateProcessFailCount++;
                                         updateSuccessCount++;
@@ -717,12 +722,11 @@ public class UpdateService extends Service {
                                     registeredFailedMembers.setName(member.getName());
                                    // registeredFailedMembers.setUserId(member.getUserId());
                                     registeredFailedMembers.setImage(InitializationActivity.REGISTERED_FAILED_DIR + File.separator + failedPathName);
-                                    result = registeredFailedMembers.save();
+//                                    result = registeredFailedMembers.save();
+                                    DatabaseController.getInstance().insertRegisterFailMember(registeredFailedMembers);
                                     Log.e("tag", "registeredFailedMembers_name---" + member.getName() + "---id---" + member.getUserId());
-                                    if (result) {
                                         updateProcessFailCount++;
                                         updateSuccessCount++;
-                                    }
                                 }
                                 break;
                             }
@@ -754,7 +758,9 @@ public class UpdateService extends Service {
                                 registeredMembers.setExpiretime(member.getExpire_time());
                                 registeredMembers.setImage(image);
                                 registeredMembers.setFeatures(feature);
-                                result = registeredMembers.save();
+                                //result = registeredMembers.save();
+                                DatabaseController.getInstance().insertMemberToDB(registeredMembers);
+                                result = true;
                                 if (result) {
                                     //如果失败列表中含有该条信息，则删除原来失败列表中该条人员信息
                                     registeredFailedMembersList = LitePal.where("userId = ?", userId).find(RegisteredFailedMembers.class);
@@ -808,7 +814,9 @@ public class UpdateService extends Service {
                                     registeredFailedMembers.setName(failedName);
                                    // registeredFailedMembers.setUserId(failedId);
                                     registeredFailedMembers.setImage(InitializationActivity.REGISTERED_FAILED_DIR + File.separator + failedPathName);
-                                    result = registeredFailedMembers.save();
+//                                    result = registeredFailedMembers.save();
+                                    DatabaseController.getInstance().insertRegisterFailMember(registeredFailedMembers);
+                                    result = true;
                                     Log.e("tag", "registeredFailedMembers_name---" + member.getName() + "---id---" + member.getUserId());
                                     if (result) {
                                         //成功列表中含有该条信息，删除原来成功列表中该条人员信息
@@ -866,7 +874,9 @@ public class UpdateService extends Service {
                                     registeredMembers.setExpiretime(member.getExpire_time());
                                     registeredMembers.setImage(image);
                                     registeredMembers.setFeatures(feature);
-                                    result = registeredMembers.save();
+//                                    result = registeredMembers.save();
+                                    DatabaseController.getInstance().insertMemberToDB(registeredMembers);
+                                    result = true;
                                     if (result) {
                                         updateSuccessCount++;
                                     }

@@ -73,6 +73,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.TemperatureStatus;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.faceserver.FaceServer;
@@ -451,6 +452,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         cancelImageTimer();
         if (util!=null) {
             util.stopGetGuideData();
+            util.reset();
             //util.release();
         }
     }
@@ -669,8 +671,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 Log.i(TAG, "onCameraConfigurationChanged: " + cameraID + "  " + displayOrientation);
             }
         };
+
+        int previewHeight = previewViewRgb.getMeasuredHeight();
+        if (!AppSettings.isIsNavigationBarOn()) {
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelper = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewViewRgb.getMeasuredHeight()))
+                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
@@ -722,8 +729,12 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             }
         };
 
+        int previewHeight = previewViewRgb.getMeasuredHeight();
+        if (!AppSettings.isIsNavigationBarOn()) {
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelperIr = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewViewIr.getMeasuredHeight()))
+                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)

@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,22 +16,24 @@ import com.certify.snap.R;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
+public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHolder> implements Filterable {
 
-public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHolder> {
-
-    Context mcontext;
-    List<RegisteredMembers> mlist;
+    private Context mcontext;
+    private List<RegisteredMembers> mlist;
+    private List<RegisteredMembers> membersList;
 
     public MemberAdapter(Context context, List<RegisteredMembers> list) {
         this.mcontext = context;
         this.mlist = list;
+        this.membersList = list;
     }
 
     public void refresh(List<RegisteredMembers> list) {
         if(list!=null) {
-            this.mlist = list;
+            this.membersList = this.mlist = list;
             notifyDataSetChanged();
         }
     }
@@ -37,7 +41,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public OnItemClickListener mOnItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(RegisteredMembers member);
     }
 
     public void setOnItemClickListener(OnItemClickListener OnItemClickListener) {
@@ -47,7 +51,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
     public OnItemLongClickListener mOnItemLongClickListener;
 
     public interface OnItemLongClickListener {
-        void onItemLongClick(View view, int position);
+        void onItemLongClick(RegisteredMembers member);
     }
 
     public void setOnItemLongClickListener(OnItemLongClickListener OnItemLongClickListener) {
@@ -68,8 +72,8 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
             holder.lastname.setText(mlist.get(position).getLastname());
             holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
-            if(!mlist.get(position).getMemberid().isEmpty()) {
-                holder.id.setText("Id: " + mlist.get(position).getMemberid());
+            if(mlist.get(position).getPrimaryId() != 0) {
+                holder.id.setText("Id: " + mlist.get(position).getPrimaryId());
             }else{
                 holder.id.setText("Id: "+mlist.get(position).getAccessid());
             }
@@ -86,31 +90,6 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
                  //holder.image.setBackgroundResource(R.drawable.face_title);
                  holder.image.setImageResource(R.drawable.face_title);
             }
-/*
-            Glide.with(mcontext).asBitmap()
-                    .load(bitmap)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .error(R.mipmap.face_title)
-                    .into(holder.image);*/
-//            inputStream = new FileInputStream(new File(path));
-//            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//            if(bitmap!=null) {
-//                Bitmap bitmap2 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
-//                Canvas canvas = new Canvas(bitmap2);
-//                Paint paint = new Paint();
-//                canvas.drawBitmap(bitmap, new Matrix(), paint);
-//                if(bitmap != null && !bitmap.isRecycled()){
-//                    bitmap.recycle();
-//                }
-//                if (bitmap2 != null) {
-//                    Bitmap newbitmap = Util.zoomBitmap(bitmap2, bitmap2.getWidth() / 2, bitmap2.getHeight() / 2);
-//                    bitmap2.recycle();
-//                    holder.image.setImageBitmap(newbitmap);
-//                }
-//            }else{
-//                holder.image.setImageBitmap(BitmapFactory.decodeResource(mcontext.getResources(),R.mipmap.face_title));
-//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -119,7 +98,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             @Override
             public void onClick(View v) {
                 if (mOnItemClickListener != null) {
-                    mOnItemClickListener.onItemClick(holder.itemView, position);
+                    mOnItemClickListener.onItemClick(mlist.get(position));
                 }
             }
         });
@@ -127,7 +106,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             @Override
             public boolean onLongClick(View v) {
                 if (mOnItemLongClickListener != null) {
-                    mOnItemLongClickListener.onItemLongClick(holder.itemView, position);
+                    mOnItemLongClickListener.onItemLongClick(mlist.get(position));
                 }
                 return true;
             }
@@ -161,4 +140,35 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
         }
     }
 
+    @Override
+    public Filter getFilter() {
+        mlist = membersList;
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    mlist = membersList;
+                } else {
+                    List<RegisteredMembers> filterList = new ArrayList<>();
+                    for (RegisteredMembers member : mlist) {
+                        if (member.getFirstname().toLowerCase().contains(charString.toLowerCase()) ||
+                            member.getLastname().toLowerCase().contains(charString.toLowerCase())) {
+                            filterList.add(member);
+                        }
+                    }
+                    mlist = filterList;
+                }
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = mlist;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mlist = (List<RegisteredMembers>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 }

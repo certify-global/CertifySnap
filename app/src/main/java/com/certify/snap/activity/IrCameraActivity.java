@@ -41,6 +41,7 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.SoundController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
@@ -484,7 +485,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                     OfflineGuestMembers offlineGuestMembers = new OfflineGuestMembers();
                                     offlineGuestMembers.setUserId(guestMembers.get(0).getUserId());
                                     offlineGuestMembers.setVerify_time(verify_time);
-                                    offlineGuestMembers.save();
+                                    //offlineGuestMembers.save();
                                     Logger.verbose(TAG, "offlineGuestMembers userId----", guestMembers.get(0).getUserId());
                                 } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(cpmpareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                                     restoreCameraAfterScan(true);
@@ -2181,7 +2182,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
-                                registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
+                                //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
+                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 
@@ -2808,10 +2810,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     private void initRecordUserTempService() {
         if (!Util.isOfflineMode(IrCameraActivity.this)){
-            if (LitePal.getDatabase() != null) {
                 try {
-                    if (LitePal.isExist(OfflineRecordTemperatureMembers.class)) {
-                        OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                    if (DatabaseController.getInstance().countOfflineTempRecord()>0) {
+                        //OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
+                        OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
                         if (firstMember != null) {
                             startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
                         } else {
@@ -2821,7 +2823,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 } catch (LitePalSupportException exception) {
                     Log.e(TAG, "Exception occurred while querying for first member from db");
                 }
-            }
         }
     }
 
