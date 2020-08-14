@@ -85,4 +85,7 @@ public interface DatabaseStore {
 
     @Query("SELECT * FROM OfflineRecordTemperatureMembers")
     List<OfflineRecordTemperatureMembers> findAllOfflineRecordTempMember();
+
+    @Query("DELETE FROM OfflineRecordTemperatureMembers")
+    void deleteAllOfflineRecord();
 }
