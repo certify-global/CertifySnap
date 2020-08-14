@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -44,12 +45,12 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
+import com.certify.snap.service.ResetOfflineDataReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.AppCenter;
-
 import org.json.JSONObject;
 
 import java.io.File;
@@ -449,6 +450,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             } else {
                 internetIndicatorImage.setVisibility(View.VISIBLE);
             }
+
+            ResetOfflineDataReceiver br = new ResetOfflineDataReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
+            intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+            this.registerReceiver(br, intentFilter);
         });
     }
 
