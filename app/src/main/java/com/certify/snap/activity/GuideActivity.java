@@ -2,8 +2,10 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -14,7 +16,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,7 +27,6 @@ import androidx.annotation.NonNull;
 
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.VersionInfo;
-import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
@@ -43,14 +43,13 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
+import com.certify.snap.service.ResetOfflineDataReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 import com.tamic.novate.Novate;
 
 import org.json.JSONObject;
@@ -162,6 +161,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         }
         AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
         Util.enableLedPower(0);
+
+        ResetOfflineDataReceiver br = new ResetOfflineDataReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
+        intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        this.registerReceiver(br, intentFilter);
     }
 
     @Override
@@ -291,7 +296,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     protected void onResume() {
         super.onResume();
     }
-
 
     @Override
     public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {

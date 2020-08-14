@@ -168,4 +168,10 @@ public class DatabaseController {
         }
         return 0;
     }
+
+    public void deleteAllOfflineRecord(){
+        if (databaseStore != null){
+            databaseStore.deleteAllOfflineRecord();
+        }
+    }
 }
