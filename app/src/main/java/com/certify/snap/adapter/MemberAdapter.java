@@ -72,11 +72,7 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
             holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
             holder.lastname.setText(mlist.get(position).getLastname());
             holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
-            if(mlist.get(position).getPrimaryId() != 0) {
-                holder.id.setText("Id: " + mlist.get(position).getPrimaryId());
-            }else{
-                holder.id.setText("Id: "+mlist.get(position).getAccessid());
-            }
+            holder.id.setText("Id: " + mlist.get(position).getMemberid());
             holder.email.setText("Email: " + mlist.get(position).getEmail());
             //holder.time.setText("ExpireTime: " + mlist.get(position).getExpire_time());
             String path = mlist.get(position).getImage();
