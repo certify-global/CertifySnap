@@ -36,6 +36,7 @@ public class AppSettings {
     private static boolean bleLightNormalTemperature = false;
     private static boolean bleLightHighTemperature = false;
     private static boolean anonymousQREnable = false;
+    private static boolean isNavigationBarOn = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -73,7 +74,7 @@ public class AppSettings {
         bleLightNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_NORMAL,false);
         bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
         anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
-
+        isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
     }
 
     public static String getThermalScanTitle() {
@@ -186,5 +187,9 @@ public class AppSettings {
 
     public static boolean isAnonymousQREnable() {
         return anonymousQREnable;
+    }
+
+    public static boolean isIsNavigationBarOn() {
+        return isNavigationBarOn;
     }
 }

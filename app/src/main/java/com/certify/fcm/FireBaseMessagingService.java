@@ -15,12 +15,11 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
-import com.certify.snap.activity.GuideActivity;
-import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.MemberSyncService;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -56,6 +55,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     @Override
     public void onNewToken(String token) {
         sharedPreferences=Util.getSharedPreferences(this);
+        ApplicationController.getInstance().setFcmPushToken(token);
         sendRegistrationToServer(token);
     }
 
@@ -99,9 +99,13 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             }else if(command.equals("NAVBARON")){
                 boolean navigationBar =true;
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+                Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
             }else if(command.equals("NAVBAROFF")){
                 boolean navigationBar = false;
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+                Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
             }
             Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
 
