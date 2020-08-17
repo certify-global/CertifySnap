@@ -5,8 +5,8 @@ import android.graphics.Bitmap;
 
 public class ImagePrint extends BasePrint {
 
-    public ImagePrint(Context context, MsgHandle mHandle, MsgDialog mDialog) {
-        super(context, mHandle, mDialog);
+    public ImagePrint(Context context) {
+        super(context);
     }
 
     private Bitmap printBitmap ;

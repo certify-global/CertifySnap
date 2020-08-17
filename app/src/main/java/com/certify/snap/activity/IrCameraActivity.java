@@ -38,10 +38,6 @@ import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
-import com.certify.snap.bluetooth.printer.BasePrint;
-import com.certify.snap.bluetooth.printer.ImagePrint;
-import com.certify.snap.bluetooth.printer.MsgDialog;
-import com.certify.snap.bluetooth.printer.MsgHandle;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
@@ -294,9 +290,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ProgressDialog progressDialog;
     private UserExportedData userData;
     private Button qrSkipButton;
-    private BasePrint mPrint = null;
-    private MsgHandle mHandle;
-    private MsgDialog mDialog;
     private Bitmap printBitmap;
 
     private void instanceStart() {
@@ -2893,12 +2886,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
-        //TODO1: Move the below to PrinterController
-        if (AppSettings.isEnablePrinter()) {
-            printBitmap = convertToImage();
-            ((ImagePrint) mPrint).setBitmap(printBitmap);
-            mPrint.print();
-        }
+
+
         TemperatureController.getInstance().clearData();
     }
 
@@ -2935,17 +2924,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         clearLeftFace(null);
     }
 
-    private void initBluetoothPrinter(){
+    private void initBluetoothPrinter() {
         // initialization for printing
-        mDialog = new MsgDialog(this);
-        mHandle = new MsgHandle(this, mDialog);
-        mPrint = new ImagePrint(this, mHandle, mDialog);
-
-        // when use bluetooth print set the adapter
-        BluetoothAdapter bluetoothAdapter = PrinterController.getInstance().getBluetoothAdapter();
-        mPrint.setBluetoothAdapter(bluetoothAdapter);
-
+        PrinterController.getInstance().init(this);
         PrinterController.getInstance().setPrinterListener(this);
+        PrinterController.getInstance().setBluetoothAdapter();
     }
 
     @Override
@@ -2956,7 +2939,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         startActivity(enableBtIntent);
     }
 
-    public Bitmap convertToImage() {
+    public void convertUIToImage() {
         View inflatedFrame = getLayoutInflater().inflate(R.layout.print_layout, null);
         FrameLayout frameLayout = inflatedFrame.findViewById(R.id.screen);
         TextView tv = inflatedFrame.findViewById(R.id.textToDisplay);
@@ -2967,7 +2950,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         frameLayout.layout(0, 0, frameLayout.getMeasuredWidth(), frameLayout.getMeasuredHeight());
         frameLayout.buildDrawingCache(true);
-        Bitmap bitmap = frameLayout.getDrawingCache();
-        return bitmap;
+        PrinterController.getInstance().setPrintImage(frameLayout.getDrawingCache());
     }
 }

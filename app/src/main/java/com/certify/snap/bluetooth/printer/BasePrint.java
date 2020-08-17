@@ -29,8 +29,6 @@ public abstract class BasePrint {
     private static final long BLE_RESOLVE_TIMEOUT = 5000;
     static Printer mPrinter;
     static boolean mCancel;
-    final MsgHandle mHandle;
-    final MsgDialog mDialog;
     private final SharedPreferences sharedPreferences;
     private final Context mContext;
     PrinterStatus mPrintResult;
@@ -38,12 +36,9 @@ public abstract class BasePrint {
     private String customSetting;
     private PrinterInfo mPrinterInfo;
 
-    BasePrint(Context context, MsgHandle handle, MsgDialog dialog) {
+    BasePrint(Context context) {
 
         mContext = context;
-        mDialog = dialog;
-        mHandle = handle;
-        mDialog.setHandle(mHandle);
         sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(context);
         mCancel = false;
@@ -51,7 +46,6 @@ public abstract class BasePrint {
         mPrinterInfo = new PrinterInfo();
         mPrinter = new Printer();
         mPrinterInfo = mPrinter.getPrinterInfo();
-        mPrinter.setMessageHandle(mHandle, Common.MSG_SDK_EVENT);
     }
 
     public static void cancel() {
@@ -672,14 +666,8 @@ public abstract class BasePrint {
             // set info. for printing
             BasePrintResult setPrinterInfoResult = setPrinterInfo();
             if (setPrinterInfoResult.success == false) {
-                mHandle.setResult(setPrinterInfoResult.errorMessage);
-                mHandle.sendMessage(mHandle.obtainMessage(Common.MSG_PRINT_END));
                 return;
             }
-
-            // start message
-            Message msg = mHandle.obtainMessage(Common.MSG_PRINT_START);
-            mHandle.sendMessage(msg);
 
             mPrintResult = new PrinterStatus();
 
@@ -690,12 +678,6 @@ public abstract class BasePrint {
                 mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
             }
             mPrinter.endCommunication();
-
-            // end message
-            mHandle.setResult(showResult());
-            mHandle.setBattery(getBatteryDetail());
-            msg = mHandle.obtainMessage(Common.MSG_PRINT_END);
-            mHandle.sendMessage(msg);
         }
     }
 
@@ -709,22 +691,12 @@ public abstract class BasePrint {
             // set info. for printing
             setPrinterInfo();
 
-            // start message
-            Message msg = mHandle.obtainMessage(Common.MSG_PRINT_START);
-            mHandle.sendMessage(msg);
-
             mPrintResult = new PrinterStatus();
             if (!mCancel) {
                 mPrintResult = mPrinter.getPrinterStatus();
             } else {
                 mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
             }
-            // end message
-            mHandle.setResult(showResult());
-            mHandle.setBattery(getBatteryDetail());
-            msg = mHandle.obtainMessage(Common.MSG_PRINT_END);
-            mHandle.sendMessage(msg);
-
         }
     }
 
@@ -738,14 +710,8 @@ public abstract class BasePrint {
             // set info. for printing
             BasePrintResult setPrinterInfoResult = setPrinterInfo();
             if (setPrinterInfoResult.success == false) {
-                mHandle.setResult(setPrinterInfoResult.errorMessage);
-                mHandle.sendMessage(mHandle.obtainMessage(Common.MSG_PRINT_END));
                 return;
             }
-
-            // start message
-            Message msg = mHandle.obtainMessage(Common.MSG_PRINT_START);
-            mHandle.sendMessage(msg);
 
             mPrintResult = new PrinterStatus();
 
@@ -754,11 +720,6 @@ public abstract class BasePrint {
             doPrint();
 
             mPrinter.endCommunication();
-            // end message
-            mHandle.setResult(showResult());
-            mHandle.setBattery(getBatteryDetail());
-            msg = mHandle.obtainMessage(Common.MSG_PRINT_END);
-            mHandle.sendMessage(msg);
 
         }
     }

@@ -46,10 +46,6 @@ import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.bluetooth.bleCommunication.BusProvider;
 import com.certify.snap.bluetooth.bleCommunication.DeviceChangedEvent;
 import com.certify.snap.bluetooth.data.DeviceInfoManager;
-import com.certify.snap.bluetooth.printer.BasePrint;
-import com.certify.snap.bluetooth.printer.ImagePrint;
-import com.certify.snap.bluetooth.printer.MsgDialog;
-import com.certify.snap.bluetooth.printer.MsgHandle;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
@@ -85,12 +81,7 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
 
     private byte[] ledrgb = new byte[3];
 
-    BasePrint myPrint = null;
-    MsgHandle mHandle;
-    MsgDialog mDialog;
-
     ImageView imageView;
-    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,20 +91,13 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         BusProvider.getInstance().register(this);
         sp = Util.getSharedPreferences(this);
 
-        // initialization for printing
-        mDialog = new MsgDialog(this);
-        mHandle = new MsgHandle(this, mDialog);
-        myPrint = new ImagePrint(this, mHandle, mDialog);
-
-        // when use bluetooth print set the adapter
-        BluetoothAdapter bluetoothAdapter = PrinterController.getInstance().getBluetoothAdapter();
-        myPrint.setBluetoothAdapter(bluetoothAdapter);
-
         initView();
         temperatureAudioCheck();
         visualCheck();
         qrAudioCheck();
         printerCheck();
+
+        initBluetoothPrinter();
 
         // request ble permission
         requestPermission();
@@ -646,6 +630,13 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         startActivity(new Intent(this, PrinterSettingsActivity.class));
     }
 
+    private void initBluetoothPrinter() {
+        // initialization for printing
+        PrinterController.getInstance().init(this);
+        PrinterController.getInstance().setPrinterListener(this);
+        PrinterController.getInstance().setBluetoothAdapter();
+    }
+
     public static Bitmap getBitmapFromView(View visitorLayout, ImageView imageView) {
         Bitmap bitmap = Bitmap.createBitmap(visitorLayout.getWidth(), visitorLayout.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
@@ -655,9 +646,8 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
     }
 
     public void printImage(View view){
-        bitmap = getBitmapFromView(testPrint, imageView);
-        ((ImagePrint) myPrint).setBitmap(bitmap);
-        myPrint.print();
+        PrinterController.getInstance().setPrintImage(getBitmapFromView(testPrint, imageView));
+        PrinterController.getInstance().print();
     }
 
     @Override

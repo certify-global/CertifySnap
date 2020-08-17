@@ -1,12 +1,19 @@
 package com.certify.snap.controller;
 
 import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
+import android.content.Context;
+import android.graphics.Bitmap;
+
+import com.certify.snap.bluetooth.printer.BasePrint;
+import com.certify.snap.bluetooth.printer.ImagePrint;
+import com.certify.snap.common.AppSettings;
 
 public class PrinterController {
 
     private static PrinterController instance = null;
     private PrinterCallbackListener listener;
+    private BasePrint mPrint = null;
+    private Bitmap printImage = null;
 
     public interface PrinterCallbackListener {
         void onBluetoothDisabled();
@@ -19,7 +26,11 @@ public class PrinterController {
         return instance;
     }
 
-    public BluetoothAdapter getBluetoothAdapter() {
+    public void init(Context context) {
+        mPrint = new ImagePrint(context);
+    }
+
+    public void setBluetoothAdapter() {
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter
                 .getDefaultAdapter();
         if (bluetoothAdapter != null && !bluetoothAdapter.isEnabled()) {
@@ -27,11 +38,26 @@ public class PrinterController {
                listener.onBluetoothDisabled();
            }
         }
-        return bluetoothAdapter;
+        mPrint.setBluetoothAdapter(bluetoothAdapter);
     }
 
     public void setPrinterListener (PrinterCallbackListener callbackListener) {
         this.listener = callbackListener;
     }
 
+    public void setPrintImage(Bitmap image) {
+        this.printImage = image;
+    }
+
+    public void print() {
+        ((ImagePrint) mPrint).setBitmap(printImage);
+        mPrint.print();
+    }
+
+    public void printOnNormalTemperature() {
+        //TODO1: Move the below to PrinterController
+        if (AppSettings.isEnablePrinter()) {
+            print();
+        }
+    }
 }

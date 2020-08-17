@@ -416,6 +416,7 @@ public class TemperatureController {
         SoundController.getInstance().playNormalTemperatureSound();
         AccessCardController.getInstance().processUnlockDoor(membersList);
         BLEController.getInstance().setLightOnNormalTemperature();
+        PrinterController.getInstance().printOnNormalTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
                 AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
