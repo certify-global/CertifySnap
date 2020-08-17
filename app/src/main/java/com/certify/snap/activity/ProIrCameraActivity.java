@@ -1031,6 +1031,13 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         for (int i = 0; i < facePreviewInfoList.size(); i++) {
             Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
             float fix = getDistance(rect);
+            //Ignore the temperature read (resulting in low read if the face is not fully visible)
+            if (rect.right > 750) {
+                final Rect[] rects = new Rect[temperatureRectList.size()];
+                int[] distances = new int[distanceList.size()];
+                util.setGuideRect(rects, distances);
+                continue;
+            }
             float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
             float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
             Rect newRect;
