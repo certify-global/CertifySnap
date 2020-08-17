@@ -301,7 +301,8 @@ public class TemperatureController {
      */
     public boolean isTemperatureAboveThreshold(float temperature) {
         boolean result = false;
-        if (temperature > Float.parseFloat(AppSettings.getTemperatureThreshold())) {
+        String tempThresholdSetting = AppSettings.getTemperatureThreshold();
+        if (!tempThresholdSetting.isEmpty() && (temperature > Float.parseFloat(tempThresholdSetting))) {
             result = true;
         }
         return result;
