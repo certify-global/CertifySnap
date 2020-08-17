@@ -149,7 +149,7 @@ public abstract class BasePrint {
     }
 
     /**
-     * get the printer settings from the SharedPreferences
+     * get the printer printer_settings from the SharedPreferences
      */
     private void getPreferences() {
         if (mPrinterInfo == null) {
@@ -260,8 +260,8 @@ public abstract class BasePrint {
         if (input.equals(""))
             input = "1";
         mPrinterInfo.numberOfCopies = Integer.parseInt(input);
-        mPrinterInfo.halftone = PrinterInfo.Halftone.valueOf(sharedPreferences
-                .getString("halftone", ""));
+       /* mPrinterInfo.halftone = PrinterInfo.Halftone.valueOf(sharedPreferences
+                .getString("halftone", ""));*/
         mPrinterInfo.printMode = PrinterInfo.PrintMode
                 .valueOf(sharedPreferences.getString("printMode", ""));
         mPrinterInfo.pjCarbon = Boolean.parseBoolean(sharedPreferences
@@ -270,9 +270,9 @@ public abstract class BasePrint {
         if (input.equals(""))
             input = "5";
         mPrinterInfo.pjDensity = Integer.parseInt(input);
-        mPrinterInfo.pjFeedMode = PrinterInfo.PjFeedMode
-                .valueOf(sharedPreferences.getString("pjFeedMode", ""));
-        mPrinterInfo.align = PrinterInfo.Align.valueOf(sharedPreferences
+        /*mPrinterInfo.pjFeedMode = PrinterInfo.PjFeedMode
+                .valueOf(sharedPreferences.getString("pjFeedMode", ""));*/
+        /*mPrinterInfo.align = PrinterInfo.Align.valueOf(sharedPreferences
                 .getString("align", ""));
         input = sharedPreferences.getString("leftMargin", "");
         if (input.equals(""))
@@ -340,7 +340,7 @@ public abstract class BasePrint {
                 .getString("overwrite", "true"));
 
         mPrinterInfo.trimTapeAfterData = Boolean.parseBoolean(sharedPreferences
-                .getString("trimTapeAfterData", "false"));
+                .getString("trimTapeAfterData", "false"));*/
 
         input = sharedPreferences.getString("imageThresholding", "");
         if (input.equals(""))

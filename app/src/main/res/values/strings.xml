@@ -227,7 +227,7 @@
     <string name="enable_qr_sound_invalid">Enable sound for invalid qr code</string>
     <string name="enable_light">Enable light on normal temperature</string>
     <string name="enable_light_high">Enable light on temperature above threshold</string>
-    <string name="enable_printer">Enable print for visitors</string>
+    <string name="enable_printer">Enable print</string>
     <string name="enable_mask">Enable Mask Detection</string>
     <string name="enable_facial">Enable Facial Recognition</string>
     <string name="screen_delay">Screen display time (seconds)</string>s
@@ -446,17 +446,27 @@
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
 
-    <!--Bluetooth printer -->
+    <!--Bluetooth Printer printer_settings-->
+
+    <string name="printer_settings"><u>Settings</u></string>
+    <string name="no_network_device">No Net Printer Found</string>
+    <string name="setting_printer">Printer Settings</string>
+    <string name="printer_title">Connect to Printer</string>
+    <string name="printer_text">Select a destination printer</string>
+    <string name="netPrinterListTitle_label">Net Printer</string>
     <string name="error_message_none">Succeeded</string>
-    <string name="ac_adapter">AC adapter</string>
-    <string name="battery_full">Full</string>
-    <string name="battery_weak">Weak</string>
-    <string name="battery_middle">Middle</string>
-    <string name="battery_charge">Need charging</string>
-    <string name="close_connect">closeing…</string>
-    <string name="button_ok">OK</string>
-    <string name="progress_dialog_message_communication_start">Start communication…</string>
-    <string name="progress_dialog_message_transfer_start">Transfer Start…</string>
+    <string name="printer_model_title">PrinterModel</string>
+    <string name="printer_model_value">Select the printer model </string>
+    <string name="port_title">Port</string>
+    <string name="port_value">Select the port</string>
+    <string name="address_title">IP address</string>
+    <string name="address_value">Set the number of ip address </string>
+    <string name="mac_address_title">MAC address</string>
+    <string name="mac_address_value">Set the number of mac address </string>
+    <string name="paper_size_title">Paper size</string>
+    <string name="paper_size_value">Select the paper size </string>
+    <string name="orientation_title">Printing orientation</string>
+    <string name="orientation_value">Select the printing orientation </string>
     <string name="progress_dialog_message_preparing_connection">Preparing the connection…</string>
     <string name="progress_dialog_message_createData">Creating the data</string>
     <string name="progress_dialog_message_sendingData">Sending the data…</string>
@@ -478,6 +488,124 @@
     <string name="cancel_printer_msg">Is cancelling, please wait</string>
     <string name="error_message_weong_os">Android OS is not supported</string>
     <string name="error_message_no_usb">USB device is not found</string>
+    <string name="progress_dialog_message_communication_start">Start communication…</string>
+    <string name="progress_dialog_message_transfer_start">Transfer Start…</string>
+
+    <string-array name="orientation">
+        <item>Portrait</item>
+        <item>Landscape</item>
+    </string-array>
+    <string-array name="orientation_values">
+        <item>PORTRAIT</item>
+        <item>LANDSCAPE</item>
+    </string-array>
+
+    <string name="number_of_copies_title">Number of copies</string>
+    <string name="number_of_copies_value">Set the number of copies </string>
+    <string name="scale_value_title">Scale value</string>
+    <string name="scale_value_value">Select the scale value </string>
+
+
+    <string name="fit_to_page_title">Fit to page</string>
+    <string name="fit_to_page_value">Select if fitting to page </string>
+
+
+    <string-array name="fitToPage">
+        <item>ORIGINAL</item>
+        <item>FIT_TO_PAGE</item>
+        <item>CUSTOM</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+    <string-array name="fit_to_page_values">
+        <item>ORIGINAL</item>
+        <item>FIT_TO_PAGE</item>
+        <item>SCALE</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+
+
+    <string name="print_quality_title">Print quality</string>
+    <string name="print_quality_value">Select the quality</string>
+
+
+    <string-array name="yes_no_entries">
+        <item>yes</item>
+        <item>no</item>
+    </string-array>
+    <string-array name="yes_no_value">
+        <item>true</item>
+        <item>false</item>
+    </string-array>
+
+
+    <string name="is_end_cut_title">End Cut</string>
+    <string name="is_end_cut_value">do end cut or not</string>
+    <string name="is_auto_cut_title">Auto Cut</string>
+    <string name="is_auto_cut_value">do auto cut or not</string>
+    <string name="otherSettings_title">Other Settings</string>
+    <string name="ip_mac_title">IP/MAC Address</string>
+    <string name="ip_mac_value">Set the IP/MAC Address</string>
+    <string name="cut_settings_value">Set the Cut Settings</string>
+    <string name="cut_settings_title">Cut Settings</string>
+
+    <string name="no_bluetooth_device">No Bluetooth Printer Found</string>
+    <string name="button_refresh">Refresh</string>
+    <string name="button_settings">Connect</string>
+
+
+    <string-array name="print_quality_array">
+        <item>LOW_RESOLUTION</item>
+        <item>NORMAL</item>
+        <item>DOUBLE_SPEED</item>
+        <item>HIGH_RESOLUTION</item>
+    </string-array>
+    <string-array name="print_quality_value">
+        <item>LOW_RESOLUTION</item>
+        <item>NORMAL</item>
+        <item>DOUBLE_SPEED</item>
+        <item>HIGH_RESOLUTION</item>
+    </string-array>
+
+
+    <string name="search_printer">Searching…</string>
+    <string name="end_title">End</string>
+    <string name="end_message">Back to Launcher</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_ok">OK</string>
+    <string name="battery_full">Full</string>
+    <string name="battery_middle">Middle</string>
+    <string name="battery_weak">Weak</string>
+    <string name="battery_charge">Need charging</string>
+    <string name="ac_adapter">AC adapter</string>
+    <string name="close_connect">closeing…</string>
+    <string name="bluetooth_printer_list_title_label">Bluetooth Printer</string>
+
+
+    <string name="half_cut_title">Half Cut(PT Only)</string>
+    <string name="half_cut_value">do half cut or not</string>
+    <string name="special_tape_title">Special tape paper(PT Only)</string>
+    <string name="special_tape_value">is special tape paper</string>
+
+
+    <string name="timeout_title">Timeout</string>
+    <string name="timeout_text">Set the timeout </string>
+    <string name="processTimeout_value">Time-out period</string>
+    <string name="processTimeout_title">Set overall time-out time </string>
+    <string name="sendTimeout_value">Set transmission waiting time</string>
+    <string name="sendTimeout_title">Transmission waiting time</string>
+    <string name="receiveTimeout_title">Reception waiting time</string>
+    <string name="receiveTimeout_value">Set reception waiting time </string>
+    <string name="connectionTimeout_title">Connect waiting time</string>
+    <string name="connectionTimeout_value">Set connect waiting time </string>
+    <string name="close_wait_time_value">Close Time-out period</string>
+    <string name="close_wait_time_title">Set close waiting time</string>
+
+    <string name="work_path_value">Select the work path</string>
+    <string name="work_path_title">Work Folder</string>
+
+    <string-array name="work_path_entries">
+        <item>In-app folder</item>
+        <item>External folder </item>
+    </string-array>
 
 </resources>
