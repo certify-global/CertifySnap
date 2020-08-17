@@ -69,8 +69,9 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
     private static final String TAG = SettingActivity.class.getSimpleName();
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
-    private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-            thermal_check_setting, scan_setting, confirmation_setting, guide_setting, qr_setting;
+    private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature,
+                    setting_upload, setting_access_password, setting_endpoint, thermal_check_setting, scan_setting,
+                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
     TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management, tv_visual_settings;
@@ -233,6 +234,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         audio_visual_setting_view = findViewById(R.id.audio_visual_setting_view);
         identification_setting_view = findViewById(R.id.identification_setting_view);
         access_control_setting_view = findViewById(R.id.access_control_setting_view);
+        audio_visual_setting = findViewById(R.id.audio_visual_setting);
 
         recordDivider = findViewById(R.id.record_divider);
         access_pwd.setTypeface(rubiklight);
@@ -627,24 +629,28 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 confirmation_setting.setVisibility(View.GONE);
                 accessControl.setVisibility(View.GONE);
                 guide_setting.setVisibility(View.GONE);
+                audio_visual_setting.setVisibility(View.GONE);
 
                 upload_logo_setting_view.setVisibility(View.GONE);
                 home_view_setting_view.setVisibility(View.GONE);
                 confirmation_screen_setting_view.setVisibility(View.GONE);
                 access_control_setting_view.setVisibility(View.GONE);
                 guide_setting_view.setVisibility(View.GONE);
+                audio_visual_setting_view.setVisibility(View.GONE);
             } else {
                 setting_upload.setVisibility(View.VISIBLE);
                 thermal_check_setting.setVisibility(View.VISIBLE);
                 confirmation_setting.setVisibility(View.VISIBLE);
                 accessControl.setVisibility(View.VISIBLE);
                 guide_setting.setVisibility(View.VISIBLE);
+                audio_visual_setting.setVisibility(View.VISIBLE);
 
                 upload_logo_setting_view.setVisibility(View.VISIBLE);
                 home_view_setting_view.setVisibility(View.VISIBLE);
                 confirmation_screen_setting_view.setVisibility(View.VISIBLE);
                 access_control_setting_view.setVisibility(View.VISIBLE);
                 guide_setting_view.setVisibility(View.VISIBLE);
+                audio_visual_setting_view.setVisibility(View.VISIBLE);
             }
         }
         else {
@@ -654,12 +660,14 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             confirmation_setting.setVisibility(View.VISIBLE);
             accessControl.setVisibility(View.VISIBLE);
             guide_setting.setVisibility(View.VISIBLE);
+            audio_visual_setting.setVisibility(View.VISIBLE);
 
             upload_logo_setting_view.setVisibility(View.VISIBLE);
             home_view_setting_view.setVisibility(View.VISIBLE);
             confirmation_screen_setting_view.setVisibility(View.VISIBLE);
             access_control_setting_view.setVisibility(View.VISIBLE);
             guide_setting_view.setVisibility(View.VISIBLE);
+            audio_visual_setting_view.setVisibility(View.VISIBLE);
         }
     }
 
