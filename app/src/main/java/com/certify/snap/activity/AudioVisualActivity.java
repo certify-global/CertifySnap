@@ -189,13 +189,14 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         tv_bluetooth_printer_status.setTypeface(rubiklight);
         testPrint.setTypeface(rubiklight);
 
-        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
+        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
-            tv_bluetooth_printer_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
+            tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
         } else {
             tv_ble_connection.setText(Html.fromHtml(text));
-            tv_bluetooth_printer_connection.setText(Html.fromHtml(text));
+            tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings));
         }
     }
 

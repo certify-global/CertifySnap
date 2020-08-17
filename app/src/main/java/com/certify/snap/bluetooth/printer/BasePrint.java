@@ -158,7 +158,7 @@ public abstract class BasePrint {
         }
         String input;
         mPrinterInfo.printerModel = PrinterInfo.Model.valueOf(sharedPreferences
-                .getString("printerModel", ""));
+                .getString("printerModel", "QL_820NWB"));
         mPrinterInfo.port = PrinterInfo.Port.valueOf(sharedPreferences
                 .getString("port", ""));
         mPrinterInfo.ipAddress = sharedPreferences.getString("address", "");

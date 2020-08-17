@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -28,6 +29,7 @@ public class BluetoothPrinterActivity extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_bluetooth_printer);
         Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
         btnRefresh.setOnClickListener(new View.OnClickListener() {
@@ -181,6 +183,11 @@ public class BluetoothPrinterActivity extends ListActivity {
             settings.putExtra("printer", mBluetoothPrinter[position].modelName);
             setResult(RESULT_OK, settings);
         }
+        finish();
+    }
+
+    public void onParamterback(View view) {
+        startActivity(new Intent(this, PrinterSettingsActivity.class));
         finish();
     }
 }

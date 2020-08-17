@@ -9,6 +9,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.view.View;
+import android.view.WindowManager;
 
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.printer.Common;
@@ -29,6 +31,7 @@ public class PrinterSettingsActivity extends PreferenceActivity implements
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         addPreferencesFromResource(R.xml.printer_settings);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -41,7 +44,7 @@ public class PrinterSettingsActivity extends PreferenceActivity implements
 
         // initialize the printer_settings
         setPreferenceValue("printerModel");
-        String printerModel = sharedPreferences.getString("printerModel", "");
+        String printerModel = sharedPreferences.getString("printerModel", "QL_820NWB");
 
         // set paper size & port information
         printerModelChange(printerModel);
@@ -52,16 +55,10 @@ public class PrinterSettingsActivity extends PreferenceActivity implements
         setPreferenceValue("paperSize");
         setPreferenceValue("orientation");
         setEditValue("numberOfCopies");
-        //setPreferenceValue("halftone");
         setPreferenceValue("printMode");
 
-        //setPreferenceValue("overwrite");
-
-        //setPreferenceValue("skipStatusCheck");
-        //setPreferenceValue("checkPrintEnd");
         setPreferenceValue("printQuality");
 
-        //setEditValue("imageThresholding");
         setEditValue("scaleValue");
 
         // initialize the custom paper size's printer_settings
@@ -417,5 +414,10 @@ public class PrinterSettingsActivity extends PreferenceActivity implements
                         return false;
                     }
                 });
+    }
+
+    public void onParamterback(View view) {
+        startActivity(new Intent(this, SettingActivity.class));
+        finish();
     }
 }
