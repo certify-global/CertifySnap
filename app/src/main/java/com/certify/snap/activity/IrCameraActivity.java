@@ -16,6 +16,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -67,6 +68,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -2885,9 +2887,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+        upDatePinterParameters();
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
-
-
         TemperatureController.getInstance().clearData();
     }
 
@@ -2933,23 +2934,48 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     public void onBluetoothDisabled() {
-        final Intent enableBtIntent = new Intent(
+        /*final Intent enableBtIntent = new Intent(
                 BluetoothAdapter.ACTION_REQUEST_ENABLE);
         enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(enableBtIntent);
+        startActivity(enableBtIntent);*/
     }
 
-    public void convertUIToImage() {
-        View inflatedFrame = getLayoutInflater().inflate(R.layout.print_layout, null);
-        FrameLayout frameLayout = inflatedFrame.findViewById(R.id.screen);
-        TextView tv = inflatedFrame.findViewById(R.id.textToDisplay);
+    private void upDatePinterParameters() {
+        Bitmap bitmap = null;
+        String name = "Anonymous";
+        UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
+        RegisteredMembers member = data.member;
+        if (AppSettings.isFacialDetect() && member != null) {
+            bitmap = BitmapFactory.decodeFile(member.image);
+            if(member.firstname != null || member.lastname != null) {
+                name = member.firstname + " " + member.lastname;
+            }
+        } else if (data.getQrCodeData() != null) {
+            name = data.getQrCodeData().getFirstName() + " " + data.getQrCodeData().getLastName();
+        } else if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+            bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
+            name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname + " " + AccessControlModel.getInstance().getRfidScanMatchedMember().lastname;
+        }
+        convertUIToImage(bitmap, name);
+    }
+
+    private void convertUIToImage(Bitmap bitmap, String name) {
+        View view = getLayoutInflater().inflate(R.layout.print_layout, null);
+        LinearLayout linearLayout = view.findViewById(R.id.screen);
+        TextView expireDate = view.findViewById(R.id.expire_date);
+        TextView userName = view.findViewById(R.id.user_name);
+        ImageView userImage = view.findViewById(R.id.user_image);
+        userName.setText(name);
+        if (bitmap != null) {
+            userImage.setImageBitmap(bitmap);
+        }
         String date = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
-        tv.setText("Expires:" + date);
-        frameLayout.setDrawingCacheEnabled(true);
-        frameLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        expireDate.setText(date);
+        linearLayout.setDrawingCacheEnabled(true);
+        linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        frameLayout.layout(0, 0, frameLayout.getMeasuredWidth(), frameLayout.getMeasuredHeight());
-        frameLayout.buildDrawingCache(true);
-        PrinterController.getInstance().setPrintImage(frameLayout.getDrawingCache());
+        linearLayout.layout(0, 0, linearLayout.getMeasuredWidth(), linearLayout.getMeasuredHeight());
+        linearLayout.buildDrawingCache(true);
+        PrinterController.getInstance().setPrintImage(linearLayout.getDrawingCache());
     }
 }

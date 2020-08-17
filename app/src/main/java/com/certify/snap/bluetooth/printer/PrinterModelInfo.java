@@ -32,16 +32,16 @@ public class PrinterModelInfo {
      * Arrays of printer ports.
      * Element 0 is default.
      */
-    private static final String[] PORTS_USB = {Common.USB};
-    private static final String[] PORTS_BT_USB = {Common.BLUETOOTH, Common.USB};
-    private static final String[] PORTS_NET_USB = {Common.NET, Common.USB};
-    private static final String[] PORTS_NET_BT_USB = {Common.NET, Common.BLUETOOTH, Common.USB};
-    private static final String[] PORTS_BT_USB_BLE = {Common.BLUETOOTH, Common.USB, Common.BLE};
-    private static final String[] PORTS_NET_BT_USB_BLE = {Common.NET, Common.BLUETOOTH, Common.USB, Common.BLE};
+    //private static final String[] PORTS_USB = {Common.USB};
+    private static final String[] PORTS_BT_USB = {Common.BLUETOOTH};
+    private static final String[] PORTS_NET_USB = {Common.NET};
+    private static final String[] PORTS_NET_BT_USB = {Common.NET, Common.BLUETOOTH};
+    private static final String[] PORTS_BT_USB_BLE = {Common.BLUETOOTH, Common.BLE};
+    private static final String[] PORTS_NET_BT_USB_BLE = {Common.NET, Common.BLUETOOTH, Common.BLE};
 
     // Port order is different for TD4 printers.
-    private static final String[] PORTS_USB_BT = {Common.USB, Common.BLUETOOTH};
-    private static final String[] PORTS_NET_USB_BT = {Common.NET, Common.USB, Common.BLUETOOTH};
+    private static final String[] PORTS_USB_BT = {Common.BLUETOOTH};
+    private static final String[] PORTS_NET_USB_BT = {Common.NET, Common.BLUETOOTH};
     private static final String[] PORTS_BT = {Common.BLUETOOTH};
     /**
      * String array containing the names of all printer models.
@@ -103,7 +103,7 @@ public class PrinterModelInfo {
         MW_145MFi(MW_140BT),
         MW_260(PORTS_BT_USB, PS_A6_ONLY),
         MW_260MFi(MW_260),
-        PJ_520(PORTS_USB, PS_PJ, PS_PJ_US),
+        PJ_520( PS_PJ, PS_PJ_US),
         PJ_522(PJ_520),
         PJ_523(PJ_520),
         PJ_622(PJ_520),
@@ -124,7 +124,7 @@ public class PrinterModelInfo {
         RJ_4040(PORTS_NET_USB, PS_CUSTOM_ONLY),
         RJ_3050(PORTS_NET_BT_USB, PS_CUSTOM_ONLY),
         RJ_3150(RJ_3050),
-        TD_2020(PORTS_USB, PS_CUSTOM_ONLY),
+        //TD_2020(PS_CUSTOM_ONLY),
         TD_2120N(PORTS_NET_BT_USB, PS_CUSTOM_ONLY),
         TD_2130N(TD_2120N),
         TD_4000(PORTS_USB_BT, PS_CUSTOM_ONLY),
@@ -133,7 +133,7 @@ public class PrinterModelInfo {
         QL_720NW(QL_710W),
         QL_580N(QL_710W),
         PT_E550W(PORTS_NET_USB, PS_PT),
-        PT_E500(PORTS_USB,PS_PT),
+        //PT_E500(PS_PT),
         PT_P750W(PT_E550W),
         PT_P710BT(PORTS_BT_USB, PS_PT),
         PT_D800W(PORTS_NET_USB, PS_PT_P9),
@@ -142,7 +142,7 @@ public class PrinterModelInfo {
         PT_P900W(PT_D800W),
         PT_P950NW(PT_D800W),
         PT_P300BT(PORTS_BT, PS_PT3),
-        QL_800(PORTS_USB, PS_QL),
+        //QL_800("", PS_QL),
         QL_810W(QL_710W),
         QL_820NWB(PORTS_NET_USB_BT, PS_QL),
         RJ_2030(PORTS_BT_USB, PS_CUSTOM_ONLY),
@@ -151,14 +151,14 @@ public class PrinterModelInfo {
         RJ_2150(RJ_3050),
         RJ_3050Ai(RJ_3050),
         RJ_3150Ai(RJ_3050),
-        QL_1100(PORTS_USB, PS_QL1100),
+        //QL_1100( PS_QL1100),
         QL_1110NWB(PORTS_NET_USB_BT, PS_QL1100),
         QL_1115NWB(PORTS_NET_USB_BT, PS_QL1115),
         RJ_4230B(PORTS_BT_USB_BLE, PS_CUSTOM_ONLY),
         RJ_4250WB(PORTS_NET_BT_USB_BLE, PS_CUSTOM_ONLY),
-        TD_4410D(PORTS_USB, PS_CUSTOM_ONLY),
+        //TD_4410D(PS_CUSTOM_ONLY),
         TD_4420DN(PORTS_NET_USB, PS_CUSTOM_ONLY),
-        TD_4510D(PORTS_USB, PS_CUSTOM_ONLY),
+        //TD_4510D(PS_CUSTOM_ONLY),
         TD_4520DN(PORTS_NET_USB, PS_CUSTOM_ONLY),
         TD_4550DNWB(PORTS_NET_BT_USB_BLE, PS_CUSTOM_ONLY),
         MW_170(MW_140BT),

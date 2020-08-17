@@ -50,12 +50,13 @@ public class PrinterController {
     }
 
     public void print() {
-        ((ImagePrint) mPrint).setBitmap(printImage);
-        mPrint.print();
+        if(printImage!= null) {
+            ((ImagePrint) mPrint).setBitmap(printImage);
+            mPrint.print();
+        }
     }
 
     public void printOnNormalTemperature() {
-        //TODO1: Move the below to PrinterController
         if (AppSettings.isEnablePrinter()) {
             print();
         }
