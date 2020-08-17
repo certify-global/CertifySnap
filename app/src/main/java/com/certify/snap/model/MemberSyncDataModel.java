@@ -559,4 +559,8 @@ public class MemberSyncDataModel {
         dbAddType = DatabaseAddType.SCALE;
         index = 0;
     }
+
+    public boolean isSyncing() {
+        return isSyncing;
+    }
 }

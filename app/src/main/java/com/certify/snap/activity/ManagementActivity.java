@@ -142,6 +142,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private ExecutorService taskExecutorService;
     public String OFFLINE_FAILED_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "offline/failed/";
     private RegisteredMembers clickMember;
+    private ImageView refresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +150,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         setContentView(R.layout.activity_management);
         relative_management = findViewById(R.id.relative_management);
         mCountTv = findViewById(R.id.count_tv);
+        refresh = findViewById(R.id.refresh);
 
         Application.getInstance().addActivity(this);
         sharedPreferences = Util.getSharedPreferences(this);
@@ -188,6 +190,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         initData(true);
         initNfc();
         initMemberSync();
+
+        if (MemberSyncDataModel.getInstance().isSyncing()){
+            refresh.setEnabled(false);
+        } else {
+            refresh.setEnabled(true);
+        }
     }
 
     @Override
@@ -224,18 +232,19 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     public synchronized void onmemberclick(View v) {
         switch (v.getId()) {
             case R.id.refresh:
-                if (memberAdapter != null || memberfailedAdapter != null) {
-                    //refresh();
-                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&&!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
+                    if (memberAdapter != null || memberfailedAdapter != null) {
+                        //refresh();
+                        if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&&!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
 
-                        count = 0;
-                        testCount = 1;
-                        activeMemberCount = totalMemberCount = 0;
-                        datalist.clear();
-                        mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
-                        Util.getmemberList(this, this);
+                            count = 0;
+                            testCount = 1;
+                            activeMemberCount = totalMemberCount = 0;
+                            datalist.clear();
+                            mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                            Util.getmemberList(this, this);
+                        }
                     }
-                }
+
                 break;
             case R.id.register:
                 resetUpdateMember();
