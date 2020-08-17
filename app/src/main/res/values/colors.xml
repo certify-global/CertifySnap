@@ -48,7 +48,12 @@
     <color name="qr_code_reader_square">#FFFFFF</color>
     <color name="translucent_black">#80000000</color>
 
+    <drawable name="table_background">#444</drawable>
 
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000</color>
+    <color name="darkGreen">#006400</color>
+    <color name="colorGreen">#4CAF50</color>
 
 
 </resources>

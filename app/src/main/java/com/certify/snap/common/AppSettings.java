@@ -37,6 +37,7 @@ public class AppSettings {
     private static boolean bleLightHighTemperature = false;
     private static boolean anonymousQREnable = false;
     private static boolean isNavigationBarOn = false;
+    private static boolean enablePrinter = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -75,6 +76,7 @@ public class AppSettings {
         bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
         anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
+        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BLUETOOTH_PRINTER,false);
     }
 
     public static String getThermalScanTitle() {
@@ -191,5 +193,9 @@ public class AppSettings {
 
     public static boolean isIsNavigationBarOn() {
         return isNavigationBarOn;
+    }
+
+    public static boolean isEnablePrinter() {
+        return enablePrinter;
     }
 }

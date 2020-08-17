@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,11 +38,16 @@ import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.bluetooth.printer.BasePrint;
+import com.certify.snap.bluetooth.printer.ImagePrint;
+import com.certify.snap.bluetooth.printer.MsgDialog;
+import com.certify.snap.bluetooth.printer.MsgHandle;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.PrinterController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.model.FaceParameters;
@@ -152,7 +158,7 @@ import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
-        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener {
+        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -288,6 +294,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ProgressDialog progressDialog;
     private UserExportedData userData;
     private Button qrSkipButton;
+    private BasePrint mPrint = null;
+    private MsgHandle mHandle;
+    private MsgDialog mDialog;
+    private Bitmap printBitmap;
 
     private void instanceStart() {
         try {
@@ -375,6 +385,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         initHidReceiver();
         initRecordUserTempService();
+        initBluetoothPrinter();
     }
 
     private void initQRCode() {
@@ -2882,6 +2893,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
+        //TODO1: Move the below to PrinterController
+        if (AppSettings.isEnablePrinter()) {
+            printBitmap = convertToImage();
+            ((ImagePrint) mPrint).setBitmap(printBitmap);
+            mPrint.print();
+        }
         TemperatureController.getInstance().clearData();
     }
 
@@ -2916,5 +2933,41 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
         TemperatureController.getInstance().setTemperatureListener(this);
         clearLeftFace(null);
+    }
+
+    private void initBluetoothPrinter(){
+        // initialization for printing
+        mDialog = new MsgDialog(this);
+        mHandle = new MsgHandle(this, mDialog);
+        mPrint = new ImagePrint(this, mHandle, mDialog);
+
+        // when use bluetooth print set the adapter
+        BluetoothAdapter bluetoothAdapter = PrinterController.getInstance().getBluetoothAdapter();
+        mPrint.setBluetoothAdapter(bluetoothAdapter);
+
+        PrinterController.getInstance().setPrinterListener(this);
+    }
+
+    @Override
+    public void onBluetoothDisabled() {
+        final Intent enableBtIntent = new Intent(
+                BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(enableBtIntent);
+    }
+
+    public Bitmap convertToImage() {
+        View inflatedFrame = getLayoutInflater().inflate(R.layout.print_layout, null);
+        FrameLayout frameLayout = inflatedFrame.findViewById(R.id.screen);
+        TextView tv = inflatedFrame.findViewById(R.id.textToDisplay);
+        String date = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
+        tv.setText("Expires:" + date);
+        frameLayout.setDrawingCacheEnabled(true);
+        frameLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        frameLayout.layout(0, 0, frameLayout.getMeasuredWidth(), frameLayout.getMeasuredHeight());
+        frameLayout.buildDrawingCache(true);
+        Bitmap bitmap = frameLayout.getDrawingCache();
+        return bitmap;
     }
 }

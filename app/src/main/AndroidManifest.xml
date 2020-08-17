@@ -42,7 +42,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".activity.SelectDeviceActivity"></activity>
+        <activity android:name=".activity.NetPrinterActivity" />
+        <activity android:name=".activity.BluetoothPrinterActivity" />
+        <activity android:name=".activity.PrinterSettingsActivity" />
+        <activity android:name=".activity.SelectDeviceActivity" />
         <activity android:name=".activity.AudioVisualActivity" />
 
         <activity
