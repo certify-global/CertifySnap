@@ -7,6 +7,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -88,4 +89,19 @@ public interface DatabaseStore {
 
     @Query("DELETE FROM OfflineRecordTemperatureMembers")
     void deleteAllOfflineRecord();
+
+    @Insert
+    void insertAccessLogOfflineRecord(AccessLogOfflineRecord... accessLogOfflineRecords);
+
+    @Query("SELECT * FROM AccessLogOfflineRecord ORDER BY primaryId ASC LIMIT 1")
+    AccessLogOfflineRecord firstAccessLogOfflineRecord();
+
+    @Query("DELETE FROM AccessLogOfflineRecord WHERE primaryid =:primaryId")
+    void deleteOfflineAccessLogRecord(long primaryId);
+
+    @Query("SELECT * FROM AccessLogOfflineRecord ORDER BY primaryId DESC LIMIT 1")
+    AccessLogOfflineRecord OfflineAccessLogRecord();
+
+    @Query("SELECT * FROM AccessLogOfflineRecord")
+    List<AccessLogOfflineRecord> findAllOfflineAccessLogRecord();
 }

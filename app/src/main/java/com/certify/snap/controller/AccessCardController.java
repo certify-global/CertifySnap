@@ -12,6 +12,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
 
@@ -251,7 +252,11 @@ public class AccessCardController implements AccessCallback {
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
 
-                new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                if (Util.isOfflineMode(context)){
+                    saveOfflineAccessLogRecord(obj);
+                } else {
+                    new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                }
             }
         } catch (Exception e) {
             Logger.error(TAG + "accessCardLog", e.getMessage());
@@ -277,5 +282,16 @@ public class AccessCardController implements AccessCallback {
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
+    }
+
+    private void saveOfflineAccessLogRecord(JSONObject obj) {
+        AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
+        try {
+            accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
+            accessLogOfflineRecord.setJsonObj(obj.toString());
+            DatabaseController.getInstance().insertOfflineAccessLog(accessLogOfflineRecord);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

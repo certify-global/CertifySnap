@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
+import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
@@ -173,5 +174,56 @@ public class DatabaseController {
         if (databaseStore != null){
             databaseStore.deleteAllOfflineRecord();
         }
+    }
+
+    public void insertOfflineAccessLog(AccessLogOfflineRecord accessLogOfflineRecord) {
+        if (databaseStore != null) {
+            databaseStore.insertAccessLogOfflineRecord(accessLogOfflineRecord);
+        }
+    }
+
+    public AccessLogOfflineRecord getFirstOfflineAccessLogRecord() {
+        if (databaseStore != null) {
+            return databaseStore.firstAccessLogOfflineRecord();
+        }
+        return null;
+    }
+
+    public void deleteOfflineAccessLogRecord(long primaryId){
+        if (databaseStore != null){
+            databaseStore.deleteOfflineAccessLogRecord(primaryId);
+        }
+    }
+
+    public AccessLogOfflineRecord getLastAccessLogPrimaryId() {
+        if (databaseStore != null) {
+            return databaseStore.OfflineAccessLogRecord();
+        }
+        return null;
+    }
+
+    public List<AccessLogOfflineRecord> findAllOfflineAccessLogRecord() {
+        if (databaseStore != null) {
+            return databaseStore.findAllOfflineAccessLogRecord();
+        }
+        return new ArrayList<>();
+    }
+
+    public boolean isOfflineRecordTempExist() {
+        boolean result = false;
+        OfflineRecordTemperatureMembers firstMember =  getFirstOfflineRecord();
+        if (firstMember != null){
+            result = true;
+        }
+        return result;
+    }
+
+    public boolean isOfflineAccessLogExist() {
+        boolean result = false;
+        AccessLogOfflineRecord firstAccessLogRecord = getFirstOfflineAccessLogRecord();
+        if (firstAccessLogRecord != null){
+            result = true;
+        }
+        return result;
     }
 }
