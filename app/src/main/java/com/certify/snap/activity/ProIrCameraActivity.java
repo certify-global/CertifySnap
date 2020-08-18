@@ -454,6 +454,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             //util.reset();
             //util.release();
         }
+        TemperatureController.getInstance().clearTemperatureMap();
     }
 
     private void  openled() {
@@ -903,7 +904,8 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 }else if(module == 27){
                     tempRect = new Rect(sharedPreferences.getInt("rect_left", 140), sharedPreferences.getInt("rect_top", 105),
                             sharedPreferences.getInt("rect_right", 200), sharedPreferences.getInt("rect_bottom", 165));
-                    startTempMeasure();
+                    UserExportedData data = new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0);
+                    startTempMeasure(data);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -917,7 +919,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     List<DrawInfo> drawInfos = new ArrayList<>();
     boolean hasFever;
 
-    private void startTempMeasure(){
+    private void startTempMeasure(UserExportedData data) {
         util.getGuideData(new GuideDataCallBack.Stub() {
             @Override
             public void callBackBitmap(final Bitmap bitmap) throws RemoteException {
@@ -928,6 +930,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                     @Override
                     public void run() {
                         if (bitmap != null && img_thermalImage != null) {
+                            thermalBitmap = bitmap;
                             img_thermalImage.setImageBitmap(bitmap);
                         } else {
                             img_thermalImage.setImageBitmap(null);
@@ -970,6 +973,14 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                 String temperatureUnit = AppSettings.getfToC();
                                 if (temperatureUnit.equals("F")) {
                                     temperature = (float) Util.celsiusToFahrenheit(temperature);
+                                }
+                                if (!AppSettings.isFacialDetect()) {
+                                    data.temperature = String.valueOf(temperature);
+                                    data.sendImages = AppSettings.isCaptureImagesAll() || AppSettings.isCaptureImagesAboveThreshold();
+                                    data.rgb = rgbBitmap;
+                                    data.ir = irBitmap;
+                                    data.thermal = thermalBitmap;
+                                    TemperatureController.getInstance().updateTemperatureMap(trackId, data);
                                 }
                                 faceHelperProIr.setName(trackId, String.valueOf(temperature));
                                 isFever = Util.isUsualTemperature(ProIrCameraActivity.this, temp);
