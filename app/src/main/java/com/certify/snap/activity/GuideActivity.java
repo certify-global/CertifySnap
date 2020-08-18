@@ -306,7 +306,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                 if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
                     || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                    if (!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
                         startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
                 }

@@ -29,7 +29,6 @@ import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
@@ -234,7 +233,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             case R.id.refresh:
                     if (memberAdapter != null || memberfailedAdapter != null) {
                         //refresh();
-                        if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&&!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT,false)) {
+                        if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&& sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS,false)) {
 
                             count = 0;
                             testCount = 1;

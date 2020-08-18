@@ -5,13 +5,8 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -138,7 +133,7 @@ public class AddDeviceActivity extends SettingBaseActivity implements JSONObject
     private void startMemberSyncService() {
         try {
             if ((sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true) || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))
-                    && !sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+                    && sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
                 startService(new Intent(this, MemberSyncService.class));
         } catch (Exception e) {
             Logger.error(LOG +"startMemberSyncService", e.getMessage());
