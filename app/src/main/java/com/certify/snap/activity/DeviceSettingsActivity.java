@@ -40,6 +40,7 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
+import com.common.thermalimage.ThermalImageUtil;
 
 import org.json.JSONObject;
 
@@ -61,6 +62,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private View pro_settings_border;
     RadioGroup sync_member_radio_group;
     RadioButton sync_member_radio_yes, sync_member_radio_no;
+    private boolean proSettingValueSp = false;
+    private boolean proSettingValue = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -199,13 +202,18 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 @Override
                 public void onClick(View v) {
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
+                    AppSettings.setProSettings(proSettingValue);
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
-                        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
                         deleteAppData();
                         Util.writeString(sharedPreferences, GlobalParameters.URL, url);
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
+                        if (proSettingValueSp != proSettingValue) {
+                            restartApp();
+                            return;
+                        }
                         finish();
                     }
                 }
@@ -230,19 +238,21 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         RadioButton radio_yes_pro = findViewById(R.id.radio_yes_pro_settings);
         RadioButton radio_no_pro = findViewById(R.id.radio_no_pro_settings);
 
-        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true))
+        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true)) {
             radio_yes_pro.setChecked(true);
-        else radio_no_pro.setChecked(true);
+            proSettingValueSp = true;
+        } else {
+            radio_no_pro.setChecked(true);
+            proSettingValueSp = false;
+        }
 
         radio_group_pro.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.radio_yes_pro_settings) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, true);
-                    AppSettings.setProSettings(true);
+                    proSettingValue = true;
                 } else {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, false);
-                    AppSettings.setProSettings(false);
+                    proSettingValue = false;
                 }
             }
 
@@ -440,8 +450,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void restartApp() {
+        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
+        ThermalImageUtil thermalImageUtil = Application.getInstance().getTemperatureUtil();
+        if (thermalImageUtil != null) {
+            thermalImageUtil.release();
+        }
         Intent intent = new Intent(this, GuideActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);

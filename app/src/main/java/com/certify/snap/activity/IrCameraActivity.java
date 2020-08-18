@@ -986,9 +986,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             Log.d(TAG, "Scan state is Thermal scan");
                             return;
                         }
-                        if (Util.isDeviceProModel()) {
-                            TemperatureController.getInstance().setRect(facePreviewInfoList, drawHelperRgb);
-                        }
                         CameraController.getInstance().setFaceVisible(true);
                         requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
                         //TemperatureController.getInstance().addTrackId(facePreviewInfoList.get(i).getTrackId());
