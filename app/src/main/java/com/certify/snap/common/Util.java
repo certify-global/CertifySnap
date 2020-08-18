@@ -1357,6 +1357,19 @@ public class Util {
                 Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
+
+                //Audio Visual alerts
+                if (jsonValue.has("AudioVisualAlerts")) {
+                    JSONObject audioVisualSettings = jsonValue.getJSONObject("AudioVisualAlerts");
+                    String soundQrCodeValid = audioVisualSettings.isNull("enableSoundForValidQRCode") ? "0" : audioVisualSettings.getString("enableSoundForValidQRCode");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_VALID, soundQrCodeValid.equals("1"));
+                    String soundQrCodeInvalid = audioVisualSettings.isNull("enableSoundForInvalidQRCode") ? "0" : audioVisualSettings.getString("enableSoundForInvalidQRCode");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_INVALID, soundQrCodeInvalid.equals("1"));
+                    String lightNormalTemperature = audioVisualSettings.isNull("enableLightOnNormalTemperature") ? "0" : audioVisualSettings.getString("enableLightOnNormalTemperature");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_NORMAL, lightNormalTemperature.equals("1"));
+                    String lightHighTemperature = audioVisualSettings.isNull("enableLightOnHighTemperature") ? "0" : audioVisualSettings.getString("enableLightOnHighTemperature");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_HIGH, lightHighTemperature.equals("1"));
+                }
             } else {
                 Logger.toast(context, "Something went wrong please try again");
             }
