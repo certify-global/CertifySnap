@@ -1513,14 +1513,14 @@ public class Util {
 
     public static String bytearray2Str(byte[] data, int start, int length, int targetLength) {
         long number = 0;
-        if (data.length < start + length) {
+        /*if (data.length < start + length) {
             return "";
-        }
+        }*/
         for (int i = 1; i <= length; i++) {
             number *= 0x100;
             number += (data[start + length - i] & 0xFF);
         }
-        return String.format("%0" + targetLength + "d", number);
+        return String.format("%0" + data.length + "d", number);
     }
 
     public static byte[] hexStringToBytes(String hexString) {
