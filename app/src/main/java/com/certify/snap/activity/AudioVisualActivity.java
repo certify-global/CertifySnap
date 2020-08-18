@@ -25,6 +25,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
@@ -62,7 +63,7 @@ import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
 public class AudioVisualActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener{
 
-    private SharedPreferences sp;
+    private SharedPreferences sp ;
     TextView tv_sound_high, tv_sound, btn_save, tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status,
             title_audio_alert, title_visual_alert, tv_ble_connection, tv_qr_sound_valid, tv_qr_sound_invalid, title_bluetooth_printer,
             enable_printer_textview, bluetooth_printer_connect, tv_bluetooth_printer_connection, tv_bluetooth_printer_status, testPrint;
@@ -181,6 +182,20 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         } else {
             tv_ble_connection.setText(Html.fromHtml(text));
             tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings));
+        }
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences != null){
+            if(!sharedPreferences.getString("printer", "NONE").equals("NONE")){
+                tv_bluetooth_printer_status.setTextColor(getResources().getColor(R.color.green));
+                print_button.setBackgroundColor(getResources().getColor(R.color.bg_blue));
+            }
+            else
+            {
+                tv_bluetooth_printer_status.setTextColor(getResources().getColor(R.color.red));
+                print_button.setBackgroundColor(getResources().getColor(R.color.gray));
+            }
+            tv_bluetooth_printer_status.setText(sharedPreferences.getString("printer", "NONE"));
         }
     }
 

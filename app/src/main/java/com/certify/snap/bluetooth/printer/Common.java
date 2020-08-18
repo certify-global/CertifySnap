@@ -36,7 +36,7 @@ public class Common {
 
     public static final String BLUETOOTH = "BLUETOOTH";
     public static final String NET = "NET";
-    public static final String USB = "USB";
+    //public static final String USB = "USB";
     public static final String BLE = "BLE";
 
     public static final int TEMPLATE_REPLACE_TYPE_START = 10020;
