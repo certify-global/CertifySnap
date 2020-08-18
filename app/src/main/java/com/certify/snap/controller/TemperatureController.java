@@ -2,10 +2,14 @@ package com.certify.snap.controller;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.os.RemoteException;
 import android.util.Log;
 
 import com.certify.snap.R;
+import com.certify.snap.arcface.model.FacePreviewInfo;
+import com.certify.snap.arcface.model.TemperatureRect;
+import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.UserExportedData;
@@ -23,6 +27,7 @@ import com.common.thermalimage.ThermalImageUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +53,10 @@ public class TemperatureController {
     private UserExportedData temperatureRecordData = null;
     private HotImageCallbackImpl thermalImageCallback;
     private HashMap<Integer, String> trackIdMap = new HashMap<>();
+    List<TemperatureRect> temperatureRectList = new ArrayList<>();
+    List<TemperatureRect> originRectList = new ArrayList<>();
+    List<Integer> distanceList = new ArrayList<>();
+    private Rect tempRect;
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
@@ -97,6 +106,7 @@ public class TemperatureController {
         } else {
             temperatureUnit = context.getString(R.string.centi);
         }
+        tempRect = new Rect(140, 105, 200, 165);
     }
 
     /**
@@ -131,6 +141,7 @@ public class TemperatureController {
     public void updateTemperatureMap(int trackId, UserExportedData data) {
         boolean value = temperatureMap.containsKey(trackId);
         if (!value) {
+            temperatureMap.clear();
             temperatureMap.put(trackId, data);
             sendTemperatureRecord(context);
         }
@@ -145,7 +156,85 @@ public class TemperatureController {
             UserExportedData data = (UserExportedData) entry.getValue();
             Util.recordUserTemperature(null, context, data, -1);
         }
-        clearTemperatureMap();
+    }
+
+    /**
+     * Method that sets the rect for the Guide temperature service
+     * @param facePreviewInfoList Face preview list
+     * @param drawHelperRgb Draw helper
+     */
+    public void setRect(final List<FacePreviewInfo> facePreviewInfoList, DrawHelper drawHelperRgb) {
+        temperatureRectList.clear();
+        originRectList.clear();
+        distanceList.clear();
+        int distance = 0;
+        for (int i = 0; i < facePreviewInfoList.size(); i++) {
+            Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
+            float fix = getDistance(facePreviewInfoList.get(i).getFaceInfo().getRect());
+            //Ignore the temperature read (resulting in low read if the face is not fully visible)
+            if (rect.right > 750) {
+                final Rect[] rects = new Rect[temperatureRectList.size()];
+                int[] distances = new int[distanceList.size()];
+                thermalImageUtil.setGuideRect(rects, distances);
+                continue;
+            }
+            float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
+            float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
+            Rect newRect;
+            if(fix > 100) {
+                newRect = new Rect(tempRect.left - 10, tempRect.top + 20, tempRect.right - 50, tempRect.bottom - 20);
+            }else if (fix > 60) {
+                newRect = new Rect(tempRect.left - 10, tempRect.top + 15, tempRect.right - 40, tempRect.bottom - 15);
+            } else if (fix > 30) {
+                newRect = new Rect(tempRect.left, tempRect.top + 10, tempRect.right - 20, tempRect.bottom - 10);
+            } else {
+                newRect = new Rect(tempRect);
+            }
+            int horizontalOffset2 = (int) (horizontalOffset / 580 * 270);
+            int verticalOffset2 = (int) (verticalOffset / 720 * 360);
+            newRect.left += verticalOffset2;
+            newRect.right += verticalOffset2;
+            newRect.top += horizontalOffset2;
+            newRect.bottom += horizontalOffset2;
+            if (newRect.left > 360 || newRect.right < 0 || newRect.top > 270 || newRect.bottom < 0) {
+                continue;
+            }
+            if (newRect.left < 0) {
+                newRect.left = 0;
+            }
+            if (newRect.right > 360) {
+                newRect.right = 360;
+            }
+            if (newRect.top < 0) {
+                newRect.top = 0;
+            }
+            if (newRect.bottom > 270) {
+                newRect.bottom = 270;
+            }
+//            Log.e(TAG,"set rect :" + newRect.toString());
+            temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect , fix));
+            originRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), rect , fix));
+            distanceList.add((int)fix);
+        }
+        if (temperatureRectList.size() == 0 || originRectList.size() == 0 || distanceList.size() == 0) {
+            return;
+        }
+        final Rect[] rects = new Rect[temperatureRectList.size()];
+        for (int i = 0; i < temperatureRectList.size(); i++) {
+            rects[i] = temperatureRectList.get(i).getRect();
+        }
+        int[] distances = new int[distanceList.size()];
+        for(int i = 0; i < distanceList.size(); i++){
+            distances[i] = 60;
+        }
+        thermalImageUtil.setGuideRect(rects, distances);
+    }
+
+    private float getDistance(Rect rect) {
+        int h = rect.bottom - rect.top;
+        int w = rect.right - rect.left;
+        int v = h + w;
+        return 80 * (310f / (float) v);
     }
 
     /**
@@ -442,7 +531,7 @@ public class TemperatureController {
     /**
      * Method that clears the Temperature map
      */
-    private void clearTemperatureMap() {
+    public void clearTemperatureMap() {
         temperatureMap.clear();
     }
 
@@ -455,10 +544,12 @@ public class TemperatureController {
         if (Util.isDeviceProModel()) {
             thermalImageUtil.stopGetGuideData();
         }
-        //thermalImageUtil.reset();
         temperatureRecordData = null;
         thermalImageCallback = null;
         temperature = 0;
         trackIdMap.clear();
+        temperatureRectList.clear();
+        originRectList.clear();
+        distanceList.clear();
     }
 }
