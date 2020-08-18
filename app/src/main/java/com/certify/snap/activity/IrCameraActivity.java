@@ -47,6 +47,7 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.PrinterController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
+import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.qrscan.CameraSource;
@@ -2814,20 +2815,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void initRecordUserTempService() {
-        if (!Util.isOfflineMode(IrCameraActivity.this)){
-                try {
-                    if (DatabaseController.getInstance().countOfflineTempRecord()>0) {
-                        //OfflineRecordTemperatureMembers firstMember = LitePal.findFirst(OfflineRecordTemperatureMembers.class);
-                        OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
-                        if (firstMember != null) {
-                            startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
-                        } else {
-                            stopService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
-                        }
-                    }
-                } catch (Exception exception) {
-                    Log.e(TAG, "Exception occurred while querying for first member from db");
-                }
+        if (!Util.isOfflineMode(IrCameraActivity.this) && !Util.isServiceRunning(OfflineRecordSyncService.class, this)){
+            startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
         }
     }
 
