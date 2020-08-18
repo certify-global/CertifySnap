@@ -661,22 +661,26 @@ public abstract class BasePrint {
     private class PrinterThread extends Thread {
         @Override
         public void run() {
+            try {
+                // set info. for printing
+                BasePrintResult setPrinterInfoResult = setPrinterInfo();
+                if (setPrinterInfoResult.success == false) {
+                    return;
+                }
 
-            // set info. for printing
-            BasePrintResult setPrinterInfoResult = setPrinterInfo();
-            if (setPrinterInfoResult.success == false) {
-                return;
+                mPrintResult = new PrinterStatus();
+
+                mPrinter.startCommunication();
+                if (!mCancel) {
+                    doPrint();
+                } else {
+                    mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
+                }
+                // mPrinter.endCommunication();
+            } catch (Exception e) {
+
             }
 
-            mPrintResult = new PrinterStatus();
-
-            mPrinter.startCommunication();
-            if (!mCancel) {
-                doPrint();
-            } else {
-                mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
-            }
-           // mPrinter.endCommunication();
         }
     }
 

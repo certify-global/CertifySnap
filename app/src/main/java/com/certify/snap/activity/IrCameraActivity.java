@@ -2632,6 +2632,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         mTriggerType = CameraController.triggerValue.CAMERA.toString();
         clearLeftFace(null);
         TemperatureController.getInstance().clearData();
+        if(progressDialog!=null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     private void setPreviewIdleTimer() {

@@ -332,8 +332,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void initNavigationBar() {
         if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true)) {
             sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
         } else {
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
         }
     }
 
