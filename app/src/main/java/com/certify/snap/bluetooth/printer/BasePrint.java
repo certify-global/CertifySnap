@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.Message;
 import android.preference.PreferenceManager;
 
 import com.brother.ptouch.sdk.CustomPaperInfo;
@@ -154,7 +153,7 @@ public abstract class BasePrint {
         mPrinterInfo.printerModel = PrinterInfo.Model.valueOf(sharedPreferences
                 .getString("printerModel", "QL_820NWB"));
         mPrinterInfo.port = PrinterInfo.Port.valueOf(sharedPreferences
-                .getString("port", ""));
+                .getString("port", "BLUETOOTH"));
         mPrinterInfo.ipAddress = sharedPreferences.getString("address", "");
         mPrinterInfo.macAddress = sharedPreferences.getString("macAddress", "");
         mPrinterInfo.setLocalName(sharedPreferences.getString("localName", ""));
@@ -169,26 +168,26 @@ public abstract class BasePrint {
                     mPrinterInfo.labelNameIndex = LabelInfo.QL700.valueOf(
                             sharedPreferences.getString("paperSize", "")).ordinal();
                     mPrinterInfo.isAutoCut = Boolean.parseBoolean(sharedPreferences
-                            .getString("autoCut", ""));
+                            .getString("autoCut", "true"));
                     mPrinterInfo.isCutAtEnd = Boolean
-                            .parseBoolean(sharedPreferences.getString("endCut", ""));
+                            .parseBoolean(sharedPreferences.getString("endCut", "false"));
                     break;
                 case QL_1100:
                 case QL_1110NWB:
                     mPrinterInfo.labelNameIndex = LabelInfo.QL1100.valueOf(
                             sharedPreferences.getString("paperSize", "")).ordinal();
                     mPrinterInfo.isAutoCut = Boolean.parseBoolean(sharedPreferences
-                            .getString("autoCut", ""));
+                            .getString("autoCut", "true"));
                     mPrinterInfo.isCutAtEnd = Boolean
-                            .parseBoolean(sharedPreferences.getString("endCut", ""));
+                            .parseBoolean(sharedPreferences.getString("endCut", "false"));
                     break;
                 case QL_1115NWB:
                     mPrinterInfo.labelNameIndex = LabelInfo.QL1115.valueOf(
                             sharedPreferences.getString("paperSize", "")).ordinal();
                     mPrinterInfo.isAutoCut = Boolean.parseBoolean(sharedPreferences
-                            .getString("autoCut", ""));
+                            .getString("autoCut", "true"));
                     mPrinterInfo.isCutAtEnd = Boolean
-                            .parseBoolean(sharedPreferences.getString("endCut", ""));
+                            .parseBoolean(sharedPreferences.getString("endCut", "false"));
                     break;
                 case PT_E550W:
                 case PT_E500:
@@ -205,14 +204,14 @@ public abstract class BasePrint {
                     mPrinterInfo.labelNameIndex = LabelInfo.PT.valueOf(paper)
                             .ordinal();
                     mPrinterInfo.isAutoCut = Boolean.parseBoolean(sharedPreferences
-                            .getString("autoCut", ""));
+                            .getString("autoCut", "true"));
                     mPrinterInfo.isCutAtEnd = Boolean
                             .parseBoolean(sharedPreferences.getString("endCut", ""));
                     mPrinterInfo.isHalfCut = Boolean.parseBoolean(sharedPreferences
-                            .getString("halfCut", ""));
+                            .getString("halfCut", "false"));
                     mPrinterInfo.isSpecialTape = Boolean
                             .parseBoolean(sharedPreferences.getString(
-                                    "specialType", ""));
+                                    "specialType", "false"));
                     break;
                 case PT_P300BT:
                     mPrinterInfo.labelNameIndex = LabelInfo.PT3.valueOf(
@@ -249,7 +248,7 @@ public abstract class BasePrint {
             }
         }
         mPrinterInfo.orientation = PrinterInfo.Orientation
-                .valueOf(sharedPreferences.getString("orientation", ""));
+                .valueOf(sharedPreferences.getString("orientation", "PORTRAIT"));
         input = sharedPreferences.getString("numberOfCopies", "1");
         if (input.equals(""))
             input = "1";
@@ -257,7 +256,7 @@ public abstract class BasePrint {
        /* mPrinterInfo.halftone = PrinterInfo.Halftone.valueOf(sharedPreferences
                 .getString("halftone", ""));*/
         mPrinterInfo.printMode = PrinterInfo.PrintMode
-                .valueOf(sharedPreferences.getString("printMode", ""));
+                .valueOf(sharedPreferences.getString("printMode", "FIT_TO_PAGE"));
         mPrinterInfo.pjCarbon = Boolean.parseBoolean(sharedPreferences
                 .getString("pjCarbon", ""));
         input = sharedPreferences.getString("pjDensity", "");
@@ -341,7 +340,7 @@ public abstract class BasePrint {
             input = "127";
         mPrinterInfo.thresholdingValue = Integer.parseInt(input);
 
-        input = sharedPreferences.getString("scaleValue", "");
+        input = sharedPreferences.getString("scaleValue", "1");
         if (input.equals(""))
             input = "0";
         try {
@@ -371,27 +370,27 @@ public abstract class BasePrint {
                 .getString("rawMode", "false"));
 
 
-        input = sharedPreferences.getString("processTimeout", "");
+        input = sharedPreferences.getString("processTimeout", "1");
         if (input.equals(""))
             input = "0";
         mPrinterInfo.timeout.processTimeoutSec = Integer.parseInt(input);
 
-        input = sharedPreferences.getString("sendTimeout", "");
+        input = sharedPreferences.getString("sendTimeout", "90");
         if (input.equals(""))
             input = "60";
         mPrinterInfo.timeout.sendTimeoutSec = Integer.parseInt(input);
 
-        input = sharedPreferences.getString("receiveTimeout", "");
+        input = sharedPreferences.getString("receiveTimeout", "180");
         if (input.equals(""))
             input = "180";
         mPrinterInfo.timeout.receiveTimeoutSec = Integer.parseInt(input);
 
-        input = sharedPreferences.getString("connectionTimeout", "");
+        input = sharedPreferences.getString("connectionTimeout", "500");
         if (input.equals(""))
             input = "0";
         mPrinterInfo.timeout.connectionWaitMSec = Integer.parseInt(input);
 
-        input = sharedPreferences.getString("closeWaitTime", "");
+        input = sharedPreferences.getString("closeWaitTime", "3");
         if (input.equals(""))
             input = "3";
         mPrinterInfo.timeout.closeWaitDisusingStatusCheckSec = Integer.parseInt(input);
@@ -677,7 +676,7 @@ public abstract class BasePrint {
             } else {
                 mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
             }
-            mPrinter.endCommunication();
+           // mPrinter.endCommunication();
         }
     }
 

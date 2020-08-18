@@ -2942,19 +2942,25 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void upDatePinterParameters() {
-        Bitmap bitmap = null;
+        Bitmap bitmap = rgbBitmap;
         String name = "Anonymous";
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         RegisteredMembers member = data.member;
         if (AppSettings.isFacialDetect() && member != null) {
             bitmap = BitmapFactory.decodeFile(member.image);
-            if(member.firstname != null || member.lastname != null) {
+            if (bitmap == null) {
+                bitmap = rgbBitmap;
+            }
+            if (member.firstname != null || member.lastname != null) {
                 name = member.firstname + " " + member.lastname;
             }
         } else if (data.getQrCodeData() != null) {
             name = data.getQrCodeData().getFirstName() + " " + data.getQrCodeData().getLastName();
         } else if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
             bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
+            if (bitmap == null) {
+                bitmap = rgbBitmap;
+            }
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname + " " + AccessControlModel.getInstance().getRfidScanMatchedMember().lastname;
         }
         convertUIToImage(bitmap, name);
@@ -2966,12 +2972,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         TextView expireDate = view.findViewById(R.id.expire_date);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
+        TextView tempPassTime = view.findViewById(R.id.temp_Pass_time);
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         userName.setText(name);
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
-        String date = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault()).format(new Date());
-        expireDate.setText(date);
+        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+        expireDate.setText(date +" "+ currentTime);
+        tempPassTime.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));

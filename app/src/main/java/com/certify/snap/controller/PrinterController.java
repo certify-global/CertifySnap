@@ -57,8 +57,14 @@ public class PrinterController {
     }
 
     public void printOnNormalTemperature() {
-        if (AppSettings.isEnablePrinter()) {
-            print();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (AppSettings.isEnablePrinter()) {
+                    print();
+                }
+            }
+        }).start();
+
     }
 }

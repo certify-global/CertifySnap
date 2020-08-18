@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="7dp"
-                android:text="Valid thru:"
+                android:text="Scan Time:"
                 android:textColor="@color/colorBlack"
                 android:textSize="10dp" />
 
@@ -63,7 +63,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/temp_Pass"
+        android:id="@+id/temp_Pass_time"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="@color/colorGreen"

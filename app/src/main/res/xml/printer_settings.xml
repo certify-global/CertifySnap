@@ -5,11 +5,13 @@
         android:summary="@string/setting_printer"
         android:title="@string/setting_printer">
         <ListPreference
+            android:defaultValue="QL_820NWB"
             android:key="printerModel"
             android:summary="@string/printer_model_value"
             android:title="@string/printer_model_title" />
 
         <ListPreference
+            android:defaultValue="BLUETOOTH"
             android:enabled="true"
             android:key="port"
             android:summary="@string/port_value"
@@ -26,6 +28,7 @@
             android:summary="@string/paper_size_value"
             android:title="@string/paper_size_title" />
         <ListPreference
+            android:defaultValue="PORTRAIT"
             android:entries="@array/orientation"
             android:entryValues="@array/orientation_values"
             android:key="orientation"
@@ -37,6 +40,7 @@
             android:summary="@string/fit_to_page_value"
             android:title="@string/fit_to_page_title">
             <ListPreference
+                android:defaultValue="FIT_TO_PAGE"
                 android:enabled="true"
                 android:entries="@array/fitToPage"
                 android:entryValues="@array/fit_to_page_values"
@@ -45,6 +49,7 @@
                 android:title="@string/fit_to_page_title" />
 
             <EditTextPreference
+                android:defaultValue="1"
                 android:enabled="true"
                 android:key="scaleValue"
                 android:summary="@string/scale_value_value"
@@ -52,6 +57,7 @@
         </PreferenceScreen>
 
         <EditTextPreference
+            android:defaultValue="1"
             android:enabled="true"
             android:key="numberOfCopies"
             android:maxLength="5"
@@ -69,30 +75,35 @@
             android:summary="@string/timeout_text"
             android:title="@string/timeout_title">
             <EditTextPreference
+                android:defaultValue="1"
                 android:enabled="true"
                 android:inputType="number"
                 android:key="processTimeout"
                 android:summary="@string/processTimeout_value"
                 android:title="@string/processTimeout_title" />
             <EditTextPreference
+                android:defaultValue="90"
                 android:enabled="true"
                 android:inputType="number"
                 android:key="sendTimeout"
                 android:summary="@string/sendTimeout_value"
                 android:title="@string/sendTimeout_title" />
             <EditTextPreference
+                android:defaultValue="180"
                 android:enabled="true"
                 android:inputType="number"
                 android:key="receiveTimeout"
                 android:summary="@string/receiveTimeout_value"
                 android:title="@string/receiveTimeout_title" />
             <EditTextPreference
+                android:defaultValue="500"
                 android:enabled="true"
                 android:inputType="number"
                 android:key="connectionTimeout"
                 android:summary="@string/connectionTimeout_value"
                 android:title="@string/connectionTimeout_title" />
             <EditTextPreference
+                android:defaultValue="3"
                 android:enabled="true"
                 android:inputType="number"
                 android:key="closeWaitTime"
@@ -120,6 +131,7 @@
         android:summary="@string/cut_settings_value"
         android:title="@string/cut_settings_title">
         <ListPreference
+            android:defaultValue="true"
             android:enabled="true"
             android:entries="@array/yes_no_entries"
             android:entryValues="@array/yes_no_value"
@@ -127,6 +139,7 @@
             android:summary="@string/is_auto_cut_value"
             android:title="@string/is_auto_cut_title" />
         <ListPreference
+            android:defaultValue="false"
             android:enabled="true"
             android:entries="@array/yes_no_entries"
             android:entryValues="@array/yes_no_value"
@@ -134,6 +147,7 @@
             android:summary="@string/is_end_cut_value"
             android:title="@string/is_end_cut_title" />
         <ListPreference
+            android:defaultValue="false"
             android:enabled="true"
             android:entries="@array/yes_no_entries"
             android:entryValues="@array/yes_no_value"
@@ -141,6 +155,7 @@
             android:summary="@string/half_cut_value"
             android:title="@string/half_cut_title" />
         <ListPreference
+            android:defaultValue="false"
             android:enabled="true"
             android:entries="@array/yes_no_entries"
             android:entryValues="@array/yes_no_value"
@@ -148,6 +163,7 @@
             android:summary="@string/special_tape_value"
             android:title="@string/special_tape_title" />
         <ListPreference
+            android:defaultValue="HIGH_RESOLUTION"
             android:entries="@array/print_quality_array"
             android:entryValues="@array/print_quality_value"
             android:key="printQuality"
