@@ -136,7 +136,7 @@ public class GlobalParameters {
     public static final String COMPENSATION = "compensation";
     public static final String Firebase_Token = "firebase_token";
     public static final String Generate_Token_Command = "generate_token_command";
-    public static final String MEMBER_SYNC_DO_NOT ="member_sync_do_not";
+    public static final String SYNC_ONLINE_MEMBERS ="sync_online_members";
     public static final String Internet_Indicator ="internet_indicator";
     public static final String Admin_InstitutionID ="Admin_InstitutionID";
     public static final String Temp_ACCESS_TOKEN = "Temp_access_token";

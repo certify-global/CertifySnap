@@ -302,7 +302,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         sync_member_radio_yes = findViewById(R.id.sync_online_members_radio_enable);
         sync_member_radio_no = findViewById(R.id.sync_online_members_radio_disable);
 
-        if (sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+        if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
             sync_member_radio_yes.setChecked(true);
         else sync_member_radio_no.setChecked(true);
 
@@ -310,9 +310,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.sync_online_members_radio_enable) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, true);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
                 } else {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, false);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
                 }
             }
 
