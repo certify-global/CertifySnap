@@ -134,7 +134,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                         @Override
                         public void onNext(List<AccessLogOfflineRecord> list) {
                             accessLogDatalist = list;
-                            if (accessLogDatalist != null) {
+                            if (accessLogDatalist != null && accessLogDatalist.size() > 0) {
                                 uploadAccessLogData(accessLogDatalist, logIndex);
                             }
                             disposable.dispose();
@@ -185,7 +185,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("faceScore", json.getString("faceScore"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
 
-            if (json.getString("irTemplate") != null){
+            if (json.has("irTemplate")){
                 jsonObject.put("irTemplate", json.getString("irTemplate"));
                 jsonObject.put("rgbTemplate", json.getString("rgbTemplate"));
                 jsonObject.put("thermalTemplate", json.getString("thermalTemplate"));
@@ -230,8 +230,10 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                             Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
                             DatabaseController.getInstance().deleteOfflineRecord(primaryid);
                         } else {
-                            findAllOfflineAccessLogRecord();
-                            //stopService(new Intent(context, OfflineRecordSyncService.class));
+                            if (DatabaseController.getInstance().isOfflineAccessLogExist())
+                                findAllOfflineAccessLogRecord();
+                            else
+                                stopService(new Intent(context, OfflineRecordSyncService.class));
                         }
                 } catch (Exception e) {
                     Log.e(TAG, "OfflineRecord Exception occurred while querying for first member from db");
@@ -241,8 +243,10 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if(index < datalist.size()) {
                 uploadTemperatureRecordData(datalist, index);
             } else {
+                if (DatabaseController.getInstance().isOfflineAccessLogExist())
                 findAllOfflineAccessLogRecord();
-                //stopService(new Intent(context, OfflineRecordSyncService.class));
+                else
+                stopService(new Intent(context, OfflineRecordSyncService.class));
             }
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
