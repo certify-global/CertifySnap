@@ -297,15 +297,15 @@ public class TemperatureController {
         if (thermalImageUtil == null || isTemperatureInProcess) return;
         isTemperatureInProcess = true;
         temperature = 0;
-        if (Util.isDeviceProModel()) {
-            startGuideTemperature();
-            return;
-        }
         if (trackIdMap.containsKey(requestId)) {
             Log.d(TAG, "Track Id already exist");
             return;
         }
         trackIdMap.put(requestId, "Measure Temperature");
+        if (Util.isDeviceProModel()) {
+            startGuideTemperature();
+            return;
+        }
         startTemperature(requestId);
     }
 
