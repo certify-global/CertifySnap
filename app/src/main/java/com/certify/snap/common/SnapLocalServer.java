@@ -230,6 +230,7 @@ public class SnapLocalServer {
             JSONObject json1 = new JSONObject(tempData.getJsonObj());
             json = JSONObject.wrap(json1) + "\n\n";
             json = json.replaceAll(",", ",\n");
+            json = json.replaceAll("\\\\/", "/");
             json = json.replaceAll("\\{", "{\n");
             json = json.replaceAll("\\}", "\n}");
         } catch (JSONException e) {
