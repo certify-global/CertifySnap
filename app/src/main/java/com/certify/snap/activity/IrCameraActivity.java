@@ -40,6 +40,7 @@ import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.SnapLocalServer;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.SoundController;
@@ -747,6 +748,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         compareResult = null;
         searchFaceInfoList.clear();
         cancelPreviewIdleTimer();
+        SnapLocalServer.stopServer();
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;

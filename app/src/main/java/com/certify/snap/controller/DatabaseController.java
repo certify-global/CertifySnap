@@ -226,4 +226,11 @@ public class DatabaseController {
         }
         return result;
     }
+
+    public List<OfflineRecordTemperatureMembers> lastTenOfflineTempRecord() {
+        if (databaseStore != null) {
+            return databaseStore.LastTenOfflineTempRecord();
+        }
+        return new ArrayList<>();
+    }
 }

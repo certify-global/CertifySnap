@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -38,6 +39,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.SnapLocalServer;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
@@ -86,6 +88,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
+
+        new ServerCall().execute();
 
         mActivity = this;
         Application.getInstance().addActivity(this);
@@ -480,4 +484,23 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         };
         startUpCountDownTimer.start();
     }
+
+    private class ServerCall extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String[] params) {
+            SnapLocalServer snapLocalServer = new SnapLocalServer();
+            try {
+                snapLocalServer.main(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String message) {
+        }
+    }
+
 }
