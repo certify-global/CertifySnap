@@ -36,7 +36,16 @@
             android:layout_width="320dp"
             android:layout_height="400dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/border_shape" />
+            android:background="@drawable/border_shape"
+            android:visibility="gone"/>
+
+        <com.certify.snap.arcface.widget.FaceRectView
+            android:id="@+id/face_rect_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/iv_verify_inner_circle"
