@@ -7,7 +7,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -47,9 +46,7 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.PrinterController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
-import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.FaceParameters;
-import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.qrscan.CameraSource;
 
 import androidx.core.app.ActivityCompat;
@@ -293,7 +290,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private ProgressDialog progressDialog;
     private UserExportedData userData;
     private Button qrSkipButton;
-    private Bitmap printBitmap;
 
     private void instanceStart() {
         try {
@@ -601,6 +597,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());*/
+        if (Util.isDeviceProModel()) {
+            outerCircle.setVisibility(View.GONE);
+        }
         HomeTextOnlyText();
     }
 
@@ -754,6 +753,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         Util.enableLedPower(0);
         TemperatureController.getInstance().clearData();
         SoundController.getInstance().clearData();
+        clearData();
+        CameraController.getInstance().setScanCloseProximityEnabled(false);
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -1862,7 +1863,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
-        CameraController.getInstance().setScanCloseProximityEnabled(sharedPreferences.getBoolean(GlobalParameters.ScanProximity, false));
+        if (Util.isDeviceProModel()) {
+            CameraController.getInstance().setScanCloseProximityEnabled(true);
+            Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, true);
+        } else {
+            CameraController.getInstance().setScanCloseProximityEnabled(sharedPreferences.getBoolean(GlobalParameters.ScanProximity, false));
+        }
         getAccessControlSettings();
         getAudioVisualSettings();
     }
@@ -2524,6 +2530,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 return;
             }
             showCameraPreview(faceFeature, requestId, rgb, ir);
+            runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), 0));
         }
     }
 
