@@ -173,6 +173,7 @@ public class TemperatureController {
                 Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
                 float fix = getDistance(facePreviewInfoList.get(i).getFaceInfo().getRect());
                 //Ignore the temperature read (resulting in low read if the face is not fully visible)
+                Log.d(TAG, "Deep Rect values " + rect.left + " " + rect.right + " " + rect.top + " " +rect.bottom);
                 if (rect.right > 750 || rect.left < 0 ) {
                     final Rect[] rects = new Rect[temperatureRectList.size()];
                     int[] distances = new int[distanceList.size()];
@@ -271,12 +272,12 @@ public class TemperatureController {
                         } else {
                             temperature = temperatureCelsius;
                         }
+                        thermalImageUtil.stopGetGuideData();
                     }
                     if (temperature != 0 && listener != null) {
                         Log.d(TAG, "Temp measured " + temperature);
                         listener.onTemperatureRead(temperature);
                     }
-                    thermalImageUtil.stopGetGuideData();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
