@@ -68,7 +68,7 @@ public class AppSettings {
         facialDetect = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         captureImagesAll = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false);
         captureImagesAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, false);
-        proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true);
+        proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false);
         displayInfoConfirmScreen = sharedPreferences.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
         qrSoundValid = sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_VALID, false);
         qrSoundInvalid= sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);

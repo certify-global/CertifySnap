@@ -100,7 +100,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sharedPreferences = Util.getSharedPreferences(this);
-            rg_temperature = findViewById(R.id.radio_group_work_flow);
+            //rg_temperature = findViewById(R.id.radio_group_work_flow);
             rb_temp = findViewById(R.id.radio_temp);
             rb_temp_face = findViewById(R.id.face_temp);
             img_sync = findViewById(R.id.img_sync);
@@ -108,7 +108,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             switch_activate = findViewById(R.id.switch_activate);
             String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
 
-            rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+       /*     rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     switch (checkedId) {
@@ -121,7 +121,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
 
                     }
                 }
-            });
+            });*/
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
