@@ -225,7 +225,7 @@ public class TemperatureController {
             }
             int[] distances = new int[distanceList.size()];
             for(int i = 0; i < distanceList.size(); i++){
-                distances[i] = 60;
+                distances[i] = distanceList.get(i);
             }
             thermalImageUtil.setGuideRect(rects, distances);
         }).start();
