@@ -1374,6 +1374,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     }
                     requestFeatureStatusMap.put(0, RequestFeatureStatus.FAILED);
 
+                    TemperatureController.getInstance().setTemperatureListener(null);
                     clearData();
                     resetHomeScreen();
                     resetRfid();
@@ -2616,6 +2617,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 imageTimer = new Timer();
                 imageTimer.schedule(new TimerTask() {
                 public void run() {
+                    TemperatureController.getInstance().setTemperatureListener(null);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
