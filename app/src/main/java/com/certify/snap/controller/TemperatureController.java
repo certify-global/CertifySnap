@@ -225,7 +225,7 @@ public class TemperatureController {
             }
             int[] distances = new int[distanceList.size()];
             for(int i = 0; i < distanceList.size(); i++){
-                distances[i] = distanceList.get(i);
+                distances[i] = 60;
             }
             thermalImageUtil.setGuideRect(rects, distances);
         }).start();
@@ -263,7 +263,7 @@ public class TemperatureController {
                         Log.e(TAG, "Temp Error data");
                         return;
                     }
-                    float temp;
+                    temperature = 0;
                     for (int i = 0; i < maxInRectInfo.size(); i++) {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
                         if (AppSettings.getfToC().equals("F")) {
@@ -271,12 +271,12 @@ public class TemperatureController {
                         } else {
                             temperature = temperatureCelsius;
                         }
-                        thermalImageUtil.stopGetGuideData();
-                        if (listener != null) {
-                            Log.d(TAG, "Temp measured " + temperature);
-                            listener.onTemperatureRead(temperature);
-                        }
                     }
+                    if (temperature != 0 && listener != null) {
+                        Log.d(TAG, "Temp measured " + temperature);
+                        listener.onTemperatureRead(temperature);
+                    }
+                    thermalImageUtil.stopGetGuideData();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -977,7 +977,11 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             }
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
             if (Util.isDeviceProModel()) {
-                TemperatureController.getInstance().setRect(facePreviewInfoList, drawHelperRgb);
+                List<FacePreviewInfo> faceList = new ArrayList<>();
+                if (facePreviewInfoList.size() > 0) {
+                    faceList.add(facePreviewInfoList.get(0));
+                }
+                TemperatureController.getInstance().setRect(faceList, drawHelperRgb);
                 if (faceRectView != null) {
                     faceRectView.clearFaceInfo();
                 }
@@ -3019,16 +3023,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void drawPreviewInfo(List<FacePreviewInfo> facePreviewInfoList) {
         runOnUiThread(() -> {
             List<DrawInfo> drawInfoList = new ArrayList<>();
-            for (int i = 0; i < facePreviewInfoList.size(); i++) {
-                int trackId = facePreviewInfoList.get(i).getTrackId();
+            if (!facePreviewInfoList.isEmpty()) {
+                int trackId = facePreviewInfoList.get(0).getTrackId();
                 Integer liveness = livenessMap.get(trackId);
-
-                int color = Color.WHITE;
-                drawInfoList.add(new DrawInfo(drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect()),
+                drawInfoList.add(new DrawInfo(drawHelperRgb.adjustRect(facePreviewInfoList.get(0).getFaceInfo().getRect()),
                         GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE,
-                        liveness == null ? LivenessInfo.UNKNOWN : liveness, color, ""));
+                        liveness == null ? LivenessInfo.UNKNOWN : liveness, Color.WHITE, ""));
+
+                drawHelperRgb.drawPreviewInfo(faceRectView, drawInfoList);
             }
-            drawHelperRgb.drawPreviewInfo(faceRectView, drawInfoList);
         });
     }
 }
