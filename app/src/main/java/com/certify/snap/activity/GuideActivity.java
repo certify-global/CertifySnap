@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -462,7 +463,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void startProDeviceInitTimer() {
-        ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        //ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setButton("SKIP", (dialog, which) -> {
+            startUpCountDownTimer.cancel();
+            progressDialog.dismiss();
+            initApp();
+        });
         startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
             @Override
             public void onTick(long remTime) {
@@ -472,12 +479,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             @Override
             public void onFinish() {
                 startUpCountDownTimer.cancel();
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
+                progressDialog.dismiss();
                 initApp();
             }
         };
         startUpCountDownTimer.start();
+        progressDialog.show();
     }
 }

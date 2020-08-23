@@ -266,7 +266,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     RelativeLayout qr_main;
     private boolean qrCodeEnable = false;
     private String institutionId = "";
-    private int ledSettingEnabled = 0;
+    private boolean ledSettingEnabled = false;
     private int processMask = FaceEngine.ASF_MASK_DETECT | FaceEngine.ASF_FACE_SHELTER | FaceEngine.ASF_AGE
                               | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER | FaceEngine.ASF_LIVENESS;
     private Bitmap maskDetectBitmap;
@@ -1652,14 +1652,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     //Optimize this can move to Utils
     public void enableLedPower() {
-        if (ledSettingEnabled == 0) {
+        if (ledSettingEnabled) {
             Util.enableLedPower(1);
         }
     }
 
     //Optimize this can move to Utils
     public void disableLedPower() {
-        if (ledSettingEnabled == 0) {
+        if (ledSettingEnabled) {
             Util.enableLedPower(0);
         }
     }
@@ -1888,7 +1888,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
         delayMilliTimeOut = sharedPreferences.getString(GlobalParameters.Timeout, "5");
-        ledSettingEnabled = sharedPreferences.getInt(GlobalParameters.LedType, 0);
+        ledSettingEnabled = sharedPreferences.getBoolean(GlobalParameters.LedType, true);
         maskEnabled = sharedPreferences.getBoolean(GlobalParameters.MASK_DETECT, false);
         faceDetectEnabled = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         scanMode = sharedPreferences.getInt(GlobalParameters.ScanMode, Constants.DEFAULT_SCAN_MODE);
