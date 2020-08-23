@@ -484,6 +484,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             }
         };
         startUpCountDownTimer.start();
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 }
