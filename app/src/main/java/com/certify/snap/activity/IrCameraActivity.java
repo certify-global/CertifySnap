@@ -242,7 +242,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     TextView tv_thermal, tv_thermal_subtitle;
     private long delayMilli = 0;
     private String delayMilliTimeOut = "";
-    private TextView tvErrorMessage, tv_scan;
+    private TextView tvErrorMessage, tv_scan, tvFaceMessage;
     private FaceEngineHelper faceEngineHelper;
 
     private NfcAdapter mNfcAdapter;
@@ -552,6 +552,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         outerCircle = findViewById(R.id.iv_verify_outer_circle);
         innerCircle = findViewById(R.id.iv_verify_inner_circle);
         tvErrorMessage = findViewById(R.id.tv_error_message);
+        tvFaceMessage = findViewById(R.id.tv_close_message);
         previewViewRgb.getViewTreeObserver().addOnGlobalLayoutListener(this);
         mask_message = findViewById(R.id.mask_message);
         mask_message.setTypeface(rubiklight);
@@ -577,6 +578,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         internetIndicatorImg = findViewById(R.id.img_internet_indicator);
         qrSkipButton = findViewById(R.id.qr_skip_button);
         faceRectView = findViewById(R.id.face_rect_view);
+        tvFaceMessage.setTypeface(rubiklight);
 
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
@@ -1065,6 +1067,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                     temperature_image.setVisibility(View.GONE);
                     tvErrorMessage.setVisibility(View.GONE);
+                    tvFaceMessage.setVisibility(View.GONE);
                     homeDisplayView();
                     mask_message.setText("");
                     mask_message.setVisibility(View.GONE);
@@ -1365,6 +1368,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             public void run() {
                                 if (tv_message != null) tv_message.setVisibility(View.GONE);
                                 if(tvErrorMessage!=null) tvErrorMessage.setVisibility(View.GONE);
+                                tvFaceMessage.setVisibility(View.GONE);
                                 if(temperature_image!= null) temperature_image.setVisibility(View.GONE);
                                 if(mask_message!=null) mask_message.setVisibility(View.GONE);
                                 clearData();
@@ -1584,7 +1588,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (tvErrorMessage != null) {
                     tvErrorMessage.setVisibility(View.GONE);
                 }
-
+                tvFaceMessage.setVisibility(View.GONE);
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 boolean showTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
                 Logger.verbose(TAG, "TemperatureCallBackUISetup() Capture temperature setting value: ", showTemperature); //Optimize
@@ -2192,6 +2196,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 @Override
                                 public void run() {
                                     tvErrorMessage.setVisibility(View.GONE);
+                                    tvFaceMessage.setVisibility(View.GONE);
                                 }
                             });
                             Log.d(TAG, "Snap Compare result Match Similarity value " + similarValue);
@@ -2281,6 +2286,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                                 public void run() {
                                     tvErrorMessage.setVisibility(View.VISIBLE);
                                     tvErrorMessage.setText(getString(R.string.analyzing_face));
+                                    tvFaceMessage.setVisibility(View.GONE);
                                 }
                             });
                             //faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
@@ -2545,6 +2551,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 if (tvErrorMessage != null) {
                     tvErrorMessage.setVisibility(View.GONE);
                 }
+                tvFaceMessage.setVisibility(View.GONE);
             });
             if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
@@ -2569,8 +2576,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         runOnUiThread(() -> {
-            tvErrorMessage.setVisibility(View.VISIBLE);
-            tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
+            tvFaceMessage.setVisibility(View.VISIBLE);
+            tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
         });
         searchFaceInfoList.clear();
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
@@ -2633,6 +2640,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             tv_message.setText("");
                             tv_message.setVisibility(View.GONE);
                             tvErrorMessage.setVisibility(View.GONE);
+                            tvFaceMessage.setVisibility(View.GONE);
                             temperature_image.setVisibility(View.GONE);
                             homeDisplayView();
                             mask_message.setText("");
@@ -2684,6 +2692,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                     if (tvErrorMessage != null) {
                         tvErrorMessage.setVisibility(View.GONE);
                     }
+                    tvFaceMessage.setVisibility(View.GONE);
                 });
             }
         }, 10 * 1000);
@@ -2710,6 +2719,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private void resetHomeScreen() {
         if (tv_message != null) tv_message.setVisibility(View.GONE);
         if (tvErrorMessage != null) tvErrorMessage.setVisibility(View.GONE);
+        tvFaceMessage.setVisibility(View.GONE);
         if (temperature_image != null) temperature_image.setVisibility(View.GONE);
         if (mask_message != null) mask_message.setVisibility(View.GONE);
         if (outerCircle != null) {
@@ -2727,6 +2737,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (tvErrorMessage != null) {
                 tvErrorMessage.setVisibility(View.GONE);
             }
+            tvFaceMessage.setVisibility(View.GONE);
         });
         clearData();
         resetRfid();
