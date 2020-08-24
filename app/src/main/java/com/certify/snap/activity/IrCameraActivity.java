@@ -2428,6 +2428,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             HomeTextOnlyText();
             rl_header.setVisibility(View.VISIBLE);
         }
+        if (Util.isDeviceProModel()) {
+            long scannerRemainingTime = CameraController.getInstance().getScannerRemainingTime();
+            if (scannerRemainingTime > 0) {
+                Toast.makeText(this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show();
+                CameraController.getInstance().setScannerRemainingTime(scannerRemainingTime);
+            }
+        }
     }
 
     /**
