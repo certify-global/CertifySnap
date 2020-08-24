@@ -245,7 +245,7 @@
     <string name="enter_title_main">Enter Main Text</string>
     <string name="enter_subtitle_sub">Enter Sub Text</string>
     <string name="fahrenheit">Fahrenheit</string>
-    <string name="celcius">Celcius</string>
+    <string name="celcius">Celsius</string>
     <string name="enter_login">Enter Password</string>
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
@@ -444,6 +444,7 @@
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
     <string name="scanner_time_msg">Scanner initializing, Please wait… \nTime Remaining: %d mins</string>
+    <string name="scanner_remaining_time_msg">Scanner calibration is progress… Time Remaining: %d mins</string>
 
     <!--Bluetooth Printer printer_settings-->
 
@@ -561,8 +562,6 @@
     <string name="half_cut_value">do half cut or not</string>
     <string name="special_tape_title">Special tape paper(PT Only)</string>
     <string name="special_tape_value">is special tape paper</string>
-
-
     <string name="timeout_title">Timeout</string>
     <string name="timeout_text">Set the timeout </string>
     <string name="processTimeout_value">Time-out period</string>

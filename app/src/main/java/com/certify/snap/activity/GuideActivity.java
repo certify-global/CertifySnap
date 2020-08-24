@@ -73,6 +73,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     boolean libraryExists = true;
     private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
+    private long remainingTime = 0;
 
     // Demo
     private static final String[] LIBRARIES = new String[]{
@@ -468,12 +469,14 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         progressDialog.setButton("SKIP", (dialog, which) -> {
             startUpCountDownTimer.cancel();
             progressDialog.dismiss();
+            CameraController.getInstance().setScannerRemainingTime(remainingTime);
             initApp();
         });
         startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
             @Override
             public void onTick(long remTime) {
-                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), (remTime/1000)/60));
+                remainingTime = ((remTime/1000)/60);
+                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), remainingTime));
             }
 
             @Override
@@ -484,6 +487,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             }
         };
         startUpCountDownTimer.start();
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 }
