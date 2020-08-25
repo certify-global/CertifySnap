@@ -3,6 +3,7 @@ package com.certify.snap.view;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
@@ -74,6 +75,7 @@ public class PrinterMsgHandle extends Handler {
                 break;
             case Common.MSG_SDK_EVENT:
                 String strMsg = msg.obj.toString();
+                Log.d("PrinterMsgHandler", "Print message " + strMsg);
                 if (strMsg.equals(PrinterInfo.Msg.MESSAGE_START_COMMUNICATION
                         .toString())) {
                     mDialog.setMessage(mContext
@@ -182,7 +184,16 @@ public class PrinterMsgHandle extends Handler {
                     mDialog.setMessage(mContext
                             .getString(R.string.progress_dialog_message_removing_template));
                     break;
-                } else {
+                } else if (strMsg
+                    .equals(PrinterInfo.Msg.MESSAGE_END_SOCKET_CLOSE.toString())) {
+                    break;
+                } else if (strMsg
+                        .equals(PrinterInfo.Msg.MESSAGE_END_SOCKET_CLOSE.toString())) {
+                    mDialog.close();
+                    PrinterController.getInstance().printError();
+                    break;
+                }
+                else {
                     break;
                 }
             case Common.MSG_PRINT_END:
@@ -195,10 +206,11 @@ public class PrinterMsgHandle extends Handler {
                 isCancelled = false;
                 break;
             case Common.MSG_PRINT_CANCEL:
-                mDialog.showStartMsgDialog(mContext
+                /*mDialog.showStartMsgDialog(mContext
                         .getString(R.string.cancel_printer_msg));
-                mDialog.disableCancel();
+                mDialog.disableCancel();*/
                 isCancelled = true;
+                PrinterController.getInstance().printError();
                 break;
             case Common.MSG_WRONG_OS:
                 mDialog.showPrintCompleteMsgDialog(mContext

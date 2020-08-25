@@ -76,7 +76,7 @@ public class PrinterController {
     public boolean isPrintScan() {
         boolean result = false;
         if (AppSettings.isEnablePrinter()) {
-            if (mPrint != null && !mPrint.getPrinterInfo().ipAddress.isEmpty()) {
+            if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
                 result = true;
             }
         }

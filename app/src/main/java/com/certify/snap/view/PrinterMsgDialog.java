@@ -31,6 +31,10 @@ public class PrinterMsgDialog {
      */
     public void showStartMsgDialog(final String message) {
 
+        if (message.contains("ERROR")) {
+            close();
+            return;
+        }
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
@@ -60,6 +64,10 @@ public class PrinterMsgDialog {
      */
     public void showPrintCompleteMsgDialog(final String message) {
 
+        if (message.contains("ERROR")) {
+            close();
+            return;
+        }
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
@@ -95,7 +103,10 @@ public class PrinterMsgDialog {
      * show message
      */
     public void showMsgNoButton(final String title, final String message) {
-
+        if (message.contains("ERROR")) {
+            close();
+            return;
+        }
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.setMessage(message);
         }
@@ -124,6 +135,9 @@ public class PrinterMsgDialog {
      * show alert dialog
      */
     public void showAlertDialog(String title, final String msg) {
+        if (msg.contains("ERROR")) {
+            return;
+        }
         AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
         dialog.setTitle(title);
         dialog.setMessage(msg);

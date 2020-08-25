@@ -578,9 +578,9 @@
     <string name="work_path_title">Work Folder</string>
     <string name="progress_dialog_message_preparing_connection">Preparing the connection…</string>
     <string name="progress_dialog_message_createData">Creating the data</string>
-    <string name="progress_dialog_message_sendingData">Sending the data…</string>
-    <string name="progress_dialog_message_sendingPrintingData">Sending the data…</string>
-    <string name="progress_dialog_message_startPrint">Printing the data </string>
+    <string name="progress_dialog_message_sendingData">Printing Badge…</string>
+    <string name="progress_dialog_message_sendingPrintingData">Printing Badge…</string>
+    <string name="progress_dialog_message_startPrint">Printing Badge</string>
     <string name="progress_dialog_message_dataSent">The data was sent </string>
     <string name="progress_dialog_message_printed">The printing process was completed </string>
     <string name="progress_dialog_message_close_connection">Closing the connection</string>

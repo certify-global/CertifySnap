@@ -2941,7 +2941,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
         upDatePinterParameters();
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
-        TemperatureController.getInstance().clearData();
+        if (!PrinterController.getInstance().isPrintScan()) {
+            TemperatureController.getInstance().clearData();
+        }
     }
 
     @Override
@@ -2995,11 +2997,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     @Override
     public void onPrintComplete() {
         onTemperatureUpdate();
+        TemperatureController.getInstance().clearData();
     }
 
     @Override
     public void onPrintError() {
         onTemperatureUpdate();
+        TemperatureController.getInstance().clearData();
     }
 
     private void upDatePinterParameters() {
