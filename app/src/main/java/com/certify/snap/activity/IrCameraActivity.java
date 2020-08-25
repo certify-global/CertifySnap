@@ -1607,6 +1607,26 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
 
+                showMaskStatus();
+                boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
+                data.exceedsThreshold = aboveThreshold;
+                data.temperature = tempValue;
+                data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
+                data.thermal = temperatureBitmap;
+                data.maskStatus = String.valueOf(maskStatus);
+                data.triggerType = mTriggerType;
+                userData = data;
+                int syncStatus;
+                if (Util.isOfflineMode(IrCameraActivity.this)) {
+                    syncStatus = 1;
+                } else {
+                    syncStatus = -1;
+                }
+                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+
+                if (PrinterController.getInstance().isPrintScan()) {
+                    return;
+                }
                 if (lanchTimer != null)
                     lanchTimer.cancel();
                 lanchTimer = new Timer();
@@ -1634,22 +1654,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
                 }, delayMilli * 1000);
-                showMaskStatus();
-                boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
-                data.exceedsThreshold = aboveThreshold;
-                data.temperature = tempValue;
-                data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
-                data.thermal = temperatureBitmap;
-                data.maskStatus = String.valueOf(maskStatus);
-                data.triggerType = mTriggerType;
-                userData = data;
-                int syncStatus;
-                if (Util.isOfflineMode(IrCameraActivity.this)) {
-                    syncStatus = 1;
-                } else {
-                    syncStatus = -1;
-                }
-                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
             }
         });
     }
@@ -2937,7 +2941,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
         upDatePinterParameters();
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
-        TemperatureController.getInstance().clearData();
+        if (!PrinterController.getInstance().isPrintScan()) {
+            TemperatureController.getInstance().clearData();
+        }
     }
 
     @Override
@@ -2986,6 +2992,18 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 BluetoothAdapter.ACTION_REQUEST_ENABLE);
         enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(enableBtIntent);*/
+    }
+
+    @Override
+    public void onPrintComplete() {
+        onTemperatureUpdate();
+        TemperatureController.getInstance().clearData();
+    }
+
+    @Override
+    public void onPrintError() {
+        onTemperatureUpdate();
+        TemperatureController.getInstance().clearData();
     }
 
     private void upDatePinterParameters() {
@@ -3051,6 +3069,31 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         liveness == null ? LivenessInfo.UNKNOWN : liveness, Color.WHITE, ""));
 
                 drawHelperRgb.drawPreviewInfo(faceRectView, drawInfoList);
+            }
+        });
+    }
+
+    private void onTemperatureUpdate() {
+        disableLedPower();
+        runOnUiThread(() -> {
+            boolean aboveThreshold = TemperatureController.getInstance().isTempAboveThreshold();
+            boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
+            boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true) && !aboveThreshold;
+            if (confirmAboveScreen || confirmBelowScreen) {
+                runOnUiThread(() -> {
+                    if(isDestroyed()) return;
+                    launchConfirmationFragment(aboveThreshold);
+                    if (isHomeViewEnabled) {
+                        pauseCameraScan();
+                    }
+                    else {
+                        isReadyToScan = false;
+                    }
+                    resetHomeScreen();
+                });
+                compareResultList.clear();
+            } else {
+                ShowLauncherView();
             }
         });
     }
