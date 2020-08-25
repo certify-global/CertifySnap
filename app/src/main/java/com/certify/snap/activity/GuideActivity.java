@@ -38,12 +38,14 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.SnapLocalServer;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.localserver.LocalServerController;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
@@ -489,9 +491,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         @Override
         protected String doInBackground(String[] params) {
-            SnapLocalServer snapLocalServer = new SnapLocalServer();
+            //SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
-                snapLocalServer.main(null);
+                //snapLocalServer.main(null);
+                LocalServerController.getInstance().findLastTenOfflineTempRecord();
+                LocalServer.getInstance().startServer();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -7,7 +7,6 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,7 +39,7 @@ import com.arcsoft.face.GenderInfo;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.SnapLocalServer;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.SoundController;
@@ -48,9 +47,7 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.PrinterController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
-import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.FaceParameters;
-import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.qrscan.CameraSource;
 
 import androidx.core.app.ActivityCompat;
@@ -748,7 +745,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         compareResult = null;
         searchFaceInfoList.clear();
         cancelPreviewIdleTimer();
-        SnapLocalServer.stopServer();
+        //SnapLocalServer.stopServer();
+        LocalServer.getInstance().stopServer();
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;
