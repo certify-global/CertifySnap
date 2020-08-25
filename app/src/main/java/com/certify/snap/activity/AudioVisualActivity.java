@@ -61,7 +61,7 @@ import butterknife.ButterKnife;
 
 import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
-public class AudioVisualActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener{
+public class AudioVisualActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener {
 
     private SharedPreferences sp ;
     TextView tv_sound_high, tv_sound, btn_save, tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status,
@@ -671,5 +671,15 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
                 BluetoothAdapter.ACTION_REQUEST_ENABLE);
         enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(enableBtIntent);
+    }
+
+    @Override
+    public void onPrintComplete() {
+        //add code here
+    }
+
+    @Override
+    public void onPrintError() {
+        //add code here
     }
 }
