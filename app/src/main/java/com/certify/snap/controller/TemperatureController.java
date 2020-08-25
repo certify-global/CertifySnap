@@ -271,6 +271,7 @@ public class TemperatureController {
                         } else {
                             temperature = temperatureCelsius;
                         }
+                        temperature += AppSettings.getTemperatureCompensation();
                         thermalImageUtil.stopGetGuideData();
                     }
                     if (temperature != 0 && listener != null) {
@@ -326,6 +327,7 @@ public class TemperatureController {
                         } else {
                             temperature = temperatureData.getTemperature();
                         }
+                        temperature += AppSettings.getTemperatureCompensation();
                     }
                     emitter.onNext(temperature);
                 })
