@@ -57,6 +57,7 @@ public class TemperatureController {
     List<TemperatureRect> originRectList = new ArrayList<>();
     List<Integer> distanceList = new ArrayList<>();
     private Rect tempRect;
+    private boolean isTempAboveThreshold = false;
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
@@ -395,6 +396,7 @@ public class TemperatureController {
         if (!tempThresholdSetting.isEmpty() && (temperature > Float.parseFloat(tempThresholdSetting))) {
             result = true;
         }
+        isTempAboveThreshold = result;
         return result;
     }
 
@@ -530,6 +532,14 @@ public class TemperatureController {
     }
 
     /**
+     * Method that returns the value if the temperature read is above threshold
+     * @return true or false accordingly
+     */
+    public boolean isTempAboveThreshold() {
+        return isTempAboveThreshold;
+    }
+
+    /**
      * Method that clears the Temperature map
      */
     public void clearTemperatureMap() {
@@ -552,5 +562,6 @@ public class TemperatureController {
         temperatureRectList.clear();
         originRectList.clear();
         distanceList.clear();
+        isTempAboveThreshold = false;
     }
 }
