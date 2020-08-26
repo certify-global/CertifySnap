@@ -275,7 +275,17 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     @Override
     public void onBackPressed() {
-        //Application.getInstance().exit();
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ProIrCameraActivity.this);
+            builder.setMessage("Are you sure you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", (dialog, id) -> finishAffinity())
+                    .setNegativeButton("No", (dialog, id) -> dialog.cancel());
+            AlertDialog alert = builder.create();
+            alert.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initView() {

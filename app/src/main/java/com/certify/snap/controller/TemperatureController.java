@@ -58,6 +58,7 @@ public class TemperatureController {
     List<Integer> distanceList = new ArrayList<>();
     private Rect tempRect;
     private boolean isTempAboveThreshold = false;
+    private boolean isGuideInited = false;
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
@@ -165,70 +166,78 @@ public class TemperatureController {
      * @param drawHelperRgb Draw helper
      */
     public void setRect(final List<FacePreviewInfo> facePreviewInfoList, DrawHelper drawHelperRgb) {
+        if (!isGuideInited) {
+            Log.e(TAG, "Temp Guide is not inited");
+            return;
+        }
         new Thread(() -> {
-            temperatureRectList.clear();
-            originRectList.clear();
-            distanceList.clear();
-            int distance = 0;
-            for (int i = 0; i < facePreviewInfoList.size(); i++) {
-                Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
-                float fix = getDistance(facePreviewInfoList.get(i).getFaceInfo().getRect());
-                //Ignore the temperature read (resulting in low read if the face is not fully visible)
-                if (rect.right > 750 || rect.left < 0 ) {
-                    final Rect[] rects = new Rect[temperatureRectList.size()];
-                    int[] distances = new int[distanceList.size()];
-                    thermalImageUtil.setGuideRect(rects, distances);
-                    continue;
+            try {
+                temperatureRectList.clear();
+                originRectList.clear();
+                distanceList.clear();
+                int distance = 0;
+                for (int i = 0; i < facePreviewInfoList.size(); i++) {
+                    Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
+                    float fix = getDistance(facePreviewInfoList.get(i).getFaceInfo().getRect());
+                    //Ignore the temperature read (resulting in low read if the face is not fully visible)
+                    if (rect.right > 750 || rect.left < 0) {
+                        final Rect[] rects = new Rect[temperatureRectList.size()];
+                        int[] distances = new int[distanceList.size()];
+                        thermalImageUtil.setGuideRect(rects, distances);
+                        continue;
+                    }
+                    float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
+                    float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
+                    Rect newRect;
+                    if (fix > 100) {
+                        newRect = new Rect(tempRect.left - 10, tempRect.top + 20, tempRect.right - 50, tempRect.bottom - 20);
+                    } else if (fix > 60) {
+                        newRect = new Rect(tempRect.left - 10, tempRect.top + 15, tempRect.right - 40, tempRect.bottom - 15);
+                    } else if (fix > 30) {
+                        newRect = new Rect(tempRect.left, tempRect.top + 10, tempRect.right - 20, tempRect.bottom - 10);
+                    } else {
+                        newRect = new Rect(tempRect);
+                    }
+                    int horizontalOffset2 = (int) (horizontalOffset / 580 * 270);
+                    int verticalOffset2 = (int) (verticalOffset / 720 * 360);
+                    newRect.left += verticalOffset2;
+                    newRect.right += verticalOffset2;
+                    newRect.top += horizontalOffset2;
+                    newRect.bottom += horizontalOffset2;
+                    if (newRect.left > 360 || newRect.right < 0 || newRect.top > 270 || newRect.bottom < 0) {
+                        continue;
+                    }
+                    if (newRect.left < 0) {
+                        newRect.left = 0;
+                    }
+                    if (newRect.right > 360) {
+                        newRect.right = 360;
+                    }
+                    if (newRect.top < 0) {
+                        newRect.top = 0;
+                    }
+                    if (newRect.bottom > 270) {
+                        newRect.bottom = 270;
+                    }
+                    temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect, fix));
+                    originRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), rect, fix));
+                    distanceList.add((int) fix);
                 }
-                float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
-                float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
-                Rect newRect;
-                if(fix > 100) {
-                    newRect = new Rect(tempRect.left - 10, tempRect.top + 20, tempRect.right - 50, tempRect.bottom - 20);
-                }else if (fix > 60) {
-                    newRect = new Rect(tempRect.left - 10, tempRect.top + 15, tempRect.right - 40, tempRect.bottom - 15);
-                } else if (fix > 30) {
-                    newRect = new Rect(tempRect.left, tempRect.top + 10, tempRect.right - 20, tempRect.bottom - 10);
-                } else {
-                    newRect = new Rect(tempRect);
+                if (temperatureRectList.size() == 0 || originRectList.size() == 0 || distanceList.size() == 0) {
+                    return;
                 }
-                int horizontalOffset2 = (int) (horizontalOffset / 580 * 270);
-                int verticalOffset2 = (int) (verticalOffset / 720 * 360);
-                newRect.left += verticalOffset2;
-                newRect.right += verticalOffset2;
-                newRect.top += horizontalOffset2;
-                newRect.bottom += horizontalOffset2;
-                if (newRect.left > 360 || newRect.right < 0 || newRect.top > 270 || newRect.bottom < 0) {
-                    continue;
+                final Rect[] rects = new Rect[temperatureRectList.size()];
+                for (int i = 0; i < temperatureRectList.size(); i++) {
+                    rects[i] = temperatureRectList.get(i).getRect();
                 }
-                if (newRect.left < 0) {
-                    newRect.left = 0;
+                int[] distances = new int[distanceList.size()];
+                for (int i = 0; i < distanceList.size(); i++) {
+                    distances[i] = 60;
                 }
-                if (newRect.right > 360) {
-                    newRect.right = 360;
-                }
-                if (newRect.top < 0) {
-                    newRect.top = 0;
-                }
-                if (newRect.bottom > 270) {
-                    newRect.bottom = 270;
-                }
-                temperatureRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), newRect , fix));
-                originRectList.add(new TemperatureRect(facePreviewInfoList.get(i).getTrackId(), rect , fix));
-                distanceList.add((int)fix);
+                thermalImageUtil.setGuideRect(rects, distances);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception in setGuideRect occurred" + e.getMessage());
             }
-            if (temperatureRectList.size() == 0 || originRectList.size() == 0 || distanceList.size() == 0) {
-                return;
-            }
-            final Rect[] rects = new Rect[temperatureRectList.size()];
-            for (int i = 0; i < temperatureRectList.size(); i++) {
-                rects[i] = temperatureRectList.get(i).getRect();
-            }
-            int[] distances = new int[distanceList.size()];
-            for(int i = 0; i < distanceList.size(); i++){
-                distances[i] = 60;
-            }
-            thermalImageUtil.setGuideRect(rects, distances);
         }).start();
     }
 
@@ -273,6 +282,7 @@ public class TemperatureController {
                             temperature = temperatureCelsius;
                         }
                         temperature += AppSettings.getTemperatureCompensation();
+                        isGuideInited = false;
                         thermalImageUtil.stopGetGuideData();
                     }
                     if (temperature != 0 && listener != null) {
@@ -289,6 +299,7 @@ public class TemperatureController {
 
             }
         });
+        isGuideInited = true;
     }
 
     /**
@@ -555,6 +566,7 @@ public class TemperatureController {
         isTemperatureInProcess = false;
         listener = null;
         if (Util.isDeviceProModel()) {
+            isGuideInited = false;
             thermalImageUtil.stopGetGuideData();
         }
         temperatureRecordData = null;

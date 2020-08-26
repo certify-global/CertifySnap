@@ -982,8 +982,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 List<FacePreviewInfo> faceList = new ArrayList<>();
                 if (facePreviewInfoList.size() > 0) {
                     faceList.add(facePreviewInfoList.get(0));
+                    TemperatureController.getInstance().setRect(faceList, drawHelperRgb);
                 }
-                TemperatureController.getInstance().setRect(faceList, drawHelperRgb);
                 if (faceRectView != null) {
                     faceRectView.clearFaceInfo();
                 }
@@ -2912,7 +2912,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
      */
     private void initTemperature() {
         TemperatureController.getInstance().init(this);
-        TemperatureController.getInstance().setTemperatureListener(this);
+        //TemperatureController.getInstance().setTemperatureListener(this);
     }
 
     @Override
