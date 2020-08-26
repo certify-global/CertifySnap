@@ -107,4 +107,7 @@ public interface DatabaseStore {
 
     @Query("SELECT * FROM AccessLogOfflineRecord")
     List<AccessLogOfflineRecord> findAllOfflineAccessLogRecord();
+
+    @Query("SELECT * FROM AccessLogOfflineRecord ORDER BY primaryId ASC LIMIT 10")
+    List<AccessLogOfflineRecord> LastTenOfflineAccessLog();
 }

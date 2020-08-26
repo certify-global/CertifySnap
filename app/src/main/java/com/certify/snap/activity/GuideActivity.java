@@ -495,7 +495,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             try {
                 //snapLocalServer.main(null);
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
-                LocalServer.getInstance().startServer();
+                LocalServerController.getInstance().lastTenOfflineAccessLogRecord();
+                LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -233,4 +233,11 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
+
+    public List<AccessLogOfflineRecord> lastTenOfflineAccessLog() {
+        if (databaseStore != null) {
+            return databaseStore.LastTenOfflineAccessLog();
+        }
+        return new ArrayList<>();
+    }
 }
