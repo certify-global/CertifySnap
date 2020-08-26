@@ -3016,17 +3016,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             if (bitmap == null) {
                 bitmap = rgbBitmap;
             }
-            if (member.firstname != null || member.lastname != null) {
-                name = member.firstname + " " + member.lastname;
+            if (member.firstname != null) {
+                name = member.firstname;
             }
         } else if (data.getQrCodeData() != null) {
-            name = data.getQrCodeData().getFirstName() + " " + data.getQrCodeData().getLastName();
+            name = data.getQrCodeData().getFirstName();
         } else if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
             bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
             if (bitmap == null) {
                 bitmap = rgbBitmap;
             }
-            name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname + " " + AccessControlModel.getInstance().getRfidScanMatchedMember().lastname;
+            name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
         }
         convertUIToImage(bitmap, name);
     }
