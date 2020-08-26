@@ -1552,21 +1552,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             int color = Color.YELLOW;
 //            color = sheltered == FaceShelterInfo.NOT_SHELTERED || facePreviewInfoList.get(i).getMask() == MaskInfo.NOT_WORN ? Color.RED : Color.YELLOW;
             if (temperatureMap.get(trackId) != null) {
-                color = Util.isUsualTemperature(this, temperatureMap.get(trackId)) ? Color.RED : Color.GREEN;
+                color = Color.GREEN;
+                if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperatureMap.get(trackId))) {
+                    color = Color.RED;
+                }
             }
-            /*if (recognizeStatus != null && recognizeStatus == RequestFeatureStatus.SUCCEED) {
-                color = RecognizeColor.COLOR_SUCCESS;
-            }*/
-//                if (recognizeStatus == RequestFeatureStatus.FAILED) {
-//                    color = RecognizeColor.COLOR_FAILED;
-//                }
-//                if (recognizeStatus == RequestFeatureStatus.SUCCEED) {
-//                    color = RecognizeColor.COLOR_SUCCESS;
-//                }
-//            }
-//            if (liveness != null && liveness == LivenessInfo.NOT_ALIVE) {
-//                color = RecognizeColor.COLOR_FAILED;
-//            }
             drawInfoList.add(new DrawInfo(drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect()),
                     GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE,
                     liveness == null ? LivenessInfo.UNKNOWN : liveness, color,
