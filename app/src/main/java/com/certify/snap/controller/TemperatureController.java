@@ -166,10 +166,10 @@ public class TemperatureController {
      * @param drawHelperRgb Draw helper
      */
     public void setRect(final List<FacePreviewInfo> facePreviewInfoList, DrawHelper drawHelperRgb) {
-        if (!isGuideInited) {
+        /*if (!isGuideInited) {
             Log.e(TAG, "Temp Guide is not inited");
             return;
-        }
+        }*/
         new Thread(() -> {
             try {
                 temperatureRectList.clear();
