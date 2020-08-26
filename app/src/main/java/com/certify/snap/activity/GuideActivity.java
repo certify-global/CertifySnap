@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -231,7 +230,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
                 startBLEService();
-                AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -466,7 +464,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void startProDeviceInitTimer() {
         //ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setButton("SKIP", (dialog, which) -> {
+        progressDialog.setButton("Ok", (dialog, which) -> {
             startUpCountDownTimer.cancel();
             progressDialog.dismiss();
             CameraController.getInstance().setScannerRemainingTime(remainingTime);
