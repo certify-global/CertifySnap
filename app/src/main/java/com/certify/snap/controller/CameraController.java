@@ -125,8 +125,8 @@ public class CameraController {
     }
 
     public void initDeviceMode() {
-        if (Application.getInstance().getTemperatureUtil().getUsingModule() != null) {
-            deviceMode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+        if (ApplicationController.getInstance().getTemperatureUtil().getUsingModule() != null) {
+            deviceMode = ApplicationController.getInstance().getTemperatureUtil().getUsingModule()[0];
         }
     }
 

@@ -39,6 +39,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
@@ -89,6 +90,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         setContentView(R.layout.guide);
 
         mActivity = this;
+        ApplicationController.getInstance().initThermalUtil(this);
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
@@ -132,6 +134,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
         }
+        ApplicationController.getInstance().releaseThermalUtil();
     }
 
     private boolean isInstalled(Context context, String packageName) {

@@ -102,7 +102,7 @@ public class TemperatureController {
      */
     public void init(Context context) {
         this.context = context;
-        thermalImageUtil = Application.getInstance().getTemperatureUtil();
+        thermalImageUtil = ApplicationController.getInstance().getTemperatureUtil();
         if (AppSettings.getfToC().equals("F")) {
             temperatureUnit = context.getString(R.string.fahrenheit_symbol);
         } else {

@@ -498,10 +498,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
-        ThermalImageUtil thermalImageUtil = Application.getInstance().getTemperatureUtil();
-        if (thermalImageUtil != null) {
-            thermalImageUtil.release();
-        }
+        ApplicationController.getInstance().releaseThermalUtil();
         Intent intent = new Intent(this, GuideActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);

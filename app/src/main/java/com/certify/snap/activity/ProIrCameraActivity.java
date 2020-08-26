@@ -73,6 +73,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.TemperatureStatus;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.TemperatureController;
@@ -202,7 +203,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private TextView tv_measure_area, tv_current_rect, tv_default_rect;
     Map<String, String> distanceInfo = null;
     byte lastCheckSum = 0x00;
-    ThermalImageUtil util = Application.getInstance().getTemperatureUtil();
+    ThermalImageUtil util = ApplicationController.getInstance().getTemperatureUtil();
     private boolean isTemperature = false;
     private Rect tempRect;
     private Tag mTag;
