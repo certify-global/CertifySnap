@@ -2928,7 +2928,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
     @Override
     public void onTemperatureRead(float temperature) {
-        if (!CameraController.getInstance().isFaceVisible()) return;
+        if (PrinterController.getInstance().isPrintScan()) {
+            updatePrintOnTemperatureRead(temperature);
+            return;
+        }
         String tempString = String.valueOf(temperature);
         String text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
@@ -2939,11 +2942,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             return;
         }
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
-        upDatePinterParameters();
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
-        if (!PrinterController.getInstance().isPrintScan()) {
-            TemperatureController.getInstance().clearData();
-        }
+        TemperatureController.getInstance().clearData();
     }
 
     @Override
@@ -3006,11 +3006,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         TemperatureController.getInstance().clearData();
     }
 
-    private void upDatePinterParameters() {
+    private void updatePrinterParameters() {
         Bitmap bitmap = rgbBitmap;
         String name = "Anonymous";
+        RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
-        RegisteredMembers member = data.member;
+        if (data != null) {
+            member = data.member;
+        }
         if (AppSettings.isFacialDetect() && member != null) {
             bitmap = BitmapFactory.decodeFile(member.image);
             if (bitmap == null) {
@@ -3073,16 +3076,32 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
+    private void updatePrintOnTemperatureRead(float temperature) {
+        String tempString = String.valueOf(temperature);
+        String text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
+            text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+            TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
+            TemperatureController.getInstance().clearData();
+            return;
+        }
+        TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+        updatePrinterParameters();
+        TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
+    }
+
+    /**
+     * Method that updates the UI for Normal temperature
+     */
     private void onTemperatureUpdate() {
         disableLedPower();
         runOnUiThread(() -> {
-            boolean aboveThreshold = TemperatureController.getInstance().isTempAboveThreshold();
-            boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true) && aboveThreshold;
-            boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true) && !aboveThreshold;
-            if (confirmAboveScreen || confirmBelowScreen) {
+            boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
+            if (confirmBelowScreen) {
                 runOnUiThread(() -> {
                     if(isDestroyed()) return;
-                    launchConfirmationFragment(aboveThreshold);
+                    launchConfirmationFragment(false);
                     if (isHomeViewEnabled) {
                         pauseCameraScan();
                     }
