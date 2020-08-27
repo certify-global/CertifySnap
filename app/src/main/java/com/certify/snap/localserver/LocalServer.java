@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.RegisteredMembers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -44,7 +45,6 @@ public class LocalServer {
             ExecutorService es = Executors.newCachedThreadPool();
             mHttpServer.setExecutor(es);
             mHttpServer.createContext("/", rootHandler);
-            mHttpServer.createContext("/index", messageHandler);
             mHttpServer.start();
 
         } catch (IOException e) {
@@ -67,10 +67,23 @@ public class LocalServer {
 
                 String request = exchange.getRequestMethod();
                 URI pingValue = exchange.getRequestURI();
-                String responseData = getResponseData(pingValue);
                 if (request != null) {
                     if (request.equals("GET")) {
+                        String responseData = getResponseData(pingValue);
                         sendResponse(exchange, responseData);
+                    } else if (request.equals("POST")) {
+                        InputStream inputStream = exchange.getRequestBody();
+                        if (inputStream != null){
+                            String requestBody = streamToString(inputStream);
+                            try {
+                                JSONObject jsonBody = new JSONObject(requestBody);
+                                String postData = postResponseData(pingValue, jsonBody);
+                                if (postData != null && !postData.isEmpty())
+                                    sendResponse(exchange, postData);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
 
@@ -90,40 +103,6 @@ public class LocalServer {
         }
 
     }
-
-
-    private final HttpHandler messageHandler = (HttpHandler)(new HttpHandler() {
-        public final void handle(HttpExchange httpExchange) {
-            String request = httpExchange.getRequestMethod();
-            if (request != null) {
-                switch(request.hashCode()) {
-                    case 70454:
-                        if (request.equals("GET")) {
-                            sendResponse(httpExchange, "Would be all messages stringified json");
-                        }
-                        break;
-                    case 2461856:
-                        if (request.equals("POST")) {
-                            InputStream inputStream = httpExchange.getRequestBody();
-                            if (inputStream != null){
-                                String requestBody = streamToString(inputStream);
-                                try {
-                                    JSONObject jsonBody = new JSONObject(requestBody);
-                                    String jsonString = jsonBody.toString();
-                                    if (jsonString != null)
-                                        sendResponse(httpExchange, jsonString);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-
-                        }
-                }
-            }
-
-        }
-    });
 
     private final String streamToString(InputStream inputStream) {
         Scanner s = (new Scanner(inputStream)).useDelimiter("\\A");
@@ -149,13 +128,28 @@ public class LocalServer {
                 }
             }
         } else if (pingValue.getPath().equalsIgnoreCase("/GetAccessLogs")){
-            if (LocalServerController.getInstance().getAccessLogDatalist().size() > 0){
-                for (AccessLogOfflineRecord list : LocalServerController.getInstance().getAccessLogDatalist()) {
+            if (LocalServerController.getInstance().getAccessLogDataList().size() > 0){
+                for (AccessLogOfflineRecord list : LocalServerController.getInstance().getAccessLogDataList()) {
                     stringBuilderData.append(LocalServerController.getInstance().convertJsonData(list.getJsonObj()));
+                }
+            }
+        } else if (pingValue.getPath().equalsIgnoreCase("/GetMembers")) {
+            if (LocalServerController.getInstance().getMemberDataList().size() > 0){
+                for (RegisteredMembers list : LocalServerController.getInstance().getMemberDataList()) {
+                    stringBuilderData.append(LocalServerController.getInstance().convertJsonMemberData(list));
                 }
             }
         }
         stringBuilderData.append("]");
        return stringBuilderData.toString();
+    }
+
+    private String postResponseData(URI pingValue, JSONObject member) {
+        if (pingValue.getPath().equalsIgnoreCase("/AddUpdateMember")){
+            String updateMember = LocalServerController.getInstance().findUpdateMember(member);
+            return updateMember;
+        }
+
+        return "";
     }
 }

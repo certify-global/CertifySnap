@@ -110,4 +110,7 @@ public interface DatabaseStore {
 
     @Query("SELECT * FROM AccessLogOfflineRecord ORDER BY primaryId ASC LIMIT 10")
     List<AccessLogOfflineRecord> LastTenOfflineAccessLog();
+
+    @Query("SELECT * FROM RegisteredMembers ORDER BY primaryid ASC LIMIT 10")
+    List<RegisteredMembers> lastTenMembers();
 }

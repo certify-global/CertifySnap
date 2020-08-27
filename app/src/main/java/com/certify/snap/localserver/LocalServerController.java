@@ -10,6 +10,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.RegisteredMembers;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +32,8 @@ public class LocalServerController {
     private static final String TAG = LocalServerController.class.getSimpleName();
     private static LocalServerController mInstance = null;
     List<OfflineRecordTemperatureMembers> tempDataList = new ArrayList<>();
-    private List<AccessLogOfflineRecord> accessLogDatalist = new ArrayList<>();
+    private List<AccessLogOfflineRecord> accessLogDataList = new ArrayList<>();
+    private List<RegisteredMembers> memberDataList = new ArrayList<>();
 
     public static LocalServerController getInstance() {
         if (mInstance == null) {
@@ -44,8 +46,12 @@ public class LocalServerController {
         return tempDataList;
     }
 
-    public List<AccessLogOfflineRecord> getAccessLogDatalist() {
-        return accessLogDatalist;
+    public List<AccessLogOfflineRecord> getAccessLogDataList() {
+        return accessLogDataList;
+    }
+
+    public List<RegisteredMembers> getMemberDataList() {
+        return memberDataList;
     }
 
     public void findLastTenOfflineTempRecord() {
@@ -105,7 +111,7 @@ public class LocalServerController {
         return json;
     }
 
-    public void lastTenOfflineAccessLogRecord() {
+    public void findLastTenOfflineAccessLogRecord() {
         try {
             Observable.create(new ObservableOnSubscribe<List<AccessLogOfflineRecord>>() {
                 @Override
@@ -125,7 +131,7 @@ public class LocalServerController {
                         @Override
                         public void onNext(List<AccessLogOfflineRecord> list) {
                             if (list != null && list.size() > 0)
-                            accessLogDatalist = list;
+                            accessLogDataList = list;
 
                             disposable.dispose();
                         }
@@ -164,5 +170,99 @@ public class LocalServerController {
             e.printStackTrace();
         }
         return json;
+    }
+
+    public void findLastTenMembers() {
+        try {
+            Observable.create(new ObservableOnSubscribe<List<RegisteredMembers>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<RegisteredMembers>> emitter) throws Exception {
+                    List<RegisteredMembers> membersList = DatabaseController.getInstance().lastTenMembers();
+                    emitter.onNext(membersList);
+                }
+            }).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<RegisteredMembers>>() {
+                        Disposable disposable;
+
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
+                        }
+
+                        @Override
+                        public void onNext(List<RegisteredMembers> list) {
+                            if (list != null && list.size() > 0) {
+                                memberDataList = list;
+                            }
+                            disposable.dispose();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Error in adding the members to data model from database");
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            disposable.dispose();
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String convertJsonMemberData(RegisteredMembers member) {
+        String json = "{\n";
+        try {
+            json += "\"primaryId\": " + member.getPrimaryId()+ ",\n";
+            json += "\"firstName\": " + JSONObject.quote(member.getFirstname()) + ",\n";
+            json += "\"lastname\": " + JSONObject.quote(member.getLastname()) + ",\n";
+            json += "\"status\": " + member.getStatus() + ",\n";
+            json += "\"phoneNumber\": " + JSONObject.quote(member.getMobile()) + ",\n";
+            json += "\"certifyId\": " + member.getUniqueid() + ",\n";
+            json += "\"faceTemplate\": " + JSONObject.quote(member.getImage()) + ",\n";
+            json += "\"memberId\": " + JSONObject.quote(member.getMemberid()) + ",\n";
+            json += "\"email\": " + JSONObject.quote(member.getEmail()) + ",\n";
+            json += "\"accessId\": " + JSONObject.quote(member.getAccessid()) + ",\n";
+            json += "\"memberType\": " + JSONObject.quote(member.getMemberType()) + ",\n";
+            json += "\"dateTime\": " + JSONObject.quote(member.getDateTime()) + "\n";
+            json = json.replaceAll("\\\\/", "/");
+
+            json += "}\n\n";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
+    public String findUpdateMember(JSONObject member) {
+        try {
+            String uniqueId = member.getString("certifyId");
+            List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExit(uniqueId);
+            if (list != null && list.size() > 0) {
+                RegisteredMembers Members = list.get(0);
+                Members.setFirstname(member.getString("firstName"));
+                Members.setLastname(member.getString("lastname"));
+                Members.setMobile(member.getString("phoneNumber"));
+                Members.setMemberid(member.getString("memberId"));
+                Members.setEmail(member.getString("email"));
+                Members.setAccessid(member.getString("accessId"));
+                Members.setUniqueid(member.getString("certifyId"));
+                Members.setStatus(member.getString("status"));
+                Members.setImage(member.getString("faceTemplate"));
+                Members.setPrimaryId(member.getLong("primaryId"));
+                Members.setDateTime(Util.currentDate());
+                DatabaseController.getInstance().updateMember(Members);
+                findLastTenMembers();
+                return "result: OK";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return "result: FAIL";
+        }
+        return "result: FAIL";
     }
 }

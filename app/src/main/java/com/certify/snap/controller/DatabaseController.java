@@ -240,4 +240,11 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
+
+    public List<RegisteredMembers> lastTenMembers() {
+        if (databaseStore != null) {
+            return databaseStore.lastTenMembers();
+        }
+        return new ArrayList<>();
+    }
 }

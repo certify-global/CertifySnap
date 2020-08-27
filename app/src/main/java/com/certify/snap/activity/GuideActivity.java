@@ -40,7 +40,6 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
-import com.certify.snap.common.SnapLocalServer;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
@@ -495,7 +494,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             try {
                 //snapLocalServer.main(null);
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
-                LocalServerController.getInstance().lastTenOfflineAccessLogRecord();
+                LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
+                LocalServerController.getInstance().findLastTenMembers();
                 LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
