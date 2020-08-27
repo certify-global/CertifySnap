@@ -10,6 +10,7 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AccessLogOfflineRecord;
@@ -222,12 +223,17 @@ public class AccessCardController implements AccessCallback {
         unlockDoorOnHighTemp();
     }
 
-    public void accessCardLog(Context context, RegisteredMembers  registeredMembers,float temperature) {
+    public void accessCardLog(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
+        boolean isFacialEnabled = AppSettings.isFacialDetect();
+        if (isFacialEnabled) {
+            if (data != null && data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
+                registeredMembers = data.member;
+            }
+        }
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            if ( sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !AccessCardController.getInstance().isAllowAnonymous()
-                    && (AccessCardController.getInstance().isEnableRelay() ||
-                    AccessCardController.getInstance().isWeigandEnabled())) {
+            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !mAllowAnonymous && (mEnableRelay || mEnableWeigan))
+                    || isFacialEnabled) {
                 JSONObject obj = new JSONObject();
                 obj.put("id", 0);
                 obj.put("firstName", registeredMembers.getFirstname());
@@ -235,9 +241,9 @@ public class AccessCardController implements AccessCallback {
                 obj.put("temperature", temperature);
                 obj.put("memberId", registeredMembers.getMemberid());
                 obj.put("accessId", registeredMembers.getAccessid());
-                obj.put("qrCodeId", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
+                obj.put("qrCodeId", "");
                 obj.put("deviceId", Util.getSNCode());
-                obj.put("deviceName", "");
+                obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
                 obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                 obj.put("facilityId", 0);
                 obj.put("locationId", 0);
@@ -247,7 +253,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("sourceIP", Util.getLocalIpAddress());
                 obj.put("deviceData", Util.MobileDetails(context));
                 obj.put("guid", "");
-                obj.put("faceParameters", "");
+                obj.put("faceParameters", Util.FaceParameters(context, data));
                 obj.put("eventType", "");
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
@@ -266,22 +272,13 @@ public class AccessCardController implements AccessCallback {
     @Override
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null) {
-                return;
-            }
-            if (reportInfo.isNull("responseCode")) return;
-            if (!reportInfo.getString("responseCode").equals("1")) {
-                Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed");
+            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1")) {
+                Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
+                saveOfflineAccessLogRecord(req);
             }
         } catch (Exception e) {
             Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
         }
-    }
-
-    public void clearData() {
-        AccessControlModel.getInstance().clearData();
-        mAccessCardID = "";
-        mAccessIdDb = "";
     }
 
     private void saveOfflineAccessLogRecord(JSONObject obj) {
@@ -293,5 +290,11 @@ public class AccessCardController implements AccessCallback {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void clearData() {
+        AccessControlModel.getInstance().clearData();
+        mAccessCardID = "";
+        mAccessIdDb = "";
     }
 }

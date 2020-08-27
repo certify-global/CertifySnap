@@ -525,7 +525,8 @@ public class TemperatureController {
         PrinterController.getInstance().printOnNormalTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
+                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
     }
 
     /**
@@ -541,7 +542,8 @@ public class TemperatureController {
         BLEController.getInstance().setLightOnHighTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
+                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
     }
 
     /**

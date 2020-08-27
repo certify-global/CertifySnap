@@ -2344,7 +2344,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             //Access Log api call
             RegisteredMembers member = new RegisteredMembers();
             member.setAccessid(cardId);
-            AccessCardController.getInstance().accessCardLog(this, member, 0);
+            AccessCardController.getInstance().accessCardLog(this, member, 0,
+                                    new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
 
             //If Access denied, stop the reader and start again
             //Optimize: Not to close the stream
