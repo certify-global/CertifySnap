@@ -989,6 +989,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                     data.rgb = rgbBitmap;
                                     data.ir = irBitmap;
                                     data.thermal = thermalBitmap;
+                                    data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
                                     TemperatureController.getInstance().updateTemperatureMap(trackId, data);
                                 }
                                 faceHelperProIr.setName(trackId, String.valueOf(temperature));
@@ -1199,6 +1200,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                                     data.rgb = rgbBitmap;
                                                     data.ir = irBitmap;
                                                     data.thermal = bitmap;
+                                                    data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
                                                     TemperatureController.getInstance().updateTemperatureMap(trackId, data);
                                                 }
                                             } else if (temperature > temperatureMap.get(trackId)) {
@@ -1810,5 +1812,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         data.rgb = rgbBitmap;
         data.ir = irBitmap;
         data.thermal = thermalBitmap;
+        data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
     }
 }

@@ -15,7 +15,7 @@ public class CameraController {
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private boolean isFaceVisible = false; //flag to let know when the face is detected
-    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA}
+    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA, MULTIUSER}
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
