@@ -123,8 +123,8 @@ public class PrinterMsgHandle extends Handler {
                         .toString())) {
                     /*mDialog.setMessage(mContext
                             .getString(R.string.error_message_runtime));*/
-                    mDialog.setMessage(mContext
-                            .getString(R.string.progress_dialog_message_printed));
+                    /*mDialog.setMessage(mContext
+                            .getString(R.string.progress_dialog_message_printed));*/
                     mDialog.close();
                     PrinterController.getInstance().printComplete();
                     break;
@@ -198,17 +198,17 @@ public class PrinterMsgHandle extends Handler {
                 }
             case Common.MSG_PRINT_END:
             case Common.MSG_DATA_SEND_END:
-                if (mBattery != null && !mBattery.equals("")) {
+                /*if (mBattery != null && !mBattery.equals("")) {
                     mDialog.showPrintCompleteMsgDialog((mResult + "\nBattery: " + mBattery));
-                } else {
+                } else */{
                     mDialog.showPrintCompleteMsgDialog(mResult);
                 }
                 isCancelled = false;
                 break;
             case Common.MSG_PRINT_CANCEL:
-                /*mDialog.showStartMsgDialog(mContext
+                mDialog.showStartMsgDialog(mContext
                         .getString(R.string.cancel_printer_msg));
-                mDialog.disableCancel();*/
+                mDialog.disableCancel();
                 isCancelled = true;
                 PrinterController.getInstance().printError();
                 break;

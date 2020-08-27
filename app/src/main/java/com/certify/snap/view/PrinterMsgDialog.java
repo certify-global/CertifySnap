@@ -31,7 +31,7 @@ public class PrinterMsgDialog {
      */
     public void showStartMsgDialog(final String message) {
 
-        if (message.contains("ERROR")) {
+        if (message.contains("Succeeded")) {
             close();
             return;
         }
@@ -64,7 +64,7 @@ public class PrinterMsgDialog {
      */
     public void showPrintCompleteMsgDialog(final String message) {
 
-        if (message.contains("ERROR")) {
+        if (message.contains("Succeeded")) {
             close();
             return;
         }
@@ -103,7 +103,7 @@ public class PrinterMsgDialog {
      * show message
      */
     public void showMsgNoButton(final String title, final String message) {
-        if (message.contains("ERROR")) {
+        if (message.contains("Succeeded")) {
             close();
             return;
         }
@@ -135,7 +135,8 @@ public class PrinterMsgDialog {
      * show alert dialog
      */
     public void showAlertDialog(String title, final String msg) {
-        if (msg.contains("ERROR")) {
+        if (msg.contains("Succeeded")) {
+            close();
             return;
         }
         AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
