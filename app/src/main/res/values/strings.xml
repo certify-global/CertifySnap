@@ -444,7 +444,7 @@
     <string name="endpoint_api">Api</string>
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">Scanner is initializing. You can wait or Click Ok to continue to use the scanner while it initializes… \nTime Remaining: %d mins</string>
+    <string name="scanner_time_msg">Scanner is initializing. You can wait or click OK to continue to use the scanner while it initializes… \nTime Remaining: %d mins</string>
     <string name="scanner_remaining_time_msg">Scanner calibration is progress… Time Remaining: %d mins</string>
 
     <!--Bluetooth Printer printer_settings-->
