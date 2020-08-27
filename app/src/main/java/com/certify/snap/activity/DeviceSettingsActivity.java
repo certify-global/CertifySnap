@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.ShellUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
@@ -51,7 +53,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private TextView btn_save, tvSettingsName, activateStatus, tv_device_activation_status, pro_settings;
     private RelativeLayout ll;
     private Switch switch_activate;
-    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members, navigation_bar_textview, sync_online_members_textview;
+    private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members,
+                navigation_bar_textview, sync_online_members_textview, led_switch_textview;
     private Button tvClearData, not_activate;
     private Typeface rubiklight;
     private String url_end;
@@ -64,61 +67,22 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     RadioButton sync_member_radio_yes, sync_member_radio_no;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
+    private SeekBar seekBar;
+    private int ledLevel = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_device_settings);
-            etEndUrl = findViewById(R.id.et_end_url);
-            etDeviceName = findViewById(R.id.et_device_name);
-            etPassword = findViewById(R.id.et_device_password);
-            btn_save = findViewById(R.id.btn_save_device);
-            tvSettingsName = findViewById(R.id.tv_device_settings);
-            switch_activate = findViewById(R.id.switch_activate_device);
-            activateStatus = findViewById(R.id.activate_status);
-            not_activate = findViewById(R.id.not_activate);
-            tv_device_activation_status = findViewById(R.id.tv_device_activation_status);
-            tvDeviceManager = findViewById(R.id.tv_device_manage);
-            tv_activate_tv_device = findViewById(R.id.activate_tv_device);
-            tvEnd = findViewById(R.id.tv_end_device);
-            tvDeviceName = findViewById(R.id.tv_device_name_dev);
-            tvPass = findViewById(R.id.tv_password_device);
-            tvSettingStr = findViewById(R.id.tv_device_settings_str);
-            sharedPreferences = Util.getSharedPreferences(this);
-            tvClearData = findViewById(R.id.tv_clear_cache);
-            tvResetSnap = findViewById(R.id.tv_reset_snap);
-            pro_settings = findViewById(R.id.pro_settings);
-            pro_layout = findViewById(R.id.pro_layout);
-            pro_settings_border= findViewById(R.id.pro_settings_border);
-            tv_reset_members = findViewById(R.id.tv_reset_members);
-            tv_clear_members = findViewById(R.id.tv_clear_members);
-            navigation_bar_textview = findViewById(R.id.navigation_bar_textview);
-            sync_online_members_textview = findViewById(R.id.sync_online_members_textview);
 
-            rubiklight = Typeface.createFromAsset(getAssets(),
-                    "rubiklight.ttf");
-            activateStatus.setTypeface(rubiklight);
-            tvDeviceManager.setTypeface(rubiklight);
-            tv_activate_tv_device.setTypeface(rubiklight);
-            tvDeviceName.setTypeface(rubiklight);
-            tvPass.setTypeface(rubiklight);
-            tvSettingStr.setTypeface(rubiklight);
-            tvSettingsName.setTypeface(rubiklight);
-            tvResetSnap.setTypeface(rubiklight);
-            tvClearData.setTypeface(rubiklight);
-            not_activate.setTypeface(rubiklight);
-            tv_device_activation_status.setTypeface(rubiklight);
-            tvEnd.setTypeface(rubiklight);
-            pro_settings.setTypeface(rubiklight);
-            tv_reset_members.setTypeface(rubiklight);
-            tv_clear_members.setTypeface(rubiklight);
-            navigation_bar_textview.setTypeface(rubiklight);
-            sync_online_members_textview.setTypeface(rubiklight);
-
+            initView();
             proSettings();
             navigationBarSettings();
             syncMemberSettings();
+            ledSwitchSettings();
+            seekBarSettings();
+            setDefaultLedBrightnessLevel();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -201,6 +165,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    saveLedBrightnessSetting();
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
                     AppSettings.setProSettings(proSettingValue);
@@ -233,12 +198,63 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     }
 
+    private void initView(){
+        etEndUrl = findViewById(R.id.et_end_url);
+        etDeviceName = findViewById(R.id.et_device_name);
+        etPassword = findViewById(R.id.et_device_password);
+        btn_save = findViewById(R.id.btn_save_device);
+        tvSettingsName = findViewById(R.id.tv_device_settings);
+        switch_activate = findViewById(R.id.switch_activate_device);
+        activateStatus = findViewById(R.id.activate_status);
+        not_activate = findViewById(R.id.not_activate);
+        tv_device_activation_status = findViewById(R.id.tv_device_activation_status);
+        tvDeviceManager = findViewById(R.id.tv_device_manage);
+        tv_activate_tv_device = findViewById(R.id.activate_tv_device);
+        tvEnd = findViewById(R.id.tv_end_device);
+        tvDeviceName = findViewById(R.id.tv_device_name_dev);
+        tvPass = findViewById(R.id.tv_password_device);
+        tvSettingStr = findViewById(R.id.tv_device_settings_str);
+        sharedPreferences = Util.getSharedPreferences(this);
+        tvClearData = findViewById(R.id.tv_clear_cache);
+        tvResetSnap = findViewById(R.id.tv_reset_snap);
+        pro_settings = findViewById(R.id.pro_settings);
+        pro_layout = findViewById(R.id.pro_layout);
+        pro_settings_border= findViewById(R.id.pro_settings_border);
+        tv_reset_members = findViewById(R.id.tv_reset_members);
+        tv_clear_members = findViewById(R.id.tv_clear_members);
+        navigation_bar_textview = findViewById(R.id.navigation_bar_textview);
+        sync_online_members_textview = findViewById(R.id.sync_online_members_textview);
+        led_switch_textview = findViewById(R.id.led_switch_textview);
+        seekBar=findViewById(R.id.seekbar);
+
+        rubiklight = Typeface.createFromAsset(getAssets(),
+                "rubiklight.ttf");
+        activateStatus.setTypeface(rubiklight);
+        tvDeviceManager.setTypeface(rubiklight);
+        tv_activate_tv_device.setTypeface(rubiklight);
+        tvDeviceName.setTypeface(rubiklight);
+        tvPass.setTypeface(rubiklight);
+        tvSettingStr.setTypeface(rubiklight);
+        tvSettingsName.setTypeface(rubiklight);
+        tvResetSnap.setTypeface(rubiklight);
+        tvClearData.setTypeface(rubiklight);
+        not_activate.setTypeface(rubiklight);
+        tv_device_activation_status.setTypeface(rubiklight);
+        tvEnd.setTypeface(rubiklight);
+        pro_settings.setTypeface(rubiklight);
+        tv_reset_members.setTypeface(rubiklight);
+        tv_clear_members.setTypeface(rubiklight);
+        navigation_bar_textview.setTypeface(rubiklight);
+        sync_online_members_textview.setTypeface(rubiklight);
+        led_switch_textview.setTypeface(rubiklight);
+    }
+
     private void proSettings() {
         RadioGroup radio_group_pro = findViewById(R.id.radio_group_pro_settings);
         RadioButton radio_yes_pro = findViewById(R.id.radio_yes_pro_settings);
         RadioButton radio_no_pro = findViewById(R.id.radio_no_pro_settings);
 
-        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true)) {
+        if (sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false)) {
             radio_yes_pro.setChecked(true);
             proSettingValueSp = true;
         } else {
@@ -294,6 +310,35 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             }
         });
 
+    }
+
+    private void ledSwitchSettings() {
+        RadioGroup  led_radio_group = findViewById(R.id.radio_group_led);
+        RadioButton radio_led_on = findViewById(R.id.radio_led_on);
+        RadioButton radio_led_off = findViewById(R.id.radio_led_off);
+        boolean ledSwitch = sharedPreferences.getBoolean(GlobalParameters.LedType,true);
+
+        if (ledSwitch){
+            radio_led_on.setChecked(true);
+        }else {
+            radio_led_off.setChecked(true);
+            Util.setLedPower(0);
+        }
+
+        led_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radio_led_on:
+                        Util.writeBoolean(sharedPreferences,GlobalParameters.LedType,true);
+                        break;
+                    case R.id.radio_led_off:
+                        Util.writeBoolean(sharedPreferences,GlobalParameters.LedType,false);
+                        Util.setLedPower(0);
+                        break;
+                }
+            }
+        });
     }
 
     private void syncMemberSettings() {
@@ -453,10 +498,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
-        ThermalImageUtil thermalImageUtil = Application.getInstance().getTemperatureUtil();
-        if (thermalImageUtil != null) {
-            thermalImageUtil.release();
-        }
+        ApplicationController.getInstance().releaseThermalUtil();
         Intent intent = new Intent(this, GuideActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -526,6 +568,43 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         //LitePal.deleteDatabase("telpo_face");
         DatabaseController.getInstance().deleteAllMember();
         Toast.makeText(this, "All Members Cleared", Toast.LENGTH_LONG).show();
+    }
+
+    private void seekBarSettings(){
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(Build.MODEL.contains("950")||"TPS980Q".equals(Build.MODEL)){
+                    progress /= 8;
+                    Log.e("progress---",progress+"");
+                    Util.setLedPower(progress);
+                }else {
+                    Process p = null;
+                    ledLevel = progress;
+                    //String cmd = "echo " + progress + " > /sys/class/backlight/rk28_bl_sub/brightness";
+                    //String cmd = "echo " + progress + " > /sys/class/backlight/backlight_extend/brightness";//新
+                    String cmd = "echo " + progress + " > /sys/class/backlight/led-brightness/brightness";//新
+                    ShellUtils.execCommand(cmd, false);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
+
+    private void setDefaultLedBrightnessLevel() {
+        ledLevel = sharedPreferences.getInt(GlobalParameters.LedBrightnessLevel, 30);
+        seekBar.setProgress(ledLevel);
+    }
+
+    private void saveLedBrightnessSetting() {
+        Util.writeInt(sharedPreferences, GlobalParameters.LedBrightnessLevel, ledLevel);
     }
 
 }

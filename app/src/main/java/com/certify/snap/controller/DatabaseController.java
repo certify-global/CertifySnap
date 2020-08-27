@@ -53,6 +53,13 @@ public class DatabaseController {
         return false;
     }
 
+    public List<RegisteredMembers> findMemberByAccessId(String accessId) {
+        if (databaseStore != null) {
+            return databaseStore.findMemberByAccessId(accessId);
+        }
+        return new ArrayList<>();
+    }
+
     public List<RegisteredMembers> findMember(long primaryId) {
         if (databaseStore != null) {
             return databaseStore.findMemberByPrimaryId(primaryId);

@@ -36,7 +36,16 @@
             android:layout_width="320dp"
             android:layout_height="400dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/border_shape" />
+            android:background="@drawable/border_shape"
+            android:visibility="gone"/>
+
+        <com.certify.snap.arcface.widget.FaceRectView
+            android:id="@+id/face_rect_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/iv_verify_inner_circle"
@@ -54,9 +63,28 @@
             android:background="@color/white"
             android:visibility="visible">
 
+            <LinearLayout
+                android:id="@+id/tv_close_message_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/margin_10"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_close_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/translucent_black"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
             <ImageView
                 android:id="@+id/img_logo"
                 android:layout_width="300dp"
+                android:layout_below="@+id/tv_close_message_layout"
                 android:layout_height="150dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/white"

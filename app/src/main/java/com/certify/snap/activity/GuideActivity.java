@@ -41,6 +41,7 @@ import com.certify.snap.common.License;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
@@ -75,6 +76,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     boolean libraryExists = true;
     private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
+    private long remainingTime = 0;
 
     // Demo
     private static final String[] LIBRARIES = new String[]{
@@ -93,6 +95,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new ServerCall().execute();
 
         mActivity = this;
+        ApplicationController.getInstance().initThermalUtil(this);
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
@@ -136,6 +139,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
         }
+        ApplicationController.getInstance().releaseThermalUtil();
     }
 
     private boolean isInstalled(Context context, String packageName) {
@@ -234,7 +238,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
                 startBLEService();
-                AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -467,23 +470,31 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void startProDeviceInitTimer() {
-        ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        //ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setButton("Ok", (dialog, which) -> {
+            startUpCountDownTimer.cancel();
+            progressDialog.dismiss();
+            CameraController.getInstance().setScannerRemainingTime(remainingTime);
+            initApp();
+        });
         startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
             @Override
             public void onTick(long remTime) {
-                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), (remTime/1000)/60));
+                remainingTime = ((remTime/1000)/60);
+                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), remainingTime));
             }
 
             @Override
             public void onFinish() {
                 startUpCountDownTimer.cancel();
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
+                progressDialog.dismiss();
                 initApp();
             }
         };
         startUpCountDownTimer.start();
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     private class ServerCall extends AsyncTask<String, Void, String> {

@@ -19,6 +19,7 @@ public class PrinterModelInfo {
     private static final String[] PS_PJ_US = {"LETTER", "LEGAL", "A4", "A5", "A5_LANDSCAPE", "CUSTOM"};
     private static final String[] PS_PT = {"W3_5", "W6", "W9", "W12", "W18", "W24", "HS_W6", "HS_W9", "HS_W12", "HS_W18", "HS_W24"};
     private static final String[] PS_QL = {"W17H54", "W17H87", "W23H23", "W29H42", "W29H90", "W38H90", "W39H48", "W52H29", "W54H29", "W62H29", "W62H100", "W60H86", "W12", "W29", "W38", "W50", "W54", "W62", "W62RB"};
+    private static final String[] PS_QL_1 = {"W62", "W62RB"};
 
     private static final String[] PS_QL1100 = {"W17H54", "W17H87", "W23H23", "W29H42", "W29H90", "W38H90", "W39H48", "W52H29", "W62H29", "W62H100", "W60H86","W102H51","W102H152", "W103H164", "W12", "W29", "W38", "W50", "W54", "W62", "W102", "W103"};
     private static final String[] PS_QL1115 = {"W17H54", "W17H87", "W23H23", "W29H42", "W29H90", "W38H90", "W39H48", "W52H29", "W62H29", "W62H100", "W60H86","W102H51","W102H152", "W103H164", "W12", "W29", "W38", "W50", "W54", "W62", "W102", "W103", "DT_W90", "DT_W102", "DT_W102H51", "DT_W102H152"};
@@ -144,7 +145,7 @@ public class PrinterModelInfo {
         PT_P300BT(PORTS_BT, PS_PT3),
         //QL_800("", PS_QL),
         QL_810W(QL_710W),
-        QL_820NWB(PORTS_NET_USB_BT, PS_QL),
+        QL_820NWB(PORTS_NET_USB_BT, PS_QL_1),
         RJ_2030(PORTS_BT_USB, PS_CUSTOM_ONLY),
         RJ_2050(RJ_3050),
         RJ_2140(PORTS_NET_USB, PS_CUSTOM_ONLY),

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Message;
 import android.preference.PreferenceManager;
 
 import com.brother.ptouch.sdk.CustomPaperInfo;
@@ -19,6 +20,8 @@ import com.brother.ptouch.sdk.PrinterInfo.Model;
 import com.brother.ptouch.sdk.PrinterStatus;
 import com.brother.ptouch.sdk.Unit;
 import com.certify.snap.R;
+import com.certify.snap.view.PrinterMsgDialog;
+import com.certify.snap.view.PrinterMsgHandle;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,23 @@ public abstract class BasePrint {
     private boolean manualCustomPaperSettingsEnabled;
     private String customSetting;
     private PrinterInfo mPrinterInfo;
+    private PrinterMsgHandle mHandle;
+    private PrinterMsgDialog mDialog;
+
+    BasePrint(Context context, PrinterMsgHandle handle, PrinterMsgDialog dialog) {
+        mContext = context;
+        mDialog = dialog;
+        mHandle = handle;
+        mDialog.setHandle(mHandle);
+        sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        mCancel = false;
+        // initialization for print
+        mPrinterInfo = new PrinterInfo();
+        mPrinter = new Printer();
+        mPrinterInfo = mPrinter.getPrinterInfo();
+        mPrinter.setMessageHandle(mHandle, Common.MSG_SDK_EVENT);
+    }
 
     BasePrint(Context context) {
 
@@ -665,8 +685,14 @@ public abstract class BasePrint {
                 // set info. for printing
                 BasePrintResult setPrinterInfoResult = setPrinterInfo();
                 if (setPrinterInfoResult.success == false) {
+                    mHandle.setResult(setPrinterInfoResult.errorMessage);
+                    mHandle.sendMessage(mHandle.obtainMessage(Common.MSG_PRINT_END));
                     return;
                 }
+
+                // start message
+                Message msg = mHandle.obtainMessage(Common.MSG_PRINT_START);
+                mHandle.sendMessage(msg);
 
                 mPrintResult = new PrinterStatus();
 
@@ -676,7 +702,13 @@ public abstract class BasePrint {
                 } else {
                     mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
                 }
-                // mPrinter.endCommunication();
+                mPrinter.endCommunication();
+
+                // end message
+                mHandle.setResult(showResult());
+                mHandle.setBattery(getBatteryDetail());
+                msg = mHandle.obtainMessage(Common.MSG_PRINT_END);
+                mHandle.sendMessage(msg);
             } catch (Exception e) {
 
             }
@@ -694,12 +726,22 @@ public abstract class BasePrint {
             // set info. for printing
             setPrinterInfo();
 
+            // start message
+            Message msg = mHandle.obtainMessage(Common.MSG_PRINT_START);
+            mHandle.sendMessage(msg);
+
             mPrintResult = new PrinterStatus();
             if (!mCancel) {
                 mPrintResult = mPrinter.getPrinterStatus();
             } else {
                 mPrintResult.errorCode = ErrorCode.ERROR_CANCEL;
             }
+
+            // end message
+            mHandle.setResult(showResult());
+            mHandle.setBattery(getBatteryDetail());
+            msg = mHandle.obtainMessage(Common.MSG_PRINT_END);
+            mHandle.sendMessage(msg);
         }
     }
 
@@ -713,8 +755,14 @@ public abstract class BasePrint {
             // set info. for printing
             BasePrintResult setPrinterInfoResult = setPrinterInfo();
             if (setPrinterInfoResult.success == false) {
+                mHandle.setResult(setPrinterInfoResult.errorMessage);
+                mHandle.sendMessage(mHandle.obtainMessage(Common.MSG_PRINT_END));
                 return;
             }
+
+            // start message
+            Message msg = mHandle.obtainMessage(Common.MSG_PRINT_START);
+            mHandle.sendMessage(msg);
 
             mPrintResult = new PrinterStatus();
 
@@ -724,6 +772,11 @@ public abstract class BasePrint {
 
             mPrinter.endCommunication();
 
+            // end message
+            mHandle.setResult(showResult());
+            mHandle.setBattery(getBatteryDetail());
+            msg = mHandle.obtainMessage(Common.MSG_PRINT_END);
+            mHandle.sendMessage(msg);
         }
     }
 }

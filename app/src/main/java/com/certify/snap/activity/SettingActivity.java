@@ -71,10 +71,12 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature,
                     setting_upload, setting_access_password, setting_endpoint, thermal_check_setting, scan_setting,
-                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting;
+                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting, printer_settings_layout;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management, tv_visual_settings;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting,
+            tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management,
+            tv_visual_settings, printer_setting_text;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -86,7 +88,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
     private TextView accessControlTv, tvDeviceOnline, tvDeviceName, tvDeviceSettings, tvDeviceMode;
     private View temperature_setting_view,upload_logo_setting_view, home_view_setting_view, scan_view_setting_view,
             confirmation_screen_setting_view, guide_setting_view, member_management_setting_view, audio_visual_setting_view,
-            identification_setting_view, access_control_setting_view;
+            identification_setting_view, access_control_setting_view, printer_setting_view;
     private TextView mConnectivityStatus, tvRecord;
     private View recordDivider;
 
@@ -100,7 +102,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sharedPreferences = Util.getSharedPreferences(this);
-            rg_temperature = findViewById(R.id.radio_group_work_flow);
+            //rg_temperature = findViewById(R.id.radio_group_work_flow);
             rb_temp = findViewById(R.id.radio_temp);
             rb_temp_face = findViewById(R.id.face_temp);
             img_sync = findViewById(R.id.img_sync);
@@ -108,7 +110,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             switch_activate = findViewById(R.id.switch_activate);
             String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
 
-            rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+       /*     rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     switch (checkedId) {
@@ -121,7 +123,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
 
                     }
                 }
-            });
+            });*/
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -235,6 +237,9 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         identification_setting_view = findViewById(R.id.identification_setting_view);
         access_control_setting_view = findViewById(R.id.access_control_setting_view);
         audio_visual_setting = findViewById(R.id.audio_visual_setting);
+        printer_settings_layout = findViewById(R.id.printer_settings_layout);
+        printer_setting_view = findViewById(R.id.printer_setting_view);
+        printer_setting_text = findViewById(R.id.printer_setting_text);
 
         recordDivider = findViewById(R.id.record_divider);
         access_pwd.setTypeface(rubiklight);
@@ -257,6 +262,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         tvDeviceSettings.setTypeface(rubiklight);
         tvDeviceMode.setTypeface(rubiklight);
         tvRecord.setTypeface(rubiklight);
+        printer_setting_text.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
         accessControlTv.setTypeface(rubiklight);
@@ -390,6 +396,10 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             case R.id.audio_visual_setting:
                 Intent visualIntent = new Intent(SettingActivity.this, AudioVisualActivity.class);
                 startActivity(visualIntent);
+                break;
+            case R.id.printer_settings_layout:
+                Intent printerIntent = new Intent(SettingActivity.this, PrinterViewSettingsActivity.class);
+                startActivity(printerIntent);
                 break;
             case R.id.btn_exit:
                 initiateLaunchHomeScreen();
@@ -630,6 +640,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 accessControl.setVisibility(View.GONE);
                 guide_setting.setVisibility(View.GONE);
                 audio_visual_setting.setVisibility(View.GONE);
+                printer_settings_layout.setVisibility(View.GONE);
 
                 upload_logo_setting_view.setVisibility(View.GONE);
                 home_view_setting_view.setVisibility(View.GONE);
@@ -637,6 +648,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 access_control_setting_view.setVisibility(View.GONE);
                 guide_setting_view.setVisibility(View.GONE);
                 audio_visual_setting_view.setVisibility(View.GONE);
+                printer_setting_view.setVisibility(View.GONE);
             } else {
                 setting_upload.setVisibility(View.VISIBLE);
                 thermal_check_setting.setVisibility(View.VISIBLE);
@@ -644,6 +656,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 accessControl.setVisibility(View.VISIBLE);
                 guide_setting.setVisibility(View.VISIBLE);
                 audio_visual_setting.setVisibility(View.VISIBLE);
+                printer_settings_layout.setVisibility(View.VISIBLE);
 
                 upload_logo_setting_view.setVisibility(View.VISIBLE);
                 home_view_setting_view.setVisibility(View.VISIBLE);
@@ -651,6 +664,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 access_control_setting_view.setVisibility(View.VISIBLE);
                 guide_setting_view.setVisibility(View.VISIBLE);
                 audio_visual_setting_view.setVisibility(View.VISIBLE);
+                printer_setting_view.setVisibility(View.VISIBLE);
             }
         }
         else {
@@ -661,6 +675,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             accessControl.setVisibility(View.VISIBLE);
             guide_setting.setVisibility(View.VISIBLE);
             audio_visual_setting.setVisibility(View.VISIBLE);
+            printer_settings_layout.setVisibility(View.VISIBLE);
 
             upload_logo_setting_view.setVisibility(View.VISIBLE);
             home_view_setting_view.setVisibility(View.VISIBLE);
@@ -668,6 +683,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             access_control_setting_view.setVisibility(View.VISIBLE);
             guide_setting_view.setVisibility(View.VISIBLE);
             audio_visual_setting_view.setVisibility(View.VISIBLE);
+            printer_setting_view.setVisibility(View.VISIBLE);
         }
     }
 

@@ -38,6 +38,7 @@ public class AppSettings {
     private static boolean anonymousQREnable = false;
     private static boolean isNavigationBarOn = false;
     private static boolean enablePrinter = false;
+    private static float temperatureCompensation = 0;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -68,7 +69,7 @@ public class AppSettings {
         facialDetect = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         captureImagesAll = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false);
         captureImagesAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, false);
-        proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, true);
+        proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false);
         displayInfoConfirmScreen = sharedPreferences.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
         qrSoundValid = sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_VALID, false);
         qrSoundInvalid= sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);
@@ -77,6 +78,7 @@ public class AppSettings {
         anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
         enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BLUETOOTH_PRINTER,false);
+        temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
     }
 
     public static String getThermalScanTitle() {
@@ -197,5 +199,9 @@ public class AppSettings {
 
     public static boolean isEnablePrinter() {
         return enablePrinter;
+    }
+
+    public static float getTemperatureCompensation() {
+        return temperatureCompensation;
     }
 }

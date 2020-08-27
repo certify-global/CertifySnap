@@ -1,36 +1,16 @@
 package com.certify.snap.activity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.Camera;
-import android.os.Build;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import com.certify.snap.BuildConfig;
 
-import com.certify.snap.common.Application;
-import com.certify.snap.common.ConfigUtil;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.ShellUtils;
-import com.certify.snap.common.Util;
 import com.certify.snap.R;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_0_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_180_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_270_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_90_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_ALL_OUT;
+import com.certify.snap.common.Application;
+import com.certify.snap.common.Util;
 
 public class ParameterActivity extends SettingBaseActivity {
 
@@ -56,12 +36,12 @@ public class ParameterActivity extends SettingBaseActivity {
 
             Application.getInstance().addActivity(this);
             sp = Util.getSharedPreferences(this);
-            initView();
+            //initView();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-
+/*
     private void initView(){
         radioGroupCamera = findViewById(R.id.radio_group_camera_type);
         rgbCamera = findViewById(R.id.radio_camera_0);
@@ -387,5 +367,5 @@ public class ParameterActivity extends SettingBaseActivity {
     public void onParamterback(View view) {
         startActivity(new Intent(ParameterActivity.this,SettingActivity.class));
         finish();
-    }
+    }*/
 }

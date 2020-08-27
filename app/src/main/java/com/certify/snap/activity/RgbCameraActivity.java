@@ -68,6 +68,7 @@ import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
@@ -524,7 +525,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 public void run() {
 
                     try {
-                        TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
+                        TemperatureData temperatureData = ApplicationController.getInstance().getTemperatureUtil()
                                 .getDataAndBitmap(50, true, new HotImageCallback.Stub() {
                             @Override
                             public void onTemperatureFail(String e) throws RemoteException {

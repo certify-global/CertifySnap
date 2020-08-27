@@ -234,6 +234,7 @@
     <string name="tv_confirmation_setting">Confirmation View Settings</string>
     <string name="member_management_setting">Member Management</string>
     <string name="audio_visual_setting">Audio and Visual Settings </string>
+    <string name="printer_setting">Printer Settings</string>
     <string name="confirmation_view">Confirmation View</string>
     <string name="enable_temperature">Enable</string>
     <string name="confirmation_text_below">Confirmation for temperature below threshold</string>
@@ -245,7 +246,7 @@
     <string name="enter_title_main">Enter Main Text</string>
     <string name="enter_subtitle_sub">Enter Sub Text</string>
     <string name="fahrenheit">Fahrenheit</string>
-    <string name="celcius">Celcius</string>
+    <string name="celcius">Celsius</string>
     <string name="enter_login">Enter Password</string>
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
@@ -389,7 +390,7 @@
     <string name="confirm_title_below">Have a nice day!</string>
     <string name="analyzing_face">Analyzing Face</string>
     <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
-    <string name="step_closer">Please step closer</string>
+    <string name="step_closer">Please Step Closer</string>
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
@@ -443,7 +444,8 @@
     <string name="endpoint_api">Api</string>
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">Scanner initializing, Please wait… \nTime Remaining: %d mins</string>
+    <string name="scanner_time_msg">Scanner is initializing. You can wait or click OK to continue to use the scanner while it initializes… \nTime Remaining: %d mins</string>
+    <string name="scanner_remaining_time_msg">Scanner calibration is progress… Time Remaining: %d mins</string>
 
     <!--Bluetooth Printer printer_settings-->
 
@@ -561,8 +563,6 @@
     <string name="half_cut_value">do half cut or not</string>
     <string name="special_tape_title">Special tape paper(PT Only)</string>
     <string name="special_tape_value">is special tape paper</string>
-
-
     <string name="timeout_title">Timeout</string>
     <string name="timeout_text">Set the timeout </string>
     <string name="processTimeout_value">Time-out period</string>
@@ -575,9 +575,31 @@
     <string name="connectionTimeout_value">Set connect waiting time </string>
     <string name="close_wait_time_value">Close Time-out period</string>
     <string name="close_wait_time_title">Set close waiting time</string>
-
     <string name="work_path_value">Select the work path</string>
     <string name="work_path_title">Work Folder</string>
+    <string name="progress_dialog_message_preparing_connection">Preparing the connection…</string>
+    <string name="progress_dialog_message_createData">Creating the data</string>
+    <string name="progress_dialog_message_sendingData">Printing Badge…</string>
+    <string name="progress_dialog_message_sendingPrintingData">Printing Badge…</string>
+    <string name="progress_dialog_message_startPrint">Printing Badge</string>
+    <string name="progress_dialog_message_dataSent">The data was sent </string>
+    <string name="progress_dialog_message_printed">The printing process was completed </string>
+    <string name="progress_dialog_message_close_connection">Closing the connection</string>
+    <string name="progress_dialog_message_set_paper">Please Set Paper</string>
+    <string name="progress_dialog_message_cooling_start">Printer cooling start</string>
+    <string name="progress_dialog_message_cooling_end">Printer cooling end</string>
+    <string name="progress_dialog_message_waiting_peel">Wait for peeling label</string>
+    <string name="progress_dialog_message_sending_template">File transferring</string>
+    <string name="progress_dialog_message_getting_bluetooth_setting">Getting Bluetooth settings </string>
+    <string name="progress_dialog_message_setting_bluetooth_setting">Transferring Bluetooth settings </string>
+    <string name="progress_dialog_message_removing_template">Removing templates </string>
+    <string name="progress_dialog_message_getting_template">Getting template list </string>
+    <string name="error_message_runtime">Runtime error occurred </string>
+    <string name="cancel_printer_msg">Is cancelling, please wait</string>
+    <string name="error_message_weong_os">Android OS is not supported</string>
+    <string name="error_message_no_usb">USB device is not found</string>
+    <string name="progress_dialog_message_communication_start">Start communication…</string>
+    <string name="progress_dialog_message_transfer_start">Transfer Start…</string>
 
     <string-array name="work_path_entries">
         <item>In-app folder</item>
