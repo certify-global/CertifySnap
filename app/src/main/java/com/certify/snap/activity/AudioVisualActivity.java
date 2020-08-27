@@ -61,13 +61,12 @@ import butterknife.ButterKnife;
 
 import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
-public class AudioVisualActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener {
+public class AudioVisualActivity extends SettingBaseActivity {
 
     private SharedPreferences sp ;
     TextView tv_sound_high, tv_sound, btn_save, tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status,
-            title_audio_alert, title_visual_alert, tv_ble_connection, tv_qr_sound_valid, tv_qr_sound_invalid, title_bluetooth_printer,
-            enable_printer_textview, bluetooth_printer_connect, tv_bluetooth_printer_connection, tv_bluetooth_printer_status, testPrint;
-    Button tv_ble_connect_btn, light_on, light_off, print_button;
+            title_audio_alert, title_visual_alert, tv_ble_connection, tv_qr_sound_valid, tv_qr_sound_invalid;
+    Button tv_ble_connect_btn, light_on, light_off;
     Typeface rubiklight;
     LinearLayout visul_alert_layout;
 
@@ -82,8 +81,6 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
 
     private byte[] ledrgb = new byte[3];
 
-    ImageView imageView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,9 +93,7 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         temperatureAudioCheck();
         visualCheck();
         qrAudioCheck();
-        printerCheck();
 
-        initBluetoothPrinter();
 
         // request ble permission
         requestPermission();
@@ -117,7 +112,6 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         if  (mBluetoothLeService != null)
             mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
 
-        PrinterController.getInstance().setPrinterListener(this);
     }
     private void initView(){
 
@@ -139,15 +133,7 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         visul_alert_layout = findViewById(R.id.visul_alert_layout);
         tv_qr_sound_valid = findViewById(R.id.tv_qr_sound_valid);
         tv_qr_sound_invalid = findViewById(R.id.tv_qr_sound_invalid);
-        title_bluetooth_printer = findViewById(R.id.title_bluetooth_printer);
-        enable_printer_textview = findViewById(R.id.enable_printer_textview);
-        tv_bluetooth_printer_status = findViewById(R.id.tv_bluetooth_printer_status);
-        bluetooth_printer_connect = findViewById(R.id.bluetooth_printer_connect);
-        tv_bluetooth_printer_connection = findViewById(R.id.tv_bluetooth_printer_connection);
-        testPrint = findViewById(R.id.test_print);
-        imageView = findViewById(R.id.imageView);
-        print_button = findViewById(R.id.print_button);
-        testPrint.setText("Test Printer");
+
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -167,35 +153,12 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
         tv_ble_connection.setTypeface(rubiklight);
         tv_qr_sound_valid.setTypeface(rubiklight);
         tv_qr_sound_invalid.setTypeface(rubiklight);
-        title_bluetooth_printer.setTypeface(rubiklight);
-        enable_printer_textview.setTypeface(rubiklight);
-        bluetooth_printer_connect.setTypeface(rubiklight);
-        tv_bluetooth_printer_connection.setTypeface(rubiklight);
-        tv_bluetooth_printer_status.setTypeface(rubiklight);
-        testPrint.setTypeface(rubiklight);
 
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
-        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
-            tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
         } else {
             tv_ble_connection.setText(Html.fromHtml(text));
-            tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings));
-        }
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPreferences != null){
-            if(!sharedPreferences.getString("printer", "NONE").equals("NONE")){
-                tv_bluetooth_printer_status.setTextColor(getResources().getColor(R.color.green));
-                print_button.setBackgroundColor(getResources().getColor(R.color.bg_blue));
-            }
-            else
-            {
-                tv_bluetooth_printer_status.setTextColor(getResources().getColor(R.color.red));
-                print_button.setBackgroundColor(getResources().getColor(R.color.gray));
-            }
-            tv_bluetooth_printer_status.setText(sharedPreferences.getString("printer", "NONE"));
         }
     }
 
@@ -294,25 +257,6 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
                 if(checkedId==R.id.radio_yes_light_high)
                     Util.writeBoolean(sp, GlobalParameters.BLE_LIGHT_HIGH, true);
                 else Util.writeBoolean(sp, GlobalParameters.BLE_LIGHT_HIGH, false);
-            }
-        });
-    }
-
-    private void printerCheck(){
-        RadioGroup radio_group_printer = findViewById(R.id.radio_group_printer);
-        RadioButton radio_enable_printer = findViewById(R.id.radio_yes_printer);
-        RadioButton radio_disable_printer = findViewById(R.id.radio_no_printer);
-
-        if (sp.getBoolean(GlobalParameters.BLUETOOTH_PRINTER, false))
-            radio_enable_printer.setChecked(true);
-        else radio_disable_printer.setChecked(true);
-
-        radio_group_printer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_printer)
-                    Util.writeBoolean(sp, GlobalParameters.BLUETOOTH_PRINTER, true);
-                else Util.writeBoolean(sp, GlobalParameters.BLUETOOTH_PRINTER, false);
             }
         });
     }
@@ -639,47 +583,4 @@ public class AudioVisualActivity extends SettingBaseActivity implements PrinterC
 
     public static int mColor = -1;
     private static float mPer;
-
-
-    public void selectBluetoothPrinter(View view) {
-        startActivity(new Intent(this, PrinterSettingsActivity.class));
-    }
-
-    private void initBluetoothPrinter() {
-        // initialization for printing
-        PrinterController.getInstance().init(this);
-        PrinterController.getInstance().setPrinterListener(this);
-        PrinterController.getInstance().setBluetoothAdapter();
-    }
-
-    public static Bitmap getBitmapFromView(View visitorLayout, ImageView imageView) {
-        Bitmap bitmap = Bitmap.createBitmap(visitorLayout.getWidth(), visitorLayout.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        visitorLayout.draw(canvas);
-        //imageView.setImageBitmap(bitmap);
-        return bitmap;
-    }
-
-    public void printImage(View view){
-        PrinterController.getInstance().setPrintImage(getBitmapFromView(testPrint, imageView));
-        PrinterController.getInstance().print();
-    }
-
-    @Override
-    public void onBluetoothDisabled() {
-        final Intent enableBtIntent = new Intent(
-                BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(enableBtIntent);
-    }
-
-    @Override
-    public void onPrintComplete() {
-        //add code here
-    }
-
-    @Override
-    public void onPrintError() {
-        //add code here
-    }
 }

@@ -234,6 +234,7 @@
     <string name="tv_confirmation_setting">Confirmation View Settings</string>
     <string name="member_management_setting">Member Management</string>
     <string name="audio_visual_setting">Audio and Visual Settings </string>
+    <string name="printer_setting">Printer Settings</string>
     <string name="confirmation_view">Confirmation View</string>
     <string name="enable_temperature">Enable</string>
     <string name="confirmation_text_below">Confirmation for temperature below threshold</string>
