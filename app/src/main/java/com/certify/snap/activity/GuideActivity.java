@@ -3,12 +3,9 @@ package com.certify.snap.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,8 +23,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.arcsoft.face.FaceEngine;
-import com.arcsoft.face.VersionInfo;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
@@ -54,10 +49,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.AppCenter;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,17 +62,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private Animation myAnimation;
     private SharedPreferences sharedPreferences;
     private boolean onlineMode = true;
-    boolean libraryExists = true;
     private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
     private long remainingTime = 0;
-
-    // Demo
-    private static final String[] LIBRARIES = new String[]{
-            "libarcsoft_face_engine.so",
-            "libarcsoft_face.so",
-            "libarcsoft_image_util.so",
-    };
     private ImageView internetIndicatorImage;
 
     @Override
@@ -137,50 +121,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         ApplicationController.getInstance().releaseThermalUtil();
     }
 
-    private boolean isInstalled(Context context, String packageName) {
-        final PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-        for (int i = 0; i < pinfo.size(); i++) {
-            if (pinfo.get(i).packageName.equalsIgnoreCase(packageName))
-                return true;
-        }
-        return false;
-    }
-
     private void checkStatus() {
         checkPermission();
-        libraryExists = checkSoFile(LIBRARIES);
-        ApplicationInfo applicationInfo = getApplicationInfo();
-        Log.e(TAG, "onCreate: " + applicationInfo.nativeLibraryDir);
-        if (!libraryExists) {
-//            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
-//            finish();
-        } else {
-            VersionInfo versionInfo = new VersionInfo();
-            int code = FaceEngine.getVersion(versionInfo);
-            Log.e(TAG, "onCreate: getVersion, code is: " + code + ", versionInfo is: " + versionInfo);
-        }
-    }
-
-    /**
-     * @param libraries
-     * @return
-     */
-    private boolean checkSoFile(String[] libraries) {
-        File dir = new File(getApplicationInfo().nativeLibraryDir);
-        File[] files = dir.listFiles();
-        if (files == null || files.length == 0) {
-            return false;
-        }
-        List<String> libraryNameList = new ArrayList<>();
-        for (File file : files) {
-            libraryNameList.add(file.getName());
-        }
-        boolean exists = true;
-        for (String library : libraries) {
-            exists &= libraryNameList.contains(library);
-        }
-        return exists;
     }
 
     private void checkPermission() {
@@ -465,9 +407,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void startProDeviceInitTimer() {
-        //ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setButton("Ok", (dialog, which) -> {
+        progressDialog.setButton("OK", (dialog, which) -> {
             startUpCountDownTimer.cancel();
             progressDialog.dismiss();
             CameraController.getInstance().setScannerRemainingTime(remainingTime);

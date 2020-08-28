@@ -1222,39 +1222,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             imageTimer.cancel();
     }
 
-    private static class ProcessHandler extends Handler {
-        WeakReference<IrCameraActivity> activityWeakReference;
-
-        private ProcessHandler(IrCameraActivity activity) {
-            activityWeakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            IrCameraActivity irCameraActivity = activityWeakReference.get();
-            if (irCameraActivity == null)
-                return;
-            switch (msg.what) {
-                case HIDE_VERIFY_UI:
-                    // irCameraActivity.stopAnimation();
-                    //irCameraActivity.changeVerifyBackground(R.color.transparency, false);
-                    break;
-                case CARD_ID_ERROR:
-//                    irCameraActivity.mBeepManager2.playBeepSoundAndVibrate();
-                    irCameraActivity.showNfcResult(false, false);
-                    break;
-                case ENTER:
-//                    irCameraActivity.mBeepManager1.playBeepSoundAndVibrate();
-                    irCameraActivity.showNfcResult(true, true);
-                    break;
-                case TIME_ERROR:
-//                    irCameraActivity.mBeepManager2.playBeepSoundAndVibrate();
-                    irCameraActivity.showNfcResult(true, false);
-                    break;
-            }
-        }
-    }
-
     private void showSnackbar(final String snackMessage) {
         tv_sync.setTypeface(rubiklight);
         if (snackMessage.equals("start")) {
@@ -1272,26 +1239,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void showNfcResult(boolean isSuccess, boolean isLimitTime) {
-        if (nfcDialog != null && nfcDialog.isShowing())
-            return;
-        View view = View.inflate(this, R.layout.toast_guest, null);
-        ImageView img_nfc = view.findViewById(R.id.img_guest);
-        TextView txt_nfc = view.findViewById(R.id.txt_guest);
-        img_nfc.setBackground(isSuccess ? (isLimitTime ? getDrawable(R.mipmap.scan_success) : getDrawable(R.mipmap.scan_fail)) : getDrawable(R.mipmap.scan_fail));
-        txt_nfc.setText(isSuccess ? (isLimitTime ? getString(R.string.welcome) : getString(R.string.text_notpasstime)) : getString(R.string.Unrecognized));
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setView(view)
-                .setCancelable(false);
-        nfcDialog = builder.create();
-        nfcDialog.show();
-        Window window = nfcDialog.getWindow();
-        if (window != null) {
-            window.setLayout(getWindowManager().getDefaultDisplay().getWidth() / 2, WindowManager.LayoutParams.WRAP_CONTENT);
-            window.setBackgroundDrawable(new ColorDrawable());
-        }
-    }
-
     private void changeVerifyBackground(int id, boolean isVisible) {
         if (outerCircle == null || innerCircle == null || relativeLayout == null)
             return;
@@ -1299,12 +1246,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         //outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         //innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         relativeLayout.setBackground(getDrawable(id));
-    }
-
-    private void showAnimation() {
-//        temperature_image.setVisibility(View.GONE);
-//        tv_message.setText("");
-//        tv_message.setVisibility(View.GONE);
     }
 
     public String[] processLimitedTime(String data) {
@@ -2629,7 +2570,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
                 //logo.setVisibility(View.GONE);
-                showAnimation();
 
                 cancelImageTimer();
                 imageTimer = new Timer();
