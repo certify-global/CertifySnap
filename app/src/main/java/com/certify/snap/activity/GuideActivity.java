@@ -38,6 +38,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.common.SnapLocalServer;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -501,13 +502,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
         @Override
         protected String doInBackground(String[] params) {
-            //SnapLocalServer snapLocalServer = new SnapLocalServer();
+            SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
-                //snapLocalServer.main(null);
+                snapLocalServer.main(null);
                 LocalServerController.getInstance().findAllMembers();
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
                 LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
-                LocalServer.getInstance().startServer(GuideActivity.this);
+                //LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

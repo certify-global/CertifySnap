@@ -35,6 +35,7 @@ import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -88,7 +89,7 @@ public class SnapLocalServer {
 //TODO make port configurable, listen on assigned interface ip address and loopback address
         server = ServerBootstrap.bootstrap()
                 .setListenerPort(port)
-                .setLocalAddress(InetAddress.getLoopbackAddress())
+                .setLocalAddress(InetAddress.getLocalHost())
                 .setSocketConfig(socketConfig)
                 //.setSslContext(sslContext)
                 .setExceptionListener(new ExceptionListener() {
@@ -160,10 +161,16 @@ public class SnapLocalServer {
                 final HttpContext context) throws HttpException, IOException {
 
             final String method = request.getMethod();
+            try {
+                String pingValue = request.getUri().getPath();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
             if (!Method.GET.isSame(method) && !Method.HEAD.isSame(method) && !Method.POST.isSame(method)) {
                 throw new MethodNotSupportedException(method + " method not supported");
             } else {
                 StringBuilder stringBuilderData = new StringBuilder();
+
                 stringBuilderData.append("[\n");
                 if (dataList.size() > 0){
                     for (OfflineRecordTemperatureMembers list : dataList){
