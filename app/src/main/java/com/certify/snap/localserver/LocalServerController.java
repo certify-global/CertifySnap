@@ -123,6 +123,7 @@ public class LocalServerController {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<List<AccessLogOfflineRecord>>() {
                         Disposable disposable;
+
                         @Override
                         public void onSubscribe(Disposable d) {
                             disposable = d;
@@ -131,7 +132,7 @@ public class LocalServerController {
                         @Override
                         public void onNext(List<AccessLogOfflineRecord> list) {
                             if (list != null && list.size() > 0)
-                            accessLogDataList = list;
+                                accessLogDataList = list;
 
                             disposable.dispose();
                         }
@@ -172,12 +173,12 @@ public class LocalServerController {
         return json;
     }
 
-    public void findLastTenMembers() {
+    public void findAllMembers() {
         try {
             Observable.create(new ObservableOnSubscribe<List<RegisteredMembers>>() {
                 @Override
                 public void subscribe(ObservableEmitter<List<RegisteredMembers>> emitter) throws Exception {
-                    List<RegisteredMembers> membersList = DatabaseController.getInstance().lastTenMembers();
+                    List<RegisteredMembers> membersList = DatabaseController.getInstance().findAll();
                     emitter.onNext(membersList);
                 }
             }).subscribeOn(Schedulers.computation())
@@ -216,9 +217,9 @@ public class LocalServerController {
     public String convertJsonMemberData(RegisteredMembers member) {
         String json = "{\n";
         try {
-            json += "\"primaryId\": " + member.getPrimaryId()+ ",\n";
+            json += "\"primaryId\": " + member.getPrimaryId() + ",\n";
             json += "\"firstName\": " + JSONObject.quote(member.getFirstname()) + ",\n";
-            json += "\"lastname\": " + JSONObject.quote(member.getLastname()) + ",\n";
+            json += "\"lastName\": " + JSONObject.quote(member.getLastname()) + ",\n";
             json += "\"status\": " + member.getStatus() + ",\n";
             json += "\"phoneNumber\": " + JSONObject.quote(member.getMobile()) + ",\n";
             json += "\"certifyId\": " + member.getUniqueid() + ",\n";
@@ -240,8 +241,8 @@ public class LocalServerController {
 
     public String findUpdateMember(JSONObject member) {
         try {
-            String uniqueId = member.getString("certifyId");
-            List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExit(uniqueId);
+            long primaryId = member.getLong("primaryId");
+            List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
             if (list != null && list.size() > 0) {
                 RegisteredMembers Members = list.get(0);
                 Members.setFirstname(member.getString("firstName"));
@@ -256,12 +257,26 @@ public class LocalServerController {
                 Members.setPrimaryId(member.getLong("primaryId"));
                 Members.setDateTime(Util.currentDate());
                 DatabaseController.getInstance().updateMember(Members);
-                findLastTenMembers();
+                findAllMembers();
                 return "result: OK";
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            return "result: FAIL";
+        }
+        return "result: FAIL";
+    }
+
+    public String deleteMember(JSONObject member) {
+        try {
+            long primaryId = member.getLong("primaryId");
+            List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
+            if (list != null && list.size() > 0) {
+                DatabaseController.getInstance().deleteMember(primaryId);
+                findAllMembers();
+                return "result: OK";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return "result: FAIL";
     }

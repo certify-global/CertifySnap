@@ -37,7 +37,7 @@ public class LocalServer {
         return mInstance;
     }
 
-    public void startServer(Context context){
+    public void startServer(Context context) {
         try {
             this.mContext = context;
             InetSocketAddress inetSocketAddress = new InetSocketAddress(port);
@@ -73,7 +73,7 @@ public class LocalServer {
                         sendResponse(exchange, responseData);
                     } else if (request.equals("POST")) {
                         InputStream inputStream = exchange.getRequestBody();
-                        if (inputStream != null){
+                        if (inputStream != null) {
                             String requestBody = streamToString(inputStream);
                             try {
                                 JSONObject jsonBody = new JSONObject(requestBody);
@@ -92,9 +92,9 @@ public class LocalServer {
     };
 
 
-    private void sendResponse(HttpExchange httpExchange, String responseText){
+    private void sendResponse(HttpExchange httpExchange, String responseText) {
         try {
-            httpExchange.sendResponseHeaders(200, (long)responseText.length());
+            httpExchange.sendResponseHeaders(200, (long) responseText.length());
             OutputStream os = httpExchange.getResponseBody();
             os.write(responseText.getBytes());
             os.close();
@@ -106,48 +106,51 @@ public class LocalServer {
 
     private final String streamToString(InputStream inputStream) {
         Scanner s = (new Scanner(inputStream)).useDelimiter("\\A");
-        String var10000;
+        String str;
         if (s.hasNext()) {
-            var10000 = s.next();
+            str = s.next();
         } else {
-            var10000 = "";
+            str = "";
         }
 
-        return var10000;
+        return str;
     }
 
     private String getResponseData(URI pingValue) {
         StringBuilder stringBuilderData = new StringBuilder();
         stringBuilderData.append("[\n");
-        if (pingValue.getPath().equalsIgnoreCase("/Ping")){
+        if (pingValue.getPath().equalsIgnoreCase("/Ping")) {
             stringBuilderData.append(LocalServerController.getInstance().getDeviceHealthCheck(mContext));
-        } else if (pingValue.getPath().equalsIgnoreCase("/GetTemperatureLogs")){
-            if (LocalServerController.getInstance().getOfflineTempDataList().size() > 0){
-                for (OfflineRecordTemperatureMembers list : LocalServerController.getInstance().getOfflineTempDataList()){
+        } else if (pingValue.getPath().equalsIgnoreCase("/GetTemperatureLogs")) {
+            if (LocalServerController.getInstance().getOfflineTempDataList().size() > 0) {
+                for (OfflineRecordTemperatureMembers list : LocalServerController.getInstance().getOfflineTempDataList()) {
                     stringBuilderData.append(LocalServerController.getInstance().convertJsonData(list.getJsonObj()));
                 }
             }
-        } else if (pingValue.getPath().equalsIgnoreCase("/GetAccessLogs")){
-            if (LocalServerController.getInstance().getAccessLogDataList().size() > 0){
+        } else if (pingValue.getPath().equalsIgnoreCase("/GetAccessLogs")) {
+            if (LocalServerController.getInstance().getAccessLogDataList().size() > 0) {
                 for (AccessLogOfflineRecord list : LocalServerController.getInstance().getAccessLogDataList()) {
                     stringBuilderData.append(LocalServerController.getInstance().convertJsonData(list.getJsonObj()));
                 }
             }
         } else if (pingValue.getPath().equalsIgnoreCase("/GetMembers")) {
-            if (LocalServerController.getInstance().getMemberDataList().size() > 0){
+            if (LocalServerController.getInstance().getMemberDataList().size() > 0) {
                 for (RegisteredMembers list : LocalServerController.getInstance().getMemberDataList()) {
                     stringBuilderData.append(LocalServerController.getInstance().convertJsonMemberData(list));
                 }
             }
         }
         stringBuilderData.append("]");
-       return stringBuilderData.toString();
+        return stringBuilderData.toString();
     }
 
     private String postResponseData(URI pingValue, JSONObject member) {
-        if (pingValue.getPath().equalsIgnoreCase("/AddUpdateMember")){
+        if (pingValue.getPath().equalsIgnoreCase("/AddUpdateMember")) {
             String updateMember = LocalServerController.getInstance().findUpdateMember(member);
             return updateMember;
+        } else if (pingValue.getPath().equalsIgnoreCase("/DeleteMember")) {
+            String deleteMember = LocalServerController.getInstance().deleteMember(member);
+            return deleteMember;
         }
 
         return "";

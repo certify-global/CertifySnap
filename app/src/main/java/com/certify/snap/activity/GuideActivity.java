@@ -54,6 +54,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.AppCenter;
+
 import org.json.JSONObject;
 
 import java.io.File;
@@ -310,7 +311,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void run() {
 
                 if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                    || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
                         startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
@@ -384,12 +385,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void cancelActivationTimer() {
-       if (mActivationTimer != null) {
-           mActivationTimer.cancel();
-       }
+        if (mActivationTimer != null) {
+            mActivationTimer.cancel();
+        }
     }
 
-    private void initAppStatusInfo(){
+    private void initAppStatusInfo() {
         AppStatusInfo.getInstance().clear();
         updateAppStatusInfo("APPSTARTED", AppStatusInfo.APP_STARTED);
     }
@@ -399,7 +400,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             AppStatusInfo.getInstance().setAppStarted(message);
         else if (message.equals(AppStatusInfo.APP_CLOSED))
             AppStatusInfo.getInstance().setAppClosed(message);
-        else if(message.equals(AppStatusInfo.DEVICE_SETTINGS))
+        else if (message.equals(AppStatusInfo.DEVICE_SETTINGS))
             AppStatusInfo.getInstance().setDeviceSettings(message);
         Logger.debug(TAG, key, message);
     }
@@ -428,8 +429,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
-                    Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                    Logger.verbose(TAG,"firebase token",token);
+                    Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, token);
+                    Logger.verbose(TAG, "firebase token", token);
 
                 }
             });
@@ -452,7 +453,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
 
-            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)) {
                 internetIndicatorImage.setVisibility(View.GONE);
             } else {
                 internetIndicatorImage.setVisibility(View.VISIBLE);
@@ -471,7 +472,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
             @Override
             public void onTick(long remTime) {
-                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), (remTime/1000)/60));
+                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), (remTime / 1000) / 60));
             }
 
             @Override
@@ -493,9 +494,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
                 //snapLocalServer.main(null);
+                LocalServerController.getInstance().findAllMembers();
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
                 LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
-                LocalServerController.getInstance().findLastTenMembers();
                 LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
