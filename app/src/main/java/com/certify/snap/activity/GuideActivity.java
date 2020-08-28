@@ -504,9 +504,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
                 //snapLocalServer.main(null);
+                LocalServerController.getInstance().findAllMembers();
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
                 LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
-                LocalServerController.getInstance().findLastTenMembers();
                 LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
