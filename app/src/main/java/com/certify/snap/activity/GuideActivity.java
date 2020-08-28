@@ -41,6 +41,7 @@ import com.certify.snap.common.License;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
@@ -54,7 +55,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.AppCenter;
-
 import org.json.JSONObject;
 
 import java.io.File;
@@ -76,6 +76,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     boolean libraryExists = true;
     private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
+    private long remainingTime = 0;
 
     // Demo
     private static final String[] LIBRARIES = new String[]{
@@ -94,6 +95,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new ServerCall().execute();
 
         mActivity = this;
+        ApplicationController.getInstance().initThermalUtil(this);
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
@@ -137,6 +139,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
         }
+        ApplicationController.getInstance().releaseThermalUtil();
     }
 
     private boolean isInstalled(Context context, String packageName) {
@@ -235,7 +238,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
                 startBLEService();
-                AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -311,7 +313,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void run() {
 
                 if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                    || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
                         startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
@@ -385,12 +387,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void cancelActivationTimer() {
-        if (mActivationTimer != null) {
-            mActivationTimer.cancel();
-        }
+       if (mActivationTimer != null) {
+           mActivationTimer.cancel();
+       }
     }
 
-    private void initAppStatusInfo() {
+    private void initAppStatusInfo(){
         AppStatusInfo.getInstance().clear();
         updateAppStatusInfo("APPSTARTED", AppStatusInfo.APP_STARTED);
     }
@@ -400,7 +402,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             AppStatusInfo.getInstance().setAppStarted(message);
         else if (message.equals(AppStatusInfo.APP_CLOSED))
             AppStatusInfo.getInstance().setAppClosed(message);
-        else if (message.equals(AppStatusInfo.DEVICE_SETTINGS))
+        else if(message.equals(AppStatusInfo.DEVICE_SETTINGS))
             AppStatusInfo.getInstance().setDeviceSettings(message);
         Logger.debug(TAG, key, message);
     }
@@ -429,8 +431,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
-                    Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, token);
-                    Logger.verbose(TAG, "firebase token", token);
+                    Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+                    Logger.verbose(TAG,"firebase token",token);
 
                 }
             });
@@ -453,7 +455,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
 
-            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)) {
+            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
                 internetIndicatorImage.setVisibility(View.GONE);
             } else {
                 internetIndicatorImage.setVisibility(View.VISIBLE);
@@ -468,23 +470,31 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void startProDeviceInitTimer() {
-        ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        //ProgressDialog progressDialog = ProgressDialog.show(this, "", String.format(getString(R.string.scanner_time_msg), 10));
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setButton("Ok", (dialog, which) -> {
+            startUpCountDownTimer.cancel();
+            progressDialog.dismiss();
+            CameraController.getInstance().setScannerRemainingTime(remainingTime);
+            initApp();
+        });
         startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
             @Override
             public void onTick(long remTime) {
-                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), (remTime / 1000) / 60));
+                remainingTime = ((remTime/1000)/60);
+                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), remainingTime));
             }
 
             @Override
             public void onFinish() {
                 startUpCountDownTimer.cancel();
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
+                progressDialog.dismiss();
                 initApp();
             }
         };
         startUpCountDownTimer.start();
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     private class ServerCall extends AsyncTask<String, Void, String> {
@@ -494,9 +504,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             //SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
                 //snapLocalServer.main(null);
-                LocalServerController.getInstance().findAllMembers();
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
                 LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
+                LocalServerController.getInstance().findLastTenMembers();
                 LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();

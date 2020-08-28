@@ -46,7 +46,6 @@ public class Application extends android.app.Application {
     // private DownloadMgr mDownloadMgr;
     public static boolean member=false;
     private List<Activity> activityList = new LinkedList();
-    private ThermalImageUtil temperatureUtil;
     private static SimplePreference preference;
     private int deviceMode = 0;
     WifiManager wifi;
@@ -84,8 +83,6 @@ public class Application extends android.app.Application {
 
         BlockDetectByPrinter.start(false);//检测卡顿
 
-        temperatureUtil = new ThermalImageUtil(this);
-
         if (BuildConfig.BUILD_TYPE != "debug") {
             initAppCenter();
         }
@@ -113,10 +110,6 @@ public class Application extends android.app.Application {
 //    public MyOkHttp getMyOkHttp() {
 //        return mMyOkHttp;
 //    }
-
-    public ThermalImageUtil getTemperatureUtil(){
-        return temperatureUtil;
-    }
 
     // Activity
     public void addActivity(Activity activity) {

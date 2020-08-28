@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="com.certify.snap.activity.ParameterActivity">
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -386,6 +386,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </ScrollView>-->
 
 </LinearLayout>

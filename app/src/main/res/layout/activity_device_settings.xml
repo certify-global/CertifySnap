@@ -83,15 +83,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_device_activation_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="@string/device_activation_status"
             android:textColor="@color/black"
             android:textSize="20sp" />
@@ -109,8 +109,8 @@
             android:id="@+id/not_activate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/bg_blue"
             android:layout_gravity="center"
+            android:background="@color/bg_blue"
             android:padding="10dp"
             android:text="@string/activate"
             android:textColor="@color/white"
@@ -125,8 +125,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_end_device"
@@ -152,7 +152,7 @@
                 android:text="@string/protocol_text"
                 android:textColor="@color/black"
                 android:textSize="@dimen/font_18"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/et_end_url"
@@ -169,7 +169,7 @@
                 android:text="@string/hostname"
                 android:textColor="@color/black"
                 android:textSize="@dimen/font_18"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 
@@ -181,8 +181,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_device_name_dev"
@@ -213,8 +213,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_password_device"
@@ -230,8 +230,8 @@
             android:id="@+id/et_device_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:background="@drawable/edittextbackground"
             android:hint="@string/acces_password"
             android:inputType="numberPassword"
@@ -247,8 +247,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_device_settings_str"
@@ -280,8 +280,8 @@
         android:id="@+id/pro_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/pro_settings"
@@ -329,49 +329,104 @@
         android:background="@color/blue" />
 
     <LinearLayout
-        android:id="@+id/navigation_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/margin_10">
+        android:weightSum="2"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/navigation_bar_textview"
+        <LinearLayout
+            android:id="@+id/navigation_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/NavigationBar"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
+            android:layout_margin="@dimen/margin_10"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <RadioGroup
-            android:id="@+id/navigation_bar_radio_group"
+            <TextView
+                android:id="@+id/navigation_bar_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/NavigationBar"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <RadioGroup
+                android:id="@+id/navigation_bar_radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/navigation_bar_radio_enable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/navigation_bar_radio_disable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/led_switch_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
+            android:layout_margin="@dimen/margin_10"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/navigation_bar_radio_enable"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/led_switch_textview"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
-                android:text="@string/living_type_1"
+                android:text="@string/led_switch"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
+                android:textSize="@dimen/font_18" />
 
-            <RadioButton
-                android:id="@+id/navigation_bar_radio_disable"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/radio_group_led"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
-                android:theme="@style/MyCheckBox" />
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="horizontal">
 
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/radio_led_on"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
 
+                <RadioButton
+                    android:id="@+id/radio_led_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+        </LinearLayout>
     </LinearLayout>
 
     <View
@@ -381,11 +436,38 @@
         android:background="@color/blue" />
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/led_brightness_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LED Brightness:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+        <SeekBar
+            android:layout_margin="10dp"
+            android:id="@+id/seekbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:max="255"
+            android:progress="30" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
+
+    <LinearLayout
         android:id="@+id/data_management_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/tv_device_manage"
@@ -452,15 +534,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_reset_members"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:text="@string/clear_members"
             android:textColor="@color/black"
             android:textSize="20sp" />
@@ -469,13 +551,13 @@
             android:id="@+id/tv_clear_members"
             android:layout_width="275dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="#D6D6D6"
             android:onClick="clearDatabase"
             android:padding="@dimen/margin_10"
             android:text="@string/clear_members_button"
             android:textColor="@color/white"
-            android:layout_gravity="center"
             android:textSize="20sp" />
     </LinearLayout>
 
@@ -483,11 +565,12 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/blue" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="@dimen/margin_10">
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tv_reset_snap"
@@ -504,9 +587,9 @@
             android:id="@+id/tv_clear_cache"
             android:layout_width="275dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="#D6D6D6"
-            android:layout_gravity="center"
             android:padding="@dimen/margin_10"
             android:text="@string/clear_cache_app"
             android:textColor="@color/white"

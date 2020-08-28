@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -42,12 +43,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
+        <activity android:name=".activity.PrinterViewSettingsActivity"></activity>
         <activity android:name=".activity.NetPrinterActivity" />
         <activity android:name=".activity.BluetoothPrinterActivity" />
         <activity android:name=".activity.PrinterSettingsActivity" />
         <activity android:name=".activity.SelectDeviceActivity" />
         <activity android:name=".activity.AudioVisualActivity" />
-
         <activity
             android:name=".activity.NFCCardActivity"
             android:launchMode="singleTask"
@@ -120,14 +121,18 @@
         <activity
             android:name=".activity.ConnectivityStatusActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.AddDeviceActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.AdminLoginActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.RegisterDeviceActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.RegisterSuccessActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".activity.AddDeviceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.AdminLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.RegisterDeviceActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.RegisterSuccessActivity"
+            android:screenOrientation="portrait" />
 
         <service android:name=".service.GuideService" />
         <service android:name=".service.UpdateService" />
@@ -150,13 +155,13 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
-        <receiver android:name=".service.ResetOfflineDataReceiver"
+        <receiver
+            android:name=".service.ResetOfflineDataReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.DATE_CHANGED"/>
-                <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="android.intent.action.DATE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
@@ -178,7 +183,8 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <service android:name = ".service.HIDService"
+        <service
+            android:name=".service.HIDService"
             android:stopWithTask="false" />
 
         <meta-data
@@ -207,9 +213,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <service
-            android:name="com.certify.snap.bluetooth.bleCommunication.BluetoothLeService"/>
+        <service android:name=".bluetooth.bleCommunication.BluetoothLeService" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

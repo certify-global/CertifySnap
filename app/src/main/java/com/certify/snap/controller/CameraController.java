@@ -1,8 +1,10 @@
 package com.certify.snap.controller;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
@@ -13,7 +15,7 @@ public class CameraController {
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private boolean isFaceVisible = false; //flag to let know when the face is detected
-    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA}
+    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA, MULTIUSER}
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
@@ -24,6 +26,7 @@ public class CameraController {
     public static int IMAGE_PROCESS_COMPLETE = 1;
     public ScanState scanState = ScanState.IDLE;
     private  int deviceMode =0;
+    private long scannerRemainingTime = 0;
 
     public enum ScanState {
         IDLE,
@@ -42,6 +45,7 @@ public class CameraController {
     public void init() {
         clearData();
         faceParameters = new FaceParameters();
+        startProDeviceInitTimer();
     }
 
     public QrCodeData getQrCodeData() {
@@ -121,13 +125,37 @@ public class CameraController {
     }
 
     public void initDeviceMode() {
-        if (Application.getInstance().getTemperatureUtil().getUsingModule() != null) {
-            deviceMode = Application.getInstance().getTemperatureUtil().getUsingModule()[0];
+        if (ApplicationController.getInstance().getTemperatureUtil().getUsingModule() != null) {
+            deviceMode = ApplicationController.getInstance().getTemperatureUtil().getUsingModule()[0];
         }
     }
 
     public int getDeviceMode() {
         return deviceMode;
+    }
+
+    public long getScannerRemainingTime() {
+        return scannerRemainingTime;
+    }
+
+    public void setScannerRemainingTime(long scannerRemainingTime) {
+        this.scannerRemainingTime = scannerRemainingTime;
+    }
+
+    private void startProDeviceInitTimer() {
+        if (scannerRemainingTime > 0) {
+            new CountDownTimer(scannerRemainingTime, Constants.PRO_SCANNER_INIT_INTERVAL) {
+                @Override
+                public void onTick(long remTime) {
+                    scannerRemainingTime = ((remTime / 1000) / 60);
+                }
+
+                @Override
+                public void onFinish() {
+                    scannerRemainingTime = 0;
+                }
+            }.start();
+        }
     }
 
     public float getOnlyTextSize(int length) {

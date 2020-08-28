@@ -73,6 +73,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.TemperatureStatus;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.TemperatureController;
@@ -202,7 +203,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private TextView tv_measure_area, tv_current_rect, tv_default_rect;
     Map<String, String> distanceInfo = null;
     byte lastCheckSum = 0x00;
-    ThermalImageUtil util = Application.getInstance().getTemperatureUtil();
+    ThermalImageUtil util = ApplicationController.getInstance().getTemperatureUtil();
     private boolean isTemperature = false;
     private Rect tempRect;
     private Tag mTag;
@@ -275,7 +276,17 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     @Override
     public void onBackPressed() {
-        //Application.getInstance().exit();
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ProIrCameraActivity.this);
+            builder.setMessage("Are you sure you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", (dialog, id) -> finishAffinity())
+                    .setNegativeButton("No", (dialog, id) -> dialog.cancel());
+            AlertDialog alert = builder.create();
+            alert.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initView() {
@@ -978,6 +989,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                     data.rgb = rgbBitmap;
                                     data.ir = irBitmap;
                                     data.thermal = thermalBitmap;
+                                    data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
                                     TemperatureController.getInstance().updateTemperatureMap(trackId, data);
                                 }
                                 faceHelperProIr.setName(trackId, String.valueOf(temperature));
@@ -1041,7 +1053,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
             float fix = getDistance(rect);
             //Ignore the temperature read (resulting in low read if the face is not fully visible)
-            if (rect.right > 750) {
+            if (rect.right > 750 || rect.left < 0) {
                 final Rect[] rects = new Rect[temperatureRectList.size()];
                 int[] distances = new int[distanceList.size()];
                 util.setGuideRect(rects, distances);
@@ -1188,6 +1200,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                                                     data.rgb = rgbBitmap;
                                                     data.ir = irBitmap;
                                                     data.thermal = bitmap;
+                                                    data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
                                                     TemperatureController.getInstance().updateTemperatureMap(trackId, data);
                                                 }
                                             } else if (temperature > temperatureMap.get(trackId)) {
@@ -1552,21 +1565,11 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             int color = Color.YELLOW;
 //            color = sheltered == FaceShelterInfo.NOT_SHELTERED || facePreviewInfoList.get(i).getMask() == MaskInfo.NOT_WORN ? Color.RED : Color.YELLOW;
             if (temperatureMap.get(trackId) != null) {
-                color = Util.isUsualTemperature(this, temperatureMap.get(trackId)) ? Color.RED : Color.GREEN;
+                color = Color.GREEN;
+                if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperatureMap.get(trackId))) {
+                    color = Color.RED;
+                }
             }
-            /*if (recognizeStatus != null && recognizeStatus == RequestFeatureStatus.SUCCEED) {
-                color = RecognizeColor.COLOR_SUCCESS;
-            }*/
-//                if (recognizeStatus == RequestFeatureStatus.FAILED) {
-//                    color = RecognizeColor.COLOR_FAILED;
-//                }
-//                if (recognizeStatus == RequestFeatureStatus.SUCCEED) {
-//                    color = RecognizeColor.COLOR_SUCCESS;
-//                }
-//            }
-//            if (liveness != null && liveness == LivenessInfo.NOT_ALIVE) {
-//                color = RecognizeColor.COLOR_FAILED;
-//            }
             drawInfoList.add(new DrawInfo(drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect()),
                     GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE,
                     liveness == null ? LivenessInfo.UNKNOWN : liveness, color,
@@ -1809,5 +1812,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         data.rgb = rgbBitmap;
         data.ir = irBitmap;
         data.thermal = thermalBitmap;
+        data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
     }
 }

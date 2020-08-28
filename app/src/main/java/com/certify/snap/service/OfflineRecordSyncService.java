@@ -93,7 +93,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                         @Override
                         public void onNext(List<OfflineRecordTemperatureMembers> list) {
                             datalist = list;
-                            if (datalist != null) {
+                            if (datalist != null && datalist.size() > 0) {
                                 uploadTemperatureRecordData(datalist, index);
                             }
                             disposable.dispose();
