@@ -2535,15 +2535,17 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
             return;
         }
-        if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
-            runOnUiThread(() -> {
-                tvFaceMessage.setVisibility(View.VISIBLE);
-                tvFaceMessage.setText(getString(R.string.face_center));
-            });
-            searchFaceInfoList.clear();
-            face3DAngle = null;
-            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
-            return;
+        if (Util.isDeviceProModel()) {
+            if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
+                runOnUiThread(() -> {
+                    tvFaceMessage.setVisibility(View.VISIBLE);
+                    tvFaceMessage.setText(getString(R.string.face_center));
+                });
+                searchFaceInfoList.clear();
+                face3DAngle = null;
+                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+                return;
+            }
         }
         Log.d(TAG, "Face is close, Initiate search");
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
