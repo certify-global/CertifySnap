@@ -15,12 +15,14 @@ import com.brother.ptouch.sdk.Printer;
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.printer.Common;
+import com.certify.snap.view.PrinterMsgDialog;
 
 import java.util.ArrayList;
 
 public class NetPrinterActivity extends ListActivity {
 
     // information
+    private final PrinterMsgDialog msgDialog = new PrinterMsgDialog(this);
     private String modelName; // the print model name.
     private NetPrinter[] mNetPrinter; // array of storing Printer informations.
     private ArrayList<String> mItems = null; // List of storing the printer's
@@ -189,9 +191,9 @@ public class NetPrinterActivity extends ListActivity {
      * make a dialog, which shows the message during searching
      */
     private void setDialog() {
-        /*msgDialog.showMsgNoButton(
+        msgDialog.showMsgNoButton(
                 getString(R.string.netPrinterListTitle_label),
-                getString(R.string.search_printer));*/
+                getString(R.string.search_printer));
     }
 
     /**
@@ -206,9 +208,16 @@ public class NetPrinterActivity extends ListActivity {
             for (int i = 0; i < Common.SEARCH_TIMES; i++) {
                 // search for net printer.
                 if (netPrinterList(i)) {
+                    msgDialog.close();
                     break;
                 }
             }
+            msgDialog.close();
         }
+    }
+
+    public void onParamterback(View view) {
+        startActivity(new Intent(this, PrinterSettingsActivity.class));
+        finish();
     }
 }
