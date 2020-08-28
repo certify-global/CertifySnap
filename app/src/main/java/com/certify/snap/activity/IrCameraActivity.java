@@ -223,6 +223,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private List<CompareResult> compareResultList;
     private SharedPreferences sharedPreferences;
     private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
+    private Toast faceThermalToast = null;
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -294,6 +295,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private UserExportedData userData;
     private Button qrSkipButton;
     private FaceRectView faceRectView;
+    private Face3DAngle face3DAngle;
 
     private void instanceStart() {
         try {
@@ -2414,7 +2416,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         emitter.onNext(searchFaceInfoList);
                         return;
                     }
-                    emitter.onNext(searchFaceInfoList);
 
                     int faceProcessCode = faceEngineHelper.getFrEngine().process(mBgr24, mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), FaceEngine.CP_PAF_BGR24, searchFaceInfoList, processMask);
                     // Need to work on condition
@@ -2439,6 +2440,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceEngineHelper.getFrEngine().getFace3DAngle(face3DAngles);
                             if (face3DAngles.size() > 0) {
                                 faceParameters.face3DAngle = faceParameters.getFace3DAngle(face3DAngles.get(0));
+                                face3DAngle = face3DAngles.get(0);
                             }
 
                             List<AgeInfo> ageInfos = new ArrayList<>();
@@ -2460,6 +2462,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                         }
                     }
+                    emitter.onNext(searchFaceInfoList);
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -2522,16 +2525,27 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
-        if (searchFaceList.size() > 0 && isFaceClose(searchFaceList.get(0))) {
-            Log.d(TAG, "Face is close, Initiate search");
+        if (searchFaceList.size() > 0 && !isFaceClose(searchFaceList.get(0))) {
+            runOnUiThread(() -> {
+                tvFaceMessage.setVisibility(View.VISIBLE);
+                tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
+            });
+            searchFaceInfoList.clear();
+            face3DAngle = null;
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
             return;
         }
-        runOnUiThread(() -> {
-            tvFaceMessage.setVisibility(View.VISIBLE);
-            tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
-        });
-        searchFaceInfoList.clear();
+        if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
+            runOnUiThread(() -> {
+                tvFaceMessage.setVisibility(View.VISIBLE);
+                tvFaceMessage.setText(getString(R.string.face_center));
+            });
+            searchFaceInfoList.clear();
+            face3DAngle = null;
+            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+            return;
+        }
+        Log.d(TAG, "Face is close, Initiate search");
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
     }
 
@@ -2540,11 +2554,28 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (faceInfo != null) {
             Rect rect = faceInfo.getRect();
             Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.width() + " " +rect.height() + " )");
+            Log.d(TAG, "SnapXT Face Orient" + faceInfo.getOrient());
             if (rect.width() > 45) {
                 result = true;
                 Log.d(TAG, "SnapXT Face is close");
             } else {
                 Log.d(TAG, "SnapXT Face is not close");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Method that checks for the Face angle, returns true if face is straight (90 degrees)
+     * @param face3DAngle face3D info
+     * @return true or false accordingly
+     */
+    private boolean isFaceAngleCentered(Face3DAngle face3DAngle) {
+        boolean result = false;
+        if (face3DAngle != null) {
+            float yaw = face3DAngle.getYaw();
+            if (yaw > -10 && yaw < 10) {
+                result = true;
             }
         }
         return result;
@@ -2631,6 +2662,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if(progressDialog!=null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+        face3DAngle = null;
+        faceThermalToast = null;
     }
 
     private void setPreviewIdleTimer() {
@@ -2917,6 +2950,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
         TemperatureController.getInstance().setTemperatureListener(this);
         clearLeftFace(null);
+    }
+
+    @Override
+    public void onFaceNotInRangeOfThermal() {
+        runOnUiThread(() -> {
+            if (faceThermalToast != null) return;
+            faceThermalToast = Toast.makeText(IrCameraActivity.this, "Please move towards center", Toast.LENGTH_SHORT);
+            faceThermalToast.show();
+        });
     }
 
     private void initBluetoothPrinter() {

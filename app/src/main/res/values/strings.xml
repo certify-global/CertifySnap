@@ -391,6 +391,7 @@
     <string name="analyzing_face">Analyzing Face</string>
     <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
     <string name="step_closer">Please Step Closer</string>
+    <string name="face_center">Please Center Your Face</string>
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
