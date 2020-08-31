@@ -274,6 +274,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int maskStatus = -2;
     private boolean maskEnabled = false;
     private boolean faceDetectEnabled = false;
+    private boolean isProDevice = false;
     private BroadcastReceiver mMessageReceiver = null;
     private AutofitTextView tvOnlyText;
     int memberCount;
@@ -1833,6 +1834,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void getAppSettings() {
+        isProDevice = Util.isDeviceProModel();
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
@@ -2535,7 +2537,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
             return;
         }
-        if (Util.isDeviceProModel()) {
+        if (isProDevice) {
             if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
                 runOnUiThread(() -> {
                     tvFaceMessage.setVisibility(View.VISIBLE);
