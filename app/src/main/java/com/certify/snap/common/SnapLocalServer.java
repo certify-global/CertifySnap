@@ -27,17 +27,16 @@
 
 package com.certify.snap.common;
 
-import android.util.Log;
-
-import com.certify.snap.controller.DatabaseController;
+import android.content.Context;
+import com.certify.snap.localserver.LocalServerController;
+import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.RegisteredMembers;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -60,27 +59,18 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.protocol.HttpCoreContext;
 import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.util.TimeValue;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Example of embedded HTTP/1.1 file server using classic I/O.
  */
 public class SnapLocalServer {
     private static HttpServer server;
-    private static String TAG = "SnapLocalServer";
-    static List<OfflineRecordTemperatureMembers> dataList = new ArrayList<>();
+    private static String TAG = SnapLocalServer.class.getSimpleName();;
+    private static Context mContext;
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args, Context context) throws Exception {
         int port = 8080;
+        mContext = context;
 
         final SocketConfig socketConfig = SocketConfig.custom()
                 .setSoTimeout(80, TimeUnit.SECONDS)
@@ -89,7 +79,8 @@ public class SnapLocalServer {
 //TODO make port configurable, listen on assigned interface ip address and loopback address
         server = ServerBootstrap.bootstrap()
                 .setListenerPort(port)
-                .setLocalAddress(InetAddress.getLocalHost())
+                .setLocalAddress(InetAddress.getByName("127.0.0.1"))
+                .setCanonicalHostName("127.0.0.1")
                 .setSocketConfig(socketConfig)
                 //.setSslContext(sslContext)
                 .setExceptionListener(new ExceptionListener() {
@@ -124,7 +115,6 @@ public class SnapLocalServer {
             }
         });
         Logger.debug(TAG, "Listening on port " + port);
-        findLastTenOfflineTempRecord();
 
         server.awaitTermination(TimeValue.MAX_VALUE);
 
@@ -163,88 +153,53 @@ public class SnapLocalServer {
             final String method = request.getMethod();
             try {
                 String pingValue = request.getUri().getPath();
+
+                if (!Method.GET.isSame(method) && !Method.HEAD.isSame(method) && !Method.POST.isSame(method)) {
+                    throw new MethodNotSupportedException(method + " method not supported");
+                } else {
+                    if (Method.GET.isSame(method)){
+                        String responseData = getResponseData(pingValue);
+                        final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
+                        final EndpointDetails endpoint = coreContext.getEndpointDetails();
+                        response.setCode(HttpStatus.SC_OK);
+                        StringEntity stringEntity = new StringEntity(responseData, ContentType.APPLICATION_JSON);
+                        response.setEntity(stringEntity);
+                        Logger.debug(TAG, response.toString());
+                    }
+                }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            if (!Method.GET.isSame(method) && !Method.HEAD.isSame(method) && !Method.POST.isSame(method)) {
-                throw new MethodNotSupportedException(method + " method not supported");
-            } else {
-                StringBuilder stringBuilderData = new StringBuilder();
+        }
 
-                stringBuilderData.append("[\n");
-                if (dataList.size() > 0){
-                    for (OfflineRecordTemperatureMembers list : dataList){
-                        stringBuilderData.append(convertJsonData(list));
-                    }
-                    stringBuilderData.append("]");
+    }
+
+    private static String getResponseData(String pingValue) {
+        StringBuilder stringBuilderData = new StringBuilder();
+        stringBuilderData.append("[\n");
+        if (pingValue.equalsIgnoreCase("/Ping")) {
+            stringBuilderData.append(LocalServerController.getInstance().getDeviceHealthCheck(mContext));
+        } else if (pingValue.equalsIgnoreCase("/GetTemperatureLogs")) {
+            if (LocalServerController.getInstance().getOfflineTempDataList().size() > 0) {
+                for (OfflineRecordTemperatureMembers list : LocalServerController.getInstance().getOfflineTempDataList()) {
+                    stringBuilderData.append(list.toString());
                 }
-                final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
-                final EndpointDetails endpoint = coreContext.getEndpointDetails();
-                response.setCode(HttpStatus.SC_OK);
-//                StringEntity stringEntity = new StringEntity("Welcome to certify local server", ContentType.DEFAULT_TEXT);
-                StringEntity stringEntity = new StringEntity(stringBuilderData.toString(), ContentType.APPLICATION_JSON);
-                response.setEntity(stringEntity);
-                Logger.debug(TAG, response.toString());
+            }
+        } else if (pingValue.equalsIgnoreCase("/GetAccessLogs")) {
+            if (LocalServerController.getInstance().getAccessLogDataList().size() > 0) {
+                for (AccessLogOfflineRecord list : LocalServerController.getInstance().getAccessLogDataList()) {
+                    stringBuilderData.append(list.toString());
+                }
+            }
+        } else if (pingValue.equalsIgnoreCase("/GetMembers")) {
+            if (LocalServerController.getInstance().getMemberDataList().size() > 0) {
+                for (RegisteredMembers list : LocalServerController.getInstance().getMemberDataList()) {
+                    stringBuilderData.append(LocalServerController.getInstance().convertJsonMemberData(list));
+                }
             }
         }
-
-    }
-
-    private static void findLastTenOfflineTempRecord() {
-        try {
-            Observable.create(new ObservableOnSubscribe<List<OfflineRecordTemperatureMembers>>() {
-                @Override
-                public void subscribe(ObservableEmitter<List<OfflineRecordTemperatureMembers>> emitter) throws Exception {
-                    List<OfflineRecordTemperatureMembers> offlineRecordList = DatabaseController.getInstance().lastTenOfflineTempRecord();
-                    emitter.onNext(offlineRecordList);
-                }
-            }).subscribeOn(Schedulers.computation())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<List<OfflineRecordTemperatureMembers>>() {
-                        Disposable disposable;
-
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            disposable = d;
-                        }
-
-                        @Override
-                        public void onNext(List<OfflineRecordTemperatureMembers> list) {
-                            if (list != null && list.size() > 0) {
-                                dataList = list;
-                            }
-                            disposable.dispose();
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Log.e(TAG, "Error in adding the member to data model from database");
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            disposable.dispose();
-                        }
-                    });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static String convertJsonData(OfflineRecordTemperatureMembers tempData) {
-        String json = "";
-        try {
-            JSONObject json1 = new JSONObject(tempData.getJsonObj());
-            json = JSONObject.wrap(json1) + "\n\n";
-            json = json.replaceAll(",", ",\n");
-            json = json.replaceAll("\\\\/", "/");
-            json = json.replaceAll("\\{", "{\n");
-            json = json.replaceAll("\\}", "\n}");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return json;
+        stringBuilderData.append("\n]");
+        return stringBuilderData.toString();
     }
 
 }

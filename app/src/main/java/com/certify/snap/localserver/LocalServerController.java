@@ -155,22 +155,16 @@ public class LocalServerController {
     public String getDeviceHealthCheck(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         JSONObject obj = new JSONObject();
-        String json = "";
         try {
             obj.put("lastUpdateDateTime", Util.getUTCDate(""));
             obj.put("deviceSN", Util.getSNCode());
             obj.put("deviceInfo", Util.MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", Util.getAppState());
-            JSONObject json1 = new JSONObject(obj.toString());
-            json = JSONObject.wrap(json1) + "\n\n";
-            json = json.replaceAll(",", ",\n");
-            json = json.replaceAll("\\{", "{\n");
-            json = json.replaceAll("\\}", "\n}");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return json;
+        return obj.toString();
     }
 
     public void findAllMembers() {
@@ -215,28 +209,25 @@ public class LocalServerController {
     }
 
     public String convertJsonMemberData(RegisteredMembers member) {
-        String json = "{\n";
+        JSONObject obj = new JSONObject();
         try {
-            json += "\"primaryId\": " + member.getPrimaryId() + ",\n";
-            json += "\"firstName\": " + JSONObject.quote(member.getFirstname()) + ",\n";
-            json += "\"lastName\": " + JSONObject.quote(member.getLastname()) + ",\n";
-            json += "\"status\": " + member.getStatus() + ",\n";
-            json += "\"phoneNumber\": " + JSONObject.quote(member.getMobile()) + ",\n";
-            json += "\"certifyId\": " + member.getUniqueid() + ",\n";
-            json += "\"faceTemplate\": " + JSONObject.quote(member.getImage()) + ",\n";
-            json += "\"memberId\": " + JSONObject.quote(member.getMemberid()) + ",\n";
-            json += "\"email\": " + JSONObject.quote(member.getEmail()) + ",\n";
-            json += "\"accessId\": " + JSONObject.quote(member.getAccessid()) + ",\n";
-            json += "\"memberType\": " + JSONObject.quote(member.getMemberType()) + ",\n";
-            json += "\"dateTime\": " + JSONObject.quote(member.getDateTime()) + "\n";
-            json = json.replaceAll("\\\\/", "/");
-
-            json += "}\n\n";
+            obj.put("primaryId", member.getPrimaryId());
+            obj.put("firstName", member.getFirstname());
+            obj.put("lastname", member.getLastname());
+            obj.put("email", member.getEmail());
+            obj.put("phoneNumber", member.getMobile());
+            obj.put("certifyId", member.getUniqueid());
+            obj.put("memberId", member.getMemberid());
+            obj.put("accessId", member.getAccessid());
+            obj.put("faceTemplate", Util.encodeImagePath(member.getImage()));
+            obj.put("status", member.getStatus());
+            obj.put("memberType", member.getMemberType());
+            obj.put("dateTime", member.getDateTime());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return json;
+        return obj.toString();
     }
 
     public String findUpdateMember(JSONObject member) {

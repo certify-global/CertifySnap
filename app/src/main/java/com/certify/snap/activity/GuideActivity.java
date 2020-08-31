@@ -504,10 +504,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         protected String doInBackground(String[] params) {
             SnapLocalServer snapLocalServer = new SnapLocalServer();
             try {
-                snapLocalServer.main(null);
                 LocalServerController.getInstance().findAllMembers();
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
                 LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
+                snapLocalServer.main(null, GuideActivity.this);
                 //LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
