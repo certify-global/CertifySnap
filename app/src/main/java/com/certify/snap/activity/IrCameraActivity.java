@@ -2928,26 +2928,29 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         runOnUiThread(() -> {
             switch (errorCode.getValue()) {
                 case 1: {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
                     outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                 }
                 break;
 
                 case 2: {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
                     outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                 }
                 break;
 
                 case 3: {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
                     outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                 }
                 break;
 
-                default: {
+                /*default: {
                     tvErrorMessage.setVisibility(View.GONE);
-                }
+                }*/
             }
         });
         TemperatureController.getInstance().clearData();

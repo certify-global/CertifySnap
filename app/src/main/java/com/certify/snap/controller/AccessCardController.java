@@ -226,9 +226,15 @@ public class AccessCardController implements AccessCallback {
     public void accessCardLog(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
         boolean isFacialEnabled = AppSettings.isFacialDetect();
         if (isFacialEnabled) {
-            if (data != null && data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
-                registeredMembers = data.member;
+            if (data != null) {
+                if ((AccessControlModel.getInstance().getRfidScanMatchedMember() == null) ||
+                         data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
+                    registeredMembers = data.member;
+                }
             }
+        }
+        if (registeredMembers == null) {
+            registeredMembers = new RegisteredMembers();
         }
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);

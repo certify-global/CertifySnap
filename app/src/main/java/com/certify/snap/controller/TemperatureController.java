@@ -453,12 +453,16 @@ public class TemperatureController {
                 if (reason != null) {
                     obj = new JSONObject(reason);
                     String errorCode = obj.getString("err");
-                    Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + errorCode);
-                    updateGuideMsgOnTemperatureFail(errorCode);
 
-                    float temNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
-                    Log.e(TAG, "SnapXT Temperature Failed Tem no correct: " + temNoCorrect);
-                    updateAllowLowOnTemperatureFail(errorCode, temNoCorrect);
+                    if (errorCode != null) {
+                        float temNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
+                        Log.e(TAG, "SnapXT Temperature Failed Tem no correct: " + temNoCorrect);
+                        updateAllowLowOnTemperatureFail(errorCode, temNoCorrect);
+
+                        Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + errorCode);
+                        if (TemperatureController.getInstance().getTrackIdMap().isEmpty()) return;
+                        updateGuideMsgOnTemperatureFail(errorCode);
+                    }
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "Error in fetching the error value on Temperature Fail");
@@ -563,6 +567,14 @@ public class TemperatureController {
      */
     public void clearTemperatureMap() {
         temperatureMap.clear();
+    }
+
+    /**
+     * Method that returns the trackId Map for Temperature
+     * @return Map data
+     */
+    public HashMap<Integer, String> getTrackIdMap() {
+        return trackIdMap;
     }
 
     /**
