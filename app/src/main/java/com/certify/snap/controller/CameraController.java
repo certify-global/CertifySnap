@@ -145,10 +145,11 @@ public class CameraController {
 
     private void startProDeviceInitTimer() {
         if (scannerRemainingTime > 0) {
-            new CountDownTimer(scannerRemainingTime, Constants.PRO_SCANNER_INIT_INTERVAL) {
+            long timeDuration = (scannerRemainingTime * 60 * 1000);
+            new CountDownTimer(timeDuration, Constants.PRO_SCANNER_INIT_INTERVAL) {
                 @Override
                 public void onTick(long remTime) {
-                    scannerRemainingTime = ((remTime / 1000) / 60);
+                    scannerRemainingTime = ((remTime/1000)/60);
                 }
 
                 @Override

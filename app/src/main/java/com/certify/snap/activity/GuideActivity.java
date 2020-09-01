@@ -68,7 +68,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private boolean onlineMode = true;
     private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
-    private long remainingTime = 0;
+    private long remainingTime = 20;
     private ImageView internetIndicatorImage;
     public LocalServer localServer;
 
