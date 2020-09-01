@@ -1,38 +1,50 @@
 package com.certify.snap.activity;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.certify.snap.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class GestureActivity extends AppCompatActivity {
-
+    private final String TAG = GestureActivity.class.getSimpleName();
     private boolean runCheck = true;
     private TextView peopleHandTips;
     private EditText leftRange, rightRange;
-    private TextView covidQuestionsText;
+    private TextView covidQuestionsText, titleView;
     private Button question_one_yes_button, question_one_no_button;
 
     public static final String COVID_QUESTION_ONE = "covid_question_one";
@@ -41,12 +53,42 @@ public class GestureActivity extends AppCompatActivity {
     private String nextQuestion = COVID_QUESTION_ONE;
     Boolean wait = true;
     private SeekBar mSeekBar;
+    private boolean VOICE_ENABLED = false;
+    private SpeechRecognizer speechRecognizer;
+    private Intent speechRecognizerIntent;
+    private boolean allQuestionAnswered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gesture);
         initView();
+
+        if (VOICE_ENABLED) {
+            handleQuestionnaireByVoice();
+            return;
+        }
+        handleGestureByGesture();
+    }
+
+    private void handleQuestionnaireByVoice() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+            checkPermission();
+        }
+
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+
+        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 120000);
+
+        onSpeechRecognitionListener();
+
+        startListening();
+    }
+
+    private void handleGestureByGesture() {
         new Thread(new Runnable() {
 
             @Override
@@ -102,6 +144,14 @@ public class GestureActivity extends AppCompatActivity {
         System.exit(0);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
+    }
+
     void initView() {
         peopleHandTips = (TextView) findViewById(R.id.peopleHandTips);
         leftRange = (EditText) findViewById(R.id.leftRange);
@@ -110,6 +160,11 @@ public class GestureActivity extends AppCompatActivity {
         question_one_yes_button = findViewById(R.id.question_one_yes_button);
         question_one_no_button = findViewById(R.id.question_one_no_button);
         mSeekBar = findViewById(R.id.seekBar);
+        titleView = findViewById(R.id.title_text_view);
+
+        if (VOICE_ENABLED) {
+            titleView.setText("Please answer the questions by saying Yes or No");
+        }
     }
 
     int leftRangeValue = 50;
@@ -330,6 +385,9 @@ public class GestureActivity extends AppCompatActivity {
                     covidQuestionsText.setText("2. Have you travelled overseas in the last 14 days");
                     buttonReset();
 
+                    if (VOICE_ENABLED) {
+                        startListening();
+                    }
                 } else if (key.equals(COVID_QUESTION_ONE)) {
                     nextQuestion = COVID_QUESTION_TWO;
                     covidQuestionsText.setText("2. Have you travelled overseas in the last 14 days");
@@ -339,22 +397,28 @@ public class GestureActivity extends AppCompatActivity {
                     covidQuestionsText.setText("3. Have you been in contact with someone who has confirmed case of Covid-19?");
                     buttonReset();
 
+                    if (VOICE_ENABLED) {
+                        startListening();
+                    }
                 } else if (key.equals(COVID_QUESTION_TWO)) {
                     nextQuestion = COVID_QUESTION_THREE;
                     covidQuestionsText.setText("3. Have you been in contact with someone who has confirmed case of Covid-19?");
                     buttonReset();
                 } else if (key.equals(COVID_QUESTION_THREE) && value) {
                     buttonReset();
-                    //startActivity(new Intent(GestureActivity.this, IrCameraActivity.class));
+                    allQuestionAnswered = true;
+                    if (VOICE_ENABLED) {
+                        stopListening();
+                    }
                 } else if (key.equals(COVID_QUESTION_THREE)) {
-                    //startActivity(new Intent(GestureActivity.this, IrCameraActivity.class));
                     buttonReset();
                 }
             }
         });
     }
 
-    private void buttonReset() {
+    private void buttonReset(){
+        //changeQuestion(nextQuestion, true);
         mSeekBar.setProgress(mSeekBar.getProgress() + 1);
         question_one_yes_button.setBackgroundColor(getResources().getColor(R.color.gray));
         question_one_no_button.setBackgroundColor(getResources().getColor(R.color.gray));
@@ -370,6 +434,101 @@ public class GestureActivity extends AppCompatActivity {
                 this.cancel();
             }
         }, 2 * 1000);
+    }
+
+    //-----> Voice code
+    private void checkPermission() {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+        //}
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1 && grantResults.length > 0 ){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                Toast.makeText(this,"Permission Granted",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onSpeechRecognitionListener() {
+        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle bundle) {
+                Log.d(TAG, "Voice onReadyForSpeech");
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+                Log.d(TAG, "Voice onBeginningOfSpeech");
+            }
+
+            @Override
+            public void onRmsChanged(float v) {
+                Log.d(TAG, "Voice onRmsChanged");
+            }
+
+            @Override
+            public void onBufferReceived(byte[] bytes) {
+                Log.d(TAG, "Voice onBufferReceived");
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+                Log.d(TAG, "Voice onEndOfSpeech");
+
+            }
+
+            @Override
+            public void onError(int i) {
+                Log.d(TAG, "Voice onError");
+                if (allQuestionAnswered) {
+                    stopListening();
+                    return;
+                }
+                startListening();
+            }
+
+            @Override
+            public void onResults(Bundle bundle) {
+                Log.d(TAG, "Voice onResults");
+                ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (data.size() > 0) {
+                    if (data.get(0).toLowerCase().equals("yes")
+                            || data.get(0).toLowerCase().equals("no")) {
+                        changeQuestion(nextQuestion, true);
+                    }
+                }
+            }
+
+            @Override
+            public void onPartialResults(Bundle bundle) {
+                Log.d(TAG, "Voice onPartialResults");
+            }
+
+            @Override
+            public void onEvent(int i, Bundle bundle) {
+                Log.d(TAG, "Voice onEvent");
+            }
+        });
+    }
+
+    private void startListening() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (speechRecognizer != null) {
+                    speechRecognizer.startListening(speechRecognizerIntent);
+                }
+            }
+        }, 2000);
+    }
+
+    private void stopListening() {
+        if (speechRecognizer != null) {
+            speechRecognizer.stopListening();
+        }
     }
 
 }
