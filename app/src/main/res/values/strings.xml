@@ -241,6 +241,7 @@
     <string name="confirmation_text_above">Confirmation for temperature above threshold</string>
     <string name="scan_view">Scan View</string>
     <string name="audio_visual_view">Audio and Visual</string>
+    <string name="gesture_view">Gesture</string>
     <string name="ble_devices_view">BLE Devices</string>
     <string name="thermal_view">Home View</string>
     <string name="enter_title_main">Enter Main Text</string>

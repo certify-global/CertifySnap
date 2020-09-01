@@ -19,7 +19,8 @@ public class ScanViewActivity extends SettingBaseActivity {
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low;
     Typeface rubiklight;
-    TextView tv_delay,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask;
+    TextView tv_delay,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask,
+            voiceRecognitionTextView ,  handGestureTextView;
     TextInputLayout text_input_low_temp;
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
@@ -33,10 +34,13 @@ public class ScanViewActivity extends SettingBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            rubiklight = Typeface.createFromAsset(getAssets(),
-                    "rubiklight.ttf");
             setContentView(R.layout.activity_scan_view);
             sp = Util.getSharedPreferences(this);
+
+            initView();
+            voiceRecognitionCheck();
+            handGestureCheck();
+
             final RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
             final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
             RadioButton rbCaptureNo = findViewById(R.id.radio_no_capture);
@@ -49,33 +53,6 @@ public class ScanViewActivity extends SettingBaseActivity {
             RadioGroup radio_group_reg = findViewById(R.id.radio_group_reg);
             RadioButton radio_yes_reg = findViewById(R.id.radio_yes_reg);
             RadioButton radio_no_reg = findViewById(R.id.radio_no_reg);
-
-            et_screen_delay = findViewById(R.id.et_screen_delay);
-            text_input_low_temp = findViewById(R.id.text_input_low_temp);
-            editTextDialogUserInput_low = findViewById(R.id.editTextDialogUserInput_low);
-            radio_group_mask = findViewById(R.id.radio_group_mask);
-            radio_yes_mask = findViewById(R.id.radio_yes_mask);
-            radio_no_mask = findViewById(R.id.radio_no_mask);
-            btn_save = findViewById(R.id.btn_exit);
-            tv_delay = findViewById(R.id.tv_delay);
-            tv_temp_all = findViewById(R.id.tv_temp_all);
-            tv_capture_image = findViewById(R.id.tv_capture_image);
-            tv_reg = findViewById(R.id.tv_reg);
-            tv_scan = findViewById(R.id.titles);
-            tv_temp_details = findViewById(R.id.tv_temp_details);
-            tv_mask = findViewById(R.id.tv_mask);
-            scanProximityView = findViewById(R.id.tv_scan_proximity);
-            scanProximityRg = findViewById(R.id.scan_proximity_rg);
-            scanProximityYes = findViewById(R.id.radio_yes_scan_proximity);
-            scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
-            tv_delay.setTypeface(rubiklight);
-            tv_temp_all.setTypeface(rubiklight);
-            tv_capture_image.setTypeface(rubiklight);
-            tv_temp_details.setTypeface(rubiklight);
-            tv_scan.setTypeface(rubiklight);
-            tv_reg.setTypeface(rubiklight);
-            tv_mask.setTypeface(rubiklight);
-            scanProximityView.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
                 rbCaptureYes.setChecked(true);
@@ -171,6 +148,82 @@ public class ScanViewActivity extends SettingBaseActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void initView(){
+        et_screen_delay = findViewById(R.id.et_screen_delay);
+        text_input_low_temp = findViewById(R.id.text_input_low_temp);
+        editTextDialogUserInput_low = findViewById(R.id.editTextDialogUserInput_low);
+        radio_group_mask = findViewById(R.id.radio_group_mask);
+        radio_yes_mask = findViewById(R.id.radio_yes_mask);
+        radio_no_mask = findViewById(R.id.radio_no_mask);
+        btn_save = findViewById(R.id.btn_exit);
+        tv_delay = findViewById(R.id.tv_delay);
+        tv_temp_all = findViewById(R.id.tv_temp_all);
+        tv_capture_image = findViewById(R.id.tv_capture_image);
+        tv_reg = findViewById(R.id.tv_reg);
+        tv_scan = findViewById(R.id.titles);
+        tv_temp_details = findViewById(R.id.tv_temp_details);
+        tv_mask = findViewById(R.id.tv_mask);
+        scanProximityView = findViewById(R.id.tv_scan_proximity);
+        scanProximityRg = findViewById(R.id.scan_proximity_rg);
+        scanProximityYes = findViewById(R.id.radio_yes_scan_proximity);
+        scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
+        voiceRecognitionTextView = findViewById(R.id.voice_recognition_textView);
+        handGestureTextView = findViewById(R.id.hand_gesture_text_view);
+
+        rubiklight = Typeface.createFromAsset(getAssets(),
+                "rubiklight.ttf");
+
+        tv_delay.setTypeface(rubiklight);
+        tv_temp_all.setTypeface(rubiklight);
+        tv_capture_image.setTypeface(rubiklight);
+        tv_temp_details.setTypeface(rubiklight);
+        tv_scan.setTypeface(rubiklight);
+        tv_reg.setTypeface(rubiklight);
+        tv_mask.setTypeface(rubiklight);
+        scanProximityView.setTypeface(rubiklight);
+        voiceRecognitionTextView.setTypeface(rubiklight);
+        handGestureTextView.setTypeface(rubiklight);
+
+    }
+
+    private void voiceRecognitionCheck(){
+        RadioGroup radio_group_light = findViewById(R.id.radio_group_voice_recognition);
+        RadioButton radio_yes_light = findViewById(R.id.radio_yes_voice_recognition);
+        RadioButton radio_no_light = findViewById(R.id.radio_no_voice_recognition);
+
+        if(sp.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false))
+            radio_yes_light.setChecked(true);
+        else radio_no_light.setChecked(true);
+
+        radio_group_light.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_voice_recognition)
+                    Util.writeBoolean(sp, GlobalParameters.VISUAL_RECOGNITION, true);
+                else Util.writeBoolean(sp, GlobalParameters.VISUAL_RECOGNITION, false);
+            }
+        });
+    }
+
+    private void handGestureCheck(){
+        RadioGroup radio_group_light = findViewById(R.id.radio_group_hand_gesture);
+        RadioButton radio_yes_light = findViewById(R.id.radio_yes_hand_gesture);
+        RadioButton radio_no_light = findViewById(R.id.radio_no_hand_gesture);
+
+        if(sp.getBoolean(GlobalParameters.HAND_GESTURE,false))
+            radio_yes_light.setChecked(true);
+        else radio_no_light.setChecked(true);
+
+        radio_group_light.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_hand_gesture)
+                    Util.writeBoolean(sp, GlobalParameters.HAND_GESTURE, true);
+                else Util.writeBoolean(sp, GlobalParameters.HAND_GESTURE, false);
+            }
+        });
     }
 
     private void setDefaultScanProximity() {

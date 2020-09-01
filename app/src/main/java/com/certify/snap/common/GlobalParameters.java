@@ -142,7 +142,8 @@ public class GlobalParameters {
     public static final String Temp_ACCESS_TOKEN = "Temp_access_token";
     public static final String QR_BUTTON_TEXT = "QR_button_text";
     public static final String QR_SKIP_BUTTON_ENABLE_DISABLE = "QR_skip_button_enable";
-
+    public static final String VISUAL_RECOGNITION = "VisualRecognition";
+    public static final String HAND_GESTURE = "HandGesture";
 
     public static final String Temperature = "temperature";
     public static final String Temphint = "temphint";

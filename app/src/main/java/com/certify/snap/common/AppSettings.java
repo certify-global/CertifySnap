@@ -39,6 +39,8 @@ public class AppSettings {
     private static boolean isNavigationBarOn = false;
     private static boolean enablePrinter = false;
     private static float temperatureCompensation = 0;
+    private static boolean enableVoice = false;
+    private static boolean enableHandGesture = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -79,6 +81,8 @@ public class AppSettings {
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
         enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BLUETOOTH_PRINTER,false);
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
+        enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false);
+        enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
     }
 
     public static String getThermalScanTitle() {
@@ -203,5 +207,13 @@ public class AppSettings {
 
     public static float getTemperatureCompensation() {
         return temperatureCompensation;
+    }
+
+    public static boolean isEnableVoice() {
+        return enableVoice;
+    }
+
+    public static boolean isEnableHandGesture() {
+        return enableHandGesture;
     }
 }
