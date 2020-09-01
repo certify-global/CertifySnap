@@ -72,6 +72,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private boolean proSettingValue = false;
     private SeekBar seekBar;
     private int ledLevel = 0;
+    private boolean serverSettingValue = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -175,11 +176,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     AppSettings.setProSettings(proSettingValue);
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         deleteAppData();
+                        if (serverSettingValue)
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
                         Util.writeString(sharedPreferences, GlobalParameters.URL, url);
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
-                        if (proSettingValueSp != proSettingValue) {
+                        if (proSettingValueSp != proSettingValue || serverSettingValue) {
                             restartApp();
                             return;
                         }
@@ -623,7 +626,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)) {
             radio_yes_server.setChecked(true);
             tvServerIp.setVisibility(View.VISIBLE);
-            tvServerIp.setText(Constants.SERVER_IP +":"+Constants.port);
+            String text = String.format(getResources().getString(R.string.text_ip_address), Constants.SERVER_IP +":"+Constants.port);
+            tvServerIp.setText(text);
         } else {
             radio_no_server.setChecked(true);
 
@@ -636,12 +640,15 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
                     radio_yes_server.setChecked(true);
                     tvServerIp.setVisibility(View.VISIBLE);
-                    tvServerIp.setText(Constants.SERVER_IP +":"+Constants.port);
-                    restartApp();
-                    finish();
+                    String text = String.format(getResources().getString(R.string.text_ip_address), Constants.SERVER_IP +":"+Constants.port);
+                    tvServerIp.setText(text);
+                    serverSettingValue = true;
                 } else {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, false);
                     radio_no_server.setChecked(true);
+                    serverSettingValue = false;
+                    tvServerIp.setVisibility(View.GONE);
+                    tvServerIp.setText("");
                 }
             }
 

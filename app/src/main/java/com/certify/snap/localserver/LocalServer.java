@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -69,13 +70,19 @@ import org.json.JSONObject;
 /**
  * Example of embedded HTTP/1.1 file server using classic I/O.
  */
-public class SnapLocalServer {
-    private static HttpServer server;
-    private static String TAG = SnapLocalServer.class.getSimpleName();;
-    private static Context mContext;
+public class LocalServer implements LocalServerController.LocalServerCallbackListener{
+    private HttpServer server;
+    private static String TAG = LocalServer.class.getSimpleName();;
+    private Context mContext;
+    public HttpContext httpContext;
+    public ClassicHttpResponse httpResponse;
 
-    public static void main(final String[] args, Context context) throws Exception {
+    public LocalServer(Context context){
         mContext = context;
+        LocalServerController.getInstance().setListener(this);
+    }
+
+    public void init() throws Exception {
 
         final SocketConfig socketConfig = SocketConfig.custom()
                 .setSoTimeout(80, TimeUnit.SECONDS)
@@ -125,7 +132,7 @@ public class SnapLocalServer {
 
     }
 
-    public static void startServer() {
+    public void startServer() {
         try {
             server.start();
         } catch (Exception e) {
@@ -134,7 +141,7 @@ public class SnapLocalServer {
 
     }
 
-    public static void stopServer() {
+    public void stopServer() {
         try {
             server.stop();
         } catch (Exception e) {
@@ -143,7 +150,7 @@ public class SnapLocalServer {
 
     }
 
-    public static class HttpFileHandler implements HttpRequestHandler {
+    public class HttpFileHandler implements HttpRequestHandler {
 
         public HttpFileHandler() {
             super();
@@ -156,6 +163,8 @@ public class SnapLocalServer {
                 final HttpContext context) throws HttpException, IOException {
 
             final String method = request.getMethod();
+            httpContext = context;
+            httpResponse = response;
             try {
                 String pingValue = request.getUri().getPath();
 
@@ -177,12 +186,7 @@ public class SnapLocalServer {
                             }
                         }
                     }
-                    final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
-                    final EndpointDetails endpoint = coreContext.getEndpointDetails();
-                    response.setCode(HttpStatus.SC_OK);
-                    StringEntity stringEntity = new StringEntity(responseData, ContentType.APPLICATION_JSON);
-                    response.setEntity(stringEntity);
-                    Logger.debug(TAG, response.toString());
+                    sendResponseData(httpContext, responseData);
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
@@ -203,24 +207,27 @@ public class SnapLocalServer {
         return str;
     }
 
-    private static String getResponseData(String pingValue) {
+    private String getResponseData(String pingValue) {
         StringBuilder stringBuilderData = new StringBuilder();
         stringBuilderData.append("[\n");
         if (pingValue.equalsIgnoreCase("/Ping")) {
             stringBuilderData.append(LocalServerController.getInstance().getDeviceHealthCheck(mContext));
         } else if (pingValue.equalsIgnoreCase("/GetTemperatureLogs")) {
+            LocalServerController.getInstance().findLastTenOfflineTempRecord();
             if (LocalServerController.getInstance().getOfflineTempDataList().size() > 0) {
                 for (OfflineRecordTemperatureMembers list : LocalServerController.getInstance().getOfflineTempDataList()) {
                     stringBuilderData.append(list.toString());
                 }
             }
         } else if (pingValue.equalsIgnoreCase("/GetAccessLogs")) {
+            LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
             if (LocalServerController.getInstance().getAccessLogDataList().size() > 0) {
                 for (AccessLogOfflineRecord list : LocalServerController.getInstance().getAccessLogDataList()) {
                     stringBuilderData.append(list.toString());
                 }
             }
         } else if (pingValue.equalsIgnoreCase("/GetMembers")) {
+            LocalServerController.getInstance().findAllMembers();
             if (LocalServerController.getInstance().getMemberDataList().size() > 0) {
                 for (RegisteredMembers list : LocalServerController.getInstance().getMemberDataList()) {
                     stringBuilderData.append(LocalServerController.getInstance().convertJsonMemberData(list));
@@ -241,6 +248,34 @@ public class SnapLocalServer {
         }
 
         return "";
+    }
+
+    @Override
+    public void onGetMemberRequest(List<RegisteredMembers> list) {
+        StringBuilder stringBuilderData = new StringBuilder();
+        stringBuilderData.append("[\n");
+        if (LocalServerController.getInstance().getMemberDataList().size() > 0) {
+            for (RegisteredMembers registeredMember : LocalServerController.getInstance().getMemberDataList()) {
+                stringBuilderData.append(LocalServerController.getInstance().convertJsonMemberData(registeredMember));
+            }
+        }
+        stringBuilderData.append("\n]");
+        sendResponseData(httpContext,stringBuilderData.toString());
+    }
+
+    public void sendResponseData(HttpContext context, String responseData){
+        final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
+        final EndpointDetails endpoint = coreContext.getEndpointDetails();
+        httpResponse.setCode(HttpStatus.SC_OK);
+        StringEntity stringEntity = new StringEntity(responseData, ContentType.APPLICATION_JSON);
+        httpResponse.setEntity(stringEntity);
+                    //Logger.debug(TAG, response.toString());
+    }
+
+    public void processGetRequest(String requestName){
+        if (requestName.equalsIgnoreCase("/GetMembers")){
+            LocalServerController.getInstance().findAllMembers();
+        }
     }
 
 }

@@ -33,7 +33,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
-import com.certify.snap.localserver.SnapLocalServer;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
@@ -41,6 +41,7 @@ import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.localserver.LocalServerController;
+import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
@@ -69,6 +70,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private CountDownTimer startUpCountDownTimer;
     private long remainingTime = 0;
     private ImageView internetIndicatorImage;
+    public LocalServer localServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +124,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             startUpCountDownTimer.cancel();
         }
         ApplicationController.getInstance().releaseThermalUtil();
-        SnapLocalServer.stopServer();
+        if (localServer != null){
+            localServer.stopServer();
+        }
     }
 
     private void checkStatus() {
@@ -352,7 +356,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         runOnUiThread(() -> {
             initAppStatusInfo();
             if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)){
-                new ServerCall().execute();
+                localServer = new LocalServer(this);
+                new LocalServerTask(localServer).execute();
             }
             try {
                 Util.createAudioDirectory();
@@ -438,27 +443,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         startUpCountDownTimer.start();
         progressDialog.setCancelable(false);
         progressDialog.show();
-    }
-
-    private class ServerCall extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String[] params) {
-            SnapLocalServer snapLocalServer = new SnapLocalServer();
-            try {
-                LocalServerController.getInstance().findAllMembers();
-                LocalServerController.getInstance().findLastTenOfflineTempRecord();
-                LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
-                snapLocalServer.main(null, GuideActivity.this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String message) {
-        }
     }
 
 }

@@ -430,6 +430,37 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/navigation_bar_border"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/led_brightness_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LED Brightness:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+        <SeekBar
+            android:layout_marginTop="@dimen/margin_10"
+            android:layout_marginLeft="@dimen/margin_10"
+            android:layout_marginRight="@dimen/margin_10"
+            android:layout_marginBottom="@dimen/margin_5"
+            android:id="@+id/seekbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:max="255"
+            android:progress="30" />
+    </LinearLayout>
+
+    <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/blue" />
@@ -481,39 +512,12 @@
             android:id="@+id/tv_server_ip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=" "
+            android:text="@string/text_ip_address"
+            android:layout_marginTop="@dimen/margin_5"
             android:textColor="@color/black"
             android:textSize="@dimen/font_18"
             android:visibility="gone"/>
 
-    </LinearLayout>
-
-    <View
-        android:id="@+id/navigation_bar_border"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/blue" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_10"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/led_brightness_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="LED Brightness:"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
-        <SeekBar
-            android:layout_margin="10dp"
-            android:id="@+id/seekbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:max="255"
-            android:progress="30" />
     </LinearLayout>
 
     <View

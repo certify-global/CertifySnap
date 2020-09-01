@@ -3,7 +3,6 @@ package com.certify.snap.localserver;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -18,22 +17,17 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-
-import static com.certify.snap.common.Util.getSharedPreferences;
-
 public class LocalServerController {
     private static final String TAG = LocalServerController.class.getSimpleName();
     private static LocalServerController mInstance = null;
     List<OfflineRecordTemperatureMembers> tempDataList = new ArrayList<>();
     private List<AccessLogOfflineRecord> accessLogDataList = new ArrayList<>();
     private List<RegisteredMembers> memberDataList = new ArrayList<>();
+    private LocalServerCallbackListener listener;
+
+    public interface LocalServerCallbackListener {
+        void onGetMemberRequest(List<RegisteredMembers> list);
+    }
 
     public static LocalServerController getInstance() {
         if (mInstance == null) {
@@ -55,7 +49,8 @@ public class LocalServerController {
     }
 
     public void findLastTenOfflineTempRecord() {
-        try {
+        tempDataList = DatabaseController.getInstance().lastTenOfflineTempRecord();
+        /*try {
             Observable.create(new ObservableOnSubscribe<List<OfflineRecordTemperatureMembers>>() {
                 @Override
                 public void subscribe(ObservableEmitter<List<OfflineRecordTemperatureMembers>> emitter) throws Exception {
@@ -92,11 +87,12 @@ public class LocalServerController {
                     });
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void findLastTenOfflineAccessLogRecord() {
-        try {
+        accessLogDataList = DatabaseController.getInstance().lastTenOfflineAccessLog();
+       /* try {
             Observable.create(new ObservableOnSubscribe<List<AccessLogOfflineRecord>>() {
                 @Override
                 public void subscribe(ObservableEmitter<List<AccessLogOfflineRecord>> emitter) throws Exception {
@@ -133,11 +129,11 @@ public class LocalServerController {
                     });
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public String getDeviceHealthCheck(Context context) {
-        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         JSONObject obj = new JSONObject();
         try {
             obj.put("lastUpdateDateTime", Util.getUTCDate(""));
@@ -151,7 +147,12 @@ public class LocalServerController {
         return obj.toString();
     }
 
-    public void findAllMembers() {
+    public List<RegisteredMembers> findAllMembers(){
+        memberDataList = DatabaseController.getInstance().findAll();
+        return memberDataList;
+    }
+
+   /* public void findAllMembers() {
         try {
             Observable.create(new ObservableOnSubscribe<List<RegisteredMembers>>() {
                 @Override
@@ -173,6 +174,9 @@ public class LocalServerController {
                         public void onNext(List<RegisteredMembers> list) {
                             if (list != null && list.size() > 0) {
                                 memberDataList = list;
+                                if (listener != null){
+                                    listener.onGetMemberRequest(memberDataList);
+                                }
                             }
                             disposable.dispose();
                         }
@@ -190,7 +194,7 @@ public class LocalServerController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public String convertJsonMemberData(RegisteredMembers member) {
         JSONObject obj = new JSONObject();
@@ -254,5 +258,9 @@ public class LocalServerController {
             e.printStackTrace();
         }
         return "result: FAIL";
+    }
+
+    public void setListener(LocalServerCallbackListener listener) {
+        this.listener = listener;
     }
 }
