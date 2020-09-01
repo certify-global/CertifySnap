@@ -223,6 +223,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private List<CompareResult> compareResultList;
     private SharedPreferences sharedPreferences;
     private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
+    private Toast faceThermalToast = null;
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.CAMERA,
@@ -273,6 +274,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private int maskStatus = -2;
     private boolean maskEnabled = false;
     private boolean faceDetectEnabled = false;
+    private boolean isProDevice = false;
     private BroadcastReceiver mMessageReceiver = null;
     private AutofitTextView tvOnlyText;
     int memberCount;
@@ -294,6 +296,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private UserExportedData userData;
     private Button qrSkipButton;
     private FaceRectView faceRectView;
+    private Face3DAngle face3DAngle;
 
     private void instanceStart() {
         try {
@@ -1222,39 +1225,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             imageTimer.cancel();
     }
 
-    private static class ProcessHandler extends Handler {
-        WeakReference<IrCameraActivity> activityWeakReference;
-
-        private ProcessHandler(IrCameraActivity activity) {
-            activityWeakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            IrCameraActivity irCameraActivity = activityWeakReference.get();
-            if (irCameraActivity == null)
-                return;
-            switch (msg.what) {
-                case HIDE_VERIFY_UI:
-                    // irCameraActivity.stopAnimation();
-                    //irCameraActivity.changeVerifyBackground(R.color.transparency, false);
-                    break;
-                case CARD_ID_ERROR:
-//                    irCameraActivity.mBeepManager2.playBeepSoundAndVibrate();
-                    irCameraActivity.showNfcResult(false, false);
-                    break;
-                case ENTER:
-//                    irCameraActivity.mBeepManager1.playBeepSoundAndVibrate();
-                    irCameraActivity.showNfcResult(true, true);
-                    break;
-                case TIME_ERROR:
-//                    irCameraActivity.mBeepManager2.playBeepSoundAndVibrate();
-                    irCameraActivity.showNfcResult(true, false);
-                    break;
-            }
-        }
-    }
-
     private void showSnackbar(final String snackMessage) {
         tv_sync.setTypeface(rubiklight);
         if (snackMessage.equals("start")) {
@@ -1272,26 +1242,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
     }
 
-    private void showNfcResult(boolean isSuccess, boolean isLimitTime) {
-        if (nfcDialog != null && nfcDialog.isShowing())
-            return;
-        View view = View.inflate(this, R.layout.toast_guest, null);
-        ImageView img_nfc = view.findViewById(R.id.img_guest);
-        TextView txt_nfc = view.findViewById(R.id.txt_guest);
-        img_nfc.setBackground(isSuccess ? (isLimitTime ? getDrawable(R.mipmap.scan_success) : getDrawable(R.mipmap.scan_fail)) : getDrawable(R.mipmap.scan_fail));
-        txt_nfc.setText(isSuccess ? (isLimitTime ? getString(R.string.welcome) : getString(R.string.text_notpasstime)) : getString(R.string.Unrecognized));
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setView(view)
-                .setCancelable(false);
-        nfcDialog = builder.create();
-        nfcDialog.show();
-        Window window = nfcDialog.getWindow();
-        if (window != null) {
-            window.setLayout(getWindowManager().getDefaultDisplay().getWidth() / 2, WindowManager.LayoutParams.WRAP_CONTENT);
-            window.setBackgroundDrawable(new ColorDrawable());
-        }
-    }
-
     private void changeVerifyBackground(int id, boolean isVisible) {
         if (outerCircle == null || innerCircle == null || relativeLayout == null)
             return;
@@ -1299,12 +1249,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         //outerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         //innerCircle.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         relativeLayout.setBackground(getDrawable(id));
-    }
-
-    private void showAnimation() {
-//        temperature_image.setVisibility(View.GONE);
-//        tv_message.setText("");
-//        tv_message.setVisibility(View.GONE);
     }
 
     public String[] processLimitedTime(String data) {
@@ -1890,6 +1834,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void getAppSettings() {
+        isProDevice = Util.isDeviceProModel();
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
@@ -2344,7 +2289,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             //Access Log api call
             RegisteredMembers member = new RegisteredMembers();
             member.setAccessid(cardId);
-            AccessCardController.getInstance().accessCardLog(this, member, 0);
+            AccessCardController.getInstance().accessCardLog(this, member, 0,
+                                    new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
 
             //If Access denied, stop the reader and start again
             //Optimize: Not to close the stream
@@ -2472,7 +2418,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         emitter.onNext(searchFaceInfoList);
                         return;
                     }
-                    emitter.onNext(searchFaceInfoList);
 
                     int faceProcessCode = faceEngineHelper.getFrEngine().process(mBgr24, mAlignedBitmap.getWidth(), mAlignedBitmap.getHeight(), FaceEngine.CP_PAF_BGR24, searchFaceInfoList, processMask);
                     // Need to work on condition
@@ -2497,6 +2442,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             faceEngineHelper.getFrEngine().getFace3DAngle(face3DAngles);
                             if (face3DAngles.size() > 0) {
                                 faceParameters.face3DAngle = faceParameters.getFace3DAngle(face3DAngles.get(0));
+                                face3DAngle = face3DAngles.get(0);
                             }
 
                             List<AgeInfo> ageInfos = new ArrayList<>();
@@ -2518,6 +2464,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                             }
                         }
                     }
+                    emitter.onNext(searchFaceInfoList);
                 })
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -2580,16 +2527,29 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     }
 
     private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
-        if (searchFaceList.size() > 0 && isFaceClose(searchFaceList.get(0))) {
-            Log.d(TAG, "Face is close, Initiate search");
+        if (searchFaceList.size() > 0 && !isFaceClose(searchFaceList.get(0))) {
+            runOnUiThread(() -> {
+                tvFaceMessage.setVisibility(View.VISIBLE);
+                tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
+            });
+            searchFaceInfoList.clear();
+            face3DAngle = null;
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
             return;
         }
-        runOnUiThread(() -> {
-            tvFaceMessage.setVisibility(View.VISIBLE);
-            tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
-        });
-        searchFaceInfoList.clear();
+        if (isProDevice) {
+            if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
+                runOnUiThread(() -> {
+                    tvFaceMessage.setVisibility(View.VISIBLE);
+                    tvFaceMessage.setText(getString(R.string.face_center));
+                });
+                searchFaceInfoList.clear();
+                face3DAngle = null;
+                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
+                return;
+            }
+        }
+        Log.d(TAG, "Face is close, Initiate search");
         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
     }
 
@@ -2598,11 +2558,28 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (faceInfo != null) {
             Rect rect = faceInfo.getRect();
             Log.d(TAG, "SnapXT Face Rect values" + "("+ rect.width() + " " +rect.height() + " )");
+            Log.d(TAG, "SnapXT Face Orient" + faceInfo.getOrient());
             if (rect.width() > 45) {
                 result = true;
                 Log.d(TAG, "SnapXT Face is close");
             } else {
                 Log.d(TAG, "SnapXT Face is not close");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Method that checks for the Face angle, returns true if face is straight (90 degrees)
+     * @param face3DAngle face3D info
+     * @return true or false accordingly
+     */
+    private boolean isFaceAngleCentered(Face3DAngle face3DAngle) {
+        boolean result = false;
+        if (face3DAngle != null) {
+            float yaw = face3DAngle.getYaw();
+            if (yaw > -10 && yaw < 10) {
+                result = true;
             }
         }
         return result;
@@ -2628,7 +2605,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 relative_main.setVisibility(View.GONE);
                 // rl_header.setVisibility(View.GONE);
                 //logo.setVisibility(View.GONE);
-                showAnimation();
 
                 cancelImageTimer();
                 imageTimer = new Timer();
@@ -2690,6 +2666,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if(progressDialog!=null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+        face3DAngle = null;
+        faceThermalToast = null;
     }
 
     private void setPreviewIdleTimer() {
@@ -2950,32 +2928,44 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         runOnUiThread(() -> {
             switch (errorCode.getValue()) {
                 case 1: {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, getResources().getString(R.string.text_value1)));
                     outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                 }
                 break;
 
                 case 2: {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
                     outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                 }
                 break;
 
                 case 3: {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                     tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT3, getResources().getString(R.string.text_value3)));
                     outerCircle.setBackgroundResource(R.drawable.border_shape_red);
                 }
                 break;
 
-                default: {
+                /*default: {
                     tvErrorMessage.setVisibility(View.GONE);
-                }
+                }*/
             }
         });
         TemperatureController.getInstance().clearData();
         CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
         TemperatureController.getInstance().setTemperatureListener(this);
         clearLeftFace(null);
+    }
+
+    @Override
+    public void onFaceNotInRangeOfThermal() {
+        runOnUiThread(() -> {
+            if (faceThermalToast != null) return;
+            faceThermalToast = Toast.makeText(IrCameraActivity.this, "Please move towards center", Toast.LENGTH_SHORT);
+            faceThermalToast.show();
+        });
     }
 
     private void initBluetoothPrinter() {

@@ -3,11 +3,11 @@ package com.certify.snap.controller;
 import android.os.CountDownTimer;
 import android.util.Log;
 
-import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
+import com.common.thermalimage.ThermalImageUtil;
 
 public class CameraController {
     private final String TAG = CameraController.class.getSimpleName();
@@ -125,8 +125,9 @@ public class CameraController {
     }
 
     public void initDeviceMode() {
-        if (ApplicationController.getInstance().getTemperatureUtil().getUsingModule() != null) {
-            deviceMode = ApplicationController.getInstance().getTemperatureUtil().getUsingModule()[0];
+        ThermalImageUtil thermalImageUtil = ApplicationController.getInstance().getTemperatureUtil();
+        if (thermalImageUtil != null && thermalImageUtil.getUsingModule() != null) {
+            deviceMode = thermalImageUtil.getUsingModule()[0];
         }
     }
 

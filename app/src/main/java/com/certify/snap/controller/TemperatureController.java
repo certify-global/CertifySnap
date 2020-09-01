@@ -64,6 +64,7 @@ public class TemperatureController {
         void onThermalImage(Bitmap bitmap);
         void onTemperatureRead(float temperature);
         void onTemperatureFail(GuideMessage errorCode);
+        void onFaceNotInRangeOfThermal();
     }
 
     public enum GuideMessage {
@@ -180,10 +181,13 @@ public class TemperatureController {
                     Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
                     float fix = getDistance(facePreviewInfoList.get(i).getFaceInfo().getRect());
                     //Ignore the temperature read (resulting in low read if the face is not fully visible)
-                    if (rect.right > 750 || rect.left < 0) {
+                    if (rect.right > 700 || rect.left < 80) {
                         final Rect[] rects = new Rect[temperatureRectList.size()];
                         int[] distances = new int[distanceList.size()];
                         thermalImageUtil.setGuideRect(rects, distances);
+                        if (listener != null) {
+                            listener.onFaceNotInRangeOfThermal();
+                        }
                         continue;
                     }
                     float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
@@ -449,12 +453,16 @@ public class TemperatureController {
                 if (reason != null) {
                     obj = new JSONObject(reason);
                     String errorCode = obj.getString("err");
-                    Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + errorCode);
-                    updateGuideMsgOnTemperatureFail(errorCode);
 
-                    float temNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
-                    Log.e(TAG, "SnapXT Temperature Failed Tem no correct: " + temNoCorrect);
-                    updateAllowLowOnTemperatureFail(errorCode, temNoCorrect);
+                    if (errorCode != null) {
+                        float temNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
+                        Log.e(TAG, "SnapXT Temperature Failed Tem no correct: " + temNoCorrect);
+                        updateAllowLowOnTemperatureFail(errorCode, temNoCorrect);
+
+                        Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + errorCode);
+                        if (TemperatureController.getInstance().getTrackIdMap().isEmpty()) return;
+                        updateGuideMsgOnTemperatureFail(errorCode);
+                    }
                 }
             } catch (JSONException e) {
                 Log.e(TAG, "Error in fetching the error value on Temperature Fail");
@@ -525,7 +533,8 @@ public class TemperatureController {
         PrinterController.getInstance().printOnNormalTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
+                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
     }
 
     /**
@@ -541,7 +550,8 @@ public class TemperatureController {
         BLEController.getInstance().setLightOnHighTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
+                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
     }
 
     /**
@@ -557,6 +567,14 @@ public class TemperatureController {
      */
     public void clearTemperatureMap() {
         temperatureMap.clear();
+    }
+
+    /**
+     * Method that returns the trackId Map for Temperature
+     * @return Map data
+     */
+    public HashMap<Integer, String> getTrackIdMap() {
+        return trackIdMap;
     }
 
     /**
