@@ -280,6 +280,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         startMemberSyncService();
         startBLEService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
+        startLocalServer();
     }
 
     private void initNavigationBar() {
@@ -355,10 +356,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void initApp() {
         runOnUiThread(() -> {
             initAppStatusInfo();
-            if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)){
-                localServer = new LocalServer(this);
-                new LocalServerTask(localServer).execute();
-            }
             try {
                 Util.createAudioDirectory();
             } catch (IOException e) {
@@ -445,4 +442,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         progressDialog.show();
     }
 
+    private void startLocalServer() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)){
+            localServer = new LocalServer(this);
+            new LocalServerTask(localServer).execute();
+        }
+    }
 }
