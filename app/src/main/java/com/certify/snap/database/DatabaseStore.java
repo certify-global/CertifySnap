@@ -113,4 +113,7 @@ public interface DatabaseStore {
 
     @Query("SELECT * FROM RegisteredMembers ORDER BY primaryid ASC LIMIT 10")
     List<RegisteredMembers> lastTenMembers();
+
+    @Query("DELETE FROM AccessLogOfflineRecord")
+    void deleteAllOfflineAccessLogRecords();
 }
