@@ -297,6 +297,8 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private Button qrSkipButton;
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
+    private FaceFeature mFaceFeature;
+    private int mRequestId;
 
     private void instanceStart() {
         try {
@@ -818,7 +820,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                         }
                     }
 
-                    if (CameraController.getInstance().isScanCloseProximityEnabled()) {
+                    if (CameraController.getInstance().isScanCloseProximityEnabled()
+                        || AppSettings.isEnableVoice()
+                        || AppSettings.isEnableHandGesture()) {
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                     } else if (!isFaceIdentified) {
                         if (!Util.isOfflineMode(IrCameraActivity.this)) {
@@ -2510,6 +2514,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 }
                 tvFaceMessage.setVisibility(View.GONE);
             });
+            if (AppSettings.isEnableVoice() || AppSettings.isEnableHandGesture()) {
+                pauseCameraScan();
+                mFaceFeature = faceFeature;
+                mRequestId = requestId;
+                launchGestureFragment();
+                return;
+            }
             if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                 !isFaceIdentified) {
@@ -3103,6 +3114,24 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             } else {
                 ShowLauncherView();
             }
+        });
+    }
+
+    private void launchGestureFragment() {
+        Fragment gestureFragment = new GestureFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
+        transaction.addToBackStack("GestureFragment");
+        transaction.commitAllowingStateLoss();
+    }
+
+    public void resumeFromGesture() {
+        runOnUiThread(() -> {
+            resumeCameraScan();
+            CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+            changeVerifyBackground(R.color.transparency, true);
+            relative_main.setVisibility(View.GONE);
+            new Handler().postDelayed(() -> runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0)), 1000);
         });
     }
 }
