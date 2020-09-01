@@ -238,7 +238,7 @@ public class AccessCardController implements AccessCallback {
         }
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !mAllowAnonymous && (mEnableRelay || mEnableWeigan))
+            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && (mEnableRelay || mEnableWeigan))
                     || isFacialEnabled) {
                 JSONObject obj = new JSONObject();
                 obj.put("id", 0);
@@ -271,7 +271,7 @@ public class AccessCardController implements AccessCallback {
                 }
             }
         } catch (Exception e) {
-            Logger.error(TAG + "accessCardLog", e.getMessage());
+            Logger.error(TAG + "AccessLog Error", e.getMessage());
         }
     }
 
