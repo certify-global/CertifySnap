@@ -226,13 +226,19 @@ public class AccessCardController implements AccessCallback {
     public void accessCardLog(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
         boolean isFacialEnabled = AppSettings.isFacialDetect();
         if (isFacialEnabled) {
-            if (data != null && data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
-                registeredMembers = data.member;
+            if (data != null) {
+                if ((AccessControlModel.getInstance().getRfidScanMatchedMember() == null) ||
+                         data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
+                    registeredMembers = data.member;
+                }
             }
+        }
+        if (registeredMembers == null) {
+            registeredMembers = new RegisteredMembers();
         }
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && !mAllowAnonymous && (mEnableRelay || mEnableWeigan))
+            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && (mEnableRelay || mEnableWeigan))
                     || isFacialEnabled) {
                 JSONObject obj = new JSONObject();
                 obj.put("id", 0);
@@ -265,7 +271,7 @@ public class AccessCardController implements AccessCallback {
                 }
             }
         } catch (Exception e) {
-            Logger.error(TAG + "accessCardLog", e.getMessage());
+            Logger.error(TAG + "AccessLog Error", e.getMessage());
         }
     }
 
