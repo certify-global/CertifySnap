@@ -64,6 +64,7 @@ public class TemperatureController {
         void onThermalImage(Bitmap bitmap);
         void onTemperatureRead(float temperature);
         void onTemperatureFail(GuideMessage errorCode);
+        void onFaceNotInRangeOfThermal();
     }
 
     public enum GuideMessage {
@@ -180,10 +181,13 @@ public class TemperatureController {
                     Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
                     float fix = getDistance(facePreviewInfoList.get(i).getFaceInfo().getRect());
                     //Ignore the temperature read (resulting in low read if the face is not fully visible)
-                    if (rect.right > 750 || rect.left < 0) {
+                    if (rect.right > 700 || rect.left < 80) {
                         final Rect[] rects = new Rect[temperatureRectList.size()];
                         int[] distances = new int[distanceList.size()];
                         thermalImageUtil.setGuideRect(rects, distances);
+                        if (listener != null) {
+                            listener.onFaceNotInRangeOfThermal();
+                        }
                         continue;
                     }
                     float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
@@ -525,7 +529,8 @@ public class TemperatureController {
         PrinterController.getInstance().printOnNormalTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
+                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
     }
 
     /**
@@ -541,7 +546,8 @@ public class TemperatureController {
         BLEController.getInstance().setLightOnHighTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature);
+                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
     }
 
     /**
