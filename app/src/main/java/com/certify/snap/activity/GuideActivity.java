@@ -38,8 +38,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
-import com.certify.snap.common.SnapLocalServer;
-import com.certify.snap.localserver.LocalServer;
+import com.certify.snap.localserver.SnapLocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
@@ -93,8 +92,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
 
-        new ServerCall().execute();
-
         mActivity = this;
         ApplicationController.getInstance().initThermalUtil(this);
         Application.getInstance().addActivity(this);
@@ -141,6 +138,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             startUpCountDownTimer.cancel();
         }
         ApplicationController.getInstance().releaseThermalUtil();
+        SnapLocalServer.stopServer();
     }
 
     private boolean isInstalled(Context context, String packageName) {
@@ -411,6 +409,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void initApp() {
         runOnUiThread(() -> {
             initAppStatusInfo();
+            if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)){
+                new ServerCall().execute();
+            }
             try {
                 Util.createAudioDirectory();
             } catch (IOException e) {
@@ -508,7 +509,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 LocalServerController.getInstance().findLastTenOfflineTempRecord();
                 LocalServerController.getInstance().findLastTenOfflineAccessLogRecord();
                 snapLocalServer.main(null, GuideActivity.this);
-                //LocalServer.getInstance().startServer(GuideActivity.this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

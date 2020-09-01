@@ -430,6 +430,65 @@
     </LinearLayout>
 
     <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/blue" />
+
+    <LinearLayout
+        android:id="@+id/local_server_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_10"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/local_server_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable Local Server:"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+
+        <RadioGroup
+            android:id="@+id/local_server_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_yes_server_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/radio_no_server_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+        <TextView
+            android:id="@+id/tv_server_ip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <View
         android:id="@+id/navigation_bar_border"
         android:layout_width="match_parent"
         android:layout_height="1dp"

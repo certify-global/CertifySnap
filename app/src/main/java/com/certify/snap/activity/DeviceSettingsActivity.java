@@ -33,6 +33,7 @@ import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -42,7 +43,6 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
-import com.common.thermalimage.ThermalImageUtil;
 
 import org.json.JSONObject;
 
@@ -65,6 +65,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private View pro_settings_border;
     RadioGroup sync_member_radio_group;
     RadioButton sync_member_radio_yes, sync_member_radio_no;
+    RadioGroup radio_group_local_server;
+    RadioButton radio_yes_server, radio_no_server;
+    TextView tvLocalServer, tvServerIp;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
@@ -83,6 +86,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             ledSwitchSettings();
             seekBarSettings();
             setDefaultLedBrightnessLevel();
+            localServerSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -226,6 +230,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         sync_online_members_textview = findViewById(R.id.sync_online_members_textview);
         led_switch_textview = findViewById(R.id.led_switch_textview);
         seekBar=findViewById(R.id.seekbar);
+        tvLocalServer = findViewById(R.id.local_server_tv);
+        tvServerIp = findViewById(R.id.tv_server_ip);
+        radio_group_local_server = findViewById(R.id.local_server_radio_group);
+        radio_yes_server = findViewById(R.id.radio_yes_server_setting);
+        radio_no_server = findViewById(R.id.radio_no_server_setting);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -247,6 +256,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         navigation_bar_textview.setTypeface(rubiklight);
         sync_online_members_textview.setTypeface(rubiklight);
         led_switch_textview.setTypeface(rubiklight);
+        tvLocalServer.setTypeface(rubiklight);
+        tvServerIp.setTypeface(rubiklight);
     }
 
     private void proSettings() {
@@ -605,6 +616,37 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private void saveLedBrightnessSetting() {
         Util.writeInt(sharedPreferences, GlobalParameters.LedBrightnessLevel, ledLevel);
+    }
+
+    private void localServerSetting() {
+
+        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)) {
+            radio_yes_server.setChecked(true);
+            tvServerIp.setVisibility(View.VISIBLE);
+            tvServerIp.setText(Constants.SERVER_IP +":"+Constants.port);
+        } else {
+            radio_no_server.setChecked(true);
+
+        }
+
+        radio_group_local_server.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_server_setting) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
+                    radio_yes_server.setChecked(true);
+                    tvServerIp.setVisibility(View.VISIBLE);
+                    tvServerIp.setText(Constants.SERVER_IP +":"+Constants.port);
+                    restartApp();
+                    finish();
+                } else {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, false);
+                    radio_no_server.setChecked(true);
+                }
+            }
+
+        });
+
     }
 
 }

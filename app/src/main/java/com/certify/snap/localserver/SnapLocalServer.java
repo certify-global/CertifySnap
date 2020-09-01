@@ -25,18 +25,22 @@
  *
  */
 
-package com.certify.snap.common;
+package com.certify.snap.localserver;
 
 import android.content.Context;
-import com.certify.snap.localserver.LocalServerController;
+
+import com.certify.snap.common.Constants;
+import com.certify.snap.common.Logger;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -59,6 +63,8 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.protocol.HttpCoreContext;
 import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.util.TimeValue;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Example of embedded HTTP/1.1 file server using classic I/O.
@@ -69,7 +75,6 @@ public class SnapLocalServer {
     private static Context mContext;
 
     public static void main(final String[] args, Context context) throws Exception {
-        int port = 8080;
         mContext = context;
 
         final SocketConfig socketConfig = SocketConfig.custom()
@@ -78,9 +83,9 @@ public class SnapLocalServer {
                 .build();
 //TODO make port configurable, listen on assigned interface ip address and loopback address
         server = ServerBootstrap.bootstrap()
-                .setListenerPort(port)
-                .setLocalAddress(InetAddress.getByName("127.0.0.1"))
-                .setCanonicalHostName("127.0.0.1")
+                .setListenerPort(Constants.port)
+                .setLocalAddress(InetAddress.getByName(Constants.SERVER_IP))
+                .setCanonicalHostName(Constants.SERVER_IP)
                 .setSocketConfig(socketConfig)
                 //.setSslContext(sslContext)
                 .setExceptionListener(new ExceptionListener() {
@@ -114,7 +119,7 @@ public class SnapLocalServer {
 
             }
         });
-        Logger.debug(TAG, "Listening on port " + port);
+        Logger.debug(TAG, "Listening on port " + Constants.port);
 
         server.awaitTermination(TimeValue.MAX_VALUE);
 
@@ -157,21 +162,45 @@ public class SnapLocalServer {
                 if (!Method.GET.isSame(method) && !Method.HEAD.isSame(method) && !Method.POST.isSame(method)) {
                     throw new MethodNotSupportedException(method + " method not supported");
                 } else {
+                    String responseData = "";
                     if (Method.GET.isSame(method)){
-                        String responseData = getResponseData(pingValue);
-                        final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
-                        final EndpointDetails endpoint = coreContext.getEndpointDetails();
-                        response.setCode(HttpStatus.SC_OK);
-                        StringEntity stringEntity = new StringEntity(responseData, ContentType.APPLICATION_JSON);
-                        response.setEntity(stringEntity);
-                        Logger.debug(TAG, response.toString());
+                        responseData = getResponseData(pingValue);
+                    } else if (Method.POST.isSame(method)){
+                        InputStream inputStream = request.getEntity().getContent();
+                        if (inputStream != null) {
+                            String requestBody = streamToString(inputStream);
+                            try {
+                                JSONObject jsonBody = new JSONObject(requestBody);
+                                responseData = postResponseData(pingValue, jsonBody);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
+                    final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
+                    final EndpointDetails endpoint = coreContext.getEndpointDetails();
+                    response.setCode(HttpStatus.SC_OK);
+                    StringEntity stringEntity = new StringEntity(responseData, ContentType.APPLICATION_JSON);
+                    response.setEntity(stringEntity);
+                    Logger.debug(TAG, response.toString());
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
         }
 
+    }
+
+    private static final String streamToString(InputStream inputStream) {
+        Scanner s = (new Scanner(inputStream)).useDelimiter("\\A");
+        String str;
+        if (s.hasNext()) {
+            str = s.next();
+        } else {
+            str = "";
+        }
+
+        return str;
     }
 
     private static String getResponseData(String pingValue) {
@@ -200,6 +229,18 @@ public class SnapLocalServer {
         }
         stringBuilderData.append("\n]");
         return stringBuilderData.toString();
+    }
+
+    private static String postResponseData(String pingValue, JSONObject member) {
+        if (pingValue.equalsIgnoreCase("/AddUpdateMember")) {
+            String updateMember = LocalServerController.getInstance().findUpdateMember(member);
+            return updateMember;
+        } else if (pingValue.equalsIgnoreCase("/DeleteMember")) {
+            String deleteMember = LocalServerController.getInstance().deleteMember(member);
+            return deleteMember;
+        }
+
+        return "";
     }
 
 }

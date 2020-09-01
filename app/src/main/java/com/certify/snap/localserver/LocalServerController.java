@@ -95,22 +95,6 @@ public class LocalServerController {
         }
     }
 
-    public String convertJsonData(String tempData) {
-        String json = "";
-        try {
-            JSONObject json1 = new JSONObject(tempData);
-            json = JSONObject.wrap(json1) + "\n\n";
-            json = json.replaceAll(",", ",\n");
-            json = json.replaceAll("\\\\/", "/");
-            json = json.replaceAll("\\{", "{\n");
-            json = json.replaceAll("\\}", "\n}");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return json;
-    }
-
     public void findLastTenOfflineAccessLogRecord() {
         try {
             Observable.create(new ObservableOnSubscribe<List<AccessLogOfflineRecord>>() {

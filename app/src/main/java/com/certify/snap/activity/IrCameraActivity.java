@@ -42,8 +42,6 @@ import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.SnapLocalServer;
-import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.SoundController;
@@ -759,8 +757,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         compareResult = null;
         searchFaceInfoList.clear();
         cancelPreviewIdleTimer();
-        SnapLocalServer.stopServer();
-        //LocalServer.getInstance().stopServer();
         if (mNfcAdapter != null && isNfcFDispatchEnabled) {
             mNfcAdapter.disableForegroundDispatch(this);
             isNfcFDispatchEnabled = false;

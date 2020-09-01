@@ -155,4 +155,5 @@ public class GlobalParameters {
     public static final String MaskMode = "maskMode";
     public static final String Centigrades = "centigrade";
     public static final String Fahrenheits = "fahrenheit";
+    public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
 }
