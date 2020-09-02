@@ -68,7 +68,6 @@ public class TemperatureController {
         void onTemperatureRead(float temperature);
         void onTemperatureFail(GuideMessage errorCode);
         void onFaceNotInRangeOfThermal();
-        void onTemperatureNoDataError();
     }
 
     public enum GuideMessage {
@@ -189,7 +188,7 @@ public class TemperatureController {
                         final Rect[] rects = new Rect[temperatureRectList.size()];
                         int[] distances = new int[distanceList.size()];
                         thermalImageUtil.setGuideRect(rects, distances);
-                        //cancelGuideTempTimer();
+                        cancelGuideTempTimer();
                         if (listener != null) {
                             listener.onFaceNotInRangeOfThermal();
                         }
@@ -262,7 +261,7 @@ public class TemperatureController {
      */
     public void startGuideTemperature() {
         Log.d(TAG, "Temp startGuideTemperature getGuideData");
-        //startGuideTemperatureTimer();
+        startGuideTemperatureTimer();
         thermalImageUtil.getGuideData(new GuideDataCallBack.Stub() {
             @Override
             public void callBackBitmap(final Bitmap bitmap) throws RemoteException {
@@ -276,7 +275,7 @@ public class TemperatureController {
             public void callBackData(TemperatureBigData temperatureBigData) throws RemoteException {
                 try {
                     Log.d(TAG, "Temp callBackData");
-                    //cancelGuideTempTimer();
+                    cancelGuideTempTimer();
                     final List<float[]> maxInRectInfo = temperatureBigData.getTemInfoList();//The length of the List is the number of rects,
                     // which records the temperature measurement information of the rect of each face
                     final float envirTem = temperatureBigData.getEmvirTem();//Ambient temperature
@@ -592,12 +591,7 @@ public class TemperatureController {
         guideTempTimer.schedule(new TimerTask() {
             public void run() {
                 this.cancel();
-                if (thermalImageUtil != null) {
-                    thermalImageUtil.stopGetGuideData();
-                }
-                if (listener != null) {
-                    listener.onTemperatureNoDataError();
-                }
+                resetGuideThermal();
             }
         }, 3 * 1000);
     }
@@ -613,6 +607,25 @@ public class TemperatureController {
     }
 
     /**
+     * Method that resets the Guide Thermal
+     */
+    private void resetGuideThermal() {
+        if (thermalImageUtil != null) {
+            Log.e(TAG, "Reset Guide ThemalUtil");
+            thermalImageUtil.stopGetGuideData();
+            isTemperatureInProcess = false;
+            trackIdMap.clear();
+            ApplicationController.getInstance().releaseThermalUtil();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ApplicationController.getInstance().initThermalUtil(context);
+        }
+    }
+
+    /**
      * Method that clears the Temperature data parameters
      */
     public void clearData() {
@@ -620,8 +633,10 @@ public class TemperatureController {
         listener = null;
         if (Util.isDeviceProModel()) {
             isGuideInited = false;
-            thermalImageUtil.stopGetGuideData();
-            //cancelGuideTempTimer();
+            if (thermalImageUtil != null) {
+                thermalImageUtil.stopGetGuideData();
+            }
+            cancelGuideTempTimer();
         }
         temperatureRecordData = null;
         thermalImageCallback = null;

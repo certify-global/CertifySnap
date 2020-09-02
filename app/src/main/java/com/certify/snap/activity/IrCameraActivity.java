@@ -2967,13 +2967,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
-    @Override
-    public void onTemperatureNoDataError() {
-        runOnUiThread(() -> {
-             showAlertDialog("Error", "Application has encountered a problem, App will restart.", "Ok", null);
-        });
-    }
-
     private void initBluetoothPrinter() {
         // initialization for printing
         PrinterController.getInstance().init(this);
@@ -3110,28 +3103,5 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 ShowLauncherView();
             }
         });
-    }
-
-    private void showAlertDialog(String title, String message, String positiveButton, String negativeButton) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(IrCameraActivity.this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton(positiveButton, (dialog, id) -> {
-                    restartApp();
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-        new Handler().postDelayed(this::restartApp, 3000);
-    }
-
-    private void restartApp() {
-        finishAffinity();
-        ApplicationController.getInstance().releaseThermalUtil();
-        Intent intent = new Intent(this, GuideActivity.class);
-        int mPendingIntentId = 111111;
-        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
     }
 }
