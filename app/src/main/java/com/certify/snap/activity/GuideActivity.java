@@ -178,6 +178,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             });
         } else if (!onlineMode) {
             //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
+            startLocalServer();
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
         } else {
             //TODO: This dialog is required when the connection fails to API server
@@ -447,7 +448,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void startLocalServer() {
-        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)){
+        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)
+            && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServer = new LocalServer(this);
             new LocalServerTask(localServer).execute();
         }

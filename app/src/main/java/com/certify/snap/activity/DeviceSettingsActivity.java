@@ -80,6 +80,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private ImageView ivClipBoard;
     private String serverAddress = "";
     private RelativeLayout addrRelativeLayout;
+    private LinearLayout localServerLayout;
+    private boolean onlineMode = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,11 +109,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         isOnline = true;
+                        localServerLayout.setVisibility(View.GONE);
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
                         activateStatus();
 
                     } else {
                         isOnline = false;
+                        localServerLayout.setVisibility(View.VISIBLE);
                         activateStatus();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
@@ -190,7 +194,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
-                        if (proSettingValueSp != proSettingValue || serverSettingValue) {
+                        if (proSettingValueSp != proSettingValue || serverSettingValue
+                            || !onlineMode) {
                             restartApp();
                             return;
                         }
@@ -248,6 +253,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         radio_no_server = findViewById(R.id.radio_no_server_setting);
         ivClipBoard = findViewById(R.id.iv_clipBoard);
         addrRelativeLayout = findViewById(R.id.addr_relative_layout);
+        localServerLayout = findViewById(R.id.local_server_parent_layout);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -271,6 +277,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         led_switch_textview.setTypeface(rubiklight);
         tvLocalServer.setTypeface(rubiklight);
         tvServerIp.setTypeface(rubiklight);
+
+        if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+            localServerLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     private void proSettings() {
@@ -407,11 +417,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(true);
                 activateStatus.setText("Activated");
                 not_activate.setVisibility(View.GONE);
+                onlineMode = true;
             } else {
                 switch_activate.setChecked(false);
                 activateStatus.setText("Not Activated");
                 not_activate.setText("Activate");
                 tvSettingsName.setText("Local");
+                onlineMode = false;
             }
             syncMemberSettings();
             deviceAccessPassword();
