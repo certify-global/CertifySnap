@@ -2,6 +2,8 @@ package com.certify.snap.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -74,6 +77,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private SeekBar seekBar;
     private int ledLevel = 0;
     private boolean serverSettingValue = false;
+    private ImageView ivClipBoard;
+    private String serverAddress = "";
+    private RelativeLayout addrRelativeLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +100,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvHostName = findViewById(R.id.tv_hostName);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             setUIData();
+            copyLocalServerAddress();
 
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -239,6 +246,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         radio_group_local_server = findViewById(R.id.local_server_radio_group);
         radio_yes_server = findViewById(R.id.radio_yes_server_setting);
         radio_no_server = findViewById(R.id.radio_no_server_setting);
+        ivClipBoard = findViewById(R.id.iv_clipBoard);
+        addrRelativeLayout = findViewById(R.id.addr_relative_layout);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -627,8 +636,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         LocalServer localServer = new LocalServer(this);
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)) {
             radio_yes_server.setChecked(true);
-            tvServerIp.setVisibility(View.VISIBLE);
-            String text = String.format(getResources().getString(R.string.text_ip_address), localServer.getIpAddress(this) +":"+Constants.port);
+            addrRelativeLayout.setVisibility(View.VISIBLE);
+            serverAddress = localServer.getIpAddress(this) +":"+Constants.port;
+            String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
             tvServerIp.setText(text);
         } else {
             radio_no_server.setChecked(true);
@@ -641,21 +651,35 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 if (checkedId == R.id.radio_yes_server_setting) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
                     radio_yes_server.setChecked(true);
-                    tvServerIp.setVisibility(View.VISIBLE);
-                    String text = String.format(getResources().getString(R.string.text_ip_address), localServer.getIpAddress(DeviceSettingsActivity.this) +":"+Constants.port);
+                    addrRelativeLayout.setVisibility(View.VISIBLE);
+                    serverAddress = localServer.getIpAddress(DeviceSettingsActivity.this) +":"+Constants.port;
+                    String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
                     tvServerIp.setText(text);
                     serverSettingValue = true;
                 } else {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, false);
                     radio_no_server.setChecked(true);
                     serverSettingValue = false;
-                    tvServerIp.setVisibility(View.GONE);
+                    addrRelativeLayout.setVisibility(View.GONE);
                     tvServerIp.setText("");
                 }
             }
 
         });
 
+    }
+
+    private void copyLocalServerAddress() {
+        ivClipBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("text", serverAddress);
+                clipboard.setPrimaryClip(clip);
+                String message = String.format(getResources().getString(R.string.text_copied), serverAddress);
+                Toast.makeText(DeviceSettingsActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

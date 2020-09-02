@@ -331,8 +331,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="2"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="2">
 
         <LinearLayout
             android:id="@+id/navigation_bar_layout"
@@ -448,14 +448,15 @@
             android:text="LED Brightness:"
             android:textColor="@color/black"
             android:textSize="@dimen/font_18" />
+
         <SeekBar
-            android:layout_marginTop="@dimen/margin_10"
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_10"
+            android:layout_marginTop="@dimen/margin_10"
             android:layout_marginRight="@dimen/margin_10"
             android:layout_marginBottom="@dimen/margin_5"
-            android:id="@+id/seekbar"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
             android:max="255"
             android:progress="30" />
     </LinearLayout>
@@ -508,16 +509,30 @@
                 android:theme="@style/MyCheckBox" />
 
         </RadioGroup>
-        <TextView
-            android:id="@+id/tv_server_ip"
+
+        <RelativeLayout
+            android:id="@+id/addr_relative_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_ip_address"
-            android:layout_marginTop="@dimen/margin_5"
-            android:textColor="@color/black"
-            android:textSize="@dimen/font_18"
-            android:visibility="gone"/>
+            android:visibility="gone">
 
+            <TextView
+                android:id="@+id/tv_server_ip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_5"
+                android:text="@string/text_ip_address"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <ImageView
+                android:id="@+id/iv_clipBoard"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/margin_20"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/margin_5"
+                android:src="@mipmap/record" />
+        </RelativeLayout>
     </LinearLayout>
 
     <View

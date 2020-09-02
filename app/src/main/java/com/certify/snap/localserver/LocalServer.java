@@ -144,6 +144,7 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
     public void startServer() {
         try {
             server.start();
+            Logger.verbose(TAG, "Start the server " , Constants.port);
         } catch (Exception e) {
             Logger.error(TAG, e.getMessage());
         }
@@ -153,6 +154,7 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
     public void stopServer() {
         try {
             server.stop();
+            Logger.verbose(TAG, "Stop the server " , Constants.port);
         } catch (Exception e) {
             Logger.error(TAG, e.getMessage());
         }
