@@ -389,14 +389,6 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initBluetoothPrinter();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (ApplicationController.getInstance().isDeviceBoot()) {
-            showPrintMsgDialog();
-        }
-    }
-
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
@@ -695,6 +687,9 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         } catch (RuntimeException e) {
             Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
+        }
+        if (ApplicationController.getInstance().isDeviceBoot()) {
+            showPrintMsgDialog();
         }
     }
 
