@@ -2967,6 +2967,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
+    @Override
+    public void onThermalGuideReset() {
+        Log.d(TAG, "onThermalGuideReset");
+        TemperatureController.getInstance().clearData();
+        CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
+        TemperatureController.getInstance().setTemperatureListener(this);
+        clearLeftFace(null);
+    }
+
     private void initBluetoothPrinter() {
         // initialization for printing
         PrinterController.getInstance().init(this);

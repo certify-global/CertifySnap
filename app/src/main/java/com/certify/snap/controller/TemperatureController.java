@@ -68,6 +68,7 @@ public class TemperatureController {
         void onTemperatureRead(float temperature);
         void onTemperatureFail(GuideMessage errorCode);
         void onFaceNotInRangeOfThermal();
+        void onThermalGuideReset();
     }
 
     public enum GuideMessage {
@@ -286,12 +287,14 @@ public class TemperatureController {
                     temperature = 0;
                     for (int i = 0; i < maxInRectInfo.size(); i++) {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
-                        if (AppSettings.getfToC().equals("F")) {
-                            temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
-                        } else {
-                            temperature = temperatureCelsius;
+                        if (temperatureCelsius > 0) {
+                            if (AppSettings.getfToC().equals("F")) {
+                                temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
+                            } else {
+                                temperature = temperatureCelsius;
+                            }
+                            temperature += AppSettings.getTemperatureCompensation();
                         }
-                        temperature += AppSettings.getTemperatureCompensation();
                         isGuideInited = false;
                         thermalImageUtil.stopGetGuideData();
                     }
@@ -342,14 +345,18 @@ public class TemperatureController {
         Observable
                 .create((ObservableOnSubscribe<Float>) emitter -> {
                     thermalImageCallback = new HotImageCallbackImpl();
+                    temperature = 0;
                     TemperatureData temperatureData = thermalImageUtil.getDataAndBitmap(50, true, thermalImageCallback);
                     if (temperatureData != null) {
-                        if (AppSettings.getfToC().equals("F")) {
-                            temperature = (float) Util.celsiusToFahrenheit(temperatureData.getTemperature());
-                        } else {
-                            temperature = temperatureData.getTemperature();
+                        temperature = temperatureData.getTemperature();
+                        if (temperature > 0) {
+                            if (AppSettings.getfToC().equals("F")) {
+                                temperature = (float) Util.celsiusToFahrenheit(temperature);
+                            } else {
+                                temperature = temperatureData.getTemperature();
+                            }
+                            temperature += AppSettings.getTemperatureCompensation();
                         }
-                        temperature += AppSettings.getTemperatureCompensation();
                     }
                     emitter.onNext(temperature);
                 })
@@ -593,7 +600,7 @@ public class TemperatureController {
                 this.cancel();
                 resetGuideThermal();
             }
-        }, 3 * 1000);
+        }, 5 * 1000);
     }
 
     /**
@@ -613,8 +620,6 @@ public class TemperatureController {
         if (thermalImageUtil != null) {
             Log.e(TAG, "Reset Guide ThemalUtil");
             thermalImageUtil.stopGetGuideData();
-            isTemperatureInProcess = false;
-            trackIdMap.clear();
             ApplicationController.getInstance().releaseThermalUtil();
             try {
                 Thread.sleep(2000);
@@ -622,6 +627,9 @@ public class TemperatureController {
                 e.printStackTrace();
             }
             ApplicationController.getInstance().initThermalUtil(context);
+            if (listener != null) {
+                listener.onThermalGuideReset();
+            }
         }
     }
 
