@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_gravity="center"
     android:background="@color/white"
+    android:orientation="horizontal"
     tools:context=".activity.GestureActivity">
 
     <TextView
@@ -21,97 +22,177 @@
         android:textSize="24sp"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/title_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginRight="10dp"
-        android:gravity="center"
-        android:text="Wave right hand if Yes\n Wave left hand if NO"
-        android:textColor="@color/black"
-        android:textSize="20dp" />
-
-    <TextView
-        android:id="@+id/covid_questions_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="70dp"
-        android:layout_marginRight="10dp"
-        android:gravity="center"
-        android:text="1. Do you have a Dry Cough"
-        android:textColor="@color/black"
-        android:textSize="30dp" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="90dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/question_one_yes_button"
-            android:layout_width="150dp"
-            android:layout_height="70dp"
-            android:background="@color/gray"
-            android:text="YES" />
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="Wave right hand if NO\n Wave left hand if YES"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:visibility="gone" />
 
-        <Button
-            android:id="@+id/question_one_no_button"
-            android:layout_width="150dp"
-            android:layout_height="70dp"
-            android:layout_marginLeft="80dp"
-            android:background="@color/gray"
-            android:text="NO" />
-    </LinearLayout>
+        <TextView
+            android:id="@+id/covid_questions_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Wave right for English \n Wave left form Spanish"
+            android:textColor="@color/black"
+            android:textSize="30dp" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        style="@style/Widget.AppCompat.SeekBar.Discrete"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:gravity="center"
-        android:max="3"
-        android:minHeight="10dp"
-        android:progressDrawable="@drawable/progress"
-        android:thumb="@drawable/custom_thumb" />
+        <LinearLayout
+            android:id="@+id/voice_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="40dp"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
 
-        <TableRow>
+                <ImageView
+                    android:id="@+id/mic_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/mic_nobackground_1" />
 
-            <EditText
-                android:id="@+id/leftRange"
-                android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/listening_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="45dp"
+                    android:gravity="center"
+                    android:text="Listening..."
+                    android:textColor="@color/black"
+                    android:textSize="30dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:digits="0123456789"
-                android:hint="left threshold"
-                android:text="50" />
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/rightRange"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:digits="0123456789"
-                android:hint="right threshold"
-                android:text="50" />
+                <Button
+                    android:id="@+id/voice_yes_button"
+                    android:layout_width="150dp"
+                    android:layout_height="70dp"
+                    android:background="@color/gray"
+                    android:text="YES" />
+
+                <Button
+                    android:id="@+id/voice_no_button"
+                    android:layout_width="150dp"
+                    android:layout_height="70dp"
+                    android:layout_marginLeft="80dp"
+                    android:background="@color/gray"
+                    android:text="NO" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/hand_gesture_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="90dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="sureRange"
-                android:text="Confirm" />
-        </TableRow>
-    </TableLayout>
+                android:id="@+id/hand_yes_button"
+                android:layout_width="150dp"
+                android:layout_height="70dp"
+                android:background="@color/gray"
+                android:text="YES" />
 
+            <Button
+                android:id="@+id/hand_no_button"
+                android:layout_width="150dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="80dp"
+                android:background="@color/gray"
+                android:text="NO" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="100dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/image1"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/white"
+                android:src="@drawable/no_tick" />
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="130dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center"
+                android:background="@color/very_light_gray" />
+
+            <ImageView
+                android:id="@+id/image2"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/white"
+                android:src="@drawable/no_tick" />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="130dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center"
+                android:background="@color/very_light_gray" />
+
+            <ImageView
+                android:id="@+id/image3"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/white"
+                android:src="@drawable/no_tick" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="130dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center"
+                android:background="@color/very_light_gray" />
+
+            <ImageView
+                android:id="@+id/image4"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@color/white"
+                android:src="@drawable/no_tick" />
+
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

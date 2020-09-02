@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
@@ -21,8 +22,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SeekBar;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,6 @@ import androidx.core.content.ContextCompat;
 
 import com.certify.snap.R;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.fragment.ConfirmationScreenFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,26 +42,30 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class GestureFragment extends Fragment {
 
     private final String TAG = GestureFragment.class.getSimpleName();
     private boolean runCheck = true;
     private TextView peopleHandTips;
-    private EditText leftRange, rightRange;
     private TextView covidQuestionsText, titleView;
-    private Button question_one_yes_button, question_one_no_button;
-    private View view;
+    private Button handGestureYesButton, handGestureNoButton, voiceGestureYesButton, voiceGestureNoButton;
+    private View view, view1, view2, view3;
+    private ImageView image1, image2, image3, image4;
 
-    public static final String COVID_QUESTION_ONE = "covid_question_one";
-    public static final String COVID_QUESTION_TWO = "covid_question_two";
-    public static final String COVID_QUESTION_THREE = "covid_question_three";
-    private String nextQuestion = COVID_QUESTION_ONE;
+    public static final String LANGUAGE_QUESTION = "language_question";
+    public static final String MEMBER_TYPE_QUESTION = "member_type_question";
+    public static final String QUESTION_ONE = "question_one";
+    public static final String QUESTION_TWO = "question_two";
+    public static final String QUESTION_THREE = "question_three";
+    private String nextQuestion = LANGUAGE_QUESTION;
     Boolean wait = true;
-    private SeekBar mSeekBar;
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private boolean allQuestionAnswered = false;
+    private LinearLayout voiceLayout, handGestureLayout, progressLayout;
+    Typeface rubiklight;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,14 +85,16 @@ public class GestureFragment extends Fragment {
     }
 
     private void handleQuestionnaireByVoice() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+        voiceLayout.setVisibility(View.GONE);
+        covidQuestionsText.setText("Say YES for English \n Say NO for SPANISH");
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             checkPermission();
         }
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
 
         speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 120000);
 
@@ -106,32 +112,36 @@ public class GestureFragment extends Fragment {
                 while (runCheck) {
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
-                        final int left = Integer.valueOf(map.get("leftPower"));
-                        final int right = Integer.valueOf(map.get("rightPower"));
-                        getActivity().runOnUiThread(new Runnable() {
+                        try {
+                            final int left = Integer.valueOf(map.get("leftPower"));
+                            final int right = Integer.valueOf(map.get("rightPower"));
+                            getActivity().runOnUiThread(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                // TODO Auto-generated method stub
-                                peopleHandTips.setText("Left hand energy[" + left + "] Right hand energy[" + right + "]");
+                                @Override
+                                public void run() {
+                                    // TODO Auto-generated method stub
+                                    peopleHandTips.setText("Left hand energy[" + left + "] Right hand energy[" + right + "]");
+                                }
+                            });
+
+                            if (left >= 200) {
+                                leftHandWave();
                             }
-                        });
+                            if (right >= 200) {
+                                rightHandWave();
+                            }
 
-                        if (left >= 200) {
-                            leftHandWave();
-                        }
-                        if (right >= 200) {
-                            rightHandWave();
-                        }
-
-                        if (left <= leftRangeValue && right <= rightRangeValue) {
-                            sendCMD(5);
-                        } else if (left > leftRangeValue && right > rightRangeValue) {
-                            sendCMD(6);
-                        } else if (left > leftRangeValue && right <= rightRangeValue) {
-                            sendCMD(4);
-                        } else if (left <= leftRangeValue && right > rightRangeValue) {
-                            sendCMD(3);
+                            if (left <= leftRangeValue && right <= rightRangeValue) {
+                                sendCMD(5);
+                            } else if (left > leftRangeValue && right > rightRangeValue) {
+                                sendCMD(6);
+                            } else if (left > leftRangeValue && right <= rightRangeValue) {
+                                sendCMD(4);
+                            } else if (left <= leftRangeValue && right > rightRangeValue) {
+                                sendCMD(3);
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, "handleGestureByGesture: " + e.toString());
                         }
                     }
                 }
@@ -161,14 +171,28 @@ public class GestureFragment extends Fragment {
     }
 
     void initView() {
-        peopleHandTips = (TextView) view.findViewById(R.id.peopleHandTips);
-        leftRange = (EditText) view.findViewById(R.id.leftRange);
-        rightRange = (EditText) view.findViewById(R.id.rightRange);
+        peopleHandTips = view.findViewById(R.id.peopleHandTips);
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
-        question_one_yes_button = view.findViewById(R.id.question_one_yes_button);
-        question_one_no_button = view.findViewById(R.id.question_one_no_button);
-        mSeekBar = view.findViewById(R.id.seekBar);
+        handGestureYesButton = view.findViewById(R.id.hand_yes_button);
+        handGestureNoButton = view.findViewById(R.id.hand_no_button);
+        voiceGestureYesButton = view.findViewById(R.id.voice_yes_button);
+        voiceGestureNoButton = view.findViewById(R.id.voice_no_button);
         titleView = view.findViewById(R.id.title_text_view);
+        voiceLayout = view.findViewById(R.id.voice_layout);
+        handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
+        progressLayout = view.findViewById(R.id.progress_layout);
+        view1 = view.findViewById(R.id.view1);
+        view2 = view.findViewById(R.id.view2);
+        view3 = view.findViewById(R.id.view3);
+        image1 = view.findViewById(R.id.image1);
+        image2 = view.findViewById(R.id.image2);
+        image3 = view.findViewById(R.id.image3);
+        image4 = view.findViewById(R.id.image4);
+
+        rubiklight = Typeface.createFromAsset(getActivity().getAssets(),
+                "rubiklight.ttf");
+        covidQuestionsText.setTypeface(rubiklight);
+        titleView.setTypeface(rubiklight);
 
         if (AppSettings.isEnableVoice()) {
             titleView.setText("Please answer the questions by saying Yes or No");
@@ -177,17 +201,6 @@ public class GestureFragment extends Fragment {
 
     int leftRangeValue = 50;
     int rightRangeValue = 50;
-
-    public void sureRange(View view) {
-        String leftRangeString = leftRange.getText().toString();
-        if (leftRangeString != null && !"".equals(leftRangeString)) {
-            leftRangeValue = Integer.valueOf(leftRangeString);
-        }
-        String rightRangeString = rightRange.getText().toString();
-        if (rightRangeString != null && !"".equals(rightRangeString)) {
-            rightRangeValue = Integer.valueOf(rightRangeString);
-        }
-    }
 
     /**
      * 1: Left and right hand energy<br>
@@ -388,50 +401,89 @@ public class GestureFragment extends Fragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (key.equals(COVID_QUESTION_ONE) && value) {
-                    nextQuestion = COVID_QUESTION_TWO;
+                if (key.equals(LANGUAGE_QUESTION)) {
+                    nextQuestion = MEMBER_TYPE_QUESTION;
+                    covidQuestionsText.setText("Wave right hand if Doctor \n Wave left hand if Patient");
+                    if (AppSettings.isEnableVoice()) {
+                        covidQuestionsText.setText("If Doctor say YES \n If Patient say NO");
+                        startListening();
+                    }
+                } else if (key.equals(MEMBER_TYPE_QUESTION)) {
+                    nextQuestion = QUESTION_ONE;
+                    covidQuestionsText.setText("1. Do you have Dry Cough");
+                    image1.setImageResource(R.drawable.tick);
+                    uiUpdate();
+                    if (AppSettings.isEnableVoice()) {
+                        startListening();
+                    }
+                } else if (key.equals(QUESTION_ONE) && value) {
+                    nextQuestion = QUESTION_TWO;
                     covidQuestionsText.setText("2. Have you travelled overseas in the last 14 days");
-                    buttonReset();
+                    view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+                    image2.setImageResource(R.drawable.tick);
+                    handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.green));
+                    uiUpdate();
+                    if (AppSettings.isEnableVoice()) {
+                        startListening();
+                    }
+                } else if (key.equals(QUESTION_ONE)) {
+                    nextQuestion = QUESTION_TWO;
+                    covidQuestionsText.setText("2. Have you travelled overseas in the last 14 days");
+                    view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+                    image2.setImageResource(R.drawable.tick);
+                    handGestureNoButton.setBackgroundColor(getResources().getColor(R.color.green));
+                    uiUpdate();
+
+                } else if (key.equals(QUESTION_TWO) && value) {
+                    nextQuestion = QUESTION_THREE;
+                    covidQuestionsText.setText("3. Have you been in contact with someone who has confirmed case of Covid-19?");
+                    view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+                    image3.setImageResource(R.drawable.tick);
+                    handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.green));
+                    uiUpdate();
 
                     if (AppSettings.isEnableVoice()) {
                         startListening();
                     }
-                } else if (key.equals(COVID_QUESTION_ONE)) {
-                    nextQuestion = COVID_QUESTION_TWO;
-                    covidQuestionsText.setText("2. Have you travelled overseas in the last 14 days");
-                    buttonReset();
-                } else if (key.equals(COVID_QUESTION_TWO) && value) {
-                    nextQuestion = COVID_QUESTION_THREE;
+                } else if (key.equals(QUESTION_TWO)) {
+                    nextQuestion = QUESTION_THREE;
                     covidQuestionsText.setText("3. Have you been in contact with someone who has confirmed case of Covid-19?");
-                    buttonReset();
-
-                    if (AppSettings.isEnableVoice()) {
-                        startListening();
-                    }
-                } else if (key.equals(COVID_QUESTION_TWO)) {
-                    nextQuestion = COVID_QUESTION_THREE;
-                    covidQuestionsText.setText("3. Have you been in contact with someone who has confirmed case of Covid-19?");
-                    buttonReset();
-                } else if (key.equals(COVID_QUESTION_THREE) && value) {
-                    buttonReset();
+                    view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+                    image3.setImageResource(R.drawable.tick);
+                    handGestureNoButton.setBackgroundColor(getResources().getColor(R.color.green));
+                    uiUpdate();
+                } else if (key.equals(QUESTION_THREE) && value) {
                     allQuestionAnswered = true;
+                    view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+                    image4.setImageResource(R.drawable.tick);
+                    handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.green));
+                    uiUpdate();
                     if (AppSettings.isEnableVoice()) {
                         stopListening();
                     }
                     closeFragment();
-                } else if (key.equals(COVID_QUESTION_THREE)) {
-                    buttonReset();
+                } else if (key.equals(QUESTION_THREE)) {
+                    view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+                    image4.setImageResource(R.drawable.tick);
+                    handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.green));
+                    uiUpdate();
                     closeFragment();
                 }
             }
         });
     }
 
-    private void buttonReset(){
-        //changeQuestion(nextQuestion, true);
-        mSeekBar.setProgress(mSeekBar.getProgress() + 1);
-        question_one_yes_button.setBackgroundColor(getResources().getColor(R.color.gray));
-        question_one_no_button.setBackgroundColor(getResources().getColor(R.color.gray));
+    private void uiUpdate() {
+        titleView.setVisibility(View.VISIBLE);
+        if (AppSettings.isEnableHandGesture()) {
+            handGestureLayout.setVisibility(View.VISIBLE);
+        }
+        if (AppSettings.isEnableVoice()) {
+            voiceLayout.setVisibility(view.VISIBLE);
+        }
+        progressLayout.setVisibility(View.VISIBLE);
+        handGestureNoButton.setBackgroundColor(getResources().getColor(R.color.gray));
+        handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.gray));
     }
 
     private Timer mTimer;
@@ -443,7 +495,7 @@ public class GestureFragment extends Fragment {
                 wait = true;
                 this.cancel();
             }
-        }, 2 * 1000);
+        }, 1 * 1000);
     }
 
     //-----> Voice code
@@ -456,9 +508,9 @@ public class GestureFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1 && grantResults.length > 0 ){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                Toast.makeText(getContext(), "Permission Granted",Toast.LENGTH_SHORT).show();
+        if (requestCode == 1 && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                Toast.makeText(getContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
         }
     }
 

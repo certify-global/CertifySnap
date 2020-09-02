@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,20 +44,21 @@ public class GestureActivity extends AppCompatActivity {
     private final String TAG = GestureActivity.class.getSimpleName();
     private boolean runCheck = true;
     private TextView peopleHandTips;
-    private EditText leftRange, rightRange;
+    //private EditText leftRange, rightRange;
     private TextView covidQuestionsText, titleView;
-    private Button question_one_yes_button, question_one_no_button;
+    private Button handGestureYesButton, handGestureNoButton, voiceGestureYesButton, voiceGestureNoButton;
 
     public static final String COVID_QUESTION_ONE = "covid_question_one";
     public static final String COVID_QUESTION_TWO = "covid_question_two";
     public static final String COVID_QUESTION_THREE = "covid_question_three";
     private String nextQuestion = COVID_QUESTION_ONE;
     Boolean wait = true;
-    private SeekBar mSeekBar;
+    //private SeekBar mSeekBar;
     private boolean VOICE_ENABLED = false;
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private boolean allQuestionAnswered = false;
+    private LinearLayout voiceLayout, handGestureLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,8 @@ public class GestureActivity extends AppCompatActivity {
     }
 
     private void handleQuestionnaireByVoice() {
+        voiceLayout.setVisibility(View.VISIBLE);
+        handGestureLayout.setVisibility(View.GONE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
             checkPermission();
         }
@@ -89,6 +93,8 @@ public class GestureActivity extends AppCompatActivity {
     }
 
     private void handleGestureByGesture() {
+        voiceLayout.setVisibility(View.GONE);
+        handGestureLayout.setVisibility(View.VISIBLE);
         new Thread(new Runnable() {
 
             @Override
@@ -154,13 +160,17 @@ public class GestureActivity extends AppCompatActivity {
 
     void initView() {
         peopleHandTips = (TextView) findViewById(R.id.peopleHandTips);
-        leftRange = (EditText) findViewById(R.id.leftRange);
-        rightRange = (EditText) findViewById(R.id.rightRange);
+        //leftRange = (EditText) findViewById(R.id.leftRange);
+        //rightRange = (EditText) findViewById(R.id.rightRange);
         covidQuestionsText = findViewById(R.id.covid_questions_text);
-        question_one_yes_button = findViewById(R.id.question_one_yes_button);
-        question_one_no_button = findViewById(R.id.question_one_no_button);
-        mSeekBar = findViewById(R.id.seekBar);
+        handGestureYesButton = findViewById(R.id.hand_yes_button);
+        handGestureNoButton = findViewById(R.id.hand_no_button);
+        voiceGestureYesButton = findViewById(R.id.voice_yes_button);
+        voiceGestureNoButton = findViewById(R.id.voice_no_button);
+        //mSeekBar = findViewById(R.id.seekBar);
         titleView = findViewById(R.id.title_text_view);
+        voiceLayout = findViewById(R.id.voice_layout);
+        handGestureLayout = findViewById(R.id.hand_gesture_layout);
 
         if (VOICE_ENABLED) {
             titleView.setText("Please answer the questions by saying Yes or No");
@@ -171,14 +181,14 @@ public class GestureActivity extends AppCompatActivity {
     int rightRangeValue = 50;
 
     public void sureRange(View view) {
-        String leftRangeString = leftRange.getText().toString();
+     /*   String leftRangeString = leftRange.getText().toString();
         if (leftRangeString != null && !"".equals(leftRangeString)) {
             leftRangeValue = Integer.valueOf(leftRangeString);
         }
         String rightRangeString = rightRange.getText().toString();
         if (rightRangeString != null && !"".equals(rightRangeString)) {
             rightRangeValue = Integer.valueOf(rightRangeString);
-        }
+        }*/
     }
 
     /**
@@ -417,11 +427,18 @@ public class GestureActivity extends AppCompatActivity {
         });
     }
 
+    private void positiveAnswerQuestion(){
+        //changeQuestion(nextQuestion, true);
+        //mSeekBar.setProgress(mSeekBar.getProgress() + 1);
+        handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.green));
+        handGestureNoButton.setBackgroundColor(getResources().getColor(R.color.green));
+    }
+
     private void buttonReset(){
         //changeQuestion(nextQuestion, true);
-        mSeekBar.setProgress(mSeekBar.getProgress() + 1);
-        question_one_yes_button.setBackgroundColor(getResources().getColor(R.color.gray));
-        question_one_no_button.setBackgroundColor(getResources().getColor(R.color.gray));
+        //mSeekBar.setProgress(mSeekBar.getProgress() + 1);
+        handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.green));
+        handGestureNoButton.setBackgroundColor(getResources().getColor(R.color.green));
     }
 
     private Timer mTimer;
