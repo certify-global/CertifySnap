@@ -336,6 +336,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
         CameraController.getInstance().init();
+        CameraController.getInstance().startProDeviceInitTimer(this);
         initAccessControl();
         SoundController.getInstance().init(this);
 

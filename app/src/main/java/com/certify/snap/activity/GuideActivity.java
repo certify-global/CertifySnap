@@ -2,12 +2,12 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -95,10 +95,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new Handler().postDelayed(() -> {
             CameraController.getInstance().initDeviceMode();
             if (value != null && value.equals("BootCompleted")) {
-                if (Util.isDeviceProModel()) {
+                if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
                     startProDeviceInitTimer();
                     return;
                 }
+                showPrintMsgDialog();
             }
             initApp();
         }, 1000);
@@ -420,6 +421,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         progressDialog.setButton("OK", (dialog, which) -> {
             startUpCountDownTimer.cancel();
             progressDialog.dismiss();
+            showPrintMsgDialog();
             CameraController.getInstance().setScannerRemainingTime(remainingTime);
             initApp();
         });
@@ -434,6 +436,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void onFinish() {
                 startUpCountDownTimer.cancel();
                 progressDialog.dismiss();
+                showPrintMsgDialog();
+                ApplicationController.getInstance().setProDeviceBootTime(sharedPreferences, Util.currentDate());
                 initApp();
             }
         };
@@ -447,5 +451,25 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             localServer = new LocalServer(this);
             new LocalServerTask(localServer).execute();
         }
+    }
+
+    private void showPrintMsgDialog() {
+        String printDevice = sharedPreferences.getString("printer", "NONE");
+        if (printDevice != null && !printDevice.equalsIgnoreCase("NONE")) {
+            showAlertDialog("", getString(R.string.pair_printer_message), "OK", "");
+        }
+    }
+
+    private void showAlertDialog(String title, String message, String positiveButton, String negativeButton) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(GuideActivity.this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(positiveButton, (dialog, id) -> {
+                    dialog.dismiss();
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        new Handler().postDelayed(dialog::dismiss, 3000);
     }
 }

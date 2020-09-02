@@ -1,9 +1,11 @@
 package com.certify.snap.controller;
 
+import android.content.Context;
 import android.os.CountDownTimer;
 import android.util.Log;
 
 import com.certify.snap.common.Constants;
+import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
@@ -45,7 +47,6 @@ public class CameraController {
     public void init() {
         clearData();
         faceParameters = new FaceParameters();
-        startProDeviceInitTimer();
     }
 
     public QrCodeData getQrCodeData() {
@@ -143,7 +144,7 @@ public class CameraController {
         this.scannerRemainingTime = scannerRemainingTime;
     }
 
-    private void startProDeviceInitTimer() {
+    public void startProDeviceInitTimer(Context context) {
         if (scannerRemainingTime > 0) {
             long timeDuration = (scannerRemainingTime * 60 * 1000);
             new CountDownTimer(timeDuration, Constants.PRO_SCANNER_INIT_INTERVAL) {
@@ -155,6 +156,7 @@ public class CameraController {
                 @Override
                 public void onFinish() {
                     scannerRemainingTime = 0;
+                    ApplicationController.getInstance().setProDeviceBootTime(Util.getSharedPreferences(context), Util.currentDate());
                 }
             }.start();
         }

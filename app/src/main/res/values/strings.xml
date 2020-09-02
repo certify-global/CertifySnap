@@ -603,6 +603,7 @@
     <string name="progress_dialog_message_transfer_start">Transfer Start…</string>
     <string name="text_ip_address">Address: %1$s</string>
     <string name="text_copied">Copied: %1$s</string>
+    <string name="pair_printer_message">Please un-pair and pair the Printer again</string>
 
     <string-array name="work_path_entries">
         <item>In-app folder</item>
