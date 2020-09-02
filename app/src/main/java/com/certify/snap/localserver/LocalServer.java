@@ -28,9 +28,14 @@
 package com.certify.snap.localserver;
 
 import android.content.Context;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
+import android.text.format.Formatter;
 
+import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredMembers;
@@ -67,6 +72,8 @@ import org.apache.hc.core5.util.TimeValue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static android.content.Context.WIFI_SERVICE;
+
 /**
  * Example of embedded HTTP/1.1 file server using classic I/O.
  */
@@ -76,6 +83,8 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
     private Context mContext;
     public HttpContext httpContext;
     public ClassicHttpResponse httpResponse;
+    DhcpInfo dhcpInfo;
+    WifiManager wifi;
 
     public LocalServer(Context context){
         mContext = context;
@@ -91,8 +100,8 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
 //TODO make port configurable, listen on assigned interface ip address and loopback address
         server = ServerBootstrap.bootstrap()
                 .setListenerPort(Constants.port)
-                .setLocalAddress(InetAddress.getByName(Constants.SERVER_IP))
-                .setCanonicalHostName(Constants.SERVER_IP)
+                .setLocalAddress(InetAddress.getByName(getIpAddress(mContext)))
+                .setCanonicalHostName(getIpAddress(mContext))
                 .setSocketConfig(socketConfig)
                 //.setSslContext(sslContext)
                 .setExceptionListener(new ExceptionListener() {
@@ -238,7 +247,7 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
         return stringBuilderData.toString();
     }
 
-    private static String postResponseData(String pingValue, JSONObject member) {
+    private String postResponseData(String pingValue, JSONObject member) {
         if (pingValue.equalsIgnoreCase("/AddUpdateMember")) {
             String updateMember = LocalServerController.getInstance().findUpdateMember(member);
             return updateMember;
@@ -276,6 +285,21 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
         if (requestName.equalsIgnoreCase("/GetMembers")){
             LocalServerController.getInstance().findAllMembers();
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    public String getIpAddress(Context context){
+        String ipAddress = "";
+        if (Util.isConnectedWifi(context)){
+            wifi= (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
+            dhcpInfo=wifi.getDhcpInfo();
+            ipAddress = String.valueOf(Formatter.formatIpAddress(dhcpInfo.ipAddress));
+        } else if (Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)){
+            ipAddress = ConnectivityStatusActivity.getIPAddress(true);
+        } else {
+            ipAddress = "127.0.0.1";
+        }
+        return ipAddress;
     }
 
 }

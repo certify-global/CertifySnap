@@ -41,6 +41,7 @@ import com.certify.snap.common.ShellUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
@@ -623,10 +624,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private void localServerSetting() {
 
+        LocalServer localServer = new LocalServer(this);
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)) {
             radio_yes_server.setChecked(true);
             tvServerIp.setVisibility(View.VISIBLE);
-            String text = String.format(getResources().getString(R.string.text_ip_address), Constants.SERVER_IP +":"+Constants.port);
+            String text = String.format(getResources().getString(R.string.text_ip_address), localServer.getIpAddress(this) +":"+Constants.port);
             tvServerIp.setText(text);
         } else {
             radio_no_server.setChecked(true);
@@ -640,7 +642,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
                     radio_yes_server.setChecked(true);
                     tvServerIp.setVisibility(View.VISIBLE);
-                    String text = String.format(getResources().getString(R.string.text_ip_address), Constants.SERVER_IP +":"+Constants.port);
+                    String text = String.format(getResources().getString(R.string.text_ip_address), localServer.getIpAddress(DeviceSettingsActivity.this) +":"+Constants.port);
                     tvServerIp.setText(text);
                     serverSettingValue = true;
                 } else {

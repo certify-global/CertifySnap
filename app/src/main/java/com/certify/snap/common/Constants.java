@@ -11,7 +11,6 @@ public class Constants {
 
     public static final String APP_ID = "GUhYjMeFLiFARWet58gTGotUpr189H6Ch7QFSSMgMUCZ";
     public static final String SDK_KEY = "4LxEGC47QhYUPdXZxemhKQSEiFh6p9rYUSitfEcAAFFF";
-    public static final String SERVER_IP = "192.168.43.130";
     public static final int port = 8080;
 
     /**
