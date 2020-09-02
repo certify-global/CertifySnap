@@ -70,6 +70,11 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         } else {
             tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings));
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if(sharedPreferences != null){

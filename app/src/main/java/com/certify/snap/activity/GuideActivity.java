@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -454,9 +455,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void showPrintMsgDialog() {
-        String printDevice = sharedPreferences.getString("printer", "NONE");
-        if (printDevice != null && !printDevice.equalsIgnoreCase("NONE")) {
-            showAlertDialog("", getString(R.string.pair_printer_message), "OK", "");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences != null) {
+            String printDevice = sharedPreferences.getString("printer", "NONE");
+            if (printDevice != null && !printDevice.equalsIgnoreCase("NONE")) {
+                showAlertDialog("", getString(R.string.pair_printer_message), "OK", "");
+            }
         }
     }
 
