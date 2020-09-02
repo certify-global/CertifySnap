@@ -57,6 +57,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -388,6 +389,14 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initBluetoothPrinter();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (ApplicationController.getInstance().isDeviceBoot()) {
+            showPrintMsgDialog();
+        }
+    }
+
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
@@ -707,6 +716,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ApplicationController.getInstance().setDeviceBoot(false);
     }
 
     @Override
@@ -3113,5 +3128,28 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
                 ShowLauncherView();
             }
         });
+    }
+
+    private void showPrintMsgDialog() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences != null) {
+            String printDevice = sharedPreferences.getString("printer", "NONE");
+            if (printDevice != null && !printDevice.equalsIgnoreCase("NONE")) {
+                showAlertDialog("", getString(R.string.pair_printer_message), "OK", "");
+            }
+        }
+    }
+
+    private void showAlertDialog(String title, String message, String positiveButton, String negativeButton) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(IrCameraActivity.this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(positiveButton, (dialog, id) -> {
+                    dialog.dismiss();
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        new Handler().postDelayed(() -> dialog.dismiss(), 6000);
     }
 }

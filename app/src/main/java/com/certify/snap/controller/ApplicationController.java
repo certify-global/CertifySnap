@@ -14,6 +14,7 @@ public class ApplicationController {
     private String endPointUrl = "";
     private String fcmPushToken = "";
     private ThermalImageUtil temperatureUtil = null;
+    private boolean isDeviceBoot = false;
 
     public static ApplicationController getInstance() {
         if (instance == null)
@@ -35,6 +36,14 @@ public class ApplicationController {
 
     public void setFcmPushToken(String fcmPushToken) {
         this.fcmPushToken = fcmPushToken;
+    }
+
+    public boolean isDeviceBoot() {
+        return isDeviceBoot;
+    }
+
+    public void setDeviceBoot(boolean deviceBoot) {
+        isDeviceBoot = deviceBoot;
     }
 
     /**
