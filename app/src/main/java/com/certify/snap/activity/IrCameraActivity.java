@@ -690,6 +690,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         }
         if (ApplicationController.getInstance().isDeviceBoot()) {
             showPrintMsgDialog();
+            ApplicationController.getInstance().setDeviceBoot(false);
         }
     }
 
