@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 import com.certify.snap.R;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.controller.GestureController;
+import com.certify.snap.view.TimerAnimationView;
 
 public class GestureFragment extends Fragment implements GestureController.GestureCallbackListener {
 
@@ -32,6 +33,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private ImageView image1, image2, image3, image4;
     private LinearLayout voiceLayout, handGestureLayout, progressLayout;
     private Typeface rubiklight;
+    private TimerAnimationView mTimerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +66,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         voiceLayout = view.findViewById(R.id.voice_layout);
         handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
         progressLayout = view.findViewById(R.id.progress_layout);
+        mTimerView = view.findViewById(R.id.timer_view);
         view1 = view.findViewById(R.id.view1);
         view2 = view.findViewById(R.id.view2);
         view3 = view.findViewById(R.id.view3);
@@ -155,6 +158,11 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     public void onAllQuestionsAnswered() {
         GestureController.getInstance().clearData();
         getActivity().runOnUiThread(this::closeFragment);
+    }
+
+    @Override
+    public void onVoiceListeningStart() {
+        getActivity().runOnUiThread(() -> mTimerView.start(8));
     }
 
     private void closeFragment() {

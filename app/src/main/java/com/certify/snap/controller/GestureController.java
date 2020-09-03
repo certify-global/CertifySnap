@@ -52,6 +52,7 @@ public class GestureController {
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
         void onAllQuestionsAnswered();
+        void onVoiceListeningStart();
     }
 
     public static GestureController getInstance() {
@@ -176,6 +177,9 @@ public class GestureController {
         new Handler().postDelayed(() -> {
             if (speechRecognizer != null) {
                 speechRecognizer.startListening(speechRecognizerIntent);
+                if (listener != null) {
+                    listener.onVoiceListeningStart();
+                }
             }
         }, 2000);
     }
@@ -196,7 +200,6 @@ public class GestureController {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 while (runCheck) {
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
@@ -206,7 +209,6 @@ public class GestureController {
                             /*getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    // TODO Auto-generated method stub
                                     peopleHandTips.setText("Left hand energy[" + left + "] Right hand energy[" + right + "]");
                                 }
                             });*/
@@ -235,8 +237,7 @@ public class GestureController {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    Log.e(TAG, "Exception in initHandGesture Thread sleep" + e.getMessage());
                 }
             }
         }).start();
