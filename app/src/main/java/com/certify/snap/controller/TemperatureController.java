@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
@@ -59,12 +61,14 @@ public class TemperatureController {
     private Rect tempRect;
     private boolean isTempAboveThreshold = false;
     private boolean isGuideInited = false;
+    private Timer guideTempTimer = null;
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
         void onTemperatureRead(float temperature);
         void onTemperatureFail(GuideMessage errorCode);
         void onFaceNotInRangeOfThermal();
+        void onThermalGuideReset();
     }
 
     public enum GuideMessage {
@@ -185,6 +189,7 @@ public class TemperatureController {
                         final Rect[] rects = new Rect[temperatureRectList.size()];
                         int[] distances = new int[distanceList.size()];
                         thermalImageUtil.setGuideRect(rects, distances);
+                        cancelGuideTempTimer();
                         if (listener != null) {
                             listener.onFaceNotInRangeOfThermal();
                         }
@@ -257,6 +262,7 @@ public class TemperatureController {
      */
     public void startGuideTemperature() {
         Log.d(TAG, "Temp startGuideTemperature getGuideData");
+        startGuideTemperatureTimer();
         thermalImageUtil.getGuideData(new GuideDataCallBack.Stub() {
             @Override
             public void callBackBitmap(final Bitmap bitmap) throws RemoteException {
@@ -270,6 +276,7 @@ public class TemperatureController {
             public void callBackData(TemperatureBigData temperatureBigData) throws RemoteException {
                 try {
                     Log.d(TAG, "Temp callBackData");
+                    cancelGuideTempTimer();
                     final List<float[]> maxInRectInfo = temperatureBigData.getTemInfoList();//The length of the List is the number of rects,
                     // which records the temperature measurement information of the rect of each face
                     final float envirTem = temperatureBigData.getEmvirTem();//Ambient temperature
@@ -280,12 +287,14 @@ public class TemperatureController {
                     temperature = 0;
                     for (int i = 0; i < maxInRectInfo.size(); i++) {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
-                        if (AppSettings.getfToC().equals("F")) {
-                            temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
-                        } else {
-                            temperature = temperatureCelsius;
+                        if (temperatureCelsius > 0) {
+                            if (AppSettings.getfToC().equals("F")) {
+                                temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
+                            } else {
+                                temperature = temperatureCelsius;
+                            }
+                            temperature += AppSettings.getTemperatureCompensation();
                         }
-                        temperature += AppSettings.getTemperatureCompensation();
                         isGuideInited = false;
                         thermalImageUtil.stopGetGuideData();
                     }
@@ -336,14 +345,18 @@ public class TemperatureController {
         Observable
                 .create((ObservableOnSubscribe<Float>) emitter -> {
                     thermalImageCallback = new HotImageCallbackImpl();
+                    temperature = 0;
                     TemperatureData temperatureData = thermalImageUtil.getDataAndBitmap(50, true, thermalImageCallback);
                     if (temperatureData != null) {
-                        if (AppSettings.getfToC().equals("F")) {
-                            temperature = (float) Util.celsiusToFahrenheit(temperatureData.getTemperature());
-                        } else {
-                            temperature = temperatureData.getTemperature();
+                        temperature = temperatureData.getTemperature();
+                        if (temperature > 0) {
+                            if (AppSettings.getfToC().equals("F")) {
+                                temperature = (float) Util.celsiusToFahrenheit(temperature);
+                            } else {
+                                temperature = temperatureData.getTemperature();
+                            }
+                            temperature += AppSettings.getTemperatureCompensation();
                         }
-                        temperature += AppSettings.getTemperatureCompensation();
                     }
                     emitter.onNext(temperature);
                 })
@@ -578,6 +591,49 @@ public class TemperatureController {
     }
 
     /**
+     * Method that starts the Guide Temperature timer
+     */
+    private void startGuideTemperatureTimer() {
+        guideTempTimer = new Timer();
+        guideTempTimer.schedule(new TimerTask() {
+            public void run() {
+                this.cancel();
+                resetGuideThermal();
+            }
+        }, 5 * 1000);
+    }
+
+    /**
+     * Method that cancels the Guide Temperature timer
+     */
+    private void cancelGuideTempTimer() {
+        if (guideTempTimer != null) {
+            Log.d(TAG, "Temp Cancel Guide Temperature timer");
+            guideTempTimer.cancel();
+        }
+    }
+
+    /**
+     * Method that resets the Guide Thermal
+     */
+    private void resetGuideThermal() {
+        if (thermalImageUtil != null) {
+            Log.e(TAG, "Reset Guide ThemalUtil");
+            thermalImageUtil.stopGetGuideData();
+            ApplicationController.getInstance().releaseThermalUtil();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ApplicationController.getInstance().initThermalUtil(context);
+            if (listener != null) {
+                listener.onThermalGuideReset();
+            }
+        }
+    }
+
+    /**
      * Method that clears the Temperature data parameters
      */
     public void clearData() {
@@ -585,7 +641,10 @@ public class TemperatureController {
         listener = null;
         if (Util.isDeviceProModel()) {
             isGuideInited = false;
-            thermalImageUtil.stopGetGuideData();
+            if (thermalImageUtil != null) {
+                thermalImageUtil.stopGetGuideData();
+            }
+            cancelGuideTempTimer();
         }
         temperatureRecordData = null;
         thermalImageCallback = null;

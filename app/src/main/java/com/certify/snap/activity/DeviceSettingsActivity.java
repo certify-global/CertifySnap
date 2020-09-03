@@ -2,6 +2,8 @@ package com.certify.snap.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -33,6 +36,7 @@ import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -40,9 +44,9 @@ import com.certify.snap.common.ShellUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
-import com.common.thermalimage.ThermalImageUtil;
 
 import org.json.JSONObject;
 
@@ -65,10 +69,19 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private View pro_settings_border;
     RadioGroup sync_member_radio_group;
     RadioButton sync_member_radio_yes, sync_member_radio_no;
+    RadioGroup radio_group_local_server;
+    RadioButton radio_yes_server, radio_no_server;
+    TextView tvLocalServer, tvServerIp;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
     private int ledLevel = 0;
+    private boolean serverSettingValue = false;
+    private ImageView ivClipBoard;
+    private String serverAddress = "";
+    private RelativeLayout addrRelativeLayout;
+    private LinearLayout localServerLayout;
+    private boolean onlineMode = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,22 +96,26 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             ledSwitchSettings();
             seekBarSettings();
             setDefaultLedBrightnessLevel();
+            localServerSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
             tvDeviceManager.setPaintFlags(tvDeviceManager.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             setUIData();
+            copyLocalServerAddress();
 
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         isOnline = true;
+                        localServerLayout.setVisibility(View.GONE);
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
                         activateStatus();
 
                     } else {
                         isOnline = false;
+                        localServerLayout.setVisibility(View.VISIBLE);
                         activateStatus();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
@@ -171,11 +188,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     AppSettings.setProSettings(proSettingValue);
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         deleteAppData();
+                        if (serverSettingValue)
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
                         Util.writeString(sharedPreferences, GlobalParameters.URL, url);
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
-                        if (proSettingValueSp != proSettingValue) {
+                        if (proSettingValueSp != proSettingValue || serverSettingValue
+                            || !onlineMode) {
                             restartApp();
                             return;
                         }
@@ -226,6 +246,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         sync_online_members_textview = findViewById(R.id.sync_online_members_textview);
         led_switch_textview = findViewById(R.id.led_switch_textview);
         seekBar=findViewById(R.id.seekbar);
+        tvLocalServer = findViewById(R.id.local_server_tv);
+        tvServerIp = findViewById(R.id.tv_server_ip);
+        radio_group_local_server = findViewById(R.id.local_server_radio_group);
+        radio_yes_server = findViewById(R.id.radio_yes_server_setting);
+        radio_no_server = findViewById(R.id.radio_no_server_setting);
+        ivClipBoard = findViewById(R.id.iv_clipBoard);
+        addrRelativeLayout = findViewById(R.id.addr_relative_layout);
+        localServerLayout = findViewById(R.id.local_server_parent_layout);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -247,6 +275,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         navigation_bar_textview.setTypeface(rubiklight);
         sync_online_members_textview.setTypeface(rubiklight);
         led_switch_textview.setTypeface(rubiklight);
+        tvLocalServer.setTypeface(rubiklight);
+        tvServerIp.setTypeface(rubiklight);
+
+        if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+            localServerLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     private void proSettings() {
@@ -383,11 +417,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(true);
                 activateStatus.setText("Activated");
                 not_activate.setVisibility(View.GONE);
+                onlineMode = true;
             } else {
                 switch_activate.setChecked(false);
                 activateStatus.setText("Not Activated");
                 not_activate.setText("Activate");
                 tvSettingsName.setText("Local");
+                onlineMode = false;
             }
             syncMemberSettings();
             deviceAccessPassword();
@@ -605,6 +641,57 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private void saveLedBrightnessSetting() {
         Util.writeInt(sharedPreferences, GlobalParameters.LedBrightnessLevel, ledLevel);
+    }
+
+    private void localServerSetting() {
+
+        LocalServer localServer = new LocalServer(this);
+        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)) {
+            radio_yes_server.setChecked(true);
+            addrRelativeLayout.setVisibility(View.VISIBLE);
+            serverAddress = localServer.getIpAddress(this) +":"+Constants.port;
+            String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
+            tvServerIp.setText(text);
+        } else {
+            radio_no_server.setChecked(true);
+
+        }
+
+        radio_group_local_server.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_server_setting) {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
+                    radio_yes_server.setChecked(true);
+                    addrRelativeLayout.setVisibility(View.VISIBLE);
+                    serverAddress = localServer.getIpAddress(DeviceSettingsActivity.this) +":"+Constants.port;
+                    String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
+                    tvServerIp.setText(text);
+                    serverSettingValue = true;
+                } else {
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, false);
+                    radio_no_server.setChecked(true);
+                    serverSettingValue = false;
+                    addrRelativeLayout.setVisibility(View.GONE);
+                    tvServerIp.setText("");
+                }
+            }
+
+        });
+
+    }
+
+    private void copyLocalServerAddress() {
+        ivClipBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("text", serverAddress);
+                clipboard.setPrimaryClip(clip);
+                String message = String.format(getResources().getString(R.string.text_copied), serverAddress);
+                Toast.makeText(DeviceSettingsActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

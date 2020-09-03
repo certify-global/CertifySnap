@@ -1,8 +1,11 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
 import com.common.thermalimage.ThermalImageUtil;
 
 public class ApplicationController {
@@ -11,6 +14,7 @@ public class ApplicationController {
     private String endPointUrl = "";
     private String fcmPushToken = "";
     private ThermalImageUtil temperatureUtil = null;
+    private boolean isDeviceBoot = false;
 
     public static ApplicationController getInstance() {
         if (instance == null)
@@ -34,6 +38,18 @@ public class ApplicationController {
         this.fcmPushToken = fcmPushToken;
     }
 
+    public boolean isDeviceBoot() {
+        return isDeviceBoot;
+    }
+
+    public void setDeviceBoot(boolean deviceBoot) {
+        isDeviceBoot = deviceBoot;
+    }
+
+    /**
+     * Method that initializes the Thermal util
+     * @param context context
+     */
     public void initThermalUtil(Context context) {
         Log.d(TAG, "App Init Thermal Util");
         temperatureUtil = new ThermalImageUtil(context);
@@ -43,6 +59,36 @@ public class ApplicationController {
         return temperatureUtil;
     }
 
+    /**
+     * Method that sets the scanner time for Pro device
+     * @param sharedPreferences SharedPref
+     * @param proDeviceBootTime DateTime
+     */
+    public void setProDeviceBootTime(SharedPreferences sharedPreferences, String proDeviceBootTime) {
+        if (sharedPreferences != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.PRO_DEVICE_BOOT_TIME, proDeviceBootTime);
+        }
+    }
+
+    /**
+     * Method that checks for the if the scanner time set for the Pro device
+     * @param sharedPreferences sharedPref
+     * @return true or false accordingly
+     */
+    public boolean isProDeviceStartScannerTimer(SharedPreferences sharedPreferences) {
+        boolean result = true;
+        if (sharedPreferences != null) {
+            String dateTime = sharedPreferences.getString(GlobalParameters.PRO_DEVICE_BOOT_TIME, "");
+            if (dateTime != null && !dateTime.isEmpty()) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Method that releases the Thermal Util
+     */
     public void releaseThermalUtil() {
         if (temperatureUtil != null) {
             Log.d(TAG, "App Release Thermal Util");

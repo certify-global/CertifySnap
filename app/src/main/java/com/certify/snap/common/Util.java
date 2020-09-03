@@ -1114,7 +1114,7 @@ public class Util {
         }
     }
 
-    private static String getAppState(){
+    public static String getAppState(){
         String appState = "Foreground";
         if(ApplicationLifecycleHandler.isInBackground)
             appState = "Background";

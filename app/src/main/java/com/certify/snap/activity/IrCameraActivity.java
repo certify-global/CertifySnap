@@ -20,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -43,6 +42,7 @@ import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.controller.DatabaseController;
@@ -56,6 +56,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -135,7 +136,6 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -338,6 +338,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
         CameraController.getInstance().init();
+        CameraController.getInstance().startProDeviceInitTimer(this);
         initAccessControl();
         SoundController.getInstance().init(this);
 
@@ -688,6 +689,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
             Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
+        if (ApplicationController.getInstance().isDeviceBoot()) {
+            showPrintMsgDialog();
+            ApplicationController.getInstance().setDeviceBoot(false);
+        }
     }
 
     @Override
@@ -708,6 +713,12 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ApplicationController.getInstance().setDeviceBoot(false);
     }
 
     @Override
@@ -2387,11 +2398,10 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             HomeTextOnlyText();
             rl_header.setVisibility(View.VISIBLE);
         }
-        if (Util.isDeviceProModel()) {
+        if (isProDevice) {
             long scannerRemainingTime = CameraController.getInstance().getScannerRemainingTime();
             if (scannerRemainingTime > 0) {
                 Toast.makeText(this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show();
-                CameraController.getInstance().setScannerRemainingTime(scannerRemainingTime);
             }
         }
     }
@@ -2979,6 +2989,15 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         });
     }
 
+    @Override
+    public void onThermalGuideReset() {
+        Log.d(TAG, "onThermalGuideReset");
+        TemperatureController.getInstance().clearData();
+        CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
+        TemperatureController.getInstance().setTemperatureListener(this);
+        clearLeftFace(null);
+    }
+
     private void initBluetoothPrinter() {
         // initialization for printing
         PrinterController.getInstance().init(this);
@@ -3133,5 +3152,28 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
             relative_main.setVisibility(View.GONE);
             new Handler().postDelayed(() -> runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0)), 1000);
         });
+    }
+
+    private void showPrintMsgDialog() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences != null) {
+            String printDevice = sharedPreferences.getString("printer", "NONE");
+            if (printDevice != null && !printDevice.equalsIgnoreCase("NONE")) {
+                showAlertDialog("", getString(R.string.pair_printer_message), "OK", "");
+            }
+        }
+    }
+
+    private void showAlertDialog(String title, String message, String positiveButton, String negativeButton) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(IrCameraActivity.this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(positiveButton, (dialog, id) -> {
+                    dialog.dismiss();
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        new Handler().postDelayed(() -> dialog.dismiss(), 6000);
     }
 }

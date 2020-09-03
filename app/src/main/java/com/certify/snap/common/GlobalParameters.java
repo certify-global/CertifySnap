@@ -144,6 +144,7 @@ public class GlobalParameters {
     public static final String QR_SKIP_BUTTON_ENABLE_DISABLE = "QR_skip_button_enable";
     public static final String VISUAL_RECOGNITION = "VisualRecognition";
     public static final String HAND_GESTURE = "HandGesture";
+    public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
 
     public static final String Temperature = "temperature";
     public static final String Temphint = "temphint";
@@ -156,4 +157,5 @@ public class GlobalParameters {
     public static final String MaskMode = "maskMode";
     public static final String Centigrades = "centigrade";
     public static final String Fahrenheits = "fahrenheit";
+    public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
 }

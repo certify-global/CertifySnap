@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -32,12 +34,15 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.localserver.LocalServerController;
+import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
@@ -64,8 +69,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private boolean onlineMode = true;
     private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
-    private long remainingTime = 0;
+    private long remainingTime = 20;
     private ImageView internetIndicatorImage;
+    public LocalServer localServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +96,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         new Handler().postDelayed(() -> {
             CameraController.getInstance().initDeviceMode();
             if (value != null && value.equals("BootCompleted")) {
-                if (Util.isDeviceProModel()) {
+                ApplicationController.getInstance().setDeviceBoot(true);
+                if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
                     startProDeviceInitTimer();
                     return;
                 }
@@ -119,6 +126,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             startUpCountDownTimer.cancel();
         }
         ApplicationController.getInstance().releaseThermalUtil();
+        if (localServer != null){
+            localServer.stopServer();
+        }
+        ApplicationController.getInstance().setDeviceBoot(false);
     }
 
     private void checkStatus() {
@@ -167,6 +178,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             });
         } else if (!onlineMode) {
             //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
+            startLocalServer();
             Util.switchRgbOrIrActivity(GuideActivity.this, true);
         } else {
             //TODO: This dialog is required when the connection fails to API server
@@ -272,6 +284,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         startMemberSyncService();
         startBLEService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
+        startLocalServer();
     }
 
     private void initNavigationBar() {
@@ -425,11 +438,20 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             public void onFinish() {
                 startUpCountDownTimer.cancel();
                 progressDialog.dismiss();
+                ApplicationController.getInstance().setProDeviceBootTime(sharedPreferences, Util.currentDate());
                 initApp();
             }
         };
         startUpCountDownTimer.start();
         progressDialog.setCancelable(false);
         progressDialog.show();
+    }
+
+    private void startLocalServer() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)
+            && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+            localServer = new LocalServer(this);
+            new LocalServerTask(localServer).execute();
+        }
     }
 }

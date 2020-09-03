@@ -14,6 +14,7 @@ def keyStore = new Properties()
 def baseFileName = "CertifySnap"
 keyStore.load(new FileInputStream("$userHome/certifysnap/keystore.properties"))
 android {
+    useLibrary 'org.apache.http.legacy'
 
     signingConfigs {
         Snap {
@@ -101,6 +102,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation files('libs\\http-2.2.1.jar')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
@@ -144,6 +146,7 @@ dependencies {
     implementation 'com.squareup:otto:1.3.7'
     annotationProcessor 'com.jakewharton:butterknife:7.0.1'
     implementation 'com.jakewharton:butterknife:7.0.1'
+    implementation 'org.apache.httpcomponents.core5:httpcore5:5.0.1'
 
     testImplementation 'commons-logging:commons-logging:1.2'
     testImplementation "org.mockito:mockito-core:3.3.3"

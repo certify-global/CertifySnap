@@ -177,9 +177,10 @@ public class DatabaseController {
         return 0;
     }
 
-    public void deleteAllOfflineRecord(){
+    public void deleteAllOfflineRecord() {
         if (databaseStore != null){
             databaseStore.deleteAllOfflineRecord();
+            databaseStore.deleteAllOfflineAccessLogRecords();
         }
     }
 
@@ -232,5 +233,26 @@ public class DatabaseController {
             result = true;
         }
         return result;
+    }
+
+    public List<OfflineRecordTemperatureMembers> lastTenOfflineTempRecord() {
+        if (databaseStore != null) {
+            return databaseStore.LastTenOfflineTempRecord();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<AccessLogOfflineRecord> lastTenOfflineAccessLog() {
+        if (databaseStore != null) {
+            return databaseStore.LastTenOfflineAccessLog();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<RegisteredMembers> lastTenMembers() {
+        if (databaseStore != null) {
+            return databaseStore.lastTenMembers();
+        }
+        return new ArrayList<>();
     }
 }
