@@ -40,7 +40,7 @@
             android:text="Wave right hand if NO\n Wave left hand if YES"
             android:textColor="@color/black"
             android:textSize="20dp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <TextView
             android:id="@+id/covid_questions_text"
@@ -82,6 +82,13 @@
                     android:text="Listening..."
                     android:textColor="@color/black"
                     android:textSize="30dp" />
+
+                <!--<com.certify.snap.view.TimerAnimationView
+                    android:id="@+id/timer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:circleColor="@color/timer_circle"/>-->
+
             </LinearLayout>
 
             <LinearLayout
