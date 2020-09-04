@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
@@ -99,16 +100,11 @@ public class SoundController {
     }
 
     /**
-     * Method that clears the Sound parameters
+     * Method that saves the audio file in the External storage
+     * @param audioSoundFileData Audio file data
+     * @param fileName FileName
      */
-    public void clearData() {
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
-        }
-    }
-
-    public File saveAudioFile(String audioSoundFileData, String fileName) {
+    public void saveAudioFile(String audioSoundFileData, String fileName) {
         final byte[] imgBytesData = android.util.Base64.decode(audioSoundFileData,
                 android.util.Base64.DEFAULT);
         final File file;
@@ -126,13 +122,18 @@ public class SoundController {
                     fileOutputStream);
             bufferedOutputStream.write(imgBytesData);
             bufferedOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            Log.e(TAG, "Error in saving the audio file " + e.getMessage());
         }
-        return file;
+    }
+
+    /**
+     * Method that clears the Sound parameters
+     */
+    public void clearData() {
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
     }
 }

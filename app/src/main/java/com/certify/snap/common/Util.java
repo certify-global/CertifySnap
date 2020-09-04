@@ -1279,11 +1279,11 @@ public class Util {
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
-                if (!audioForNormalTemperature.isEmpty() && audioForNormalTemperature != null) {
+                if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
                 }
                 String audioForHighTemperature = jsonValueScan.isNull("audioForHighTemperature") ? "" : jsonValueScan.getString("audioForHighTemperature");
-                if (!audioForHighTemperature.isEmpty() && audioForHighTemperature != null) {
+                if (audioForHighTemperature != null && !audioForHighTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForHighTemperature, "High.mp3");
                 }
 
@@ -1379,11 +1379,11 @@ public class Util {
                     String lightHighTemperature = audioVisualSettings.isNull("enableLightOnHighTemperature") ? "0" : audioVisualSettings.getString("enableLightOnHighTemperature");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_HIGH, lightHighTemperature.equals("1"));
                     String audioForValidQRCode = audioVisualSettings.isNull("audioForValidQRCode") ? "" : audioVisualSettings.getString("audioForValidQRCode");
-                    if (!audioForValidQRCode.isEmpty() && audioForValidQRCode != null) {
+                    if (audioForValidQRCode != null && !audioForValidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
                     }
                     String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
-                    if (!audioForInvalidQRCode.isEmpty() && audioForInvalidQRCode != null) {
+                    if (audioForInvalidQRCode != null && !audioForInvalidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForInvalidQRCode, "Invalid.mp3");
                     }
                 }
