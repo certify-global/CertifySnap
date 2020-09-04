@@ -5,10 +5,17 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.Environment;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SoundController {
     private static final String TAG = SoundController.class.getSimpleName();
@@ -27,6 +34,7 @@ public class SoundController {
 
     /**
      * Method that initializes the Sound parameters
+     *
      * @param context context
      */
     public void init(Context context) {
@@ -59,7 +67,7 @@ public class SoundController {
      */
     public void playNormalTemperatureSound() {
         if (isNormalSoundEnable) {
-            Util.soundPool( context, "normal", soundPool);
+            Util.soundPool(context, "normal", soundPool);
         }
     }
 
@@ -77,7 +85,7 @@ public class SoundController {
      */
     public void playValidQrSound() {
         if (AppSettings.isQrSoundValid()) {
-            Util.qrSoundPool(context,  soundPool, true);
+            Util.qrSoundPool(context, soundPool, true);
         }
     }
 
@@ -86,7 +94,7 @@ public class SoundController {
      */
     public void playInvalidQrSound() {
         if (AppSettings.isQrSoundInvalid()) {
-            Util.qrSoundPool(context,  soundPool, false);
+            Util.qrSoundPool(context, soundPool, false);
         }
     }
 
@@ -98,5 +106,33 @@ public class SoundController {
             soundPool.release();
             soundPool = null;
         }
+    }
+
+    public File saveAudioFile(String audioSoundFileData, String fileName) {
+        final byte[] imgBytesData = android.util.Base64.decode(audioSoundFileData,
+                android.util.Base64.DEFAULT);
+        final File file;
+        try {
+            String path = Environment.getExternalStorageDirectory() + "/Audio/";
+            File dirFile = new File(path);
+            if (!dirFile.exists()) {
+                dirFile.mkdir();
+            }
+            file = new File(path + fileName);
+            final FileOutputStream fileOutputStream;
+
+            fileOutputStream = new FileOutputStream(file);
+            final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+                    fileOutputStream);
+            bufferedOutputStream.write(imgBytesData);
+            bufferedOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return file;
     }
 }

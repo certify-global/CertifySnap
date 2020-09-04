@@ -70,6 +70,7 @@ import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
@@ -788,7 +789,7 @@ public class Util {
             }
             if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
                 saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
-            } else{
+            } else {
                 new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
             }
 
@@ -806,7 +807,7 @@ public class Util {
             offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
             offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
             offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
-            if (data.member.getFirstname() != null){
+            if (data.member.getFirstname() != null) {
                 offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
                 offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
                 offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
@@ -1104,7 +1105,7 @@ public class Util {
             obj.put("deviceSN", getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("appState", getAppState() );
+            obj.put("appState", getAppState());
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -1114,9 +1115,9 @@ public class Util {
         }
     }
 
-    public static String getAppState(){
+    public static String getAppState() {
         String appState = "Foreground";
-        if(ApplicationLifecycleHandler.isInBackground)
+        if (ApplicationLifecycleHandler.isInBackground)
             appState = "Background";
         return appState;
     }
@@ -1277,6 +1278,14 @@ public class Util {
                 String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" : jsonValueScan.getString("lowTemperatureThreshold");
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
+                String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
+                if (!audioForNormalTemperature.isEmpty() && audioForNormalTemperature != null) {
+                    SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
+                }
+                String audioForHighTemperature = jsonValueScan.isNull("audioForHighTemperature") ? "" : jsonValueScan.getString("audioForHighTemperature");
+                if (!audioForHighTemperature.isEmpty() && audioForHighTemperature != null) {
+                    SoundController.getInstance().saveAudioFile(audioForHighTemperature, "High.mp3");
+                }
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
@@ -1369,6 +1378,14 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_NORMAL, lightNormalTemperature.equals("1"));
                     String lightHighTemperature = audioVisualSettings.isNull("enableLightOnHighTemperature") ? "0" : audioVisualSettings.getString("enableLightOnHighTemperature");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_HIGH, lightHighTemperature.equals("1"));
+                    String audioForValidQRCode = audioVisualSettings.isNull("audioForValidQRCode") ? "" : audioVisualSettings.getString("audioForValidQRCode");
+                    if (!audioForValidQRCode.isEmpty() && audioForValidQRCode != null) {
+                        SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
+                    }
+                    String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
+                    if (!audioForInvalidQRCode.isEmpty() && audioForInvalidQRCode != null) {
+                        SoundController.getInstance().saveAudioFile(audioForInvalidQRCode, "Invalid.mp3");
+                    }
                 }
             } else {
                 Logger.toast(context, "Something went wrong please try again");
@@ -1854,7 +1871,7 @@ public class Util {
         return isNetworkOff(context);
     }
 
-    public static void qrSoundPool(Context context, SoundPool soundPool, Boolean validQRCode ) {
+    public static void qrSoundPool(Context context, SoundPool soundPool, Boolean validQRCode) {
         if (soundPool == null) return;
         try {
 
@@ -1888,13 +1905,13 @@ public class Util {
     }
 
     public static boolean isQRCodeWithPrefix(String code) {
-       if(code != null) {
-           if (code.isEmpty()) {
-               return false;
-           }
-           return code.toLowerCase().startsWith("tr");
-       }
-       return false;
+        if (code != null) {
+            if (code.isEmpty()) {
+                return false;
+            }
+            return code.toLowerCase().startsWith("tr");
+        }
+        return false;
     }
 
     public static void deleteAppData(Context context) {
@@ -1904,7 +1921,7 @@ public class Util {
         }
         DatabaseController.getInstance().deleteAllMember();
         // Saving the token, after clearing the sharedPreference
-        Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
     }
 
     public static void stopMemberSyncService(Context context) {
@@ -1922,16 +1939,16 @@ public class Util {
     }
 
 
-    public static void getPushresponse(PushCallback callback, Context context,String guid,String uniqueID,String response_msg,String eventType) {
+    public static void getPushresponse(PushCallback callback, Context context, String guid, String uniqueID, String response_msg, String eventType) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
             obj.put("commandGuid", guid);
-            obj.put("deviceUUID",uniqueID);
-            obj.put("eventType",eventType);
-            obj.put("response", response_msg+" push success");
-            if(guid == null) {
+            obj.put("deviceUUID", uniqueID);
+            obj.put("eventType", eventType);
+            obj.put("response", response_msg + " push success");
+            if (guid == null) {
                 obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
                 obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
                 obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
@@ -1986,6 +2003,7 @@ public class Util {
         }
         return "";
     }
+
     public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
