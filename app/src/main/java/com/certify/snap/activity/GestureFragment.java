@@ -28,7 +28,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private final String TAG = GestureFragment.class.getSimpleName();
     private TextView peopleHandTips;
     private TextView covidQuestionsText, titleView;
-    private Button handGestureYesButton, handGestureNoButton, voiceGestureYesButton, voiceGestureNoButton;
     private View view, view1, view2, view3;
     private ImageView image1, image2, image3, image4;
     private LinearLayout voiceLayout, handGestureLayout, progressLayout;
@@ -58,10 +57,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     void initView() {
         peopleHandTips = view.findViewById(R.id.peopleHandTips);
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
-        handGestureYesButton = view.findViewById(R.id.hand_yes_button);
-        handGestureNoButton = view.findViewById(R.id.hand_no_button);
-        voiceGestureYesButton = view.findViewById(R.id.voice_yes_button);
-        voiceGestureNoButton = view.findViewById(R.id.voice_no_button);
         titleView = view.findViewById(R.id.title_text_view);
         voiceLayout = view.findViewById(R.id.voice_layout);
         handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
@@ -83,6 +78,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (AppSettings.isEnableVoice()) {
             titleView.setText("Please answer the questions by saying Yes or No");
             voiceLayout.setVisibility(View.VISIBLE);
+        } else {
+            voiceLayout.setVisibility(View.GONE);
         }
     }
 
@@ -113,8 +110,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             voiceLayout.setVisibility(View.VISIBLE);
         }
         progressLayout.setVisibility(View.VISIBLE);
-        handGestureNoButton.setBackgroundColor(getResources().getColor(R.color.gray));
-        handGestureYesButton.setBackgroundColor(getResources().getColor(R.color.gray));
     }
 
     //-----> Voice code

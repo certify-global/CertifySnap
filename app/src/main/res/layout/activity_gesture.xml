@@ -108,7 +108,8 @@
                     android:layout_width="150dp"
                     android:layout_height="70dp"
                     android:background="@color/gray"
-                    android:text="YES" />
+                    android:text="YES"
+                    android:visibility="gone"/>
 
                 <Button
                     android:id="@+id/voice_no_button"
@@ -116,7 +117,8 @@
                     android:layout_height="70dp"
                     android:layout_marginLeft="80dp"
                     android:background="@color/gray"
-                    android:text="NO" />
+                    android:text="NO"
+                    android:visibility="gone"/>
             </LinearLayout>
 
         </LinearLayout>

@@ -434,5 +434,7 @@ public class GestureController {
         questionList.clear();
         runCheck = false;
         listener = null;
+        usbReader = null;
+        mUsbManager = null;
     }
 }
