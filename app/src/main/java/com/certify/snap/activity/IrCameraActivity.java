@@ -326,7 +326,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ir);
         mActivity = this;
-        Log.v("Shailendra", "Shailendra visit IR Camera Activity");
+
         instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
