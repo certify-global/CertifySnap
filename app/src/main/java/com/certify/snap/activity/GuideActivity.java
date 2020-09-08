@@ -130,6 +130,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             localServer.stopServer();
         }
         ApplicationController.getInstance().setDeviceBoot(false);
+        BaseActivity.mActivity = null;
     }
 
     private void checkStatus() {

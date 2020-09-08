@@ -15,6 +15,7 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
+import com.certify.snap.activity.BaseActivity;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -29,7 +30,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
 import java.util.Random;
 
 public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback, PushCallback {
@@ -90,6 +90,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Util.deleteAppData(this);
                 Util.restartApp(this);
             }else if(command.equals("RESTART")){
+                if (BaseActivity.mActivity != null){
+                    BaseActivity.mActivity.finishAffinity();
+                }
                 Util.restartApp(this);
             }else if(command.equals("DEACTIVATE")){
                 Util.deleteAppData(this);
@@ -180,9 +183,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+           /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, this, "");
-            }
+            }*/
 
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
