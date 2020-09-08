@@ -1564,20 +1564,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                 showMaskStatus();
                 boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
-                data.exceedsThreshold = aboveThreshold;
-                data.temperature = tempValue;
-                data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
-                data.thermal = temperatureBitmap;
-                data.maskStatus = String.valueOf(maskStatus);
-                data.triggerType = mTriggerType;
-                userData = data;
-                int syncStatus;
-                if (Util.isOfflineMode(IrCameraActivity.this)) {
-                    syncStatus = 1;
-                } else {
-                    syncStatus = -1;
+                if (data != null) {
+                    data.exceedsThreshold = aboveThreshold;
+                    data.temperature = tempValue;
+                    data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
+                    data.thermal = temperatureBitmap;
+                    data.maskStatus = String.valueOf(maskStatus);
+                    data.triggerType = mTriggerType;
+                    userData = data;
+                    int syncStatus;
+                    if (Util.isOfflineMode(IrCameraActivity.this)) {
+                        syncStatus = 1;
+                    } else {
+                        syncStatus = -1;
+                    }
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
                 }
-                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
 
                 if (PrinterController.getInstance().isPrintScan()) {
                     return;
