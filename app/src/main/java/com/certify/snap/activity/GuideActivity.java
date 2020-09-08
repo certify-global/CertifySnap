@@ -285,7 +285,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         startMemberSyncService();
         startBLEService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
-        startLocalServer();
     }
 
     private void initNavigationBar() {
