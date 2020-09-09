@@ -62,7 +62,7 @@ public class AdminLoginActivity extends SettingBaseActivity implements JSONObjec
             textview_name.setTypeface(rubiklight);
             tv_note.setTypeface(rubiklight);
             tv_version.setText(Util.getVersionBuild());
-            tv_serial_no.setText("Serial No: " + Util.getSNCode());
+            tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
 
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -137,7 +137,7 @@ public class LocalServerController {
         JSONObject obj = new JSONObject();
         try {
             obj.put("lastUpdateDateTime", Util.getUTCDate(""));
-            obj.put("deviceSN", Util.getSNCode());
+            obj.put("deviceSN", Util.getSNCode(context));
             obj.put("deviceInfo", Util.MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", Util.getAppState());

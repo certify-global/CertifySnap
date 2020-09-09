@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import androidx.multidex.MultiDexApplication;
+
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
@@ -179,7 +181,7 @@ public class Application extends android.app.Application {
     public String getPragmaKey(Context context){
         wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
         String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
-        String deviceSerialNo = Util.getSNCode();
+        String deviceSerialNo = Util.getSNCode(this);
         return getSha256Hash(deviceSerialNo + macAddress);
     }
 

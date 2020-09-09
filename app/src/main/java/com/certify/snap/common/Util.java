@@ -119,6 +119,7 @@ import java.util.concurrent.ExecutorService;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
+    private static final String TODO = "TODO";
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
     private static String tokenRequestModule = ""; //Optimize
@@ -214,8 +215,24 @@ public class Util {
      *
      * @return
      */
-    public static String getSNCode() {
-        if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 28) {
+    @SuppressLint("MissingPermission")
+    public static String getSNCode(Context context) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                Log.d("TAG", "Naga.........No permissions getSNCode: ");
+                return TODO;
+            }
+            Log.d("TAG", "Naga.........permissions getSNCode: ");
+            return android.os.Build.getSerial();
+        }
+        else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
             return getSerialNumber();
@@ -597,7 +614,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
+            obj.put("deviceSN", Util.getSNCode(context));//Util.getSNCode()
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
@@ -612,7 +629,7 @@ public class Util {
 
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
             }
@@ -641,7 +658,7 @@ public class Util {
 
     public static String getJSONObjectAddmember(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
             }
@@ -1102,7 +1119,7 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             obj.put("lastUpdateDateTime", getUTCDate(""));
-            obj.put("deviceSN", getSNCode());
+            obj.put("deviceSN", getSNCode(context));
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", getAppState());
@@ -1438,7 +1455,7 @@ public class Util {
 
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);
+                    openDialogactivate(context, "This device SN: " + Util.getSNCode(context) + " " + context.getResources().getString(R.string.device_inactive), toast);
                 }
             } else {
                 if (json1.isNull("access_token")) {
@@ -1668,7 +1685,7 @@ public class Util {
 
     public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1682,7 +1699,7 @@ public class Util {
 
     public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }

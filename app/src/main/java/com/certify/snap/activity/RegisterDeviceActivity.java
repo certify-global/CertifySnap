@@ -75,12 +75,12 @@ public class RegisterDeviceActivity extends SettingBaseActivity implements AddDe
             text_imei_number.setTypeface(rubiklight);
 
             tv_version.setText(Util.getVersionBuild());
-            tv_serial_no.setText("Serial No: " + Util.getSNCode());
-            text_serial_number.setText("SERIAL NUMBER: " + Util.getSNCode());
+            tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
+            text_serial_number.setText("SERIAL NUMBER: " + Util.getSNCode(this));
             imeiNumber = Util.getUniqueIMEIId(this);
             text_imei_number.setText("IMEI NUMBER: " + imeiNumber);
             rb_active.setChecked(true);
-            edittext_sno.setText(Util.getSNCode());
+            edittext_sno.setText(Util.getSNCode(this));
             rg_status.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -98,7 +98,7 @@ public class RegisterDeviceActivity extends SettingBaseActivity implements AddDe
                     if (edittext_device_name.getText().toString().isEmpty()) {
                         text_input_device_name.setError("Device Name should not be empty");
                     }else{
-                        sendReqAddDevice(edittext_device_name.getText().toString(), Util.getSNCode(), imeiNumber,rbstatus);
+                        sendReqAddDevice(edittext_device_name.getText().toString(), Util.getSNCode(RegisterDeviceActivity.this), imeiNumber,rbstatus);
                     }
 
                 }

@@ -53,7 +53,7 @@ public class LoginActivity extends Activity {
             textview_name.setTypeface(rubiklight);
             tv_pwd_error.setTypeface(rubiklight);
             tv_version.setText(Util.getVersionBuild());
-            tv_serial_no.setText("Serial No: " + Util.getSNCode());
+            tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -78,7 +78,7 @@ public class LoginActivity extends Activity {
                             validatePassword();
                         }
                     } else {
-                        String input = Util.getSNCode();     //input string
+                        String input = Util.getSNCode(LoginActivity.this);     //input string
                         String lastsixDigits = "";
                         if (input.length() > 6) {
                             lastsixDigits = input.substring(input.length() - 6);

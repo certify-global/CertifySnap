@@ -451,7 +451,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         } else if (!sharedPreferences.getString(GlobalParameters.deviceMasterCode, "").isEmpty()) {
             etPassword.setText(sharedPreferences.getString(GlobalParameters.deviceMasterCode, ""));
         } else {
-            String input = Util.getSNCode();
+            String input = Util.getSNCode(this);
             String lastsixDigits = "";
 
             if (input.length() > 6) {

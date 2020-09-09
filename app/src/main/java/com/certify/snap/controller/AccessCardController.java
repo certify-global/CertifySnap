@@ -248,7 +248,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("memberId", registeredMembers.getMemberid());
                 obj.put("accessId", registeredMembers.getAccessid());
                 obj.put("qrCodeId", "");
-                obj.put("deviceId", Util.getSNCode());
+                obj.put("deviceId", Util.getSNCode(context));
                 obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
                 obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                 obj.put("facilityId", 0);

@@ -298,6 +298,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
     private Button qrSkipButton;
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
+    private int orientationValue = 0;
 
     private void instanceStart() {
         try {
@@ -939,9 +940,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!isNavigationBarOn) {
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
+        if (Build.VERSION.SDK_INT >= 26) {
+            orientationValue = 270;
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelper = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
-                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
+                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
                 .cameraListener(rgbCameraListener)
@@ -962,9 +967,13 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         if (!isNavigationBarOn) {
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
+        if (Build.VERSION.SDK_INT >= 26) {
+            orientationValue = 270;
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelperIr = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
-                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
+                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)
                 .cameraListener(irCameraListener)
