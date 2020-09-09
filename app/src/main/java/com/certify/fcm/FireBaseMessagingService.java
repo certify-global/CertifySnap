@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
@@ -29,13 +30,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
 import java.util.Random;
 
 public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback, PushCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
+    public static final String NOTIFICATION_BROADCAST_ACTION = "com.action.notification.restart";
      SharedPreferences sharedPreferences;
 
     @Override
@@ -88,8 +89,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Util.getMemberID(this,CertifyId);
             }else if(command.equals("RESET")){
                 Util.deleteAppData(this);
+                sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("RESTART")){
+                sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("DEACTIVATE")){
                 Util.deleteAppData(this);
@@ -180,9 +183,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+           /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, this, "");
-            }
+            }*/
 
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -198,5 +201,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerPush()", "Exception occurred while processing API response callback with Push command response api" + e.getMessage());
         }
+    }
+
+    private void sendBroadcastMessage() {
+        Intent intent = new Intent();
+        intent.setAction(NOTIFICATION_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

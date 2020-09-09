@@ -110,7 +110,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.GlobalParameters.livenessDetect;
 
-public class ProIrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener {
+public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
 
     private static final String TAG = "ProIrCameraActivity";
     private ProcessHandler processHandler;
@@ -125,7 +125,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
 
     private FaceRectView faceRectView;
 
-    Timer tTimer, pTimer, imageTimer;
+    Timer tTimer, pTimer;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
 
@@ -219,6 +219,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
     private Bitmap irBitmap;
     private Bitmap rgbBitmap;
     private Bitmap thermalBitmap;
+    private Timer guideTempTimer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -432,8 +433,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             tTimer.cancel();
         if (pTimer != null)
             pTimer.cancel();
-        if (imageTimer != null)
-            imageTimer.cancel();
         if (cameraHelper != null) {
             cameraHelper.release();
             cameraHelper = null;
@@ -459,7 +458,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         }
 
         FaceServer.getInstance().unInit();
-        cancelImageTimer();
         if (util!=null) {
             util.stopGetGuideData();
         }
@@ -771,26 +769,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 faceRectView.clearFaceInfo();
             }
 
-            if(imageTimer == null){
-                imageTimer = new Timer();
-                imageTimer.schedule(new TimerTask() {
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Log.e("imagetimer---","start");
-//                                    isSearch = true;
-//                                    tv_message.setText("");
-//                                    img_temperature.setVisibility(View.GONE);
-//                                Util.enableLedPower(0);
-                            }
-                        });
-
-                        this.cancel();
-                    }
-                }, 3* 1000);//20秒
-            }
-
             List<FacePreviewInfo> facePreviewInfoList = faceHelperProIr.onPreviewFrame(cloneNv21Rgb);
             this.facePreviewInfoList = facePreviewInfoList;
 
@@ -800,6 +778,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 }else if(module == 27){
                     setRect(facePreviewInfoList);
                 }
+                startGuideTemperatureTimer();
             }
             if (facePreviewInfoList != null && faceRectView != null && drawHelperRgb != null) {
                 drawPreviewInfo(facePreviewInfoList);
@@ -808,7 +787,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             clearLeftFace(facePreviewInfoList);
 
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
-                cancelImageTimer();
 //                openled();
                 for (int i = 0; i < facePreviewInfoList.size(); i++) {
                     // 注意：这里虽然使用的是IR画面活体检测，RGB画面特征提取，但是考虑到成像接近，所以只用了RGB画面的图像质量检测
@@ -951,6 +929,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
             @Override
             public void callBackData(TemperatureBigData temperatureBigData) throws RemoteException {
                 try {
+                    cancelGuideTempTimer();
                     long nowTime = System.currentTimeMillis();
                     long costTime = nowTime - lastDataTime;
                     Log.d(TAG, "aadataTime["+ costTime +"]");
@@ -1057,6 +1036,7 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
                 final Rect[] rects = new Rect[temperatureRectList.size()];
                 int[] distances = new int[distanceList.size()];
                 util.setGuideRect(rects, distances);
+                cancelGuideTempTimer();
                 continue;
             }
             float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
@@ -1711,13 +1691,6 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         message.sendToTarget();
     }
 
-    private void cancelImageTimer() {
-        if (imageTimer != null) {
-            imageTimer.cancel();
-            imageTimer = null;
-        }
-    }
-
     private static class ProcessHandler extends Handler {
         WeakReference<ProIrCameraActivity> activityWeakReference;
 
@@ -1814,4 +1787,51 @@ public class ProIrCameraActivity extends Activity implements ViewTreeObserver.On
         data.thermal = thermalBitmap;
         data.triggerType = CameraController.triggerValue.MULTIUSER.toString();
     }
+
+    /**
+     * Method that starts the Guide Temperature timer
+     */
+    public void startGuideTemperatureTimer() {
+        if (guideTempTimer != null) return;
+        guideTempTimer = new Timer();
+        guideTempTimer.schedule(new TimerTask() {
+            public void run() {
+                cancelGuideTempTimer();
+                resetGuideThermal();
+            }
+        }, 20 * 1000);
+    }
+
+    /**
+     * Method that cancels the Guide Temperature timer
+     */
+    public void cancelGuideTempTimer() {
+        if (guideTempTimer != null) {
+            Log.d(TAG, "Temp Cancel Guide Temperature timer");
+            guideTempTimer.cancel();
+            guideTempTimer = null;
+        }
+    }
+
+    /**
+     * Method that resets the Guide Thermal
+     */
+    private void resetGuideThermal() {
+        module = 0;
+        new Thread(() -> {
+            util.stopGetGuideData();
+            TemperatureController.getInstance().clearTemperatureMap();
+            ApplicationController.getInstance().releaseThermalUtil();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ApplicationController.getInstance().initThermalUtil(ProIrCameraActivity.this);
+            util = ApplicationController.getInstance().getTemperatureUtil();
+            isTemperature = false;
+            new InitTemperatureThread().start();
+        }).start();
+    }
+
 }

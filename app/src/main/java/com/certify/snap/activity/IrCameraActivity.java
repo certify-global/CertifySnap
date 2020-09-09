@@ -157,7 +157,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
-public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
+public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
@@ -326,6 +326,7 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_ir);
+
         instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
@@ -1573,20 +1574,22 @@ public class IrCameraActivity extends Activity implements ViewTreeObserver.OnGlo
 
                 showMaskStatus();
                 boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
-                data.exceedsThreshold = aboveThreshold;
-                data.temperature = tempValue;
-                data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
-                data.thermal = temperatureBitmap;
-                data.maskStatus = String.valueOf(maskStatus);
-                data.triggerType = mTriggerType;
-                userData = data;
-                int syncStatus;
-                if (Util.isOfflineMode(IrCameraActivity.this)) {
-                    syncStatus = 1;
-                } else {
-                    syncStatus = -1;
+                if (data != null) {
+                    data.exceedsThreshold = aboveThreshold;
+                    data.temperature = tempValue;
+                    data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
+                    data.thermal = temperatureBitmap;
+                    data.maskStatus = String.valueOf(maskStatus);
+                    data.triggerType = mTriggerType;
+                    userData = data;
+                    int syncStatus;
+                    if (Util.isOfflineMode(IrCameraActivity.this)) {
+                        syncStatus = 1;
+                    } else {
+                        syncStatus = -1;
+                    }
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
                 }
-                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
 
                 if (PrinterController.getInstance().isPrintScan()) {
                     return;

@@ -81,7 +81,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private String serverAddress = "";
     private RelativeLayout addrRelativeLayout;
     private LinearLayout localServerLayout;
-    private boolean onlineMode = false;
+    private boolean deviceOnlineSwitch = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,6 +107,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    deviceOnlineSwitch = true;
                     if (isChecked) {
                         isOnline = true;
                         localServerLayout.setVisibility(View.GONE);
@@ -194,8 +195,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
-                        if (proSettingValueSp != proSettingValue || serverSettingValue
-                            || !onlineMode) {
+                        if ((proSettingValueSp != proSettingValue) || (serverSettingValue
+                            && deviceOnlineSwitch)) {
                             restartApp();
                             return;
                         }
@@ -417,13 +418,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(true);
                 activateStatus.setText("Activated");
                 not_activate.setVisibility(View.GONE);
-                onlineMode = true;
             } else {
                 switch_activate.setChecked(false);
                 activateStatus.setText("Not Activated");
                 not_activate.setText("Activate");
                 tvSettingsName.setText("Local");
-                onlineMode = false;
             }
             syncMemberSettings();
             deviceAccessPassword();
@@ -652,6 +651,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             serverAddress = localServer.getIpAddress(this) +":"+Constants.port;
             String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
             tvServerIp.setText(text);
+            serverSettingValue = true;
         } else {
             radio_no_server.setChecked(true);
 
