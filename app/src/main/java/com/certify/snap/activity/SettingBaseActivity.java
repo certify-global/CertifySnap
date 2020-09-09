@@ -9,7 +9,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
-public abstract class SettingBaseActivity extends Activity {
+public abstract class SettingBaseActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

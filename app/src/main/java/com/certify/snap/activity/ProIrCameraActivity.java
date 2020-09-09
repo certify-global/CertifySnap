@@ -228,7 +228,6 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_pro_ir_camera);
-        mActivity = this;
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WindowManager.LayoutParams attributes = getWindow().getAttributes();
             attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;

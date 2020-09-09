@@ -10,12 +10,12 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
-import com.certify.snap.activity.BaseActivity;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -36,6 +36,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
+    public static final String NOTIFICATION_BROADCAST_ACTION = "com.action.notification.restart";
      SharedPreferences sharedPreferences;
 
     @Override
@@ -88,14 +89,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Util.getMemberID(this,CertifyId);
             }else if(command.equals("RESET")){
                 Util.deleteAppData(this);
-                if (BaseActivity.mActivity != null){
-                    BaseActivity.mActivity.finishAffinity();
-                }
+                sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("RESTART")){
-                if (BaseActivity.mActivity != null){
-                    BaseActivity.mActivity.finishAffinity();
-                }
+                sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("DEACTIVATE")){
                 Util.deleteAppData(this);
@@ -204,5 +201,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerPush()", "Exception occurred while processing API response callback with Push command response api" + e.getMessage());
         }
+    }
+
+    private void sendBroadcastMessage() {
+        Intent intent = new Intent();
+        intent.setAction(NOTIFICATION_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }
