@@ -156,4 +156,5 @@ public class GlobalParameters {
     public static final String Centigrades = "centigrade";
     public static final String Fahrenheits = "fahrenheit";
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
+    public static final String APP_LAUNCH_TIME = "app_launch_time";
 }

@@ -32,6 +32,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.Settings;
 
 import androidx.annotation.RequiresApi;
@@ -115,6 +116,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
@@ -1099,6 +1101,7 @@ public class Util {
     public static void getDeviceHealthCheck(JSONObjectCallback callback, Context context) {
         try {
             SharedPreferences sharedPreferences = getSharedPreferences(context);
+            Log.v("Shailendra", "Running Device Health Check api");
 
             JSONObject obj = new JSONObject();
             obj.put("lastUpdateDateTime", getUTCDate(""));
@@ -1106,6 +1109,8 @@ public class Util {
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", getAppState());
+            obj.put("appUpTime", getAppUpTime(context));
+            obj.put("deviceUpTime", getDeviceUpTime());
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
@@ -2017,5 +2022,33 @@ public class Util {
 
         }
         return null;
+    }
+
+    private static String getAppUpTime(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
+        Date appLaunchDateTime = new Date(Long.parseLong(appLaunchTime));
+        Date currentDateTime = new Date(System.currentTimeMillis());
+        long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(differenceInTime) % 60;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(differenceInTime) % 60;
+        long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+        long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+        long totalHours = hours + days * 24;
+        return String.format(Locale.getDefault(),"%d:%02d:%02d",totalHours,minutes,seconds);
+    }
+
+    private static String getDeviceUpTime() {
+        long uptimeMillis = SystemClock.elapsedRealtime();
+        String deviceUptime = String.format(Locale.getDefault(),
+                "%d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(uptimeMillis),
+                TimeUnit.MILLISECONDS.toMinutes(uptimeMillis)
+                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+                        .toHours(uptimeMillis)),
+                TimeUnit.MILLISECONDS.toSeconds(uptimeMillis)
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                        .toMinutes(uptimeMillis)));
+        return deviceUptime;
     }
 }

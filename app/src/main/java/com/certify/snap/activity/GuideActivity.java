@@ -416,6 +416,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
             this.registerReceiver(br, intentFilter);
         });
+        Util.writeString(sharedPreferences, GlobalParameters.APP_LAUNCH_TIME, String.valueOf(System.currentTimeMillis()));
     }
 
     private void startProDeviceInitTimer() {
