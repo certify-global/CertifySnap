@@ -957,7 +957,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                             for (int i = 0; i < maxInRectInfo.size(); i++) {
                                 int trackId = temperatureRectList.get(i).getTrackId();
                                 temperature = maxInRectInfo.get(i)[3];
-                                if (temperature < 0) continue;
+                                if (temperature <= 10) continue;
                                 String temperatureUnit = AppSettings.getfToC();
                                 if (temperatureUnit.equals("F")) {
                                     temperature = (float) Util.celsiusToFahrenheit(temperature);
