@@ -263,6 +263,7 @@ public class AudioVisualActivity extends SettingBaseActivity {
 
     public void saveAudioSettings(View view){
         Util.showToast(AudioVisualActivity.this, getString(R.string.save_success));
+        startActivity(new Intent(this, SettingActivity.class));
         finish();
     }
 
