@@ -1101,7 +1101,6 @@ public class Util {
     public static void getDeviceHealthCheck(JSONObjectCallback callback, Context context) {
         try {
             SharedPreferences sharedPreferences = getSharedPreferences(context);
-            Log.v("Shailendra", "Running Device Health Check api");
 
             JSONObject obj = new JSONObject();
             obj.put("lastUpdateDateTime", getUTCDate(""));
@@ -1115,7 +1114,7 @@ public class Util {
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+            Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
         }
     }
