@@ -72,6 +72,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private long remainingTime = 20;
     private ImageView internetIndicatorImage;
     public LocalServer localServer;
+    ResetOfflineDataReceiver resetOfflineDataReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +131,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             localServer.stopServer();
         }
         ApplicationController.getInstance().setDeviceBoot(false);
+        if (resetOfflineDataReceiver != null){
+            this.unregisterReceiver(resetOfflineDataReceiver);
+        }
     }
 
     private void checkStatus() {
@@ -386,11 +390,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 internetIndicatorImage.setVisibility(View.VISIBLE);
             }
 
-            ResetOfflineDataReceiver br = new ResetOfflineDataReceiver();
+            resetOfflineDataReceiver = new ResetOfflineDataReceiver();
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
             intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
-            this.registerReceiver(br, intentFilter);
+            this.registerReceiver(resetOfflineDataReceiver, intentFilter);
         });
         Util.writeString(sharedPreferences, GlobalParameters.APP_LAUNCH_TIME, String.valueOf(System.currentTimeMillis()));
     }
