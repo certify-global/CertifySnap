@@ -1285,10 +1285,14 @@ public class Util {
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
                 if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
+                } else {
+                    SoundController.getInstance().deleteAudioFile("Normal.mp3");
                 }
                 String audioForHighTemperature = jsonValueScan.isNull("audioForHighTemperature") ? "" : jsonValueScan.getString("audioForHighTemperature");
                 if (audioForHighTemperature != null && !audioForHighTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForHighTemperature, "High.mp3");
+                } else {
+                    SoundController.getInstance().deleteAudioFile("High.mp3");
                 }
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
@@ -1385,10 +1389,14 @@ public class Util {
                     String audioForValidQRCode = audioVisualSettings.isNull("audioForValidQRCode") ? "" : audioVisualSettings.getString("audioForValidQRCode");
                     if (audioForValidQRCode != null && !audioForValidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
+                    } else {
+                        SoundController.getInstance().deleteAudioFile( "Valid.mp3");
                     }
                     String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
                     if (audioForInvalidQRCode != null && !audioForInvalidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForInvalidQRCode, "Invalid.mp3");
+                    } else {
+                        SoundController.getInstance().deleteAudioFile("Invalid.mp3");
                     }
                 }
             } else {

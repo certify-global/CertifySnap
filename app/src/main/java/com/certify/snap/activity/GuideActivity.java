@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
@@ -41,7 +42,6 @@ import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
-import com.certify.snap.localserver.LocalServerController;
 import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
@@ -55,9 +55,9 @@ import com.microsoft.appcenter.AppCenter;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
@@ -73,6 +73,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private ImageView internetIndicatorImage;
     public LocalServer localServer;
     ResetOfflineDataReceiver resetOfflineDataReceiver;
+    public ExecutorService taskExecutorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
+        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+        taskExecutorService = executorService.getExecutorService();
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
 
@@ -127,12 +130,16 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             startUpCountDownTimer.cancel();
         }
         ApplicationController.getInstance().releaseThermalUtil();
-        if (localServer != null){
-            localServer.stopServer();
+        if (localServer == null){
+            localServer = new LocalServer(this);
         }
+        localServer.stopServer();
         ApplicationController.getInstance().setDeviceBoot(false);
         if (resetOfflineDataReceiver != null){
             this.unregisterReceiver(resetOfflineDataReceiver);
+        }
+        if (taskExecutorService != null) {
+            taskExecutorService = null;
         }
     }
 
@@ -430,8 +437,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void startLocalServer() {
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)
             && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-            localServer = new LocalServer(this);
-            new LocalServerTask(localServer).execute();
+            if (taskExecutorService != null) {
+                localServer = new LocalServer(this);
+                new LocalServerTask(localServer).executeOnExecutor(taskExecutorService);
+            }
         }
     }
 }

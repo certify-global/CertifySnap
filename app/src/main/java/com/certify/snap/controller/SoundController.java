@@ -127,6 +127,18 @@ public class SoundController {
         }
     }
 
+    public void deleteAudioFile(String fileName) {
+        String dirPath = Environment.getExternalStorageDirectory() + "/Audio/";
+        File dirFile = new File(dirPath);
+        if (dirFile.exists()){
+            File file = new File(dirPath + fileName);
+            if (file.exists()) {
+                boolean result = file.delete();
+                Log.i(TAG, String.valueOf(result));
+            }
+        }
+    }
+
     /**
      * Method that clears the Sound parameters
      */
