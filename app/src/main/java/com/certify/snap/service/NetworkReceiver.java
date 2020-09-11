@@ -22,7 +22,7 @@ public class NetworkReceiver extends BroadcastReceiver {
         if (("android.net.wifi.WIFI_STATE_CHANGED".equals(intent.getAction())) || ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction()))) {
             if (Util.isConnectedWifi(context) || Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)) {
                 try {
-                    if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
+                    if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
                         if (!Util.isServiceRunning(DeviceHealthService.class, context)) {
                             context.startService(new Intent(context, DeviceHealthService.class));
                             Application.StartService(context);

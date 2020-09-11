@@ -1608,7 +1608,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 resetHomeScreen();
                             });
                             compareResultList.clear();
-                            data.compareResult = null;  //Make the compare result null to avoid update again
+                            if (data != null) {
+                                data.compareResult = null;  //Make the compare result null to avoid update again
+                            }
                         } else {
                             ShowLauncherView();
                         }
