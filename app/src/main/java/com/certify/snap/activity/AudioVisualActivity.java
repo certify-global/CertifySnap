@@ -102,15 +102,9 @@ public class AudioVisualActivity extends SettingBaseActivity {
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(DeviceInfoManager.getInstance().getDeviceAddress() != null){
+            uiConnect();
         }
-
-        // connect ble device
-        if  (mBluetoothLeService != null)
-            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
 
     }
     private void initView(){
@@ -415,16 +409,10 @@ public class AudioVisualActivity extends SettingBaseActivity {
      * @return
      */
     private boolean controlLed(byte[] rgb) {
-        // get bluetoothGattCharacteristic
+        if(mBluetoothLeService == null)
+            return false;
         BluetoothGattCharacteristic characteristic = mBluetoothLeService.getGattCharacteristic(BluetoothGattAttributes.LED_CHARACTERISTIC);
-
         if (characteristic != null) {
-            // check connection
-            if (!mConnected) {
-                Toast.makeText(this, R.string.ble_not_connected, Toast.LENGTH_SHORT).show();
-                return false;
-            }
-            // send characteristic data
             mBluetoothLeService.sendDataCharacteristic(characteristic,rgb );
             return true;
         }
@@ -498,26 +486,17 @@ public class AudioVisualActivity extends SettingBaseActivity {
         }
     }
 
-    public void bleLightOn(View view){
-        if(mConnected) {
-            int val = lightOn();
-            byte[] rgb = {6, 1, intToByte(Color.red(val)), intToByte(Color.green(val)), intToByte(Color.blue(val))};
-            controlLed(rgb);
-            for(int i=0; i<3; i++)
-                ledrgb[i] = rgb[i+1];
-        }
+    public void bleLightOn(View view) {
+        int val = lightOn();
+        byte[] rgb = {6, 1, intToByte(Color.red(val)), intToByte(Color.green(val)), intToByte(Color.blue(val))};
+        controlLed(rgb);
+        System.arraycopy(rgb, 1, ledrgb, 0, 3);
     }
 
-    public void bleLightOff(View view){
-        if(mConnected) {
-            //Off the light
-            byte[] rgb = {6, 1, intToByte(Color.red(MEASURED_STATE_MASK)), intToByte(Color.green(MEASURED_STATE_MASK)), intToByte(Color.blue(MEASURED_STATE_MASK))};
-
-            controlLed(rgb);
-
-            for(int i=0; i<3; i++)
-                ledrgb[i] = rgb[i+1];
-        }
+    public void bleLightOff(View view) {
+        byte[] rgb = {6, 1, intToByte(Color.red(MEASURED_STATE_MASK)), intToByte(Color.green(MEASURED_STATE_MASK)), intToByte(Color.blue(MEASURED_STATE_MASK))};
+        controlLed(rgb);
+        System.arraycopy(rgb, 1, ledrgb, 0, 3);
     }
 
     public static byte intToByte(int i) {

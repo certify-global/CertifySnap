@@ -186,7 +186,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
-                startBLEService();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -282,7 +281,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         }
         initNavigationBar();
         startMemberSyncService();
-        startBLEService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
     }
 
@@ -293,28 +291,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
-        }
-    }
-
-    private void startBLEService() {
-        try {
-            if (AppSettings.isBleLightNormalTemperature() || AppSettings.isBleLightHighTemperature()) {
-                if (!Util.isServiceRunning(BluetoothLeService.class, GuideActivity.this)) {
-                    Log.d(TAG, "startBLEService");
-                    BLEController.getInstance().initServiceConnection();
-                    // connection ble service
-                    Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-                    bindService(gattServiceIntent, BLEController.getInstance().mServiceConnection, BIND_AUTO_CREATE);
-
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "startBLEService: exception" + e.toString());
         }
     }
 

@@ -693,6 +693,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             showPrintMsgDialog();
             ApplicationController.getInstance().setDeviceBoot(false);
         }
+
+        startBLEService();
     }
 
     @Override
@@ -3150,5 +3152,27 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AlertDialog dialog = builder.create();
         dialog.show();
         new Handler().postDelayed(() -> dialog.dismiss(), 6000);
+    }
+
+    private void startBLEService() {
+        try {
+            if (AppSettings.isBleLightNormalTemperature() || AppSettings.isBleLightHighTemperature()) {
+                if (!Util.isServiceRunning(BluetoothLeService.class, IrCameraActivity.this)) {
+                    Log.d(TAG, "startBLEService");
+                    BLEController.getInstance().initServiceConnection();
+                    // connection ble service
+                    Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+                    bindService(gattServiceIntent, BLEController.getInstance().mServiceConnection, BIND_AUTO_CREATE);
+
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "startBLEService: exception" + e.toString());
+        }
     }
 }
