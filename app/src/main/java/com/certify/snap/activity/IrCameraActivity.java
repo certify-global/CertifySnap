@@ -527,7 +527,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         public void onClick(DialogInterface dialog, int id) {
                             finishAffinity();
                             stopHealthCheckService();
-                            stopBLEService();
+                            //stopBLEService();
                             //stopMemberSyncService();
                             stopHidService();
                         }
@@ -2606,7 +2606,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         cancelPreviewIdleTimer();
         enableLedPower();
-
         if (maskEnabled && !faceDetectEnabled) {
             if (maskDetectBitmap == null && rgbBitmap != null) {
                 maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
@@ -2686,6 +2685,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         face3DAngle = null;
         faceThermalToast = null;
+
+        if(isDisconnected) {
+            Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show();
+            BLEController.getInstance().connectToDevice();
+        }
     }
 
     private void setPreviewIdleTimer() {

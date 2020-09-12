@@ -182,8 +182,12 @@ public class BLEController {
         };
     }
 
+    public void connectToDevice() {
+        if (mBluetoothLeService != null)
+            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+    }
+
     private void  clearData(){
         mBluetoothLeService = null;
     }
-
 }
