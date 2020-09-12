@@ -388,6 +388,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initHidReceiver();
         initRecordUserTempService();
         initBluetoothPrinter();
+        startBLEService();
     }
 
     private void initQRCode() {
@@ -693,8 +694,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             showPrintMsgDialog();
             ApplicationController.getInstance().setDeviceBoot(false);
         }
-
-        startBLEService();
     }
 
     @Override
@@ -784,6 +783,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         SoundController.getInstance().clearData();
         clearData();
         CameraController.getInstance().setScanCloseProximityEnabled(false);
+        try {
+            unbindService(BLEController.getInstance().mServiceConnection);
+            BLEController.getInstance().mServiceConnection = null;
+        } catch (Exception e) {
+            Log.e(TAG, "BLE unbind Error");
+        }
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -2687,7 +2692,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         faceThermalToast = null;
 
         if(isDisconnected) {
-            Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show();
+            runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
             BLEController.getInstance().connectToDevice();
         }
     }

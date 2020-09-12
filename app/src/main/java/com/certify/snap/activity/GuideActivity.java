@@ -119,12 +119,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
-            unbindService(BLEController.getInstance().mServiceConnection);
-            BLEController.getInstance().mServiceConnection = null;
-        } catch (Exception e) {
-            Log.e(TAG, "BLE unbind Error");
-        }
         cancelActivationTimer();
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();

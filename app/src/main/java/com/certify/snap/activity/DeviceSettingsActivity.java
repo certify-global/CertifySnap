@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -49,6 +50,13 @@ import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
@@ -532,10 +540,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void restartApp() {
+        initiateCloseApp();
+    }
+
+    private void closeApp() {
         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
-        ApplicationController.getInstance().releaseThermalUtil();
         Intent intent = new Intent(this, GuideActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -696,4 +707,45 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         });
     }
 
+    private void initiateCloseApp() {
+        ProgressDialog.show(this, "", "Closing and Restarting App, Please wait...");
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    ApplicationController.getInstance().releaseThermalUtil();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    emitter.onNext(true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable closeAppDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        closeAppDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        closeApp();
+                        closeAppDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in fetching settings from the server");
+                        closeApp();
+                        closeAppDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
 }

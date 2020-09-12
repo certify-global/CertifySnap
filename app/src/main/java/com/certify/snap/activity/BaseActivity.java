@@ -35,11 +35,15 @@ public abstract class BaseActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, new IntentFilter(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION));
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
-        this.registerReceiver(networkReceiver, intentFilter);
+        if (activityReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, new IntentFilter(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION));
+        }
+        if (networkReceiver != null) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+            intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+            this.registerReceiver(networkReceiver, intentFilter);
+        }
         this.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
@@ -95,14 +99,14 @@ public abstract class BaseActivity extends Activity {
 
             // connected
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                isDisconnected = true;
-                Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
+                isDisconnected = false;
+                //Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onReceive: "+ R.string.ble_connect_success);
             }
             // disconnected
             else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 isDisconnected = true;
-                Toast.makeText(getBaseContext(), R.string.ble_disconnected, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getBaseContext(), R.string.ble_disconnected, Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onReceive: "+ R.string.ble_disconnected);
             }
         }
