@@ -111,6 +111,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     if (isChecked) {
                         isOnline = true;
                         localServerLayout.setVisibility(View.GONE);
+                        LocalServer localServer = new LocalServer(DeviceSettingsActivity.this);
+                        localServer.stopServer();
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
                         activateStatus();
 

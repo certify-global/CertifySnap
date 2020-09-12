@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SoundController {
     private static final String TAG = SoundController.class.getSimpleName();
@@ -25,6 +27,8 @@ public class SoundController {
     private boolean isNormalSoundEnable = false;
     private boolean isHighSoundEnable = false;
     private SoundPool soundPool;
+    private boolean startTime = false;
+    private Timer mTimer;
 
     public static SoundController getInstance() {
         if (instance == null) {
@@ -94,6 +98,10 @@ public class SoundController {
      * Method that initiates playing of the invalid QrCode sound
      */
     public void playInvalidQrSound() {
+        if(startTime)
+            return;
+        startTime = true;
+        startTimer();
         if (AppSettings.isQrSoundInvalid()) {
             Util.qrSoundPool(context, soundPool, false);
         }
@@ -147,5 +155,17 @@ public class SoundController {
             soundPool.release();
             soundPool = null;
         }
+        if (mTimer != null) mTimer.cancel();
+
+    }
+
+    private void startTimer() {
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            public void run() {
+                startTime = false;
+                this.cancel();
+            }
+        }, 2 * 1000);
     }
 }
