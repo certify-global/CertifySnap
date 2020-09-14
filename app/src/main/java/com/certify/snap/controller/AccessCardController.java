@@ -236,6 +236,9 @@ public class AccessCardController implements AccessCallback {
         if (registeredMembers == null) {
             registeredMembers = new RegisteredMembers();
         }
+        if (mAllowAnonymous && !isFacialEnabled) {
+            registeredMembers.setAccessid(AccessCardController.getInstance().getAccessCardID());
+        }
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && (mEnableRelay || mEnableWeigan))
