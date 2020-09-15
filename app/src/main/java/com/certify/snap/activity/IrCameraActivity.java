@@ -1726,7 +1726,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
-            if (Util.isNumeric(guid) || (!Util.isQRCodeWithPrefix(guid) && AppSettings.isAnonymousQREnable())) {
+            if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
