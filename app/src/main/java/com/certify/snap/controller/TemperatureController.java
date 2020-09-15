@@ -242,7 +242,7 @@ public class TemperatureController {
                 }
                 int[] distances = new int[distanceList.size()];
                 for (int i = 0; i < distanceList.size(); i++) {
-                    distances[i] = distanceList.get(i);
+                    distances[i] = 60;
                 }
                 thermalImageUtil.setGuideRect(rects, distances);
             } catch (Exception e) {
@@ -295,9 +295,9 @@ public class TemperatureController {
                                 temperature = temperatureCelsius;
                             }
                             temperature += AppSettings.getTemperatureCompensation();
+                            isGuideInited = false;
+                            thermalImageUtil.stopGetGuideData();
                         }
-                        isGuideInited = false;
-                        thermalImageUtil.stopGetGuideData();
                     }
                     if (temperature > MINIMUM_TEMPERATURE_THRESHOLD && listener != null) {
                         Log.d(TAG, "Temp measured " + temperature);
