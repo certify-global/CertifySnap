@@ -1390,7 +1390,7 @@ public class Util {
                     if (audioForValidQRCode != null && !audioForValidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
                     } else {
-                        SoundController.getInstance().deleteAudioFile( "Valid.mp3");
+                        SoundController.getInstance().deleteAudioFile("Valid.mp3");
                     }
                     String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
                     if (audioForInvalidQRCode != null && !audioForInvalidQRCode.isEmpty()) {
@@ -1486,12 +1486,13 @@ public class Util {
     public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            String id = reportInfo.getJSONObject("responseData").getString("id");
-            String firstName = reportInfo.getJSONObject("responseData").getString("firstName");
-            String lastName = reportInfo.getJSONObject("responseData").getString("lastName");
-            String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
-            String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
-            String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
+            JSONObject responseData = reportInfo.getJSONObject("responseData");
+            String id = responseData.getString("id") == null ? "" : responseData.getString("id");
+            String firstName = responseData.getString("firstName") == null ? "" : responseData.getString("firstName");
+            String lastName = responseData.getString("lastName") == null ? "" : responseData.getString("lastName");
+            String trqStatus = responseData.getString("trqStatus") == null ? "" : responseData.getString("trqStatus");
+            String memberId = responseData.getString("memberId") == null ? "" : responseData.getString("memberId");
+            String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);
@@ -2042,7 +2043,7 @@ public class Util {
         long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
         long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
         long totalHours = hours + days * 24;
-        return String.format(Locale.getDefault(),"%d:%02d:%02d",totalHours,minutes,seconds);
+        return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
     }
 
     private static String getDeviceUpTime() {
