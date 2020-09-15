@@ -2,7 +2,6 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -257,10 +256,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
-    public CameraSource cameraSource = null;
-    public static CameraSourcePreview preview;
-    public static GraphicOverlay graphicOverlay;
-    public static IrCameraActivity livePreviewActivity;
+    private CameraSource cameraSource = null;
+    private CameraSourcePreview preview;
+    private GraphicOverlay graphicOverlay;
     private static final String BARCODE_DETECTION = "Barcode Detection";
     FrameLayout frameLayout;
     ImageView img_qr;
@@ -409,12 +407,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (preview == null) {
                 Log.d(TAG, "Preview is null");
             }
-            graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
-            if (graphicOverlay == null) {
-                Log.d(TAG, "graphicOverlay is null");
-
-            }
-            livePreviewActivity = this;
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
             if ((sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) || (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) == true)) {
@@ -565,6 +557,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mask_message = findViewById(R.id.mask_message);
         mask_message.setTypeface(rubiklight);
         tv_sync = findViewById(R.id.tv_sync);
+        graphicOverlay = findViewById(R.id.fireFaceOverlay);
 
         tv_display_time = findViewById(R.id.tv_display_time);
         tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
@@ -1706,12 +1699,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (preview == null) {
                     Log.d(TAG, "resume: Preview is null");
                 }
-                if (graphicOverlay == null) {
-                    Log.d(TAG, "resume: graphOverlay is null");
-                }
                 preview.start(cameraSource, graphicOverlay);
             } catch (IOException e) {
-                Log.e(TAG, "Unable to start camera source.", e);
+                Log.e(TAG, "Unable to start camera source " + e.getMessage());
                 cameraSource.release();
                 cameraSource = null;
             }
@@ -1720,7 +1710,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onBarcodeData(String guid) {
-        startQRTimer(guid);
         try {
             mTriggerType = CameraController.triggerValue.CODEID.toString();
             preview.stop();
@@ -1735,129 +1724,61 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 clearQrCodePreview();
                 setCameraPreview();
                 SoundController.getInstance().playValidQrSound();
-            } else {
-                tv_scan.setText(R.string.tv_qr_validating);
-                img_qr.setVisibility(View.VISIBLE);
-                img_qr.setBackgroundResource(R.drawable.qrimage);
+                return;
+            }
+            tv_scan.setText(R.string.tv_qr_validating);
+            img_qr.setVisibility(View.VISIBLE);
+            img_qr.setBackgroundResource(R.drawable.qrimage);
 
-                //  preview.release();
-
-                Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
-                CameraController.getInstance().setQrCodeId(guid);
-                if (institutionId.isEmpty()) {
-                    Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
-                    Toast toastbar = Toast
-                            .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
-                    toastbar.show();
-                    preview.stop();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            img_qr.setVisibility(View.GONE);
-                            startCameraSource();
-                        }
-                    }, 3 * 1000);
-                    return;
-                }
-                for (int i = 0; i < guid.length(); i++) {
-                    try {
-                        if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                            JSONObject obj = new JSONObject();
-                            obj.put("qrCodeID", guid);
-                            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                            new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                        }
-                    } catch (Exception e) {
-                        Logger.error(TAG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
-                    }
-                    if (i == 0) {
-                        break;
-                    }
-                }
+            if (isInstitutionIdEmpty()) {
+                return;
             }
 
+            //Make API call
+            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+            CameraController.getInstance().setQrCodeId(guid);
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                startQRTimer(guid);
+                JSONObject obj = new JSONObject();
+                obj.put("qrCodeID", guid);
+                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+            }
         } catch (Exception e) {
             cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
-        cancelQRTimer();
     }
 
     @Override
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
+        cancelQRTimer();
         try {
             if (reportInfo == null) {
-                preview.stop();
-                img_qr.setVisibility(View.GONE);
-                startCameraSource();
-                tv_scan.setText(R.string.tv_qr_scan);
-                tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_scan.setTextColor(getResources().getColor(R.color.black));
-                imageqr.setBackgroundColor(getResources().getColor(R.color.white));
-                Logger.debug("deep", reportInfo.toString());
+                resetInvalidQrCode();
+                Logger.debug(TAG, reportInfo.toString());
                 return;
             }
-
-            if (!reportInfo.isNull("Message")) {
-                if (reportInfo.getString("Message").contains("token expired") && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
-                    Util.getToken(this, this);
-                JSONObject obj = new JSONObject();
-                obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
-                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                Logger.debug("expired", reportInfo.toString());
-
-            } else {
-                if (reportInfo.isNull("responseCode")) return;
-                if (reportInfo.getString("responseCode").equals("1")) {
-                    runOnUiThread(() -> {
-                        if (isReadyToScan) return;
-                        Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                        preview.stop();
-                        clearQrCodePreview();
-                        setCameraPreview();
-                        SoundController.getInstance().playValidQrSound();
-                    });
-                } else {
+            if (reportInfo.isNull("responseCode")) {
+                resetInvalidQrCode();
+                return;
+            }
+            if (reportInfo.getString("responseCode").equals("1")) {
+                runOnUiThread(() -> {
+                    if (isReadyToScan) return;
+                    Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
-                    img_qr.setVisibility(View.VISIBLE);
-                    img_qr.setBackgroundResource(R.drawable.invalid_qr);
-                    imageqr.setBackgroundColor(getResources().getColor(R.color.red));
-                    Toast snackbar = Toast
-                            .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
-                    snackbar.show();
-                    Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            img_qr.setVisibility(View.GONE);
-                            startCameraSource();
-                            tv_scan.setText(R.string.tv_qr_scan);
-                            tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
-                            tv_scan.setTextColor(getResources().getColor(R.color.black));
-                            imageqr.setBackgroundColor(getResources().getColor(R.color.white));
-                        }
-                    }, 2000);
-                    SoundController.getInstance().playInvalidQrSound();
-                }
+                    clearQrCodePreview();
+                    setCameraPreview();
+                    SoundController.getInstance().playValidQrSound();
+                });
+                return;
             }
-
-
+            resetInvalidQrCode();
+            SoundController.getInstance().playInvalidQrSound();
         } catch (Exception e) {
-            Logger.error(" onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
-            preview.stop();
-            img_qr.setVisibility(View.GONE);
-            startCameraSource();
-            if (tv_scan != null) {
-                tv_scan.setText(R.string.tv_qr_scan);
-                tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_scan.setTextColor(getResources().getColor(R.color.black));
-            }
-            if (imageqr != null) {
-                imageqr.setBackgroundColor(getResources().getColor(R.color.white));
-            }
-            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
-            Logger.toast(this, "QRCode something went wrong. Please try again");
+            Logger.error("QRCode Response processing error", e.getMessage());
+            resetInvalidQrCode();
         }
     }
 
@@ -1946,7 +1867,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreview() {
-        long delay  = 300;
+        long delay  = 1000;
         if (qrCodeEnable) {
             resetCameraView();
             if (rfIdEnable) {
@@ -2812,13 +2733,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void resetQrCode() {
         if (qrCodeEnable) {
             isReadyToScan = false;
-            clearQrCodePreview();
             runOnUiThread(() -> {
                 img_qr.setVisibility(View.GONE);
                 initQRCode();
                 startCameraSource();
             });
         }
+    }
+
+    private void resetInvalidQrCode() {
+        preview.stop();
+        startCameraSource();
+        Toast snackbar = Toast
+                .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
+        snackbar.show();
+        img_qr.setBackgroundResource(R.drawable.invalid_qr);
+        imageqr.setBackgroundColor(getResources().getColor(R.color.red));
+        img_qr.setVisibility(View.GONE);
+        tv_scan.setText(R.string.tv_qr_scan);
+        tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+        tv_scan.setTextColor(getResources().getColor(R.color.black));
+        imageqr.setBackgroundColor(getResources().getColor(R.color.white));
+        Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
     }
 
     private void startHidService() {
@@ -3196,14 +3132,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mQRTimer = new Timer();
         mQRTimer.schedule(new TimerTask() {
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
-                        CameraController.getInstance().setQrCodeId(guid);
-                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-                        clearQrCodePreview();
-                        setCameraPreview();                    }
+                runOnUiThread(() -> {
+                    Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+                    CameraController.getInstance().setQrCodeId(guid);
+                    Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                    clearQrCodePreview();
+                    setCameraPreview();
                 });
                 this.cancel();
             }
@@ -3214,5 +3148,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (mQRTimer != null) {
             mQRTimer.cancel();
         }
+    }
+
+    private boolean isInstitutionIdEmpty() {
+        boolean result = false;
+        if (institutionId.isEmpty()) {
+            result = true;
+            Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
+            Toast toastbar = Toast
+                    .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
+            toastbar.show();
+            resetInvalidQrCode();
+        }
+        return result;
     }
 }

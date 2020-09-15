@@ -774,7 +774,8 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId())) {
+            } else if (isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
