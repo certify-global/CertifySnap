@@ -91,9 +91,11 @@ public class ApplicationController {
      */
     public void releaseThermalUtil() {
         if (temperatureUtil != null) {
-            Log.d(TAG, "App Release Thermal Util");
-            temperatureUtil.release();
-            temperatureUtil = null;
+            if (temperatureUtil.getUsingModule() != null) {
+                Log.d(TAG, "App Release Thermal Util");
+                temperatureUtil.release();
+                temperatureUtil = null;
+            }
         }
     }
 }
