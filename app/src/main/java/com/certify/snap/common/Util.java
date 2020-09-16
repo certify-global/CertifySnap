@@ -675,7 +675,7 @@ public class Util {
 
     public static JSONObject getJSONObjectQRCode(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req, context);
+            String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }

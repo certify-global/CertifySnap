@@ -1738,21 +1738,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             CameraController.getInstance().setQrCodeId(guid);
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                startQRTimer(guid);
+                //startQRTimer(guid);
                 JSONObject obj = new JSONObject();
                 obj.put("qrCodeID", guid);
                 obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                 new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
             }
         } catch (Exception e) {
-            cancelQRTimer();
+            //cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
     }
 
     @Override
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
-        cancelQRTimer();
+        //cancelQRTimer();
         try {
             if (reportInfo == null) {
                 resetInvalidQrCode();
@@ -1760,7 +1760,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             if (reportInfo.isNull("responseCode")) {
-                resetInvalidQrCode();
+                if (reportInfo.getString("responseTimeOut").equals("timeout")){
+                    onQRCodeTimeOut(req.getString("qrCodeID"));
+                } else {
+                    resetInvalidQrCode();
+                }
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {
@@ -3161,5 +3165,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetInvalidQrCode();
         }
         return result;
+    }
+
+    public void onQRCodeTimeOut(String guid){
+        runOnUiThread(() -> {
+            Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+            CameraController.getInstance().setQrCodeId(guid);
+            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+            clearQrCodePreview();
+            setCameraPreview();
+        });
     }
 }
