@@ -298,6 +298,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Button qrSkipButton;
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
+    private Timer mQRTimer;
 
     private void instanceStart() {
         try {
@@ -1719,6 +1720,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onBarcodeData(String guid) {
+        startQRTimer(guid);
         try {
             mTriggerType = CameraController.triggerValue.CODEID.toString();
             preview.stop();
@@ -1726,7 +1728,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
-            if (Util.isNumeric(guid) || (!Util.isQRCodeWithPrefix(guid) && AppSettings.isAnonymousQREnable())) {
+            if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
@@ -1775,8 +1777,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
 
         } catch (Exception e) {
+            cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
+        cancelQRTimer();
     }
 
     @Override
@@ -1806,7 +1810,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    runOnUiThread(() ->  {
+                    runOnUiThread(() -> {
                         if (isReadyToScan) return;
                         Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                         preview.stop();
@@ -3184,6 +3188,31 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } catch (Exception e) {
             Log.d(TAG, "startBLEService: exception" + e.toString());
+        }
+    }
+
+    private void startQRTimer(String guid) {
+        cancelQRTimer();
+        mQRTimer = new Timer();
+        mQRTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+                        CameraController.getInstance().setQrCodeId(guid);
+                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                        clearQrCodePreview();
+                        setCameraPreview();                    }
+                });
+                this.cancel();
+            }
+        }, 5 * 1000);
+    }
+
+    private void cancelQRTimer() {
+        if (mQRTimer != null) {
+            mQRTimer.cancel();
         }
     }
 }
