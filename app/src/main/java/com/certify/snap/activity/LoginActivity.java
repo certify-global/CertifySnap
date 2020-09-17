@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -9,11 +8,11 @@ import androidx.annotation.Nullable;
 import com.certify.snap.common.AppSettings;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
@@ -24,7 +23,7 @@ import com.certify.snap.model.AppStatusInfo;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends BaseActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
     EditText etPassword;
@@ -159,9 +158,12 @@ public class LoginActivity extends Activity {
         mLoginScreenTimer = new Timer();
         mLoginScreenTimer.schedule(new TimerTask() {
             public void run() {
-                launchHomeScreen();
-                finish();
                 this.cancel();
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "App encountered a problem, will restart", Toast.LENGTH_SHORT).show();
+                    finishAffinity();
+                    restartApplication();
+                });
             }
         }, 10 * 1000);
     }

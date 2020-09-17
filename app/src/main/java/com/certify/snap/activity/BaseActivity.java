@@ -1,13 +1,14 @@
 package com.certify.snap.activity;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -111,4 +112,13 @@ public abstract class BaseActivity extends Activity {
             }
         }
     };
+
+    protected void restartApplication() {
+        finishAffinity();
+        Intent intent = new Intent(this, GuideActivity.class);
+        int mPendingIntentId = 111111;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
 }
