@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -16,9 +17,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.CameraController;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,7 +96,13 @@ public class TemperatureActivity extends SettingBaseActivity {
     }
 
     public void temperatureCalibration(View view){
-        Intent tempIntent = new Intent(this, TemperatureCalibrationActivity.class);
-        startActivity(tempIntent);
+        int mode = CameraController.getInstance().getDeviceMode();
+        if(mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2){
+            Intent tempIntent = new Intent(this, TemperatureCalibrationGuideActivity.class);
+            startActivity(tempIntent);
+        }else{
+            Intent tempIntent = new Intent(this, TemperatureCalibrationActivity.class);
+            startActivity(tempIntent);
+        }
     }
 }
