@@ -12,7 +12,7 @@ public class Constants {
     public static final String APP_ID = "GUhYjMeFLiFARWet58gTGotUpr189H6Ch7QFSSMgMUCZ";
     public static final String SDK_KEY = "4LxEGC47QhYUPdXZxemhKQSEiFh6p9rYUSitfEcAAFFF";
     public static final int port = 8080;
-    public static final String TIME_OUT_RESPONSE = "{\"responseTimeOut\":timeout}";
+    public static final String TIME_OUT_RESPONSE = "Timeout";
     public static final int HTTP_TIME_OUT = 10 * 1000;
 
     /**

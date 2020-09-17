@@ -1760,7 +1760,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             if (reportInfo.isNull("responseCode")) {
-                if (reportInfo.getString("responseTimeOut").equals("timeout")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
                     onQRCodeTimeOut(req.getString("qrCodeID"));
                 } else {
                     resetInvalidQrCode();
