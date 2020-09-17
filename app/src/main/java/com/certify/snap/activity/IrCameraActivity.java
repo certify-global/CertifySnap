@@ -1667,7 +1667,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+            if (reportInfo == null) {
+                Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
+                return;
+            }
+            if (!reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }

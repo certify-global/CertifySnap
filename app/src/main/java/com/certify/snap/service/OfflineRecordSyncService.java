@@ -299,7 +299,10 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
     @Override
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+            if (reportInfo == null) {
+                return;
+            }
+            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {

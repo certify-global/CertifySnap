@@ -232,7 +232,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             //cancelActivationTimer();
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
+            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -240,6 +240,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                         Util.switchRgbOrIrActivity(GuideActivity.this, true);
                     }
                 });
+                return;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");

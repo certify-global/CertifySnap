@@ -282,8 +282,12 @@ public class AccessCardController implements AccessCallback {
     @Override
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+            if (reportInfo == null) {
                 Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
+                saveOfflineAccessLogRecord(req);
+                return;
+            }
+            if (!reportInfo.getString("responseCode").equals("1") || (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE))) {
                 saveOfflineAccessLogRecord(req);
             }
         } catch (Exception e) {

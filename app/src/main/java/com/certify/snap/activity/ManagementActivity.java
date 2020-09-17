@@ -1329,7 +1329,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         try {
             if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
                 DismissProgressDialog(mloadingprogress);
-                showResult("Please rsync after sometime");
+                showResult("Please re-sync after sometime");
             }
         } catch (JSONException e) {
             e.printStackTrace();
