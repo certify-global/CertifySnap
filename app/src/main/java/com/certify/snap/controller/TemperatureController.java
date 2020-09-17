@@ -114,7 +114,7 @@ public class TemperatureController {
         } else {
             temperatureUnit = context.getString(R.string.centi);
         }
-        tempRect = new Rect(140, 105, 200, 165);
+        tempRect = new Rect(160, 70, 220, 145);
     }
 
     /**
