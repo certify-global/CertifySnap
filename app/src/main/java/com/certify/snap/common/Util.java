@@ -660,8 +660,13 @@ public class Util {
 
     public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req, context);
+            String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -677,8 +682,12 @@ public class Util {
         try {
             String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
-                JSONObject object = new JSONObject(responseTemp);
-                object.put("responseTimeOut", responseTemp);
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
+                return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
@@ -706,8 +715,13 @@ public class Util {
 
     public static JSONObject getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req, context);
+            String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -1685,6 +1699,11 @@ public class Util {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -1699,6 +1718,11 @@ public class Util {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -2021,8 +2045,13 @@ public class Util {
 
     public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postJson(url, req, context);
+            String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {

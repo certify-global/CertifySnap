@@ -56,6 +56,10 @@ public class Requestor {
             httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
+            HttpParams httpParams = httpclient1.getParams();
+            httpParams.setParameter(CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
+            httpParams.setParameter(SO_TIMEOUT, Constants.HTTP_TIME_OUT);
+            httpclient1.setParams(httpParams);
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             Log.d("responseHttp", "" + responseHttp.getStatusLine().getStatusCode());
@@ -98,7 +102,10 @@ public class Requestor {
             properties.put("Response:", responseStr);
             Analytics.trackEvent(endPoint[1], properties);
 
-        } catch (Exception e) {
+        } catch (SocketTimeoutException | ConnectTimeoutException e){
+            responseStr = Constants.TIME_OUT_RESPONSE;
+        }
+        catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
             for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
@@ -335,7 +342,6 @@ public class Requestor {
             httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
-            int timeout = 10; // seconds
             HttpParams httpParams = httpclient1.getParams();
             httpParams.setParameter(
                     CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);

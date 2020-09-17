@@ -20,6 +20,7 @@ import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -148,7 +149,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
 
         try {
-            if (reportInfo.isNull("responseCode"))  {
+            if (reportInfo.isNull("responseCode") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE))  {
                 onMemberIdErrorResponse(req);
                 return;
             }

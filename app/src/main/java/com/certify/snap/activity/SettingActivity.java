@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import androidx.annotation.RequiresApi;
 
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.License;
 import com.certify.snap.controller.DatabaseController;
 import com.google.android.material.snackbar.Snackbar;
@@ -551,6 +552,9 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             if (reportInfo == null) {
                 return;
             }
+            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
+                Logger.error(TAG, "Timeout exception");
+            }
             try {
                 String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
                 json1 = new JSONObject(formatedString.replace("\\", ""));
@@ -582,6 +586,9 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
     public void onJSONObjectListenerSetting(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
+                return;
+            }
+            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
                 return;
             }
             if (!reportInfo.isNull("Message")) {

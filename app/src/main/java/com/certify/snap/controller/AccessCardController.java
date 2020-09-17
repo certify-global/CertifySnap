@@ -7,6 +7,7 @@ import android.util.Log;
 import com.certify.callback.AccessCallback;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -281,7 +282,7 @@ public class AccessCardController implements AccessCallback {
     @Override
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
                 Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
                 saveOfflineAccessLogRecord(req);
             }
