@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -16,6 +17,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.certify.fcm.FireBaseMessagingService;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.service.NetworkReceiver;
 
 public abstract class BaseActivity extends Activity {
@@ -120,5 +123,16 @@ public abstract class BaseActivity extends Activity {
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
+
+    protected void checkDeviceMode() {
+        runOnUiThread(() -> {
+            int mode = CameraController.getInstance().getDeviceMode();
+            if (mode < 21 || ApplicationController.getInstance().getTemperatureUtil() == null) {
+                Toast.makeText(this, "App encountered a problem, will restart", Toast.LENGTH_SHORT).show();
+                finishAffinity();
+                restartApplication();
+            }
+        });
     }
 }

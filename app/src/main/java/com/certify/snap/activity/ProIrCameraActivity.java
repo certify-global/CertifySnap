@@ -1793,6 +1793,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
      */
     public void startGuideTemperatureTimer() {
         if (guideTempTimer != null) return;
+        checkDeviceMode();
         guideTempTimer = new Timer();
         guideTempTimer.schedule(new TimerTask() {
             public void run() {

@@ -2574,6 +2574,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
+        checkDeviceMode();
         cancelPreviewIdleTimer();
         enableLedPower();
         if (maskEnabled && !faceDetectEnabled) {
