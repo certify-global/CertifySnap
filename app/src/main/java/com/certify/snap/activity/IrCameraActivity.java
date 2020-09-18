@@ -1580,6 +1580,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
                     data.triggerType = mTriggerType;
+                    data.machineTemperature = String.valueOf(TemperatureController.getInstance().getMachineTemperature());
+                    data.ambientTemperature = String.valueOf(TemperatureController.getInstance().getAmbientTemperature());
                     userData = data;
                     int syncStatus;
                     if (Util.isOfflineMode(IrCameraActivity.this)) {

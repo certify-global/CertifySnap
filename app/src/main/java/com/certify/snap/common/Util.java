@@ -757,6 +757,8 @@ public class Util {
             obj.put("locationId", 0);
             obj.put("deviceTime", Util.getMMDDYYYYDate());
             obj.put("trigger", data.triggerType);
+            obj.put("machineTemperature", data.machineTemperature);
+            obj.put("ambientTemperature", data.ambientTemperature);
             if (data.sendImages) {
                 obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
