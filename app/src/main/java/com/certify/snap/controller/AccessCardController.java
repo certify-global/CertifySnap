@@ -287,7 +287,7 @@ public class AccessCardController implements AccessCallback {
                 saveOfflineAccessLogRecord(req);
                 return;
             }
-            if (!reportInfo.getString("responseCode").equals("1") || (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE))) {
+            if (!reportInfo.getString("responseCode").equals("1") || (reportInfo.has("responseTimeOut"))) {
                 saveOfflineAccessLogRecord(req);
             }
         } catch (Exception e) {

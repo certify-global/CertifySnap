@@ -212,9 +212,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 onSettingsUpdated();
                 return;
             }
-            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                onSettingsUpdated();
-                return;
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    onSettingsUpdated();
+                    return;
+                }
             }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
             onSettingsUpdated();

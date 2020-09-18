@@ -588,8 +588,10 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                return;
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    return;
+                }
             }
             if (!reportInfo.isNull("Message")) {
                 if (reportInfo.getString("Message").contains("token expired"))

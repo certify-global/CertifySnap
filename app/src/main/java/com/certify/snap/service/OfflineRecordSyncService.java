@@ -302,8 +302,10 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
-                return;
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+                    return;
+                }
             }
             if (reportInfo.getString("responseCode").equals("1")) {
                 try {

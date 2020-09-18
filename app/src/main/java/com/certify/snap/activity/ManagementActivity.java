@@ -1327,9 +1327,11 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }
         try {
-            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                DismissProgressDialog(mloadingprogress);
-                showResult("Please re-sync after sometime");
+            if (reportInfo.has("responseTimeOut")) {
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    DismissProgressDialog(mloadingprogress);
+                    showResult("Please re-sync after sometime");
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1358,9 +1360,11 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         if (reportInfo != null) {
             try {
                 if (reportInfo.isNull("responseCode")) {
-                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                        DismissProgressDialog(mloadingprogress);
-                        showResult("Please rsync after sometime");
+                    if (reportInfo.has("responseTimeOut")){
+                        if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                            DismissProgressDialog(mloadingprogress);
+                            showResult("Please re-sync after sometime");
+                        }
                     }
                     return;
                 }

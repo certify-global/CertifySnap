@@ -122,8 +122,10 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }
         try {
-            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                return;
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    return;
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -156,7 +158,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
 
         try {
-            if (reportInfo.isNull("responseCode") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE))  {
+            if (reportInfo.isNull("responseCode") || reportInfo.has("responseTimeOut"))  {
                 onMemberIdErrorResponse(req);
                 return;
             }

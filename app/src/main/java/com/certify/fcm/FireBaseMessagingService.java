@@ -152,8 +152,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                return;
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    return;
+                }
             }
             Util.retrieveSetting(reportInfo, this);
         } catch (Exception e) {
@@ -170,8 +172,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
 
         try {
             if (reportInfo.isNull("responseCode"))  {
-                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                    Logger.error(TAG, "onJSONObjectListenerMemberID()", "Member is not sync");
+                if (reportInfo.has("responseTimeOut")){
+                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                        Logger.error(TAG, "onJSONObjectListenerMemberID()", "Member is not sync");
+                    }
                 }
                 return;
             }

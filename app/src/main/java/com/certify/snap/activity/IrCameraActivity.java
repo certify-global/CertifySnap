@@ -1682,7 +1682,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
-            if (!reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+            if (!reportInfo.getString("responseCode").equals("1") || reportInfo.has("responseTimeOut")) {
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
@@ -1782,8 +1782,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             if (reportInfo.isNull("responseCode")) {
-                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                    onQRCodeTimeOut(req.getString("qrCodeID"));
+                if (reportInfo.has("responseTimeOut")){
+                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                        onQRCodeTimeOut(req.getString("qrCodeID"));
+                    }
                 } else {
                     resetInvalidQrCode();
                 }
