@@ -486,7 +486,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 return;
             }
             if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                Logger.error(TAG, "Timeout exception");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DeviceSettingsActivity.this, "Due to network error setting not update. Please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
             }
             try {
                 String formatedString = reportInfo.substring(1, reportInfo.length() - 1);

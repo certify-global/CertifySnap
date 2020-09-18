@@ -17,6 +17,7 @@ import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ApplicationLifecycleHandler;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -75,6 +76,9 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
             if (reportInfo == null) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
+                return;
+            } if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                 return;
             } else {

@@ -1657,6 +1657,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (reportInfo == null) {
                 return;
             }
+            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.toast(IrCameraActivity.this, "Due to network error setting not update. Please try again");
+                    }
+                });
+                return;
+            }
             if (reportInfo.contains("token expired"))
                 Util.getToken(this, this);
 

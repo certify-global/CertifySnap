@@ -170,6 +170,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
 
         try {
             if (reportInfo.isNull("responseCode"))  {
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    Logger.error(TAG, "onJSONObjectListenerMemberID()", "Member is not sync");
+                }
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {
