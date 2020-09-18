@@ -632,6 +632,11 @@ public class Util {
         try {
             String responseTemp = Requestor.postJsonLogin(url, req, "");
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -702,6 +707,11 @@ public class Util {
         try {
             String responseTemp = Requestor.postJsonAdmin(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
+                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
+                    JSONObject object = new JSONObject(responseTemp);
+                    object.put("responseTimeOut", responseTemp);
+                    return object;
+                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {

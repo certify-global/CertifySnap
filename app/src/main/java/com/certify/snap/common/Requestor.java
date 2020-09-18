@@ -236,6 +236,10 @@ public class Requestor {
             httpost.addHeader("Content-type", "application/x-www-form-urlencoded");
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
+            HttpParams httpParams = httpclient1.getParams();
+            httpParams.setParameter(CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
+            httpParams.setParameter(SO_TIMEOUT, Constants.HTTP_TIME_OUT);
+            httpclient1.setParams(httpParams);
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             StatusLine status = responseHttp.getStatusLine();
@@ -257,6 +261,8 @@ public class Requestor {
             e.printStackTrace();
             Logger.error("postJsonLogin",e.getMessage());
 
+        } catch (SocketTimeoutException | ConnectTimeoutException e){
+            responseStr = Constants.TIME_OUT_RESPONSE;
         } catch (Exception e) {
             e.printStackTrace();
           Logger.error("postJsonLogin",e.getMessage());
@@ -276,6 +282,10 @@ public class Requestor {
             httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.Temp_ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
+            HttpParams httpParams = httpclient1.getParams();
+            httpParams.setParameter(CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
+            httpParams.setParameter(SO_TIMEOUT, Constants.HTTP_TIME_OUT);
+            httpclient1.setParams(httpParams);
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             StatusLine status = responseHttp.getStatusLine();
@@ -314,6 +324,8 @@ public class Requestor {
             properties.put("Response:", responseStr);
             Analytics.trackEvent(endPoint[1], properties);
 
+        } catch (SocketTimeoutException | ConnectTimeoutException e) {
+            responseStr = Constants.TIME_OUT_RESPONSE;
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();

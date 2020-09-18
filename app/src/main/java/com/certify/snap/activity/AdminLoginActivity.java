@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import com.certify.callback.JSONObjectCallbackLogin;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectLogin;
-import com.certify.snap.async.AsyncJSONObjectSender;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -128,6 +128,15 @@ public class AdminLoginActivity extends SettingBaseActivity implements JSONObjec
                 } else {
                     Logger.toast(this,"Invalid Credentials");
                 }
+            }
+            if (report.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mprogressDialog.dismiss();
+                        Logger.toast(AdminLoginActivity.this,"Due to timeout error unable to login. Please try again.");
+                    }
+                });
             }
 
         } catch (Exception e) {
