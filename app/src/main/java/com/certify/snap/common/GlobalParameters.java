@@ -58,6 +58,7 @@ public class GlobalParameters {
     public static final String FACE_TEMP = "facetemp";
     public static final String TEMP_ONLY = "temp";
     public static final String TEMP_TEST = "test";
+    public static final String DISPLAY_TEMP_THRESHOLD = "display_temp_threshold";
     public static final String IMAGE_ICON = "image";
     public static final String IMAGE_ICON_API = "image_api";
     public static final String ACCESS_TOKEN = "access_token";
@@ -157,4 +158,6 @@ public class GlobalParameters {
     public static final String Fahrenheits = "fahrenheit";
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
     public static final String APP_LAUNCH_TIME = "app_launch_time";
+
+    public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
 }

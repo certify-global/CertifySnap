@@ -39,6 +39,8 @@ public class AppSettings {
     private static boolean isNavigationBarOn = false;
     private static boolean enablePrinter = false;
     private static float temperatureCompensation = 0;
+    private static float displayTemperatureThreshold = 0;
+    private static boolean setTemperatureThreshold = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -79,6 +81,8 @@ public class AppSettings {
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
         enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BLUETOOTH_PRINTER,false);
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
+        displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
+        setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
     }
 
     public static String getThermalScanTitle() {
@@ -203,5 +207,13 @@ public class AppSettings {
 
     public static float getTemperatureCompensation() {
         return temperatureCompensation;
+    }
+
+    public static float getDisplayTemperatureThreshold() {
+        return displayTemperatureThreshold;
+    }
+
+    public static boolean isSetTemperatureThreshold() {
+        return setTemperatureThreshold;
     }
 }
