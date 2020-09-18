@@ -777,11 +777,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         SoundController.getInstance().clearData();
         clearData();
         CameraController.getInstance().setScanCloseProximityEnabled(false);
-        try {
-            unbindService(BLEController.getInstance().mServiceConnection);
-            BLEController.getInstance().mServiceConnection = null;
-        } catch (Exception e) {
-            Log.e(TAG, "BLE unbind Error");
+        if (BLEController.getInstance().mServiceConnection != null) {
+            try {
+                unbindService(BLEController.getInstance().mServiceConnection);
+                BLEController.getInstance().mServiceConnection = null;
+            } catch (Exception e) {
+                Log.e(TAG, "BLE unbind Error");
+            }
         }
     }
 
