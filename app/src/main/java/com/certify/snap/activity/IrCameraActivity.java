@@ -2738,6 +2738,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             isReadyToScan = false;
             runOnUiThread(() -> {
                 img_qr.setVisibility(View.GONE);
+                clearQrCodePreview();
                 initQRCode();
                 startCameraSource();
             });
