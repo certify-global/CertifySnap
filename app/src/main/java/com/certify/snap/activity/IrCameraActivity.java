@@ -1669,7 +1669,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+            if (reportInfo == null) {
+                Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
+                return;
+            }
+            if (!reportInfo.getString("responseCode").equals("1") || reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
@@ -2866,10 +2870,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         String tempString = String.valueOf(temperature);
         String text = "";
-        if(AppSettings.isSetTemperatureThreshold() && temperature <= AppSettings.getDisplayTemperatureThreshold() ){
+        if (AppSettings.isSetTemperatureThreshold() && temperature <= AppSettings.getDisplayTemperatureThreshold() ){
             text = getString(R.string.temperature_normal_text);
-        }
-        else {
+        } else {
             text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
@@ -3037,7 +3040,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void updatePrintOnTemperatureRead(float temperature) {
         String tempString = String.valueOf(temperature);
-        String text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        String text = "";
+        if (AppSettings.isSetTemperatureThreshold() && temperature <= AppSettings.getDisplayTemperatureThreshold() ){
+            text = getString(R.string.temperature_normal_text);
+        } else {
+            text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        }
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
             text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
