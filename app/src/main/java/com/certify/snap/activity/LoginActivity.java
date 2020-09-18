@@ -158,12 +158,9 @@ public class LoginActivity extends BaseActivity {
         mLoginScreenTimer = new Timer();
         mLoginScreenTimer.schedule(new TimerTask() {
             public void run() {
+                launchHomeScreen();
+                finish();
                 this.cancel();
-                runOnUiThread(() -> {
-                    Toast.makeText(LoginActivity.this, "App encountered a problem, will restart", Toast.LENGTH_SHORT).show();
-                    finishAffinity();
-                    restartApplication();
-                });
             }
         }, 10 * 1000);
     }
