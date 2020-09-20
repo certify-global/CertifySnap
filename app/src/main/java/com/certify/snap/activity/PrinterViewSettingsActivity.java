@@ -24,10 +24,12 @@ import com.certify.snap.controller.PrinterController;
 
 public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener{
 
-    TextView title_bluetooth_printer, enable_printer_textview, bluetooth_printer_connect, tv_bluetooth_printer_connection,
-            tv_bluetooth_printer_status, testPrint;
-    ImageView imageView;
-    Button print_button;
+    TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
+            brotherBluetoothPrinterStatus, brotherTestPrint,
+            titleToshibaBluetoothPrinter, enableToshibaPrinterTextView, toshibaBluetoothPrinterConnect, toshibaBluetoothPrinterConnection,
+            toshibaBluetoothPrinterStatus, toshibaTestPrint;
+    ImageView brotherImageView, toshibaImageView;
+    Button brotherPrintButton, toshibaPrintButton;
     Typeface rubiklight;
     private SharedPreferences sp ;
 
@@ -38,37 +40,57 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         sp = Util.getSharedPreferences(this);
 
         initView();
-        printerCheck();
+        brotherPrinterCheck();
+        toshibaPrinterCheck();
 
         initBluetoothPrinter();
         PrinterController.getInstance().setPrinterListener(this);
     }
 
     private void initView(){
-        title_bluetooth_printer = findViewById(R.id.title_bluetooth_printer);
-        enable_printer_textview = findViewById(R.id.enable_printer_textview);
-        tv_bluetooth_printer_status = findViewById(R.id.tv_bluetooth_printer_status);
-        bluetooth_printer_connect = findViewById(R.id.bluetooth_printer_connect);
-        tv_bluetooth_printer_connection = findViewById(R.id.tv_bluetooth_printer_connection);
-        testPrint = findViewById(R.id.test_print);
-        imageView = findViewById(R.id.imageView);
-        print_button = findViewById(R.id.print_button);
-        testPrint.setText("Test Printer");
+        titleBrotherBluetoothPrinter = findViewById(R.id.title_bother_bluetooth_printer);
+        enableBrotherPrinterTextView = findViewById(R.id.enable_bother_printer_textview);
+        brotherBluetoothPrinterStatus = findViewById(R.id.tv_bluetooth_bother_printer_status);
+        brotherBluetoothPrinterConnect = findViewById(R.id.bluetooth_bother_printer_connect);
+        brotherBluetoothPrinterConnection = findViewById(R.id.tv_bluetooth_bother_printer_connection);
+        brotherTestPrint = findViewById(R.id.bother_test_print);
+        brotherImageView = findViewById(R.id.bother_imageView);
+        brotherPrintButton = findViewById(R.id.bother_print_button);
+        brotherTestPrint.setText("Brother Printer");
+
+        titleToshibaBluetoothPrinter = findViewById(R.id.title_toshiba_bluetooth_printer);
+        enableToshibaPrinterTextView = findViewById(R.id.enable_toshiba_printer_textview);
+        toshibaBluetoothPrinterStatus = findViewById(R.id.tv_bluetooth_toshiba_printer_status);
+        toshibaBluetoothPrinterConnect = findViewById(R.id.bluetooth_toshiba_printer_connect);
+        toshibaBluetoothPrinterConnection = findViewById(R.id.tv_bluetooth_toshiba_printer_connection);
+        toshibaTestPrint = findViewById(R.id.toshiba_test_print);
+        toshibaImageView = findViewById(R.id.toshiba_imageView);
+        toshibaPrintButton = findViewById(R.id.toshiba_print_button);
+        toshibaTestPrint.setText("Toshiba Printer");
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
-        title_bluetooth_printer.setTypeface(rubiklight);
-        enable_printer_textview.setTypeface(rubiklight);
-        bluetooth_printer_connect.setTypeface(rubiklight);
-        tv_bluetooth_printer_connection.setTypeface(rubiklight);
-        tv_bluetooth_printer_status.setTypeface(rubiklight);
-        testPrint.setTypeface(rubiklight);
+        titleBrotherBluetoothPrinter.setTypeface(rubiklight);
+        enableBrotherPrinterTextView.setTypeface(rubiklight);
+        brotherBluetoothPrinterConnect.setTypeface(rubiklight);
+        brotherBluetoothPrinterConnection.setTypeface(rubiklight);
+        brotherBluetoothPrinterStatus.setTypeface(rubiklight);
+        brotherTestPrint.setTypeface(rubiklight);
+
+        titleToshibaBluetoothPrinter.setTypeface(rubiklight);
+        enableToshibaPrinterTextView.setTypeface(rubiklight);
+        toshibaBluetoothPrinterConnect.setTypeface(rubiklight);
+        toshibaBluetoothPrinterConnection.setTypeface(rubiklight);
+        toshibaBluetoothPrinterStatus.setTypeface(rubiklight);
+        toshibaTestPrint.setTypeface(rubiklight);
 
         String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
-            tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
+            brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
+            toshibaBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
         } else {
-            tv_bluetooth_printer_connection.setText(Html.fromHtml(printerSettings));
+            brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings));
+            toshibaBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings));
         }
     }
 
@@ -79,33 +101,52 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if(sharedPreferences != null){
             if(!sharedPreferences.getString("printer", "NONE").equals("NONE")){
-                tv_bluetooth_printer_status.setTextColor(getResources().getColor(R.color.green));
-                print_button.setBackgroundColor(getResources().getColor(R.color.bg_blue));
+                brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.green));
+                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.bg_blue));
             }
             else
             {
-                tv_bluetooth_printer_status.setTextColor(getResources().getColor(R.color.red));
-                print_button.setBackgroundColor(getResources().getColor(R.color.gray));
+                brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.red));
+                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.gray));
             }
-            tv_bluetooth_printer_status.setText(sharedPreferences.getString("printer", "NONE"));
+            brotherBluetoothPrinterStatus.setText(sharedPreferences.getString("printer", "NONE"));
         }
     }
 
-    private void printerCheck(){
-        RadioGroup radio_group_printer = findViewById(R.id.radio_group_printer);
-        RadioButton radio_enable_printer = findViewById(R.id.radio_yes_printer);
-        RadioButton radio_disable_printer = findViewById(R.id.radio_no_printer);
+    private void brotherPrinterCheck(){
+        RadioGroup radio_group_printer = findViewById(R.id.radio_group_brother_printer);
+        RadioButton radio_enable_printer = findViewById(R.id.radio_yes_bother_printer);
+        RadioButton radio_disable_printer = findViewById(R.id.radio_no_bother_printer);
 
-        if (sp.getBoolean(GlobalParameters.BLUETOOTH_PRINTER, false))
+        if (sp.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false))
             radio_enable_printer.setChecked(true);
         else radio_disable_printer.setChecked(true);
 
         radio_group_printer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_printer)
-                    Util.writeBoolean(sp, GlobalParameters.BLUETOOTH_PRINTER, true);
-                else Util.writeBoolean(sp, GlobalParameters.BLUETOOTH_PRINTER, false);
+                if(checkedId==R.id.radio_yes_bother_printer)
+                    Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, true);
+                else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
+            }
+        });
+    }
+
+    private void toshibaPrinterCheck(){
+        RadioGroup radioGroupToshibaPrinter = findViewById(R.id.radio_group_toshiba_printer);
+        RadioButton enableToshiba_printer = findViewById(R.id.radio_yes_toshiba_printer);
+        RadioButton disableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
+
+        if (sp.getBoolean(GlobalParameters.Toshiba_BLUETOOTH_PRINTER, false))
+            enableToshiba_printer.setChecked(true);
+        else disableToshibaPrinter.setChecked(true);
+
+        radioGroupToshibaPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_toshiba_printer)
+                    Util.writeBoolean(sp, GlobalParameters.Toshiba_BLUETOOTH_PRINTER, true);
+                else Util.writeBoolean(sp, GlobalParameters.Toshiba_BLUETOOTH_PRINTER, false);
             }
         });
     }
@@ -130,7 +171,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     }
 
     public void printImage(View view){
-        PrinterController.getInstance().setPrintImage(getBitmapFromView(testPrint, imageView));
+        PrinterController.getInstance().setPrintImage(getBitmapFromView(brotherTestPrint, brotherImageView));
         PrinterController.getInstance().print();
     }
 

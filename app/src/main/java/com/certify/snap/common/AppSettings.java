@@ -79,7 +79,7 @@ public class AppSettings {
         bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
         anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
-        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BLUETOOTH_PRINTER,false);
+        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER,false);
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
