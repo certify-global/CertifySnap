@@ -137,7 +137,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         RadioButton enableToshiba_printer = findViewById(R.id.radio_yes_toshiba_printer);
         RadioButton disableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
 
-        if (sp.getBoolean(GlobalParameters.Toshiba_BLUETOOTH_PRINTER, false))
+        if (sp.getBoolean(GlobalParameters.TOSHIBA_BLUETOOTH_PRINTER, false))
             enableToshiba_printer.setChecked(true);
         else disableToshibaPrinter.setChecked(true);
 
@@ -145,8 +145,8 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId==R.id.radio_yes_toshiba_printer)
-                    Util.writeBoolean(sp, GlobalParameters.Toshiba_BLUETOOTH_PRINTER, true);
-                else Util.writeBoolean(sp, GlobalParameters.Toshiba_BLUETOOTH_PRINTER, false);
+                    Util.writeBoolean(sp, GlobalParameters.TOSHIBA_BLUETOOTH_PRINTER, true);
+                else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_BLUETOOTH_PRINTER, false);
             }
         });
     }
