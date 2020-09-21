@@ -43,7 +43,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".activity.TemperatureCalibrationGuideActivity"></activity>
+        <activity android:name=".bluetooth.printer.toshiba.ToshibaSmpLabelActivity"></activity>
+        <activity android:name=".bluetooth.printer.toshiba.ToshibaFileSettingActivity" />
+        <activity android:name=".bluetooth.printer.toshiba.OptionActivity" />
+        <activity android:name=".bluetooth.printer.toshiba.CommunicationActivity" />
+        <activity android:name=".bluetooth.printer.toshiba.ToshibaLabelActivity" />
+        <activity android:name=".bluetooth.printer.toshiba.ToshibaPortSettingsActivity" />
+        <activity android:name=".bluetooth.printer.toshiba.ToshibaMenuActivity" />
+        <activity android:name=".bluetooth.printer.toshiba.ToshibaPrinterSettingsActivity" />
+        <activity android:name=".activity.TemperatureCalibrationGuideActivity" />
         <activity android:name=".activity.PrinterViewSettingsActivity" />
         <activity android:name=".activity.NetPrinterActivity" />
         <activity android:name=".activity.BluetoothPrinterActivity" />

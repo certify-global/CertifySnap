@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".bluetooth.printer.toshiba.OptionActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtPrintMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/textPrintMode" />
+
+        <Spinner
+            android:id="@+id/spinnerPrintMode"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/printmode"
+            android:prompt="@string/printmode_prompt" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/BttonChange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickButtonChange"
+        android:text="@string/btnChange"></Button>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txtControlCode" />
+
+        <Spinner
+            android:id="@+id/spinnerControlCode"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/controlcodeMode"
+            android:prompt="@string/controlcodemode_prompt" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txtRecvTimeout" />
+
+        <EditText
+            android:id="@+id/ReceiveTimeoutEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txtLanguage" />
+
+        <Spinner
+            android:id="@+id/spinnerLanguage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/languatemode"
+            android:prompt="@string/languatemode_prompt" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GraphicType" />
+
+        <Spinner
+            android:id="@+id/spinnerGraphicType"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_span="2"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/graphicmode"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/BttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickButtonSave"
+        android:text="@string/save"></Button>
+
+    <Button
+        android:id="@+id/BttonReturn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickButtonReturn"
+        android:text="@string/retur"></Button>
+
+</LinearLayout>

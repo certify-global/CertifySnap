@@ -1,0 +1,88 @@
+[System]
+Target=Label format generation tool
+TargetVersion=B002.026
+Language=JPN
+DefaultLangID=411
+OSVersion=Windows 7 Professional Version 6.1  Build 7601  Service Pack 1
+LFMVersion=B002.001
+FormName=
+[Paper]
+PaperKind=Default
+PaperSize=1057,740
+LabelFormSize=1057,740
+IssueCondition=0
+Rows=1
+Columns=1
+LeftMergine=0
+TopMergine=0
+RowGap=0
+ColumnGap=0
+NoOfObjects=9
+PrinterName=
+Printer=BA400TT
+LabelGap=20
+PrintMode=C,0
+Rotation=0
+Ribon=0
+VoltAdj_Heat=0
+VoltAdj_Ribn=0
+VoltAdj_Mult=0
+FeedAdj=0
+CutAdj=0
+BFeedAdj=0
+Sensore=2
+PrintSpeed=4
+EnergyTypeD=-1
+EnergyTypeT=-1
+OpenTypeFont=0,0,0,0
+[Object]
+1=2,"RECTANGLE",65,41,1005,701,0,0
+2=1,"VLINE",410,40,410,700,0,0
+3=1,"HLINE 1",65,222,1000,222,0,0
+4=1,"HLINE 2",65,445,1000,445,0,0
+5=0,"Name (Fixed)",100,60,354,216,0,3
+6=0,"Name Data",485,70,908,199,0,3
+7=0,"Code (Fixed)",100,270,354,426,0,3
+8=0,"Code Data",485,285,1014,414,0,3
+9=5,"Code Data",490,505,935,655,0,2
+[Extention]
+1=5,7,0
+2=4
+3=4
+4=4
+5=4,1,"Lucida Console",17,0,28,-100,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+6=8,1,"Lucida Console",14,1,23,-100,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+7=4,1,"Lucida Console",17,0,28,-100,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+8=10,1,"Lucida Console",14,1,23,-100,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+9="S",8,3,9,3,9,3,1,116,60,1,"4",0,0,0,0,0
+[PREXTENTION]
+1=6,0,0
+2=5,0,0
+3=5,0,0
+4=5,0,0
+5=0,K,20,30,0,B,24,0,0,0,0,0,0
+6=0,J,20,30,0,B,20,0,0,0,0,0,0
+7=0,K,20,30,0,B,24,0,0,0,0,0,0
+8=0,J,20,30,0,B,20,0,0,0,0,0,0
+[CustomData]
+1=0
+2=0
+3=0
+4=0
+5=0
+6=0
+7=0
+8=0
+9=0
+[Sample]
+5="Name";
+6="BA400T-T";
+7="Code";
+8="21052353  ";
+9="21052353";
+[Attribute]
+5=
+6=
+7=
+8=
+9=

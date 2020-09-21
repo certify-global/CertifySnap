@@ -1,0 +1,88 @@
+[System]
+Target=Label format generation tool
+TargetVersion=B002.026
+Language=JPN
+DefaultLangID=411
+OSVersion=Windows 7 Professional Version 6.1  Build 7601  Service Pack 1
+LFMVersion=B002.001
+FormName=
+[Paper]
+PaperKind=工場出荷設定
+PaperSize=1057,740
+LabelFormSize=1057,740
+IssueCondition=0
+Rows=1
+Columns=1
+LeftMergine=0
+TopMergine=0
+RowGap=0
+ColumnGap=0
+NoOfObjects=9
+PrinterName=
+Printer=BA400TT
+LabelGap=20
+PrintMode=C,0
+Rotation=0
+Ribon=0
+VoltAdj_Heat=0
+VoltAdj_Ribn=0
+VoltAdj_Mult=0
+FeedAdj=0
+CutAdj=0
+BFeedAdj=0
+Sensore=2
+PrintSpeed=4
+EnergyTypeD=-1
+EnergyTypeT=-1
+OpenTypeFont=0,0,0,0
+[Object]
+1=2,"四角形",65,41,1005,701,0,0
+2=1,"縦線",410,40,410,700,0,0
+3=1,"横線１",65,222,1000,222,0,0
+4=1,"横線２",65,445,1000,445,0,0
+5=0,"品名（固定）",130,70,331,197,0,3
+6=0,"品名 ﾃﾞｰﾀ",525,70,906,197,0,3
+7=0,"製品ｺｰﾄﾞ（固定）",130,270,341,397,0,3
+8=0,"製品ｺｰﾄﾞ ﾃﾞｰﾀ",500,250,881,406,0,3
+9=5,"ﾊﾞｰｺｰﾄﾞ",490,505,935,655,0,2
+[Extention]
+1=5,7,0
+2=4
+3=4
+4=4
+5=4,1,"ＭＳ ゴシック",35,0,62,-1,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+6=9,1,"ＭＳ ゴシック",14,1,18,-100,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+7=10,1,"ＭＳ ゴシック",35,0,24,-1,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+8=8,1,"ＭＳ ゴシック",18,1,21,-1,0,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+9="S",8,3,9,3,9,3,1,116,60,1,"4",0,0,0,0,0
+[PREXTENTION]
+1=6,0,0
+2=5,0,0
+3=5,0,0
+4=5,0,0
+5=0,X,25,30,2,B,20,0,0,0,0,0,0
+6=0,X,20,30,2,B,16,0,0,0,0,0,0
+7=0,X,10,30,2,B,8,0,0,0,0,0,0
+8=0,K,15,30,0,B,18,0,0,0,0,0,0
+[CustomData]
+1=0
+2=0
+3=0
+4=0
+5=0
+6=0
+7=0
+8=0
+9=0
+[Sample]
+5="品名";
+6=" BA400T-T";
+7="製品コード";
+8="21052353";
+9="21052353";
+[Attribute]
+5=
+6=
+7=
+8=
+9=

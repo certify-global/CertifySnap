@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".bluetooth.printer.toshiba.ToshibaMenuActivity">
+
+    <TableLayout
+        android:id="@+id/TableLayout01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="9px"
+        android:paddingTop="52px">
+
+        <TableRow
+            android:id="@+id/TableRow02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/BtnSelectPrinterType"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickBtnSelectPrinterType"
+                android:paddingLeft="10px"
+                android:text="@string/printerModel"></Button>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/BtnSelectPair"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickBtnSelectPare"
+                android:paddingLeft="10px"
+                android:text="bluetoothPairing"></Button>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow04"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/BtnSelectLavel"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickBtnSelectLavel"
+                android:paddingLeft="10px"
+                android:text="@string/labelSelection"></Button>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow05"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/BtnCommunicate"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickBtnCommunicate"
+                android:paddingLeft="10px"
+                android:text="@string/communicate"></Button>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow06"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/BtnOption"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClickBtnOption"
+                android:paddingLeft="10px"
+                android:text="@string/option"></Button>
+        </TableRow>
+
+
+    </TableLayout>
+
+</LinearLayout>

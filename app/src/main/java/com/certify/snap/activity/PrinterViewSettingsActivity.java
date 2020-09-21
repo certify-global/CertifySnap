@@ -18,6 +18,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.bluetooth.printer.toshiba.ToshibaMenuActivity;
+import com.certify.snap.bluetooth.printer.toshiba.ToshibaPrinterSettingsActivity;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.PrinterController;
@@ -196,5 +198,10 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     public void saveAudioSettings(View view){
         Util.showToast(PrinterViewSettingsActivity.this, getString(R.string.save_success));
         finish();
+    }
+
+    // TOSHIBA PRINTER
+    public void selectToshibaBluetoothPrinter(View view){
+        startActivity(new Intent(this, ToshibaMenuActivity.class));
     }
 }
