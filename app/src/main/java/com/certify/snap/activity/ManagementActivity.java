@@ -1330,7 +1330,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             if (reportInfo.has("responseTimeOut")) {
                 if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
                     DismissProgressDialog(mloadingprogress);
-                    showResult("Bad network connection. Please re-sync after sometime");
+                    showResult("Network connectivity issue. Please re-sync after sometime");
                 }
             }
         } catch (JSONException e) {
@@ -1363,7 +1363,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     if (reportInfo.has("responseTimeOut")){
                         if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
                             DismissProgressDialog(mloadingprogress);
-                            showResult("Bad network connection. Please re-sync after sometime");
+                            showResult("Network connectivity issue. Please re-sync after sometime");
                         }
                     }
                     return;

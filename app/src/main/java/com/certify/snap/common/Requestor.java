@@ -19,6 +19,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -47,7 +48,7 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             Logger.debug("urlSreq", reqPing.toString());
             HttpPost httpost = new HttpPost(urlStr);
-             httpost.addHeader("Content-type", "application/json");
+            httpost.addHeader("Content-type", "application/json");
             if (device_sn.equals("device_sn"))
                 httpost.setHeader("device_sn", SerialNo);
             else {
@@ -102,10 +103,9 @@ public class Requestor {
             properties.put("Response:", responseStr);
             Analytics.trackEvent(endPoint[1], properties);
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e){
-            responseStr = Constants.TIME_OUT_RESPONSE;
-        }
-        catch (Exception e) {
+        } catch (SocketTimeoutException | ConnectTimeoutException e) {
+            responseStr = getTimeoutJson();
+        } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
             for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
@@ -226,7 +226,7 @@ public class Requestor {
         return responseStr;
     }
 
-    public static String postJsonLogin(String urlStr, String reqPing,String header) {
+    public static String postJsonLogin(String urlStr, String reqPing, String header) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
         try {
@@ -259,13 +259,13 @@ public class Requestor {
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();
-            Logger.error("postJsonLogin",e.getMessage());
+            Logger.error("postJsonLogin", e.getMessage());
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e){
-            responseStr = Constants.TIME_OUT_RESPONSE;
+        } catch (SocketTimeoutException | ConnectTimeoutException e) {
+            responseStr = getTimeoutJson();
         } catch (Exception e) {
             e.printStackTrace();
-          Logger.error("postJsonLogin",e.getMessage());
+            Logger.error("postJsonLogin", e.getMessage());
         }
         return responseStr;
     }
@@ -325,7 +325,7 @@ public class Requestor {
             Analytics.trackEvent(endPoint[1], properties);
 
         } catch (SocketTimeoutException | ConnectTimeoutException e) {
-            responseStr = Constants.TIME_OUT_RESPONSE;
+            responseStr = getTimeoutJson();
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
@@ -399,8 +399,8 @@ public class Requestor {
             properties.put("Response:", responseStr);
             Analytics.trackEvent(endPoint[1], properties);
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e){
-            responseStr = Constants.TIME_OUT_RESPONSE;
+        } catch (SocketTimeoutException | ConnectTimeoutException e) {
+            responseStr = getTimeoutJson();
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
@@ -417,5 +417,14 @@ public class Requestor {
         return responseStr;
     }
 
+    private static String getTimeoutJson() {
+        JSONObject object = new JSONObject();
+        try {
+            object.put("responseTimeOut", Constants.TIME_OUT_RESPONSE);
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return object.toString();
+    }
 
 }
