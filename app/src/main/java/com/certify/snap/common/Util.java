@@ -633,7 +633,7 @@ public class Util {
             String responseTemp = Requestor.postJsonLogin(url, req, "");
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -668,7 +668,7 @@ public class Util {
             String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -688,7 +688,7 @@ public class Util {
             String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -708,7 +708,7 @@ public class Util {
             String responseTemp = Requestor.postJsonAdmin(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -728,7 +728,7 @@ public class Util {
             String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -1712,7 +1712,7 @@ public class Util {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -1731,7 +1731,7 @@ public class Util {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
@@ -2060,7 +2060,7 @@ public class Util {
             String responseTemp = Requestor.postHttpJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
+                    JSONObject object = new JSONObject();
                     object.put("responseTimeOut", responseTemp);
                     return object;
                 }
