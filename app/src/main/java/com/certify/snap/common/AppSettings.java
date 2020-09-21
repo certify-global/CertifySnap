@@ -41,6 +41,8 @@ public class AppSettings {
     private static float temperatureCompensation = 0;
     private static boolean enableVoice = false;
     private static boolean enableHandGesture = false;
+    private static float displayTemperatureThreshold = 0;
+    private static boolean setTemperatureThreshold = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -83,6 +85,8 @@ public class AppSettings {
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
         enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false);
         enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
+        displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
+        setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
     }
 
     public static String getThermalScanTitle() {
@@ -215,5 +219,13 @@ public class AppSettings {
 
     public static boolean isEnableHandGesture() {
         return enableHandGesture;
+    }
+
+    public static float getDisplayTemperatureThreshold() {
+        return displayTemperatureThreshold;
+    }
+
+    public static boolean isSetTemperatureThreshold() {
+        return setTemperatureThreshold;
     }
 }

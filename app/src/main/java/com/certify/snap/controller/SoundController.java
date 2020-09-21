@@ -5,10 +5,20 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.Environment;
+import android.util.Log;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SoundController {
     private static final String TAG = SoundController.class.getSimpleName();
@@ -17,6 +27,8 @@ public class SoundController {
     private boolean isNormalSoundEnable = false;
     private boolean isHighSoundEnable = false;
     private SoundPool soundPool;
+    private boolean startTime = false;
+    private Timer mTimer;
 
     public static SoundController getInstance() {
         if (instance == null) {
@@ -27,6 +39,7 @@ public class SoundController {
 
     /**
      * Method that initializes the Sound parameters
+     *
      * @param context context
      */
     public void init(Context context) {
@@ -59,7 +72,7 @@ public class SoundController {
      */
     public void playNormalTemperatureSound() {
         if (isNormalSoundEnable) {
-            Util.soundPool( context, "normal", soundPool);
+            Util.soundPool(context, "normal", soundPool);
         }
     }
 
@@ -77,7 +90,7 @@ public class SoundController {
      */
     public void playValidQrSound() {
         if (AppSettings.isQrSoundValid()) {
-            Util.qrSoundPool(context,  soundPool, true);
+            Util.qrSoundPool(context, soundPool, true);
         }
     }
 
@@ -85,8 +98,52 @@ public class SoundController {
      * Method that initiates playing of the invalid QrCode sound
      */
     public void playInvalidQrSound() {
+        if(startTime)
+            return;
+        startTime = true;
+        startTimer();
         if (AppSettings.isQrSoundInvalid()) {
-            Util.qrSoundPool(context,  soundPool, false);
+            Util.qrSoundPool(context, soundPool, false);
+        }
+    }
+
+    /**
+     * Method that saves the audio file in the External storage
+     * @param audioSoundFileData Audio file data
+     * @param fileName FileName
+     */
+    public void saveAudioFile(String audioSoundFileData, String fileName) {
+        final byte[] imgBytesData = android.util.Base64.decode(audioSoundFileData,
+                android.util.Base64.DEFAULT);
+        final File file;
+        try {
+            String path = Environment.getExternalStorageDirectory() + "/Audio/";
+            File dirFile = new File(path);
+            if (!dirFile.exists()) {
+                dirFile.mkdir();
+            }
+            file = new File(path + fileName);
+            final FileOutputStream fileOutputStream;
+
+            fileOutputStream = new FileOutputStream(file);
+            final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+                    fileOutputStream);
+            bufferedOutputStream.write(imgBytesData);
+            bufferedOutputStream.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in saving the audio file " + e.getMessage());
+        }
+    }
+
+    public void deleteAudioFile(String fileName) {
+        String dirPath = Environment.getExternalStorageDirectory() + "/Audio/";
+        File dirFile = new File(dirPath);
+        if (dirFile.exists()){
+            File file = new File(dirPath + fileName);
+            if (file.exists()) {
+                boolean result = file.delete();
+                Log.i(TAG, String.valueOf(result));
+            }
         }
     }
 
@@ -98,5 +155,17 @@ public class SoundController {
             soundPool.release();
             soundPool = null;
         }
+        if (mTimer != null) mTimer.cancel();
+
+    }
+
+    private void startTimer() {
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            public void run() {
+                startTime = false;
+                this.cancel();
+            }
+        }, 2 * 1000);
     }
 }

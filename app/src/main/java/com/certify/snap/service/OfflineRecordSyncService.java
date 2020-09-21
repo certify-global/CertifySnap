@@ -14,6 +14,7 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -300,6 +301,11 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
         try {
             if (reportInfo == null) {
                 return;
+            }
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)) {
+                    return;
+                }
             }
             if (reportInfo.getString("responseCode").equals("1")) {
                 try {

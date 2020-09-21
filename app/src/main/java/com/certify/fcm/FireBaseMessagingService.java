@@ -8,14 +8,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
+import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -29,13 +33,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
 import java.util.Random;
 
 public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback, PushCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
+    public static final String NOTIFICATION_BROADCAST_ACTION = "com.action.notification.restart";
      SharedPreferences sharedPreferences;
 
     @Override
@@ -88,8 +92,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Util.getMemberID(this,CertifyId);
             }else if(command.equals("RESET")){
                 Util.deleteAppData(this);
+                sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("RESTART")){
+                sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("DEACTIVATE")){
                 Util.deleteAppData(this);
@@ -146,6 +152,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    return;
+                }
+            }
             Util.retrieveSetting(reportInfo, this);
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
@@ -161,6 +172,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
 
         try {
             if (reportInfo.isNull("responseCode"))  {
+                if (reportInfo.has("responseTimeOut")){
+                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                        Logger.error(TAG, "onJSONObjectListenerMemberID()", "Member is not sync");
+                    }
+                }
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {
@@ -180,9 +196,12 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Util.getTokenActivate(reportInfo, status, this, "");
+            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
+                Logger.error(TAG, "onJSONObjectListener()", "Activate Application Request Error!");
             }
+           /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Util.getTokenActivate(reportInfo, status, this, "");
+            }*/
 
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -198,5 +217,11 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerPush()", "Exception occurred while processing API response callback with Push command response api" + e.getMessage());
         }
+    }
+
+    private void sendBroadcastMessage() {
+        Intent intent = new Intent();
+        intent.setAction(NOTIFICATION_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

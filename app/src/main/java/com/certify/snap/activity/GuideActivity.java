@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
@@ -41,7 +42,6 @@ import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
-import com.certify.snap.localserver.LocalServerController;
 import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
@@ -55,9 +55,9 @@ import com.microsoft.appcenter.AppCenter;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
@@ -72,6 +72,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private long remainingTime = 20;
     private ImageView internetIndicatorImage;
     public LocalServer localServer;
+    ResetOfflineDataReceiver resetOfflineDataReceiver;
+    public ExecutorService taskExecutorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
+        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+        taskExecutorService = executorService.getExecutorService();
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
 
@@ -115,21 +119,22 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
-            unbindService(BLEController.getInstance().mServiceConnection);
-            BLEController.getInstance().mServiceConnection = null;
-        } catch (Exception e) {
-            Log.e(TAG, "BLE unbind Error");
-        }
         cancelActivationTimer();
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
         }
         ApplicationController.getInstance().releaseThermalUtil();
-        if (localServer != null){
-            localServer.stopServer();
+        if (localServer == null){
+            localServer = new LocalServer(this);
         }
+        localServer.stopServer();
         ApplicationController.getInstance().setDeviceBoot(false);
+        if (resetOfflineDataReceiver != null){
+            this.unregisterReceiver(resetOfflineDataReceiver);
+        }
+        if (taskExecutorService != null) {
+            taskExecutorService = null;
+        }
     }
 
     private void checkStatus() {
@@ -186,12 +191,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
-                startBLEService();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
             Util.activateApplication(GuideActivity.this, GuideActivity.this);
-            startActivationTimer();
+            //startActivationTimer();
         }
     }
 
@@ -208,6 +212,12 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 onSettingsUpdated();
                 return;
             }
+            if (reportInfo.has("responseTimeOut")){
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    onSettingsUpdated();
+                    return;
+                }
+            }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
             onSettingsUpdated();
         } catch (Exception e) {
@@ -223,7 +233,17 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
-            cancelActivationTimer();
+            //cancelActivationTimer();
+            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                    }
+                });
+                return;
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
@@ -282,9 +302,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         }
         initNavigationBar();
         startMemberSyncService();
-        startBLEService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
-        startLocalServer();
     }
 
     private void initNavigationBar() {
@@ -294,28 +312,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
-        }
-    }
-
-    private void startBLEService() {
-        try {
-            if (AppSettings.isBleLightNormalTemperature() || AppSettings.isBleLightHighTemperature()) {
-                if (!Util.isServiceRunning(BluetoothLeService.class, GuideActivity.this)) {
-                    Log.d(TAG, "startBLEService");
-                    BLEController.getInstance().initServiceConnection();
-                    // connection ble service
-                    Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-                    bindService(gattServiceIntent, BLEController.getInstance().mServiceConnection, BIND_AUTO_CREATE);
-
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "startBLEService: exception" + e.toString());
         }
     }
 
@@ -411,12 +407,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 internetIndicatorImage.setVisibility(View.VISIBLE);
             }
 
-            ResetOfflineDataReceiver br = new ResetOfflineDataReceiver();
+            resetOfflineDataReceiver = new ResetOfflineDataReceiver();
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
             intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
-            this.registerReceiver(br, intentFilter);
+            this.registerReceiver(resetOfflineDataReceiver, intentFilter);
         });
+        Util.writeString(sharedPreferences, GlobalParameters.APP_LAUNCH_TIME, String.valueOf(System.currentTimeMillis()));
     }
 
     private void startProDeviceInitTimer() {
@@ -450,8 +447,10 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void startLocalServer() {
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)
             && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-            localServer = new LocalServer(this);
-            new LocalServerTask(localServer).execute();
+            if (taskExecutorService != null) {
+                localServer = new LocalServer(this);
+                new LocalServerTask(localServer).executeOnExecutor(taskExecutorService);
+            }
         }
     }
 }

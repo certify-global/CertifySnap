@@ -35,7 +35,7 @@ public class BLEController {
     private boolean isHighTempLightEnabled = false;
     private int NORMAL_TEMP_COLOR =-16711936;
     private int HIGH_TEMP_COLOR = 0xffff0000;
-    public ServiceConnection mServiceConnection;
+    public ServiceConnection mServiceConnection = null;
 
         public static BLEController getInstance() {
         if (bleServiceInstance == null)
@@ -182,8 +182,12 @@ public class BLEController {
         };
     }
 
+    public void connectToDevice() {
+        if (mBluetoothLeService != null)
+            mBluetoothLeService.connect(DeviceInfoManager.getInstance().getDeviceAddress());
+    }
+
     private void  clearData(){
         mBluetoothLeService = null;
     }
-
 }

@@ -62,6 +62,10 @@ public class TemperatureController {
     private boolean isTempAboveThreshold = false;
     private boolean isGuideInited = false;
     private Timer guideTempTimer = null;
+    private final int MINIMUM_TEMPERATURE_THRESHOLD = 10; //in celsius
+
+    private float machineTemperature = 0;
+    private float ambientTemperature = 0;
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
@@ -113,7 +117,7 @@ public class TemperatureController {
         } else {
             temperatureUnit = context.getString(R.string.centi);
         }
-        tempRect = new Rect(140, 105, 200, 165);
+        tempRect = new Rect(160, 70, 220, 145);
     }
 
     /**
@@ -241,7 +245,7 @@ public class TemperatureController {
                 }
                 int[] distances = new int[distanceList.size()];
                 for (int i = 0; i < distanceList.size(); i++) {
-                    distances[i] = 60;
+                    distances[i] = distanceList.get(i);
                 }
                 thermalImageUtil.setGuideRect(rects, distances);
             } catch (Exception e) {
@@ -287,18 +291,20 @@ public class TemperatureController {
                     temperature = 0;
                     for (int i = 0; i < maxInRectInfo.size(); i++) {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
-                        if (temperatureCelsius > 0) {
+                        machineTemperature = maxInRectInfo.get(i)[0]* (9f / 5) + 32;
+                        ambientTemperature = temperatureBigData.getEmvirTem() * (9f / 5) + 32;
+                        if (temperatureCelsius > MINIMUM_TEMPERATURE_THRESHOLD) {
                             if (AppSettings.getfToC().equals("F")) {
                                 temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
                             } else {
                                 temperature = temperatureCelsius;
                             }
                             temperature += AppSettings.getTemperatureCompensation();
+                            isGuideInited = false;
+                            thermalImageUtil.stopGetGuideData();
                         }
-                        isGuideInited = false;
-                        thermalImageUtil.stopGetGuideData();
                     }
-                    if (temperature != 0 && listener != null) {
+                    if (temperature > MINIMUM_TEMPERATURE_THRESHOLD && listener != null) {
                         Log.d(TAG, "Temp measured " + temperature);
                         listener.onTemperatureRead(temperature);
                     }
@@ -349,7 +355,7 @@ public class TemperatureController {
                     TemperatureData temperatureData = thermalImageUtil.getDataAndBitmap(50, true, thermalImageCallback);
                     if (temperatureData != null) {
                         temperature = temperatureData.getTemperature();
-                        if (temperature > 0) {
+                        if (temperature > MINIMUM_TEMPERATURE_THRESHOLD) {
                             if (AppSettings.getfToC().equals("F")) {
                                 temperature = (float) Util.celsiusToFahrenheit(temperature);
                             } else {
@@ -372,7 +378,7 @@ public class TemperatureController {
 
                     @Override
                     public void onNext(Float temperature) {
-                        if (listener != null && temperature != 0) {
+                        if (listener != null && temperature > MINIMUM_TEMPERATURE_THRESHOLD) {
                             listener.onTemperatureRead(temperature);
                         }
                         tempDisposable.dispose();
@@ -631,6 +637,14 @@ public class TemperatureController {
                 listener.onThermalGuideReset();
             }
         }
+    }
+
+    public float getMachineTemperature() {
+        return machineTemperature;
+    }
+
+    public float getAmbientTemperature() {
+        return ambientTemperature;
     }
 
     /**

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.certify.callback.AccessCallback;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -237,6 +238,9 @@ public class AccessCardController implements AccessCallback {
             registeredMembers = new RegisteredMembers();
         }
         try {
+            if (mAllowAnonymous && !isFacialEnabled) {
+                registeredMembers.setAccessid(AccessCardController.getInstance().getAccessCardID());
+            }
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && (mEnableRelay || mEnableWeigan))
                     || isFacialEnabled) {
@@ -278,8 +282,12 @@ public class AccessCardController implements AccessCallback {
     @Override
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo == null) {
                 Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
+                saveOfflineAccessLogRecord(req);
+                return;
+            }
+            if (!reportInfo.getString("responseCode").equals("1") || (reportInfo.has("responseTimeOut"))) {
                 saveOfflineAccessLogRecord(req);
             }
         } catch (Exception e) {

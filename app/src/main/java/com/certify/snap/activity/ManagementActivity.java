@@ -26,6 +26,7 @@ import android.provider.MediaStore;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.Constants;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
@@ -1269,6 +1270,22 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     DismissProgressDialog(mprogressDialog);
                 }
             }
+        } else if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (mprogressDialog != null)
+                    DismissProgressDialog(mprogressDialog);
+                    if (isUpdate) {
+                        showResult(getString(R.string.update_failed));
+                        isUpdate = false;
+                    } else if (isDeleted){
+                        deletionFailed();
+                    } else {
+                        showResult(getString(R.string.register_failed));
+                    }
+                }
+            });
         } else {
             deletionFailed();
         }
@@ -1309,6 +1326,16 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }
+        try {
+            if (reportInfo.has("responseTimeOut")) {
+                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                    DismissProgressDialog(mloadingprogress);
+                    showResult("Please re-sync after sometime");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         Log.e(TAG, "MemberList null response");
     }
 
@@ -1333,6 +1360,12 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         if (reportInfo != null) {
             try {
                 if (reportInfo.isNull("responseCode")) {
+                    if (reportInfo.has("responseTimeOut")){
+                        if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
+                            DismissProgressDialog(mloadingprogress);
+                            showResult("Please re-sync after sometime");
+                        }
+                    }
                     return;
                 }
                 if (reportInfo.getString("responseCode").equals("1")) {

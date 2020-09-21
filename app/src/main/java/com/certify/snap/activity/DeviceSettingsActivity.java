@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -50,6 +51,13 @@ import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
@@ -81,7 +89,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private String serverAddress = "";
     private RelativeLayout addrRelativeLayout;
     private LinearLayout localServerLayout;
-    private boolean onlineMode = false;
+    private boolean deviceOnlineSwitch = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,9 +115,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    deviceOnlineSwitch = true;
                     if (isChecked) {
                         isOnline = true;
                         localServerLayout.setVisibility(View.GONE);
+                        LocalServer localServer = new LocalServer(DeviceSettingsActivity.this);
+                        localServer.stopServer();
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
                         activateStatus();
 
@@ -194,8 +205,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
-                        if (proSettingValueSp != proSettingValue || serverSettingValue
-                            || !onlineMode) {
+                        if ((proSettingValueSp != proSettingValue) || (serverSettingValue
+                            && deviceOnlineSwitch)) {
                             restartApp();
                             return;
                         }
@@ -417,13 +428,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(true);
                 activateStatus.setText("Activated");
                 not_activate.setVisibility(View.GONE);
-                onlineMode = true;
             } else {
                 switch_activate.setChecked(false);
                 activateStatus.setText("Not Activated");
                 not_activate.setText("Activate");
                 tvSettingsName.setText("Local");
-                onlineMode = false;
             }
             syncMemberSettings();
             deviceAccessPassword();
@@ -474,6 +483,15 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         try {
             JSONObject json1 = null;
             if (reportInfo == null) {
+                return;
+            }
+            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DeviceSettingsActivity.this, "Due to network error setting not update. Please try again", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 return;
             }
             try {
@@ -531,10 +549,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void restartApp() {
+        initiateCloseApp();
+    }
+
+    private void closeApp() {
         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
-        ApplicationController.getInstance().releaseThermalUtil();
         Intent intent = new Intent(this, GuideActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -652,6 +673,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             serverAddress = localServer.getIpAddress(this) +":"+Constants.port;
             String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
             tvServerIp.setText(text);
+            serverSettingValue = true;
         } else {
             radio_no_server.setChecked(true);
 
@@ -694,4 +716,45 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         });
     }
 
+    private void initiateCloseApp() {
+        ProgressDialog.show(this, "", "Closing and Restarting App, Please wait...");
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    ApplicationController.getInstance().releaseThermalUtil();
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    emitter.onNext(true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable closeAppDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        closeAppDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        closeApp();
+                        closeAppDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in fetching settings from the server");
+                        closeApp();
+                        closeAppDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
 }
