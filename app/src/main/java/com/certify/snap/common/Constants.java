@@ -12,8 +12,6 @@ public class Constants {
     public static final String APP_ID = "GUhYjMeFLiFARWet58gTGotUpr189H6Ch7QFSSMgMUCZ";
     public static final String SDK_KEY = "4LxEGC47QhYUPdXZxemhKQSEiFh6p9rYUSitfEcAAFFF";
     public static final int port = 8080;
-    public static final String TIME_OUT_RESPONSE = "Timeout";
-    public static final int HTTP_TIME_OUT = 5 * 1000;
 
     /**
      * IR预览数据相对于RGB预览数据的横向偏移量，注意：是预览数据，一般的摄像头的预览数据都是 width > height
@@ -45,5 +43,7 @@ public class Constants {
     public static final int PRO_SCANNER_INIT_TIME = 1260000;  //21 minutes
 
     public static final int PRO_SCANNER_INIT_INTERVAL = 60000;
+
+    public static final int TEMPERATURE_MAX_RETRY = 5;
 }
 

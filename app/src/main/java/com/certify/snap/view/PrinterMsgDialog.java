@@ -1,5 +1,6 @@
 package com.certify.snap.view;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,6 +15,7 @@ public class PrinterMsgDialog {
     private final Context mContext;
     private ProgressDialog mProgressDialog;
     private PrinterMsgHandle mHandle;
+    private Activity mActivity;
 
     public PrinterMsgDialog(Context context) {
         mContext = context;
@@ -125,7 +127,7 @@ public class PrinterMsgDialog {
      * close dialog
      */
     public void close() {
-
+        if (mActivity != null && mActivity.isDestroyed()) return;
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
@@ -150,5 +152,9 @@ public class PrinterMsgDialog {
     public void disableCancel() {
         mProgressDialog.getButton(mProgressDialog.BUTTON_POSITIVE).setEnabled(
                 false);
+    }
+
+    public void setActivity(Activity mActivity) {
+        this.mActivity = mActivity;
     }
 }

@@ -78,18 +78,14 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
             if (reportInfo == null) {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                 return;
-            } if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
-                return;
+            }
+            JSONObject json = new JSONObject(reportInfo);
+            if (json.getInt("responseCode") == 1) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
+                if(ApplicationLifecycleHandler.isInBackground)
+                    bringApplicationToForeground();
             } else {
-                JSONObject json = new JSONObject(reportInfo);
-                if (json.getInt("responseCode") == 1) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
-                    if(ApplicationLifecycleHandler.isInBackground)
-                        bringApplicationToForeground();
-                } else {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
-                }
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
             }
 
             if (reportInfo.contains("token expired"))

@@ -167,6 +167,7 @@
     <string name="temperature_normal">Temperature Normal:&#160;</string>
     <string name="temperature_anormaly">Temperature High:&#160;</string>
     <string name="temperature_normal_text">Temperature Normal</string>
+    <string name="temperature_high_text">Temperature High</string>
     <string name="temperature_retry">Trying to get the temperature, please wait...</string>
     <string name="temperature_failresult">Failed to get temperature!</string>
 

@@ -128,6 +128,7 @@ public abstract class BaseActivity extends Activity {
     protected void checkDeviceMode() {
         runOnUiThread(() -> {
             int mode = CameraController.getInstance().getDeviceMode();
+            Log.d(TAG, "Device mode " + mode);
             if (mode == 0 || ApplicationController.getInstance().getTemperatureUtil() == null) {
                 Toast.makeText(this, "App encountered a problem, will restart", Toast.LENGTH_SHORT).show();
                 finishAffinity();

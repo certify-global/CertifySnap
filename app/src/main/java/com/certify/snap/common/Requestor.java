@@ -14,22 +14,17 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static org.apache.http.params.CoreConnectionPNames.*;
 
 public class Requestor {
 
@@ -47,7 +42,7 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             Logger.debug("urlSreq", reqPing.toString());
             HttpPost httpost = new HttpPost(urlStr);
-             httpost.addHeader("Content-type", "application/json");
+            httpost.addHeader("Content-type", "application/json");
             if (device_sn.equals("device_sn"))
                 httpost.setHeader("device_sn", SerialNo);
             else {
@@ -56,10 +51,6 @@ public class Requestor {
             httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
-            HttpParams httpParams = httpclient1.getParams();
-            httpParams.setParameter(CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpParams.setParameter(SO_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpclient1.setParams(httpParams);
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             Log.d("responseHttp", "" + responseHttp.getStatusLine().getStatusCode());
@@ -102,10 +93,7 @@ public class Requestor {
             properties.put("Response:", responseStr);
             Analytics.trackEvent(endPoint[1], properties);
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e){
-            responseStr = Constants.TIME_OUT_RESPONSE;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
             for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
@@ -236,10 +224,6 @@ public class Requestor {
             httpost.addHeader("Content-type", "application/x-www-form-urlencoded");
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
-            HttpParams httpParams = httpclient1.getParams();
-            httpParams.setParameter(CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpParams.setParameter(SO_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpclient1.setParams(httpParams);
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             StatusLine status = responseHttp.getStatusLine();
@@ -261,11 +245,9 @@ public class Requestor {
             e.printStackTrace();
             Logger.error("postJsonLogin",e.getMessage());
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e){
-            responseStr = Constants.TIME_OUT_RESPONSE;
         } catch (Exception e) {
             e.printStackTrace();
-          Logger.error("postJsonLogin",e.getMessage());
+            Logger.error("postJsonLogin",e.getMessage());
         }
         return responseStr;
     }
@@ -282,10 +264,6 @@ public class Requestor {
             httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.Temp_ACCESS_TOKEN, ""));
             DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
                     .getNewHttpClient();
-            HttpParams httpParams = httpclient1.getParams();
-            httpParams.setParameter(CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpParams.setParameter(SO_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpclient1.setParams(httpParams);
             httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
             HttpResponse responseHttp = httpclient1.execute(httpost);
             StatusLine status = responseHttp.getStatusLine();
@@ -324,83 +302,6 @@ public class Requestor {
             properties.put("Response:", responseStr);
             Analytics.trackEvent(endPoint[1], properties);
 
-        } catch (SocketTimeoutException | ConnectTimeoutException e) {
-            responseStr = Constants.TIME_OUT_RESPONSE;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Map<String, String> properties = new HashMap<>();
-            for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
-                String key = iter.next();
-                String value = reqPing.optString(key);
-                properties.put(key, value);
-            }
-            properties.put("Device Serial No:", Util.getSNCode());
-            properties.put("URL:", urlStr);
-            properties.put("Response:", responseStr);
-            Analytics.trackEvent(endPoint[1], properties);
-        }
-        return responseStr;
-    }
-
-    public static String postHttpJson(String urlStr, JSONObject reqPing, Context context) {
-        String responseStr = null;
-        String[] endPoint = urlStr.split(".me/");
-        SharedPreferences sp = Util.getSharedPreferences(context);
-        try {
-            if (EndPoints.deployment == EndPoints.Mode.Demo)
-                Logger.debug("urlStr", urlStr);
-            HttpPost httpost = new HttpPost(urlStr);
-            httpost.addHeader("Content-type", "application/json");
-            httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
-            DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
-                    .getNewHttpClient();
-            HttpParams httpParams = httpclient1.getParams();
-            httpParams.setParameter(
-                    CONNECTION_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpParams.setParameter(
-                    SO_TIMEOUT, Constants.HTTP_TIME_OUT);
-            httpclient1.setParams(httpParams);
-
-            httpost.setEntity(new StringEntity(reqPing.toString(), "UTF-8"));
-            HttpResponse responseHttp = httpclient1.execute(httpost);
-            StatusLine status = responseHttp.getStatusLine();
-            if (status.getStatusCode() == HttpStatus.SC_OK) {
-                responseStr = EntityUtils
-                        .toString(responseHttp.getEntity());
-            } else if (status.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                JSONObject objMessage = new JSONObject();
-                objMessage.put("Message", "token expired");
-                responseStr = objMessage.toString();
-
-                Map<String, String> properties = new HashMap<>();
-                for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
-                    String key = iter.next();
-                    String value = reqPing.optString(key);
-                    properties.put(key, value);
-                }
-                //properties.put("URL:", urlStr);
-                //properties.put("Response:", responseStr);
-                Analytics.trackEvent(endPoint[1], properties);
-            } else {
-                responseStr = EntityUtils
-                        .toString(responseHttp.getEntity());
-            }
-
-
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            Map<String, String> properties = new HashMap<>();
-            for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
-                String key = iter.next();
-                String value = reqPing.optString(key);
-                properties.put(key, value);
-            }
-            properties.put("URL:", urlStr);
-            properties.put("Response:", responseStr);
-            Analytics.trackEvent(endPoint[1], properties);
-
-        } catch (SocketTimeoutException | ConnectTimeoutException e){
-            responseStr = Constants.TIME_OUT_RESPONSE;
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();

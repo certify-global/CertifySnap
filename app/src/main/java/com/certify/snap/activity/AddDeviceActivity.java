@@ -100,10 +100,6 @@ public class AddDeviceActivity extends SettingBaseActivity implements JSONObject
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                runOnUiThread(() -> Toast.makeText(AddDeviceActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show());
-                return;
-            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
                 Util.getTokenActivate(reportInfo, status, this, "deviceactivity");
 

@@ -300,6 +300,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
     private Timer mQRTimer;
+    private boolean isLowTempRead;
+    private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
 
     private void instanceStart() {
         try {
@@ -1559,20 +1561,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
                 tvFaceMessage.setVisibility(View.GONE);
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                boolean showTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
-                Logger.verbose(TAG, "TemperatureCallBackUISetup() Capture temperature setting value: ", showTemperature); //Optimize
-                if (showTemperature) {
-                    tv_message.setVisibility(View.VISIBLE);
-                } else {
-                    tv_message.setVisibility(View.GONE);
-                }
-
+                tv_message.setVisibility(View.VISIBLE);
                 tv_message.setTextColor(getResources().getColor(R.color.white));
-                if (lowTemp)
-                    tv_message.setBackgroundColor(getResources().getColor(R.color.bg_blue));
-                else
-                    tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
-
+                tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
 
@@ -1662,15 +1653,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.toast(IrCameraActivity.this, "Due to network error setting not update. Please try again");
-                    }
-                });
-                return;
-            }
             if (reportInfo.contains("token expired"))
                 Util.getToken(this, this);
 
@@ -1687,7 +1669,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
-            if (!reportInfo.getString("responseCode").equals("1") || reportInfo.has("responseTimeOut")) {
+            if (!reportInfo.getString("responseCode").equals("1")) {
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
@@ -1765,35 +1747,25 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             CameraController.getInstance().setQrCodeId(guid);
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                //startQRTimer(guid);
+                startQRTimer(guid);
                 JSONObject obj = new JSONObject();
                 obj.put("qrCodeID", guid);
                 obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                 new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
             }
         } catch (Exception e) {
-            //cancelQRTimer();
+            cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
     }
 
     @Override
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
-        //cancelQRTimer();
+        cancelQRTimer();
         try {
             if (reportInfo == null) {
                 resetInvalidQrCode();
                 Logger.debug(TAG, reportInfo.toString());
-                return;
-            }
-            if (reportInfo.isNull("responseCode")) {
-                if (reportInfo.has("responseTimeOut")){
-                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                        onQRCodeTimeOut(req.getString("qrCodeID"));
-                    }
-                } else {
-                    resetInvalidQrCode();
-                }
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {
@@ -2867,6 +2839,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initTemperature() {
         TemperatureController.getInstance().init(this);
         //TemperatureController.getInstance().setTemperatureListener(this);
+        if (AppSettings.getfToC().equals("F")) {
+            MIN_TEMP_DISPLAY_THRESHOLD = 50;
+        } else {
+            MIN_TEMP_DISPLAY_THRESHOLD = 10;
+        }
     }
 
     @Override
@@ -2888,13 +2865,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         String tempString = String.valueOf(temperature);
         String text = "";
-        if (AppSettings.isSetTemperatureThreshold() && temperature <= AppSettings.getDisplayTemperatureThreshold() ){
+        if (isLowTempRead || !AppSettings.isCaptureTemperature()) {
             text = getString(R.string.temperature_normal_text);
         } else {
             text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
+        isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
-            text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            if (AppSettings.isCaptureTemperature()) {
+                text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            } else {
+                text = getString(R.string.temperature_high_text);
+            }
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
             TemperatureController.getInstance().clearData();
@@ -2959,11 +2941,44 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         clearLeftFace(null);
     }
 
+    @Override
+    public void onTemperatureLow(int retryCount, float temperature) {
+        if (TemperatureController.getInstance().getTemperatureRetry() == Constants.TEMPERATURE_MAX_RETRY) {
+            TemperatureController.getInstance().setTemperatureRetry(0);
+            if (temperature < MIN_TEMP_DISPLAY_THRESHOLD) {
+                Log.d(TAG, "onTemperatureLow Temperature less than display threshold" + temperature);
+                return;
+            }
+            Log.d(TAG, "onTemperatureLow " + temperature);
+            cancelImageTimer();
+            isLowTempRead = true;
+            onTemperatureRead(temperature);
+            return;
+        }
+        cancelImageTimer();
+        runOnUiThread(() -> {
+            tvErrorMessage.setVisibility(View.VISIBLE);
+            if (isProDevice) {
+                tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getResources().getString(R.string.step_closer)));
+            } else {
+                tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
+                outerCircle.setBackgroundResource(R.drawable.border_shape_red);
+            }
+        });
+        startCameraPreviewTimer();
+        TemperatureController.getInstance().clearData();
+        CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
+        TemperatureController.getInstance().setTemperatureListener(this);
+        clearLeftFace(null);
+    }
+
     private void initBluetoothPrinter() {
         // initialization for printing
-        PrinterController.getInstance().init(this, this);
-        PrinterController.getInstance().setPrinterListener(this);
-        PrinterController.getInstance().setBluetoothAdapter();
+        if (AppSettings.isEnablePrinter()) {
+            PrinterController.getInstance().init(this, this);
+            PrinterController.getInstance().setPrinterListener(this);
+            PrinterController.getInstance().setBluetoothAdapter();
+        }
     }
 
     @Override
@@ -3083,13 +3098,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void updatePrintOnTemperatureRead(float temperature) {
         String tempString = String.valueOf(temperature);
         String text = "";
-        if (AppSettings.isSetTemperatureThreshold() && temperature <= AppSettings.getDisplayTemperatureThreshold() ){
+        if (isLowTempRead || !AppSettings.isCaptureTemperature()){
             text = getString(R.string.temperature_normal_text);
         } else {
             text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
+        isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
-            text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            if (AppSettings.isCaptureTemperature()) {
+                text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            } else {
+                text = getString(R.string.temperature_high_text);
+            }
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
             TemperatureController.getInstance().clearData();
@@ -3171,29 +3191,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private void startQRTimer(String guid) {
-        cancelQRTimer();
-        mQRTimer = new Timer();
-        mQRTimer.schedule(new TimerTask() {
-            public void run() {
-                runOnUiThread(() -> {
-                    Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
-                    CameraController.getInstance().setQrCodeId(guid);
-                    Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-                    clearQrCodePreview();
-                    setCameraPreview();
-                });
-                this.cancel();
-            }
-        }, 5 * 1000);
-    }
-
-    private void cancelQRTimer() {
-        if (mQRTimer != null) {
-            mQRTimer.cancel();
-        }
-    }
-
     private boolean isInstitutionIdEmpty() {
         boolean result = false;
         if (institutionId.isEmpty()) {
@@ -3207,14 +3204,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return result;
     }
 
-    public void onQRCodeTimeOut(String guid) {
-        runOnUiThread(() -> {
-            Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
-            CameraController.getInstance().setQrCodeId(guid);
-            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-            clearQrCodePreview();
-            setCameraPreview();
-        });
+    private void startQRTimer(String guid) {
+        cancelQRTimer();
+        mQRTimer = new Timer();
+        mQRTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+                        CameraController.getInstance().setQrCodeId(guid);
+                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                        clearQrCodePreview();
+                        setCameraPreview();                    }
+                });
+                this.cancel();
+            }
+        }, 5 * 1000);
+    }
+
+    private void cancelQRTimer() {
+        if (mQRTimer != null) {
+            mQRTimer.cancel();
+        }
     }
 
     private void startCameraPreviewTimer() {

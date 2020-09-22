@@ -66,6 +66,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         this.context = context;
         this.activity = activity;
         mDialog = new PrinterMsgDialog(context);
+        mDialog.setActivity(activity);
         mHandle = new PrinterMsgHandle(context, mDialog);
         mPrint = new ImagePrint(context, mHandle, mDialog);
         initUsbPrint();
