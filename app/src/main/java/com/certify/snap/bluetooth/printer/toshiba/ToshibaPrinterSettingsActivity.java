@@ -30,6 +30,7 @@ import jp.co.toshibatec.bcp.library.BCPControl;
 import jp.co.toshibatec.bcp.library.LongRef;
 
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.AsynchronousMode;
+import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
@@ -133,6 +134,66 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
 
     }
 
+    private void resizeReturnButton() {
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        Button btnReturn = (Button)this.findViewById(R.id.BttonReturn);
+        Point size = new Point();
+        display.getSize(size);
+        btnReturn.setWidth(size.x);
+    }
+
+    public void  onClickButtonReturn( View view ) {
+    }
+
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction()==KeyEvent.ACTION_DOWN ) {
+            if( event.getKeyCode() == KeyEvent.KEYCODE_BACK ) {
+                this.confirmActivityFinish();
+
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    protected void confirmActivityFinish() {
+        util.comfirmDialog(this, this.getString(R.string.confirmBack),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }
+                , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+    }
+
+    private void callFILE() {
+        String filePath = util.getPreferences(this, PORTSETTING_FILE_PATH_KEYNAME);
+        if (filePath.length() == 0) {
+            filePath = Environment.getExternalStorageDirectory().getPath() + "/PrintImageFile.txt";
+        }
+        util.setPreferences(this, PORTSETTING_FILE_PATH_KEYNAME, filePath);
+    }
+
+    public void testPrint(View view){
+        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName();
+        try {
+            util.asset2file(this, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        printLabel();
+    }
+
+
+
+    // Print Label
     private void printLabel(){
         if( m_bcpControl == null ) {
 
@@ -157,68 +218,6 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
             this.openBluetoothPort( SynchronousMode );
         }
     }
-
-    private void resizeReturnButton() {
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-
-        Button btnReturn = (Button)this.findViewById(R.id.BttonReturn);
-        Point size = new Point();
-        display.getSize(size);
-        btnReturn.setWidth(size.x);
-    }
-
-    public void  onClickButtonReturn( View view ) {
-        //this.confirmActivityFinish();
-    }
-
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction()==KeyEvent.ACTION_DOWN ) {
-            if( event.getKeyCode() == KeyEvent.KEYCODE_BACK ) {
-                this.confirmActivityFinish();
-
-                return true;
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
-    protected void confirmActivityFinish() {
-        util.comfirmDialog(this, this.getString(R.string.confirmBack),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        finish();
-                    }
-                }
-                , new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // いいえを押した場合なので何もしないでDialogを閉じる
-                    }
-                });
-    }
-
-    private void callFILE() {
-        String className = "FileSettingActivity";
-        startActivity(new Intent(this, ToshibaFileSettingActivity.class));
-    }
-
-    public void testPrint(View view){
-        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName();
-        try {
-            util.asset2file(this, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        printLabel();
-        //startActivity(new Intent(ToshibaPrinterSettingsActivity.this, ToshibaSmpLabelActivity.class));
-    }
-
-
-
-    // Print Label
 
     protected Dialog onCreateDialog(int id) {
         Dialog dialog = null;
