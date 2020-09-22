@@ -41,6 +41,7 @@ public class AppSettings {
     private static float temperatureCompensation = 0;
     private static float displayTemperatureThreshold = 0;
     private static boolean setTemperatureThreshold = false;
+    private static boolean isPrintUsbEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -83,6 +84,7 @@ public class AppSettings {
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
+        isPrintUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER,false);
     }
 
     public static String getThermalScanTitle() {
@@ -215,5 +217,9 @@ public class AppSettings {
 
     public static boolean isSetTemperatureThreshold() {
         return setTemperatureThreshold;
+    }
+
+    public static boolean isPrintUsbEnabled() {
+        return isPrintUsbEnabled;
     }
 }

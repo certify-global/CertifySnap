@@ -23,7 +23,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.PrinterController;
 
-public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener{
+public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener {
 
     TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
             brotherBluetoothPrinterStatus, brotherTestPrint,
@@ -32,7 +32,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     ImageView brotherImageView, toshibaImageView;
     Button brotherPrintButton, toshibaPrintButton;
     Typeface rubiklight;
-    private SharedPreferences sp ;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         PrinterController.getInstance().setPrinterListener(this);
     }
 
-    private void initView(){
+    private void initView() {
         titleBrotherBluetoothPrinter = findViewById(R.id.title_bother_bluetooth_printer);
         enableBrotherPrinterTextView = findViewById(R.id.enable_bother_printer_textview);
         brotherBluetoothPrinterStatus = findViewById(R.id.tv_bluetooth_bother_printer_status);
@@ -100,13 +100,11 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         super.onResume();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPreferences != null){
-            if(!sharedPreferences.getString("printer", "NONE").equals("NONE")){
+        if (sharedPreferences != null) {
+            if (!sharedPreferences.getString("printer", "NONE").equals("NONE")) {
                 brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.green));
                 brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.bg_blue));
-            }
-            else
-            {
+            } else {
                 brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.red));
                 brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.gray));
             }
@@ -114,7 +112,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         }
     }
 
-    private void brotherPrinterCheck(){
+    private void brotherPrinterCheck() {
         RadioGroup radio_group_printer = findViewById(R.id.radio_group_brother_printer);
         RadioButton radio_enable_printer = findViewById(R.id.radio_yes_bother_printer);
         RadioButton radio_disable_printer = findViewById(R.id.radio_no_bother_printer);
@@ -126,28 +124,28 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         radio_group_printer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_bother_printer)
+                if (checkedId == R.id.radio_yes_bother_printer)
                     Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, true);
                 else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
             }
         });
     }
 
-    private void toshibaPrinterCheck(){
+    private void toshibaPrinterCheck() {
         RadioGroup radioGroupToshibaPrinter = findViewById(R.id.radio_group_toshiba_printer);
         RadioButton enableToshiba_printer = findViewById(R.id.radio_yes_toshiba_printer);
         RadioButton disableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
 
-        if (sp.getBoolean(GlobalParameters.TOSHIBA_BLUETOOTH_PRINTER, false))
+        if (sp.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER, false))
             enableToshiba_printer.setChecked(true);
         else disableToshibaPrinter.setChecked(true);
 
         radioGroupToshibaPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_toshiba_printer)
-                    Util.writeBoolean(sp, GlobalParameters.TOSHIBA_BLUETOOTH_PRINTER, true);
-                else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_BLUETOOTH_PRINTER, false);
+                if (checkedId == R.id.radio_yes_toshiba_printer)
+                    Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, true);
+                else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, false);
             }
         });
     }
@@ -158,7 +156,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     private void initBluetoothPrinter() {
         // initialization for printing
-        PrinterController.getInstance().init(this);
+        PrinterController.getInstance().init(this, this);
         PrinterController.getInstance().setPrinterListener(this);
         PrinterController.getInstance().setBluetoothAdapter();
     }
@@ -171,7 +169,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         return bitmap;
     }
 
-    public void printImage(View view){
+    public void printImage(View view) {
         PrinterController.getInstance().setPrintImage(getBitmapFromView(brotherTestPrint, brotherImageView));
         PrinterController.getInstance().print();
     }
@@ -194,13 +192,23 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         //add code here
     }
 
-    public void saveAudioSettings(View view){
+    @Override
+    public void onPrintUsbSuccess(String status, long resultCode) {
+        //add code here
+    }
+
+    @Override
+    public void onPrintUsbError(String status, long resultCode) {
+        //add code here
+    }
+
+    public void saveAudioSettings(View view) {
         Util.showToast(PrinterViewSettingsActivity.this, getString(R.string.save_success));
         finish();
     }
 
     // TOSHIBA PRINTER
-    public void selectToshibaBluetoothPrinter(View view){
+    public void selectToshibaBluetoothPrinter(View view) {
         startActivity(new Intent(this, ToshibaPrinterSettingsActivity.class));
     }
 }

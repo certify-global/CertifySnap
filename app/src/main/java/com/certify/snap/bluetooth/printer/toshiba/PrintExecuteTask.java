@@ -479,6 +479,11 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
     // メインスレッドで実行する処理
     @Override  
     protected void onPostExecute(String result) {
+		if(mContext.isDestroyed()){
+			m_bcpObj = null;
+			mContext = null;
+			return;
+		}
     	mProgressDlg.dismiss();
     //	util.showAlertDialog(mContext, result);
    	

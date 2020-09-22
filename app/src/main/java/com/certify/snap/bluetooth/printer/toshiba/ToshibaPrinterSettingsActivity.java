@@ -58,6 +58,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
             printerList(context);
             portList(context);
             copyIniFile();
+            initPrint();
         } catch( Exception e ) {
             Log.d("TAG", "onCreate: ");
         }
@@ -128,23 +129,13 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
         listView.setAdapter(adapter);
         listView.setSelector(new PaintDrawable(Color.BLUE));
         listView.setItemChecked(selectPosition, true);
-        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int position, long id)  {
-                ListView listView = (ListView) parent;
-                selectMenu( position, listView );
-            }
-            private void selectMenu(int position, ListView listView) {
-                String item = (String) listView.getItemAtPosition(position);
-                util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
-                onClickButtonReturn(null);
-            }
-        };
-        listView.setOnItemClickListener(clickListener);
+        String item = "B-FV4D";
+        util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
+        onClickButtonReturn(null);
     }
 
-    private void portList(Context context){
+    private void portList(Context context) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
         adapter.add("FILE");
         ListView listView = (ListView) findViewById(R.id.port_menu_list);
@@ -153,32 +144,18 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
 
         listView.setSelector(new PaintDrawable(Color.BLUE));
 
-        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+        util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
+        callFILE();
+    }
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int position, long id) {
-                ListView listView = (ListView) parent;
-                selectMenu(position, listView);
-            }
-
-            private void selectMenu(int position, ListView listView) {
-                String item = (String) listView.getItemAtPosition(position);
-
-                if (item.equals("FILE")) {
-                    util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, item);
-                    callFILE();
-                }
-            }
-        };
-        listView.setOnItemClickListener(clickListener);
-
-        String item = util.getPreferences(context, PORTSETTING_PORT_MODE_KEYNAME);
-        if (item.length() == 0) {
-            listView.setItemChecked(0, true);
-        } else {
-            listView.setItemChecked(2, true);
+    private void initPrint(){
+        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName();
+        try {
+            util.asset2file(this, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
+        printLabel();
     }
 
     private void resizeReturnButton() {
@@ -229,16 +206,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
     }
 
     public void testPrint(View view){
-        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName();
-        try {
-            util.asset2file(this, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        printLabel();
     }
-
-
 
     // Print Label
     private void printLabel(){
@@ -332,7 +300,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
             labelItemList.put( getString(R.string.dataName) ,  hinName );
         }
 
-        String codeData = util.getLavelDataForEditText( this , R.id.EditTextCode, "21052355");
+       /* String codeData = util.getLavelDataForEditText( this , R.id.EditTextCode, "21052355");
         if( codeData.length() > 8 ) {
             labelItemList.put( getString(R.string.productCodeName),  codeData.substring(0, 7));
             labelItemList.put( getString(R.string.barCode),  codeData.substring(0, 7));
@@ -340,7 +308,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
         } else {
             labelItemList.put( getString(R.string.productCodeData),  codeData );
             labelItemList.put( getString(R.string.barCode),  codeData );
-        }
+        }*/
         m_LabelData.setObjectDataList( labelItemList );
 
         String filePathName = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName() + "/" + "tempLabel.lfm";

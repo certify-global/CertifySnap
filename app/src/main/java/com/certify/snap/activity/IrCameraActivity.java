@@ -3,6 +3,7 @@ package com.certify.snap.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
@@ -40,6 +41,8 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.bluetooth.printer.toshiba.PrintDialogDelegate;
+import com.certify.snap.bluetooth.printer.toshiba.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.ApplicationController;
@@ -2958,7 +2961,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void initBluetoothPrinter() {
         // initialization for printing
-        PrinterController.getInstance().init(this);
+        PrinterController.getInstance().init(this, this);
         PrinterController.getInstance().setPrinterListener(this);
         PrinterController.getInstance().setBluetoothAdapter();
     }
@@ -2981,6 +2984,30 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onPrintError() {
         onTemperatureUpdate();
         TemperatureController.getInstance().clearData();
+    }
+
+    @Override
+    public void onPrintUsbSuccess(String status, long resultCode) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
+                util.showAlertDialog(IrCameraActivity.this, strMessage );
+                onPrintComplete();
+            }
+        });
+
+    }
+
+    @Override
+    public void onPrintUsbError(String status, long resultCode) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
+                util.showAlertDialog(IrCameraActivity.this, strMessage );
+            }
+        });
     }
 
     private void updatePrinterParameters() {

@@ -48,7 +48,7 @@ public class ConnectExecuteTask extends AsyncTask<ConnectionData, Void, String  
     	// スタイルを設定
     	mProgressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		mProgressDlg.setCancelable(true);
-		mProgressDlg.show();
+		//mProgressDlg.show();
     	
     	
     }
