@@ -660,7 +660,7 @@ public class Util {
 
     public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -675,7 +675,7 @@ public class Util {
 
     public static JSONObject getJSONObjectQRCode(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -705,7 +705,7 @@ public class Util {
 
     public static JSONObject getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -2025,7 +2025,7 @@ public class Util {
 
     public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }

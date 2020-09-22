@@ -171,16 +171,6 @@ public class RegisterDeviceActivity extends SettingBaseActivity implements AddDe
                     Logger.toast(this,responseMessage);
                 }
             }
-            if (report.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mprogressDialog.dismiss();
-                        Logger.toast(RegisterDeviceActivity.this,"Device is not register. Please try again.");
-                    }
-                });
-            }
-
         } catch (Exception e) {
             Logger.error(TAG + "onJSONObjectListenerAddDevice","Login api response error"+e.getMessage());
             mprogressDialog.dismiss();

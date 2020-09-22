@@ -67,6 +67,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private Animation myAnimation;
     private SharedPreferences sharedPreferences;
     private boolean onlineMode = true;
+    private Timer mActivationTimer;
     private CountDownTimer startUpCountDownTimer;
     private long remainingTime = 20;
     private ImageView internetIndicatorImage;
@@ -118,6 +119,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } catch (Exception e) {
             e.printStackTrace();
         }
+        cancelActivationTimer();
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
         }
@@ -193,6 +195,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 return;
             }
             Util.activateApplication(GuideActivity.this, GuideActivity.this);
+            startActivationTimer();
         }
     }
 
@@ -209,12 +212,6 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 onSettingsUpdated();
                 return;
             }
-            if (reportInfo.has("responseTimeOut")){
-                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                    onSettingsUpdated();
-                    return;
-                }
-            }
             Util.retrieveSetting(reportInfo, GuideActivity.this);
             onSettingsUpdated();
         } catch (Exception e) {
@@ -230,17 +227,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
-            //cancelActivationTimer();
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
-                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
-                    }
-                });
-                return;
-            }
+            cancelActivationTimer();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
@@ -309,6 +296,29 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         } else {
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
+        }
+    }
+
+    private void startActivationTimer() {
+        cancelActivationTimer();
+        mActivationTimer = new Timer();
+        mActivationTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                    }
+                });
+                this.cancel();
+            }
+        }, 10 * 1000);
+    }
+
+    private void cancelActivationTimer() {
+        if (mActivationTimer != null) {
+            mActivationTimer.cancel();
         }
     }
 

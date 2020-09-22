@@ -296,6 +296,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Button qrSkipButton;
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
+    private Timer mQRTimer;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
 
@@ -1649,15 +1650,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Logger.toast(IrCameraActivity.this, "Due to network error setting not update. Please try again");
-                    }
-                });
-                return;
-            }
             if (reportInfo.contains("token expired"))
                 Util.getToken(this, this);
 
@@ -1752,35 +1744,25 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             CameraController.getInstance().setQrCodeId(guid);
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                //startQRTimer(guid);
+                startQRTimer(guid);
                 JSONObject obj = new JSONObject();
                 obj.put("qrCodeID", guid);
                 obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                 new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
             }
         } catch (Exception e) {
-            //cancelQRTimer();
+            cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
     }
 
     @Override
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
-        //cancelQRTimer();
+        cancelQRTimer();
         try {
             if (reportInfo == null) {
                 resetInvalidQrCode();
                 Logger.debug(TAG, reportInfo.toString());
-                return;
-            }
-            if (reportInfo.isNull("responseCode")) {
-                if (reportInfo.has("responseTimeOut")){
-                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                        onQRCodeTimeOut(req.getString("qrCodeID"));
-                    }
-                } else {
-                    resetInvalidQrCode();
-                }
                 return;
             }
             if (reportInfo.getString("responseCode").equals("1")) {
@@ -3193,14 +3175,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return result;
     }
 
-    public void onQRCodeTimeOut(String guid) {
-        runOnUiThread(() -> {
-            Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
-            CameraController.getInstance().setQrCodeId(guid);
-            Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-            clearQrCodePreview();
-            setCameraPreview();
-        });
+    private void startQRTimer(String guid) {
+        cancelQRTimer();
+        mQRTimer = new Timer();
+        mQRTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+                        CameraController.getInstance().setQrCodeId(guid);
+                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                        clearQrCodePreview();
+                        setCameraPreview();                    }
+                });
+                this.cancel();
+            }
+        }, 5 * 1000);
+    }
+
+    private void cancelQRTimer() {
+        if (mQRTimer != null) {
+            mQRTimer.cancel();
+        }
     }
 
     private void startCameraPreviewTimer() {

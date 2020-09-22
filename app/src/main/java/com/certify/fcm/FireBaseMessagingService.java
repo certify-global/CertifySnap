@@ -152,11 +152,6 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.has("responseTimeOut")){
-                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                    return;
-                }
-            }
             Util.retrieveSetting(reportInfo, this);
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerSetting()", "Exception while processing API response callback" + e.getMessage());
@@ -171,14 +166,6 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         }
 
         try {
-            if (reportInfo.isNull("responseCode"))  {
-                if (reportInfo.has("responseTimeOut")){
-                    if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                        Logger.error(TAG, "onJSONObjectListenerMemberID()", "Member is not sync");
-                    }
-                }
-                return;
-            }
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
@@ -195,9 +182,6 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         try {
             if (reportInfo == null) {
                 return;
-            }
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                Logger.error(TAG, "onJSONObjectListener()", "Activate Application Request Error!");
             }
            /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, this, "");

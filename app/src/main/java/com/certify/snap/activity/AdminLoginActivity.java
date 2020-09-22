@@ -129,16 +129,6 @@ public class AdminLoginActivity extends SettingBaseActivity implements JSONObjec
                     Logger.toast(this,"Invalid Credentials");
                 }
             }
-            if (report.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mprogressDialog.dismiss();
-                        Logger.toast(AdminLoginActivity.this,"Due to timeout error unable to login. Please try again.");
-                    }
-                });
-            }
-
         } catch (Exception e) {
             Logger.error(LOG + "onJSONObjectListenerLogin","Login api response error"+e.getMessage());
             Logger.toast(this,"Invalid Credentials");

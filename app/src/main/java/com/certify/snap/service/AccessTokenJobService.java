@@ -29,10 +29,6 @@ public class AccessTokenJobService extends JobService implements JSONObjectCallb
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)) {
-                Util.switchRgbOrIrActivity(this, true);
-                return;
-            }
             JSONObject json1 = null;
             SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
             try {
