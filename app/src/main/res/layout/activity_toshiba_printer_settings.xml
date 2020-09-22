@@ -10,32 +10,18 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <ListView
+            android:visibility="gone"
             android:id="@+id/StartMenuButtonlist1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <ListView
+            android:visibility="gone"
             android:id="@+id/port_menu_list"
             android:layout_width="fill_parent"
             android:layout_height="50dp"/>
-
-        <Button
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="25dp"
-            android:onClick="testPrint"
-            android:text="Print"/>
-
-        <Button
-            android:visibility="gone"
-            android:id="@+id/BttonReturn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClickButtonReturn"
-            android:text="@string/retur" />
-
         <LinearLayout
+            android:visibility="gone"
             android:layout_margin="@dimen/margin_15"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
@@ -54,6 +40,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_margin="@dimen/margin_15"
 
             android:layout_width="fill_parent"
@@ -73,6 +60,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:visibility="gone"
             android:layout_margin="@dimen/margin_15"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">

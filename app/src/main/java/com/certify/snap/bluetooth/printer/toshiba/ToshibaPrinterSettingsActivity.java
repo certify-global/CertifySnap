@@ -54,7 +54,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_toshiba_printer_settings);
         final Context context = this.getApplicationContext();
 
-        try {
+     /*   try {
             resizeReturnButton();
             printerList(context);
             portList(context);
@@ -62,7 +62,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
             initPrint();
         } catch( Exception e ) {
             Log.d("TAG", "onCreate: ");
-        }
+        }*/
 
     }
 
@@ -133,7 +133,6 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
 
         String item = "B-FV4D";
         util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
-        onClickButtonReturn(null);
     }
 
     private void portList(Context context) {
@@ -167,35 +166,6 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
         Point size = new Point();
         display.getSize(size);
         btnReturn.setWidth(size.x);
-    }
-
-    public void  onClickButtonReturn( View view ) {
-    }
-
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction()==KeyEvent.ACTION_DOWN ) {
-            if( event.getKeyCode() == KeyEvent.KEYCODE_BACK ) {
-                this.confirmActivityFinish();
-
-                return true;
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
-
-    protected void confirmActivityFinish() {
-        util.comfirmDialog(this, this.getString(R.string.confirmBack),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                }
-                , new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
     }
 
     private void callFILE() {
@@ -301,15 +271,6 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
             labelItemList.put( getString(R.string.dataName) ,  hinName );
         }
 
-       /* String codeData = util.getLavelDataForEditText( this , R.id.EditTextCode, "21052355");
-        if( codeData.length() > 8 ) {
-            labelItemList.put( getString(R.string.productCodeName),  codeData.substring(0, 7));
-            labelItemList.put( getString(R.string.barCode),  codeData.substring(0, 7));
-
-        } else {
-            labelItemList.put( getString(R.string.productCodeData),  codeData );
-            labelItemList.put( getString(R.string.barCode),  codeData );
-        }*/
         m_LabelData.setObjectDataList( labelItemList );
 
         String filePathName = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName() + "/" + "tempLabel.lfm";
