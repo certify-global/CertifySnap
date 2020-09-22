@@ -257,4 +257,12 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
            listener.onPrintUsbSuccess(status, resultCode);
        }
     }
+
+    public void clearData() {
+        mPrintData = null;
+        mUsbPrintControl = null;
+        mConnectData = null;
+        mConnectionDelegate = null;
+        mPrintDialogDelegate = null;
+    }
 }
