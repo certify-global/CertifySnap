@@ -83,18 +83,8 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         final Context context = this.getApplicationContext();
 
         initView();
-        brotherPrinterCheck();
-        toshibaPrinterCheck();
-
-        try {
-            resizeReturnButton();
-            printerList(context);
-            portList(context);
-            copyIniFile();
-            initPrint();
-        } catch( Exception e ) {
-            Log.d("TAG", "onCreate: ");
-        }
+        initBrotherPrinter();
+        initToshibaPrinter();
 
         initBluetoothPrinter();
         PrinterController.getInstance().setPrinterListener(this);
@@ -164,6 +154,10 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         }
     }
 
+    private void initBrotherPrinter() {
+        brotherPrinterCheck();
+    }
+
     private void brotherPrinterCheck() {
         RadioGroup radio_group_printer = findViewById(R.id.radio_group_brother_printer);
         RadioButton radio_enable_printer = findViewById(R.id.radio_yes_bother_printer);
@@ -181,6 +175,17 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
                 else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
             }
         });
+    }
+
+    private void initToshibaPrinter() {
+        toshibaPrinterCheck();
+        try {
+            resizeReturnButton();
+            printerList(this.getApplicationContext());
+            portList(this.getApplicationContext());
+        } catch (Exception e) {
+            Log.e("PrinterViewSetting", "Exception in initializing Toshiba Printer " + e.getMessage());
+        }
     }
 
     private void toshibaPrinterCheck() {
@@ -343,7 +348,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         listView.setSelector(new PaintDrawable(Color.BLUE));
 
         util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
-        callFILE();
     }
 
     private void initPrint(){

@@ -18,6 +18,7 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.view.PrinterMsgDialog;
 import com.certify.snap.view.PrinterMsgHandle;
 
+import java.io.File;
 import java.util.HashMap;
 
 import jp.co.toshibatec.bcp.library.BCPControl;
@@ -147,11 +148,12 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         return mPrintDialogDelegate;
     }
 
-    private void initUsbPrint(){
+    private void initUsbPrint() {
         String item = "B-FV4D";
         util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
         util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
         initFile();
+        copyIniFile();
         final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
         try {
             util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
@@ -180,6 +182,42 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         util.setPreferences(context, PORTSETTING_FILE_PATH_KEYNAME, filePath);
     }
 
+    private boolean copyIniFile() {
+        String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
+
+        File newfile = new File(myMemotyPath);
+        if (newfile.exists() == false) {
+            if (newfile.mkdirs()) {
+            }
+        }
+        try {
+            util.asset2file(context, "ErrMsg0.ini", myMemotyPath, "ErrMsg0.ini");
+            util.asset2file(context, "ErrMsg1.ini", myMemotyPath, "ErrMsg1.ini");
+            util.asset2file(context, "PRTEP2G.ini", myMemotyPath, "PRTEP2G.ini");
+            util.asset2file(context, "PRTEP2GQM.ini", myMemotyPath,
+                    "PRTEP2GQM.ini");
+            util.asset2file(context, "PRTEP4GQM.ini", myMemotyPath,
+                    "PRTEP4GQM.ini");
+            util.asset2file(context, "PRTEP4T.ini", myMemotyPath, "PRTEP4T.ini");
+            util.asset2file(context, "PRTEV4TT.ini", myMemotyPath, "PRTEV4TT.ini");
+            util.asset2file(context, "PRTEV4TG.ini", myMemotyPath, "PRTEV4TG.ini");
+            util.asset2file(context, "PRTLV4TT.ini", myMemotyPath, "PRTLV4TT.ini");
+            util.asset2file(context, "PRTLV4TG.ini", myMemotyPath, "PRTLV4TG.ini");
+            util.asset2file(context, "PRTFP3DGQM.ini", myMemotyPath, "PRTFP3DGQM.ini");
+            //ADD 03/12/2018
+            util.asset2file(context, "PRTBA400TG.ini", myMemotyPath, "PRTBA400TG.ini");
+            util.asset2file(context, "PRTBA400TT.ini", myMemotyPath, "PRTBA400TT.ini");
+            util.asset2file(context, "PrtList.ini", myMemotyPath, "PrtList.ini");
+            util.asset2file(context, "resource.xml", myMemotyPath, "resource.xml");
+            util.asset2file(context, "PRTFP2DG.ini", myMemotyPath, "PRTFP2DG.ini");
+            util.asset2file(context, "PRTFV4D.ini", myMemotyPath, "PRTFV4D.ini");
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
+
     public PrintData getPrintData() {
         return mPrintData;
     }
@@ -195,7 +233,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     private void openUsbPort( int issueMode ) {
-        if( mConnectData.getIsOpen().get() == false ){
+        if(!mConnectData.getIsOpen().get()){
             mConnectionDelegate.openPort(activity ,  mUsbPrintControl , mConnectData , issueMode );
             this.mCurrentIssueMode = issueMode;
         }
