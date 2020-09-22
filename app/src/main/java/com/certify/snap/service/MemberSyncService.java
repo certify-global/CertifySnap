@@ -9,10 +9,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -22,7 +20,6 @@ import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncTaskExecutorService;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -103,29 +100,25 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
     @Override
     public void onJSONObjectListenerMemberList(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo != null) {
-                Gson gson = new Gson();
-                MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
-                if (response.responseCode != null && response.responseCode.equals("1")) {
-                    List<MemberListData> memberList = response.memberList;
-                    totalMemberCount = memberList.size();
-                    Log.d(TAG, "MemberList Size " + memberList.size());
-                    MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
-                    for (int i = 0; i < memberList.size(); i++) {
-                        if (memberList.get(i).status) {
-                            activeMemberCount++;
-                            getMemberID(memberList.get(i).id);
-                        }
+        if (reportInfo != null) {
+            Gson gson = new Gson();
+            MemberListResponse response = gson.fromJson(String.valueOf(reportInfo), MemberListResponse.class);
+            if (response.responseCode != null && response.responseCode.equals("1")) {
+                List<MemberListData> memberList = response.memberList;
+                totalMemberCount = memberList.size();
+                Log.d(TAG, "MemberList Size " + memberList.size());
+                MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
+                for (int i = 0; i < memberList.size(); i++) {
+                    if (memberList.get(i).status) {
+                        activeMemberCount++;
+                        getMemberID(memberList.get(i).id);
                     }
-                    MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-                    doSendBroadcast("start", activeMemberCount, count);
-                    return;
                 }
-                Log.e(TAG, "MemberList response = " + response.responseCode);
+                MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
+                doSendBroadcast("start", activeMemberCount, count);
+                return;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "MemberList response = " + response.responseCode);
         }
         Log.e(TAG, "MemberList null response");
     }
@@ -142,7 +135,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
             }
         } catch (Exception e) {
-            Logger.error(" getMemberID()", e.getMessage());
+            Logger.error(" getMemberID()",e.getMessage());
         }
     }
 
@@ -155,7 +148,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
 
         try {
-            if (reportInfo.isNull("responseCode") || reportInfo.has("responseTimeOut")) {
+            if (reportInfo.isNull("responseCode"))  {
                 onMemberIdErrorResponse(req);
                 return;
             }
@@ -173,13 +166,13 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
     }
 
-    private void doSendBroadcast(String message, int memberCount, int count) {
+    private void doSendBroadcast(String message,int memberCount,int count) {
         Intent event_snackbar = new Intent("EVENT_SNACKBAR");
 
         if (!TextUtils.isEmpty(message))
-            event_snackbar.putExtra("message", message);
-        event_snackbar.putExtra("memberCount", memberCount);
-        event_snackbar.putExtra("count", count);
+            event_snackbar.putExtra("message",message);
+        event_snackbar.putExtra("memberCount",memberCount);
+        event_snackbar.putExtra("count",count);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(event_snackbar);
     }
