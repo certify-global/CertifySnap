@@ -1,106 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:shrinkColumns="1"
-    android:stretchColumns="1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".bluetooth.printer.toshiba.CommunicationActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="" />
 
     <Button
         android:id="@+id/BttonPortOpen"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickButtonPortOpen"
-        android:text="@string/btnPortOpen"></Button>
+        android:text="@string/btnPortOpen" />
 
-    <Spinner
-        android:id="@+id/spinnerMode"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawSelectorOnTop="true"
-        android:entries="@array/planets"
-        android:prompt="@string/planet_prompt" />
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <TableRow
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        <Spinner
+            android:id="@+id/spinnerMode"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/planets"
+            android:prompt="@string/planet_prompt" />
 
-        <TextView
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/writeData" />
+
+            <EditText
+                android:id="@+id/WriteDataEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
+        </TableRow>
+
+        <Button
+            android:id="@+id/BttonWrite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/writeData" />
+            android:onClick="onClickButtonWrite"
+            android:text="@string/btnWrite" />
 
-        <EditText
-            android:id="@+id/WriteDataEditText"
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btnReadData" />
+
+            <EditText
+                android:id="@+id/ReadDataEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
+        </TableRow>
+
+        <Button
+            android:id="@+id/BttonRead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_span="2" />
-    </TableRow>
+            android:onClick="onClickButtonRead"
+            android:text="@string/btnRead" />
 
-    <Button
-        android:id="@+id/BttonWrite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClickButtonWrite"
-        android:text="@string/btnWrite" />
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-    <TableRow
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/txtStatus" />
 
-        <TextView
+            <EditText
+                android:id="@+id/StatusDataEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2" />
+        </TableRow>
+
+        <Button
+            android:id="@+id/BttonStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btnReadData" />
+            android:onClick="onClickButtonStatus"
+            android:text="@string/btnStatus" />
 
-        <EditText
-            android:id="@+id/ReadDataEditText"
+        <Button
+            android:id="@+id/BttonReturn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_span="2" />
-    </TableRow>
-
-    <Button
-        android:id="@+id/BttonRead"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClickButtonRead"
-        android:text="@string/btnRead" />
-
-    <TableRow
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/txtStatus" />
-
-        <EditText
-            android:id="@+id/StatusDataEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_span="2" />
-    </TableRow>
-
-    <Button
-        android:id="@+id/BttonStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClickButtonStatus"
-        android:text="@string/btnStatus" />
-
-    <Button
-        android:id="@+id/BttonReturn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClickButtonReturn"
-        android:text="@string/retur"></Button>
-
-</TableLayout>
+            android:onClick="onClickButtonReturn"
+            android:text="@string/retur"/>
+    </LinearLayout>
+</LinearLayout>

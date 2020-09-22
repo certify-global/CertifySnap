@@ -5,12 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".bluetooth.printer.toshiba.OptionActivity">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="" />
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -31,15 +28,17 @@
     </LinearLayout>
 
     <Button
+        android:visibility="gone"
         android:id="@+id/BttonChange"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickButtonChange"
-        android:text="@string/btnChange"></Button>
+        android:text="@string/btnChange"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_30">
 
         <TextView
             android:layout_width="wrap_content"
@@ -57,6 +56,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
@@ -73,6 +73,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
@@ -92,6 +93,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
@@ -111,16 +113,17 @@
 
     <Button
         android:id="@+id/BttonSave"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickButtonSave"
-        android:text="@string/save"></Button>
+        android:text="@string/save"/>
 
     <Button
+        android:visibility="gone"
         android:id="@+id/BttonReturn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClickButtonReturn"
-        android:text="@string/retur"></Button>
+        android:text="@string/retur"/>
 
 </LinearLayout>
