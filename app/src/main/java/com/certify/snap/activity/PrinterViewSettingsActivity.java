@@ -56,9 +56,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     Typeface rubiklight;
     private SharedPreferences sp;
 
-    private ConnectionDelegate mConnectionDelegate = null;
-    private PrintDialogDelegate mPrintDialogDelegate = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,6 +134,12 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
             }
             brotherBluetoothPrinterStatus.setText(sharedPreferences.getString("printer", "NONE"));
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PrinterController.getInstance().clearData();
     }
 
     private void initBrotherPrinter() {
@@ -300,29 +303,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         display.getSize(size);
         btnReturn.setWidth(size.x);
     }*/
-
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
-        dialog = mPrintDialogDelegate.createDialog( id );
-        if( null == dialog ) {
-            dialog = super.onCreateDialog( id );
-        }
-        return dialog;
-    }
-
-    protected void onPrepareDialog(int id, Dialog dialog) {
-        if( false == mPrintDialogDelegate.PrepareDialog(  id, dialog) ) {
-            super.onPrepareDialog(id, dialog );
-        }
-    }
-
-    private void loadEditTextItem(String srcData, int resourceID, String defaultData) {
-        if( srcData == null || srcData.compareTo("Default") == 0 || srcData.length() == 0 ) {
-            ((EditText)this.findViewById( resourceID )).setText( defaultData );
-        } else {
-            (( EditText )this.findViewById( resourceID )).setText( srcData );
-        }
-    }
 
     public void onClickButtonPrint( View view ) {
         new Thread(() -> {
