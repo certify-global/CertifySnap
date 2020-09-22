@@ -27,7 +27,7 @@ public class ToshibaSmpLabelActivity extends AppCompatActivity implements BCPCon
 
     private BCPControl m_bcpControl = null;
     private ConnectionData mConnectData = new ConnectionData();
-    private int mCurrentIssueMode = AsynchronousMode;	// カレントの発行モード
+    private int mCurrentIssueMode = AsynchronousMode;
     private PrintData m_LabelData = new PrintData();
 
     private ConnectionDelegate mConnectionDelegate = null;
@@ -44,67 +44,27 @@ public class ToshibaSmpLabelActivity extends AppCompatActivity implements BCPCon
 
             m_bcpControl = new BCPControl( this );
 
-            // プロパティ値を設定
             util.SetPropaty( this , m_bcpControl );
 
             String srcData = "";
 
-            // プリンタ名取得
             String strPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
             if (strPrinterType == null || strPrinterType.length() == 0){
                 strPrinterType = "B-FV4D";
             }
-            // 品名
             loadEditTextItem(srcData, R.id.EditTextName, strPrinterType );
-            // コード
             loadEditTextItem(srcData, R.id.EditTextCode, "21052355" );
-            // 印刷枚数
             loadEditTextItem(srcData, R.id.EditTextPrintNum, "1" );
 
 
             mConnectionDelegate = new ConnectionDelegate();
             mPrintDialogDelegate = new PrintDialogDelegate( this , m_bcpControl, m_LabelData );
 
-            this.openBluetoothPort( SynchronousMode );		// 発行モードとして発行完了復帰（同期）で実行する
+            this.openBluetoothPort( SynchronousMode );
         }
 
     }
-    //
-    @Override
-    protected void onResume(){
-        super.onResume();
-    }
 
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-    //
-    public void onPause(){
-        super.onPause();
-
-
-    }
-    /**
-     *
-     */
-    public void onStop() {
-        super.onStop();
-
-    }
-    /**
-     *
-     */
-    public void onDestory(){
-        super.onDestroy();
-
-
-
-    }
-    /**
-     *
-     */
     protected Dialog onCreateDialog(int id) {
         Dialog dialog = null;
         dialog = mPrintDialogDelegate.createDialog( id );
@@ -115,9 +75,7 @@ public class ToshibaSmpLabelActivity extends AppCompatActivity implements BCPCon
     }
 
 
-    /**
-     *
-     */
+
     protected void onPrepareDialog(int id, Dialog dialog) {
         if( false == mPrintDialogDelegate.PrepareDialog(  id, dialog) ) {
             super.onPrepareDialog(id, dialog );
@@ -131,17 +89,13 @@ public class ToshibaSmpLabelActivity extends AppCompatActivity implements BCPCon
      * @param defaultData
      */
     private void loadEditTextItem(String srcData, int resourceID, String defaultData) {
-        // 読み込みデータがなし、デフォルト、空白の場合：
         if( srcData == null || srcData.compareTo("Default") == 0 || srcData.length() == 0 ) {
             ((EditText)this.findViewById( resourceID )).setText( defaultData );
         } else {
             (( EditText )this.findViewById( resourceID )).setText( srcData );
         }
     }
-    /**
-     * [印刷実行]ボタンを押した時に呼び出されるメソッド
-     * @param view
-     */
+
     public void onClickButtonPrint( View view ) {
         try{
             callPrintThread();
@@ -150,20 +104,12 @@ public class ToshibaSmpLabelActivity extends AppCompatActivity implements BCPCon
         }
     }
 
-    /**
-     * [前画面に戻る]ボタンを押した時に呼び出されるメソッド
-     * @param view
-     */
     public void onClickButtonReturn( View view ) {
 
         confirmationEndDialog( this );
     }
 
 
-    /**
-     * Bluetoothポートオープン
-     * @param issueMode [in] 復帰モード  : 1:送信完了復帰 2:発行完了復帰
-     */
     private void openBluetoothPort( int issueMode ) {
 
         if( mConnectData.getIsOpen().get() == false ){
@@ -172,15 +118,11 @@ public class ToshibaSmpLabelActivity extends AppCompatActivity implements BCPCon
         }
     }
 
-    /**
-     * Bluetoothポートクローズ
-     */
     private void closeBluetoothPort(){
 
         mConnectionDelegate.closePort(this ,  m_bcpControl , mConnectData );
     }
 
-    //BACKキーの無効化
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {

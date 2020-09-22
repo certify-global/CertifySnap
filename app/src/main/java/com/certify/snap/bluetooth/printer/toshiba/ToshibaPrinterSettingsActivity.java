@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
@@ -46,7 +47,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
             portList(context);
 
         } catch( Exception e ) {
-
+            Log.d("TAG", "onCreate: ");
         }
 
     }
@@ -55,7 +56,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice );
         String orginalPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
         int position = 0;
-        int selectPosition = 0;
+        int selectPosition = 13;
         for(int i=0; i<PRINTER_LIST.length; i++){
             adapter.add(PRINTER_LIST[i]);
 
@@ -89,12 +90,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
     private void portList(Context context){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
         String strPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
-        if (strPrinterType != null && strPrinterType.length() != 0 &&
-                (PRINTER_LIST[4].compareTo(strPrinterType) == 0 || PRINTER_LIST[5].compareTo(strPrinterType) == 0)) {
-            adapter.add("FILE");
-        } else {
-            adapter.add("FILE");
-        }
+        adapter.add("FILE");
 
         ListView listView = (ListView) findViewById(R.id.port_menu_list);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
