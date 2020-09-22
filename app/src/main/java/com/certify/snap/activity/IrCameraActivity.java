@@ -3,7 +3,6 @@ package com.certify.snap.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
@@ -37,6 +36,7 @@ import com.arcsoft.face.AgeInfo;
 import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
+import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
@@ -160,7 +160,8 @@ import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
-        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener {
+        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
+        PrintStatusCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -3003,30 +3004,25 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onPrintUsbCommand() {
-        runOnUiThread(() -> new PrintExecuteTask(this ,
-                                                PrinterController.getInstance().getUsbPrintControl())
+        runOnUiThread(() -> new PrintExecuteTask(this,
+                                                PrinterController.getInstance().getUsbPrintControl(), this)
                                                 .execute(PrinterController.getInstance().getPrintData()));
     }
 
     @Override
     public void onPrintUsbSuccess(String status, long resultCode) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
-                util.showAlertDialog(IrCameraActivity.this, strMessage );
-                onPrintComplete();
-            }
+        runOnUiThread(() -> {
+            String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
+            util.showAlertDialog(IrCameraActivity.this, strMessage );
+            onPrintComplete();
         });
 
     }
 
     @Override
-    public void onPrintUsbError(String status, long resultCode) {
-        runOnUiThread(() -> {
-            String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
-            util.showAlertDialog(IrCameraActivity.this, strMessage );
-        });
+    public void onPrintStatus(String status, int code) {
+        Log.d(TAG, "Print status " + status);
+        runOnUiThread(this::onPrintComplete);
     }
 
     private void updatePrinterParameters() {

@@ -202,11 +202,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         //add code here
     }
 
-    @Override
-    public void onPrintUsbError(String status, long resultCode) {
-        //add code here
-    }
-
     public void saveAudioSettings(View view) {
         Util.showToast(PrinterViewSettingsActivity.this, getString(R.string.save_success));
         finish();

@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
 
 import java.io.File;
@@ -37,7 +38,7 @@ import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.SynchronousMode;
 
-public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements BCPControl.LIBBcpControlCallBack {
+public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements BCPControl.LIBBcpControlCallBack, PrintStatusCallback {
 
     private BCPControl m_bcpControl = null;
     private ConnectionData mConnectData = new ConnectionData();
@@ -316,6 +317,11 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
 
         m_LabelData.setObjectDataList( labelItemList );
 
-        new PrintExecuteTask( this , m_bcpControl ).execute( m_LabelData );
+        new PrintExecuteTask( this , m_bcpControl, this).execute( m_LabelData );
+    }
+
+    @Override
+    public void onPrintStatus(String status, int code) {
+        //do noop
     }
 }

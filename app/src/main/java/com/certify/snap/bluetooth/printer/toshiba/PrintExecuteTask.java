@@ -18,6 +18,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 
+import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
 
 import java.io.BufferedReader;
@@ -50,13 +51,14 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 	// 復帰モード
 	final int AsynchronousMode = 1;	// 送信完了復帰（非同期）
 	final int SynchronousMode = 2;		// 発行完了復帰（同期）
+	private PrintStatusCallback statusCallback;
 	
 	
     // コンストラクタ
-    public PrintExecuteTask(Activity conText , BCPControl bcpcontrol ) {
+    public PrintExecuteTask(Activity conText , BCPControl bcpcontrol, PrintStatusCallback callback) {
     	mContext = conText;
     	m_bcpObj = bcpcontrol;
-    	
+    	this.statusCallback = callback;
     }
 
     //Amir
@@ -466,6 +468,9 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 			m_bcpObj = null;
 			mContext = null;
 			return;
+		}
+		if (statusCallback != null) {
+			statusCallback.onPrintStatus(result, 0);
 		}
     	m_bcpObj = null;
     	mContext = null;

@@ -13,7 +13,6 @@ import com.certify.snap.bluetooth.printer.toshiba.ConnectionData;
 import com.certify.snap.bluetooth.printer.toshiba.ConnectionDelegate;
 import com.certify.snap.bluetooth.printer.toshiba.PrintData;
 import com.certify.snap.bluetooth.printer.toshiba.PrintDialogDelegate;
-import com.certify.snap.bluetooth.printer.toshiba.PrintExecuteTask;
 import com.certify.snap.bluetooth.printer.toshiba.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.view.PrinterMsgDialog;
@@ -53,7 +52,6 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         void onPrintError();
         void onPrintUsbCommand();
         void onPrintUsbSuccess(String status, long resultCode);
-        void onPrintUsbError(String status, long resultCode);
     }
 
     public static PrinterController getInstance() {
