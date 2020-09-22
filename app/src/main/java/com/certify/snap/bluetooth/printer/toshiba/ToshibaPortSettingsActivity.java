@@ -20,11 +20,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.certify.snap.R;
 
+import jp.co.toshibatec.bcp.library.BCPControl;
+import jp.co.toshibatec.bcp.library.LongRef;
+
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
 
 public class ToshibaPortSettingsActivity extends AppCompatActivity {
+
+
+    private static final String OPTION_PRINTMODE_KEYNAME = "OGPM";
+    private BCPControl m_bcpControl = null;
+    private ConnectionData mConnectData = new ConnectionData();
+
+    private String mIssueMode = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,5 +198,51 @@ public class ToshibaPortSettingsActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    public void onClickButtonPortOpen(View view) {
+        try {
+            if (mConnectData.getIsOpen().get() == true) {
+                LongRef Result = new LongRef(0);
+                if (false == m_bcpControl.ClosePort(Result)) {
+                    util.showAlertDialog(this, String.format(R.string.msg_PortCloseError + "= %08x", Result.getLongValue()));
+                } else {
+                    mConnectData.getIsOpen().set(false);
+                    ((Button) this.findViewById(R.id.BttonPortOpen)).setText(R.string.msg_PortOpen);
+                }
+            } else {
+                portOpen();
+            }
+
+        } catch (Exception ex) {
+
+        }
+
+    }
+
+    private void portOpen() {
+        String portSetting = "";
+
+        String portMode = util.getPreferences(this, PORTSETTING_PORT_MODE_KEYNAME);
+
+        portSetting = util.getPortSetting(this);
+        if (portSetting.length() == 0) {
+            return;
+        }
+        if (mIssueMode.equalsIgnoreCase("Send")) {
+            mConnectData.setIssueMode(1);
+        } else {
+            mConnectData.setIssueMode(2);
+        }
+        mConnectData.setPortSetting(portSetting);
+
+        String printerType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
+        int usePrinter = Defines.getPrinterNo(printerType);
+        m_bcpControl.setUsePrinter(usePrinter);
+
+        ConnectExecuteTask task = new ConnectExecuteTask(this, ((Button) this.findViewById(R.id.BttonPortOpen)), m_bcpControl);
+        task.execute(mConnectData);
+
+
     }
 }
