@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_5"
                 android:layout_marginTop="@dimen/margin_15"
-                android:text="Brother Printer"
+                android:text="Wifi/Bluetooth Printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
@@ -223,7 +223,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_5"
                 android:layout_marginTop="@dimen/margin_15"
-                android:text="Toshiba Printer"
+                android:text="USB Printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
