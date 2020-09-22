@@ -173,7 +173,7 @@
 
                 <Button
                     android:id="@+id/bother_print_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:background="@color/gray"
@@ -273,6 +273,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_20"
@@ -320,7 +321,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginTop="25dp"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
@@ -335,11 +336,11 @@
 
                 <Button
                     android:id="@+id/toshiba_print_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:background="@color/gray"
-                    android:onClick="printImage"
+                    android:onClick="onClickButtonPrint"
                     android:padding="10dp"
                     android:text="Print"
                     android:textColor="@color/white"
@@ -441,13 +442,6 @@
                     android:inputType="number" />
             </LinearLayout>
 
-            <Button
-                android:layout_margin="@dimen/margin_15"
-                android:id="@+id/BttonPrint"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="onClickButtonPrint"
-                android:text="@string/print"/>
         </LinearLayout>
     </LinearLayout>
 

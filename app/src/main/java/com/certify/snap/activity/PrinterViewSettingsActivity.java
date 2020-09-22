@@ -165,7 +165,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     private void initToshibaPrinter() {
         toshibaPrinterCheck();
         try {
-            resizeReturnButton();
             printerList(this.getApplicationContext());
             portList(this.getApplicationContext());
         } catch (Exception e) {
@@ -292,7 +291,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
     }
 
-    private void resizeReturnButton() {
+/*    private void resizeReturnButton() {
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
@@ -300,7 +299,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         Point size = new Point();
         display.getSize(size);
         btnReturn.setWidth(size.x);
-    }
+    }*/
 
     protected Dialog onCreateDialog(int id) {
         Dialog dialog = null;
