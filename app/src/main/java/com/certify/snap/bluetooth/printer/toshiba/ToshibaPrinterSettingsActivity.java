@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -41,7 +42,6 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
         final Context context = this.getApplicationContext();
 
         try {
-
             resizeReturnButton();
             printerList(context);
             portList(context);
@@ -89,9 +89,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
 
     private void portList(Context context){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
-        String strPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
         adapter.add("FILE");
-
         ListView listView = (ListView) findViewById(R.id.port_menu_list);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         listView.setAdapter(adapter);
@@ -109,17 +107,9 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
             private void selectMenu(int position, ListView listView) {
                 String item = (String) listView.getItemAtPosition(position);
 
-                if (item.equals("Bluetooth")) {
-                    util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, item);
-                    //callBluetooth();
-                } else if (item.equals("WLAN")) {
-                    util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, item);
-                    //callWLAN();
-                } else if (item.equals("FILE")) {
+                if (item.equals("FILE")) {
                     util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, item);
                     callFILE();
-                } else {
-
                 }
             }
         };
@@ -128,18 +118,8 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
         String item = util.getPreferences(context, PORTSETTING_PORT_MODE_KEYNAME);
         if (item.length() == 0) {
             listView.setItemChecked(0, true);
-
         } else {
-            if (item.equals("Bluetooth")) {
-                listView.setItemChecked(0, true);
-
-            } else if (item.equals("WLAN")) {
-                listView.setItemChecked(1, true);
-            } else if (item.equals("FILE")) {
-                listView.setItemChecked(2, true);
-            } else {
-                listView.setItemChecked(0, true);
-            }
+            listView.setItemChecked(2, true);
         }
 
     }
@@ -191,49 +171,13 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
         startActivity(new Intent(this, ToshibaFileSettingActivity.class));
     }
 
-    public void onClickButtonPortOpen(View view) {
+    public void testPrint(View view){
+        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName();
         try {
-            if (mConnectData.getIsOpen().get() == true) {
-                LongRef Result = new LongRef(0);
-                if (false == m_bcpControl.ClosePort(Result)) {
-                    util.showAlertDialog(this, String.format(R.string.msg_PortCloseError + "= %08x", Result.getLongValue()));
-                } else {
-                    mConnectData.getIsOpen().set(false);
-                    ((Button) this.findViewById(R.id.BttonPortOpen)).setText(R.string.msg_PortOpen);
-                }
-            } else {
-                portOpen();
-            }
-
-        } catch (Exception ex) {
-
+            util.asset2file(this, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-    }
-
-    private void portOpen() {
-        String portSetting = "";
-
-        String portMode = util.getPreferences(this, PORTSETTING_PORT_MODE_KEYNAME);
-
-        portSetting = util.getPortSetting(this);
-        if (portSetting.length() == 0) {
-            return;
-        }
-        if (mIssueMode.equalsIgnoreCase("Send")) {
-            mConnectData.setIssueMode(1);
-        } else {
-            mConnectData.setIssueMode(2);
-        }
-        mConnectData.setPortSetting(portSetting);
-
-        String printerType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
-        int usePrinter = Defines.getPrinterNo(printerType);
-        m_bcpControl.setUsePrinter(usePrinter);
-
-        ConnectExecuteTask task = new ConnectExecuteTask(this, ((Button) this.findViewById(R.id.BttonPortOpen)), m_bcpControl);
-        task.execute(mConnectData);
-
-
+        startActivity(new Intent(ToshibaPrinterSettingsActivity.this, ToshibaSmpLabelActivity.class));
     }
 }
