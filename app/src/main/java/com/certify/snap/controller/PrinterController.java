@@ -1,5 +1,6 @@
 package com.certify.snap.controller;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -33,8 +34,9 @@ public class PrinterController {
         return instance;
     }
 
-    public void init(Context context) {
+    public void init(Context context, Activity activity) {
         mDialog = new PrinterMsgDialog(context);
+        mDialog.setActivity(activity);
         mHandle = new PrinterMsgHandle(context, mDialog);
         mPrint = new ImagePrint(context, mHandle, mDialog);
     }

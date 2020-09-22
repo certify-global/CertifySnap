@@ -116,7 +116,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     private void initBluetoothPrinter() {
         // initialization for printing
-        PrinterController.getInstance().init(this);
+        PrinterController.getInstance().init(this, this);
         PrinterController.getInstance().setPrinterListener(this);
         PrinterController.getInstance().setBluetoothAdapter();
     }
