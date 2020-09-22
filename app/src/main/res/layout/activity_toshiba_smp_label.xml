@@ -6,12 +6,6 @@
     android:orientation="vertical"
     tools:context=".bluetooth.printer.toshiba.ToshibaSmpLabelActivity">
 
-    <TextView
-        android:id="@+id/EditTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/txtSmpev4t" />
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -68,12 +62,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClickButtonPrint"
-        android:text="@string/print"></Button>
+        android:text="@string/print"/>
 
-    <Button
-        android:id="@+id/BttonReturn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClickButtonReturn"
-        android:text="@string/retur"></Button>
 </LinearLayout>

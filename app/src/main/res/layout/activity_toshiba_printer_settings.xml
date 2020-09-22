@@ -19,12 +19,11 @@
             android:layout_height="50dp"/>
 
         <Button
-            android:visibility="gone"
-            android:id="@+id/BttonPortOpen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onClickButtonPortOpen"
-            android:text="@string/btnPortOpen" />
+            android:layout_margin="25dp"
+            android:onClick="testPrint"
+            android:text="Print"/>
 
         <Button
             android:visibility="gone"
