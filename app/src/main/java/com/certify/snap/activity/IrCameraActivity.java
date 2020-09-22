@@ -3265,4 +3265,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
     }
+
+    protected Dialog onCreateDialog(int id) {
+        Dialog dialog = null;
+        dialog = PrinterController.getInstance().getPrintDialogDelegate().createDialog( id );
+        if( null == dialog ) {
+            dialog = super.onCreateDialog( id );
+        }
+        return dialog;
+    }
+
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        if( false == PrinterController.getInstance().getPrintDialogDelegate().PrepareDialog(  id, dialog) ) {
+            super.onPrepareDialog(id, dialog );
+        }
+    }
 }
