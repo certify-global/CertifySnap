@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".bluetooth.printer.toshiba.ToshibaPrinterSettingsActivity">
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_message_printer_Select" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <ListView
+            android:id="@+id/StartMenuButtonlist1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <ListView
+            android:id="@+id/port_menu_list"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"/>
 
-    <ListView
-        android:id="@+id/StartMenuButtonlist1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"></ListView>
+        <Button
+            android:id="@+id/BttonPortOpen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClickButtonPortOpen"
+            android:text="@string/btnPortOpen" />
 
-    <Button
-        android:id="@+id/BttonReturn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClickButtonReturn"
-        android:text="@string/retur"></Button>
-
-</LinearLayout>
+        <Button
+            android:id="@+id/BttonReturn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClickButtonReturn"
+            android:text="@string/retur" />
+    </LinearLayout>
+</ScrollView>

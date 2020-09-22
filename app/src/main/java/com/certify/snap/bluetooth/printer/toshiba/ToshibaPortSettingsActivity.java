@@ -50,15 +50,12 @@ public class ToshibaPortSettingsActivity extends AppCompatActivity {
             String strPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
             if (strPrinterType != null && strPrinterType.length() != 0 &&
                     (PRINTER_LIST[4].compareTo(strPrinterType) == 0 || PRINTER_LIST[5].compareTo(strPrinterType) == 0)) {
-                //adapter.add("WLAN");
                 adapter.add("FILE");
             } else {
-               /* adapter.add("Bluetooth");
-                adapter.add("WLAN");*/
                 adapter.add("FILE");
             }
 
-            ListView listView = (ListView) findViewById(R.id.StartMenuButtonlist1);
+            ListView listView = (ListView) findViewById(R.id.port_menu_list);
             listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             listView.setAdapter(adapter);
 
@@ -72,18 +69,9 @@ public class ToshibaPortSettingsActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View arg1, int position, long id) {
                     ListView listView = (ListView) parent;
-
-
                     selectMenu(position, listView);
-
-
                 }
 
-                /**
-                 *
-                 * @param position
-                 * @param listView
-                 */
                 private void selectMenu(int position, ListView listView) {
                     String item = (String) listView.getItemAtPosition(position);
 
