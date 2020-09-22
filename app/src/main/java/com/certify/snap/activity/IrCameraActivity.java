@@ -1666,7 +1666,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
-            if (!reportInfo.getString("responseCode").equals("1") || reportInfo.has("responseTimeOut")) {
+            if (!reportInfo.getString("responseCode").equals("1")) {
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
