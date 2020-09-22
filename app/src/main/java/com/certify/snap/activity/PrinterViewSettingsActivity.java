@@ -18,7 +18,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.toshiba.ToshibaMenuActivity;
 import com.certify.snap.bluetooth.printer.toshiba.ToshibaPrinterSettingsActivity;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
