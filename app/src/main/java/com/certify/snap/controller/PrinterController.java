@@ -239,7 +239,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
-    private void printUsb() {
+    public void printUsb() {
         mPrintData.setCurrentIssueMode( mCurrentIssueMode );
         int printCount = 1;
         mPrintData.setPrintCount( printCount );

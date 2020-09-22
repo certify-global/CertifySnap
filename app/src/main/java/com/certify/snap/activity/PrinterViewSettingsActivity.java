@@ -13,7 +13,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
@@ -31,32 +30,23 @@ import android.widget.TextView;
 
 import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.toshiba.ConnectionData;
 import com.certify.snap.bluetooth.printer.toshiba.ConnectionDelegate;
-import com.certify.snap.bluetooth.printer.toshiba.PrintData;
 import com.certify.snap.bluetooth.printer.toshiba.PrintDialogDelegate;
 import com.certify.snap.bluetooth.printer.toshiba.PrintExecuteTask;
 import com.certify.snap.bluetooth.printer.toshiba.ToshibaPrinterSettingsActivity;
 import com.certify.snap.bluetooth.printer.toshiba.util;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.PrinterController;
 
-import java.io.File;
-import java.util.HashMap;
-
-import jp.co.toshibatec.bcp.library.BCPControl;
-import jp.co.toshibatec.bcp.library.LongRef;
-
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.AsynchronousMode;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.SynchronousMode;
 
-public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener, BCPControl.LIBBcpControlCallBack, PrintStatusCallback {
+public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener, PrintStatusCallback {
 
+    private static final String TAG = PrinterViewSettingsActivity.class.getSimpleName();
     TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
             brotherBluetoothPrinterStatus, brotherTestPrint,
             titleToshibaBluetoothPrinter, enableToshibaPrinterTextView, toshibaBluetoothPrinterConnect, toshibaBluetoothPrinterConnection,
@@ -65,11 +55,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     Button brotherPrintButton, toshibaPrintButton;
     Typeface rubiklight;
     private SharedPreferences sp;
-
-    private BCPControl m_bcpControl = null;
-    private ConnectionData mConnectData = new ConnectionData();
-    private int mCurrentIssueMode = AsynchronousMode;
-    private PrintData m_LabelData = new PrintData();
 
     private ConnectionDelegate mConnectionDelegate = null;
     private PrintDialogDelegate mPrintDialogDelegate = null;
@@ -184,7 +169,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
             printerList(this.getApplicationContext());
             portList(this.getApplicationContext());
         } catch (Exception e) {
-            Log.e("PrinterViewSetting", "Exception in initializing Toshiba Printer " + e.getMessage());
+            Log.e(TAG, "Exception in initializing Toshiba Printer " + e.getMessage());
         }
     }
 
@@ -251,7 +236,9 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     @Override
     public void onPrintUsbCommand() {
-        //do noop
+        runOnUiThread(() -> new PrintExecuteTask(this,
+                PrinterController.getInstance().getUsbPrintControl(), this)
+                .execute(PrinterController.getInstance().getPrintData()));
     }
 
     @Override
@@ -267,51 +254,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     // TOSHIBA PRINTER
     public void selectToshibaBluetoothPrinter(View view) {
         startActivity(new Intent(this, ToshibaPrinterSettingsActivity.class));
-    }
-
-    private boolean copyIniFile() {
-
-        String myMemotyPath = Environment.getDataDirectory().getPath()
-                + "/data/" + this.getPackageName();
-
-        File newfile = new File(myMemotyPath);
-        if (newfile.exists() == false) {
-            if (newfile.mkdirs()) {
-
-            }
-        }
-        try {
-
-            util.asset2file(this, "ErrMsg0.ini", myMemotyPath, "ErrMsg0.ini");
-            util.asset2file(this, "ErrMsg1.ini", myMemotyPath, "ErrMsg1.ini");
-            util.asset2file(this, "PRTEP2G.ini", myMemotyPath, "PRTEP2G.ini");
-            util.asset2file(this, "PRTEP2GQM.ini", myMemotyPath,
-                    "PRTEP2GQM.ini");
-            util.asset2file(this, "PRTEP4GQM.ini", myMemotyPath,
-                    "PRTEP4GQM.ini");
-            util.asset2file(this, "PRTEP4T.ini", myMemotyPath, "PRTEP4T.ini");
-            util.asset2file(this, "PRTEV4TT.ini", myMemotyPath, "PRTEV4TT.ini");
-            util.asset2file(this, "PRTEV4TG.ini", myMemotyPath, "PRTEV4TG.ini");
-            util.asset2file(this, "PRTLV4TT.ini", myMemotyPath, "PRTLV4TT.ini");
-            util.asset2file(this, "PRTLV4TG.ini", myMemotyPath, "PRTLV4TG.ini");
-            util.asset2file(this, "PRTFP3DGQM.ini", myMemotyPath, "PRTFP3DGQM.ini");
-            //ADD 03/12/2018
-            util.asset2file(this, "PRTBA400TG.ini", myMemotyPath, "PRTBA400TG.ini");
-            util.asset2file(this, "PRTBA400TT.ini", myMemotyPath, "PRTBA400TT.ini");
-            util.asset2file(this, "PrtList.ini", myMemotyPath, "PrtList.ini");
-            util.asset2file(this, "resource.xml", myMemotyPath, "resource.xml");
-            util.asset2file(this, "PRTFP2DG.ini", myMemotyPath, "PRTFP2DG.ini");
-
-            util.asset2file(this, "PRTFV4D.ini", myMemotyPath, "PRTFV4D.ini");
-
-        } catch (Exception e) {
-
-            util.showAlertDialog(this,
-                    getString(R.string.msg_CopyPrinterConfigFile));
-            return false;
-        }
-
-        return true;
     }
 
     private void printerList(Context context){
@@ -350,16 +292,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
     }
 
-    private void initPrint(){
-        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName();
-        try {
-            util.asset2file(this, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        printLabel();
-    }
-
     private void resizeReturnButton() {
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -368,40 +300,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         Point size = new Point();
         display.getSize(size);
         btnReturn.setWidth(size.x);
-    }
-
-    private void callFILE() {
-        String filePath = util.getPreferences(this, PORTSETTING_FILE_PATH_KEYNAME);
-        if (filePath.length() == 0) {
-            filePath = Environment.getExternalStorageDirectory().getPath() + "/PrintImageFile.txt";
-        }
-        util.setPreferences(this, PORTSETTING_FILE_PATH_KEYNAME, filePath);
-    }
-
-    // Print Label
-    private void printLabel(){
-        if( m_bcpControl == null ) {
-
-            m_bcpControl = new BCPControl( this );
-
-            util.SetPropaty( this , m_bcpControl );
-
-            String srcData = "";
-
-            String strPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
-            if (strPrinterType == null || strPrinterType.length() == 0){
-                strPrinterType = "B-FV4D";
-            }
-            loadEditTextItem(srcData, R.id.EditTextName, strPrinterType );
-            loadEditTextItem(srcData, R.id.EditTextCode, "21052355" );
-            loadEditTextItem(srcData, R.id.EditTextPrintNum, "1" );
-
-
-            mConnectionDelegate = new ConnectionDelegate();
-            mPrintDialogDelegate = new PrintDialogDelegate( this , m_bcpControl, m_LabelData );
-
-            this.openBluetoothPort( SynchronousMode );
-        }
     }
 
     protected Dialog onCreateDialog(int id) {
@@ -428,60 +326,16 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     }
 
     public void onClickButtonPrint( View view ) {
-        try{
-            callPrintThread();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openBluetoothPort( int issueMode ) {
-
-        if( mConnectData.getIsOpen().get() == false ){
-            mConnectionDelegate.openPort(this ,  m_bcpControl , mConnectData , issueMode );
-            this.mCurrentIssueMode = issueMode;
-        }
-    }
-
-    @Override
-    public void BcpControl_OnStatus(String PrinterStatus, long Result) {
-        // TODO Auto-generated method stub
-        String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", PrinterStatus , Result );
-        util.showAlertDialog(this, strMessage );
-    }
-
-    private void callPrintThread() {
-
-        LongRef result = new LongRef( 0 );
-
-        m_LabelData.setCurrentIssueMode( this.mCurrentIssueMode );
-        int printCount = Integer.parseInt( util.getLavelDataForEditText( this , R.id.EditTextPrintNum, "1" ) );
-        //
-        if( printCount < 0 || 10 < printCount ) {
-            printCount = 1;
-        }
-        m_LabelData.setPrintCount( printCount );
-        HashMap<String , String> labelItemList = new HashMap<String , String>();
-
-        String hinName = util.getLavelDataForEditText( this , R.id.EditTextName, "B-FV4D");
-        if( hinName.length() > 10 ){
-            labelItemList.put( getString(R.string.dataName) ,  hinName.substring(0, 9) );
-        } else {
-            labelItemList.put( getString(R.string.dataName) ,  hinName );
-        }
-
-        m_LabelData.setObjectDataList( labelItemList );
-
-        String filePathName = Environment.getDataDirectory().getPath() + "/data/" + this.getPackageName() + "/" + "tempLabel.lfm";
-        m_LabelData.setLfmFileFullPath( filePathName );
-
-        m_LabelData.setObjectDataList( labelItemList );
-
-        new PrintExecuteTask( this , m_bcpControl, this).execute( m_LabelData );
+        new Thread(() -> {
+            if (AppSettings.isPrintUsbEnabled()) {
+                PrinterController.getInstance().setPrintData("Test Usb Print");
+                PrinterController.getInstance().printUsb();
+            }
+        }).start();
     }
 
     @Override
     public void onPrintStatus(String status, int code) {
-        //do noop
+        Log.d(TAG, "Print Status " + status);
     }
 }
