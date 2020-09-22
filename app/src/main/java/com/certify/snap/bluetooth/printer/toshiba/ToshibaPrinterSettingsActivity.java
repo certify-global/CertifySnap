@@ -159,7 +159,7 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity {
     }
 
     public void  onClickButtonReturn( View view ) {
-        this.confirmActivityFinish();
+        //this.confirmActivityFinish();
     }
 
     public boolean dispatchKeyEvent(KeyEvent event) {
