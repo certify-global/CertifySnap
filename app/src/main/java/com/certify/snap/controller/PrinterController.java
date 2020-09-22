@@ -51,6 +51,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         void onBluetoothDisabled();
         void onPrintComplete();
         void onPrintError();
+        void onPrintUsbCommand();
         void onPrintUsbSuccess(String status, long resultCode);
         void onPrintUsbError(String status, long resultCode);
     }
@@ -181,6 +182,20 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         util.setPreferences(context, PORTSETTING_FILE_PATH_KEYNAME, filePath);
     }
 
+    public PrintData getPrintData() {
+        return mPrintData;
+    }
+
+    public void setPrintData(String data) {
+        HashMap<String , String> labelItemList = new HashMap<>();
+        labelItemList.put("Name Data",  data);
+        mPrintData.setObjectDataList(labelItemList);
+    }
+
+    public BCPControl getUsbPrintControl() {
+        return mUsbPrintControl;
+    }
+
     private void openUsbPort( int issueMode ) {
         if( mConnectData.getIsOpen().get() == false ){
             mConnectionDelegate.openPort(activity ,  mUsbPrintControl , mConnectData , issueMode );
@@ -192,24 +207,17 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         mPrintData.setCurrentIssueMode( mCurrentIssueMode );
         int printCount = 1;
         mPrintData.setPrintCount( printCount );
-        HashMap<String , String> labelItemList = new HashMap<String , String>();
-        String hinName = "B-FV4D";
-        labelItemList.put( "Name Data" ,  hinName );
-        mPrintData.setObjectDataList( labelItemList );
         String filePathName = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName() + "/" + "tempLabel.lfm";
         mPrintData.setLfmFileFullPath( filePathName );
-        mPrintData.setObjectDataList( labelItemList );
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                new PrintExecuteTask( activity , mUsbPrintControl ).execute( mPrintData );
-            }
-        });
+        if (listener != null) {
+            listener.onPrintUsbCommand();
+        }
     }
 
     @Override
     public void BcpControl_OnStatus(String status, long resultCode) {
        if(listener!= null){
+           Log.d(TAG, "Deep onPrintUsb Success");
            listener.onPrintUsbSuccess(status, resultCode);
        }
     }

@@ -23,7 +23,6 @@ public class ConnectExecuteTask extends AsyncTask<ConnectionData, Void, String  
 	BCPControl m_bcpObj = null;
 	// ConnectionData  m_connectData = null;
 	Activity    mContext = null;
-	ProgressDialog mProgressDlg = null;
 	Button mPortOpenButton = null;
 
     public ConnectExecuteTask(Activity conText , BCPControl bcpcontrol ) {
@@ -37,21 +36,8 @@ public class ConnectExecuteTask extends AsyncTask<ConnectionData, Void, String  
     	m_bcpObj = bcpcontrol;
     	mPortOpenButton = portOpenButton;
     }
-	/**
-	 * 
-	 */
-    protected void onPreExecute() {
-    	mProgressDlg = new ProgressDialog( mContext );
-    	// タイトル, 本文を設定
-    	mProgressDlg.setTitle(R.string.connectionProcess);
-    	mProgressDlg.setMessage(mContext.getString(R.string.wait));
-    	// スタイルを設定
-    	mProgressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		mProgressDlg.setCancelable(true);
-		//mProgressDlg.show();
-    	
-    	
-    }
+
+
     /**
      * バックグラウンドで実行する処理 
      */
@@ -92,12 +78,10 @@ public class ConnectExecuteTask extends AsyncTask<ConnectionData, Void, String  
 	 */
     @Override  
     protected void onPostExecute(String result) {
-    	mProgressDlg.dismiss();
 
     	if( mContext.getString(R.string.msg_success).equals(result) && null != mPortOpenButton ) {
         	mPortOpenButton.setText(R.string.msg_PortClose);
     	}
-    	util.showAlertDialog( mContext , result );
 
     	mContext = null;
     	m_bcpObj = null;

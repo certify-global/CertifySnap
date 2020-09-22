@@ -15,23 +15,10 @@ public class WriteExecuteTask extends AsyncTask<String, Void, String  >{
 	BCPControl m_bcpObj = null;
 	// ConnectionData  m_connectData = null;
 	Activity    mContext = null;
-	ProgressDialog mProgressDlg = null;
-    // コンストラクタ
+	// コンストラクタ
     public WriteExecuteTask(Activity conText , BCPControl bcpcontrol ) {
     	mContext = conText;
     	m_bcpObj = bcpcontrol;
-    	
-    }
-    @Override
-    protected void onPreExecute() {
-    	mProgressDlg = new ProgressDialog( mContext );
-    	// タイトル, 本文を設定
-    	mProgressDlg.setTitle( R.string.runWritePort);
-    	mProgressDlg.setMessage(mContext.getString(R.string.wait));
-    	// スタイルを設定
-    	mProgressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		mProgressDlg.setCancelable(true);
-		mProgressDlg.show();
     	
     }
 
@@ -54,15 +41,6 @@ public class WriteExecuteTask extends AsyncTask<String, Void, String  >{
     	}
 
         return mContext.getString(R.string.msg_success);
-    }
-	
-    // メインスレッドで実行する処理
-    @Override  
-    protected void onPostExecute(String result) {
-    	mProgressDlg.dismiss();
-    	
-    	util.showAlertDialog( mContext , result );
-
     }
 	
 }

@@ -2,7 +2,6 @@ package com.certify.snap.bluetooth.printer.toshiba;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,7 +45,6 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 	BCPControl m_bcpObj = null;
 	// PrintData  m_printData = null;
 	Activity    mContext = null;
-	ProgressDialog mProgressDlg = null;
 	String mGetStatus = "";
 	
 	// 復帰モード
@@ -58,21 +56,6 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
     public PrintExecuteTask(Activity conText , BCPControl bcpcontrol ) {
     	mContext = conText;
     	m_bcpObj = bcpcontrol;
-    	
-    }
-  
-    protected void onPreExecute() {
-    	mProgressDlg = new ProgressDialog( mContext );
-    	// タイトル, 本文を設定
-    	mProgressDlg.setTitle(R.string.runPrint);
-    	mProgressDlg.setMessage(mContext.getString(R.string.wait));
-    	// mProgressDlg.setIndeterminate(false);        
-    	// スタイルを設定
-    	mProgressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		// mProgressDlg.setMax(5);
-		mProgressDlg.setCancelable(false);
-		mProgressDlg.show();
-
     	
     }
 
@@ -484,19 +467,6 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 			mContext = null;
 			return;
 		}
-    	mProgressDlg.dismiss();
-    //	util.showAlertDialog(mContext, result);
-   	
-    	if( result.equals(mContext.getString(R.string.msg_success)) ) {
-    		mContext.showDialog( PrintDialogDelegate.PRINT_COMPLETEMESSAGE_DIALOG );
-    	
-    	} else if( result.equals(mContext.getString(R.string.msg_RetryError)) ) {
-    		Log.d("RetryError","");
-    		mContext.showDialog( PrintDialogDelegate.RETRYERRORMESSAGE_DIALOG );
-    	} else {
-    		Log.d("else RetryError","");
-    		mContext.showDialog( PrintDialogDelegate.ERRORMESSAGE_DIALOG );
-    	}
     	m_bcpObj = null;
     	mContext = null;
     }

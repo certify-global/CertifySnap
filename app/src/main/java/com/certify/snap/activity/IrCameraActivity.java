@@ -41,7 +41,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
-import com.certify.snap.bluetooth.printer.toshiba.PrintDialogDelegate;
+import com.certify.snap.bluetooth.printer.toshiba.PrintExecuteTask;
 import com.certify.snap.bluetooth.printer.toshiba.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
@@ -2974,11 +2974,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void initBluetoothPrinter() {
         // initialization for printing
-        if (AppSettings.isEnablePrinter()) {
+        //if (AppSettings.isEnablePrinter()) {
             PrinterController.getInstance().init(this, this);
             PrinterController.getInstance().setPrinterListener(this);
             PrinterController.getInstance().setBluetoothAdapter();
-        }
+        //}
     }
 
     @Override
@@ -3002,6 +3002,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
+    public void onPrintUsbCommand() {
+        runOnUiThread(() -> new PrintExecuteTask(this ,
+                                                PrinterController.getInstance().getUsbPrintControl())
+                                                .execute(PrinterController.getInstance().getPrintData()));
+    }
+
+    @Override
     public void onPrintUsbSuccess(String status, long resultCode) {
         runOnUiThread(new Runnable() {
             @Override
@@ -3016,12 +3023,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onPrintUsbError(String status, long resultCode) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
-                util.showAlertDialog(IrCameraActivity.this, strMessage );
-            }
+        runOnUiThread(() -> {
+            String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
+            util.showAlertDialog(IrCameraActivity.this, strMessage );
         });
     }
 
@@ -3051,6 +3055,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
         }
         convertUIToImage(bitmap, name);
+        PrinterController.getInstance().setPrintData(name);
     }
 
     private void convertUIToImage(Bitmap bitmap, String name) {
@@ -3266,18 +3271,4 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
     }
 
-    protected Dialog onCreateDialog(int id) {
-        Dialog dialog = null;
-        dialog = PrinterController.getInstance().getPrintDialogDelegate().createDialog( id );
-        if( null == dialog ) {
-            dialog = super.onCreateDialog( id );
-        }
-        return dialog;
-    }
-
-    protected void onPrepareDialog(int id, Dialog dialog) {
-        if( false == PrinterController.getInstance().getPrintDialogDelegate().PrepareDialog(  id, dialog) ) {
-            super.onPrepareDialog(id, dialog );
-        }
-    }
 }

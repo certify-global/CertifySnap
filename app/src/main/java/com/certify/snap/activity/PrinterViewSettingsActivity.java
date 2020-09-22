@@ -193,6 +193,11 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     }
 
     @Override
+    public void onPrintUsbCommand() {
+        //do noop
+    }
+
+    @Override
     public void onPrintUsbSuccess(String status, long resultCode) {
         //add code here
     }
