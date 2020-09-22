@@ -94,7 +94,6 @@
     </string-array>
 
     <string-array name="controlcodeMode">
-        <item>ESC,LF,NULL</item>
         <item>{,|,}</item>
     </string-array>
 
