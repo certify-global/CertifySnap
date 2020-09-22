@@ -13,6 +13,7 @@
             android:id="@+id/StartMenuButtonlist1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
         <ListView
             android:id="@+id/port_menu_list"
             android:layout_width="fill_parent"
@@ -32,5 +33,68 @@
             android:layout_height="wrap_content"
             android:onClick="onClickButtonReturn"
             android:text="@string/retur" />
+
+        <LinearLayout
+            android:layout_margin="@dimen/margin_15"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/productName" />
+
+            <EditText
+                android:id="@+id/EditTextName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_margin="@dimen/margin_15"
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/code" />
+
+            <EditText
+                android:id="@+id/EditTextCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_margin="@dimen/margin_15"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/noOfPrints" />
+
+            <EditText
+                android:id="@+id/EditTextPrintNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <Button
+            android:layout_margin="@dimen/margin_15"
+            android:id="@+id/BttonPrint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClickButtonPrint"
+            android:text="@string/print"/>
     </LinearLayout>
 </ScrollView>
