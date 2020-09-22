@@ -202,6 +202,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     // TOSHIBA PRINTER
     public void selectToshibaBluetoothPrinter(View view){
-        startActivity(new Intent(this, ToshibaMenuActivity.class));
+        startActivity(new Intent(this, ToshibaPrinterSettingsActivity.class));
     }
 }

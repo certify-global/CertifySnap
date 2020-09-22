@@ -24,6 +24,7 @@ import android.widget.ListView;
 
 import com.certify.snap.R;
 
+import java.io.File;
 import java.util.HashMap;
 
 import jp.co.toshibatec.bcp.library.BCPControl;
@@ -56,10 +57,56 @@ public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements
             resizeReturnButton();
             printerList(context);
             portList(context);
+            copyIniFile();
         } catch( Exception e ) {
             Log.d("TAG", "onCreate: ");
         }
 
+    }
+
+    private boolean copyIniFile() {
+
+        String myMemotyPath = Environment.getDataDirectory().getPath()
+                + "/data/" + this.getPackageName();
+
+        File newfile = new File(myMemotyPath);
+        if (newfile.exists() == false) {
+            if (newfile.mkdirs()) {
+
+            }
+        }
+        try {
+
+            util.asset2file(this, "ErrMsg0.ini", myMemotyPath, "ErrMsg0.ini");
+            util.asset2file(this, "ErrMsg1.ini", myMemotyPath, "ErrMsg1.ini");
+            util.asset2file(this, "PRTEP2G.ini", myMemotyPath, "PRTEP2G.ini");
+            util.asset2file(this, "PRTEP2GQM.ini", myMemotyPath,
+                    "PRTEP2GQM.ini");
+            util.asset2file(this, "PRTEP4GQM.ini", myMemotyPath,
+                    "PRTEP4GQM.ini");
+            util.asset2file(this, "PRTEP4T.ini", myMemotyPath, "PRTEP4T.ini");
+            util.asset2file(this, "PRTEV4TT.ini", myMemotyPath, "PRTEV4TT.ini");
+            util.asset2file(this, "PRTEV4TG.ini", myMemotyPath, "PRTEV4TG.ini");
+            util.asset2file(this, "PRTLV4TT.ini", myMemotyPath, "PRTLV4TT.ini");
+            util.asset2file(this, "PRTLV4TG.ini", myMemotyPath, "PRTLV4TG.ini");
+            util.asset2file(this, "PRTFP3DGQM.ini", myMemotyPath, "PRTFP3DGQM.ini");
+            //ADD 03/12/2018
+            util.asset2file(this, "PRTBA400TG.ini", myMemotyPath, "PRTBA400TG.ini");
+            util.asset2file(this, "PRTBA400TT.ini", myMemotyPath, "PRTBA400TT.ini");
+            util.asset2file(this, "PrtList.ini", myMemotyPath, "PrtList.ini");
+            util.asset2file(this, "resource.xml", myMemotyPath, "resource.xml");
+            util.asset2file(this, "PRTFP2DG.ini", myMemotyPath, "PRTFP2DG.ini");
+
+            util.asset2file(this, "PRTFV4D.ini", myMemotyPath, "PRTFV4D.ini");
+
+        } catch (Exception e) {
+
+            util.showAlertDialog(this,
+                    getString(R.string.msg_CopyPrinterConfigFile));
+            return false;
+        }
+
+        return true;
     }
 
     private void printerList(Context context){
