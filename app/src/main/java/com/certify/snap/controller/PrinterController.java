@@ -70,13 +70,11 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     private void initWifiBTPrinter() {
-        if (AppSettings.isEnablePrinter()) {
-            mDialog = new PrinterMsgDialog(context);
-            mDialog.setActivity(activity);
-            mHandle = new PrinterMsgHandle(context, mDialog);
-            mPrint = new ImagePrint(context, mHandle, mDialog);
-            setBluetoothAdapter();
-        }
+        mDialog = new PrinterMsgDialog(context);
+        mDialog.setActivity(activity);
+        mHandle = new PrinterMsgHandle(context, mDialog);
+        mPrint = new ImagePrint(context, mHandle, mDialog);
+        setBluetoothAdapter();
     }
 
     public void setBluetoothAdapter() {
@@ -156,30 +154,28 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     private void initUsbPrint() {
-        if (AppSettings.isPrintUsbEnabled()) {
-            String item = "B-FV4D";
-            util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
-            util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
-            initFile();
-            copyIniFile();
-            final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
-            try {
-                util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        String item = "B-FV4D";
+        util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
+        util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
+        initFile();
+        copyIniFile();
+        final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
+        try {
+            util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            if (mUsbPrintControl == null) {
-                mUsbPrintControl = new BCPControl(this);
-                util.SetPropaty(context, mUsbPrintControl);
+        if (mUsbPrintControl == null) {
+            mUsbPrintControl = new BCPControl(this);
+            util.SetPropaty(context, mUsbPrintControl);
            /* String strPrinterType = util.getPreferences(context, PRINTER_TYPE_KEYNAME);
             if (strPrinterType == null || strPrinterType.length() == 0){
                 strPrinterType = "B-FV4D";
             }*/
-                mConnectionDelegate = new ConnectionDelegate();
-                mPrintDialogDelegate = new PrintDialogDelegate(activity, mUsbPrintControl, mPrintData);
-                this.openUsbPort(SynchronousMode);
-            }
+           mConnectionDelegate = new ConnectionDelegate();
+           mPrintDialogDelegate = new PrintDialogDelegate(activity, mUsbPrintControl, mPrintData);
+           this.openUsbPort(SynchronousMode);
         }
     }
 
