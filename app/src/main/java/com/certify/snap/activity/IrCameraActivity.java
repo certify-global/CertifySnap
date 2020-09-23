@@ -3050,24 +3050,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
         }
-        convertUIToImage(bitmap, name);
-        PrinterController.getInstance().setPrintData(name);
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+        String dateTime = date +" "+ currentTime;
+        PrinterController.getInstance().setPrintData(name, dateTime);
+
+        convertUIToImage(bitmap, name, dateTime);
     }
 
-    private void convertUIToImage(Bitmap bitmap, String name) {
+    private void convertUIToImage(Bitmap bitmap, String name, String dateTime) {
         View view = getLayoutInflater().inflate(R.layout.print_layout, null);
         LinearLayout linearLayout = view.findViewById(R.id.screen);
         TextView expireDate = view.findViewById(R.id.expire_date);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
         TextView tempPassTime = view.findViewById(R.id.temp_Pass_time);
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         userName.setText(name);
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
-        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
-        expireDate.setText(date +" "+ currentTime);
+        expireDate.setText(dateTime);
         tempPassTime.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

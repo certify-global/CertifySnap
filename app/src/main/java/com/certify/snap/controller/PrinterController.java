@@ -229,9 +229,12 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         return mPrintData;
     }
 
-    public void setPrintData(String data) {
+    public void setPrintData(String name, String dateTime) {
         HashMap<String , String> labelItemList = new HashMap<>();
-        labelItemList.put("Name Data",  data);
+        labelItemList.put( "Name Data",  name );
+        labelItemList.put( "TimeScan Data",  dateTime );
+        labelItemList.put( "Status Data", "   PASS   " );
+        labelItemList.put( "Type Data",  "  Thermal Scan  " );
         mPrintData.setObjectDataList(labelItemList);
     }
 

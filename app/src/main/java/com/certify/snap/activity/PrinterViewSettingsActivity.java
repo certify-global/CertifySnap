@@ -40,6 +40,10 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.PrinterController;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
 import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
@@ -307,7 +311,10 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     public void onClickButtonPrint( View view ) {
         new Thread(() -> {
             if (AppSettings.isPrintUsbEnabled()) {
-                PrinterController.getInstance().setPrintData("Test Usb Print");
+                String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+                String dateTime = date +" "+ currentTime;
+                PrinterController.getInstance().setPrintData("Test Print", dateTime);
                 PrinterController.getInstance().printUsb();
             }
         }).start();
