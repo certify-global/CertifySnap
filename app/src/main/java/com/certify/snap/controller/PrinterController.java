@@ -7,13 +7,13 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 
-import com.certify.snap.bluetooth.printer.BasePrint;
-import com.certify.snap.bluetooth.printer.ImagePrint;
-import com.certify.snap.bluetooth.printer.toshiba.ConnectionData;
-import com.certify.snap.bluetooth.printer.toshiba.ConnectionDelegate;
-import com.certify.snap.bluetooth.printer.toshiba.PrintData;
-import com.certify.snap.bluetooth.printer.toshiba.PrintDialogDelegate;
-import com.certify.snap.bluetooth.printer.toshiba.util;
+import com.certify.snap.printer.BasePrint;
+import com.certify.snap.printer.ImagePrint;
+import com.certify.snap.printer.usb.ConnectionData;
+import com.certify.snap.printer.usb.ConnectionDelegate;
+import com.certify.snap.printer.usb.PrintData;
+import com.certify.snap.printer.usb.PrintDialogDelegate;
+import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.view.PrinterMsgDialog;
 import com.certify.snap.view.PrinterMsgHandle;
@@ -23,11 +23,11 @@ import java.util.HashMap;
 
 import jp.co.toshibatec.bcp.library.BCPControl;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.AsynchronousMode;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.SynchronousMode;
+import static com.certify.snap.printer.usb.Defines.AsynchronousMode;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_FILE_PATH_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.SynchronousMode;
 
 public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     private static final String TAG = PrinterController.class.getSimpleName();

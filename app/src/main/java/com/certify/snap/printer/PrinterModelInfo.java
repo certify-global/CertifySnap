@@ -1,6 +1,4 @@
-package com.certify.snap.bluetooth.printer;
-
-import com.certify.snap.bluetooth.printer.Common;
+package com.certify.snap.printer;
 
 import java.util.Locale;
 

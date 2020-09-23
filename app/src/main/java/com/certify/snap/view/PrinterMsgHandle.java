@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.Common;
+import com.certify.snap.printer.Common;
 import com.certify.snap.controller.PrinterController;
 
 public class PrinterMsgHandle extends Handler {

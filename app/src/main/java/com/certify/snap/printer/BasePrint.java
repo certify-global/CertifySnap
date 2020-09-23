@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer;
+package com.certify.snap.printer;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;

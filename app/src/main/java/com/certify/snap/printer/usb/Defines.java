@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 
 public abstract class Defines {

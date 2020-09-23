@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Build;
@@ -16,12 +14,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -30,11 +25,9 @@ import android.widget.TextView;
 
 import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.toshiba.ConnectionDelegate;
-import com.certify.snap.bluetooth.printer.toshiba.PrintDialogDelegate;
-import com.certify.snap.bluetooth.printer.toshiba.PrintExecuteTask;
-import com.certify.snap.bluetooth.printer.toshiba.ToshibaPrinterSettingsActivity;
-import com.certify.snap.bluetooth.printer.toshiba.util;
+import com.certify.snap.printer.usb.PrintExecuteTask;
+import com.certify.snap.printer.usb.UsbPrinterSettingsActivity;
+import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -44,9 +37,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PRINTER_LIST;
+import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
 
 public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener, PrintStatusCallback {
 
@@ -262,7 +255,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     // TOSHIBA PRINTER
     public void selectToshibaBluetoothPrinter(View view) {
-        startActivity(new Intent(this, ToshibaPrinterSettingsActivity.class));
+        startActivity(new Intent(this, UsbPrinterSettingsActivity.class));
     }
 
     private void printerList(Context context) {

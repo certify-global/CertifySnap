@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,11 +11,11 @@ import jp.co.toshibatec.bcp.library.BCPControl;
 import jp.co.toshibatec.bcp.library.LongRef;
 import jp.co.toshibatec.bcp.library.StringRef;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_IP_ADDRESS_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_NUMBER_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_FILE_PATH_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_IP_ADDRESS_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_NUMBER_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
 
 
 public class ConnectionDelegate {

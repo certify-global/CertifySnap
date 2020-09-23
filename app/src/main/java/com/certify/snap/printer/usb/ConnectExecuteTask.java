@@ -1,7 +1,6 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Button;
@@ -12,7 +11,7 @@ import jp.co.toshibatec.bcp.library.BCPControl;
 import jp.co.toshibatec.bcp.library.LongRef;
 import jp.co.toshibatec.bcp.library.StringRef;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.AsynchronousMode;
+import static com.certify.snap.printer.usb.Defines.AsynchronousMode;
 
 /**
  *

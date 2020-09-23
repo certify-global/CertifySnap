@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,14 +16,14 @@ import java.io.InputStream;
 
 import jp.co.toshibatec.bcp.library.BCPControl;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.OPTION_CONTROLCODE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.OPTION_GRAPHICTYPE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.OPTION_LANGUAGE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.OPTION_RECVTIME_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_IP_ADDRESS_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_NUMBER_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.OPTION_CONTROLCODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.OPTION_GRAPHICTYPE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.OPTION_LANGUAGE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.OPTION_RECVTIME_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_FILE_PATH_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_IP_ADDRESS_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_NUMBER_KEYNAME;
 
 public class util {
 

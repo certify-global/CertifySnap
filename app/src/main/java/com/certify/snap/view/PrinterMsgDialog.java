@@ -8,8 +8,8 @@ import android.content.DialogInterface;
 import android.os.Message;
 
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.BasePrint;
-import com.certify.snap.bluetooth.printer.Common;
+import com.certify.snap.printer.BasePrint;
+import com.certify.snap.printer.Common;
 
 public class PrinterMsgDialog {
     private final Context mContext;

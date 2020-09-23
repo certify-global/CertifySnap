@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -36,8 +36,8 @@ import jp.co.toshibatec.bcp.library.BCPControl;
 import jp.co.toshibatec.bcp.library.LongRef;
 import jp.co.toshibatec.bcp.library.StringRef;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_FILE_PATH_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
 
 public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 

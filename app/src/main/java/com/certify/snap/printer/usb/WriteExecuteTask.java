@@ -1,7 +1,6 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import com.certify.snap.R;

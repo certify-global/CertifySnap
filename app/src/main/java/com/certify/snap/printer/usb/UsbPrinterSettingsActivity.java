@@ -1,22 +1,17 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,14 +26,14 @@ import java.util.HashMap;
 import jp.co.toshibatec.bcp.library.BCPControl;
 import jp.co.toshibatec.bcp.library.LongRef;
 
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.AsynchronousMode;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_FILE_PATH_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PORTSETTING_PORT_MODE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_LIST;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.PRINTER_TYPE_KEYNAME;
-import static com.certify.snap.bluetooth.printer.toshiba.Defines.SynchronousMode;
+import static com.certify.snap.printer.usb.Defines.AsynchronousMode;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_FILE_PATH_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PRINTER_LIST;
+import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.SynchronousMode;
 
-public class ToshibaPrinterSettingsActivity extends AppCompatActivity implements BCPControl.LIBBcpControlCallBack, PrintStatusCallback {
+public class UsbPrinterSettingsActivity extends AppCompatActivity implements BCPControl.LIBBcpControlCallBack, PrintStatusCallback {
 
     private BCPControl m_bcpControl = null;
     private ConnectionData mConnectData = new ConnectionData();

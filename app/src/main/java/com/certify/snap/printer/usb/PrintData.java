@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer.toshiba;
+package com.certify.snap.printer.usb;
 
 import java.util.HashMap;
 import java.util.Map;
