@@ -59,6 +59,8 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     Button brotherPrintButton, toshibaPrintButton;
     Typeface rubiklight;
     private SharedPreferences sp;
+    RadioGroup radio_group_printer, radioGroupToshibaPrinter;
+    RadioButton radio_enable_printer, radio_disable_printer, enableToshiba_printer, disableToshibaPrinter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,13 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         brotherTestPrint = findViewById(R.id.bother_test_print);
         brotherImageView = findViewById(R.id.bother_imageView);
         brotherPrintButton = findViewById(R.id.bother_print_button);
+        radio_group_printer = findViewById(R.id.radio_group_brother_printer);
+        radio_enable_printer = findViewById(R.id.radio_yes_bother_printer);
+        radio_disable_printer = findViewById(R.id.radio_no_bother_printer);
+        radioGroupToshibaPrinter = findViewById(R.id.radio_group_toshiba_printer);
+        enableToshiba_printer = findViewById(R.id.radio_yes_toshiba_printer);
+        disableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
+
         brotherTestPrint.setText("Brother Printer");
 
         titleToshibaBluetoothPrinter = findViewById(R.id.title_toshiba_bluetooth_printer);
@@ -151,10 +160,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     }
 
     private void brotherPrinterCheck() {
-        RadioGroup radio_group_printer = findViewById(R.id.radio_group_brother_printer);
-        RadioButton radio_enable_printer = findViewById(R.id.radio_yes_bother_printer);
-        RadioButton radio_disable_printer = findViewById(R.id.radio_no_bother_printer);
-
         if (sp.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false))
             radio_enable_printer.setChecked(true);
         else radio_disable_printer.setChecked(true);
@@ -162,9 +167,10 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         radio_group_printer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radio_yes_bother_printer)
+                if (checkedId == R.id.radio_yes_bother_printer) {
                     Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, true);
-                else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
+                    disableToshibaPrinter.setChecked(true);
+                } else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
             }
         });
     }
@@ -180,10 +186,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     }
 
     private void toshibaPrinterCheck() {
-        RadioGroup radioGroupToshibaPrinter = findViewById(R.id.radio_group_toshiba_printer);
-        RadioButton enableToshiba_printer = findViewById(R.id.radio_yes_toshiba_printer);
-        RadioButton disableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
-
         if (sp.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER, false))
             enableToshiba_printer.setChecked(true);
         else disableToshibaPrinter.setChecked(true);
@@ -191,9 +193,10 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         radioGroupToshibaPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radio_yes_toshiba_printer)
+                if (checkedId == R.id.radio_yes_toshiba_printer) {
                     Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, true);
-                else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, false);
+                    radio_disable_printer.setChecked(true);
+                } else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, false);
             }
         });
     }
@@ -262,12 +265,12 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         startActivity(new Intent(this, ToshibaPrinterSettingsActivity.class));
     }
 
-    private void printerList(Context context){
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice );
+    private void printerList(Context context) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
         String orginalPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
         int position = 0;
         int selectPosition = 13;
-        for(int i=0; i<PRINTER_LIST.length; i++){
+        for (int i = 0; i < PRINTER_LIST.length; i++) {
             adapter.add(PRINTER_LIST[i]);
 
             if (orginalPrinterType != null && orginalPrinterType.length() != 0
@@ -298,22 +301,12 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
     }
 
-/*    private void resizeReturnButton() {
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-
-        Button btnReturn = (Button)this.findViewById(R.id.BttonReturn);
-        Point size = new Point();
-        display.getSize(size);
-        btnReturn.setWidth(size.x);
-    }*/
-
-    public void onClickButtonPrint( View view ) {
+    public void onClickButtonPrint(View view) {
         new Thread(() -> {
             if (AppSettings.isPrintUsbEnabled()) {
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
-                String dateTime = date +" "+ currentTime;
+                String dateTime = date + " " + currentTime;
                 PrinterController.getInstance().setPrintData("Test Print", dateTime);
                 PrinterController.getInstance().printUsb();
             }
