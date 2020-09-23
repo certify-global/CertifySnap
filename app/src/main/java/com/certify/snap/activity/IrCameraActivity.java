@@ -791,7 +791,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Log.e(TAG, "BLE unbind Error");
             }
         }
-        PrinterController.getInstance().clearData();
+        //PrinterController.getInstance().clearData();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -2976,11 +2976,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void initBluetoothPrinter() {
         // initialization for printing
-        //if (AppSettings.isEnablePrinter()) {
+        if (AppSettings.isEnablePrinter() || AppSettings.isPrintUsbEnabled()) {
             PrinterController.getInstance().init(this, this);
             PrinterController.getInstance().setPrinterListener(this);
             PrinterController.getInstance().setBluetoothAdapter();
-        //}
+        }
     }
 
     @Override
