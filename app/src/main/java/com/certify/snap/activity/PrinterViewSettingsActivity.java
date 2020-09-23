@@ -26,7 +26,6 @@ import android.widget.TextView;
 import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
 import com.certify.snap.printer.usb.PrintExecuteTask;
-import com.certify.snap.printer.usb.UsbPrinterSettingsActivity;
 import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
