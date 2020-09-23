@@ -2979,7 +2979,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (AppSettings.isEnablePrinter() || AppSettings.isPrintUsbEnabled()) {
             PrinterController.getInstance().init(this, this);
             PrinterController.getInstance().setPrinterListener(this);
-            PrinterController.getInstance().setBluetoothAdapter();
         }
     }
 
