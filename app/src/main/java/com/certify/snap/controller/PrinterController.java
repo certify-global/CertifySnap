@@ -38,9 +38,9 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     private PrinterMsgHandle mHandle;
     private PrinterMsgDialog mDialog;
     private Context context;
-    private PrintData mPrintData = new PrintData();
+    private PrintData mPrintData = null;
     private BCPControl mUsbPrintControl = null;
-    private ConnectionData mConnectData = new ConnectionData();
+    private ConnectionData mConnectData = null;
     private ConnectionDelegate mConnectionDelegate = null;
     private PrintDialogDelegate mPrintDialogDelegate = null;
     private int mCurrentIssueMode = AsynchronousMode;
@@ -153,7 +153,9 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         return mPrintDialogDelegate;
     }
 
-    private void initUsbPrint() {
+    public void initUsbPrint() {
+        mPrintData = new PrintData();
+        mConnectData = new ConnectionData();
         String item = "B-FV4D";
         util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
         util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");

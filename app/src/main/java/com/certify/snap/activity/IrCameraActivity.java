@@ -791,7 +791,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Log.e(TAG, "BLE unbind Error");
             }
         }
-        //PrinterController.getInstance().clearData();
+        PrinterController.getInstance().clearData();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {

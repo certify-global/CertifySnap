@@ -139,7 +139,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //PrinterController.getInstance().clearData();
+        PrinterController.getInstance().clearData();
     }
 
     private void initBrotherPrinter() {
