@@ -43,7 +43,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".printer.usb.UsbPrinterSettingsActivity" />
+        <activity android:name=".activity.UsbPrinterSettingsActivity" />
         <activity android:name=".activity.TemperatureCalibrationGuideActivity" />
         <activity android:name=".activity.PrinterViewSettingsActivity" />
         <activity android:name=".activity.NetPrinterActivity" />

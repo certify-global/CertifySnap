@@ -1,4 +1,4 @@
-package com.certify.snap.printer.usb;
+package com.certify.snap.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +19,12 @@ import android.widget.ListView;
 
 import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
+import com.certify.snap.printer.usb.ConnectionData;
+import com.certify.snap.printer.usb.ConnectionDelegate;
+import com.certify.snap.printer.usb.PrintData;
+import com.certify.snap.printer.usb.PrintDialogDelegate;
+import com.certify.snap.printer.usb.PrintExecuteTask;
+import com.certify.snap.printer.usb.util;
 
 import java.io.File;
 import java.util.HashMap;
