@@ -552,9 +552,6 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-                Logger.error(TAG, "Timeout exception");
-            }
             try {
                 String formatedString = reportInfo.substring(1, reportInfo.length() - 1);
                 json1 = new JSONObject(formatedString.replace("\\", ""));
@@ -587,11 +584,6 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         try {
             if (reportInfo == null) {
                 return;
-            }
-            if (reportInfo.has("responseTimeOut")){
-                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                    return;
-                }
             }
             if (!reportInfo.isNull("Message")) {
                 if (reportInfo.getString("Message").contains("token expired"))

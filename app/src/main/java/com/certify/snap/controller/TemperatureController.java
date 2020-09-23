@@ -62,8 +62,8 @@ public class TemperatureController {
     private boolean isTempAboveThreshold = false;
     private boolean isGuideInited = false;
     private Timer guideTempTimer = null;
-    private final int MINIMUM_TEMPERATURE_THRESHOLD = 10; //in celsius
-
+    private float MIN_TEMPERATURE_THRESHOLD = 93.2f;
+    private int mTemperatureRetry = 0;
     private float machineTemperature = 0;
     private float ambientTemperature = 0;
 
@@ -73,6 +73,7 @@ public class TemperatureController {
         void onTemperatureFail(GuideMessage errorCode);
         void onFaceNotInRangeOfThermal();
         void onThermalGuideReset();
+        void onTemperatureLow(int retryCount, float temperature);
     }
 
     public enum GuideMessage {
@@ -114,8 +115,10 @@ public class TemperatureController {
         thermalImageUtil = ApplicationController.getInstance().getTemperatureUtil();
         if (AppSettings.getfToC().equals("F")) {
             temperatureUnit = context.getString(R.string.fahrenheit_symbol);
+            MIN_TEMPERATURE_THRESHOLD = 93.2f;
         } else {
             temperatureUnit = context.getString(R.string.centi);
+            MIN_TEMPERATURE_THRESHOLD = 34;
         }
         tempRect = new Rect(160, 70, 220, 145);
     }
@@ -293,20 +296,23 @@ public class TemperatureController {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
                         machineTemperature = maxInRectInfo.get(i)[0]* (9f / 5) + 32;
                         ambientTemperature = temperatureBigData.getEmvirTem() * (9f / 5) + 32;
-                        if (temperatureCelsius > MINIMUM_TEMPERATURE_THRESHOLD) {
-                            if (AppSettings.getfToC().equals("F")) {
-                                temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
-                            } else {
-                                temperature = temperatureCelsius;
-                            }
-                            temperature += AppSettings.getTemperatureCompensation();
-                            isGuideInited = false;
-                            thermalImageUtil.stopGetGuideData();
+                        if (AppSettings.getfToC().equals("F")) {
+                            temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
+                        } else {
+                            temperature = temperatureCelsius;
                         }
+                        temperature += AppSettings.getTemperatureCompensation();
+                        isGuideInited = false;
+                        thermalImageUtil.stopGetGuideData();
                     }
-                    if (temperature > MINIMUM_TEMPERATURE_THRESHOLD && listener != null) {
+                    if (listener != null) {
                         Log.d(TAG, "Temp measured " + temperature);
-                        listener.onTemperatureRead(temperature);
+                        if ((temperature - AppSettings.getTemperatureCompensation())  >= MIN_TEMPERATURE_THRESHOLD) {
+                            listener.onTemperatureRead(temperature);
+                        } else {
+                            mTemperatureRetry++;
+                            listener.onTemperatureLow(mTemperatureRetry, temperature);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -355,13 +361,10 @@ public class TemperatureController {
                     TemperatureData temperatureData = thermalImageUtil.getDataAndBitmap(50, true, thermalImageCallback);
                     if (temperatureData != null) {
                         temperature = temperatureData.getTemperature();
-                        if (temperature > MINIMUM_TEMPERATURE_THRESHOLD) {
-                            if (AppSettings.getfToC().equals("F")) {
-                                temperature = (float) Util.celsiusToFahrenheit(temperature);
-                            } else {
-                                temperature = temperatureData.getTemperature();
-                            }
-                            temperature += AppSettings.getTemperatureCompensation();
+                        if (AppSettings.getfToC().equals("F")) {
+                            temperature = (float) Util.celsiusToFahrenheit(temperature);
+                        } else {
+                            temperature = temperatureData.getTemperature();
                         }
                     }
                     emitter.onNext(temperature);
@@ -378,8 +381,13 @@ public class TemperatureController {
 
                     @Override
                     public void onNext(Float temperature) {
-                        if (listener != null && temperature > MINIMUM_TEMPERATURE_THRESHOLD) {
-                            listener.onTemperatureRead(temperature);
+                        if (listener != null) {
+                            if ((temperature - AppSettings.getTemperatureCompensation()) >= MIN_TEMPERATURE_THRESHOLD) {
+                                listener.onTemperatureRead(temperature);
+                            } else {
+                                mTemperatureRetry++;
+                                listener.onTemperatureLow(mTemperatureRetry, temperature);
+                            }
                         }
                         tempDisposable.dispose();
                     }
@@ -450,6 +458,21 @@ public class TemperatureController {
      */
     public void setTemperatureRecordData(UserExportedData temperatureRecordData) {
         this.temperatureRecordData = temperatureRecordData;
+    }
+
+    /**
+     * Method that returns the Temperature retry value
+     * @return value
+     */
+    public int getTemperatureRetry() {
+        return mTemperatureRetry;
+    }
+
+    /**
+     * Method that sets the Temperature retry value
+     */
+    public void setTemperatureRetry(int value) {
+        mTemperatureRetry = value;
     }
 
     /**
@@ -531,7 +554,8 @@ public class TemperatureController {
                         return;
                     }
                     if (callbackListener != null) {
-                        callbackListener.onTemperatureFail(GuideMessage.WRONG_TEMP_TOO_COLD);
+                        TemperatureController.getInstance().mTemperatureRetry++;
+                        callbackListener.onTemperatureLow(TemperatureController.getInstance().mTemperatureRetry, lowTemperature);
                     }
                 }
             }

@@ -14,7 +14,7 @@ import com.brother.ptouch.sdk.NetPrinter;
 import com.brother.ptouch.sdk.Printer;
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.Common;
+import com.certify.snap.printer.Common;
 import com.certify.snap.view.PrinterMsgDialog;
 
 import java.util.ArrayList;

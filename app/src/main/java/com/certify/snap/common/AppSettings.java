@@ -43,6 +43,7 @@ public class AppSettings {
     private static boolean enableHandGesture = false;
     private static float displayTemperatureThreshold = 0;
     private static boolean setTemperatureThreshold = false;
+    private static boolean isPrintUsbEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -81,12 +82,13 @@ public class AppSettings {
         bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
         anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
-        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BLUETOOTH_PRINTER,false);
+        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER,false);
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
         enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false);
         enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
+        isPrintUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER,false);
     }
 
     public static String getThermalScanTitle() {
@@ -227,5 +229,9 @@ public class AppSettings {
 
     public static boolean isSetTemperatureThreshold() {
         return setTemperatureThreshold;
+    }
+
+    public static boolean isPrintUsbEnabled() {
+        return isPrintUsbEnabled;
     }
 }

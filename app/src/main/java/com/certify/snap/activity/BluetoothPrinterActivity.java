@@ -15,7 +15,7 @@ import android.widget.ListView;
 
 import com.brother.ptouch.sdk.NetPrinter;
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.Common;
+import com.certify.snap.printer.Common;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -87,7 +87,8 @@ public class GlobalParameters {
     public static final String QR_SOUND_INVALID = "qr_sound_invalid";
     public static final String BLE_LIGHT_NORMAL = "BleLightNormal";
     public static final String BLE_LIGHT_HIGH = "BleLightHigh";
-    public static final String BLUETOOTH_PRINTER = "BluetoothPrinter";
+    public static final String BROTHER_BLUETOOTH_PRINTER = "BrotherBluetoothPrinter";
+    public static final String TOSHIBA_USB_PRINTER = "ToshibaBluetoothPrinter";
     public static final String MASK_DETECT = "mask_detect";
     public static final String FACIAL_DETECT = "facial_detect";
     public static final String ALLOW_ALL = "allow_all";

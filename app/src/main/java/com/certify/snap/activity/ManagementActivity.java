@@ -26,7 +26,6 @@ import android.provider.MediaStore;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncTaskExecutorService;
-import com.certify.snap.common.Constants;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
@@ -232,18 +231,18 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     public synchronized void onmemberclick(View v) {
         switch (v.getId()) {
             case R.id.refresh:
-                    if (memberAdapter != null || memberfailedAdapter != null) {
-                        //refresh();
-                        if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&& sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS,false)) {
+                if (memberAdapter != null || memberfailedAdapter != null) {
+                    //refresh();
+                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&& sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS,false)) {
 
-                            count = 0;
-                            testCount = 1;
-                            activeMemberCount = totalMemberCount = 0;
-                            datalist.clear();
-                            mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
-                            Util.getmemberList(this, this);
-                        }
+                        count = 0;
+                        testCount = 1;
+                        activeMemberCount = totalMemberCount = 0;
+                        datalist.clear();
+                        mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                        Util.getmemberList(this, this);
                     }
+                }
 
                 break;
             case R.id.register:
@@ -272,34 +271,34 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     emitter.onNext(membersList);
                 }
             }).subscribeOn(Schedulers.computation())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(new Observer<List<RegisteredMembers>>() {
-                  Disposable disposable;
-                  @Override
-                  public void onSubscribe(Disposable d) {
-                      disposable = d;
-                  }
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<RegisteredMembers>>() {
+                        Disposable disposable;
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
+                        }
 
-                  @Override
-                  public void onNext(List<RegisteredMembers> list) {
-                      if (list != null) {
-                          datalist = list;
-                          mCountTv.setText(String.valueOf(datalist.size()));
-                          refreshMemberList(list);
-                      }
-                      disposable.dispose();
-                  }
+                        @Override
+                        public void onNext(List<RegisteredMembers> list) {
+                            if (list != null) {
+                                datalist = list;
+                                mCountTv.setText(String.valueOf(datalist.size()));
+                                refreshMemberList(list);
+                            }
+                            disposable.dispose();
+                        }
 
-                  @Override
-                  public void onError(Throwable e) {
-                      Log.e(TAG, "Error in adding the member to data model from database");
-                  }
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Error in adding the member to data model from database");
+                        }
 
-                  @Override
-                  public void onComplete() {
-                      disposable.dispose();
-                  }
-              });
+                        @Override
+                        public void onComplete() {
+                            disposable.dispose();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -646,25 +645,25 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     if (members.getUniqueid() != null) {
 
-                                mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
-                                try {
-                                    isDeleted = true;
-                                    JSONObject obj = new JSONObject();
-                                    obj.put("id", members.getUniqueid());
-                                    obj.put("firstName", members.getFirstname());
-                                    obj.put("lastname", members.getLastname());
-                                    obj.put("email", members.getEmail());
-                                    obj.put("phoneNumber", members.getMobile());
-                                    obj.put("memberId", members.getMemberid());
-                                    obj.put("accessId", members.getAccessid());
-                                    obj.put("faceTemplate", Util.encodeImagePath(members.getImage()));
-                                    obj.put("status", false);
-                                    obj.put("memberType", 1);
-                                    new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
-                                } catch (Exception e) {
-                                    Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
-                                }
-                                }
+                        mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
+                        try {
+                            isDeleted = true;
+                            JSONObject obj = new JSONObject();
+                            obj.put("id", members.getUniqueid());
+                            obj.put("firstName", members.getFirstname());
+                            obj.put("lastname", members.getLastname());
+                            obj.put("email", members.getEmail());
+                            obj.put("phoneNumber", members.getMobile());
+                            obj.put("memberId", members.getMemberid());
+                            obj.put("accessId", members.getAccessid());
+                            obj.put("faceTemplate", Util.encodeImagePath(members.getImage()));
+                            obj.put("status", false);
+                            obj.put("memberType", 1);
+                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                        } catch (Exception e) {
+                            Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
+                        }
+                    }
 
                 } else {
                     localDelete(members);
@@ -1237,7 +1236,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         members.setImage(image);
                         members.setStatus(statusStr);
                         if (clickMember != null)
-                        members.setPrimaryId(clickMember.getPrimaryId());
+                            members.setPrimaryId(clickMember.getPrimaryId());
 
                         localDelete(members);
                         isDeleted = false;
@@ -1270,22 +1269,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     DismissProgressDialog(mprogressDialog);
                 }
             }
-        } else if (reportInfo.equals(Constants.TIME_OUT_RESPONSE)){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (mprogressDialog != null)
-                    DismissProgressDialog(mprogressDialog);
-                    if (isUpdate) {
-                        showResult(getString(R.string.update_failed));
-                        isUpdate = false;
-                    } else if (isDeleted){
-                        deletionFailed();
-                    } else {
-                        showResult(getString(R.string.register_failed));
-                    }
-                }
-            });
         } else {
             deletionFailed();
         }
@@ -1326,16 +1309,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }
-        try {
-            if (reportInfo.has("responseTimeOut")) {
-                if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                    DismissProgressDialog(mloadingprogress);
-                    showResult("Please re-sync after sometime");
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         Log.e(TAG, "MemberList null response");
     }
 
@@ -1360,12 +1333,6 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         if (reportInfo != null) {
             try {
                 if (reportInfo.isNull("responseCode")) {
-                    if (reportInfo.has("responseTimeOut")){
-                        if (reportInfo.getString("responseTimeOut").equals(Constants.TIME_OUT_RESPONSE)){
-                            DismissProgressDialog(mloadingprogress);
-                            showResult("Please re-sync after sometime");
-                        }
-                    }
                     return;
                 }
                 if (reportInfo.getString("responseCode").equals("1")) {

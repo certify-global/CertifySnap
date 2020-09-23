@@ -13,8 +13,8 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.certify.snap.R;
-import com.certify.snap.bluetooth.printer.Common;
-import com.certify.snap.bluetooth.printer.PrinterModelInfo;
+import com.certify.snap.printer.Common;
+import com.certify.snap.printer.PrinterModelInfo;
 
 import java.io.File;
 import java.util.ArrayList;

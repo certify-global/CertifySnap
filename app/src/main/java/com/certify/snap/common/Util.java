@@ -632,11 +632,6 @@ public class Util {
         try {
             String responseTemp = Requestor.postJsonLogin(url, req, "");
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -665,13 +660,8 @@ public class Util {
 
     public static JSONObject getJSONObjectSetting(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -685,13 +675,8 @@ public class Util {
 
     public static JSONObject getJSONObjectQRCode(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -707,11 +692,6 @@ public class Util {
         try {
             String responseTemp = Requestor.postJsonAdmin(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -725,13 +705,8 @@ public class Util {
 
     public static JSONObject getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -1311,6 +1286,8 @@ public class Util {
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
+                String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
+
                 if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
                 } else {
@@ -1335,6 +1312,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, allowlowtemperaturescanning.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
                 Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");
@@ -1711,11 +1689,6 @@ public class Util {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -1730,11 +1703,6 @@ public class Util {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
@@ -2057,13 +2025,8 @@ public class Util {
 
     public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.postHttpJson(url, req, context);
+            String responseTemp = Requestor.postJson(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
-                if (responseTemp.equals(Constants.TIME_OUT_RESPONSE)){
-                    JSONObject object = new JSONObject(responseTemp);
-                    object.put("responseTimeOut", responseTemp);
-                    return object;
-                }
                 return new JSONObject(responseTemp);
             }
         } catch (Exception e) {
