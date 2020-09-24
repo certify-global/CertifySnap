@@ -44,6 +44,11 @@ public class AppSettings {
     private static float displayTemperatureThreshold = 0;
     private static boolean setTemperatureThreshold = false;
     private static boolean isPrintUsbEnabled = false;
+    private static boolean isPrintAllScan = false;
+    private static boolean isPrintAccessCardUsers = false;
+    private static boolean isPrintQrCodeUsers = false;
+    private static boolean isPrintWaveUsers = false;
+    private static boolean isHighTemperature = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -88,7 +93,11 @@ public class AppSettings {
         enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
-        isPrintUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER,false);
+        isPrintAllScan = sharedPreferences.getBoolean(GlobalParameters.PRINT_ALL_SCAN,false);
+        isPrintAccessCardUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS,false);
+        isPrintQrCodeUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS,false);
+        isPrintWaveUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_WAVE_USERS,false);
+        isHighTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
     }
 
     public static String getThermalScanTitle() {
@@ -233,5 +242,25 @@ public class AppSettings {
 
     public static boolean isPrintUsbEnabled() {
         return isPrintUsbEnabled;
+    }
+
+    public static boolean isIsPrintAllScan() {
+        return isPrintAllScan;
+    }
+
+    public static boolean isIsPrintAccessCardUsers() {
+        return isPrintAccessCardUsers;
+    }
+
+    public static boolean isIsPrintQrCodeUsers() {
+        return isPrintQrCodeUsers;
+    }
+
+    public static boolean isIsPrintWaveUsers() {
+        return isPrintWaveUsers;
+    }
+
+    public static boolean isIsHighTemperature() {
+        return isHighTemperature;
     }
 }

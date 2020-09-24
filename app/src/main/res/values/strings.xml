@@ -230,6 +230,11 @@
     <string name="enable_light">Enable light on normal temperature</string>
     <string name="enable_light_high">Enable light on temperature above threshold</string>
     <string name="enable_printer">Enable print</string>
+    <string name="print_all_scan">Print for all Scan</string>
+    <string name="print_access_card">Print for Access Card Users</string>
+    <string name="print_qr_code_users">Print for QR Code Users</string>
+    <string name="print_wave_users">Print for Wave Users</string>
+    <string name="print_high_temperature">Print for High Temperature</string>
     <string name="enable_mask">Enable Mask Detection</string>
     <string name="enable_facial">Enable Facial Recognition</string>
     <string name="screen_delay">Screen display time (seconds)</string>s

@@ -46,13 +46,18 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
             brotherBluetoothPrinterStatus, brotherTestPrint,
             titleToshibaBluetoothPrinter, enableToshibaPrinterTextView, toshibaBluetoothPrinterConnect, toshibaBluetoothPrinterConnection,
-            toshibaBluetoothPrinterStatus, toshibaTestPrint;
-    ImageView brotherImageView, toshibaImageView;
+            toshibaBluetoothPrinterStatus,
+            printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle;
+    ImageView brotherImageView;
     Button brotherPrintButton, toshibaPrintButton;
     Typeface rubiklight;
     private SharedPreferences sp;
-    RadioGroup radio_group_printer, radioGroupToshibaPrinter;
-    RadioButton radio_enable_printer, radio_disable_printer, enableToshiba_printer, disableToshibaPrinter;
+    RadioGroup radioGroupPrinter, radioGroupToshibaPrinter, radioGroupPrintAllScan, radioGroupPrintAccessCard, radioGroupPrintQRCode,
+            radioGroupPrintWave, radioGroupPrintHighTemperature;
+    RadioButton radioEnableBrotherPrinter, radioDisableBrotherPrinter, radioEnableToshibaPrinter, radioDisableToshibaPrinter,
+            radioButtonYesPrintAllScans, radioButtonNoPrintAllScans,radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
+            radioButtonYesPrintQRCode, radioButtonNoPrintQRCode, radioButtonYesPrintWave, radioButtonNoPrintWave,
+            radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +65,8 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         setContentView(R.layout.activity_printer_view_settings);
         sp = Util.getSharedPreferences(this);
 
-        final Context context = this.getApplicationContext();
-
         initView();
+        printerOptionCheck();
         initBrotherPrinter();
         initToshibaPrinter();
 
@@ -79,12 +83,39 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         brotherTestPrint = findViewById(R.id.bother_test_print);
         brotherImageView = findViewById(R.id.bother_imageView);
         brotherPrintButton = findViewById(R.id.bother_print_button);
-        radio_group_printer = findViewById(R.id.radio_group_brother_printer);
-        radio_enable_printer = findViewById(R.id.radio_yes_bother_printer);
-        radio_disable_printer = findViewById(R.id.radio_no_bother_printer);
+        radioGroupPrinter = findViewById(R.id.radio_group_brother_printer);
+        radioEnableBrotherPrinter = findViewById(R.id.radio_yes_bother_printer);
+        radioDisableBrotherPrinter = findViewById(R.id.radio_no_bother_printer);
         radioGroupToshibaPrinter = findViewById(R.id.radio_group_toshiba_printer);
-        enableToshiba_printer = findViewById(R.id.radio_yes_toshiba_printer);
-        disableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
+        radioEnableToshibaPrinter = findViewById(R.id.radio_yes_toshiba_printer);
+        radioDisableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
+
+        // printer Options
+        printerOptionsTitle = findViewById(R.id.title_printer_options);
+        printAllScanTitle = findViewById(R.id.print_all_scan_title);
+        radioGroupPrintAllScan = findViewById(R.id.radio_group_print_all_scan);
+        radioButtonYesPrintAllScans = findViewById(R.id.radio_yes_print_all_scan);
+        radioButtonNoPrintAllScans = findViewById(R.id.radio_no_print_all_scan);
+        //Access Card
+        printAccessCardTitle = findViewById(R.id.print_access_card_title);
+        radioGroupPrintAccessCard = findViewById(R.id.radio_group_print_access_card);
+        radioButtonYesPrintAccessCard = findViewById(R.id.radio_yes_print_access_card);
+        radioButtonNoPrintAccessCard = findViewById(R.id.radio_no_print_access_card);
+        //QR Code
+        printQRCodeTitle = findViewById(R.id.print_qr_code_title);
+        radioGroupPrintQRCode = findViewById(R.id.radio_group_print_qr_code);
+        radioButtonYesPrintQRCode = findViewById(R.id.radio_yes_print_qr_code);
+        radioButtonNoPrintQRCode = findViewById(R.id.radio_no_print_qr_code);
+        //Wave Users
+        printWaveUsersTitle = findViewById(R.id.print_wave_users_title);
+        radioGroupPrintWave = findViewById(R.id.radio_group_print_wave_users);
+        radioButtonYesPrintWave = findViewById(R.id.radio_yes_print_wave_users);
+        radioButtonNoPrintWave = findViewById(R.id.radio_no_print_wave_users);
+        //High Temperature
+        printHighTemperatureTitle = findViewById(R.id.print_high_temperature_title);
+        radioGroupPrintHighTemperature = findViewById(R.id.radio_group_print_high_temperature);
+        radioButtonYesPrintHighTemperature = findViewById(R.id.radio_yes_print_high_temperature);
+        radioButtonNoPrintHighTemperature = findViewById(R.id.radio_no_print_high_temperature);
 
         brotherTestPrint.setText("Brother Printer");
 
@@ -93,10 +124,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         toshibaBluetoothPrinterStatus = findViewById(R.id.tv_bluetooth_toshiba_printer_status);
         toshibaBluetoothPrinterConnect = findViewById(R.id.bluetooth_toshiba_printer_connect);
         toshibaBluetoothPrinterConnection = findViewById(R.id.tv_bluetooth_toshiba_printer_connection);
-        toshibaTestPrint = findViewById(R.id.toshiba_test_print);
-        toshibaImageView = findViewById(R.id.toshiba_imageView);
         toshibaPrintButton = findViewById(R.id.toshiba_print_button);
-        toshibaTestPrint.setText("Toshiba Printer");
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -112,7 +140,13 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
         toshibaBluetoothPrinterConnect.setTypeface(rubiklight);
         toshibaBluetoothPrinterConnection.setTypeface(rubiklight);
         toshibaBluetoothPrinterStatus.setTypeface(rubiklight);
-        toshibaTestPrint.setTypeface(rubiklight);
+
+        printerOptionsTitle.setTypeface(rubiklight);
+        printAllScanTitle.setTypeface(rubiklight);
+        printAccessCardTitle.setTypeface(rubiklight);
+        printQRCodeTitle.setTypeface(rubiklight);
+        printWaveUsersTitle.setTypeface(rubiklight);
+        printHighTemperatureTitle.setTypeface(rubiklight);
 
         String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
@@ -153,15 +187,15 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     private void brotherPrinterCheck() {
         if (sp.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false))
-            radio_enable_printer.setChecked(true);
-        else radio_disable_printer.setChecked(true);
+            radioEnableBrotherPrinter.setChecked(true);
+        else radioDisableBrotherPrinter.setChecked(true);
 
-        radio_group_printer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        radioGroupPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.radio_yes_bother_printer) {
                     Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, true);
-                    disableToshibaPrinter.setChecked(true);
+                    radioDisableToshibaPrinter.setChecked(true);
                 } else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
             }
         });
@@ -179,18 +213,92 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     private void toshibaPrinterCheck() {
         if (sp.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER, false))
-            enableToshiba_printer.setChecked(true);
-        else disableToshibaPrinter.setChecked(true);
+            radioEnableToshibaPrinter.setChecked(true);
+        else radioDisableToshibaPrinter.setChecked(true);
 
         radioGroupToshibaPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.radio_yes_toshiba_printer) {
                     Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, true);
-                    radio_disable_printer.setChecked(true);
+                    radioDisableBrotherPrinter.setChecked(true);
                 } else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, false);
             }
         });
+    }
+
+    private void printerOptionCheck(){
+        //All Scan
+        if (sp.getBoolean(GlobalParameters.PRINT_ALL_SCAN, false))
+            radioButtonYesPrintAllScans.setChecked(true);
+        else radioButtonNoPrintAllScans.setChecked(true);
+
+        radioGroupPrintAllScan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_all_scan) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_ALL_SCAN, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_ALL_SCAN, false);
+            }
+        });
+
+        // Access card users
+        if (sp.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS, false))
+            radioButtonYesPrintAccessCard.setChecked(true);
+        else radioButtonNoPrintAccessCard.setChecked(true);
+
+        radioGroupPrintAccessCard.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_access_card) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_ACCESS_CARD_USERS, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_ACCESS_CARD_USERS, false);
+            }
+        });
+
+        //QrCode
+
+        if (sp.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS, false))
+            radioButtonYesPrintQRCode.setChecked(true);
+        else radioButtonNoPrintQRCode.setChecked(true);
+
+        radioGroupPrintQRCode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_qr_code) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_USERS, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_USERS, false);
+            }
+        });
+
+        //Wave users
+        if (sp.getBoolean(GlobalParameters.PRINT_WAVE_USERS, false))
+            radioButtonYesPrintWave.setChecked(true);
+        else radioButtonNoPrintWave.setChecked(true);
+
+        radioGroupPrintWave.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_wave_users) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_WAVE_USERS, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_WAVE_USERS, false);
+            }
+        });
+
+        //High Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE, false))
+            radioButtonYesPrintHighTemperature.setChecked(true);
+        else radioButtonNoPrintHighTemperature.setChecked(true);
+
+        radioGroupPrintHighTemperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_high_temperature) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_HIGH_TEMPERATURE, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_HIGH_TEMPERATURE, false);
+            }
+        });
+
     }
 
     public void selectBluetoothPrinter(View view) {

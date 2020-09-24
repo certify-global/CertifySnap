@@ -163,4 +163,10 @@ public class GlobalParameters {
     public static final String APP_LAUNCH_TIME = "app_launch_time";
 
     public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
+
+    public static final String PRINT_ALL_SCAN = "printAllScan";
+    public static final String PRINT_ACCESS_CARD_USERS = "printAccessCard";
+    public static final String PRINT_QR_CODE_USERS = "printQRCode";
+    public static final String PRINT_WAVE_USERS = "printWaveUsers";
+    public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
 }
