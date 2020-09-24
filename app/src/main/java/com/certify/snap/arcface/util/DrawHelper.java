@@ -1,26 +1,27 @@
 package com.certify.snap.arcface.util;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import com.arcsoft.face.AgeInfo;
 import com.arcsoft.face.GenderInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.certify.snap.arcface.model.DrawInfo;
+import com.certify.snap.arcface.widget.FaceLandmarkView;
 import com.certify.snap.arcface.widget.FaceRectView;
 
 import java.util.List;
 
-/**
- * 绘制人脸框帮助类，用于在{@link com.arcsoft.arcfacedemo.widget.FaceRectView}上绘制矩形
- */
+
 public class DrawHelper {
     private int previewWidth, previewHeight, canvasWidth, canvasHeight, cameraDisplayOrientation, cameraId;
     private boolean isMirror;
     private boolean mirrorHorizontal = false, mirrorVertical = false;
-
+    private static final String TAG = "DrawHelper";
     /**
      * 创建一个绘制辅助类对象，并且设置绘制相关的参数
      *
@@ -48,7 +49,7 @@ public class DrawHelper {
         this.mirrorVertical = mirrorVertical;
     }
 
-    public void draw(FaceRectView faceRectView, List<DrawInfo> drawInfoList) {
+    public void drawPreviewInfo(FaceRectView faceRectView, List<DrawInfo> drawInfoList) {
         if (faceRectView == null) {
             return;
         }
@@ -57,6 +58,17 @@ public class DrawHelper {
             return;
         }
         faceRectView.addFaceInfo(drawInfoList);
+    }
+
+    public void drawLandmarkInfo(FaceLandmarkView faceLandmarkView, List<PointF[]> landmarkInfoList) {
+        if (faceLandmarkView == null) {
+            return;
+        }
+        faceLandmarkView.clearLandmarkInfo();
+        if (landmarkInfoList == null || landmarkInfoList.size() == 0) {
+            return;
+        }
+        faceLandmarkView.addLandmarkInfo(landmarkInfoList);
     }
 
     /**
@@ -79,22 +91,21 @@ public class DrawHelper {
         if (ftRect == null) {
             return null;
         }
-
         Rect rect = new Rect(ftRect);
         float horizontalRatio;
         float verticalRatio;
-        if (cameraDisplayOrientation % 180 == 0) {
-            horizontalRatio = (float) canvasWidth / (float) previewWidth;
-            verticalRatio = (float) canvasHeight / (float) previewHeight;
-        } else {
-            horizontalRatio = (float) canvasHeight / (float) previewWidth;
-            verticalRatio = (float) canvasWidth / (float) previewHeight;
-        }
+//        if (cameraDisplayOrientation % 180 == 0) {
+//            horizontalRatio = (float) canvasWidth / (float) previewWidth;
+//            verticalRatio = (float) canvasHeight / (float) previewHeight;
+//        } else {
+        horizontalRatio = (float) canvasHeight / (float) previewWidth;
+        verticalRatio = (float) canvasWidth / (float) previewHeight;
+//        }
         rect.left *= horizontalRatio;
         rect.right *= horizontalRatio;
         rect.top *= verticalRatio;
         rect.bottom *= verticalRatio;
-
+//        Log.e(TAG,ftRect.toString() + "-" + rect.toString() + "-" + cameraDisplayOrientation);
         Rect newRect = new Rect();
         switch (cameraDisplayOrientation) {
             case 0:
@@ -154,7 +165,7 @@ public class DrawHelper {
          *
          * XOR
          */
-        if (isMirror ^ mirrorHorizontal) {
+        /*if (isMirror ^ mirrorHorizontal) {
             int left = newRect.left;
             int right = newRect.right;
             newRect.left = canvasWidth - right;
@@ -165,8 +176,123 @@ public class DrawHelper {
             int bottom = newRect.bottom;
             newRect.top = canvasHeight - bottom;
             newRect.bottom = canvasHeight - top;
+        }*/
+        if (mirrorHorizontal) {
+//            Log.e(TAG,"isMirrorHorizontal");
+            newRect.left = rect.top;
+            newRect.right = rect.bottom;
+            newRect.top = rect.left;
+            newRect.bottom = rect.right;
+        }else {
+            newRect.right = canvasWidth - rect.top;
+            newRect.left = canvasWidth - rect.bottom;
+            newRect.top = rect.left;
+            newRect.bottom = rect.right;
         }
+//        Log.e(TAG,newRect.toString());
         return newRect;
+    }
+
+    /**
+     * 调整人脸特征点用来绘制
+     *
+     * @param facePoints 人脸关键点
+     * @return 调整后的需要被绘制到View上的rect
+     */
+    public PointF[] adjustPoint(PointF[] facePoints) {
+        int previewWidth = this.previewWidth;
+        int previewHeight = this.previewHeight;
+        int canvasWidth = this.canvasWidth;
+        int canvasHeight = this.canvasHeight;
+        int cameraDisplayOrientation = this.cameraDisplayOrientation;
+        int cameraId = this.cameraId;
+        boolean isMirror = this.isMirror;
+        boolean mirrorHorizontal = this.mirrorHorizontal;
+        boolean mirrorVertical = this.mirrorVertical;
+
+        if (facePoints == null) {
+            return null;
+        }
+
+        PointF[] newPoints = new PointF[facePoints.length];
+        for (int i = 0; i < facePoints.length; i++) {
+            PointF p = facePoints[i];
+            PointF pointF = new PointF(p.x, p.y);
+            float horizontalRatio;
+            float verticalRatio;
+//            if (cameraDisplayOrientation % 180 == 0) {
+//                horizontalRatio = (float) canvasWidth / (float) previewWidth;
+//                verticalRatio = (float) canvasHeight / (float) previewHeight;
+//            } else {
+            horizontalRatio = (float) canvasHeight / (float) previewWidth;
+            verticalRatio = (float) canvasWidth / (float) previewHeight;
+//            }
+            pointF.x *= horizontalRatio;
+            pointF.y *= verticalRatio;
+
+            PointF newPoint = new PointF();
+            newPoints[i] = newPoint;
+            switch (cameraDisplayOrientation) {
+                case 0:
+                    if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        newPoint.x = canvasWidth - pointF.x;
+                    } else {
+                        newPoint.x = pointF.x;
+                    }
+                    newPoint.y = pointF.y;
+                    break;
+                case 90:
+                    newPoint.x = canvasWidth - pointF.y;
+                    if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        newPoint.y = canvasHeight - pointF.x;
+                    } else {
+                        newPoint.y = pointF.x;
+                    }
+                    break;
+                case 180:
+                    newPoint.y = canvasHeight - pointF.y;
+                    if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        newPoint.x = pointF.x;
+                    } else {
+                        newPoint.x = canvasWidth - pointF.x;
+                    }
+                    break;
+                case 270:
+                    newPoint.x = pointF.y;
+                    if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                        newPoint.y = pointF.x;
+                    } else {
+                        newPoint.y = canvasHeight - pointF.x;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            /**
+             * isMirror mirrorHorizontal finalIsMirrorHorizontal
+             * true         true                false
+             * false        false               false
+             * true         false               true
+             * false        true                true
+             *
+             * XOR
+             */
+            if (isMirror ^ mirrorHorizontal) {
+                float x = newPoint.x;
+                newPoint.x = canvasWidth - x;
+            }
+            if (mirrorVertical) {
+                float y = newPoint.y;
+                newPoint.y = canvasHeight - y;
+            }
+            if(mirrorHorizontal){
+
+            }else {
+
+            }
+        }
+        return newPoints;
     }
 
     /**
@@ -211,19 +337,42 @@ public class DrawHelper {
 
         if (drawInfo.getName() == null) {
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            paint.setTextSize(rect.width() / 8);
+            paint.setTextSize(rect.width() / 12);
 
-            String str = (drawInfo.getSex() == GenderInfo.MALE ? "MALE" : (drawInfo.getSex() == GenderInfo.FEMALE ? "FEMALE" : "UNKNOWN"))
-                    + ","
-                    + (drawInfo.getAge() == AgeInfo.UNKNOWN_AGE ? "UNKNOWN" : drawInfo.getAge())
-                    + ","
-                    + (drawInfo.getLiveness() == LivenessInfo.ALIVE ? "ALIVE" : (drawInfo.getLiveness() == LivenessInfo.NOT_ALIVE ? "NOT_ALIVE" : "UNKNOWN"));
+            String str =
+                    (drawInfo.getSex() == GenderInfo.MALE ? "MALE" : (drawInfo.getSex() == GenderInfo.FEMALE ? "FEMALE" : "UNKNOWN"))
+                            + ","
+                            + (drawInfo.getAge() == AgeInfo.UNKNOWN_AGE ? "UNKNOWN" : drawInfo.getAge())
+                            + ","
+                            + (drawInfo.getLiveness() == LivenessInfo.ALIVE ? "ALIVE" : (drawInfo.getLiveness() == LivenessInfo.NOT_ALIVE ? "NOT_ALIVE" : "UNKNOWN"));
             canvas.drawText(str, rect.left, rect.top - 10, paint);
         } else {
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            paint.setTextSize(rect.width() / 8);
+            paint.setTextSize(rect.width() / 4);
             canvas.drawText(drawInfo.getName(), rect.left, rect.top - 10, paint);
         }
+    }
+
+    public static void drawFaceLandmarks(Canvas canvas, PointF[] landmarkInfoArray, int pointSize, Paint paint) {
+        if (canvas == null || landmarkInfoArray == null) {
+            return;
+        }
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(pointSize);
+        paint.setColor(Color.RED);
+        paint.setAntiAlias(true);
+
+
+        if (landmarkInfoArray.length > 0) {
+            Path path = new Path();
+            path.moveTo(landmarkInfoArray[0].x, landmarkInfoArray[0].y);
+            for (int i = 1; i < landmarkInfoArray.length; i++) {
+                path.lineTo(landmarkInfoArray[i].x, landmarkInfoArray[i].y);
+            }
+            path.close();
+            canvas.drawPath(path, paint);
+        }
+
     }
 
     public void setPreviewWidth(int previewWidth) {

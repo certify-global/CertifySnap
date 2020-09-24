@@ -6,9 +6,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import com.certify.snap.BuildConfig;
+import com.certify.snap.activity.ConnectivityStatusActivity;
+import com.certify.snap.bluetooth.data.SimplePreference;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.database.Database;
 import com.certify.snap.service.AlarmReceiver;
 import com.common.thermalimage.ThermalImageUtil;
 import com.microsoft.appcenter.AppCenter;
@@ -19,12 +24,13 @@ import com.microsoft.appcenter.crashes.ingestion.models.ErrorAttachmentLog;
 import com.microsoft.appcenter.crashes.model.ErrorReport;
 import com.tamic.novate.Novate;
 
-import org.litepal.LitePal;
-
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Handler;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -36,17 +42,21 @@ public class Application extends android.app.Application {
     private static final String TAG = Application.class.getSimpleName();
     private static Application mInstance;
     private Novate novate;
-//    private MyOkHttp mMyOkHttp;
-   // private DownloadMgr mDownloadMgr;
+    //    private MyOkHttp mMyOkHttp;
+    // private DownloadMgr mDownloadMgr;
     public static boolean member=false;
     private List<Activity> activityList = new LinkedList();
-    private ThermalImageUtil temperatureUtil;
+    private static SimplePreference preference;
+    private int deviceMode = 0;
+    WifiManager wifi;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        LitePal.initialize(this);
+        String password = getPragmaKey(this);
+        DatabaseController.getInstance().init(this, password);
+        preference = new SimplePreference(this);
 
         mInstance = this;
 
@@ -73,14 +83,20 @@ public class Application extends android.app.Application {
 
         BlockDetectByPrinter.start(false);//检测卡顿
 
-        temperatureUtil = new ThermalImageUtil(this);
-
         if (BuildConfig.BUILD_TYPE != "debug") {
             initAppCenter();
         }
 
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(this);
+
+        ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
+        registerActivityLifecycleCallbacks(handler);
+        registerComponentCallbacks(handler);
+    }
+
+    public static SimplePreference getPreference() {
+        return preference;
     }
 
     public static synchronized Application getInstance() {
@@ -95,26 +111,10 @@ public class Application extends android.app.Application {
 //        return mMyOkHttp;
 //    }
 
-    public ThermalImageUtil getTemperatureUtil(){
-        return temperatureUtil;
-    }
-
     // Activity
     public void addActivity(Activity activity) {
 //        activityList.add(activity);
     }
-
-    // Activity finish
-    public void exit() {
-        for (Activity activity : activityList) {
-            if(activity!=null && !activity.isFinishing()) {
-                Log.e("exit---", activity.getLocalClassName());
-                activity.finish();
-            }
-        }
-        System.exit(0);
-    }
-
 
     public static void StartService(Context context) {
 
@@ -141,10 +141,10 @@ public class Application extends android.app.Application {
     private void initAppCenter() {
         setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
         AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",
-                Analytics.class, Crashes.class);
+    Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
         Crashes.setEnabled(true);
-    }
+}
 
     private void setAppCenterCrashListener() {
         AbstractCrashesListener crashesListener = new AbstractCrashesListener() {
@@ -175,4 +175,34 @@ public class Application extends android.app.Application {
         };
         Crashes.setListener(crashesListener);
     }
+
+    public String getPragmaKey(Context context){
+        wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
+        String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
+        String deviceSerialNo = Util.getSNCode();
+        return getSha256Hash(deviceSerialNo + macAddress);
+    }
+
+    private String getSha256Hash(String password) {
+        try {
+            MessageDigest digest = null;
+            try {
+                digest = MessageDigest.getInstance("SHA-256");
+            } catch (NoSuchAlgorithmException e1) {
+                e1.printStackTrace();
+            }
+            digest.reset();
+            return bin2hex(digest.digest(password.getBytes()));
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private String bin2hex(byte[] data) {
+        StringBuilder hex = new StringBuilder(data.length * 2);
+        for (byte b : data)
+            hex.append(String.format("%02x", b & 0xFF));
+        return hex.toString();
+    }
+
 }

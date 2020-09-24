@@ -1,36 +1,16 @@
 package com.certify.snap.activity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.Camera;
-import android.os.Build;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import com.certify.snap.BuildConfig;
 
-import com.certify.snap.common.Application;
-import com.certify.snap.common.ConfigUtil;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.ShellUtils;
-import com.certify.snap.common.Util;
 import com.certify.snap.R;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_0_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_180_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_270_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_90_ONLY;
-import static com.arcsoft.face.enums.DetectFaceOrientPriority.ASF_OP_ALL_OUT;
+import com.certify.snap.common.Application;
+import com.certify.snap.common.Util;
 
 public class ParameterActivity extends SettingBaseActivity {
 
@@ -56,12 +36,12 @@ public class ParameterActivity extends SettingBaseActivity {
 
             Application.getInstance().addActivity(this);
             sp = Util.getSharedPreferences(this);
-            initView();
+            //initView();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-
+/*
     private void initView(){
         radioGroupCamera = findViewById(R.id.radio_group_camera_type);
         rgbCamera = findViewById(R.id.radio_camera_0);
@@ -315,34 +295,7 @@ public class ParameterActivity extends SettingBaseActivity {
                 }
             }
         });
-        radio_group_navigationbar = findViewById(R.id.radio_group_navigationbar);
-        radio_navigationbar_show = findViewById(R.id.radio_navigation_show);
-        radio_navigationbar_hide = findViewById(R.id.radio_navigation_hide);
-        boolean navigationbar = sp.getBoolean(GlobalParameters.NavigationBar,true);
 
-        if (navigationbar){
-            radio_navigationbar_show.setChecked(true);
-            sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-        }else {
-            radio_navigationbar_hide.setChecked(true);
-            sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-        }
-
-        radio_group_navigationbar.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radio_navigation_show:
-                        Util.writeBoolean(sp,GlobalParameters.NavigationBar,true);
-                        sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-                        break;
-                    case R.id.radio_navigation_hide:
-                        Util.writeBoolean(sp,GlobalParameters.NavigationBar,false);
-                        sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-                        break;
-                }
-            }
-        });
         relaytime = findViewById(R.id.edit_relaytime);
         int relaytimeresult = sp.getInt(GlobalParameters.RelayTime,5);
         if(relaytimeresult > 0){
@@ -414,5 +367,5 @@ public class ParameterActivity extends SettingBaseActivity {
     public void onParamterback(View view) {
         startActivity(new Intent(ParameterActivity.this,SettingActivity.class));
         finish();
-    }
+    }*/
 }

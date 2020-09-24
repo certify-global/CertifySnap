@@ -92,6 +92,9 @@ public class ThermalSetting extends SettingBaseActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Util.writeBoolean(sp, GlobalParameters.HOME_TEXT_IS_ENABLE, isChecked);
+                    if (isChecked) {
+                        cbTextOnly.setChecked(false);
+                    }
                     if(!isChecked)setIdentificationOptions();
                 }
             });
@@ -99,6 +102,9 @@ public class ThermalSetting extends SettingBaseActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     Util.writeBoolean(sp, GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, isChecked);
+                    if (isChecked) {
+                        cbHomeText.setChecked(false);
+                    }
                 }
             });
         } catch (Exception e) {

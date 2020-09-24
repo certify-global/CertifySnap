@@ -2,11 +2,10 @@ package com.certify.snap.service;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.certify.callback.JSONObjectCallback;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -45,9 +44,9 @@ public class AccessTokenJobService extends JobService implements JSONObjectCallb
             String token_type = json1.getString("token_type");
             String institutionId = json1.getString("InstitutionID");
             String expire_time = json1.getString(".expires");
-            String command = json1.isNull("command")?"":json1.getString("command");
-            if(command.equals("REACTIVATE")){
-               // Util.activateApplication();
+            String command = json1.isNull("command") ? "" : json1.getString("command");
+            if (command.equals("REACTIVATE")) {
+                // Util.activateApplication();
             }
 
             Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);

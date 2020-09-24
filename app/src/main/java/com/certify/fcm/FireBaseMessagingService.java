@@ -8,18 +8,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
+import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.activity.GuideActivity;
-import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.MemberSyncService;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -29,13 +33,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
 import java.util.Random;
 
-public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback {
+public class FireBaseMessagingService extends FirebaseMessagingService implements SettingCallback, MemberIDCallback, JSONObjectCallback, PushCallback {
     private static final String TAG = FireBaseMessagingService.class.getSimpleName();
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
+    public static final String NOTIFICATION_BROADCAST_ACTION = "com.action.notification.restart";
      SharedPreferences sharedPreferences;
 
     @Override
@@ -55,6 +59,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     @Override
     public void onNewToken(String token) {
         sharedPreferences=Util.getSharedPreferences(this);
+        ApplicationController.getInstance().setFcmPushToken(token);
         sendRegistrationToServer(token);
     }
 
@@ -70,23 +75,45 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             JSONObject jsonObject = new JSONObject(messageBody);
             sharedPreferences=Util.getSharedPreferences(this);
 
-            String command=jsonObject.isNull("Command") ? "":jsonObject.getString("Command");
-            String Value1=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
+            String command=jsonObject.isNull("command") ? "":jsonObject.getString("command");
+            String certifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+            String commandGUID=jsonObject.isNull("commandGUID") ? "":jsonObject.getString("commandGUID");
+            String uniqueDeviceId=jsonObject.isNull("uniqueDeviceId") ? "":jsonObject.getString("uniqueDeviceId");
+            String eventTypeId=jsonObject.isNull("eventTypeId") ? "":jsonObject.getString("eventTypeId");
+            String institutionId=jsonObject.isNull("institutionId") ? "":jsonObject.getString("institutionId");
 
-
-                if(command.equals("SETTINGS")){
-                    Util.getSettings(this,this);
-                }else if(command.equals("ALLMEMBER")){
-                    if ( sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true)
-                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
-                        startService(new Intent(this, MemberSyncService.class));
-                        Application.StartService(this);
-                    }
-                }else if(command.equals("MEMBER")){
-                    String CertifyId=jsonObject.isNull("Value1") ? "":jsonObject.getString("Value1");
-                    Util.getMemberID(this,CertifyId);
-
-                }
+            if(command.equals("SETTINGS")){
+                Util.getSettings(this,this);
+            }else if(command.equals("ALLMEMBER")){
+                startService(new Intent(this, MemberSyncService.class));
+                Application.StartService(this);
+            }else if(command.equals("MEMBER")){
+                String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
+                Util.getMemberID(this,CertifyId);
+            }else if(command.equals("RESET")){
+                Util.deleteAppData(this);
+                sendBroadcastMessage();
+                Util.restartApp(this);
+            }else if(command.equals("RESTART")){
+                sendBroadcastMessage();
+                Util.restartApp(this);
+            }else if(command.equals("DEACTIVATE")){
+                Util.deleteAppData(this);
+                Util.writeBoolean(sharedPreferences,GlobalParameters.ONLINE_MODE,false);
+            }else if(command.equals("CHECKHEALTH")){
+                Util.getDeviceHealthCheck(FireBaseMessagingService.this, FireBaseMessagingService.this);
+            }else if(command.equals("NAVBARON")){
+                boolean navigationBar =true;
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+                Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
+            }else if(command.equals("NAVBAROFF")){
+                boolean navigationBar = false;
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+                sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+                Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
+            }
+            Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
 
 
         } catch (Exception e) {
@@ -139,14 +166,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         }
 
         try {
-            if (reportInfo.isNull("responseCode"))  {
-                return;
-            }
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
-                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                   // doSendBroadcast("start", activeMemberCount, count++);
+                    MemberSyncDataModel.getInstance().createMemberDataAndUpdate(memberList);
                 }
             }
         } catch (JSONException e) {
@@ -160,12 +183,29 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo == null) {
                 return;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+           /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, this, "");
-            }
+            }*/
 
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
+    }
+
+    @Override
+    public void onJSONObjectListenerPush(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                return;
+            }
+        } catch (Exception e) {
+            Logger.error(TAG, "onJSONObjectListenerPush()", "Exception occurred while processing API response callback with Push command response api" + e.getMessage());
+        }
+    }
+
+    private void sendBroadcastMessage() {
+        Intent intent = new Intent();
+        intent.setAction(NOTIFICATION_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

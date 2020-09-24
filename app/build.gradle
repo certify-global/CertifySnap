@@ -14,6 +14,7 @@ def keyStore = new Properties()
 def baseFileName = "CertifySnap"
 keyStore.load(new FileInputStream("$userHome/certifysnap/keystore.properties"))
 android {
+    useLibrary 'org.apache.http.legacy'
 
     signingConfigs {
         Snap {
@@ -67,6 +68,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "ENDPOINT_URL", "\"https://apiqa.certify.me\""
+            testCoverageEnabled = true
         }
         debug {
             minifyEnabled false
@@ -92,15 +94,18 @@ android.applicationVariants.all { variant ->
         output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
+
+def room_version="2.2.5"
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation files('libs\\http-2.2.1.jar')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    implementation 'org.litepal.android:java:3.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.tamic.novate:novate:1.5.5'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
@@ -110,15 +115,19 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //  api project(path: ':myokhttp')
+    implementation files('libs/bcpissuelibrary')
     implementation files('libs/core-3.1.0.jar')
     implementation files('libs/telpo_api.jar')
     implementation files('libs/util.jar')
     implementation files('libs/arcsoft_image_util.jar')
     implementation files('libs/arcsoft_face.jar')
     implementation files('libs/pushservice-6.5.0.75.jar')
-    implementation files('libs/telpo_temperature_v1.0.5.jar')
+    implementation files('libs/telpo_temperature_v1.1.4.jar')
+    implementation files('libs/brother_print_library.aar')
 //    implementation files('libs/poi-3.12-android-a.jar')
 //    implementation files('libs/poi-ooxml-schemas-3.12-20150511-a.jar')
     def appCenterSdkVersion = '3.2.1'
@@ -134,11 +143,24 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
     implementation 'me.grantland:autofittextview:0.2.1'
+    implementation 'com.github.skydoves:elasticviews:1.0.6'
+    implementation 'com.squareup:otto:1.3.7'
+    annotationProcessor 'com.jakewharton:butterknife:7.0.1'
+    implementation 'com.jakewharton:butterknife:7.0.1'
+    implementation 'org.apache.httpcomponents.core5:httpcore5:5.0.1'
 
     testImplementation 'commons-logging:commons-logging:1.2'
     testImplementation "org.mockito:mockito-core:3.3.3"
     androidTestImplementation "org.mockito:mockito-core:3.3.3"
     testImplementation "org.robolectric:robolectric:4.3.1"
+    api "net.zetetic:android-database-sqlcipher:4.4.0@aar"
+    api "androidx.sqlite:sqlite:2.1.0"
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
+    annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
 
     configurations.all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->

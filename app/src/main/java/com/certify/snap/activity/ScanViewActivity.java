@@ -19,7 +19,7 @@ public class ScanViewActivity extends SettingBaseActivity {
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low;
     Typeface rubiklight;
-    TextView tv_delay,tv_sound,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask,tv_sound_high;
+    TextView tv_delay,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask;
     TextInputLayout text_input_low_temp;
     RadioGroup radio_group_mask;
     RadioButton radio_yes_mask;
@@ -38,7 +38,7 @@ public class ScanViewActivity extends SettingBaseActivity {
             setContentView(R.layout.activity_scan_view);
             sp = Util.getSharedPreferences(this);
             final RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
-           final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
+            final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
             RadioButton rbCaptureNo = findViewById(R.id.radio_no_capture);
             RadioGroup rgCaptureAll = findViewById(R.id.radio_group_capture_all);
             RadioButton rbCaptureAllYes = findViewById(R.id.radio_yes_capture_all);
@@ -46,17 +46,10 @@ public class ScanViewActivity extends SettingBaseActivity {
             final RadioGroup radio_group_tempe = findViewById(R.id.radio_group_tempe);
             final RadioButton radio_yes_temp = findViewById(R.id.radio_yes_temp);
             RadioButton radio_no_temp = findViewById(R.id.radio_no_temp);
-            RadioGroup radio_group_sound = findViewById(R.id.radio_group_sound);
-            RadioButton radio_yes_sound = findViewById(R.id.radio_yes_sound);
-            RadioButton radio_no_sound = findViewById(R.id.radio_no_sound);
             RadioGroup radio_group_reg = findViewById(R.id.radio_group_reg);
             RadioButton radio_yes_reg = findViewById(R.id.radio_yes_reg);
             RadioButton radio_no_reg = findViewById(R.id.radio_no_reg);
-            RadioGroup radio_group_sound_high = findViewById(R.id.radio_group_sound_high);
-            RadioButton radio_yes_sound_high = findViewById(R.id.radio_yes_sound_high);
-            RadioButton radio_no_sound_high = findViewById(R.id.radio_no_sound_high);
 
-            tv_sound_high = findViewById(R.id.tv_sound_high);
             et_screen_delay = findViewById(R.id.et_screen_delay);
             text_input_low_temp = findViewById(R.id.text_input_low_temp);
             editTextDialogUserInput_low = findViewById(R.id.editTextDialogUserInput_low);
@@ -65,7 +58,6 @@ public class ScanViewActivity extends SettingBaseActivity {
             radio_no_mask = findViewById(R.id.radio_no_mask);
             btn_save = findViewById(R.id.btn_exit);
             tv_delay = findViewById(R.id.tv_delay);
-            tv_sound = findViewById(R.id.tv_sound);
             tv_temp_all = findViewById(R.id.tv_temp_all);
             tv_capture_image = findViewById(R.id.tv_capture_image);
             tv_reg = findViewById(R.id.tv_reg);
@@ -77,14 +69,12 @@ public class ScanViewActivity extends SettingBaseActivity {
             scanProximityYes = findViewById(R.id.radio_yes_scan_proximity);
             scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
             tv_delay.setTypeface(rubiklight);
-            tv_sound.setTypeface(rubiklight);
             tv_temp_all.setTypeface(rubiklight);
             tv_capture_image.setTypeface(rubiklight);
             tv_temp_details.setTypeface(rubiklight);
             tv_scan.setTypeface(rubiklight);
             tv_reg.setTypeface(rubiklight);
             tv_mask.setTypeface(rubiklight);
-            tv_sound_high.setTypeface(rubiklight);
             scanProximityView.setTypeface(rubiklight);
 
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE,true))
@@ -96,12 +86,7 @@ public class ScanViewActivity extends SettingBaseActivity {
             if(sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true))
                 radio_yes_temp.setChecked(true);
             else radio_no_temp.setChecked(true);
-            if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND,false))
-                radio_yes_sound.setChecked(true);
-            else radio_no_sound.setChecked(true);
-            if(sp.getBoolean(GlobalParameters.CAPTURE_SOUND_HIGH,false))
-                radio_yes_sound_high.setChecked(true);
-            else radio_no_sound_high.setChecked(true);
+
             if(sp.getBoolean(GlobalParameters.ALLOW_ALL,false)) {
                 radio_yes_reg.setChecked(true);
                 text_input_low_temp.setVisibility(View.VISIBLE);
@@ -148,22 +133,7 @@ public class ScanViewActivity extends SettingBaseActivity {
                     else Util.writeBoolean(sp, GlobalParameters.CAPTURE_TEMPERATURE, false);
                 }
             });
-            radio_group_sound.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if(checkedId==R.id.radio_yes_sound)
-                        Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, true);
-                    else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND, false);
-                }
-            });
-            radio_group_sound_high.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if(checkedId==R.id.radio_yes_sound_high)
-                        Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND_HIGH, true);
-                    else Util.writeBoolean(sp, GlobalParameters.CAPTURE_SOUND_HIGH, false);
-                }
-            });
+
             radio_group_reg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {

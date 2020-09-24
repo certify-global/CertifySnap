@@ -12,23 +12,25 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHolder> {
 
     Context mcontext;
-    List<OfflineVerifyMembers> mlist;
+    List<OfflineRecordTemperatureMembers> mlist;
 
-    public RecordAdapter(Context context, List<OfflineVerifyMembers> list) {
+    public RecordAdapter(Context context, List<OfflineRecordTemperatureMembers> list) {
         this.mcontext = context;
         this.mlist = list;
     }
 
-    public void refresh(List<OfflineVerifyMembers> list) {
+    public void refresh(List<OfflineRecordTemperatureMembers> list) {
         this.mlist = list;
         notifyDataSetChanged();
     }
@@ -63,22 +65,27 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
 
         try {
-        holder.name.setText(mlist.get(position).getName());
-        if(!TextUtils.isEmpty(mlist.get(position).getTemperature())){
-            float temperature = Float.valueOf(mlist.get(position).getTemperature());
-            if(temperature > 37.3) {
-                holder.temperature.setTextColor( mcontext.getResources().getColor(R.color.red));
-            }else {
-                holder.temperature.setTextColor(mcontext.getResources().getColor(R.color.green));
+            holder.name.setText(mlist.get(position).getFirstName());
+            if(!TextUtils.isEmpty(mlist.get(position).getTemperature())){
+                float temperature = Float.valueOf(mlist.get(position).getTemperature());
+                if(temperature > 100.4) {
+                    holder.temperature.setTextColor( mcontext.getResources().getColor(R.color.red));
+                }else {
+                    holder.temperature.setTextColor(mcontext.getResources().getColor(R.color.green));
+                }
+                holder.temperature.setText("Temperature: " + temperature+" °F");
+            }else{
+                holder.temperature.setText("");
             }
-            holder.temperature.setText("Temperature: " + temperature+" ℃");
-        }else{
-            holder.temperature.setText("");
-        }
-
-        holder.mobile.setText("Mobile: "+mlist.get(position).getMobile());
-        holder.time.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(mlist.get(position).getVerify_time()));
-        String path = mlist.get(position).getImagepath();
+            if (mlist != null && mlist.get(position).getMemberId() != null) {
+                String id = mlist.get(position).getMemberId();
+                holder.mobile.setText("Id: " + id);
+            }
+            if (mlist.get(position).getDeviceTime() != null){
+                Date date = new Date(mlist.get(position).getDeviceTime());
+                holder.time.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+            }
+            String path = mlist.get(position).getImagepath();
 
             Glide.with(mcontext)
                     .load(path)

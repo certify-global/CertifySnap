@@ -45,9 +45,8 @@ public class ConfirmationScreenActivity extends Activity {
     ImageView user_img;
     CompareResult compareResultValues;
 
-    private String confirm_title,
-            confirm_subtitle ;
-
+    private String confirm_title, confirm_subtitle ;
+    private ImageView internetIndicatorImg;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +68,7 @@ public class ConfirmationScreenActivity extends Activity {
             user_img = findViewById(R.id.iv_item_head_img);
             user_name = findViewById(R.id.tv_item_name);
             face_score = findViewById(R.id.facial_score);
+            internetIndicatorImg = findViewById(R.id.img_internet_indicator);
 
             if (compareResultValues != null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 user_img.setVisibility(View.VISIBLE);
@@ -109,6 +109,12 @@ public class ConfirmationScreenActivity extends Activity {
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
+
+        if (!Util.isNetworkOff(ConfirmationScreenActivity.this) && sp.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            internetIndicatorImg.setVisibility(View.GONE);
+        } else {
+            internetIndicatorImg.setVisibility(View.VISIBLE);
+        }
     }
 
     private void compareResult() {
@@ -117,11 +123,13 @@ public class ConfirmationScreenActivity extends Activity {
                 @Override
                 public void run() {
                     File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResultValues.getUserName() + FaceServer.IMG_SUFFIX);
-                    Glide.with(ConfirmationScreenActivity.this)
-                            .load(imgFile)
-                            .skipMemoryCache(true)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .into(user_img);
+                    if (imgFile.exists()) {
+                        Glide.with(ConfirmationScreenActivity.this)
+                                .load(imgFile)
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .into(user_img);
+                    }
                     user_name.setText(compareResultValues.getMessage());
                     face_score.setText(compareResultValues.getFacialScore());
                 }
@@ -137,11 +145,16 @@ public class ConfirmationScreenActivity extends Activity {
     private void onAccessCardMatch() {
         RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
         if (matchedMember != null) {
-            Glide.with(ConfirmationScreenActivity.this)
-                    .load(matchedMember.getImage())
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .into(user_img);
+            if (!matchedMember.getImage().isEmpty()) {
+                File file = new File(matchedMember.getImage());
+                if (file.exists()) {
+                    Glide.with(ConfirmationScreenActivity.this)
+                            .load(matchedMember.getImage())
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .into(user_img);
+                }
+            }
             user_name.setText(matchedMember.getFirstname());
         }else {
             user_img.setVisibility(View.GONE);

@@ -77,4 +77,34 @@
         <item>@mipmap/load71</item>
     </array>
 
+    <string-array name="planets">
+        <item>Send</item>
+        <item>Issue</item>
+    </string-array>
+
+    <string-array name="printmode">
+        <item>0x30: LABEL</item>
+        <item>0x31: RECEIPT</item>
+        <item>0x32: RECEIPT1</item>
+        <item>0x34: ESC/POS</item>
+        <item>0x41: TPCL</item>
+        <item>0x42: TPCL1</item>
+        <item>0x43: C Mode</item>
+        <item>0x44: Z Mode</item>
+    </string-array>
+
+    <string-array name="controlcodeMode">
+        <item>{,|,}</item>
+    </string-array>
+
+    <string-array name="languatemode">
+        <item>Japanese</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="graphicmode">
+        <item>Nibble</item>
+        <item>Hex</item>
+        <item>Topix</item>
+    </string-array>
 </resources>

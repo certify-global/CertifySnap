@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.os.Environment;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,17 +23,14 @@ import android.widget.Toast;
 import com.certify.snap.adapter.RecordAdapter;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.R;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.xssf.streaming.SXSSFRow;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.litepal.LitePal;
-import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -47,12 +43,21 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class RecordActivity extends AppCompatActivity {
 
+    protected static final String TAG = RecordActivity.class.getSimpleName();
     private RecyclerView recyclerView;
     private RecordAdapter recordAdapter;
-    private List<OfflineVerifyMembers> datalist = new ArrayList<>();
-    private List<OfflineVerifyMembers> exportlist = new ArrayList<>();
+    private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
+    private List<OfflineRecordTemperatureMembers> exportlist = new ArrayList<>();
     public SQLiteDatabase db;
     private ProgressDialog mprogressDialog;
     private AlertDialog mSelectDialog;
@@ -66,11 +71,6 @@ public class RecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         Application.getInstance().addActivity(this);
-        try {
-            db = LitePal.getDatabase();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         recyclerView = findViewById(R.id.recyclerview_record);
 
         initdata(true);
@@ -78,26 +78,49 @@ public class RecordActivity extends AppCompatActivity {
 
     public void initdata(final boolean isNeedInit){
         try {
-            if (db != null) {
-                LitePal.findAllAsync(OfflineVerifyMembers.class).listen(new FindMultiCallback<OfflineVerifyMembers>() {
-                    @Override
-                    public void onFinish(List<OfflineVerifyMembers> list) {
-                        datalist = list;
-                        if (isNeedInit) {
-                            initMember();
-                        } else {
-                            refreshMemberList(datalist);
-                            recyclerView.scrollToPosition(0);
+            Observable.create(new ObservableOnSubscribe<List<OfflineRecordTemperatureMembers>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<OfflineRecordTemperatureMembers>> emitter) throws Exception {
+                    List<OfflineRecordTemperatureMembers> offlineRecordList = DatabaseController.getInstance().findAllOfflineRecord();
+                    emitter.onNext(offlineRecordList);
+                }
+            }).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<OfflineRecordTemperatureMembers>>() {
+                        Disposable disposable;
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
                         }
-                    }
-                });
-            }
+
+                        @Override
+                        public void onNext(List<OfflineRecordTemperatureMembers> list) {
+                            datalist = list;
+                            if (isNeedInit) {
+                                initMember();
+                            } else {
+                                refreshMemberList(datalist);
+                                recyclerView.scrollToPosition(0);
+                            }
+                            disposable.dispose();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Error in fetching the data model from database");
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            disposable.dispose();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void refreshMemberList(List<OfflineVerifyMembers> list) {
+    private void refreshMemberList(List<OfflineRecordTemperatureMembers> list) {
         Log.e("refreshRecordList---", "start");
         datalist = list;
         recordAdapter.refresh(datalist);
@@ -160,62 +183,6 @@ public class RecordActivity extends AppCompatActivity {
         return value;
     }
 
-    private void exportXlsx(List<OfflineVerifyMembers> list,String name) {
-        long startTime = System.currentTimeMillis();
-        String path = Environment.getExternalStorageDirectory() + "/offline/record/";
-        File file = new File(path);
-        if (!file.exists()) file.mkdirs();
-        String filePath = path + name + ".xlsx";
-        SXSSFWorkbook sxssfWorkbook = null;
-        BufferedOutputStream outputStream = null;
-        try {
-            sxssfWorkbook = new SXSSFWorkbook(getXSSFWorkbook(filePath), 100);
-            SXSSFSheet sheet = (SXSSFSheet) sxssfWorkbook.getSheetAt(0);
-            for(int z=0;z<6;z++){
-                sheet.setColumnWidth(z,25*256);
-            }
-            for (int i = 0; i < list.size()+1; i++) {
-                SXSSFRow row = (SXSSFRow) sheet.createRow(i);
-                for(int j=0;j<6;j++) {
-                    if (i == 0) {
-                        Cell cell = row.createCell(j);
-                        cell.setCellValue(selectValue(j));
-                        cell.setCellStyle(getcellstyle(sxssfWorkbook));
-                    } else if(i>=1){
-                        Cell cell = row.createCell(j);
-                        cell.setCellValue(selectValue(j,list.get(i-1)));
-                        cell.setCellStyle(getcellstyle1(sxssfWorkbook));
-                    }
-                }
-
-            }
-            outputStream = new BufferedOutputStream(new FileOutputStream(filePath));
-            sxssfWorkbook.write(outputStream);
-            outputStream.flush();
-            sxssfWorkbook.dispose();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        long endTime = System.currentTimeMillis();
-        Log.e("time---", "write time= " + (endTime - startTime) + "ms");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                DismissProgressDialog(mprogressDialog);
-                Toast.makeText(RecordActivity.this,"Export finish! File path : /sdcard/offline/record/",Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
     /**
      * 先创建一个XSSFWorkbook对象
      *
@@ -252,36 +219,6 @@ public class RecordActivity extends AppCompatActivity {
         return date.getTime();
     }
 
-    private void export(String starttime,String endtime){
-        try {
-            mprogressDialog = ProgressDialog.show(RecordActivity.this, "Export", "Export file! Please wait...");
-            Log.e("export---",stringToDate(starttime,"yyyy-MM")+"-"+
-                    stringToDate(endtime,"yyyy-MM")+"-"+System.currentTimeMillis());
-
-            final List<OfflineVerifyMembers> resultlist = LitePal.where(
-                    "verify_time >="+ stringToDate(starttime,"yyyy-MM")
-                            +" and verify_time <="+ stringToDate(endtime,"yyyy-MM")+"")
-                    .order("verify_time asc").find(OfflineVerifyMembers.class);
-            if (resultlist != null && resultlist.size()>0) {
-                Log.e("search result---",resultlist.size()+"-"+resultlist.get(0).toString());
-                final String date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-                singleThreadPool.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        exportXlsx(resultlist,"Record-"+date);
-                    }
-                });
-            }else{
-                Toast.makeText(RecordActivity.this,"Data is null!",Toast.LENGTH_SHORT).show();
-                DismissProgressDialog(mprogressDialog);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            DismissProgressDialog(mprogressDialog);
-        }
-    }
-
     private void DismissProgressDialog(ProgressDialog progress) {
         if (progress != null && progress.isShowing())
             progress.dismiss();
@@ -316,9 +253,6 @@ public class RecordActivity extends AppCompatActivity {
                     String endtime = endyearstr +"-"+ endmonthstr;
                     Log.e("exportdate---",starttime+"-"+endtime);
                     Log.e("isvaliddate---", Util.isValidDate(starttime,"yyyy-MM")+"-"+ Util.isValidDate(endtime,"yyyy-MM"));
-                    if(Util.isValidDate(starttime,"yyyy-MM") && Util.isValidDate(endtime,"yyyy-MM")){
-                        export(starttime,endtime);
-                    }
                 }else{
                     Toast.makeText(RecordActivity.this,"Please input full date!",Toast.LENGTH_SHORT).show();
                 }

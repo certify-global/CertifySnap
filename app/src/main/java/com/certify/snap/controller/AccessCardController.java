@@ -1,14 +1,30 @@
 package com.certify.snap.controller;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.callback.AccessCallback;
+import com.certify.snap.async.AsyncJSONObjectAccessLog;
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
+import com.certify.snap.common.EndPoints;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
+import com.certify.snap.common.UserExportedData;
+import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AccessLogOfflineRecord;
+import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
 
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AccessCardController  {
+public class AccessCardController implements AccessCallback {
     private static final String TAG = AccessCardController.class.getSimpleName();
     private static AccessCardController mInstance = null;
     private boolean mEnableRelay = false;
@@ -23,6 +39,7 @@ public class AccessCardController  {
 
     private String mAccessCardID = "";
     private String mAccessIdDb = "";
+    private Context context;
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -31,8 +48,8 @@ public class AccessCardController  {
         return mInstance;
     }
 
-    public void init() {
-        //mNfcAdapter = M1CardUtils.isNfcAble(context);
+    public void init(Context context) {
+        this.context = context;
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
@@ -64,6 +81,10 @@ public class AccessCardController  {
 
     public void setStopRelayOnHighTemp(boolean mStopRelayOnHighTemp) {
         this.mStopRelayOnHighTemp = mStopRelayOnHighTemp;
+    }
+
+    public boolean isWeigandEnabled() {
+        return mEnableWeigan;
     }
 
     public void setEnableWeigan(boolean mEnableWeigan) {
@@ -181,5 +202,113 @@ public class AccessCardController  {
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
         }
+    }
+
+    public void processUnlockDoor(List<RegisteredMembers> membersList) {
+        if (AppSettings.isFacialDetect()) {
+            if (membersList != null && membersList.size() > 0 ) {
+                unlockDoor();
+            }
+            return;
+        }
+        unlockDoor();
+    }
+
+    public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
+        if (AppSettings.isFacialDetect()) {
+            if (membersList != null && membersList.size() > 0 ) {
+                unlockDoorOnHighTemp();
+            }
+            return;
+        }
+        unlockDoorOnHighTemp();
+    }
+
+    public void accessCardLog(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
+        boolean isFacialEnabled = AppSettings.isFacialDetect();
+        if (isFacialEnabled) {
+            if (data != null) {
+                if ((AccessControlModel.getInstance().getRfidScanMatchedMember() == null) ||
+                         data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
+                    registeredMembers = data.member;
+                }
+            }
+        }
+        if (registeredMembers == null) {
+            registeredMembers = new RegisteredMembers();
+        }
+        try {
+            if (mAllowAnonymous && !isFacialEnabled) {
+                registeredMembers.setAccessid(AccessCardController.getInstance().getAccessCardID());
+            }
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && (mEnableRelay || mEnableWeigan))
+                    || isFacialEnabled) {
+                JSONObject obj = new JSONObject();
+                obj.put("id", 0);
+                obj.put("firstName", registeredMembers.getFirstname());
+                obj.put("lastName", registeredMembers.getLastname());
+                obj.put("temperature", temperature);
+                obj.put("memberId", registeredMembers.getMemberid());
+                obj.put("accessId", registeredMembers.getAccessid());
+                obj.put("qrCodeId", "");
+                obj.put("deviceId", Util.getSNCode());
+                obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
+                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                obj.put("facilityId", 0);
+                obj.put("locationId", 0);
+                obj.put("facilityName", "");
+                obj.put("locationName", "");
+                obj.put("deviceTime", Util.getMMDDYYYYDate());
+                obj.put("sourceIP", Util.getLocalIpAddress());
+                obj.put("deviceData", Util.MobileDetails(context));
+                obj.put("guid", "");
+                obj.put("faceParameters", Util.FaceParameters(context, data));
+                obj.put("eventType", "");
+                obj.put("evenStatus", "");
+                obj.put("utcRecordDate", Util.getUTCDate(""));
+
+                if (Util.isOfflineMode(context)){
+                    saveOfflineAccessLogRecord(obj);
+                } else {
+                    new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                }
+            }
+        } catch (Exception e) {
+            Logger.error(TAG + "AccessLog Error", e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            if (reportInfo == null) {
+                Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
+                saveOfflineAccessLogRecord(req);
+                return;
+            }
+            if (!reportInfo.getString("responseCode").equals("1")) {
+                saveOfflineAccessLogRecord(req);
+            }
+        } catch (Exception e) {
+            Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
+        }
+    }
+
+    private void saveOfflineAccessLogRecord(JSONObject obj) {
+        AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
+        try {
+            accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
+            accessLogOfflineRecord.setJsonObj(obj.toString());
+            DatabaseController.getInstance().insertOfflineAccessLog(accessLogOfflineRecord);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearData() {
+        AccessControlModel.getInstance().clearData();
+        mAccessCardID = "";
+        mAccessIdDb = "";
     }
 }

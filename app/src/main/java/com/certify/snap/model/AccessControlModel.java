@@ -1,7 +1,8 @@
 package com.certify.snap.model;
 
 
-import org.litepal.LitePal;
+import com.certify.snap.controller.DatabaseController;
+
 import java.util.List;
 
 public class AccessControlModel {
@@ -18,7 +19,7 @@ public class AccessControlModel {
     }
 
     public boolean isMemberMatch(String cardId) {
-        List<RegisteredMembers> membersList = LitePal.where("accessid = ?", cardId).find(RegisteredMembers.class);
+        List<RegisteredMembers> membersList = DatabaseController.getInstance().findMemberByAccessId(cardId);
         if (membersList != null && membersList.size() > 0) {
             currentScannedMember = membersList.get(0);
             return true;

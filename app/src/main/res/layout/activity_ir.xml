@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+
     <!--<androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_person"
         android:layout_width="match_parent"
@@ -35,7 +36,16 @@
             android:layout_width="320dp"
             android:layout_height="400dp"
             android:layout_centerInParent="true"
-            android:background="@drawable/border_shape" />
+            android:background="@drawable/border_shape"
+            android:visibility="gone"/>
+
+        <com.certify.snap.arcface.widget.FaceRectView
+            android:id="@+id/face_rect_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/iv_verify_inner_circle"
@@ -53,26 +63,32 @@
             android:background="@color/white"
             android:visibility="visible">
 
+            <LinearLayout
+                android:id="@+id/tv_close_message_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="@dimen/margin_10"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_close_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/translucent_black"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
             <ImageView
                 android:id="@+id/img_logo"
                 android:layout_width="300dp"
+                android:layout_below="@+id/tv_close_message_layout"
                 android:layout_height="150dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/white"
                 android:scaleType="fitCenter" />
-
-
-            <!-- <RelativeLayout
-                 android:id="@+id/relative_qrcode"
-                 android:layout_width="match_parent"
-                 android:layout_height="400dp"
-                 android:layout_marginLeft="@dimen/margin_20"
-                 android:layout_marginTop="@dimen/margin_20"
-                 android:layout_marginRight="@dimen/margin_20"
-                 android:background="#000"
-                 android:orientation="horizontal"
-                 android:visibility="visible"
-                 android:layout_below="@id/img_logo">-->
 
             <FrameLayout
                 android:id="@+id/barcode_scanner"
@@ -148,8 +164,27 @@
 
                 </RelativeLayout>
             </FrameLayout>
-            <!--  </RelativeLayout>
--->
+            <Button
+                android:id="@+id/qr_skip_button"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:freezesText="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="Press here if you do not have QR Code"
+                android:layout_marginTop="-55dp"
+                android:background="@drawable/btn_shape"
+                android:layout_below="@+id/barcode_scanner"
+                android:onClick="skipQr"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_thermal"
@@ -255,6 +290,15 @@
     </RelativeLayout>
 
     <ImageView
+        android:id="@+id/img_internet_indicator"
+        android:layout_width="@dimen/margin_40"
+        android:layout_height="@dimen/margin_40"
+        android:src="@drawable/red_circle"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/margin_15"
+        android:visibility="gone"/>
+
+    <ImageView
         android:id="@+id/temperature_image"
         android:layout_width="100dp"
         android:layout_height="150dp"
@@ -312,4 +356,8 @@
 
     <include layout="@layout/titlebar" />
 
+    <FrameLayout
+        android:id="@+id/dynamic_fragment_frame_layout"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent" />
 </RelativeLayout>

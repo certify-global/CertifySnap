@@ -72,4 +72,13 @@ public class FaceParameters {
         }
         return liveness;
     }
+
+    public void clear() {
+        age = 0;
+        gender = "";
+        maskStatus = -2;
+        faceShelter = "";
+        face3DAngle = "";
+        liveness = "";
+    }
 }

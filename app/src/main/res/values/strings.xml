@@ -125,7 +125,7 @@
     <string name="statusbar_show">Show</string>
     <string name="statusbar_hide">Hide</string>
 
-    <string name="NavigationBar">Navigation Bar: </string>
+    <string name="NavigationBar">Show Navigation Bar: </string>
     <string name="navigation_show">Show</string>
     <string name="navigation_hide">Hide</string>
 
@@ -166,6 +166,8 @@
     <string name="centi">&#160;°C</string>
     <string name="temperature_normal">Temperature Normal:&#160;</string>
     <string name="temperature_anormaly">Temperature High:&#160;</string>
+    <string name="temperature_normal_text">Temperature Normal</string>
+    <string name="temperature_high_text">Temperature High</string>
     <string name="temperature_retry">Trying to get the temperature, please wait...</string>
     <string name="temperature_failresult">Failed to get temperature!</string>
 
@@ -208,7 +210,7 @@
     <string name="not_activated"><u>Not Activated</u></string>
     <string name="activate"><u>Activate</u></string>
     <string name="activated"><u>Activate</u></string>
-    <string name="endpoint">Endpoint URL</string>
+    <string name="endpoint">Endpoint Name</string>
     <string name="add_cloud">Add Device to CERTIFY.me Cloud</string>
     <string name="app_version">Version</string>
     <string name="tv_thermal_setting">Home View Settings</string>
@@ -223,21 +225,30 @@
     <string name="Capture_all">Capture images of all Users</string>
     <string name="enable_sound">Enable sound on normal temperature</string>
     <string name="enable_sound_high">Enable sound on temperature above threshold</string>
+    <string name="enable_qr_sound_valid">Enable sound for valid qr code</string>
+    <string name="enable_qr_sound_invalid">Enable sound for invalid qr code</string>
+    <string name="enable_light">Enable light on normal temperature</string>
+    <string name="enable_light_high">Enable light on temperature above threshold</string>
+    <string name="enable_printer">Enable print</string>
     <string name="enable_mask">Enable Mask Detection</string>
     <string name="enable_facial">Enable Facial Recognition</string>
-    <string name="screen_delay">Screen display time (seconds)</string>
+    <string name="screen_delay">Screen display time (seconds)</string>s
     <string name="tv_confirmation_setting">Confirmation View Settings</string>
     <string name="member_management_setting">Member Management</string>
+    <string name="audio_visual_setting">Audio and Visual Settings </string>
+    <string name="printer_setting">Printer Settings</string>
     <string name="confirmation_view">Confirmation View</string>
     <string name="enable_temperature">Enable</string>
     <string name="confirmation_text_below">Confirmation for temperature below threshold</string>
     <string name="confirmation_text_above">Confirmation for temperature above threshold</string>
     <string name="scan_view">Scan View</string>
+    <string name="audio_visual_view">Audio and Visual</string>
+    <string name="ble_devices_view">BLE Devices</string>
     <string name="thermal_view">Home View</string>
     <string name="enter_title_main">Enter Main Text</string>
     <string name="enter_subtitle_sub">Enter Sub Text</string>
     <string name="fahrenheit">Fahrenheit</string>
-    <string name="celcius">Celcius</string>
+    <string name="celcius">Celsius</string>
     <string name="enter_login">Enter Password</string>
     <string name="save">SAVE</string>
     <string name="temperature_threshold">Set Temperature Threshold</string>
@@ -273,12 +284,15 @@
     <string name="tv_bar_validating">Validating Bar Code</string>
     <string name="enable_rfid">Enable RFID Scanner</string>
     <string name="enable_anonymous">Enable Anonymous QR Code / Bar Code</string>
+    <string name="enable_skip_button">Enable Skip code(Requires touch of screen)</string>
     <string name="rfid_card_error">Error! Card cannot be recognized</string>
-    <string name="grant_access">Access granted</string>
+    <string name="grant_access">Access Granted</string>
     <string name="device_not_register">  is not registered on your certify.me account. Please make sure the device is connected to Internet and device is added to your cloud account under Devices.\n
    \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="invalid_qr">Invalid QRCode</string>
     <string name="timeout">Sceen timeout(seconds) for RFID and CODE Scan</string>
+    <string name="qr_button_heading">Text to display on Button</string>
+    <string name="qr_button_text">Press here if you don\'t have a QR code</string>
     <string name="device_inactive">is not active on the your certify.me account. Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
     \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="onlinemode_nointernet">Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n
@@ -295,7 +309,7 @@
     <string name="door_control_timing">Door Control Timing (for direct wired access)</string>
     <string name="access_control_card_format">Message Format</string>
     <string name="access_control_enroll">Enroll</string>
-    <string name="access_granted">Access granted</string>
+    <string name="access_granted">Wait for Thermal Scan</string>
     <string name="access_denied">Access denied!</string>
     <string name="access_failed">User cannot be identified. Please enroll</string>
     <string name="automatic_door_access">Enable Relay</string>
@@ -365,21 +379,347 @@
     <string name="dns2">DNS2</string>
     <string name="ethernet_ip_mode">Ethernet Ip mode</string>
     <string name="ssid">SSID:</string>
+    <string name="device_reader">Device Reader:</string>
     <string name="internet_connectivity">Internet Connectivity:</string>
     <string name="cloud_connectivity">CERTIFY Cloud Connectivity:</string>
     <string name="wifi">Wifi</string>
     <string name="ethernet">Ethernet</string>
     <string name="mobile">Cellular</string>
     <string name="data_management">Data Management</string>
-    <string name="do_not_sync">Do Not Sync online Member Data to Device </string>
+    <string name="do_not_sync">Sync online Member Data to Device </string>
     <string name="enable_home_view_msg">Please enable the Home Screen setting to set this option.</string>
     <string name="confirm_title_above">Please contact your supervisor before starting any work.</string>
     <string name="confirm_title_below">Have a nice day!</string>
     <string name="analyzing_face">Analyzing Face</string>
     <string name="allow_scan_proximity">Allow Scan only on close proximity</string>
-    <string name="step_closer">Please step closer</string>
+    <string name="step_closer">Please Step Closer</string>
+    <string name="face_center">Please Center Your Face</string>
     <string name="reset_snap_app">Reset SNAP APP</string>
     <string name="clear_cache_app">CLEAR DATA and CACHE</string>
     <string name="local_data">Reset Local Data</string>
+    <string name="clear_members">Reset Members</string>
+    <string name="clear_members_button">CLEAR ALL MEMBERS</string>
+    <string name="add_device">Login to register the device</string>
+    <string name="not_configure">This device is not configured to work online.</string>
+    <string name="cloud">If you already have a cloud account,</string>
+    <string name="device_added">If you have already added the device SL NO:   on the portal,go to settings and activate.</string>
+    <string name="activation_again">Try Activation Again</string>
+    <string name="skip">Skip for Now</string>
+    <string name="offline_mode">Offline Mode</string>
+    <string name="login_account">Login to your account</string>
+    <string name="enter_email">Email</string>
+    <string name="enter_password">Password</string>
+    <string name="login_note">Note:User should have administrative rights on the account.</string>
+    <string name="add_device_info">Add Device</string>
+    <string name="sno">"Serial Number "</string>
+    <string name="imei">IMEI Number</string>
+    <string name="active">Active</string>
+    <string name="in_active">Inactive</string>
+    <string name="status">Status</string>
+    <string name="screen_timeout_msg">Please input Screen timeout for scan to 5 or above</string>
+    <string name="record">Record Management</string>
 
+    <!--audio and visual page-->
+    <string name="ble_not_supported">This device not support bluetooth service</string>
+    <string name="ble_startfind">Searching devices...</string>
+    <string name="ble_canceldfind">Canceled searching</string>
+    <string name="ble_not_find">No bluetooth devices found</string>
+    <string name="ble_canceled">You need to turn on the bluetooth service</string>
+    <string name="ble_not_connected">Not connected with any bulbs</string>
+    <string name="ble_selected">You have set up a Bluetooth connection device</string>
+    <string name="ble_connect_success">Connected successful</string>
+    <string name="ble_disconnected">Disconnected from device</string>
+    <string name="ble_device_list">Connectable device list</string>
+    <string name="unknown_service">unknown service</string>
+    <string name="unknown_characteristic">unknown_characteristic</string>
+    <string name="permission_request">The permission is required to run this app</string>
+    <string name="permission_canceled">The permission is required to run this app</string>
+    <string name="ble_connect_status">Connected BLE Light : </string>
+    <string name="ble_light_test">Test : </string>
+    <string name="ble_connect"><u>Connect</u></string>
+    <string name="not_connected"><u>Not Connected</u></string>
+
+    <string name="bluetooth_printer_connect_status">Connected Printer : </string>
+
+
+    <string name="centigrade" translatable="false">&#160;℃</string>
+    <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
+    <string name="endpoint_api">Api</string>
+    <string name="protocol_text">https://</string>
+    <string name="hostname">.certify.me</string>
+    <string name="scanner_time_msg">Scanner is initializing. You can wait or click OK to continue to use the scanner while it initializes… \nTime Remaining: %d mins</string>
+    <string name="scanner_remaining_time_msg">Scanner calibration is progress… Time Remaining: %d mins</string>
+
+    <!--Bluetooth Printer printer_settings-->
+
+    <string name="printer_settings"><u>Settings</u></string>
+    <string name="no_network_device">No Net Printer Found</string>
+    <string name="setting_printer">Printer Settings</string>
+    <string name="printer_title">Connect to Printer</string>
+    <string name="printer_text">Select a destination printer</string>
+    <string name="netPrinterListTitle_label">Net Printer</string>
+    <string name="error_message_none">Succeeded</string>
+    <string name="printer_model_title">PrinterModel</string>
+    <string name="printer_model_value">Select the printer model </string>
+    <string name="port_title">Port</string>
+    <string name="port_value">Select the port</string>
+    <string name="address_title">IP address</string>
+    <string name="address_value">Set the number of ip address </string>
+    <string name="mac_address_title">MAC address</string>
+    <string name="mac_address_value">Set the number of mac address </string>
+    <string name="paper_size_title">Paper size</string>
+    <string name="paper_size_value">Select the paper size </string>
+    <string name="orientation_title">Printing orientation</string>
+    <string name="orientation_value">Select the printing orientation </string>
+
+    <string-array name="orientation">
+        <item>Portrait</item>
+        <item>Landscape</item>
+    </string-array>
+    <string-array name="orientation_values">
+        <item>PORTRAIT</item>
+        <item>LANDSCAPE</item>
+    </string-array>
+
+    <string name="number_of_copies_title">Number of copies</string>
+    <string name="number_of_copies_value">Set the number of copies </string>
+    <string name="scale_value_title">Scale value</string>
+    <string name="scale_value_value">Select the scale value </string>
+
+
+    <string name="fit_to_page_title">Fit to page</string>
+    <string name="fit_to_page_value">Select if fitting to page </string>
+
+
+    <string-array name="fitToPage">
+        <item>ORIGINAL</item>
+        <item>FIT_TO_PAGE</item>
+        <item>CUSTOM</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+    <string-array name="fit_to_page_values">
+        <item>ORIGINAL</item>
+        <item>FIT_TO_PAGE</item>
+        <item>SCALE</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+
+
+    <string name="print_quality_title">Print quality</string>
+    <string name="print_quality_value">Select the quality</string>
+
+
+    <string-array name="yes_no_entries">
+        <item>yes</item>
+        <item>no</item>
+    </string-array>
+    <string-array name="yes_no_value">
+        <item>true</item>
+        <item>false</item>
+    </string-array>
+
+
+    <string name="is_end_cut_title">End Cut</string>
+    <string name="is_end_cut_value">do end cut or not</string>
+    <string name="is_auto_cut_title">Auto Cut</string>
+    <string name="is_auto_cut_value">do auto cut or not</string>
+    <string name="otherSettings_title">Other Settings</string>
+    <string name="ip_mac_title">IP/MAC Address</string>
+    <string name="ip_mac_value">Set the IP/MAC Address</string>
+    <string name="cut_settings_value">Set the Cut Settings</string>
+    <string name="cut_settings_title">Cut Settings</string>
+
+    <string name="no_bluetooth_device">No Bluetooth Printer Found</string>
+    <string name="button_refresh">Refresh</string>
+    <string name="button_settings">Connect</string>
+
+
+    <string-array name="print_quality_array">
+        <item>LOW_RESOLUTION</item>
+        <item>NORMAL</item>
+        <item>DOUBLE_SPEED</item>
+        <item>HIGH_RESOLUTION</item>
+    </string-array>
+    <string-array name="print_quality_value">
+        <item>LOW_RESOLUTION</item>
+        <item>NORMAL</item>
+        <item>DOUBLE_SPEED</item>
+        <item>HIGH_RESOLUTION</item>
+    </string-array>
+
+
+    <string name="search_printer">Searching…</string>
+    <string name="end_title">End</string>
+    <string name="end_message">Back to Launcher</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_ok">OK</string>
+    <string name="battery_full">Full</string>
+    <string name="battery_middle">Middle</string>
+    <string name="battery_weak">Weak</string>
+    <string name="battery_charge">Need charging</string>
+    <string name="ac_adapter">AC adapter</string>
+    <string name="close_connect">closeing…</string>
+    <string name="bluetooth_printer_list_title_label">Bluetooth Printer</string>
+
+
+    <string name="half_cut_title">Half Cut(PT Only)</string>
+    <string name="half_cut_value">do half cut or not</string>
+    <string name="special_tape_title">Special tape paper(PT Only)</string>
+    <string name="special_tape_value">is special tape paper</string>
+    <string name="timeout_title">Timeout</string>
+    <string name="timeout_text">Set the timeout </string>
+    <string name="processTimeout_value">Time-out period</string>
+    <string name="processTimeout_title">Set overall time-out time </string>
+    <string name="sendTimeout_value">Set transmission waiting time</string>
+    <string name="sendTimeout_title">Transmission waiting time</string>
+    <string name="receiveTimeout_title">Reception waiting time</string>
+    <string name="receiveTimeout_value">Set reception waiting time </string>
+    <string name="connectionTimeout_title">Connect waiting time</string>
+    <string name="connectionTimeout_value">Set connect waiting time </string>
+    <string name="close_wait_time_value">Close Time-out period</string>
+    <string name="close_wait_time_title">Set close waiting time</string>
+    <string name="work_path_value">Select the work path</string>
+    <string name="work_path_title">Work Folder</string>
+    <string name="progress_dialog_message_preparing_connection">Preparing the connection…</string>
+    <string name="progress_dialog_message_createData">Creating the data</string>
+    <string name="progress_dialog_message_sendingData">Printing Badge…</string>
+    <string name="progress_dialog_message_sendingPrintingData">Printing Badge…</string>
+    <string name="progress_dialog_message_startPrint">Printing Badge</string>
+    <string name="progress_dialog_message_dataSent">The data was sent </string>
+    <string name="progress_dialog_message_printed">The printing process was completed </string>
+    <string name="progress_dialog_message_close_connection">Closing the connection</string>
+    <string name="progress_dialog_message_set_paper">Please Set Paper</string>
+    <string name="progress_dialog_message_cooling_start">Printer cooling start</string>
+    <string name="progress_dialog_message_cooling_end">Printer cooling end</string>
+    <string name="progress_dialog_message_waiting_peel">Wait for peeling label</string>
+    <string name="progress_dialog_message_sending_template">File transferring</string>
+    <string name="progress_dialog_message_getting_bluetooth_setting">Getting Bluetooth settings </string>
+    <string name="progress_dialog_message_setting_bluetooth_setting">Transferring Bluetooth settings </string>
+    <string name="progress_dialog_message_removing_template">Removing templates </string>
+    <string name="progress_dialog_message_getting_template">Getting template list </string>
+    <string name="error_message_runtime">Runtime error occurred </string>
+    <string name="cancel_printer_msg">Is cancelling, please wait</string>
+    <string name="error_message_weong_os">Android OS is not supported</string>
+    <string name="error_message_no_usb">USB device is not found</string>
+    <string name="progress_dialog_message_communication_start">Start communication…</string>
+    <string name="progress_dialog_message_transfer_start">Transfer Start…</string>
+    <string name="text_ip_address">Address: %1$s</string>
+    <string name="text_copied">Copied: %1$s</string>
+    <string name="pair_printer_message">Please un-pair and pair the Printer again</string>
+
+    <string-array name="work_path_entries">
+        <item>In-app folder</item>
+        <item>External folder </item>
+    </string-array>
+
+    //Toshiba Printer
+    <string name="menu_message_printer_Select">Please select the printer model</string>
+    <string name="retur">Return</string>
+    <string name="confirmBack">Are you sure you want to go back to the previous screen?</string>
+    <string name="msg_Ok">YES</string>
+    <string name="msg_No">NO</string>
+    <string name="bdAddrNotSet">BD Address has not been selected.</string>
+    <string name="ipOrPortNoNotSet">IP Address or Port Number has not been selected.</string>
+    <string name="fileNameNotSet">File name has not been selected.</string>
+    <string name="outputMethodNotSelected">Output method has not been selected</string>
+    <string name="bcpsamplemessage">BCP Print for Android Sample Application</string>
+    <string name="printerModel">Select printer model</string>
+    <string name="bluetoothPairingList">Bluetooth Pairing List</string>
+    <string name="labelSelection">Label Selection</string>
+    <string name="communicate">Communication</string>
+    <string name="option">Option</string>
+    <string name="appExit">Exit</string>
+    <string name="msg_OpDestBluetooth">Output destination (Bluetooth)</string>
+    <string name="msg_OpDestWlan">Output destination(WLAN)</string>
+    <string name="msg_OpDestFile">Output destination(FILE)</string>
+    <string name="msg_OpDestSelection">Output destination selection</string>
+    <string name="alert_AppExit">Are you sure you want to exit BCP Print for Android sample application?</string>
+    <string name="msg_IsSupportBluettoth">Bluetooth is not supported.</string>
+    <string name="msg_SelectDestination">The destination has not been selected.</string>
+    <string name="msg_IPAddrnotSet">IP Address has not been set.</string>
+    <string name="msg_Portnotset">Port Number has not been set.</string>
+    <string name="msg_CopyPrinterConfigFile">It failed to copy the printer configuration file.</string>
+    <string name="msg_OpDest">Output destination has not been selected.</string>
+    <string name="wait">Please wait.</string>
+    <string name="msg_success">Success</string>
+    <string name="nfcNotSupported">Android terminal does not have NFC support.</string>
+    <string name="msg_FailedIninterfaceConn">It failed in the interface connection.</string>
+    <string name="msg_TagReadTimeOut">It failed to read the NFC tag.</string>
+    <string name="deviceNotAvailable">Given SSID does not exist.</string>
+    <string name="invalidSsidOrMacOrBDError">Invalid SSID/MAC/BD Error</string>
+    <string name="processCancelError">Process cancel Error</string>
+    <string name="msg_InterfaceChoice">Choose type</string>
+    <string name="dialogOk">OK</string>
+    <string name="dialogCancel">CANCEL</string>
+    <string name="msg_Cancel">Processing has been canceled</string>
+    <string name="confirm_TurnOnWIFI">Do you want to Turn on Wifi?</string>
+    <string name="msg_ConnectToSSID">Connect to the SSID:</string>
+    <string name="wifiError">Device does not support Wifi.</string>
+    <string name="confirm_TurnOnBT">Do you want to Turn on Bluetooth?</string>
+    <string name="bluetoothError">Device does not support Bluetooth.</string>
+    <string name="msg_connBtDevice">Connect to the Bluetooth Device: </string>
+    <string name="menumessage">Please select the output destination</string>
+    <string name="selectLabelError">Outside the execution target label it has been selected. Please select the label.</string>
+    <string name="btnPortOpen">Port Open</string>
+    <string name="planet_prompt">Return mode selection</string>
+    <string name="writeData">Write Data</string>
+    <string name="btnWrite">Write</string>
+    <string name="btnReadData">Read Data</string>
+    <string name="btnRead">Read</string>
+    <string name="txtStatus">Status</string>
+    <string name="btnStatus">Status</string>
+    <string name="msg_PortClose">Port Close</string>
+    <string name="msg_PortOpen">Port Open</string>
+    <string name="msg_PortCloseError">Port Close Error</string>
+    <string name="connectionProcess">Connecting</string>
+    <string name="msg_OpenPorterror">Open Port Error</string>
+    <string name="portOpenFailed">Port Open Failed</string>
+    <string name="noWriteTargetData">There is no write target data</string>
+    <string name="runWritePort">During WritePort execution</string>
+    <string name="msg_WritePortError">Write Port Error</string>
+    <string name="runReadPort">During ReadPort execution</string>
+    <string name="msg_ReadPortError">Read Port Error</string>
+    <string name="openPortInIssueMode">Please do the Port Open in Issue mode.</string>
+    <string name="msg_ReadStatusError">Read Status Error</string>
+    <string name="saveComlete">Saving has been completed.</string>
+    <string name="receiveTimeOutOfrange">Out-of-range value has been entered in the ReceivedTime.</string>
+    <string name="notEnteredReceiveTime">ReceiveTime has not been entered.</string>
+    <string name="textPrintMode">PrintMode</string>
+    <string name="printmode_prompt">Print Mode</string>
+    <string name="btnChange">Change</string>
+    <string name="txtControlCode">ControlCode</string>
+    <string name="controlcodemode_prompt">Control code</string>
+    <string name="txtRecvTimeout">Receive Timeout</string>
+    <string name="txtLanguage">Language</string>
+    <string name="languatemode_prompt">Language</string>
+    <string name="printerMode">During PrinterMode setting</string>
+    <string name="msg_PrinterModeerror">GetPrinterMode Error</string>
+    <string name="printMode">During PrinterMode acquition</string>
+    <string name="filePathBlank">File path is blank.</string>
+    <string name="saveFilePath">File path has been saved.</string>
+    <string name="msg_RetryError">RetryError</string>
+    <string name="msg_GetStatuscallError">GetStatus call Error</string>
+    <string name="msg_GetStatus">Get Status</string>
+    <string name="msg_result">result</string>
+    <string name="error">Error</string>
+    <string name="runPrint">Printing</string>
+    <string name="noResponseFromPrinter">No response from the printer.Do you want to continue the process?</string>
+    <string name="writeFailed">Failed to write to the printer.Do you want to continue the process?</string>
+    <string name="paperEnd">Label end.Do you want to continue the process?</string>
+    <string name="issueEndAndpaperEnd">Finish issue and Label end</string>
+    <string name="msg_executePrintError">Execute Print Error</string>
+    <string name="processComplete">Process Completion</string>
+    <string name ="productName">Name</string>
+    <string name ="code">Code</string>
+    <string name ="print">Print</string>
+    <string name ="noOfPrints">NoOfPrint</string>
+    <string name ="msg_PortCloseErrorcode">Port Close Error code</string>
+    <string name ="msg_PortCloseSuccess">Port Close Success</string>
+    <string name ="txtSmpev4t">Printing of SmpEV4T</string>
+    <string name="confirmBack1">Do you want to return to the previous screen?</string>
+    <string name="statusReception"> OnStatus Reception</string>
+    <string name="dataName">Name Data</string>
+    <string name="productCodeName">Name Data</string>
+    <string name="barCode">Code Data</string>
+    <string name="productCodeData">Code Data</string>
 </resources>

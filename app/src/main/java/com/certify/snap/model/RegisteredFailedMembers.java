@@ -1,12 +1,26 @@
 package com.certify.snap.model;
 
-import org.litepal.crud.LitePalSupport;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
-public class RegisteredFailedMembers extends LitePalSupport {
+@Entity(indices={@Index(value="id", unique=true)})
+public class RegisteredFailedMembers {
 
-    String name;
-    String image;
+    @PrimaryKey
+    @NonNull
+    public int id;
+    public String name;
+    public String image;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }

@@ -86,7 +86,7 @@ public class CameraSourcePreview extends ViewGroup {
     }
 
     private void startIfReady() throws IOException, SecurityException {
-        if (startRequested && surfaceAvailable) {
+        if (startRequested && surfaceAvailable && cameraSource != null) {
             if (PreferenceUtils.isCameraLiveViewportEnabled(context)) {
                 cameraSource.start(surfaceView.getHolder());
             } else {

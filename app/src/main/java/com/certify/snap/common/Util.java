@@ -4,7 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -30,10 +32,11 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.Settings;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.telephony.TelephonyManager;
@@ -48,32 +51,39 @@ import android.widget.Toast;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
+import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.activity.AddDeviceActivity;
+import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
+import com.certify.snap.async.AsyncJSONObjectPush;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
+import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.service.AccessTokenJobService;
+import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
@@ -89,6 +99,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -105,6 +116,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
@@ -167,14 +179,18 @@ public class Util {
     public static void switchRgbOrIrActivity(Context context, Boolean isActivity) {
         if (context == null)
             return;
+        Class<?> activity = IrCameraActivity.class;
+        if (isDeviceProModel() && getSharedPreferences(context).getBoolean(GlobalParameters.PRO_SETTINGS, false)) {
+            activity = ProIrCameraActivity.class;
+        }
         if (getSharedPreferences(context).getInt(GlobalParameters.CameraType, 0) == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, activity));
             else
-                context.startActivity(new Intent(context, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
             if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
             else
-                context.startActivity(new Intent(context, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
 //        if(isActivity) context.startActivity(new Intent(context, RgbCameraActivity.class));
@@ -538,7 +554,7 @@ public class Util {
             byte[] decodedByte = Base64.decode(input, 0);
             return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
         } catch (Exception e) {
-            Logger.verbose(LOG, "Bitmap decodeToBase64(String input) ", e.getMessage());
+            Logger.debug("Bitmap decodeToBase64(String input) ", e.getMessage());
         }
         return null;
     }
@@ -612,6 +628,19 @@ public class Util {
         return null;
     }
 
+    public static JSONObject getJSONObjectLogin(String req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJsonLogin(url, req, "");
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectLogin", e.getMessage());
+            return null;
+        }
+        return null;
+    }
+
     public static String getJSONObjectAddmember(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
@@ -659,6 +688,21 @@ public class Util {
         return null;
     }
 
+    public static JSONObject getJSONObjectAddDevice(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJsonAdmin(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
     public static JSONObject getJSONObjectTemp(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
@@ -681,7 +725,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             IrCameraActivity.UserExportedData data) {
+                                             UserExportedData data, int offlineSyncStatus) {
         Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
             if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
@@ -698,6 +742,8 @@ public class Util {
             obj.put("locationId", 0);
             obj.put("deviceTime", Util.getMMDDYYYYDate());
             obj.put("trigger", data.triggerType);
+            obj.put("machineTemperature", data.machineTemperature);
+            obj.put("ambientTemperature", data.ambientTemperature);
             if (data.sendImages) {
                 obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
@@ -730,7 +776,8 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId())) {
+            } else if (isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -745,22 +792,51 @@ public class Util {
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
-            new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+            if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
+                saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
+            } else {
+                new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+            }
 
         } catch (Exception e) {
             Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
         }
     }
 
+    private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
+        try {
+            OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
+            offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
+            offlineRecordTemperatureMembers.setJsonObj(obj.toString());
+            offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
+            offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
+            offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
+            offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
+            if (data.member.getFirstname() != null) {
+                offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
+                offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
+                offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
+            } else {
+                offlineRecordTemperatureMembers.setFirstName("Anonymous");
+                offlineRecordTemperatureMembers.setLastName("");
+            }
+            //offlineRecordTemperatureMembers.save();
+            DatabaseController.getInstance().insertOfflineMemberIntoDB(offlineRecordTemperatureMembers);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static String FaceParameters(Context context, IrCameraActivity.UserExportedData data) {
+    public static String FaceParameters(Context context, UserExportedData data) {
         String value = "";
         SharedPreferences sp = Util.getSharedPreferences(context);
         if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
             String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             value = "thresholdValue:" + thresholdvalue + ", " +
-                        "faceScore:" + data.faceScore;
+                    "faceScore:" + data.faceScore;
             FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
             if (faceParameters != null) {
                 value = value + ", " + "age:" + faceParameters.age + ", " +
@@ -774,7 +850,7 @@ public class Util {
         return value;
     }
 
-    private static void updateFaceMemberValues(JSONObject obj, IrCameraActivity.UserExportedData data) {
+    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data) {
         try {
             if (data.member == null) data.member = new RegisteredMembers();
             obj.put("id", data.member.getUniqueid());
@@ -839,7 +915,7 @@ public class Util {
             obj.put("deviceSN", Util.getSerialNumber());
             obj.put("batteryStatus", getBatteryLevel(context));
             obj.put("networkStatus", isConnectingToInternet(context));
-
+            obj.put("appState", getAppState());
 
         } catch (Exception e) {
             Log.e(LOG + "MobileDetailsData ", e.getMessage());
@@ -854,7 +930,7 @@ public class Util {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint({"MissingPermission", "HardwareIds"})
-        public static void getDeviceUUid(Context context) {
+    public static void getDeviceUUid(Context context) {
         SharedPreferences sp = Util.getSharedPreferences(context);
 
         if (!sp.getString(GlobalParameters.UUID, "").isEmpty())
@@ -998,7 +1074,7 @@ public class Util {
                 }
             }
         } catch (Exception e) {
-            Log.e(LOG + "isServiceRunning ", e.getMessage());
+            Logger.error(LOG + "isServiceRunning(Class<?> serviceClass)", e.getMessage());
         }
         return false;
     }
@@ -1027,20 +1103,30 @@ public class Util {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public static void getDeviceHealthCheck(JSONObjectCallback callback, Context context) {
         try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+            SharedPreferences sharedPreferences = getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("lastUpdateDateTime", Util.getUTCDate(""));
-            obj.put("deviceSN", Util.getSNCode());
+            obj.put("lastUpdateDateTime", getUTCDate(""));
+            obj.put("deviceSN", getSNCode());
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("appState", getAppState());
+            obj.put("appUpTime", getAppUpTime(context));
+            obj.put("deviceUpTime", getDeviceUpTime());
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+            Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
         }
+    }
+
+    public static String getAppState() {
+        String appState = "Foreground";
+        if (ApplicationLifecycleHandler.isInBackground)
+            appState = "Background";
+        return appState;
     }
 
     public static boolean activeEngineOffline(Context context) {
@@ -1141,10 +1227,18 @@ public class Util {
                 JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
-                    String doNotSyncMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_SYNC_DO_NOT, doNotSyncMembers.equals("1"));
+                    String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
+                    if (syncOnlineMembers.equals("1")) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
+                    } else {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
+                    }
                     String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
                     Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
+                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "1" : jsonDeviceSettings.getString("navigationBar");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("1"));
+                    String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
                 }
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
@@ -1191,12 +1285,26 @@ public class Util {
                 String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" : jsonValueScan.getString("lowTemperatureThreshold");
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
+                String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
+                String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
+
+                if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
+                    SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
+                } else {
+                    SoundController.getInstance().deleteAudioFile("Normal.mp3");
+                }
+                String audioForHighTemperature = jsonValueScan.isNull("audioForHighTemperature") ? "" : jsonValueScan.getString("audioForHighTemperature");
+                if (audioForHighTemperature != null && !audioForHighTemperature.isEmpty()) {
+                    SoundController.getInstance().saveAudioFile(audioForHighTemperature, "High.mp3");
+                } else {
+                    SoundController.getInstance().deleteAudioFile("High.mp3");
+                }
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND, enableSoundOnNormalTemperature.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_SOUND_HIGH, enableSoundOnHighTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_NORMAL, enableSoundOnNormalTemperature.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_HIGH, enableSoundOnHighTemperature.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
                 Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
@@ -1204,6 +1312,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, allowlowtemperaturescanning.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
                 Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");
@@ -1271,6 +1380,31 @@ public class Util {
                 Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
+
+                //Audio Visual alerts
+                if (jsonValue.has("AudioVisualAlerts")) {
+                    JSONObject audioVisualSettings = jsonValue.getJSONObject("AudioVisualAlerts");
+                    String soundQrCodeValid = audioVisualSettings.isNull("enableSoundForValidQRCode") ? "0" : audioVisualSettings.getString("enableSoundForValidQRCode");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_VALID, soundQrCodeValid.equals("1"));
+                    String soundQrCodeInvalid = audioVisualSettings.isNull("enableSoundForInvalidQRCode") ? "0" : audioVisualSettings.getString("enableSoundForInvalidQRCode");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_INVALID, soundQrCodeInvalid.equals("1"));
+                    String lightNormalTemperature = audioVisualSettings.isNull("enableLightOnNormalTemperature") ? "0" : audioVisualSettings.getString("enableLightOnNormalTemperature");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_NORMAL, lightNormalTemperature.equals("1"));
+                    String lightHighTemperature = audioVisualSettings.isNull("enableLightOnHighTemperature") ? "0" : audioVisualSettings.getString("enableLightOnHighTemperature");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_HIGH, lightHighTemperature.equals("1"));
+                    String audioForValidQRCode = audioVisualSettings.isNull("audioForValidQRCode") ? "" : audioVisualSettings.getString("audioForValidQRCode");
+                    if (audioForValidQRCode != null && !audioForValidQRCode.isEmpty()) {
+                        SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
+                    } else {
+                        SoundController.getInstance().deleteAudioFile("Valid.mp3");
+                    }
+                    String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
+                    if (audioForInvalidQRCode != null && !audioForInvalidQRCode.isEmpty()) {
+                        SoundController.getInstance().saveAudioFile(audioForInvalidQRCode, "Invalid.mp3");
+                    } else {
+                        SoundController.getInstance().deleteAudioFile("Invalid.mp3");
+                    }
+                }
             } else {
                 Logger.toast(context, "Something went wrong please try again");
             }
@@ -1316,13 +1450,25 @@ public class Util {
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                    //Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
+                    // openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_not_register), toast);
+                    context.startActivity(new Intent(context, AddDeviceActivity.class));
+
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
                     openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);
                 }
             } else {
-                if (json1.isNull("access_token")) return;
+                if (json1.isNull("access_token")) {
+                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
+                    Util.switchRgbOrIrActivity(context, true);
+                    return;
+                }
+                if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
+                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
+                    Util.switchRgbOrIrActivity(context, true);
+                    return;
+                }
                 String access_token = json1.getString("access_token");
                 String token_type = json1.getString("token_type");
                 String institutionId = json1.getString("InstitutionID");
@@ -1346,12 +1492,13 @@ public class Util {
     public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            String id = reportInfo.getJSONObject("responseData").getString("id");
-            String firstName = reportInfo.getJSONObject("responseData").getString("firstName");
-            String lastName = reportInfo.getJSONObject("responseData").getString("lastName");
-            String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
-            String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
-            String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
+            JSONObject responseData = reportInfo.getJSONObject("responseData");
+            String id = responseData.getString("id") == null ? "" : responseData.getString("id");
+            String firstName = responseData.getString("firstName") == null ? "" : responseData.getString("firstName");
+            String lastName = responseData.getString("lastName") == null ? "" : responseData.getString("lastName");
+            String trqStatus = responseData.getString("trqStatus") == null ? "" : responseData.getString("trqStatus");
+            String memberId = responseData.getString("memberId") == null ? "" : responseData.getString("memberId");
+            String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);
@@ -1689,5 +1836,233 @@ public class Util {
 
     public static void setTokenRequestName(String value) {
         tokenRequestModule = value;
+    }
+
+    public final static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
+    public static boolean isUsualTemperature(Context context, float temperature) {
+        boolean isUnusual;
+        SharedPreferences sp = getSharedPreferences(context);
+        if (sp.getInt(GlobalParameters.Temperature, 0) == 0) {
+            float centigrade = sp.getFloat(GlobalParameters.Centigrades, (float) 37.3);
+            isUnusual = (temperature > centigrade) ? true : false;
+//            Log.e("centigrade---",centigrade+"-"+isUnusual);
+        } else {
+            float fahrenheit = sp.getFloat(GlobalParameters.Fahrenheits, (float) 99.14);
+            isUnusual = (celsiusToFahrenheit(temperature) > fahrenheit) ? true : false;
+//            Log.e("fahrenheit---",fahrenheit+"-"+isUnusual);
+        }
+        return isUnusual;
+    }
+
+    public static double celsiusToFahrenheit(float temperature) {
+        BigDecimal b = new BigDecimal(temperature * 1.8 + 32);
+        return b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    public static String toHexString(byte[] data) {
+        if (data == null) {
+            return "";
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < data.length; ++i) {
+                String string = Integer.toHexString(data[i] & 255);
+                if (string.length() == 1) {
+                    stringBuilder.append("0");
+                }
+
+                stringBuilder.append(string.toUpperCase());
+            }
+
+            return stringBuilder.toString();
+        }
+    }
+
+    public static boolean isDeviceProModel() {
+        int mode = CameraController.getInstance().getDeviceMode();
+        return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
+    }
+
+    public static boolean isOfflineMode(Context context) {
+        return isNetworkOff(context);
+    }
+
+    public static void qrSoundPool(Context context, SoundPool soundPool, Boolean validQRCode) {
+        if (soundPool == null) return;
+        try {
+
+            if (validQRCode) {
+                File file = new File(Environment.getExternalStorageDirectory() + "/Audio/Valid.mp3");
+                if (file.exists()) {
+                    soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/Valid.mp3", 1);
+                } else {
+                    soundPool.load(context, R.raw.valid, 1);
+                }
+            } else {
+                File file = new File(Environment.getExternalStorageDirectory() + "/Audio/Invalid.mp3");
+                if (file.exists()) {
+                    soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/Invalid.mp3", 1);
+                } else {
+                    soundPool.load(context, R.raw.invalid, 1);
+                }
+            }
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                int lastStreamId = -1;
+
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                    //soundPool.release();
+                    lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(LOG, e.getMessage());
+        }
+    }
+
+    public static boolean isQRCodeWithPrefix(String code) {
+        if (code != null) {
+            if (code.isEmpty()) {
+                return false;
+            }
+            return code.toLowerCase().startsWith("tr");
+        }
+        return false;
+    }
+
+    public static void deleteAppData(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().clear().apply();
+        }
+        DatabaseController.getInstance().deleteAllMember();
+        // Saving the token, after clearing the sharedPreference
+        Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+    }
+
+    public static void stopMemberSyncService(Context context) {
+        Intent intent = new Intent(context, MemberSyncService.class);
+        context.stopService(intent);
+    }
+
+    public static void restartApp(Context context) {
+        stopMemberSyncService(context);
+        Intent intent = new Intent(context, GuideActivity.class);
+        int mPendingIntentId = 111111;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+    }
+
+
+    public static void getPushresponse(PushCallback callback, Context context, String guid, String uniqueID, String response_msg, String eventType) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+
+            JSONObject obj = new JSONObject();
+            obj.put("commandGuid", guid);
+            obj.put("deviceUUID", uniqueID);
+            obj.put("eventType", eventType);
+            obj.put("response", response_msg + " push success");
+            if (guid == null) {
+                obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
+                obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
+                obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
+                obj.put("LOGINFAILED", AppStatusInfo.getInstance().getLoginFailed());
+                obj.put("DEVICESETTINGS", AppStatusInfo.getInstance().getDeviceSettings());
+            }
+
+            new AsyncJSONObjectPush(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.PushCommandResponse, context).execute();
+
+        } catch (Exception e) {
+            Util.switchRgbOrIrActivity(context, true);
+            Logger.error(LOG + "getPushresponse", e.getMessage());
+
+        }
+    }
+
+
+    public static JSONObject getJSONObjectPush(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectPush " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static String getUniqueIMEIId(Context context) {
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return "";
+            }
+            String imei = telephonyManager.getDeviceId();
+            if (imei != null && !imei.isEmpty()) {
+                return imei;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectAccessLog " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    private static String getAppUpTime(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
+        Date appLaunchDateTime = new Date(Long.parseLong(appLaunchTime));
+        Date currentDateTime = new Date(System.currentTimeMillis());
+        long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(differenceInTime) % 60;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(differenceInTime) % 60;
+        long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+        long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+        long totalHours = hours + days * 24;
+        return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
+    }
+
+    private static String getDeviceUpTime() {
+        long uptimeMillis = SystemClock.elapsedRealtime();
+        String deviceUptime = String.format(Locale.getDefault(),
+                "%d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(uptimeMillis),
+                TimeUnit.MILLISECONDS.toMinutes(uptimeMillis)
+                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+                        .toHours(uptimeMillis)),
+                TimeUnit.MILLISECONDS.toSeconds(uptimeMillis)
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                        .toMinutes(uptimeMillis)));
+        return deviceUptime;
     }
 }

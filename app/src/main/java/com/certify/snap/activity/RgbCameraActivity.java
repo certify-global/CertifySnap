@@ -62,12 +62,16 @@ import com.certify.snap.arcface.util.face.FaceListener;
 import com.certify.snap.arcface.util.face.LivenessType;
 import com.certify.snap.arcface.util.face.RequestFeatureStatus;
 import com.certify.snap.arcface.util.face.RequestLivenessStatus;
-import com.certify.snap.arcface.widget.ShowFaceInfoAdapter;
+import com.certify.snap.adapter.ShowFaceInfoAdapter;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.database.Database;
+import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
@@ -80,8 +84,6 @@ import com.google.zxing.other.BeepManager;
 import com.certify.snap.R;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.view.MyGridLayoutManager;
-
-import org.litepal.LitePal;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -109,7 +111,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     private Toast toast = null;
     private static final String TAG = "RgbCameraActivity";
-    ImageView logo, loaddialog, scan, outerCircle, innerCircle, exit;
+    ImageView logo, loaddialog, outerCircle, innerCircle;
     private ObjectAnimator outerCircleAnimator, innerCircleAnimator;
     private ProcessHandler processHandler;
     private RelativeLayout relativeLayout;
@@ -290,7 +292,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
     @Override
     public void onBackPressed() {
-        Application.getInstance().exit();
     }
 
     private void initView() {
@@ -380,7 +381,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                 if (etPassword.getText().toString().equals(sp.getString("device_password", "123456"))) {
                                     sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                                     sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-                                    Application.getInstance().exit();
                                 } else {
                                     Toast.makeText(RgbCameraActivity.this, getString(R.string.toast_rgbir_pwderror)
                                             , Toast.LENGTH_LONG).show();
@@ -396,35 +396,6 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 builder.create().show();
 
                 return true;
-            }
-        });
-
-        scan = findViewById(R.id.scan);
-        final PackageManager packageManager = getPackageManager();
-        scan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClassName("com.telpo.tps550.api", "com.telpo.tps550.api.barcode.Capture");
-                try {
-                    if (intent.resolveActivityInfo(packageManager, PackageManager.MATCH_DEFAULT_ONLY) != null) {
-                        startActivityForResult(intent, GUEST_QR_CODE);
-                    } else
-                        Toast.makeText(RgbCameraActivity.this, getString(R.string.toast_ocrnotinstall), Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        exit = findViewById(R.id.exit);
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
-                sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
-
-                Application.getInstance().exit();
             }
         });
 
@@ -554,7 +525,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                 public void run() {
 
                     try {
-                        TemperatureData temperatureData = Application.getInstance().getTemperatureUtil()
+                        TemperatureData temperatureData = ApplicationController.getInstance().getTemperatureUtil()
                                 .getDataAndBitmap(50, true, new HotImageCallback.Stub() {
                             @Override
                             public void onTemperatureFail(String e) throws RemoteException {
@@ -1013,7 +984,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
 
                                     Log.e("——人脸来", compareResult.getUserName() + "-" + requestId + "-" + mobile + "-" + verify_time);
 
-                                    registeredMemberslist = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
+//                                    registeredMemberslist = LitePal.where("mobile = ?", mobile).find(RegisteredMembers.class);
+                                    registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
                                     if (registeredMemberslist.size() > 0) {
                                         RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                         String expire_time = registeredMembers.getExpiretime();
@@ -1128,7 +1100,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
         offlineVerifyMembers.setImagepath(image);
         offlineVerifyMembers.setVerify_time(verify_time);
         if(temperature >0) offlineVerifyMembers.setTemperature(""+temperature);
-        offlineVerifyMembers.save();
+        //offlineVerifyMembers.save();
+      //  databaseStore.insertOfflineVerifyMember(offlineVerifyMembers);
     }
 
 
@@ -1432,8 +1405,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             if (resultCode == 0 && data != null) {
                 String qrCode = data.getStringExtra("qrCode");
                 if (qrCode != null) {
-                    List<GuestMembers> guestMembers = LitePal.where("qrcode = ?", qrCode).find(GuestMembers.class);
-                    if (guestMembers != null && guestMembers.size() > 0) {
+//                    List<GuestMembers> guestMembers = LitePal.where("qrcode = ?", qrCode).find(GuestMembers.class);
+                    /*if (guestMembers != null && guestMembers.size() > 0) {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         Date curDate = new Date(System.currentTimeMillis());
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
@@ -1464,7 +1437,8 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                     OfflineGuestMembers offlineGuestMembers = new OfflineGuestMembers();
                                     offlineGuestMembers.setUserId(guestMembers.get(0).getUserId());
                                     offlineGuestMembers.setVerify_time(verify_time);
-                                    offlineGuestMembers.save();
+                                    //offlineGuestMembers.save();
+                                    //databaseStore.insertOfflineGuestMember(offlineGuestMembers);
                                     Log.e("tag", "offlineGuestMembers userId----" + guestMembers.get(0).getUserId());
                                 } else if (!TextUtils.isEmpty(GlobalParameters.Access_limit) && !compareAllLimitedTime(compareTime, processLimitedTime(GlobalParameters.Access_limit))) {
                                     restoreCameraAfterScan(true);
@@ -1479,7 +1453,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                 }
                             }
                         } else restoreCameraAfterScan(true);
-                    } else restoreCameraAfterScan(true);
+                    } else restoreCameraAfterScan(true);*/
                 } else restoreCameraAfterScan(true);
             } else restoreCameraAfterScan(false);
         }

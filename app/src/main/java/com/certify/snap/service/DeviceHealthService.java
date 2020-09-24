@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -12,6 +13,12 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.certify.callback.JSONObjectCallback;
+import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.activity.ProIrCameraActivity;
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.ApplicationLifecycleHandler;
+import com.certify.snap.common.Constants;
+import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
@@ -67,8 +74,18 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         //do noop
         try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
             if (reportInfo == null) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                 return;
+            }
+            JSONObject json = new JSONObject(reportInfo);
+            if (json.getInt("responseCode") == 1) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
+                if(ApplicationLifecycleHandler.isInBackground)
+                    bringApplicationToForeground();
+            } else {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
             }
 
             if (reportInfo.contains("token expired"))
@@ -76,6 +93,23 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
 
         } catch (Exception e) {
             Logger.error(LOG + "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
+        }
+    }
+
+    private void bringApplicationToForeground() {
+        Log.d("DeviceHealthService", "BringApplicationToFront");
+        Class<?> activity = IrCameraActivity.class;
+        if (Util.isDeviceProModel() && AppSettings.isProSettings()) {
+            activity = ProIrCameraActivity.class;
+        }
+        Intent notificationIntent = new Intent(this, activity);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+        try {
+            pendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            Log.e("DeviceHealthService", "Exception in bringApplicationToForeground " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

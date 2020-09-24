@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,7 +15,10 @@ import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
 
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.DatabaseController;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.text.Html;
@@ -49,22 +53,31 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
-import org.litepal.LitePal;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
 import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
 import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
 
-public class SettingActivity extends Activity implements JSONObjectCallback, SettingCallback {
+public class SettingActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
 
     private static final String TAG = SettingActivity.class.getSimpleName();
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
-    private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature, setting_upload, setting_access_password, setting_endpoint,
-            thermal_check_setting, scan_setting, confirmation_setting, guide_setting, qr_setting;
+    private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature,
+                    setting_upload, setting_access_password, setting_endpoint, thermal_check_setting, scan_setting,
+                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting, printer_settings_layout;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
-    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting, tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management;
+    TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting,
+            tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management,
+            tv_visual_settings, printer_setting_text;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -74,21 +87,23 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     Switch switch_activate;
     private RelativeLayout accessControl;
     private TextView accessControlTv, tvDeviceOnline, tvDeviceName, tvDeviceSettings, tvDeviceMode;
-    private TextView mConnectivityStatus;
+    private View temperature_setting_view,upload_logo_setting_view, home_view_setting_view, scan_view_setting_view,
+            confirmation_screen_setting_view, guide_setting_view, member_management_setting_view, audio_visual_setting_view,
+            identification_setting_view, access_control_setting_view, printer_setting_view;
+    private TextView mConnectivityStatus, tvRecord;
+    private View recordDivider;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_setting);
             Util.getNumberVersion(SettingActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sharedPreferences = Util.getSharedPreferences(this);
-            rg_temperature = findViewById(R.id.radio_group_work_flow);
+            //rg_temperature = findViewById(R.id.radio_group_work_flow);
             rb_temp = findViewById(R.id.radio_temp);
             rb_temp_face = findViewById(R.id.face_temp);
             img_sync = findViewById(R.id.img_sync);
@@ -96,7 +111,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
             switch_activate = findViewById(R.id.switch_activate);
             String FlowType = sharedPreferences.getString(GlobalParameters.TEMP_ONLY, "temp");
 
-            rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+       /*     rg_temperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     switch (checkedId) {
@@ -109,7 +124,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
                     }
                 }
-            });
+            });*/
             switch_activate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -183,6 +198,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         confirmation_setting = findViewById(R.id.confirmation_setting);
         card = findViewById(R.id.setting_activate_card);
         record = findViewById(R.id.setting_record);
+        tvRecord = findViewById(R.id.tv_record);
         setting_temperature = findViewById(R.id.setting_temperature);
         setting_upload = findViewById(R.id.setting_upload);
         setting_access_password = findViewById(R.id.setting_access_password);
@@ -201,6 +217,7 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tv_scan_setting = findViewById(R.id.tv_scan_setting);
         tv_confirmation_setting = findViewById(R.id.tv_confirmation_setting);
         tv_member_management = findViewById(R.id.member_management_setting);
+        tv_visual_settings = findViewById(R.id.visual_setting);
         tv_guide_setting = findViewById(R.id.tv_guide_setting);
         tv_qr_setting = findViewById(R.id.tv_qr_setting);
         accessControl = findViewById(R.id.access_control);
@@ -210,6 +227,22 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tvDeviceSettings = findViewById(R.id.tv_device_setting);
         tvDeviceMode = findViewById(R.id.tv_device_model);
         mConnectivityStatus = findViewById(R.id.tv_connectivity_status);
+        temperature_setting_view = findViewById(R.id.temperature_setting_view);
+        upload_logo_setting_view = findViewById(R.id.upload_logo_setting_view);
+        home_view_setting_view = findViewById(R.id.home_view_setting_view);
+        scan_view_setting_view = findViewById(R.id.scan_view_setting_view);
+        confirmation_screen_setting_view = findViewById(R.id.confirmation_screen_setting_view);
+        guide_setting_view = findViewById(R.id.guide_setting_view);
+        member_management_setting_view = findViewById(R.id.member_management_setting_view);
+        audio_visual_setting_view = findViewById(R.id.audio_visual_setting_view);
+        identification_setting_view = findViewById(R.id.identification_setting_view);
+        access_control_setting_view = findViewById(R.id.access_control_setting_view);
+        audio_visual_setting = findViewById(R.id.audio_visual_setting);
+        printer_settings_layout = findViewById(R.id.printer_settings_layout);
+        printer_setting_view = findViewById(R.id.printer_setting_view);
+        printer_setting_text = findViewById(R.id.printer_setting_text);
+
+        recordDivider = findViewById(R.id.record_divider);
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -222,12 +255,15 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
         tv_scan_setting.setTypeface(rubiklight);
         tv_confirmation_setting.setTypeface(rubiklight);
         tv_member_management.setTypeface(rubiklight);
+        tv_visual_settings.setTypeface(rubiklight);
         tv_guide_setting.setTypeface(rubiklight);
         tv_qr_setting.setTypeface(rubiklight);
         tvDeviceOnline.setTypeface(rubiklight);
         tvDeviceName.setTypeface(rubiklight);
         tvDeviceSettings.setTypeface(rubiklight);
         tvDeviceMode.setTypeface(rubiklight);
+        tvRecord.setTypeface(rubiklight);
+        printer_setting_text.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
         tv_serial_no.setText("Serial No: " + Util.getSNCode());
         accessControlTv.setTypeface(rubiklight);
@@ -243,8 +279,21 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        proSettings();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        if (Util.isNetworkOff(SettingActivity.this)) {
+            record.setVisibility(View.VISIBLE);
+            recordDivider.setVisibility(View.VISIBLE);
+        }else {
+            record.setVisibility(View.GONE);
+            recordDivider.setVisibility(View.GONE);
+        }
         setData();
     }
 
@@ -345,8 +394,16 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                 Intent memberIntent = new Intent(SettingActivity.this, ManagementActivity.class);
                 startActivity(memberIntent);
                 break;
+            case R.id.audio_visual_setting:
+                Intent visualIntent = new Intent(SettingActivity.this, AudioVisualActivity.class);
+                startActivity(visualIntent);
+                break;
+            case R.id.printer_settings_layout:
+                Intent printerIntent = new Intent(SettingActivity.this, PrinterViewSettingsActivity.class);
+                startActivity(printerIntent);
+                break;
             case R.id.btn_exit:
-                Util.switchRgbOrIrActivity(SettingActivity.this, true);
+                initiateLaunchHomeScreen();
                 finish();
                 break;
         }
@@ -376,7 +433,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
                                 // get user input and set it to result
                                 // edit text
                                 if (!sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url).equals(userInput.getText().toString().trim())) {
-                                    LitePal.deleteAll(RegisteredMembers.class);
+                                    //LitePal.deleteAll(RegisteredMembers.class);
+                                    DatabaseController.getInstance().deleteAllMember();
                                     Util.clearAllSharedPreferences(sharedPreferences);
                                     Util.activateApplication(SettingActivity.this, SettingActivity.this);
                                 }
@@ -455,9 +513,8 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        Util.switchRgbOrIrActivity(SettingActivity.this, true);
-        finish();
+        //super.onBackPressed();
+        initiateLaunchHomeScreen();
     }
 
     @Override
@@ -572,5 +629,112 @@ public class SettingActivity extends Activity implements JSONObjectCallback, Set
     private void stopHealthCheckService() {
         Intent intent = new Intent(this, DeviceHealthService.class);
         stopService(intent);
+    }
+
+    private void proSettings(){
+        if (Util.isDeviceProModel()) {
+            Log.d(TAG, "proSettings: true");
+            if (AppSettings.isProSettings()) {
+                setting_upload.setVisibility(View.GONE);
+                thermal_check_setting.setVisibility(View.GONE);
+                confirmation_setting.setVisibility(View.GONE);
+                accessControl.setVisibility(View.GONE);
+                guide_setting.setVisibility(View.GONE);
+                audio_visual_setting.setVisibility(View.GONE);
+                printer_settings_layout.setVisibility(View.GONE);
+
+                upload_logo_setting_view.setVisibility(View.GONE);
+                home_view_setting_view.setVisibility(View.GONE);
+                confirmation_screen_setting_view.setVisibility(View.GONE);
+                access_control_setting_view.setVisibility(View.GONE);
+                guide_setting_view.setVisibility(View.GONE);
+                audio_visual_setting_view.setVisibility(View.GONE);
+                printer_setting_view.setVisibility(View.GONE);
+            } else {
+                setting_upload.setVisibility(View.VISIBLE);
+                thermal_check_setting.setVisibility(View.VISIBLE);
+                confirmation_setting.setVisibility(View.VISIBLE);
+                accessControl.setVisibility(View.VISIBLE);
+                guide_setting.setVisibility(View.VISIBLE);
+                audio_visual_setting.setVisibility(View.VISIBLE);
+                printer_settings_layout.setVisibility(View.VISIBLE);
+
+                upload_logo_setting_view.setVisibility(View.VISIBLE);
+                home_view_setting_view.setVisibility(View.VISIBLE);
+                confirmation_screen_setting_view.setVisibility(View.VISIBLE);
+                access_control_setting_view.setVisibility(View.VISIBLE);
+                guide_setting_view.setVisibility(View.VISIBLE);
+                audio_visual_setting_view.setVisibility(View.VISIBLE);
+                printer_setting_view.setVisibility(View.VISIBLE);
+            }
+        }
+        else {
+            Log.d(TAG, "proSettings: false");
+            setting_upload.setVisibility(View.VISIBLE);
+            thermal_check_setting.setVisibility(View.VISIBLE);
+            confirmation_setting.setVisibility(View.VISIBLE);
+            accessControl.setVisibility(View.VISIBLE);
+            guide_setting.setVisibility(View.VISIBLE);
+            audio_visual_setting.setVisibility(View.VISIBLE);
+            printer_settings_layout.setVisibility(View.VISIBLE);
+
+            upload_logo_setting_view.setVisibility(View.VISIBLE);
+            home_view_setting_view.setVisibility(View.VISIBLE);
+            confirmation_screen_setting_view.setVisibility(View.VISIBLE);
+            access_control_setting_view.setVisibility(View.VISIBLE);
+            guide_setting_view.setVisibility(View.VISIBLE);
+            audio_visual_setting_view.setVisibility(View.VISIBLE);
+            printer_setting_view.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void initiateLaunchHomeScreen() {
+        ProgressDialog.show(this, "", "Launching Home Screen, Please wait...");
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    AppSettings.getInstance().getSettingsFromSharedPref(SettingActivity.this);
+                    emitter.onNext(true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable settingDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        settingDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        launchHomeScreen();
+                        finish();
+                        settingDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in fetching settings from the server");
+                        launchHomeScreen();
+                        finish();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    private void launchHomeScreen() {
+        if (Util.isDeviceProModel()) {
+            if (!AppSettings.isProSettings()) {
+                startActivity(new Intent(this, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } else {
+                startActivity(new Intent(this, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        } else {
+            Util.switchRgbOrIrActivity(SettingActivity.this, true);
+        }
     }
 }

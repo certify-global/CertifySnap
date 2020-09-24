@@ -2,19 +2,20 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -24,37 +25,39 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.arcsoft.face.FaceEngine;
-import com.arcsoft.face.VersionInfo;
-import com.certify.callback.ActiveEngineCallback;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.BLEController;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.localserver.LocalServerTask;
+import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
+import com.certify.snap.service.ResetOfflineDataReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.gson.Gson;
 import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
-import com.tamic.novate.Novate;
-
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
 
 public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
@@ -62,142 +65,80 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public static Activity mActivity;
     private ImageView imgPic;
     private Animation myAnimation;
-    private FaceEngine faceEngine = new FaceEngine();
-    private Novate mnovate;
-    HashMap<String, String> map = new HashMap<String, String>();
-    Gson gson = new Gson();
-    private boolean isRunService = false;
     private SharedPreferences sharedPreferences;
     private boolean onlineMode = true;
-    boolean libraryExists = true;
-    // Demo
-    private static final String[] LIBRARIES = new String[]{
-            "libarcsoft_face_engine.so",
-            "libarcsoft_face.so",
-            "libarcsoft_image_util.so",
-    };
+    private Timer mActivationTimer;
+    private CountDownTimer startUpCountDownTimer;
+    private long remainingTime = 20;
+    private ImageView internetIndicatorImage;
+    public LocalServer localServer;
+    ResetOfflineDataReceiver resetOfflineDataReceiver;
+    public ExecutorService taskExecutorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.guide);
-        try {
-            Util.createAudioDirectory();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WindowManager.LayoutParams attributes = getWindow().getAttributes();
-            attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            getWindow().setAttributes(attributes);
-        }
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                if (!task.isSuccessful()) {
-                    Log.w(TAG, "getInstanceId failed", task.getException());
-                    return;
-                }
-
-                // Get new Instance ID token
-                String token = task.getResult().getToken();
-                Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                Logger.verbose(TAG,"firebase token",token);
-
-            }
-        });
 
         mActivity = this;
+        ApplicationController.getInstance().initThermalUtil(this);
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
+        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+        taskExecutorService = executorService.getExecutorService();
         TextView tvVersion = findViewById(R.id.tv_version_guide);
         tvVersion.setText(Util.getVersionBuild());
-        try {
-            onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
-        } catch (Exception ex) {
-            Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
-        }
-        AppCenter.setEnabled(onlineMode);
-        Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
 
-        if (!isInstalled(GuideActivity.this, "com.telpo.temperatureservice")) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //  Util.showToast(GuideActivity.this,getString(R.string.toast_tempservice_notinstall));
+        Util.enableLedPower(0);
+
+        Intent intent = getIntent();
+        String value = intent.getStringExtra("DEVICE_BOOT");
+
+        //Delay of 1 second for the Thermal module to get initialized
+        new Handler().postDelayed(() -> {
+            CameraController.getInstance().initDeviceMode();
+            if (value != null && value.equals("BootCompleted")) {
+                ApplicationController.getInstance().setDeviceBoot(true);
+                if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
+                    startProDeviceInitTimer();
+                    return;
                 }
-            });
-
-        }
-
-
-        myAnimation = AnimationUtils.loadAnimation(this, R.anim.alpha);
-        imgPic = findViewById(R.id.img_telpo);
-        imgPic.startAnimation(myAnimation);
-        checkStatus();
-        boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
-        boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
-
-        sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
-        sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+            }
+            initApp();
+        }, 1000);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        updateAppStatusInfo("APPCLOSED", AppStatusInfo.APP_CLOSED);
         try {
             FaceServer.getInstance().unInit();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean isInstalled(Context context, String packageName) {
-        final PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-        for (int i = 0; i < pinfo.size(); i++) {
-            if (pinfo.get(i).packageName.equalsIgnoreCase(packageName))
-                return true;
+        cancelActivationTimer();
+        if (startUpCountDownTimer != null) {
+            startUpCountDownTimer.cancel();
         }
-        return false;
+        ApplicationController.getInstance().releaseThermalUtil();
+        if (localServer == null){
+            localServer = new LocalServer(this);
+        }
+        localServer.stopServer();
+        ApplicationController.getInstance().setDeviceBoot(false);
+        if (resetOfflineDataReceiver != null){
+            this.unregisterReceiver(resetOfflineDataReceiver);
+        }
+        if (taskExecutorService != null) {
+            taskExecutorService = null;
+        }
     }
 
     private void checkStatus() {
         checkPermission();
-        libraryExists = checkSoFile(LIBRARIES);
-        ApplicationInfo applicationInfo = getApplicationInfo();
-        Log.e(TAG, "onCreate: " + applicationInfo.nativeLibraryDir);
-        if (!libraryExists) {
-//            Toast.makeText(this,getString(R.string.library_not_found),Toast.LENGTH_SHORT).show();
-//            finish();
-        } else {
-            VersionInfo versionInfo = new VersionInfo();
-            int code = FaceEngine.getVersion(versionInfo);
-            Log.e(TAG, "onCreate: getVersion, code is: " + code + ", versionInfo is: " + versionInfo);
-        }
-    }
-
-    /**
-     * @param libraries
-     * @return
-     */
-    private boolean checkSoFile(String[] libraries) {
-        File dir = new File(getApplicationInfo().nativeLibraryDir);
-        File[] files = dir.listFiles();
-        if (files == null || files.length == 0) {
-            return false;
-        }
-        List<String> libraryNameList = new ArrayList<>();
-        for (File file : files) {
-            libraryNameList.add(file.getName());
-        }
-        boolean exists = true;
-        for (String library : libraries) {
-            exists &= libraryNameList.contains(library);
-        }
-        return exists;
     }
 
     private void checkPermission() {
@@ -231,35 +172,31 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!License.activateLicense(GuideActivity.this)) {
-                    String message = getResources().getString(R.string.active_failed);
-                    Log.e(TAG, message);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Util.openDialogactivate(GuideActivity.this, message, "");
-                        }
-                    });
-                } else if (!onlineMode) {
-                    startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
-
-                } else {
-                    //TODO: This dialog is required when the connection fails to API server
-                    //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
-
-                    //If the network is off still launch the IRActivity and allow temperature scan in offline mode
-                    if (Util.isNetworkOff(GuideActivity.this)) {
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 1000);
-                        return;
-                    }
-                    Util.activateApplication(GuideActivity.this, GuideActivity.this);
+        if (!License.activateLicense(GuideActivity.this)) {
+            String message = getResources().getString(R.string.active_failed);
+            Log.e(TAG, message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Util.openDialogactivate(GuideActivity.this, message, "");
                 }
+            });
+        } else if (!onlineMode) {
+            //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
+            startLocalServer();
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
+        } else {
+            //TODO: This dialog is required when the connection fails to API server
+            //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
 
+            //If the network is off still launch the IRActivity and allow temperature scan in offline mode
+            if (Util.isNetworkOff(GuideActivity.this)) {
+                new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
+                return;
             }
-        }).start();
+            Util.activateApplication(GuideActivity.this, GuideActivity.this);
+            startActivationTimer();
+        }
     }
 
     @Override
@@ -290,11 +227,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (reportInfo == null) {
                 return;
             }
+            cancelActivationTimer();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
             }
             startHealthCheckService();
         } catch (Exception e) {
+            Util.switchRgbOrIrActivity(GuideActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
@@ -328,7 +267,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                 if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
                     || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                    if (!sharedPreferences.getBoolean(GlobalParameters.MEMBER_SYNC_DO_NOT, false))
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
                         startService(new Intent(GuideActivity.this, MemberSyncService.class));
                     Application.StartService(GuideActivity.this);
                 }
@@ -340,10 +279,162 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      * Method that processes next steps after the App settings are updated in the SharedPref on app launch
      */
     private void onSettingsUpdated() {
+        AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
         }
+        initNavigationBar();
         startMemberSyncService();
+        updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
+    }
+
+    private void initNavigationBar() {
+        if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true)) {
+            sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
+        } else {
+            sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
+        }
+    }
+
+    private void startActivationTimer() {
+        cancelActivationTimer();
+        mActivationTimer = new Timer();
+        mActivationTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                    }
+                });
+                this.cancel();
+            }
+        }, 10 * 1000);
+    }
+
+    private void cancelActivationTimer() {
+        if (mActivationTimer != null) {
+            mActivationTimer.cancel();
+        }
+    }
+
+    private void initAppStatusInfo(){
+        AppStatusInfo.getInstance().clear();
+        updateAppStatusInfo("APPSTARTED", AppStatusInfo.APP_STARTED);
+    }
+
+    private void updateAppStatusInfo(String key, String message) {
+        if (message.equals(AppStatusInfo.APP_STARTED))
+            AppStatusInfo.getInstance().setAppStarted(message);
+        else if (message.equals(AppStatusInfo.APP_CLOSED))
+            AppStatusInfo.getInstance().setAppClosed(message);
+        else if(message.equals(AppStatusInfo.DEVICE_SETTINGS))
+            AppStatusInfo.getInstance().setDeviceSettings(message);
+        Logger.debug(TAG, key, message);
+    }
+
+    private void initApp() {
+        runOnUiThread(() -> {
+            initAppStatusInfo();
+            try {
+                Util.createAudioDirectory();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WindowManager.LayoutParams attributes = getWindow().getAttributes();
+                attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+                getWindow().setAttributes(attributes);
+            }
+            FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                @Override
+                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "getInstanceId failed", task.getException());
+                        return;
+                    }
+
+                    // Get new Instance ID token
+                    String token = task.getResult().getToken();
+                    Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
+                    Logger.verbose(TAG,"firebase token",token);
+
+                }
+            });
+            internetIndicatorImage = findViewById(R.id.img_internet_indicator);
+            try {
+                onlineMode = sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true);
+            } catch (Exception ex) {
+                Logger.error(TAG, "onCreate()", "Error in reading Online mode setting from SharedPreferences" + ex.getMessage());
+            }
+            AppCenter.setEnabled(onlineMode);
+            Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
+
+            myAnimation = AnimationUtils.loadAnimation(GuideActivity.this, R.anim.alpha);
+            imgPic = findViewById(R.id.img_telpo);
+            imgPic.startAnimation(myAnimation);
+            checkStatus();
+            boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
+            boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
+
+            sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
+            sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
+
+            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+                internetIndicatorImage.setVisibility(View.GONE);
+            } else {
+                internetIndicatorImage.setVisibility(View.VISIBLE);
+            }
+
+            resetOfflineDataReceiver = new ResetOfflineDataReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_DATE_CHANGED);
+            intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+            this.registerReceiver(resetOfflineDataReceiver, intentFilter);
+        });
+        Util.writeString(sharedPreferences, GlobalParameters.APP_LAUNCH_TIME, String.valueOf(System.currentTimeMillis()));
+    }
+
+    private void startProDeviceInitTimer() {
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setButton("OK", (dialog, which) -> {
+            startUpCountDownTimer.cancel();
+            progressDialog.dismiss();
+            CameraController.getInstance().setScannerRemainingTime(remainingTime);
+            initApp();
+        });
+        startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
+            @Override
+            public void onTick(long remTime) {
+                remainingTime = ((remTime/1000)/60);
+                progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), remainingTime));
+            }
+
+            @Override
+            public void onFinish() {
+                startUpCountDownTimer.cancel();
+                progressDialog.dismiss();
+                ApplicationController.getInstance().setProDeviceBootTime(sharedPreferences, Util.currentDate());
+                initApp();
+            }
+        };
+        startUpCountDownTimer.start();
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void startLocalServer() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)
+            && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+            if (taskExecutorService != null) {
+                localServer = new LocalServer(this);
+                new LocalServerTask(localServer).executeOnExecutor(taskExecutorService);
+            }
+        }
     }
 }

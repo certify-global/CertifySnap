@@ -43,6 +43,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/qr_scanner_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -87,6 +88,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/anonymous_qr_bar_code_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -134,6 +136,75 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/qr_skip_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="20dp">
+
+        <TextView
+            android:id="@+id/qr_skip_button_enable_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enable_skip_button"
+            android:textColor="@color/black"
+            android:textSize="@dimen/margin_20" />
+
+        <RadioGroup
+            android:id="@+id/qr_skip_button_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_10"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/qr_skip_button_radio_yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:checked="false"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/qr_skip_button_radio_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_QR_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:visibility="gone">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextQRButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/edittextbackground"
+            android:hint="@string/qr_button_heading"
+            android:paddingLeft="05dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/rfid_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -296,17 +367,23 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/display_image_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:orientation="vertical"
+        android:paddingTop="20dp">
+
+        <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_10"
-        android:layout_marginTop="@dimen/margin_15"
         android:text="@string/display"
         android:textColor="@color/black"
         android:textSize="@dimen/margin_20" />
 
-    <RadioGroup
+        <RadioGroup
         android:id="@+id/radio_group_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -334,5 +411,5 @@
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
-
+    </LinearLayout>
 </LinearLayout>

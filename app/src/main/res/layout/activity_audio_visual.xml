@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="false"
+    tools:context=".activity.AudioVisualActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/bg_green"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="5dp"
+                android:background="@mipmap/back"
+                android:onClick="onParamterback"
+                tools:ignore="OnClick" />
+
+            <TextView
+                android:id="@+id/titles"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:gravity="left|center"
+                android:onClick="onParamterback"
+                android:text="@string/audio_visual_view"
+                android:textColor="#ffffff"
+                android:textSize="22sp"
+                tools:ignore="OnClick" />
+
+            <TextView
+                android:id="@+id/btn_exit"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginRight="10dp"
+                android:gravity="right|center"
+                android:onClick="saveAudioSettings"
+                android:text="@string/save"
+                android:textColor="#ffffff"
+                android:textSize="22sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/audio_alert_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_audio_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_5"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="Audio Alerts"
+                android:textColor="@color/black"
+                android:textSize="22sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_sound_low"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_15"
+                    android:text="@string/enable_sound"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_18" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_sound"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_yes_sound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/radio_no_sound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/tv_sound_high"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_15"
+                    android:text="@string/enable_sound_high"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_18" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_sound_high"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_yes_sound_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/radio_no_sound_high"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_qr_sound_valid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_15"
+                    android:text="@string/enable_qr_sound_valid"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_18" />
+
+                <RadioGroup
+                    android:id="@+id/qr_radio_group_sound_valid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/qr_radio_yes_sound_valid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/qr_radio_no_sound_valid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/tv_qr_sound_invalid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_15"
+                    android:text="@string/enable_qr_sound_invalid"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_18" />
+
+                <RadioGroup
+                    android:id="@+id/qr_radio_group_sound_invalid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin_20"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/qr_radio_yes_sound_invalid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/qr_radio_no_sound_invalid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/font_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue" />
+
+        <LinearLayout
+            android:id="@+id/visul_alert_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_visual_alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_5"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="Visual Alerts"
+                android:textColor="@color/black"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/tv_light_low"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="@string/enable_light"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_yes_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_no_light"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/tv_light_high"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="@string/enable_light_high"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_light_high"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_yes_light_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_no_light_high"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_ble_connect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:drawablePadding="5dp"
+                    android:text="@string/ble_connect_status"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_ble_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="4dp"
+                    android:ellipsize="end"
+                    android:maxLength="25"
+                    android:maxLines="1"
+                    android:text="NONE"
+                    android:textColor="@color/red"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/tv_ble_connection_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:background="@color/bg_blue"
+                    android:onClick="selectBleDevice"
+                    android:padding="10dp"
+                    android:text="@string/ble_connect"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_ble_connection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="@dimen/margin_10"
+                    android:onClick="selectBleDevice"
+                    android:text="@string/ble_connect"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_ble_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="5dp"
+                    android:text="@string/ble_light_test"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/light_On"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:background="@color/gray"
+                    android:enabled="false"
+                    android:onClick="bleLightOn"
+                    android:padding="10dp"
+                    android:text="Light On"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:id="@+id/light_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:background="@color/gray"
+                    android:enabled="false"
+                    android:onClick="bleLightOff"
+                    android:padding="10dp"
+                    android:text="Light OFF"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue" />
+
+
+
+    </LinearLayout>
+</ScrollView>

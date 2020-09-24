@@ -44,6 +44,7 @@ public class GlobalParameters {
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
     public static final String ScanMode = "ScanMode";
     public static final String ScanProximity = "ScanProximity";
+    public static final String PRAGMA_KEY = "pragmakey";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -57,6 +58,7 @@ public class GlobalParameters {
     public static final String FACE_TEMP = "facetemp";
     public static final String TEMP_ONLY = "temp";
     public static final String TEMP_TEST = "test";
+    public static final String DISPLAY_TEMP_THRESHOLD = "display_temp_threshold";
     public static final String IMAGE_ICON = "image";
     public static final String IMAGE_ICON_API = "image_api";
     public static final String ACCESS_TOKEN = "access_token";
@@ -73,13 +75,20 @@ public class GlobalParameters {
     public static final String URL = "url";
     public static final String DEVICE_NAME = "device_name";
     public static final String DEVICE_SETTINGS_NAME = "device_settings_name";
+    public static final String PRO_SETTINGS = "pro_settings";
     public static final String Thermalscan_title = "Thermalscan_title";
     public static final String Thermalscan_subtitle = "Thermalscan_subtitle";
     public static final String CAPTURE_IMAGES_ABOVE = "c_m_above";
     public static final String CAPTURE_IMAGES_ALL = "c_m_all";
     public static final String CAPTURE_TEMPERATURE = "c_m_temp";
-    public static final String CAPTURE_SOUND = "c_m_sound";
-    public static final String CAPTURE_SOUND_HIGH = "c_sound_high";
+    public static final String TEMPERATURE_SOUND_NORMAL = "c_m_sound";
+    public static final String TEMPERATURE_SOUND_HIGH = "c_sound_high";
+    public static final String QR_SOUND_VALID = "qr_sound_valid";
+    public static final String QR_SOUND_INVALID = "qr_sound_invalid";
+    public static final String BLE_LIGHT_NORMAL = "BleLightNormal";
+    public static final String BLE_LIGHT_HIGH = "BleLightHigh";
+    public static final String BROTHER_BLUETOOTH_PRINTER = "BrotherBluetoothPrinter";
+    public static final String TOSHIBA_USB_PRINTER = "ToshibaBluetoothPrinter";
     public static final String MASK_DETECT = "mask_detect";
     public static final String FACIAL_DETECT = "facial_detect";
     public static final String ALLOW_ALL = "allow_all";
@@ -129,7 +138,27 @@ public class GlobalParameters {
     public static final String COMPENSATION = "compensation";
     public static final String Firebase_Token = "firebase_token";
     public static final String Generate_Token_Command = "generate_token_command";
-    public static final String MEMBER_SYNC_DO_NOT ="member_sync_do_not";
+    public static final String SYNC_ONLINE_MEMBERS ="sync_online_members";
+    public static final String Internet_Indicator ="internet_indicator";
+    public static final String Admin_InstitutionID ="Admin_InstitutionID";
+    public static final String Temp_ACCESS_TOKEN = "Temp_access_token";
+    public static final String QR_BUTTON_TEXT = "QR_button_text";
+    public static final String QR_SKIP_BUTTON_ENABLE_DISABLE = "QR_skip_button_enable";
+    public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
 
+    public static final String Temperature = "temperature";
+    public static final String Temphint = "temphint";
+    public static final String OpenDoor = "opendoor";
+    public static final String Host = "host";
+    public static final String Port = "port";
+    public static final String Fromadd = "fromadd";
+    public static final String Frompwd = "frompwd";
+    public static final String type = "type";
+    public static final String MaskMode = "maskMode";
+    public static final String Centigrades = "centigrade";
+    public static final String Fahrenheits = "fahrenheit";
+    public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
+    public static final String APP_LAUNCH_TIME = "app_launch_time";
 
+    public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
 }

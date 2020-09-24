@@ -1,10 +1,15 @@
 package com.certify.snap.controller;
 
+import android.content.Context;
+import android.os.CountDownTimer;
 import android.util.Log;
 
+import com.certify.snap.common.Constants;
+import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
+import com.common.thermalimage.ThermalImageUtil;
 
 public class CameraController {
     private final String TAG = CameraController.class.getSimpleName();
@@ -12,12 +17,25 @@ public class CameraController {
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private boolean isFaceVisible = false; //flag to let know when the face is detected
-    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA}
+    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA, MULTIUSER}
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
     public int CAMERA_PREVIEW_HEIGHT = 1208;
     private FaceParameters faceParameters;
+    private boolean isCameraOnForRfid = false;
+    private boolean isAppExitTriggered = false;
+    public static int IMAGE_PROCESS_COMPLETE = 1;
+    public ScanState scanState = ScanState.IDLE;
+    private  int deviceMode =0;
+    private long scannerRemainingTime = 0;
+
+    public enum ScanState {
+        IDLE,
+        FACIAL_SCAN,
+        THERMAL_SCAN,
+        COMPLETE
+    }
 
     public static CameraController getInstance() {
         if (mInstance == null) {
@@ -83,6 +101,67 @@ public class CameraController {
         return faceParameters;
     }
 
+    public boolean isCameraOnRfid() {
+        return isCameraOnForRfid;
+    }
+
+    public void setCameraOnRfid(boolean cameraOn) {
+        isCameraOnForRfid = cameraOn;
+    }
+
+    public ScanState getScanState() {
+        return scanState;
+    }
+
+    public void setScanState(ScanState scanState) {
+        this.scanState = scanState;
+    }
+
+    public boolean isAppExitTriggered() {
+        return isAppExitTriggered;
+    }
+
+    public void setAppExitTriggered(boolean appExitTriggered) {
+        isAppExitTriggered = appExitTriggered;
+    }
+
+    public void initDeviceMode() {
+        ThermalImageUtil thermalImageUtil = ApplicationController.getInstance().getTemperatureUtil();
+        if (thermalImageUtil != null && thermalImageUtil.getUsingModule() != null) {
+            deviceMode = thermalImageUtil.getUsingModule()[0];
+        }
+    }
+
+    public int getDeviceMode() {
+        return deviceMode;
+    }
+
+    public long getScannerRemainingTime() {
+        return scannerRemainingTime;
+    }
+
+    public void setScannerRemainingTime(long scannerRemainingTime) {
+        this.scannerRemainingTime = scannerRemainingTime;
+    }
+
+    public void startProDeviceInitTimer(Context context) {
+        if (scannerRemainingTime > 0) {
+            long timeDuration = (scannerRemainingTime * 60 * 1000);
+            new CountDownTimer(timeDuration, Constants.PRO_SCANNER_INIT_INTERVAL) {
+                @Override
+                public void onTick(long remTime) {
+                    scannerRemainingTime = ((remTime/1000)/60);
+                }
+
+                @Override
+                public void onFinish() {
+                    scannerRemainingTime = 0;
+                    ApplicationController.getInstance().setProDeviceBootTime(Util.getSharedPreferences(context), Util.currentDate());
+                }
+            }.start();
+        }
+    }
+
     public float getOnlyTextSize(int length) {
         Log.i("getOnlyTextSize  ", "" + length);
         if (length > 2000)
@@ -100,6 +179,11 @@ public class CameraController {
         isFaceVisible = false;
         compareResult = null;
         isFaceNotMatchedOnRetry = false;
-        faceParameters = null;
+        if (faceParameters != null) {
+            faceParameters.clear();
+        }
+        isAppExitTriggered = false;
+        scanState = ScanState.IDLE;
     }
+
 }

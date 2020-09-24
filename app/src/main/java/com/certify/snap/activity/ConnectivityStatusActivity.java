@@ -6,18 +6,16 @@ import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.RouteInfo;
 import android.net.wifi.WifiManager;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.snap.R;
@@ -37,7 +35,7 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
 
     private static final String TAG = ConnectivityStatusActivity.class.getSimpleName();
     LinearLayout mRelativeConnectivity;
-    private TextView mMacTv, mIPAddress, mNetmaskTv, mGatewayTv, mDns1Tv, mDns2Tv, mEthernetIpTv, mSsidTv, mNetworkAvailableTv;
+    private TextView mMacTv, mIPAddress, mNetmaskTv, mGatewayTv, mDns1Tv, mDns2Tv, mEthernetIpTv, mSsidTv, mNetworkAvailableTv, mDeviceReader;
     private RadioButton mRbInternetConnectivity, mRbcloudConnectivity;
     DhcpInfo dhcpInfo;
     WifiManager wifi;
@@ -58,6 +56,7 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
     private TextView mEthernetIptext;
     private TextView mInternetConnectivityText;
     private TextView mCloudConnectivityText;
+    private TextView mdeviceReaderSupport;
 
 
 
@@ -71,6 +70,7 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
                 "rubiklight.ttf");
         initView();
         networkAvailableSetText();
+        deviceReader();
         if (!Util.isNetworkOff(ConnectivityStatusActivity.this)){
             mRbInternetConnectivity.setChecked(true);
         } else {
@@ -177,7 +177,10 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
         mInternetConnectivityText.setTypeface(rubiklight);
         mCloudConnectivityText = findViewById(R.id.tv_cloudConnectivity);
         mCloudConnectivityText.setTypeface(rubiklight);
-
+        mDeviceReader = findViewById(R.id.nfc_hid_reader);
+        mDeviceReader.setTypeface(rubiklight);
+        mdeviceReaderSupport = findViewById(R.id.deviceReaderSupport);
+        mdeviceReaderSupport.setTypeface(rubiklight);
 
     }
 
@@ -310,5 +313,13 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
         } catch (Exception e) {
             Logger.error(TAG,"onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
+    }
+
+    private void deviceReader() {
+        NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter != null && mNfcAdapter.isEnabled())
+            mDeviceReader.setText("NFC Reader");
+        else
+            mDeviceReader.setText("HID Reader");
     }
 }

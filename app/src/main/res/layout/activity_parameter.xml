@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context="com.certify.snap.activity.ParameterActivity">
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -331,45 +331,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:orientation="horizontal"
-                android:visibility="visible">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1"
-                    android:text="@string/NavigationBar"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <RadioGroup android:id="@+id/radio_group_navigationbar"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
-                    android:layout_height="wrap_content">
-
-                    <RadioButton
-                        android:text="@string/navigation_show"
-                        android:id="@+id/radio_navigation_show"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <RadioButton
-                        android:text="@string/navigation_hide"
-                        android:id="@+id/radio_navigation_hide"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                </RadioGroup>
-
-
-            </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -425,6 +386,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </ScrollView>-->
 
 </LinearLayout>

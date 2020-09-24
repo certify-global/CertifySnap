@@ -1,25 +1,29 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputLayout;
-
+import com.certify.snap.common.AppSettings;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.AppStatusInfo;
 
-public class LoginActivity extends Activity {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class LoginActivity extends BaseActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
     EditText etPassword;
@@ -28,10 +32,12 @@ public class LoginActivity extends Activity {
     TextView textview_name,tv_version,tv_serial_no,tv_pwd_error,text_input_login;
     Typeface rubiklight;
     int count=10;
+    private Timer mLoginScreenTimer;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             setContentView(R.layout.activity_login);
             etPassword = findViewById(R.id.edittext_login);
             btn_confirm = findViewById(R.id.btn_login);
@@ -50,10 +56,11 @@ public class LoginActivity extends Activity {
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    cancelLoginScreenTimer();
                     if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
                         if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setText("Password should not be empty");
+                            updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
                             return;
                         }
                         if (!sp.getString(GlobalParameters.deviceSettingMasterCode, "").isEmpty()) {
@@ -79,6 +86,7 @@ public class LoginActivity extends Activity {
                         }
                         if (etPassword.getText().toString().isEmpty()) {
                             text_input_login.setText("Password should not be empty");
+                            updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
                         } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
                             if (sp.getBoolean(GlobalParameters.ONLINE_MODE, false)) {
@@ -88,11 +96,13 @@ public class LoginActivity extends Activity {
                                 Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
                                 startActivity(intent);
                                 finish();
+                                updateAppStatusInfo("LOGIN SUCCESS", AppStatusInfo.LOGIN_SUCCESS);
                             }
                         } else {
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
                             tv_pwd_error.setText("Invalid Password, Try Again");
+                            updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
 //
                         }
                     }
@@ -101,6 +111,14 @@ public class LoginActivity extends Activity {
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
+        startLoginScreenTimer();
+        Logger.debug(TAG, "onCreate", "Init complete");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cancelLoginScreenTimer();
     }
 
     private  void validatePassword(){
@@ -109,15 +127,16 @@ public class LoginActivity extends Activity {
         tv_pwd_error.setVisibility(View.VISIBLE);
         tv_pwd_error.setText("Invalid Password, Try Again");
     }
+
     public void onParamterback(View view) {
-       startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        launchHomeScreen();
         finish();
     }
 
     @Override
     public void onBackPressed() {
-
-        startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        //startActivity(new Intent(LoginActivity.this, IrCameraActivity.class));
+        launchHomeScreen();
         finish();
     }
 
@@ -130,6 +149,58 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
             startActivity(intent);
             finish();
+            updateAppStatusInfo("LOGIN SUCCESS", AppStatusInfo.LOGIN_SUCCESS);
         }
     }
+
+    private void startLoginScreenTimer() {
+       cancelLoginScreenTimer();
+        mLoginScreenTimer = new Timer();
+        mLoginScreenTimer.schedule(new TimerTask() {
+            public void run() {
+                launchHomeScreen();
+                finish();
+                this.cancel();
+            }
+        }, 10 * 1000);
+    }
+
+    private void cancelLoginScreenTimer() {
+        if (mLoginScreenTimer != null)
+            mLoginScreenTimer.cancel();
+    }
+
+    private void launchHomeScreen() {
+        if (Util.isDeviceProModel()) {
+            if (!AppSettings.isProSettings()) {
+                startActivity(new Intent(this, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } else {
+                startActivity(new Intent(this, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        } else {
+            Util.switchRgbOrIrActivity(LoginActivity.this, true);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        etPassword.getText().clear();
+    }
+
+    @Override
+    public void onUserInteraction() {
+        super.onUserInteraction();
+        cancelLoginScreenTimer();
+        Logger.debug(TAG, "onUserInteraction", "User action occurred");
+    }
+
+    private void updateAppStatusInfo(String key, String value) {
+        if (value.equals(AppStatusInfo.LOGIN_SUCCESS))
+            AppStatusInfo.getInstance().setLoginSuccess(value);
+        else if (value.equals(AppStatusInfo.LOGIN_FAILED))
+            AppStatusInfo.getInstance().setLoginFailed(value);
+        Logger.debug(TAG, key, value);
+    }
+
 }

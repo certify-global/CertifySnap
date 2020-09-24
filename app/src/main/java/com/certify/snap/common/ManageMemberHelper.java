@@ -10,10 +10,9 @@ import android.util.Log;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.RegisteredMembers;
-
-import org.litepal.LitePal;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,8 +122,8 @@ public class ManageMemberHelper {
 //      registeredMembers.setExpire_time(time);
             registeredMembers.setImage(image);
             registeredMembers.setFeatures(feature);
-            boolean result = registeredMembers.save();
-            return result;
+//            boolean result = registeredMembers.save();
+            return true;
         }catch (Exception e){
             Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
         }
@@ -150,19 +149,22 @@ public class ManageMemberHelper {
         }
     }
     private static boolean isCertifyIdExist(String uniqueID) {
-        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
+//        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
+        List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(uniqueID);
         if (membersList != null && membersList.size() > 0) {
             return true;
         }
         return false;
     }
     public static boolean deleteDatabaseCertifyId(String name, String certifyId) {
-        List<RegisteredMembers> list = LitePal.where("uniqueid = ?", certifyId).find(RegisteredMembers.class);
+        //List<RegisteredMembers> list = LitePal.where("uniqueid = ?", certifyId).find(RegisteredMembers.class);
+        List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExit(certifyId);
         if (list != null && list.size() > 0) {
             FaceServer.getInstance().deleteInfo(name + "-" + certifyId);
             String featurePath = list.get(0).getFeatures();
             String imgPath = list.get(0).getImage();
-            int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
+            //int line = LitePal.deleteAll(RegisteredMembers.class, "uniqueid = ?", certifyId);
+            int line = DatabaseController.getInstance().deleteMemberByCertifyId(certifyId);
             Log.e("tag", "line---" + line);
             File featureFile = new File(featurePath);
             File imgFile = new File(imgPath);

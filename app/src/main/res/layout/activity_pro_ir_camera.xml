@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activity.ProIrCameraActivity">
+
+    <include layout="@layout/titlebar" />
+
+    <TextureView
+        android:id="@+id/texture_preview_ir"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextureView
+        android:id="@+id/texture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.certify.snap.arcface.widget.FaceRectView
+        android:id="@+id/single_camera_face_rect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_person"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:layout_alignParentBottom="true" />
+
+    <ImageView
+        android:id="@+id/img_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        />
+
+    <ImageView
+        android:id="@+id/iv_thermalImage"
+        android:layout_marginStart="-20dp"
+        android:layout_marginTop="25dp"
+        android:layout_width="250dp"
+        android:layout_height="200dp"/>
+
+    <TextView
+        android:id="@+id/mask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/tv_measure_area"
+        android:layout_width="match_parent"
+        android:layout_height="550px"
+        android:layout_marginTop="300px"
+        android:background="@drawable/measure_rect"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="35sp" />
+
+</RelativeLayout>
