@@ -3,6 +3,7 @@ package com.certify.snap.controller;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
@@ -14,8 +15,19 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.certify.callback.GestureCallback;
+import com.certify.snap.async.AsyncJSONObjectAccessLog;
+import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.EndPoints;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
+import com.certify.snap.common.Util;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,17 +38,22 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GestureController {
+public class GestureController implements GestureCallback {
     private static final String TAG = GestureController.class.getSimpleName();
     private static GestureController instance = null;
     private Context mContext;
+    private SharedPreferences sharedPreferences;
 
     private Timer mTimer;
-    private ArrayList<String> questionList = new ArrayList<>();
+    //    private ArrayList<String> questionList = new ArrayList<>();
     private boolean wait = true;
     private boolean runCheck = true;
     private boolean allQuestionAnswered = false;
     private GestureCallbackListener listener = null;
+    //    private ArrayList<HashMap<String,String>> questionArrayList = new ArrayList<>();
+    private HashMap<String, String> questionHashmap = new HashMap<>();
+    private HashMap<String, String> answerHashmap = new HashMap<>();
+
 
     //Hand Gesture
     int leftRangeValue = 50;
@@ -44,14 +61,19 @@ public class GestureController {
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
+    int index = 0;
+
 
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
 
+
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
+
         void onAllQuestionsAnswered();
+
         void onVoiceListeningStart();
     }
 
@@ -64,16 +86,46 @@ public class GestureController {
 
     public void init(Context context) {
         this.mContext = context;
-        if (AppSettings.isEnableHandGesture()) {
-            questionList.add("Wave right hand for English \n Wave left hand for Spanish");
-            questionList.add("Wave right hand if Doctor \n Wave left hand if Patient");
-        } else if (AppSettings.isEnableVoice()) {
-            questionList.add("If English say YES \n If Spanish say NO");
-            questionList.add("If Doctor say YES \n If Patient say NO");
+        sharedPreferences = Util.getSharedPreferences(mContext);
+    }
+
+    public void getQuestionSAPI() {
+        try {
+            JSONObject obj = new JSONObject();
+           // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
+            new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
+
+        } catch (Exception e) {
+            Log.d(TAG, "getQuestionSAPI" + e.getMessage());
         }
-        questionList.add("1. Do you have Dry Cough");
-        questionList.add("2. Have you travelled overseas in the last 14 days");
-        questionList.add("3. Have you been in contact with someone who has confirmed case of Covid-19?");
+    }
+
+    @Override
+    public void onJSONObjectListenerGesture(JSONObject reportInfo, String status, JSONObject req) {
+        try {
+            questionHashmap.clear();
+            if (reportInfo == null) {
+                Logger.error(TAG, "onJSONObjectListenerGesture", "GetQuestions Log api failed");
+                return;
+            }
+            if (reportInfo.getInt("responseCode") == 1) {
+                JSONArray jsonArray = reportInfo.getJSONArray("responseData");
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String questionName = jsonObject.getString("questionName");
+                    questionHashmap.put(questionName, "NA");
+                    Log.d("CertifyXT Question",questionName);
+                }
+            }else{
+                Toast.makeText(mContext, reportInfo.getString("responseMessage"), Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, "onJSONObjectListenerGesture" + e.getMessage());
+        }
+
     }
 
     public void setCallbackListener(GestureCallbackListener callbackListener) {
@@ -82,14 +134,19 @@ public class GestureController {
 
     public String getQuestion() {
         String question = "";
-        if (questionList.size() > 0) {
-            question = questionList.get(0);
+        if (questionHashmap.size() > 0) {
+            for (String key : questionHashmap.keySet()) {
+                question = String.valueOf(key);
+                Log.d("CertifyXT getquestion",question);
+                break;
+            }
         }
         return question;
     }
 
     /**
      * Method that initializes the voice
+     *
      * @param context context
      */
     public void initVoice(Context context) {
@@ -149,7 +206,7 @@ public class GestureController {
                 if (data != null && data.size() > 0) {
                     if (data.get(0).toLowerCase().equals("yes")
                             || data.get(0).toLowerCase().equals("no")) {
-                        onQuestionAnswered();
+                        onQuestionAnswered(data.get(0).toLowerCase());
                     } else {
                         startListening();
                     }
@@ -296,7 +353,7 @@ public class GestureController {
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "Error in openReader " +e.getMessage());
+            Log.e(TAG, "Error in openReader " + e.getMessage());
         }
     }
 
@@ -359,34 +416,40 @@ public class GestureController {
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
         if (wait) {
-            updateOnWave();
+            updateOnWave("no");
         }
     }
 
     private void rightHandWave() {
         Log.d(TAG, "Left Hand wave");
         if (wait) {
-            updateOnWave();
+            updateOnWave("yes");
         }
     }
 
-    private void updateOnWave() {
-        onQuestionAnswered();
+    private void updateOnWave(String answers) {
+        onQuestionAnswered(answers);
     }
 
-    private void onQuestionAnswered() {
-        if (questionList.isEmpty()) return;
-        String question = questionList.get(0);
-        questionList.remove(question);
-        if (questionList.isEmpty()) {
+    private void onQuestionAnswered(String answer) {
+        if (questionHashmap.isEmpty()) return;
+
+        for (String key : questionHashmap.keySet()) {
+            answerHashmap.put(key, answer);
+            questionHashmap.remove(key);
+            break;
+        }
+        if (listener != null) {
+            listener.onQuestionAnswered(answer);
+        }
+
+        if (questionHashmap.isEmpty()) {
             stopListening();
             if (listener != null) {
                 listener.onAllQuestionsAnswered();
             }
         }
-        if (listener != null) {
-            listener.onQuestionAnswered(question);
-        }
+
     }
 
     public static String toHexString(byte[] data) {
@@ -431,7 +494,7 @@ public class GestureController {
             speechRecognizer.stopListening();
             speechRecognizer.destroy();
         }
-        questionList.clear();
+      //  questionHashmap.clear();
         runCheck = false;
         listener = null;
         usbReader = null;
