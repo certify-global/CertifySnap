@@ -61,4 +61,17 @@
         <item name="android:colorControlActivated">@color/bg_green</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat</item>
     </style>
+
+    <style name="spinner_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/spinner_background</item>
+        <item name="android:layout_marginRight">70dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:popupBackground">#FFFFFF</item>
+    </style>
 </resources>

@@ -49,9 +49,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             setQuestion();
 
         if (AppSettings.isEnableVoice()) {
-            handleQuestionnaireByVoice();
+           // handleQuestionnaireByVoice();
         } else {
             handleQuestionnaireByGesture();
+            //handleQuestionnaireByVoice();
         }
 
         return view;
@@ -93,7 +94,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             checkPermission();
         }
-
         GestureController.getInstance().initVoice(getContext());
         GestureController.getInstance().setSpeechRecognitionListener();
         GestureController.getInstance().startListening();

@@ -24,6 +24,7 @@ import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.GestureController;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -69,14 +70,15 @@ public class TouchlessActivity extends Activity implements FlowListCallback {
         enable_wave.setTypeface(rubiklight);
         wave_options.setTypeface(rubiklight);
         enable_wave_questions.setTypeface(rubiklight);
+        enable_mask.setTypeface(rubiklight);
         sharedPreferences = Util.getSharedPreferences(this);
         getFlowListAPI();
     }
 
     private void setValues() {
-
+        flowHashmap.put("Choose Questionnaire","header");
         ArrayList<String> values = new ArrayList<>(flowHashmap.keySet());
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,values);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item,values);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_question_selector.setAdapter(adapter);
 
@@ -85,8 +87,11 @@ public class TouchlessActivity extends Activity implements FlowListCallback {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String name = spinner_question_selector.getSelectedItem().toString();
                 String settingID = flowHashmap.get(name);
-                //Toast.makeText(TouchlessActivity.this, "key"+settingID + "value"+name, Toast.LENGTH_SHORT).show();
+                if(!settingID.equals("header"))
                 Util.writeString(sharedPreferences,GlobalParameters.Touchless_setting_id,settingID);
+                GestureController.getInstance().getQuestionSAPI();
+
+
             }
 
             @Override
@@ -94,6 +99,8 @@ public class TouchlessActivity extends Activity implements FlowListCallback {
 
             }
         });
+
+
     }
 
     public void getFlowListAPI() {
@@ -120,7 +127,6 @@ public class TouchlessActivity extends Activity implements FlowListCallback {
 
             if (report.getInt("responseCode") == 1) {
                 JSONArray jsonArray = report.getJSONArray("responseData");
-                 flowHashmap.put("Choose Questionnaire","header");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String id = jsonObject.getString("id");
@@ -133,6 +139,8 @@ public class TouchlessActivity extends Activity implements FlowListCallback {
 
                     }
                 }
+            }else{
+                Toast.makeText(this, report.getString("responseMessage"), Toast.LENGTH_SHORT).show();
             }
 
 

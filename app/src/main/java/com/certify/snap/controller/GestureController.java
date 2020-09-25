@@ -91,10 +91,16 @@ public class GestureController implements GestureCallback {
 
     public void getQuestionSAPI() {
         try {
-            JSONObject obj = new JSONObject();
-           // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
-            new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
+            if(!sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"").isEmpty()) {
+
+                JSONObject obj = new JSONObject();
+                // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
+                new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
+            }else{
+                if (AppSettings.isEnableVoice() || AppSettings.isEnableHandGesture())
+                Toast.makeText(mContext, "Please Choose Questionnaire in Touchless Interaction Setting.", Toast.LENGTH_SHORT).show();
+            }
 
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
