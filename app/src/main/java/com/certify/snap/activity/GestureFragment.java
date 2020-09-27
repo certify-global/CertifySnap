@@ -5,12 +5,14 @@ import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +32,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private TextView covidQuestionsText, titleView;
     private View view, view1, view2, view3;
     private ImageView image1, image2, image3, image4;
-    private LinearLayout voiceLayout, handGestureLayout, progressLayout;
+    private LinearLayout voiceLayout,  progressLayout;
+    private RelativeLayout handGestureLayout;
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
 
@@ -43,7 +46,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         initView();
         GestureController.getInstance().init(this.getContext());
         GestureController.getInstance().setCallbackListener(this);
-        setQuestion();
+            setQuestion();
 
         if (AppSettings.isEnableVoice()) {
             handleQuestionnaireByVoice();
@@ -76,10 +79,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         titleView.setTypeface(rubiklight);
 
         if (AppSettings.isEnableVoice()) {
-            titleView.setText("Please answer the questions by saying Yes or No");
-            voiceLayout.setVisibility(View.VISIBLE);
+          //  titleView.setText("Please answer the questions by saying Yes or No");
+           // voiceLayout.setVisibility(View.VISIBLE);
+            handGestureLayout.setVisibility(View.VISIBLE);
         } else {
-            voiceLayout.setVisibility(View.GONE);
+           // voiceLayout.setVisibility(View.GONE);
+            handGestureLayout.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -107,9 +113,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             handGestureLayout.setVisibility(View.VISIBLE);
         }
         if (AppSettings.isEnableVoice()) {
-            voiceLayout.setVisibility(View.VISIBLE);
+            //voiceLayout.setVisibility(View.VISIBLE);
+            handGestureLayout.setVisibility(View.VISIBLE);
         }
-        progressLayout.setVisibility(View.VISIBLE);
+        progressLayout.setVisibility(View.GONE);
     }
 
     //-----> Voice code
@@ -131,7 +138,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionAnswered(String answeredQ) {
         getActivity().runOnUiThread(() -> {
-            if (answeredQ.contains("Doctor")) {
+         /*   if (answeredQ.contains("Doctor")) {
                 image1.setImageResource(R.drawable.tick);
             } else if (answeredQ.contains("1.")) {
                 view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
@@ -142,7 +149,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             } else if (answeredQ.equals("3.")) {
                 view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image4.setImageResource(R.drawable.tick);
-            }
+            }*/
+
             uiUpdate();
             setQuestion();
         });

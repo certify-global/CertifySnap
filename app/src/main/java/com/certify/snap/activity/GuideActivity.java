@@ -35,6 +35,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;

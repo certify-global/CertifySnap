@@ -71,6 +71,7 @@ import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
@@ -1480,6 +1481,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
                 Util.getSettings((SettingCallback) context, context);
+                GestureController.getInstance().init(context);
+                GestureController.getInstance().getQuestionSAPI();
 
 //                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
             }
@@ -2065,4 +2068,36 @@ public class Util {
                         .toMinutes(uptimeMillis)));
         return deviceUptime;
     }
+
+    public static JSONObject getJSONObjectGesture(JSONObject req, String url, String header, Context context) {
+            try {
+                String responseTemp = Requestor.postJson(url, req, context);
+                if (responseTemp != null && !responseTemp.equals("")) {
+                    return new JSONObject(responseTemp);
+                }
+            } catch (Exception e) {
+                Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                        + ", url = " + url, e.getMessage());
+                return null;
+
+            }
+            return null;
+    }
+
+    public static JSONObject getJSONObjectFlowList(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+
 }
