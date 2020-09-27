@@ -27,6 +27,7 @@ import com.common.thermalimage.ThermalImageUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -64,8 +65,8 @@ public class TemperatureController {
     private Timer guideTempTimer = null;
     private float MIN_TEMPERATURE_THRESHOLD = 93.2f;
     private int mTemperatureRetry = 0;
-    private float machineTemperature = 0;
-    private float ambientTemperature = 0;
+    private String machineTemperature;
+    private String ambientTemperature;
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
@@ -294,8 +295,10 @@ public class TemperatureController {
                     temperature = 0;
                     for (int i = 0; i < maxInRectInfo.size(); i++) {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
-                        machineTemperature = maxInRectInfo.get(i)[0]* (9f / 5) + 32;
-                        ambientTemperature = temperatureBigData.getEmvirTem() * (9f / 5) + 32;
+                        float machineTemperatureValue = maxInRectInfo.get(i)[0]* (9f / 5) + 32;
+                        float ambientTemperatureValue = temperatureBigData.getEmvirTem() * (9f / 5) + 32;
+                        machineTemperature = new DecimalFormat("##.#").format(machineTemperatureValue);
+                        ambientTemperature = new DecimalFormat("##.#").format(ambientTemperatureValue);
                         if (AppSettings.getfToC().equals("F")) {
                             temperature = (float) Util.celsiusToFahrenheit(temperatureCelsius);
                         } else {
@@ -663,11 +666,11 @@ public class TemperatureController {
         }
     }
 
-    public float getMachineTemperature() {
+    public String getMachineTemperature() {
         return machineTemperature;
     }
 
-    public float getAmbientTemperature() {
+    public String getAmbientTemperature() {
         return ambientTemperature;
     }
 
