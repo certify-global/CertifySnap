@@ -31,7 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TouchlessActivity extends Activity implements FlowListCallback {
+public class TouchlessActivity extends SettingBaseActivity implements FlowListCallback {
     public static String TAG = "TouchlessActivity";
     TextView enable_wave, wave_options, enable_wave_questions, enable_mask;
     RadioGroup radio_group_enable_wave, radio_group_enable_questions, radio_group_mask;

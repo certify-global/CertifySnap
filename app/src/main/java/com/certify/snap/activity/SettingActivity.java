@@ -241,9 +241,10 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         printer_settings_layout = findViewById(R.id.printer_settings_layout);
         printer_setting_view = findViewById(R.id.printer_setting_view);
         printer_setting_text = findViewById(R.id.printer_setting_text);
-
         recordDivider = findViewById(R.id.record_divider);
         touchless_interaction = findViewById(R.id.touchless_interaction);
+        touchless_interaction_setting = findViewById(R.id.touchless_interaction_setting);
+
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
