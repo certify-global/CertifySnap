@@ -3037,7 +3037,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void updatePrinterParameters() {
         Bitmap bitmap = rgbBitmap;
-        String name = "Anonymous";
+        String name = "";
+        String nameTitle = "";
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {
@@ -3049,15 +3050,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 bitmap = rgbBitmap;
             }
             if (member.firstname != null) {
+                nameTitle = "Name:";
                 name = member.firstname;
             }
         } else if (data.getQrCodeData() != null) {
+            nameTitle = "Name:";
             name = data.getQrCodeData().getFirstName();
         } else if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
             bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
             if (bitmap == null) {
                 bitmap = rgbBitmap;
             }
+            nameTitle = "Name:";
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
         }
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
@@ -3065,16 +3069,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String dateTime = date +" "+ currentTime;
         PrinterController.getInstance().setPrintData(name, dateTime);
 
-        convertUIToImage(bitmap, name, dateTime);
+        convertUIToImage(bitmap, name, dateTime, nameTitle);
     }
 
-    private void convertUIToImage(Bitmap bitmap, String name, String dateTime) {
+    private void convertUIToImage(Bitmap bitmap, String name, String dateTime, String nameTitle) {
         View view = getLayoutInflater().inflate(R.layout.print_layout, null);
         LinearLayout linearLayout = view.findViewById(R.id.screen);
         TextView expireDate = view.findViewById(R.id.expire_date);
+        TextView userNameTitle = view.findViewById(R.id.user_name_title);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
         TextView tempPassTime = view.findViewById(R.id.temp_Pass_time);
+        userNameTitle.setText(nameTitle);
         userName.setText(name);
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
