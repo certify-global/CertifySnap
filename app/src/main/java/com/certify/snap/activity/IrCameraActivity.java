@@ -41,6 +41,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.printer.usb.PrintExecuteTask;
 import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
@@ -794,6 +795,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         PrinterController.getInstance().clearData();
+        GestureController.getInstance().reset();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -830,6 +832,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
                 if (faceFeature != null) {
+                    if (GestureController.getInstance().isGestureFlowComplete()) return;
+                    if (CameraController.getInstance().getScanState() == CameraController.ScanState.GESTURE_SCAN) {
+                        checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        return;
+                    }
                     isFaceIdentified = false;
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + ",tempServiceColes ");
 
@@ -843,8 +850,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         }
                     }
 
-                    if (CameraController.getInstance().isScanCloseProximityEnabled()
-                       || AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
+                    if (CameraController.getInstance().isScanCloseProximityEnabled()) {
                         if (isProDevice) {
                             runOnUiThread(() -> {
                                 changeVerifyBackground(R.color.transparency, true);
@@ -2676,10 +2682,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resetRfid();
         if (qrCodeEnable) {
             resetQrCode();
+            resumeGestureAfterScan();
             return;
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
+        if (AppSettings.isEnableHandGesture()) {
+            resumeGestureAfterScan();
+            return;
+        }
     }
 
     private void resetRfid() {
@@ -3303,4 +3314,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
     }
 
+    private void resumeGestureAfterScan() {
+        new Handler().postDelayed(() -> {
+            GestureController.getInstance().reset();
+        }, 2 * 1000);
+    }
 }

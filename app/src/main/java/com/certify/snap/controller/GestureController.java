@@ -19,6 +19,7 @@ import android.util.Log;
 import com.certify.callback.GestureCallback;
 import com.certify.snap.api.response.QuestionData;
 import com.certify.snap.api.response.QuestionListResponse;
+import com.certify.snap.api.response.QuestionSurveyOptions;
 import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -44,6 +45,7 @@ public class GestureController implements GestureCallback {
     private static GestureController instance = null;
     private Context mContext;
     private SharedPreferences sharedPreferences;
+    private boolean isGestureFlow = false;
 
     private Timer mTimer;
     private boolean wait = true;
@@ -81,8 +83,13 @@ public class GestureController implements GestureCallback {
 
     public void init(Context context) {
         this.mContext = context;
+        isGestureFlow = true;
         sharedPreferences = Util.getSharedPreferences(mContext);
         getQuestionsAPI();
+    }
+
+    public boolean isGestureFlowComplete() {
+        return isGestureFlow;
     }
 
     public void getQuestionsAPI() {
@@ -413,7 +420,9 @@ public class GestureController implements GestureCallback {
         String question = "";
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
         currentQuestionData = questionDataList.get(index);
-        question = currentQuestionData.title;
+        if (currentQuestionData != null) {
+            question = currentQuestionData.title;
+        }
         return question;
     }
 
@@ -469,6 +478,40 @@ public class GestureController implements GestureCallback {
         }, 1 * 1000);
     }
 
+    private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer) {
+        QuestionSurveyOptions qSurveyOption = null;
+        for (Map.Entry entry : questionAnswerMap.entrySet()) {
+            QuestionData questionData = (QuestionData) entry.getValue();
+            List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
+            if (qSurveyOptionList != null) {
+                for (int i = 0; i < qSurveyOptionList.size(); i++) {
+                     QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
+                     if (qOption.name.toLowerCase().equals(answer.toLowerCase())) {
+                         qSurveyOption = qOption;
+                         break;
+                     }
+                }
+            }
+        }
+        return qSurveyOption;
+    }
+
+    public void sendAnswers() {
+        List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
+        for (Map.Entry entry : questionAnswerMap.entrySet()) {
+            String answer = (String) entry.getValue();
+            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer);
+            if (qSurveyOption != null) {
+                qSurveyOptionList.add(qSurveyOption);
+            }
+        }
+        //Call API
+    }
+
+    public void reset() {
+        isGestureFlow = false;
+    }
+
     public void clearData() {
         if (speechRecognizer != null) {
             speechRecognizer.stopListening();
@@ -479,5 +522,6 @@ public class GestureController implements GestureCallback {
         usbReader = null;
         mUsbManager = null;
         index = 0;
+        currentQuestionData = null;
     }
 }
