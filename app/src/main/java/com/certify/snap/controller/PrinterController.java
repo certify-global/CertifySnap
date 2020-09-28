@@ -45,6 +45,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     private PrintDialogDelegate mPrintDialogDelegate = null;
     private int mCurrentIssueMode = AsynchronousMode;
     private Activity activity;
+    boolean isprintSetting = false;
 
 
     public interface PrinterCallbackListener {
@@ -67,6 +68,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         this.activity = activity;
         initWifiBTPrinter();
         initUsbPrint();
+        isPrintSettings();
     }
 
     private void initWifiBTPrinter() {
@@ -103,9 +105,17 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
+    private boolean isPrintSettings(){
+        if (AppSettings.isEnablePrinter() && (AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAccessCardUsers() ||
+                AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan() ||AppSettings.isPrintHighTemperatureUsers())) {
+            isprintSetting = true;
+        }
+        return isprintSetting;
+    }
+
     public void printOnNormalTemperature() {
         new Thread(() -> {
-            if (AppSettings.isEnablePrinter()) {
+            if (isprintSetting) {
                 print();
             }
         }).start();
@@ -119,7 +129,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     public boolean isPrintScan() {
         boolean result = false;
-        if (AppSettings.isEnablePrinter()) {
+        if (isprintSetting) {
             try {
                 if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
                     result = true;
@@ -130,7 +140,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
                     listener.onPrintError();
                 }
             }
-        } else if (AppSettings.isPrintUsbEnabled()) {
+        } else if (isprintSetting) {
             result = true;
         }
         return result;

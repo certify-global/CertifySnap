@@ -3044,7 +3044,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (data != null) {
             member = data.member;
         }
-        if (AppSettings.isFacialDetect() && member != null) {
+        if (AppSettings.isPrintAllScan() && (AppSettings.isFacialDetect() && member != null)) {
             bitmap = BitmapFactory.decodeFile(member.image);
             if (bitmap == null) {
                 bitmap = rgbBitmap;
@@ -3053,10 +3053,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 nameTitle = "Name:";
                 name = member.firstname;
             }
-        } else if (data.getQrCodeData() != null) {
+        } else if (AppSettings.isPrintQrCodeUsers() && data.getQrCodeData() != null) {
             nameTitle = "Name:";
             name = data.getQrCodeData().getFirstName();
-        } else if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+        } else if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
             bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
             if (bitmap == null) {
                 bitmap = rgbBitmap;
