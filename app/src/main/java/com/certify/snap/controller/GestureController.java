@@ -68,7 +68,9 @@ public class GestureController implements GestureCallback {
 
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
+
         void onAllQuestionsAnswered();
+
         void onVoiceListeningStart();
     }
 
@@ -88,8 +90,8 @@ public class GestureController implements GestureCallback {
     public void getQuestionsAPI() {
         try {
             JSONObject obj = new JSONObject();
-           // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
+            // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
 
         } catch (Exception e) {
@@ -109,8 +111,8 @@ public class GestureController implements GestureCallback {
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
             List<QuestionData> questionList = response.questionList;
             for (int i = 0; i < questionList.size(); i++) {
-                 QuestionData questionData = questionList.get(i);
-                 questionAnswerMap.put(questionData, "NA");
+                QuestionData questionData = questionList.get(i);
+                questionAnswerMap.put(questionData, "NA");
             }
             Log.d(TAG, "Gesture Questions list updated");
         } catch (Exception e) {
@@ -241,28 +243,11 @@ public class GestureController implements GestureCallback {
                         try {
                             final int left = Integer.valueOf(map.get("leftPower"));
                             final int right = Integer.valueOf(map.get("rightPower"));
-                            /*getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    peopleHandTips.setText("Left hand energy[" + left + "] Right hand energy[" + right + "]");
-                                }
-                            });*/
 
                             if (left >= 200) {
                                 leftHandWave();
-                            }
-                            if (right >= 200) {
+                            } else if (right >= 200) {
                                 rightHandWave();
-                            }
-
-                            if (left <= leftRangeValue && right <= rightRangeValue) {
-                                sendCMD(5);
-                            } else if (left > leftRangeValue && right > rightRangeValue) {
-                                sendCMD(6);
-                            } else if (left > leftRangeValue && right <= rightRangeValue) {
-                                sendCMD(4);
-                            } else if (left <= leftRangeValue && right > rightRangeValue) {
-                                sendCMD(3);
                             }
                         } catch (Exception e) {
                             Log.d(TAG, "handleGestureByGesture: " + e.toString());
@@ -413,7 +398,7 @@ public class GestureController implements GestureCallback {
         String question = "";
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
         currentQuestionData = questionDataList.get(index);
-        question = currentQuestionData.title;
+        question = currentQuestionData.questionName;
         return question;
     }
 
