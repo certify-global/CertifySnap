@@ -2689,7 +2689,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resumeCameraScan();
         if (AppSettings.isEnableHandGesture()) {
             resumeGestureAfterScan();
-            return;
         }
     }
 
