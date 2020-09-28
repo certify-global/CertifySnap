@@ -594,6 +594,7 @@ public class TemperatureController {
         SoundController.getInstance().playHighTemperatureSound();
         AccessCardController.getInstance().processUnlockDoorHigh(membersList);
         BLEController.getInstance().setLightOnHighTemperature();
+        PrinterController.getInstance().printOnHighTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
         AccessCardController.getInstance().accessCardLog(context,
                 AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,

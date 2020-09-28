@@ -306,6 +306,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Timer mQRTimer;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
+    private boolean highTemperature =false;
 
     private void instanceStart() {
         try {
@@ -3046,10 +3047,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(this::onPrintComplete);
     }
 
-    private void updatePrinterParameters() {
+    private void updatePrinterParameters(boolean highTemperature) {
         Bitmap bitmap = rgbBitmap;
         String name = "";
         String nameTitle = "";
+        String thermalText = "Thermal Scan";
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {
@@ -3074,30 +3076,38 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             nameTitle = "Name:";
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
+        } else if(AppSettings.isPrintWaveUsers()){
+            thermalText = "#. NNNN 0982";
         }
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
         String dateTime = date +" "+ currentTime;
         PrinterController.getInstance().setPrintData(name, dateTime);
 
-        convertUIToImage(bitmap, name, dateTime, nameTitle);
+        convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }
 
-    private void convertUIToImage(Bitmap bitmap, String name, String dateTime, String nameTitle) {
+    private void convertUIToImage(Bitmap bitmap, String name, String dateTime, String nameTitle, String thermalText, boolean highTemperature) {
         View view = getLayoutInflater().inflate(R.layout.print_layout, null);
         LinearLayout linearLayout = view.findViewById(R.id.screen);
         TextView expireDate = view.findViewById(R.id.expire_date);
         TextView userNameTitle = view.findViewById(R.id.user_name_title);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
-        TextView tempPassTime = view.findViewById(R.id.temp_Pass_time);
+        TextView tempPass = view.findViewById(R.id.temp_Pass);
+        TextView thermalDisplayText = view.findViewById(R.id.thermal_scan_text);
         userNameTitle.setText(nameTitle);
         userName.setText(name);
+        thermalDisplayText.setText(thermalText);
+        if(highTemperature){
+            tempPass.setText("");
+            tempPass.setBackgroundColor(getColor(R.color.white));
+        }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
         expireDate.setText(dateTime);
-        tempPassTime.setText("PASS ");
+        tempPass.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -3143,10 +3153,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
             TemperatureController.getInstance().clearData();
+            updatePrinterParameters(true);
             return;
         }
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
-        updatePrinterParameters();
+        updatePrinterParameters(false);
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
     }
 
@@ -3315,8 +3326,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resumeGestureAfterScan() {
-        new Handler().postDelayed(() -> {
-            GestureController.getInstance().reset();
-        }, 2 * 1000);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new Handler().postDelayed(() -> {
+                    GestureController.getInstance().reset();
+                }, 2 * 1000);
+            }
+        });
     }
 }

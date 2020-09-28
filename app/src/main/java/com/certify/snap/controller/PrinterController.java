@@ -107,7 +107,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     private void initUserPrintSettings() {
         if (AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAccessCardUsers() ||
-                AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan() || AppSettings.isPrintHighTemperatureUsers()) {
+                AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan() ) {
             isUserPrintEnabled = true;
         }
     }
@@ -128,9 +128,25 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
+    public void printOnHighTemperature() {
+        if (AppSettings.isPrintHighTemperatureUsers()) {
+            new Thread(() -> {
+                if (AppSettings.isEnablePrinter()) {
+                    print();
+                }
+            }).start();
+
+            new Thread(() -> {
+                if (AppSettings.isPrintUsbEnabled()) {
+                    printUsb();
+                }
+            }).start();
+        }
+    }
+
     public boolean isPrintScan() {
         boolean result = false;
-        if (isUserPrintEnabled) {
+        if (isUserPrintEnabled || AppSettings.isPrintHighTemperatureUsers()) {
             if (AppSettings.isEnablePrinter()) {
                 try {
                     if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
