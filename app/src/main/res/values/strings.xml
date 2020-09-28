@@ -728,7 +728,7 @@
     <string name="productCodeName">Name Data</string>
     <string name="barCode">Code Data</string>
     <string name="productCodeData">Code Data</string>
-    <string name="bottom_text">Hold your palm on side of the screen where indicate to answer.If you have to start over,hold both hands.</string>
+    <string name="bottom_text">Hold your palm on side of the screen where indicate to answer. If you have to start over, hold both hands.</string>
     <string name="touchless_interaction_setting">Touchless Interaction</string>
     <string name="wave_setting">Wave Setting</string>
 </resources>
