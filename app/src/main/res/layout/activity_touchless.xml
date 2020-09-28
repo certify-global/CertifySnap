@@ -48,7 +48,7 @@
             android:textSize="@dimen/font_18" />
 
         <RadioGroup
-            android:id="@+id/radio_group_enable_wave"
+            android:id="@+id/radio_group_wave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"

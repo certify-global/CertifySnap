@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -13,14 +12,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.certify.callback.FlowListCallback;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectFlowList;
-import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -31,13 +28,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TouchlessActivity extends SettingBaseActivity implements FlowListCallback {
-    public static String TAG = "TouchlessActivity";
-    TextView enable_wave, wave_options, enable_wave_questions, enable_mask;
-    RadioGroup radio_group_enable_wave, radio_group_enable_questions, radio_group_mask;
-    Spinner spinner_question_selector;
-    RadioButton radio_yes_wave, radio_no_wave, radio_yes_wave_questions, radio_no_wave_questions, radio_yes_wave_mask, radio_no_wave_mask;
-    Typeface rubiklight;
+public class GestureActivity extends SettingBaseActivity implements FlowListCallback {
+    public static String TAG = "GestureActivity";
+    TextView enableWave, waveOptions, enableWaveQuestions, enableMask;
+    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask;
+    Spinner spinnerQuestionSelector;
+    RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesWaveMask, radioNoWaveMask;
+    Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
 
@@ -46,46 +43,83 @@ public class TouchlessActivity extends SettingBaseActivity implements FlowListCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_touchless);
         initView();
+        waveCheck();
+        waveQuestionCheck();
     }
 
     private void initView() {
-        enable_wave = findViewById(R.id.enable_wave);
-        wave_options = findViewById(R.id.wave_options);
-        enable_wave_questions = findViewById(R.id.enable_wave_questions);
-        enable_mask = findViewById(R.id.enable_mask);
-        radio_group_enable_wave = findViewById(R.id.radio_group_enable_wave);
-        radio_group_enable_questions = findViewById(R.id.radio_group_enable_questions);
-        radio_group_mask = findViewById(R.id.radio_group_mask);
-        spinner_question_selector = findViewById(R.id.spinner_question_selector);
-        radio_yes_wave = findViewById(R.id.radio_yes_wave);
-        radio_no_wave = findViewById(R.id.radio_no_wave);
-        radio_yes_wave_questions = findViewById(R.id.radio_yes_wave_questions);
-        radio_no_wave_questions = findViewById(R.id.radio_no_wave_questions);
-        radio_yes_wave_mask = findViewById(R.id.radio_yes_wave_mask);
-        radio_no_wave_mask = findViewById(R.id.radio_no_wave_mask);
+        enableWave = findViewById(R.id.enable_wave);
+        waveOptions = findViewById(R.id.wave_options);
+        enableWaveQuestions = findViewById(R.id.enable_wave_questions);
+        enableMask = findViewById(R.id.enable_mask);
+        radioGroupMask = findViewById(R.id.radio_group_mask);
+        spinnerQuestionSelector = findViewById(R.id.spinner_question_selector);
 
-        rubiklight = Typeface.createFromAsset(getAssets(),
+        radioGroupWave = findViewById(R.id.radio_group_wave);
+        radioYesWave = findViewById(R.id.radio_yes_wave);
+        radioNoWave = findViewById(R.id.radio_no_wave);
+
+        radioGroupQuestions = findViewById(R.id.radio_group_enable_questions);
+        radioYesWaveQuestions = findViewById(R.id.radio_yes_wave_questions);
+        radioNoWaveQuestions = findViewById(R.id.radio_no_wave_questions);
+
+        radioYesWaveMask = findViewById(R.id.radio_yes_wave_mask);
+        radioNoWaveMask = findViewById(R.id.radio_no_wave_mask);
+
+        rubikLight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
-        enable_wave.setTypeface(rubiklight);
-        wave_options.setTypeface(rubiklight);
-        enable_wave_questions.setTypeface(rubiklight);
+        enableWave.setTypeface(rubikLight);
+        waveOptions.setTypeface(rubikLight);
+        enableWaveQuestions.setTypeface(rubikLight);
         sharedPreferences = Util.getSharedPreferences(this);
         getFlowListAPI();
     }
+
+    private void waveCheck(){
+        if(sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false))
+            radioYesWave.setChecked(true);
+        else radioNoWave.setChecked(true);
+
+        radioGroupWave.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_wave)
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, true);
+                else Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, false);
+            }
+        });
+    }
+
+    private void waveQuestionCheck(){
+        if(sharedPreferences.getBoolean(GlobalParameters.WAVE_QUESTIONS,false))
+            radioYesWaveQuestions.setChecked(true);
+        else radioNoWaveQuestions.setChecked(true);
+
+        radioGroupQuestions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_wave_questions)
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, true);
+                else Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, false);
+            }
+        });
+    }
+
+
 
     private void setValues() {
 
         ArrayList<String> values = new ArrayList<>(flowHashmap.keySet());
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,values);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_question_selector.setAdapter(adapter);
+        spinnerQuestionSelector.setAdapter(adapter);
 
-        spinner_question_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerQuestionSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String name = spinner_question_selector.getSelectedItem().toString();
+                String name = spinnerQuestionSelector.getSelectedItem().toString();
                 String settingID = flowHashmap.get(name);
-                //Toast.makeText(TouchlessActivity.this, "key"+settingID + "value"+name, Toast.LENGTH_SHORT).show();
+
                 Util.writeString(sharedPreferences,GlobalParameters.Touchless_setting_id,settingID);
             }
 
