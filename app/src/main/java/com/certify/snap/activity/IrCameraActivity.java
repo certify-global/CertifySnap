@@ -3053,7 +3053,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 nameTitle = "Name:";
                 name = member.firstname;
             }
-        } else if (AppSettings.isPrintQrCodeUsers() && data.getQrCodeData() != null) {
+        } else if (AppSettings.isPrintQrCodeUsers() && data != null && data.getQrCodeData() != null) {
             nameTitle = "Name:";
             name = data.getQrCodeData().getFirstName();
         } else if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {

@@ -45,7 +45,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     private PrintDialogDelegate mPrintDialogDelegate = null;
     private int mCurrentIssueMode = AsynchronousMode;
     private Activity activity;
-    boolean isprintSetting = false;
+    boolean isUserPrintEnabled = false;
 
 
     public interface PrinterCallbackListener {
@@ -68,7 +68,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         this.activity = activity;
         initWifiBTPrinter();
         initUsbPrint();
-        isPrintSettings();
+        initUserPrintSettings();
     }
 
     private void initWifiBTPrinter() {
@@ -105,43 +105,46 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
-    private boolean isPrintSettings(){
-        if (AppSettings.isEnablePrinter() && (AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAccessCardUsers() ||
-                AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan() ||AppSettings.isPrintHighTemperatureUsers())) {
-            isprintSetting = true;
+    private void initUserPrintSettings() {
+        if (AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAccessCardUsers() ||
+                AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan() || AppSettings.isPrintHighTemperatureUsers()) {
+            isUserPrintEnabled = true;
         }
-        return isprintSetting;
     }
 
     public void printOnNormalTemperature() {
-        new Thread(() -> {
-            if (isprintSetting) {
-                print();
-            }
-        }).start();
+        if (isUserPrintEnabled) {
+            new Thread(() -> {
+                if (AppSettings.isEnablePrinter()) {
+                    print();
+                }
+            }).start();
 
-        new Thread(() -> {
-            if (AppSettings.isPrintUsbEnabled()) {
-                printUsb();
-            }
-        }).start();
+            new Thread(() -> {
+                if (AppSettings.isPrintUsbEnabled()) {
+                    printUsb();
+                }
+            }).start();
+        }
     }
 
     public boolean isPrintScan() {
         boolean result = false;
-        if (isprintSetting) {
-            try {
-                if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
-                    result = true;
+        if (isUserPrintEnabled) {
+            if (AppSettings.isEnablePrinter()) {
+                try {
+                    if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
+                        result = true;
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "isPrintScan exception occurred");
+                    if (listener != null) {
+                        listener.onPrintError();
+                    }
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "isPrintScan exception occurred");
-                if (listener != null) {
-                    listener.onPrintError();
-                }
+            } else if (AppSettings.isPrintUsbEnabled()) {
+                result = true;
             }
-        } else if (isprintSetting) {
-            result = true;
         }
         return result;
     }
