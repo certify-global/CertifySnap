@@ -46,7 +46,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         initView();
         GestureController.getInstance().init(this.getContext());
         GestureController.getInstance().setCallbackListener(this);
-            setQuestion();
 
         if (AppSettings.isEnableVoice()) {
             handleQuestionnaireByVoice();

@@ -1481,8 +1481,6 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
                 Util.getSettings((SettingCallback) context, context);
-                GestureController.getInstance().init(context);
-                GestureController.getInstance().getQuestionSAPI();
 
 //                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
             }

@@ -15,24 +15,25 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.certify.callback.GestureCallback;
-import com.certify.snap.async.AsyncJSONObjectAccessLog;
+import com.certify.snap.api.response.QuestionData;
+import com.certify.snap.api.response.QuestionListResponse;
 import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
@@ -45,15 +46,12 @@ public class GestureController implements GestureCallback {
     private SharedPreferences sharedPreferences;
 
     private Timer mTimer;
-    //    private ArrayList<String> questionList = new ArrayList<>();
     private boolean wait = true;
     private boolean runCheck = true;
     private boolean allQuestionAnswered = false;
     private GestureCallbackListener listener = null;
-    //    private ArrayList<HashMap<String,String>> questionArrayList = new ArrayList<>();
-    private HashMap<String, String> questionHashmap = new HashMap<>();
-    private HashMap<String, String> answerHashmap = new HashMap<>();
-
+    private HashMap<QuestionData, String> questionAnswerMap = new HashMap<>();
+    private QuestionData currentQuestionData = null;
 
     //Hand Gesture
     int leftRangeValue = 50;
@@ -61,8 +59,7 @@ public class GestureController implements GestureCallback {
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
-    int index = 0;
-
+    private int index = 0;
 
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
@@ -71,9 +68,7 @@ public class GestureController implements GestureCallback {
 
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
-
         void onAllQuestionsAnswered();
-
         void onVoiceListeningStart();
     }
 
@@ -87,9 +82,10 @@ public class GestureController implements GestureCallback {
     public void init(Context context) {
         this.mContext = context;
         sharedPreferences = Util.getSharedPreferences(mContext);
+        getQuestionsAPI();
     }
 
-    public void getQuestionSAPI() {
+    public void getQuestionsAPI() {
         try {
             JSONObject obj = new JSONObject();
            // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
@@ -104,44 +100,26 @@ public class GestureController implements GestureCallback {
     @Override
     public void onJSONObjectListenerGesture(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            questionHashmap.clear();
+            questionAnswerMap.clear();
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerGesture", "GetQuestions Log api failed");
                 return;
             }
-            if (reportInfo.getInt("responseCode") == 1) {
-                JSONArray jsonArray = reportInfo.getJSONArray("responseData");
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String questionName = jsonObject.getString("questionName");
-                    questionHashmap.put(questionName, "NA");
-                    Log.d("CertifyXT Question",questionName);
-                }
-            }else{
-                Toast.makeText(mContext, reportInfo.getString("responseMessage"), Toast.LENGTH_SHORT).show();
+            Gson gson = new Gson();
+            QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
+            List<QuestionData> questionList = response.questionList;
+            for (int i = 0; i < questionList.size(); i++) {
+                 QuestionData questionData = questionList.get(i);
+                 questionAnswerMap.put(questionData, "NA");
             }
-
+            Log.d(TAG, "Gesture Questions list updated");
         } catch (Exception e) {
             Log.d(TAG, "onJSONObjectListenerGesture" + e.getMessage());
         }
-
     }
 
     public void setCallbackListener(GestureCallbackListener callbackListener) {
         this.listener = callbackListener;
-    }
-
-    public String getQuestion() {
-        String question = "";
-        if (questionHashmap.size() > 0) {
-            for (String key : questionHashmap.keySet()) {
-                question = String.valueOf(key);
-                Log.d("CertifyXT getquestion",question);
-                break;
-            }
-        }
-        return question;
     }
 
     /**
@@ -416,14 +394,14 @@ public class GestureController implements GestureCallback {
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
         if (wait) {
-            updateOnWave("no");
+            updateOnWave("Yes");
         }
     }
 
     private void rightHandWave() {
-        Log.d(TAG, "Left Hand wave");
+        Log.d(TAG, "Right Hand wave");
         if (wait) {
-            updateOnWave("yes");
+            updateOnWave("No");
         }
     }
 
@@ -431,25 +409,27 @@ public class GestureController implements GestureCallback {
         onQuestionAnswered(answers);
     }
 
-    private void onQuestionAnswered(String answer) {
-        if (questionHashmap.isEmpty()) return;
+    public String getQuestion() {
+        String question = "";
+        List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
+        currentQuestionData = questionDataList.get(index);
+        question = currentQuestionData.title;
+        return question;
+    }
 
-        for (String key : questionHashmap.keySet()) {
-            answerHashmap.put(key, answer);
-            questionHashmap.remove(key);
-            break;
+    private void onQuestionAnswered(String answer) {
+        questionAnswerMap.put(currentQuestionData, answer);
+        index++;
+        List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
+        if (index >= questionDataList.size()) {
+            if (listener != null) {
+                listener.onAllQuestionsAnswered();
+            }
+            return;
         }
         if (listener != null) {
             listener.onQuestionAnswered(answer);
         }
-
-        if (questionHashmap.isEmpty()) {
-            stopListening();
-            if (listener != null) {
-                listener.onAllQuestionsAnswered();
-            }
-        }
-
     }
 
     public static String toHexString(byte[] data) {
@@ -494,10 +474,10 @@ public class GestureController implements GestureCallback {
             speechRecognizer.stopListening();
             speechRecognizer.destroy();
         }
-      //  questionHashmap.clear();
         runCheck = false;
         listener = null;
         usbReader = null;
         mUsbManager = null;
+        index = 0;
     }
 }
