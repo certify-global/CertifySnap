@@ -833,7 +833,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
                 if (faceFeature != null) {
-                    if (GestureController.getInstance().isGestureFlowComplete()) return;
+                    if (GestureController.getInstance().isGestureFlowComplete()) {
+                        clearLeftFace(null);
+                        return;
+                    }
                     if (CameraController.getInstance().getScanState() == CameraController.ScanState.GESTURE_SCAN) {
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                         return;
@@ -2620,6 +2623,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
             BLEController.getInstance().connectToDevice();
         }
+        resetGesture();
     }
 
     private void setPreviewIdleTimer() {
@@ -2689,6 +2693,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
         if (AppSettings.isEnableHandGesture()) {
+            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
             resumeGestureAfterScan();
         }
     }
@@ -3204,9 +3209,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             resumeCameraScan();
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            changeVerifyBackground(R.color.transparency, true);
-            relative_main.setVisibility(View.GONE);
-            new Handler().postDelayed(() -> runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0)), 1000);
+            new Handler().postDelayed(() -> {
+                changeVerifyBackground(R.color.transparency, true);
+                relative_main.setVisibility(View.GONE);
+                runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
+            }, 250);
         });
     }
 
@@ -3331,13 +3338,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resumeGestureAfterScan() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                new Handler().postDelayed(() -> {
-                    GestureController.getInstance().reset();
-                }, 2 * 1000);
-            }
-        });
+        runOnUiThread(() -> new Handler().postDelayed(() -> {
+            Log.d(TAG, "Reset Gesture flow");
+            GestureController.getInstance().reset();
+        }, 2 * 1000));
+    }
+
+    private void resetGesture() {
+        if (AppSettings.isEnableHandGesture()) {
+            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+            GestureController.getInstance().reset();
+        }
     }
 }
