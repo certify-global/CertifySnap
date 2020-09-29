@@ -1226,6 +1226,7 @@ public class Util {
                 JSONObject responseData = reportInfo.getJSONObject("responseData");
                 JSONObject jsonValue = responseData.getJSONObject("jsonValue");
                 JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
+
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
@@ -1241,6 +1242,8 @@ public class Util {
                     String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
                 }
+
+
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
                 JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
@@ -1408,35 +1411,40 @@ public class Util {
                 }
 
                 //Printer Settings
-                String enableWifiBluetoothPrint = jsonValueIdentification.isNull("enableWBPrint") ? "0" : jsonValueIdentification.getString("enableWBPrint");
-                String enableUSBPrint = jsonValueIdentification.isNull("enableUSBPrint") ? "0" : jsonValueIdentification.getString("enableUSBPrint");
-                String printAllScan = jsonValueIdentification.isNull("printAllScan") ? "0" : jsonValueIdentification.getString("printAllScan");
-                String printAccessCard = jsonValueIdentification.isNull("printAccessCard") ? "0" : jsonValueIdentification.getString("printAccessCard");
-                String printQRCode = jsonValueIdentification.isNull("printQRCode") ? "0" : jsonValueIdentification.getString("printQRCode");
-                String printWaveUsers = jsonValueIdentification.isNull("printWaveUsers") ? "0" : jsonValueIdentification.getString("printWaveUsers");
-                String printHighTempScans = jsonValueIdentification.isNull("printHighTempScans") ? "0" : jsonValueIdentification.getString("printHighTempScans");
+                if (jsonValue.has("PrinterSettings")) {
+                    JSONObject printerSettings = jsonValue.getJSONObject("PrinterSettings");
+                    String enableWifiBluetoothPrint = printerSettings.isNull("enableWBPrint") ? "0" : printerSettings.getString("enableWBPrint");
+                    String enableUSBPrint = printerSettings.isNull("enableUSBPrint") ? "0" : printerSettings.getString("enableUSBPrint");
+                    String printAllScan = printerSettings.isNull("printAllScan") ? "0" : printerSettings.getString("printAllScan");
+                    String printAccessCard = printerSettings.isNull("printAccessCard") ? "0" : printerSettings.getString("printAccessCard");
+                    String printQRCode = printerSettings.isNull("printQRCode") ? "0" : printerSettings.getString("printQRCode");
+                    String printWaveUsers = printerSettings.isNull("printWaveUsers") ? "0" : printerSettings.getString("printWaveUsers");
+                    String printHighTempScans = printerSettings.isNull("printHighTempScans") ? "0" : printerSettings.getString("printHighTempScans");
 
 
-                Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printAllScan.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printAccessCard.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
-
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printAllScan.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printAccessCard.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
+                }
                 //Touch less Interaction
-                String enableWave = jsonValueIdentification.isNull("enableWave") ? "0" : jsonValueIdentification.getString("enableWave");
-                String enableQuestionAndAnswer = jsonValueIdentification.isNull("enableQuestionAndAnswer") ? "0" : jsonValueIdentification.getString("enableQuestionAndAnswer");
-                String settingId ="";
-                String enableMaskEnforcement = jsonValueIdentification.isNull("enableMaskEnforcement") ? "0" : jsonValueIdentification.getString("enableMaskEnforcement");
-                String enableVoice = jsonValueIdentification.isNull("enableVoice") ? "0" : jsonValueIdentification.getString("enableVoice");
+                if (jsonValue.has("TouchlessInteraction")) {
+                    JSONObject touchlessInteractionSettings = jsonValue.getJSONObject("TouchlessInteraction");
+                    String enableWave = touchlessInteractionSettings.isNull("enableWave") ? "0" : touchlessInteractionSettings.getString("enableWave");
+                    String enableQuestionAndAnswer = touchlessInteractionSettings.isNull("enableQuestionAndAnswer") ? "0" : touchlessInteractionSettings.getString("enableQuestionAndAnswer");
+                    String settingsID = touchlessInteractionSettings.isNull("settingId") ? "0" : touchlessInteractionSettings.getString("settingId");
+                    String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
+                    String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
 
-                Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
-                //Setting ID
-                Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, settingsID);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
+                }
 
 
             } else {

@@ -517,8 +517,8 @@ public class GestureController implements GestureCallback {
         }
         runCheck = false;
         listener = null;
-        usbReader = null;
-        mUsbManager = null;
+        //usbReader = null;
+        //mUsbManager = null;
         index = 0;
         currentQuestionData = null;
     }
