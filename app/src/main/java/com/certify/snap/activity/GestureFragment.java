@@ -137,18 +137,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionAnswered(String answeredQ) {
         getActivity().runOnUiThread(() -> {
-         /*   if (answeredQ.contains("Doctor")) {
+            int index = GestureController.getInstance().getIndex();
+         if (index== 0) {
                 image1.setImageResource(R.drawable.tick);
-            } else if (answeredQ.contains("1.")) {
+            } else if (index== 1) {
                 view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image2.setImageResource(R.drawable.tick);
-            } else if (answeredQ.equals("2.")) {
+            } else if (index== 2) {
                 view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image3.setImageResource(R.drawable.tick);
-            } else if (answeredQ.equals("3.")) {
+            } else if (index== 3) {
                 view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image4.setImageResource(R.drawable.tick);
-            }*/
+            }
 
             uiUpdate();
             setQuestion();

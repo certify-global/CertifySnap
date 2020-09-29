@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -386,14 +387,14 @@ public class GestureController implements GestureCallback {
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
         if (wait) {
-            updateOnWave("Yes");
+            updateOnWave("Y");
         }
     }
 
     private void rightHandWave() {
         Log.d(TAG, "Right Hand wave");
         if (wait) {
-            updateOnWave("No");
+            updateOnWave("N");
         }
     }
 
@@ -491,6 +492,18 @@ public class GestureController implements GestureCallback {
             }
         }
         //Call API
+    }
+
+    public String getAnswers(){
+        return questionAnswerMap.values().toString();
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public HashMap<QuestionData, String> getQuestionAnswerMap() {
+        return questionAnswerMap;
     }
 
     public void reset() {

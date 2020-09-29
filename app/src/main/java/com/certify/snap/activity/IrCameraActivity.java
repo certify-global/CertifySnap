@@ -3076,7 +3076,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             nameTitle = "Name:";
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
         } else if(AppSettings.isPrintWaveUsers()){
-            thermalText = "#. NNNN 0982";
+            String answers = GestureController.getInstance().getAnswers();
+            answers = answers.replace(",", "");
+            answers = answers.replace("[", "");
+            answers = answers.replace("]", "");
+            int numOfQ = GestureController.getInstance().getQuestionAnswerMap().size();
+            int tempValue = (int) (TemperatureController.getInstance().getTemperature()*10);
+            thermalText = numOfQ +": "+ answers + " " + String.format("%4s", tempValue).replace(' ', '0');
         }
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
