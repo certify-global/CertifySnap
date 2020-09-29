@@ -1406,6 +1406,39 @@ public class Util {
                         SoundController.getInstance().deleteAudioFile("Invalid.mp3");
                     }
                 }
+
+                //Printer Settings
+                String enableWifiBluetoothPrint = jsonValueIdentification.isNull("enableWBPrint") ? "0" : jsonValueIdentification.getString("enableWBPrint");
+                String enableUSBPrint = jsonValueIdentification.isNull("enableUSBPrint") ? "0" : jsonValueIdentification.getString("enableUSBPrint");
+                String printAllScan = jsonValueIdentification.isNull("printAllScan") ? "0" : jsonValueIdentification.getString("printAllScan");
+                String printAccessCard = jsonValueIdentification.isNull("printAccessCard") ? "0" : jsonValueIdentification.getString("printAccessCard");
+                String printQRCode = jsonValueIdentification.isNull("printQRCode") ? "0" : jsonValueIdentification.getString("printQRCode");
+                String printWaveUsers = jsonValueIdentification.isNull("printWaveUsers") ? "0" : jsonValueIdentification.getString("printWaveUsers");
+                String printHighTempScans = jsonValueIdentification.isNull("printHighTempScans") ? "0" : jsonValueIdentification.getString("printHighTempScans");
+
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printAllScan.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printAccessCard.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
+
+                //Touch less Interaction
+                String enableWave = jsonValueIdentification.isNull("enableWave") ? "0" : jsonValueIdentification.getString("enableWave");
+                String enableQuestionAndAnswer = jsonValueIdentification.isNull("enableQuestionAndAnswer") ? "0" : jsonValueIdentification.getString("enableQuestionAndAnswer");
+                String settingId ="";
+                String enableMaskEnforcement = jsonValueIdentification.isNull("enableMaskEnforcement") ? "0" : jsonValueIdentification.getString("enableMaskEnforcement");
+                String enableVoice = jsonValueIdentification.isNull("enableVoice") ? "0" : jsonValueIdentification.getString("enableVoice");
+
+                Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
+                //Setting ID
+                Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
+
+
             } else {
                 Logger.toast(context, "Something went wrong please try again");
             }

@@ -30,10 +30,11 @@ import java.util.HashMap;
 
 public class GestureActivity extends SettingBaseActivity implements FlowListCallback {
     public static String TAG = "GestureActivity";
-    TextView enableWave, waveOptions, enableWaveQuestions, enableMask;
-    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask;
+    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition;
+    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice;
     Spinner spinnerQuestionSelector;
-    RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesWaveMask, radioNoWaveMask;
+    RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesMask, radioNoMask,
+            radioYesVoice, radioNoVoice;
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
@@ -45,14 +46,16 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         initView();
         waveCheck();
         waveQuestionCheck();
+        maskEnforcementCheck();
+        voiceRecognitionCheck();
     }
 
     private void initView() {
         enableWave = findViewById(R.id.enable_wave);
         waveOptions = findViewById(R.id.wave_options);
         enableWaveQuestions = findViewById(R.id.enable_wave_questions);
-        enableMask = findViewById(R.id.enable_mask);
-        radioGroupMask = findViewById(R.id.radio_group_mask);
+        enableMask = findViewById(R.id.enable_mask_enforcement);
+        enableVoiceRecognition = findViewById(R.id.enable_voice_recognition);
         spinnerQuestionSelector = findViewById(R.id.spinner_question_selector);
 
         radioGroupWave = findViewById(R.id.radio_group_wave);
@@ -63,14 +66,21 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         radioYesWaveQuestions = findViewById(R.id.radio_yes_wave_questions);
         radioNoWaveQuestions = findViewById(R.id.radio_no_wave_questions);
 
-        radioYesWaveMask = findViewById(R.id.radio_yes_wave_mask);
-        radioNoWaveMask = findViewById(R.id.radio_no_wave_mask);
+        radioGroupMask = findViewById(R.id.radio_group_mask_enforcement);
+        radioYesMask = findViewById(R.id.radio_yes_mask_enforcement);
+        radioNoMask = findViewById(R.id.radio_no_mask_enforcement);
+
+        radioGroupVoice = findViewById(R.id.radio_group_voice_recognition);
+        radioYesVoice = findViewById(R.id.radio_yes_voice_recognition);
+        radioNoVoice = findViewById(R.id.radio_no_voice_recognition);
 
         rubikLight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
         enableWave.setTypeface(rubikLight);
         waveOptions.setTypeface(rubikLight);
         enableWaveQuestions.setTypeface(rubikLight);
+        enableVoiceRecognition.setTypeface(rubikLight);
+        enableMask.setTypeface(rubikLight);
         sharedPreferences = Util.getSharedPreferences(this);
         getFlowListAPI();
     }
@@ -105,6 +115,37 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         });
     }
 
+    private void maskEnforcementCheck(){
+
+        if(sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT,false))
+            radioYesMask.setChecked(true);
+        else radioNoMask.setChecked(true);
+
+        radioGroupMask.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_mask_enforcement)
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, true);
+                else Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, false);
+            }
+        });
+    }
+
+    private void voiceRecognitionCheck(){
+
+        if(sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false))
+            radioYesVoice.setChecked(true);
+        else radioNoVoice.setChecked(true);
+
+        radioGroupVoice.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_voice_recognition)
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, true);
+                else Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, false);
+            }
+        });
+    }
 
 
     private void setValues() {

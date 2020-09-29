@@ -38,8 +38,8 @@ public class ScanViewActivity extends SettingBaseActivity {
             sp = Util.getSharedPreferences(this);
 
             initView();
-            voiceRecognitionCheck();
-            handGestureCheck();
+            //voiceRecognitionCheck();
+            //handGestureCheck();
 
             final RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
             final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
