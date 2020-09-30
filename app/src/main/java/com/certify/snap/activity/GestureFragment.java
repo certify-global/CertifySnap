@@ -5,11 +5,9 @@ import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -28,7 +26,7 @@ import com.certify.snap.view.TimerAnimationView;
 public class GestureFragment extends Fragment implements GestureController.GestureCallbackListener {
 
     private final String TAG = GestureFragment.class.getSimpleName();
-    private TextView peopleHandTips;
+
     private TextView covidQuestionsText, titleView;
     private View view, view1, view2, view3;
     private ImageView image1, image2, image3, image4;
@@ -46,7 +44,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         initView();
         GestureController.getInstance().init(this.getContext());
         GestureController.getInstance().setCallbackListener(this);
-            setQuestion();
 
         if (AppSettings.isEnableVoice()) {
            // handleQuestionnaireByVoice();
@@ -59,20 +56,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     void initView() {
-        peopleHandTips = view.findViewById(R.id.peopleHandTips);
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
         titleView = view.findViewById(R.id.title_text_view);
         voiceLayout = view.findViewById(R.id.voice_layout);
         handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
-        progressLayout = view.findViewById(R.id.progress_layout);
+        progressLayout = view.findViewById(R.id.three_questions_layout);
         mTimerView = view.findViewById(R.id.timer_view);
-        view1 = view.findViewById(R.id.view1);
-        view2 = view.findViewById(R.id.view2);
-        view3 = view.findViewById(R.id.view3);
-        image1 = view.findViewById(R.id.image1);
-        image2 = view.findViewById(R.id.image2);
-        image3 = view.findViewById(R.id.image3);
-        image4 = view.findViewById(R.id.image4);
+        view1 = view.findViewById(R.id.threeQ_view1);
+        view2 = view.findViewById(R.id.threeQ_view2);
+        view3 = view.findViewById(R.id.threeQ_view3);
+        image1 = view.findViewById(R.id.threeQ_image1);
+        image2 = view.findViewById(R.id.threeQ_image2);
+        image3 = view.findViewById(R.id.threeQ_image3);
+        image4 = view.findViewById(R.id.threeQ_image4);
 
         rubiklight = Typeface.createFromAsset(getActivity().getAssets(),
                 "rubiklight.ttf");
@@ -138,18 +134,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionAnswered(String answeredQ) {
         getActivity().runOnUiThread(() -> {
-         /*   if (answeredQ.contains("Doctor")) {
+            int index = GestureController.getInstance().getIndex();
+         if (index== 0) {
                 image1.setImageResource(R.drawable.tick);
-            } else if (answeredQ.contains("1.")) {
+            } else if (index== 1) {
                 view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image2.setImageResource(R.drawable.tick);
-            } else if (answeredQ.equals("2.")) {
+            } else if (index== 2) {
                 view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image3.setImageResource(R.drawable.tick);
-            } else if (answeredQ.equals("3.")) {
+            } else if (index== 3) {
                 view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image4.setImageResource(R.drawable.tick);
-            }*/
+            }
 
             uiUpdate();
             setQuestion();

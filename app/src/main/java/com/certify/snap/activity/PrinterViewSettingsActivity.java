@@ -43,21 +43,23 @@ import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
 public class PrinterViewSettingsActivity extends SettingBaseActivity implements PrinterController.PrinterCallbackListener, PrintStatusCallback {
 
     private static final String TAG = PrinterViewSettingsActivity.class.getSimpleName();
+
     TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
             brotherBluetoothPrinterStatus, brotherTestPrint,
             titleToshibaBluetoothPrinter, enableToshibaPrinterTextView, toshibaBluetoothPrinterConnect, toshibaBluetoothPrinterConnection,
             toshibaBluetoothPrinterStatus,
             printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle;
-    ImageView brotherImageView;
-    Button brotherPrintButton, toshibaPrintButton;
-    Typeface rubiklight;
-    private SharedPreferences sp;
     RadioGroup radioGroupPrinter, radioGroupToshibaPrinter, radioGroupPrintAllScan, radioGroupPrintAccessCard, radioGroupPrintQRCode,
             radioGroupPrintWave, radioGroupPrintHighTemperature;
     RadioButton radioEnableBrotherPrinter, radioDisableBrotherPrinter, radioEnableToshibaPrinter, radioDisableToshibaPrinter,
             radioButtonYesPrintAllScans, radioButtonNoPrintAllScans,radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
             radioButtonYesPrintQRCode, radioButtonNoPrintQRCode, radioButtonYesPrintWave, radioButtonNoPrintWave,
             radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature;
+    Button brotherPrintButton, toshibaPrintButton;
+    ImageView brotherImageView;
+
+    Typeface rubiklight;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

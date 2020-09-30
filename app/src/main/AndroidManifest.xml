@@ -137,7 +137,7 @@
             android:name=".activity.RegisterSuccessActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.TouchlessActivity"
+            android:name=".activity.GestureActivity"
             android:screenOrientation="portrait" />
 
 

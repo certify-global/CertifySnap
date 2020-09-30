@@ -41,6 +41,7 @@ import com.certify.snap.BuildConfig;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.printer.usb.PrintExecuteTask;
 import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
@@ -305,6 +306,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Timer mQRTimer;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
+    private boolean highTemperature =false;
 
     private void instanceStart() {
         try {
@@ -794,6 +796,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         PrinterController.getInstance().clearData();
+        GestureController.getInstance().reset();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -830,6 +833,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
                 if (faceFeature != null) {
+                    if (GestureController.getInstance().isGestureFlowComplete()) {
+                        clearLeftFace(null);
+                        return;
+                    }
+                    if (CameraController.getInstance().getScanState() == CameraController.ScanState.GESTURE_SCAN) {
+                        checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        return;
+                    }
                     isFaceIdentified = false;
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + ",tempServiceColes ");
 
@@ -843,8 +854,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         }
                     }
 
-                    if (CameraController.getInstance().isScanCloseProximityEnabled()
-                       || AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
+                    if (CameraController.getInstance().isScanCloseProximityEnabled()) {
                         if (isProDevice) {
                             runOnUiThread(() -> {
                                 changeVerifyBackground(R.color.transparency, true);
@@ -2613,6 +2623,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
             BLEController.getInstance().connectToDevice();
         }
+        resetGesture();
     }
 
     private void setPreviewIdleTimer() {
@@ -2676,10 +2687,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resetRfid();
         if (qrCodeEnable) {
             resetQrCode();
+            resumeGestureAfterScan();
             return;
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
+        if (AppSettings.isEnableHandGesture()) {
+            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+            resumeGestureAfterScan();
+        }
     }
 
     private void resetRfid() {
@@ -3035,52 +3051,73 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(this::onPrintComplete);
     }
 
-    private void updatePrinterParameters() {
+    private void updatePrinterParameters(boolean highTemperature) {
         Bitmap bitmap = rgbBitmap;
-        String name = "Anonymous";
+        String name = "";
+        String nameTitle = "";
+        String thermalText = "Thermal Scan";
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {
             member = data.member;
         }
-        if (AppSettings.isFacialDetect() && member != null) {
+        if (AppSettings.isPrintAllScan() && (AppSettings.isFacialDetect() && member != null)) {
             bitmap = BitmapFactory.decodeFile(member.image);
             if (bitmap == null) {
                 bitmap = rgbBitmap;
             }
             if (member.firstname != null) {
+                nameTitle = "Name:";
                 name = member.firstname;
             }
-        } else if (data.getQrCodeData() != null) {
+        } else if (AppSettings.isPrintQrCodeUsers() && data != null && data.getQrCodeData() != null) {
+            nameTitle = "Name:";
             name = data.getQrCodeData().getFirstName();
-        } else if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+        } else if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
             bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
             if (bitmap == null) {
                 bitmap = rgbBitmap;
             }
+            nameTitle = "Name:";
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
+        } else if(AppSettings.isPrintWaveUsers()){
+            String answers = GestureController.getInstance().getAnswers();
+            answers = answers.replace(",", "");
+            answers = answers.replace("[", "");
+            answers = answers.replace("]", "");
+            int numOfQ = GestureController.getInstance().getQuestionAnswerMap().size();
+            int tempValue = (int) (TemperatureController.getInstance().getTemperature()*10);
+            thermalText = numOfQ +": "+ answers + " " + String.format("%4s", tempValue).replace(' ', '0');
         }
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
         String dateTime = date +" "+ currentTime;
         PrinterController.getInstance().setPrintData(name, dateTime);
 
-        convertUIToImage(bitmap, name, dateTime);
+        convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }
 
-    private void convertUIToImage(Bitmap bitmap, String name, String dateTime) {
+    private void convertUIToImage(Bitmap bitmap, String name, String dateTime, String nameTitle, String thermalText, boolean highTemperature) {
         View view = getLayoutInflater().inflate(R.layout.print_layout, null);
         LinearLayout linearLayout = view.findViewById(R.id.screen);
         TextView expireDate = view.findViewById(R.id.expire_date);
+        TextView userNameTitle = view.findViewById(R.id.user_name_title);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
-        TextView tempPassTime = view.findViewById(R.id.temp_Pass_time);
+        TextView tempPass = view.findViewById(R.id.temp_Pass);
+        TextView thermalDisplayText = view.findViewById(R.id.thermal_scan_text);
+        userNameTitle.setText(nameTitle);
         userName.setText(name);
+        thermalDisplayText.setText(thermalText);
+        if(highTemperature){
+            tempPass.setText("");
+            tempPass.setBackgroundColor(getColor(R.color.white));
+        }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
         expireDate.setText(dateTime);
-        tempPassTime.setText("PASS ");
+        tempPass.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -3126,10 +3163,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
             TemperatureController.getInstance().clearData();
+            updatePrinterParameters(true);
             return;
         }
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
-        updatePrinterParameters();
+        updatePrinterParameters(false);
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
     }
 
@@ -3171,9 +3209,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             resumeCameraScan();
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            changeVerifyBackground(R.color.transparency, true);
-            relative_main.setVisibility(View.GONE);
-            new Handler().postDelayed(() -> runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0)), 1000);
+            new Handler().postDelayed(() -> {
+                changeVerifyBackground(R.color.transparency, true);
+                relative_main.setVisibility(View.GONE);
+                runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
+            }, 250);
         });
     }
 
@@ -3297,4 +3337,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
     }
 
+    private void resumeGestureAfterScan() {
+        runOnUiThread(() -> new Handler().postDelayed(() -> {
+            Log.d(TAG, "Reset Gesture flow");
+            GestureController.getInstance().reset();
+        }, 2 * 1000));
+    }
+
+    private void resetGesture() {
+        if (AppSettings.isEnableHandGesture()) {
+            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+            GestureController.getInstance().reset();
+        }
+    }
 }
