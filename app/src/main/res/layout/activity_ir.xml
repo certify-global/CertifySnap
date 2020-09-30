@@ -198,7 +198,8 @@
                 android:textSize="@dimen/margin_40"
                 android:visibility="visible"
                 android:layout_marginRight="@dimen/font_10"
-                android:layout_marginLeft="@dimen/font_10"/>
+                android:layout_marginLeft="@dimen/font_10"
+                android:textAlignment="center"/>
             <me.grantland.widget.AutofitTextView
                 android:id="@+id/tv_only_text"
                 android:padding="@dimen/margin_15"

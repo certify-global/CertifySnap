@@ -732,4 +732,6 @@
     <string name="touchless_interaction_setting">Touchless Interaction</string>
     <string name="wave_setting">Wave Setting</string>
     <string name="choose_questionnaire">Choose Questionnaire</string>
+    <string name="enable_acknowledge">Enable Acknowledgement Screen</string>
+    <string name="enter_full_screen">Enter Full Screen Text</string>
 </resources>

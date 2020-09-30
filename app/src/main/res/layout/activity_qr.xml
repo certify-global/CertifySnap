@@ -269,6 +269,63 @@
             android:paddingLeft="05dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:id="@+id/tv_acknowledge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:layout_marginTop="@dimen/margin_15"
+        android:text="@string/enable_acknowledge"
+        android:textColor="@color/black"
+        android:textSize="@dimen/margin_20" />
+
+    <RadioGroup
+        android:id="@+id/radio_group_acknowledge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_5"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_yes_acknowledge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_30"
+            android:text="@string/living_type_1"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+        <RadioButton
+            android:id="@+id/radio_no_acknowledge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/living_type_0"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_14"
+            android:theme="@style/MyCheckBox" />
+
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_acknowledge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextAcknowledge"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@drawable/edittextbackground"
+            android:hint="@string/enter_full_screen"
+            android:inputType="number"
+            android:paddingLeft="05dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/tv_facial"
