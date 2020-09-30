@@ -242,6 +242,7 @@ public class GestureController implements GestureCallback {
      * Method that initializes the Hand Gesture
      */
     public void initHandGesture() {
+        runCheck = true;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -517,8 +518,8 @@ public class GestureController implements GestureCallback {
         }
         runCheck = false;
         listener = null;
-        //usbReader = null;
-        //mUsbManager = null;
+        usbReader = null;
+        mUsbManager = null;
         index = 0;
         currentQuestionData = null;
     }
