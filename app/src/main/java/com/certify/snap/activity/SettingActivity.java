@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import androidx.annotation.RequiresApi;
 
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.License;
 import com.certify.snap.controller.DatabaseController;
 import com.google.android.material.snackbar.Snackbar;

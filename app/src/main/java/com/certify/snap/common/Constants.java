@@ -43,5 +43,7 @@ public class Constants {
     public static final int PRO_SCANNER_INIT_TIME = 1260000;  //21 minutes
 
     public static final int PRO_SCANNER_INIT_INTERVAL = 60000;
+
+    public static final int TEMPERATURE_MAX_RETRY = 5;
 }
 

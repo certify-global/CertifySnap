@@ -32,6 +32,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.provider.Settings;
 
 import androidx.annotation.RequiresApi;
@@ -115,6 +116,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
@@ -757,6 +759,8 @@ public class Util {
             obj.put("locationId", 0);
             obj.put("deviceTime", Util.getMMDDYYYYDate());
             obj.put("trigger", data.triggerType);
+            obj.put("machineTemperature", data.machineTemperature);
+            obj.put("ambientTemperature", data.ambientTemperature);
             if (data.sendImages) {
                 obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
                 obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
@@ -789,7 +793,8 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId())) {
+            } else if (isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -1123,11 +1128,13 @@ public class Util {
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", getAppState());
+            obj.put("appUpTime", getAppUpTime(context));
+            obj.put("deviceUpTime", getDeviceUpTime());
 
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
         } catch (Exception e) {
-            Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
+            Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
         }
     }
@@ -1296,12 +1303,18 @@ public class Util {
                 String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
+                String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
+
                 if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
+                } else {
+                    SoundController.getInstance().deleteAudioFile("Normal.mp3");
                 }
                 String audioForHighTemperature = jsonValueScan.isNull("audioForHighTemperature") ? "" : jsonValueScan.getString("audioForHighTemperature");
                 if (audioForHighTemperature != null && !audioForHighTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForHighTemperature, "High.mp3");
+                } else {
+                    SoundController.getInstance().deleteAudioFile("High.mp3");
                 }
 
                 Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
@@ -1316,6 +1329,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, allowlowtemperaturescanning.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
                 Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");
@@ -1398,10 +1412,14 @@ public class Util {
                     String audioForValidQRCode = audioVisualSettings.isNull("audioForValidQRCode") ? "" : audioVisualSettings.getString("audioForValidQRCode");
                     if (audioForValidQRCode != null && !audioForValidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
+                    } else {
+                        SoundController.getInstance().deleteAudioFile("Valid.mp3");
                     }
                     String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
                     if (audioForInvalidQRCode != null && !audioForInvalidQRCode.isEmpty()) {
                         SoundController.getInstance().saveAudioFile(audioForInvalidQRCode, "Invalid.mp3");
+                    } else {
+                        SoundController.getInstance().deleteAudioFile("Invalid.mp3");
                     }
                 }
             } else {
@@ -1491,12 +1509,13 @@ public class Util {
     public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            String id = reportInfo.getJSONObject("responseData").getString("id");
-            String firstName = reportInfo.getJSONObject("responseData").getString("firstName");
-            String lastName = reportInfo.getJSONObject("responseData").getString("lastName");
-            String trqStatus = reportInfo.getJSONObject("responseData").getString("trqStatus");
-            String memberId = reportInfo.getJSONObject("responseData").getString("memberId");
-            String qrAccessid = reportInfo.getJSONObject("responseData").getString("accessId");
+            JSONObject responseData = reportInfo.getJSONObject("responseData");
+            String id = responseData.getString("id") == null ? "" : responseData.getString("id");
+            String firstName = responseData.getString("firstName") == null ? "" : responseData.getString("firstName");
+            String lastName = responseData.getString("lastName") == null ? "" : responseData.getString("lastName");
+            String trqStatus = responseData.getString("trqStatus") == null ? "" : responseData.getString("trqStatus");
+            String memberId = responseData.getString("memberId") == null ? "" : responseData.getString("memberId");
+            String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);
@@ -2034,5 +2053,33 @@ public class Util {
 
         }
         return null;
+    }
+
+    private static String getAppUpTime(Context context) {
+        SharedPreferences sharedPreferences = getSharedPreferences(context);
+        String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
+        Date appLaunchDateTime = new Date(Long.parseLong(appLaunchTime));
+        Date currentDateTime = new Date(System.currentTimeMillis());
+        long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(differenceInTime) % 60;
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(differenceInTime) % 60;
+        long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+        long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+        long totalHours = hours + days * 24;
+        return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
+    }
+
+    private static String getDeviceUpTime() {
+        long uptimeMillis = SystemClock.elapsedRealtime();
+        String deviceUptime = String.format(Locale.getDefault(),
+                "%d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(uptimeMillis),
+                TimeUnit.MILLISECONDS.toMinutes(uptimeMillis)
+                        - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+                        .toHours(uptimeMillis)),
+                TimeUnit.MILLISECONDS.toSeconds(uptimeMillis)
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                        .toMinutes(uptimeMillis)));
+        return deviceUptime;
     }
 }

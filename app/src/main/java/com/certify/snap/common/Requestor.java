@@ -42,7 +42,7 @@ public class Requestor {
                 Logger.debug("urlStr", urlStr);
             Logger.debug("urlSreq", reqPing.toString());
             HttpPost httpost = new HttpPost(urlStr);
-             httpost.addHeader("Content-type", "application/json");
+            httpost.addHeader("Content-type", "application/json");
             if (device_sn.equals("device_sn"))
                 httpost.setHeader("device_sn", SerialNo);
             else {
@@ -247,7 +247,7 @@ public class Requestor {
 
         } catch (Exception e) {
             e.printStackTrace();
-          Logger.error("postJsonLogin",e.getMessage());
+            Logger.error("postJsonLogin",e.getMessage());
         }
         return responseStr;
     }

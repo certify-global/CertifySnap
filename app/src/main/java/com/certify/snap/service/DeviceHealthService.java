@@ -17,6 +17,7 @@ import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ApplicationLifecycleHandler;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -77,15 +78,14 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
             if (reportInfo == null) {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                 return;
+            }
+            JSONObject json = new JSONObject(reportInfo);
+            if (json.getInt("responseCode") == 1) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
+                if(ApplicationLifecycleHandler.isInBackground)
+                    bringApplicationToForeground();
             } else {
-                JSONObject json = new JSONObject(reportInfo);
-                if (json.getInt("responseCode") == 1) {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
-                    if(ApplicationLifecycleHandler.isInBackground)
-                        bringApplicationToForeground();
-                } else {
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
-                }
+                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
             }
 
             if (reportInfo.contains("token expired"))

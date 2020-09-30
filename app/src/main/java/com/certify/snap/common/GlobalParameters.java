@@ -58,6 +58,7 @@ public class GlobalParameters {
     public static final String FACE_TEMP = "facetemp";
     public static final String TEMP_ONLY = "temp";
     public static final String TEMP_TEST = "test";
+    public static final String DISPLAY_TEMP_THRESHOLD = "display_temp_threshold";
     public static final String IMAGE_ICON = "image";
     public static final String IMAGE_ICON_API = "image_api";
     public static final String ACCESS_TOKEN = "access_token";
@@ -86,7 +87,8 @@ public class GlobalParameters {
     public static final String QR_SOUND_INVALID = "qr_sound_invalid";
     public static final String BLE_LIGHT_NORMAL = "BleLightNormal";
     public static final String BLE_LIGHT_HIGH = "BleLightHigh";
-    public static final String BLUETOOTH_PRINTER = "BluetoothPrinter";
+    public static final String BROTHER_BLUETOOTH_PRINTER = "BrotherBluetoothPrinter";
+    public static final String TOSHIBA_USB_PRINTER = "ToshibaBluetoothPrinter";
     public static final String MASK_DETECT = "mask_detect";
     public static final String FACIAL_DETECT = "facial_detect";
     public static final String ALLOW_ALL = "allow_all";
@@ -156,4 +158,7 @@ public class GlobalParameters {
     public static final String Centigrades = "centigrade";
     public static final String Fahrenheits = "fahrenheit";
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
+    public static final String APP_LAUNCH_TIME = "app_launch_time";
+
+    public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
 }

@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,14 +12,13 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.certify.callback.AddDeviceCallback;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectAddDevice;
-import com.certify.snap.async.AsyncJSONObjectSender;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -29,7 +27,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONObject;
 
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 public class RegisterDeviceActivity extends SettingBaseActivity implements AddDeviceCallback {
     private static String TAG = "RegisterDeviceActivity -> ";
@@ -174,7 +171,6 @@ public class RegisterDeviceActivity extends SettingBaseActivity implements AddDe
                     Logger.toast(this,responseMessage);
                 }
             }
-
         } catch (Exception e) {
             Logger.error(TAG + "onJSONObjectListenerAddDevice","Login api response error"+e.getMessage());
             mprogressDialog.dismiss();

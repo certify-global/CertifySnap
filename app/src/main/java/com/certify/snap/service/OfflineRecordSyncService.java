@@ -14,6 +14,7 @@ import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;

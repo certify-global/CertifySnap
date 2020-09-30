@@ -225,7 +225,7 @@ public class LocalServerController {
             if (list != null && list.size() > 0) {
                 RegisteredMembers Members = list.get(0);
                 Members.setFirstname(member.getString("firstName"));
-                Members.setLastname(member.getString("lastName"));
+                Members.setLastname(member.getString("lastname"));
                 Members.setMobile(member.getString("phoneNumber"));
                 Members.setMemberid(member.getString("memberId"));
                 Members.setEmail(member.getString("email"));

@@ -19,6 +19,8 @@ public class UserExportedData {
     public CompareResult compareResult;
     private QrCodeData qrCodeData;  //TODO1: Optimize
     public String triggerType = "";
+    public String machineTemperature = "";
+    public String ambientTemperature = "";
 
     public UserExportedData() {
         this.member = new RegisteredMembers();

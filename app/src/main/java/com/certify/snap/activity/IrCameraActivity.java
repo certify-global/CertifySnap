@@ -2,7 +2,6 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -37,10 +36,13 @@ import com.arcsoft.face.AgeInfo;
 import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceShelterInfo;
 import com.arcsoft.face.GenderInfo;
+import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.printer.usb.PrintExecuteTask;
+import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.controller.ApplicationController;
@@ -158,7 +160,8 @@ import io.reactivex.disposables.Disposable;
 import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
-        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener {
+        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
+        PrintStatusCallback {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -257,10 +260,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
-    public CameraSource cameraSource = null;
-    public static CameraSourcePreview preview;
-    public static GraphicOverlay graphicOverlay;
-    public static IrCameraActivity livePreviewActivity;
+    private CameraSource cameraSource = null;
+    private CameraSourcePreview preview;
+    private GraphicOverlay graphicOverlay;
     private static final String BARCODE_DETECTION = "Barcode Detection";
     FrameLayout frameLayout;
     ImageView img_qr;
@@ -299,6 +301,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
     private int orientationValue = 0;
+    private Timer mQRTimer;
+    private boolean isLowTempRead;
+    private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
 
     private void instanceStart() {
         try {
@@ -389,6 +394,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initHidReceiver();
         initRecordUserTempService();
         initBluetoothPrinter();
+        startBLEService();
     }
 
     private void initQRCode() {
@@ -408,12 +414,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (preview == null) {
                 Log.d(TAG, "Preview is null");
             }
-            graphicOverlay = (GraphicOverlay) findViewById(R.id.fireFaceOverlay);
-            if (graphicOverlay == null) {
-                Log.d(TAG, "graphicOverlay is null");
-
-            }
-            livePreviewActivity = this;
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
             if ((sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) || (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) == true)) {
@@ -528,7 +528,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         public void onClick(DialogInterface dialog, int id) {
                             finishAffinity();
                             stopHealthCheckService();
-                            stopBLEService();
+                            //stopBLEService();
                             //stopMemberSyncService();
                             stopHidService();
                         }
@@ -564,6 +564,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mask_message = findViewById(R.id.mask_message);
         mask_message.setTypeface(rubiklight);
         tv_sync = findViewById(R.id.tv_sync);
+        graphicOverlay = findViewById(R.id.fireFaceOverlay);
 
         tv_display_time = findViewById(R.id.tv_display_time);
         tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
@@ -612,7 +613,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         recyclerShowFaceInfo.setAdapter(adapter);
         recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());*/
-        if (Util.isDeviceProModel()) {
+        if (isProDevice) {
             faceRectView.setVisibility(View.VISIBLE);
             outerCircle.setVisibility(View.GONE);
         } else {
@@ -783,6 +784,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         SoundController.getInstance().clearData();
         clearData();
         CameraController.getInstance().setScanCloseProximityEnabled(false);
+        if (BLEController.getInstance().mServiceConnection != null) {
+            try {
+                unbindService(BLEController.getInstance().mServiceConnection);
+                BLEController.getInstance().mServiceConnection = null;
+            } catch (Exception e) {
+                Log.e(TAG, "BLE unbind Error");
+            }
+        }
+        PrinterController.getInstance().clearData();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -833,6 +843,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     }
 
                     if (CameraController.getInstance().isScanCloseProximityEnabled()) {
+                        if (isProDevice) {
+                            runOnUiThread(() -> {
+                                changeVerifyBackground(R.color.transparency, true);
+                                relative_main.setVisibility(View.GONE);
+                                startCameraPreviewTimer();
+                            });
+                        }
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                     } else if (!isFaceIdentified) {
                         if (!Util.isOfflineMode(IrCameraActivity.this)) {
@@ -1002,7 +1019,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 cloneNv21Rgb = irData.clone();
             }
             List<FacePreviewInfo> facePreviewInfoList = faceHelperIr.onPreviewFrame(cloneNv21Rgb);
-            if (Util.isDeviceProModel()) {
+            if (isProDevice) {
                 List<FacePreviewInfo> faceList = new ArrayList<>();
                 if (facePreviewInfoList.size() > 0) {
                     faceList.add(facePreviewInfoList.get(0));
@@ -1363,7 +1380,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraParameters = camera.getParameters();
             previewSizeIr = camera.getParameters().getPreviewSize();
             boolean mirrorHorizontal = false;
-            if (Util.isDeviceProModel()) {
+            if (isProDevice) {
                 mirrorHorizontal = true;
             }
             drawHelperIr = new DrawHelper(previewSizeIr.width, previewSizeIr.height, previewViewIr.getWidth(), previewViewIr.getHeight(), displayOrientation,
@@ -1407,7 +1424,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
             previewSize = camera.getParameters().getPreviewSize();
             boolean mirrorHorizontal = false;
-            if (Util.isDeviceProModel()) {
+            if (isProDevice) {
                 mirrorHorizontal = true;
             }
             drawHelperRgb = new DrawHelper(previewSize.width, previewSize.height, previewViewRgb.getWidth(), previewViewRgb.getHeight(), displayOrientation,
@@ -1555,20 +1572,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
                 tvFaceMessage.setVisibility(View.GONE);
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                boolean showTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
-                Logger.verbose(TAG, "TemperatureCallBackUISetup() Capture temperature setting value: ", showTemperature); //Optimize
-                if (showTemperature) {
-                    tv_message.setVisibility(View.VISIBLE);
-                } else {
-                    tv_message.setVisibility(View.GONE);
-                }
-
+                tv_message.setVisibility(View.VISIBLE);
                 tv_message.setTextColor(getResources().getColor(R.color.white));
-                if (lowTemp)
-                    tv_message.setBackgroundColor(getResources().getColor(R.color.bg_blue));
-                else
-                    tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
-
+                tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
                 tv_message.setText(temperature);
                 tv_message.setTypeface(rubiklight);
 
@@ -1581,6 +1587,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
                     data.triggerType = mTriggerType;
+                    data.machineTemperature = String.valueOf(TemperatureController.getInstance().getMachineTemperature());
+                    data.ambientTemperature = String.valueOf(TemperatureController.getInstance().getAmbientTemperature());
                     userData = data;
                     int syncStatus;
                     if (Util.isOfflineMode(IrCameraActivity.this)) {
@@ -1615,7 +1623,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 resetHomeScreen();
                             });
                             compareResultList.clear();
-                            data.compareResult = null;  //Make the compare result null to avoid update again
+                            if (data != null) {
+                                data.compareResult = null;  //Make the compare result null to avoid update again
+                            }
                         } else {
                             ShowLauncherView();
                         }
@@ -1666,7 +1676,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            if (reportInfo == null || !reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo == null) {
+                Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
+                return;
+            }
+            if (!reportInfo.getString("responseCode").equals("1")) {
                 Util.recordUserTemperature(IrCameraActivity.this,IrCameraActivity.this, userData, 0);
                 return;
             }
@@ -1705,12 +1719,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (preview == null) {
                     Log.d(TAG, "resume: Preview is null");
                 }
-                if (graphicOverlay == null) {
-                    Log.d(TAG, "resume: graphOverlay is null");
-                }
                 preview.start(cameraSource, graphicOverlay);
             } catch (IOException e) {
-                Log.e(TAG, "Unable to start camera source.", e);
+                Log.e(TAG, "Unable to start camera source " + e.getMessage());
                 cameraSource.release();
                 cameraSource = null;
             }
@@ -1726,134 +1737,64 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
-            if (Util.isNumeric(guid) || (!Util.isQRCodeWithPrefix(guid) && AppSettings.isAnonymousQREnable())) {
+            if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
                 tv_scan.setText(R.string.tv_bar_validating);
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                 clearQrCodePreview();
                 setCameraPreview();
                 SoundController.getInstance().playValidQrSound();
-            } else {
-                tv_scan.setText(R.string.tv_qr_validating);
-                img_qr.setVisibility(View.VISIBLE);
-                img_qr.setBackgroundResource(R.drawable.qrimage);
+                return;
+            }
+            tv_scan.setText(R.string.tv_qr_validating);
+            img_qr.setVisibility(View.VISIBLE);
+            img_qr.setBackgroundResource(R.drawable.qrimage);
 
-                //  preview.release();
-
-                Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
-                CameraController.getInstance().setQrCodeId(guid);
-                if (institutionId.isEmpty()) {
-                    Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
-                    Toast toastbar = Toast
-                            .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
-                    toastbar.show();
-                    preview.stop();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            img_qr.setVisibility(View.GONE);
-                            startCameraSource();
-                        }
-                    }, 3 * 1000);
-                    return;
-                }
-                for (int i = 0; i < guid.length(); i++) {
-                    try {
-                        if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                            JSONObject obj = new JSONObject();
-                            obj.put("qrCodeID", guid);
-                            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                            new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                        }
-                    } catch (Exception e) {
-                        Logger.error(TAG + "AsyncJSONObjectQRCode onBarcodeData(String guid)", e.getMessage());
-                    }
-                    if (i == 0) {
-                        break;
-                    }
-                }
+            if (isInstitutionIdEmpty()) {
+                return;
             }
 
+            //Make API call
+            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+            CameraController.getInstance().setQrCodeId(guid);
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                startQRTimer(guid);
+                JSONObject obj = new JSONObject();
+                obj.put("qrCodeID", guid);
+                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+            }
         } catch (Exception e) {
+            cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
     }
 
     @Override
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
+        cancelQRTimer();
         try {
             if (reportInfo == null) {
-                preview.stop();
-                img_qr.setVisibility(View.GONE);
-                startCameraSource();
-                tv_scan.setText(R.string.tv_qr_scan);
-                tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_scan.setTextColor(getResources().getColor(R.color.black));
-                imageqr.setBackgroundColor(getResources().getColor(R.color.white));
-                Logger.debug("deep", reportInfo.toString());
+                resetInvalidQrCode();
+                Logger.debug(TAG, reportInfo.toString());
                 return;
             }
-
-            if (!reportInfo.isNull("Message")) {
-                if (reportInfo.getString("Message").contains("token expired") && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
-                    Util.getToken(this, this);
-                JSONObject obj = new JSONObject();
-                obj.put("qrCodeID", sharedPreferences.getString(GlobalParameters.QRCODE_ID, ""));
-                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                Logger.debug("expired", reportInfo.toString());
-
-            } else {
-                if (reportInfo.isNull("responseCode")) return;
-                if (reportInfo.getString("responseCode").equals("1")) {
-                    runOnUiThread(() ->  {
-                        if (isReadyToScan) return;
-                        Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                        preview.stop();
-                        clearQrCodePreview();
-                        setCameraPreview();
-                        SoundController.getInstance().playValidQrSound();
-                    });
-                } else {
+            if (reportInfo.getString("responseCode").equals("1")) {
+                runOnUiThread(() -> {
+                    if (isReadyToScan) return;
+                    Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                     preview.stop();
-                    img_qr.setVisibility(View.VISIBLE);
-                    img_qr.setBackgroundResource(R.drawable.invalid_qr);
-                    imageqr.setBackgroundColor(getResources().getColor(R.color.red));
-                    Toast snackbar = Toast
-                            .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
-                    snackbar.show();
-                    Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            img_qr.setVisibility(View.GONE);
-                            startCameraSource();
-                            tv_scan.setText(R.string.tv_qr_scan);
-                            tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
-                            tv_scan.setTextColor(getResources().getColor(R.color.black));
-                            imageqr.setBackgroundColor(getResources().getColor(R.color.white));
-                        }
-                    }, 2000);
-                    SoundController.getInstance().playInvalidQrSound();
-                }
+                    clearQrCodePreview();
+                    setCameraPreview();
+                    SoundController.getInstance().playValidQrSound();
+                });
+                return;
             }
-
-
+            resetInvalidQrCode();
+            SoundController.getInstance().playInvalidQrSound();
         } catch (Exception e) {
-            Logger.error(" onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
-            preview.stop();
-            img_qr.setVisibility(View.GONE);
-            startCameraSource();
-            if (tv_scan != null) {
-                tv_scan.setText(R.string.tv_qr_scan);
-                tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_scan.setTextColor(getResources().getColor(R.color.black));
-            }
-            if (imageqr != null) {
-                imageqr.setBackgroundColor(getResources().getColor(R.color.white));
-            }
-            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
-            Logger.toast(this, "QRCode something went wrong. Please try again");
+            Logger.error("QRCode Response processing error", e.getMessage());
+            resetInvalidQrCode();
         }
     }
 
@@ -1871,7 +1812,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
-        if (Util.isDeviceProModel()) {
+        if (isProDevice) {
             CameraController.getInstance().setScanCloseProximityEnabled(true);
             Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, true);
         } else {
@@ -1942,7 +1883,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreview() {
-        long delay  = 300;
+        long delay  = 1000;
         if (qrCodeEnable) {
             resetCameraView();
             if (rfIdEnable) {
@@ -2551,10 +2492,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
         if (searchFaceList.size() > 0 && !isFaceClose(searchFaceList.get(0))) {
-            runOnUiThread(() -> {
-                tvFaceMessage.setVisibility(View.VISIBLE);
-                tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
-            });
+            if (isProDevice) {
+                tvErrorMessage.setVisibility(View.VISIBLE);
+                tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
+            } else {
+                runOnUiThread(() -> {
+                    tvFaceMessage.setVisibility(View.VISIBLE);
+                    tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
+                });
+            }
             searchFaceInfoList.clear();
             face3DAngle = null;
             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
@@ -2563,8 +2509,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (isProDevice) {
             if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
                 runOnUiThread(() -> {
-                    tvFaceMessage.setVisibility(View.VISIBLE);
-                    tvFaceMessage.setText(getString(R.string.face_center));
+                    if (isProDevice) {
+                        tvErrorMessage.setVisibility(View.VISIBLE);
+                        tvErrorMessage.setText(getString(R.string.face_center));
+                    } else {
+                        tvFaceMessage.setVisibility(View.VISIBLE);
+                        tvFaceMessage.setText(getString(R.string.face_center));
+                    }
                 });
                 searchFaceInfoList.clear();
                 face3DAngle = null;
@@ -2609,9 +2560,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
+        checkDeviceMode();
         cancelPreviewIdleTimer();
         enableLedPower();
-
         if (maskEnabled && !faceDetectEnabled) {
             if (maskDetectBitmap == null && rgbBitmap != null) {
                 maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
@@ -2619,51 +2570,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (rl_header == null) return;//TODO: post destroy calls
-                CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-                changeVerifyBackground(R.color.transparency, true);
-                relative_main.setVisibility(View.GONE);
-                // rl_header.setVisibility(View.GONE);
-                //logo.setVisibility(View.GONE);
+        runOnUiThread(() -> {
+            if (rl_header == null) return;
+            CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+            changeVerifyBackground(R.color.transparency, true);
+            relative_main.setVisibility(View.GONE);
+            // rl_header.setVisibility(View.GONE);
+            //logo.setVisibility(View.GONE);
 
-                cancelImageTimer();
-                imageTimer = new Timer();
-                imageTimer.schedule(new TimerTask() {
-                public void run() {
-                    TemperatureController.getInstance().setTemperatureListener(null);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (CameraController.getInstance().isAppExitTriggered()) {
-                                if (handler != null) {
-                                    handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
-                                }
-                                return;
-                            }
-
-                            Logger.debug(TAG, "showCameraPreview", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
-
-                            tv_message.setText("");
-                            tv_message.setVisibility(View.GONE);
-                            tvErrorMessage.setVisibility(View.GONE);
-                            tvFaceMessage.setVisibility(View.GONE);
-                            temperature_image.setVisibility(View.GONE);
-                            homeDisplayView();
-                            mask_message.setText("");
-                            mask_message.setVisibility(View.GONE);
-                            clearData(); //Clear the data on timeout
-                            disableLedPower();
-                            resetRfid();
-                            resetQrCode();
-                        }
-                    });
-                    this.cancel();
-                }
-                }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
-            }
+            cancelImageTimer();
+            startCameraPreviewTimer();
         });
 
     }
@@ -2691,6 +2607,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         face3DAngle = null;
         faceThermalToast = null;
+
+        if(isDisconnected) {
+            runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
+            BLEController.getInstance().connectToDevice();
+        }
     }
 
     private void setPreviewIdleTimer() {
@@ -2804,13 +2725,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void resetQrCode() {
         if (qrCodeEnable) {
             isReadyToScan = false;
-            clearQrCodePreview();
             runOnUiThread(() -> {
                 img_qr.setVisibility(View.GONE);
+                clearQrCodePreview();
                 initQRCode();
                 startCameraSource();
             });
         }
+    }
+
+    private void resetInvalidQrCode() {
+        preview.stop();
+        startCameraSource();
+        Toast snackbar = Toast
+                .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
+        snackbar.show();
+        img_qr.setBackgroundResource(R.drawable.invalid_qr);
+        imageqr.setBackgroundColor(getResources().getColor(R.color.red));
+        img_qr.setVisibility(View.GONE);
+        tv_scan.setText(R.string.tv_qr_scan);
+        tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+        tv_scan.setTextColor(getResources().getColor(R.color.black));
+        imageqr.setBackgroundColor(getResources().getColor(R.color.white));
+        Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
     }
 
     private void startHidService() {
@@ -2913,6 +2850,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initTemperature() {
         TemperatureController.getInstance().init(this);
         //TemperatureController.getInstance().setTemperatureListener(this);
+        if (AppSettings.getfToC().equals("F")) {
+            MIN_TEMP_DISPLAY_THRESHOLD = 50;
+        } else {
+            MIN_TEMP_DISPLAY_THRESHOLD = 10;
+        }
     }
 
     @Override
@@ -2933,9 +2875,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         String tempString = String.valueOf(temperature);
-        String text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        String text = "";
+        if (isLowTempRead || !AppSettings.isCaptureTemperature()) {
+            text = getString(R.string.temperature_normal_text);
+        } else {
+            text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        }
+        isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
-            text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            if (AppSettings.isCaptureTemperature()) {
+                text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            } else {
+                text = getString(R.string.temperature_high_text);
+            }
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
             TemperatureController.getInstance().clearData();
@@ -3000,11 +2952,43 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         clearLeftFace(null);
     }
 
+    @Override
+    public void onTemperatureLow(int retryCount, float temperature) {
+        if (TemperatureController.getInstance().getTemperatureRetry() == Constants.TEMPERATURE_MAX_RETRY) {
+            TemperatureController.getInstance().setTemperatureRetry(0);
+            if (temperature < MIN_TEMP_DISPLAY_THRESHOLD) {
+                Log.d(TAG, "onTemperatureLow Temperature less than display threshold" + temperature);
+                return;
+            }
+            Log.d(TAG, "onTemperatureLow " + temperature);
+            cancelImageTimer();
+            isLowTempRead = true;
+            onTemperatureRead(temperature);
+            return;
+        }
+        cancelImageTimer();
+        runOnUiThread(() -> {
+            tvErrorMessage.setVisibility(View.VISIBLE);
+            if (isProDevice) {
+                tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getResources().getString(R.string.step_closer)));
+            } else {
+                tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, getResources().getString(R.string.text_value2)));
+                outerCircle.setBackgroundResource(R.drawable.border_shape_red);
+            }
+        });
+        startCameraPreviewTimer();
+        TemperatureController.getInstance().clearData();
+        CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
+        TemperatureController.getInstance().setTemperatureListener(this);
+        clearLeftFace(null);
+    }
+
     private void initBluetoothPrinter() {
         // initialization for printing
-        PrinterController.getInstance().init(this);
-        PrinterController.getInstance().setPrinterListener(this);
-        PrinterController.getInstance().setBluetoothAdapter();
+        if (AppSettings.isEnablePrinter() || AppSettings.isPrintUsbEnabled()) {
+            PrinterController.getInstance().init(this, this);
+            PrinterController.getInstance().setPrinterListener(this);
+        }
     }
 
     @Override
@@ -3025,6 +3009,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onPrintError() {
         onTemperatureUpdate();
         TemperatureController.getInstance().clearData();
+    }
+
+    @Override
+    public void onPrintUsbCommand() {
+        runOnUiThread(() -> new PrintExecuteTask(this,
+                                                PrinterController.getInstance().getUsbPrintControl(), this)
+                                                .execute(PrinterController.getInstance().getPrintData()));
+    }
+
+    @Override
+    public void onPrintUsbSuccess(String status, long resultCode) {
+        runOnUiThread(() -> {
+            String strMessage = String.format(getString(R.string.statusReception) + " %s : %08x ", status , resultCode );
+            util.showAlertDialog(IrCameraActivity.this, strMessage );
+            onPrintComplete();
+        });
+
+    }
+
+    @Override
+    public void onPrintStatus(String status, int code) {
+        Log.d(TAG, "Print status " + status);
+        runOnUiThread(this::onPrintComplete);
     }
 
     private void updatePrinterParameters() {
@@ -3052,23 +3059,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
         }
-        convertUIToImage(bitmap, name);
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+        String dateTime = date +" "+ currentTime;
+        PrinterController.getInstance().setPrintData(name, dateTime);
+
+        convertUIToImage(bitmap, name, dateTime);
     }
 
-    private void convertUIToImage(Bitmap bitmap, String name) {
+    private void convertUIToImage(Bitmap bitmap, String name, String dateTime) {
         View view = getLayoutInflater().inflate(R.layout.print_layout, null);
         LinearLayout linearLayout = view.findViewById(R.id.screen);
         TextView expireDate = view.findViewById(R.id.expire_date);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
         TextView tempPassTime = view.findViewById(R.id.temp_Pass_time);
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         userName.setText(name);
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
-        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
-        expireDate.setText(date +" "+ currentTime);
+        expireDate.setText(dateTime);
         tempPassTime.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
@@ -3099,9 +3109,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void updatePrintOnTemperatureRead(float temperature) {
         String tempString = String.valueOf(temperature);
-        String text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        String text = "";
+        if (isLowTempRead || !AppSettings.isCaptureTemperature()){
+            text = getString(R.string.temperature_normal_text);
+        } else {
+            text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+        }
+        isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
-            text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            if (AppSettings.isCaptureTemperature()) {
+                text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            } else {
+                text = getString(R.string.temperature_high_text);
+            }
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
             TemperatureController.getInstance().clearData();
@@ -3160,4 +3180,102 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         dialog.show();
         new Handler().postDelayed(() -> dialog.dismiss(), 6000);
     }
+
+    private void startBLEService() {
+        try {
+            if (AppSettings.isBleLightNormalTemperature() || AppSettings.isBleLightHighTemperature()) {
+                if (!Util.isServiceRunning(BluetoothLeService.class, IrCameraActivity.this)) {
+                    Log.d(TAG, "startBLEService");
+                    BLEController.getInstance().initServiceConnection();
+                    // connection ble service
+                    Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+                    bindService(gattServiceIntent, BLEController.getInstance().mServiceConnection, BIND_AUTO_CREATE);
+
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "startBLEService: exception" + e.toString());
+        }
+    }
+
+    private boolean isInstitutionIdEmpty() {
+        boolean result = false;
+        if (institutionId.isEmpty()) {
+            result = true;
+            Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
+            Toast toastbar = Toast
+                    .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
+            toastbar.show();
+            resetInvalidQrCode();
+        }
+        return result;
+    }
+
+    private void startQRTimer(String guid) {
+        cancelQRTimer();
+        mQRTimer = new Timer();
+        mQRTimer.schedule(new TimerTask() {
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+                        CameraController.getInstance().setQrCodeId(guid);
+                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                        clearQrCodePreview();
+                        setCameraPreview();                    }
+                });
+                this.cancel();
+            }
+        }, 5 * 1000);
+    }
+
+    private void cancelQRTimer() {
+        if (mQRTimer != null) {
+            mQRTimer.cancel();
+        }
+    }
+
+    private void startCameraPreviewTimer() {
+        cancelImageTimer();
+        imageTimer = new Timer();
+        imageTimer.schedule(new TimerTask() {
+            public void run() {
+                TemperatureController.getInstance().setTemperatureListener(null);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (CameraController.getInstance().isAppExitTriggered()) {
+                            if (handler != null) {
+                                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
+                            }
+                            return;
+                        }
+
+                        Logger.debug(TAG, "showCameraPreview", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
+
+                        tv_message.setText("");
+                        tv_message.setVisibility(View.GONE);
+                        tvErrorMessage.setVisibility(View.GONE);
+                        tvFaceMessage.setVisibility(View.GONE);
+                        temperature_image.setVisibility(View.GONE);
+                        homeDisplayView();
+                        mask_message.setText("");
+                        mask_message.setVisibility(View.GONE);
+                        clearData(); //Clear the data on timeout
+                        disableLedPower();
+                        resetRfid();
+                        resetQrCode();
+                    }
+                });
+                this.cancel();
+            }
+        }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
+    }
+
 }

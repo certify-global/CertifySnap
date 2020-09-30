@@ -957,7 +957,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                             for (int i = 0; i < maxInRectInfo.size(); i++) {
                                 int trackId = temperatureRectList.get(i).getTrackId();
                                 temperature = maxInRectInfo.get(i)[3];
-                                if (temperature < 0) continue;
+                                if (temperature <= 10) continue;
                                 String temperatureUnit = AppSettings.getfToC();
                                 if (temperatureUnit.equals("F")) {
                                     temperature = (float) Util.celsiusToFahrenheit(temperature);
@@ -1032,7 +1032,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
             Rect rect = drawHelperRgb.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect());
             float fix = getDistance(rect);
             //Ignore the temperature read (resulting in low read if the face is not fully visible)
-            if (rect.right > 700 || rect.left < 80) {
+            if (rect.right > 750 || rect.left < 20) {
                 final Rect[] rects = new Rect[temperatureRectList.size()];
                 int[] distances = new int[distanceList.size()];
                 util.setGuideRect(rects, distances);
@@ -1793,6 +1793,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
      */
     public void startGuideTemperatureTimer() {
         if (guideTempTimer != null) return;
+        checkDeviceMode();
         guideTempTimer = new Timer();
         guideTempTimer.schedule(new TimerTask() {
             public void run() {

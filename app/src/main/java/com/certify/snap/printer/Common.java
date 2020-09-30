@@ -1,4 +1,4 @@
-package com.certify.snap.bluetooth.printer;
+package com.certify.snap.printer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
