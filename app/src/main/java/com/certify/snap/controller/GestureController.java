@@ -71,10 +71,9 @@ public class GestureController implements GestureCallback {
 
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
-
         void onAllQuestionsAnswered();
-
         void onVoiceListeningStart();
+        void onQuestionsReceived();
     }
 
     public static GestureController getInstance() {
@@ -87,6 +86,7 @@ public class GestureController implements GestureCallback {
     public void init(Context context) {
         this.mContext = context;
         isGestureFlow = true;
+        index = 0;
         sharedPreferences = Util.getSharedPreferences(mContext);
         getQuestionsAPI();
     }
@@ -123,6 +123,9 @@ public class GestureController implements GestureCallback {
                 questionAnswerMap.put(questionData, "NA");
             }
             Log.d(TAG, "Gesture Questions list updated");
+            if (listener != null) {
+                listener.onQuestionsReceived();
+            }
         } catch (Exception e) {
             Log.d(TAG, "onJSONObjectListenerGesture" + e.getMessage());
         }

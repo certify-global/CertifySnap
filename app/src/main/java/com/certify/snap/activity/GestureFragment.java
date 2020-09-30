@@ -164,6 +164,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         getActivity().runOnUiThread(() -> mTimerView.start(8));
     }
 
+    @Override
+    public void onQuestionsReceived() {
+        getActivity().runOnUiThread(() -> {
+            covidQuestionsText.setText(GestureController.getInstance().getQuestion());
+        });
+    }
+
     private void closeFragment() {
         if (getActivity() != null) {
             getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
