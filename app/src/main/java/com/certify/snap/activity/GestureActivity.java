@@ -149,7 +149,6 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
 
 
     private void setValues() {
-
         ArrayList<String> values = new ArrayList<>(flowHashmap.keySet());
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,values);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -169,6 +168,11 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
 
             }
         });
+        String selectedID=sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
+        String value=Util.getKeyFromValue(flowHashmap,selectedID);
+        spinnerQuestionSelector.setSelection(((ArrayAdapter<String>)spinnerQuestionSelector.getAdapter()).getPosition(value));
+        Log.d("CertifyXT gesture",value);
+
     }
 
     public void getFlowListAPI() {
@@ -204,10 +208,11 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
                     if (statusVal == 1) {
                         flowHashmap.put(settingName, id);
                         Log.d("CertifyXT settingID",id);
-                        setValues();
 
                     }
                 }
+                setValues();
+
             }
 
 

@@ -48,8 +48,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (AppSettings.isEnableVoice()) {
            // handleQuestionnaireByVoice();
         } else {
-            handleQuestionnaireByGesture();
-            //handleQuestionnaireByVoice();
+          //  handleQuestionnaireByGesture();
+            handleQuestionnaireByVoice();
         }
 
         return view;
@@ -78,7 +78,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (AppSettings.isEnableVoice()) {
           //  titleView.setText("Please answer the questions by saying Yes or No");
            // voiceLayout.setVisibility(View.VISIBLE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+           handGestureLayout.setVisibility(View.VISIBLE);
         } else {
            // voiceLayout.setVisibility(View.GONE);
             handGestureLayout.setVisibility(View.VISIBLE);
