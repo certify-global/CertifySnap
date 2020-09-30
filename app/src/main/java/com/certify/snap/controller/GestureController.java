@@ -32,9 +32,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class GestureController implements GestureCallback {
     private boolean runCheck = true;
     private boolean allQuestionAnswered = false;
     private GestureCallbackListener listener = null;
-    private HashMap<QuestionData, String> questionAnswerMap = new HashMap<>();
+    private LinkedHashMap<QuestionData, String> questionAnswerMap = new LinkedHashMap<>();
     private QuestionData currentQuestionData = null;
 
     //Hand Gesture
