@@ -111,7 +111,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             //voiceLayout.setVisibility(View.VISIBLE);
             handGestureLayout.setVisibility(View.VISIBLE);
         }
-        progressLayout.setVisibility(View.GONE);
     }
 
     //-----> Voice code
@@ -134,15 +133,15 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     public void onQuestionAnswered(String answeredQ) {
         getActivity().runOnUiThread(() -> {
             int index = GestureController.getInstance().getIndex();
-         if (index== 0) {
+         if (index== 1) {
                 image1.setImageResource(R.drawable.tick);
-            } else if (index== 1) {
+            } else if (index== 2) {
                 view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image2.setImageResource(R.drawable.tick);
-            } else if (index== 2) {
+            } else if (index== 3) {
                 view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image3.setImageResource(R.drawable.tick);
-            } else if (index== 3) {
+            } else if (index== 4) {
                 view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
                 image4.setImageResource(R.drawable.tick);
             }
@@ -168,6 +167,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     public void onQuestionsReceived() {
         getActivity().runOnUiThread(() -> {
             covidQuestionsText.setText(GestureController.getInstance().getQuestion());
+            progressLayout.setVisibility(View.VISIBLE);
         });
     }
 

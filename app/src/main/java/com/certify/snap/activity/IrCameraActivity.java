@@ -3213,7 +3213,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 changeVerifyBackground(R.color.transparency, true);
                 relative_main.setVisibility(View.GONE);
                 runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
-            }, 250);
+            }, 300);
         });
     }
 
