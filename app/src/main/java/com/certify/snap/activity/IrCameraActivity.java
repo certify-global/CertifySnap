@@ -2478,11 +2478,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvFaceMessage.setVisibility(View.GONE);
             });
             if (AppSettings.isEnableVoice() || AppSettings.isEnableHandGesture()) {
-                pauseCameraScan();
-                mFaceFeature = faceFeature;
-                mRequestId = requestId;
-                launchGestureFragment();
-                return;
+                if (Util.isGestureDeviceConnected(this)) {
+                    pauseCameraScan();
+                    mFaceFeature = faceFeature;
+                    mRequestId = requestId;
+                    launchGestureFragment();
+                    return;
+                }
+                Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show();
             }
             if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&

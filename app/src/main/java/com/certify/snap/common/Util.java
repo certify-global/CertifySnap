@@ -24,6 +24,8 @@ import android.graphics.Typeface;
 import android.graphics.YuvImage;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -113,6 +115,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -2149,5 +2153,23 @@ public class Util {
         return null;
     }
 
+    public static boolean isGestureDeviceConnected(Context context) {
+        boolean result = false;
+        UsbManager mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceHashMap = mUsbManager.getDeviceList();
+        Iterator<UsbDevice> iterator = deviceHashMap.values().iterator();
+        while (iterator.hasNext()) {
+            UsbDevice usbDevice = iterator.next();
+            int pid = usbDevice.getProductId();
+            int vid = usbDevice.getVendorId();
+            if (pid == 0x5790 && vid == 0x0483) {
+                if (mUsbManager.hasPermission(usbDevice)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
 
 }
