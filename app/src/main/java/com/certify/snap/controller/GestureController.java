@@ -55,6 +55,7 @@ public class GestureController implements GestureCallback {
     private GestureCallbackListener listener = null;
     private LinkedHashMap<QuestionData, String> questionAnswerMap = new LinkedHashMap<>();
     private QuestionData currentQuestionData = null;
+    private GestureHomeCallBackListener gestureListener = null;
 
     //Hand Gesture
     int leftRangeValue = 50;
@@ -68,12 +69,15 @@ public class GestureController implements GestureCallback {
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
 
-
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
         void onAllQuestionsAnswered();
         void onVoiceListeningStart();
         void onQuestionsReceived();
+    }
+
+    public interface GestureHomeCallBackListener {
+        void onGestureDetected();
     }
 
     public static GestureController getInstance() {
@@ -133,6 +137,10 @@ public class GestureController implements GestureCallback {
 
     public void setCallbackListener(GestureCallbackListener callbackListener) {
         this.listener = callbackListener;
+    }
+
+    public void setGestureHomeCallbackListener(GestureHomeCallBackListener callbackListener) {
+        this.gestureListener = callbackListener;
     }
 
     /**
@@ -397,6 +405,10 @@ public class GestureController implements GestureCallback {
 
     private void rightHandWave() {
         Log.d(TAG, "Right Hand wave");
+        if (gestureListener != null) {
+            gestureListener.onGestureDetected();
+            return;
+        }
         if (wait) {
             updateOnWave("N");
         }
@@ -525,5 +537,6 @@ public class GestureController implements GestureCallback {
         mUsbManager = null;
         index = 0;
         currentQuestionData = null;
+        gestureListener = null;
     }
 }
