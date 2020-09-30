@@ -63,7 +63,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/temp_Pass_time"
+        android:id="@+id/temp_Pass"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="@color/colorGreen"
@@ -79,7 +79,7 @@
         android:background="#fff" />
 
     <TextView
-        android:id="@+id/visitor"
+        android:id="@+id/thermal_scan_text"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:background="@color/colorGreen"

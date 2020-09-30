@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.CountDownTimer;
 import android.util.Log;
 
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
@@ -34,6 +35,7 @@ public class CameraController {
         IDLE,
         FACIAL_SCAN,
         THERMAL_SCAN,
+        GESTURE_SCAN,
         COMPLETE
     }
 
@@ -47,6 +49,9 @@ public class CameraController {
     public void init() {
         clearData();
         faceParameters = new FaceParameters();
+        if (AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
+            scanState = ScanState.GESTURE_SCAN;
+        }
     }
 
     public QrCodeData getQrCodeData() {

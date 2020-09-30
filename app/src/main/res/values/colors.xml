@@ -55,5 +55,8 @@
     <color name="darkGreen">#006400</color>
     <color name="colorGreen">#4CAF50</color>
 
+    <color name="parrot_green">#29EF29</color>
+    <color name="very_light_gray">#EAE6E6</color>
+
 
 </resources>

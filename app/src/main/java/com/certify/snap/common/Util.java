@@ -24,6 +24,8 @@ import android.graphics.Typeface;
 import android.graphics.YuvImage;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -71,6 +73,7 @@ import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
@@ -112,7 +115,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -1242,6 +1248,7 @@ public class Util {
                 JSONObject responseData = reportInfo.getJSONObject("responseData");
                 JSONObject jsonValue = responseData.getJSONObject("jsonValue");
                 JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
+
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
@@ -1257,6 +1264,8 @@ public class Util {
                     String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
                 }
+
+
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
                 JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
@@ -1422,6 +1431,45 @@ public class Util {
                         SoundController.getInstance().deleteAudioFile("Invalid.mp3");
                     }
                 }
+
+                //Printer Settings
+                if (jsonValue.has("PrinterSettings")) {
+                    JSONObject printerSettings = jsonValue.getJSONObject("PrinterSettings");
+                    String enableWifiBluetoothPrint = printerSettings.isNull("enableWBPrint") ? "0" : printerSettings.getString("enableWBPrint");
+                    String enableUSBPrint = printerSettings.isNull("enableUSBPrint") ? "0" : printerSettings.getString("enableUSBPrint");
+                    String printAllScan = printerSettings.isNull("printAllScan") ? "0" : printerSettings.getString("printAllScan");
+                    String printAccessCard = printerSettings.isNull("printAccessCard") ? "0" : printerSettings.getString("printAccessCard");
+                    String printQRCode = printerSettings.isNull("printQRCode") ? "0" : printerSettings.getString("printQRCode");
+                    String printWaveUsers = printerSettings.isNull("printWaveUsers") ? "0" : printerSettings.getString("printWaveUsers");
+                    String printHighTempScans = printerSettings.isNull("printHighTempScans") ? "0" : printerSettings.getString("printHighTempScans");
+
+
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printAllScan.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printAccessCard.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
+                }
+                //Touch less Interaction
+                if (jsonValue.has("TouchlessInteraction")) {
+                    JSONObject touchlessInteractionSettings = jsonValue.getJSONObject("TouchlessInteraction");
+                    String enableWave = touchlessInteractionSettings.isNull("enableWave") ? "0" : touchlessInteractionSettings.getString("enableWave");
+                    String enableQuestionAndAnswer = touchlessInteractionSettings.isNull("enableQuestionAndAnswer") ? "0" : touchlessInteractionSettings.getString("enableQuestionAndAnswer");
+                    String settingsID = touchlessInteractionSettings.isNull("settingId") ? "0" : touchlessInteractionSettings.getString("settingId");
+                    String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
+                    String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
+                    Log.d("CertifyXT flow",settingsID);
+
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, settingsID);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
+                }
+
+
             } else {
                 Logger.toast(context, "Something went wrong please try again");
             }
@@ -2082,4 +2130,63 @@ public class Util {
                         .toMinutes(uptimeMillis)));
         return deviceUptime;
     }
+
+    public static JSONObject getJSONObjectGesture(JSONObject req, String url, String header, Context context) {
+            try {
+                String responseTemp = Requestor.postJson(url, req, context);
+                if (responseTemp != null && !responseTemp.equals("")) {
+                    return new JSONObject(responseTemp);
+                }
+            } catch (Exception e) {
+                Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                        + ", url = " + url, e.getMessage());
+                return null;
+
+            }
+            return null;
+    }
+
+    public static JSONObject getJSONObjectFlowList(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static String getKeyFromValue(Map hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return String.valueOf(o);
+            }
+        }
+        return null;
+    }
+
+    public static boolean isGestureDeviceConnected(Context context) {
+        boolean result = false;
+        UsbManager mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceHashMap = mUsbManager.getDeviceList();
+        Iterator<UsbDevice> iterator = deviceHashMap.values().iterator();
+        while (iterator.hasNext()) {
+            UsbDevice usbDevice = iterator.next();
+            int pid = usbDevice.getProductId();
+            int vid = usbDevice.getVendorId();
+            if (pid == 0x5790 && vid == 0x0483) {
+                if (mUsbManager.hasPermission(usbDevice)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
 }

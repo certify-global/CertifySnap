@@ -39,9 +39,16 @@ public class AppSettings {
     private static boolean isNavigationBarOn = false;
     private static boolean enablePrinter = false;
     private static float temperatureCompensation = 0;
+    private static boolean enableVoice = false;
+    private static boolean enableHandGesture = false;
     private static float displayTemperatureThreshold = 0;
     private static boolean setTemperatureThreshold = false;
-    private static boolean isPrintUsbEnabled = false;
+    private static boolean printUsbEnabled = false;
+    private static boolean printAllScan = false;
+    private static boolean printAccessCardUsers = false;
+    private static boolean printQrCodeUsers = false;
+    private static boolean printWaveUsers = false;
+    private static boolean printHighTemperatureUsers = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -82,9 +89,15 @@ public class AppSettings {
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
         enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER,false);
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
+        enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false);
+        enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
-        isPrintUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER,false);
+        printAllScan = sharedPreferences.getBoolean(GlobalParameters.PRINT_ALL_SCAN,false);
+        printAccessCardUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS,false);
+        printQrCodeUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS,false);
+        printWaveUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_WAVE_USERS,false);
+        printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
     }
 
     public static String getThermalScanTitle() {
@@ -211,6 +224,14 @@ public class AppSettings {
         return temperatureCompensation;
     }
 
+    public static boolean isEnableVoice() {
+        return enableVoice;
+    }
+
+    public static boolean isEnableHandGesture() {
+        return enableHandGesture;
+    }
+
     public static float getDisplayTemperatureThreshold() {
         return displayTemperatureThreshold;
     }
@@ -220,6 +241,26 @@ public class AppSettings {
     }
 
     public static boolean isPrintUsbEnabled() {
-        return isPrintUsbEnabled;
+        return printUsbEnabled;
+    }
+
+    public static boolean isPrintAllScan() {
+        return printAllScan;
+    }
+
+    public static boolean isPrintAccessCardUsers() {
+        return printAccessCardUsers;
+    }
+
+    public static boolean isPrintQrCodeUsers() {
+        return printQrCodeUsers;
+    }
+
+    public static boolean isPrintWaveUsers() {
+        return printWaveUsers;
+    }
+
+    public static boolean isPrintHighTemperatureUsers() {
+        return printHighTemperatureUsers;
     }
 }

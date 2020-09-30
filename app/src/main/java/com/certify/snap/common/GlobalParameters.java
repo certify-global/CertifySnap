@@ -144,6 +144,10 @@ public class GlobalParameters {
     public static final String Temp_ACCESS_TOKEN = "Temp_access_token";
     public static final String QR_BUTTON_TEXT = "QR_button_text";
     public static final String QR_SKIP_BUTTON_ENABLE_DISABLE = "QR_skip_button_enable";
+    public static final String VISUAL_RECOGNITION = "VisualRecognition";
+    public static final String HAND_GESTURE = "HandGesture";
+    public static final String WAVE_QUESTIONS = "WaveQuestions";
+    public static final String MASK_ENFORCEMENT = "maskEnforcement";
     public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
 
     public static final String Temperature = "temperature";
@@ -159,6 +163,17 @@ public class GlobalParameters {
     public static final String Fahrenheits = "fahrenheit";
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
     public static final String APP_LAUNCH_TIME = "app_launch_time";
+    public static final String Touchless_setting_id = "touchless_setting_id";
 
     public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
+
+    public static final String PRINT_ALL_SCAN = "printAllScan";
+    public static final String PRINT_ACCESS_CARD_USERS = "printAccessCard";
+    public static final String PRINT_QR_CODE_USERS = "printQRCode";
+    public static final String PRINT_WAVE_USERS = "printWaveUsers";
+    public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
+    public static final String AcknowledgeText = "acknowledge_text";
+    public static final String AcknowledgeRadio = "acknowledge_radio";
+
+
 }
