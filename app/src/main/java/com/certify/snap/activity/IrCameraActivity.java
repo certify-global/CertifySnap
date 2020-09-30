@@ -1816,7 +1816,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
-        if (isProDevice) {
+        if (isProDevice && !AppSettings.isEnableHandGesture()) {
             CameraController.getInstance().setScanCloseProximityEnabled(true);
             Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, true);
         } else {
