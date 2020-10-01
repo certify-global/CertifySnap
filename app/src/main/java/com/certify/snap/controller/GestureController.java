@@ -16,10 +16,12 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 
+import com.certify.callback.GestureAnswerCallback;
 import com.certify.callback.GestureCallback;
 import com.certify.snap.api.response.QuestionData;
 import com.certify.snap.api.response.QuestionListResponse;
 import com.certify.snap.api.response.QuestionSurveyOptions;
+import com.certify.snap.async.AsyncGestureAnswer;
 import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -28,6 +30,7 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -41,7 +44,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GestureController implements GestureCallback {
+public class GestureController implements GestureCallback, GestureAnswerCallback {
     private static final String TAG = GestureController.class.getSimpleName();
     private static GestureController instance = null;
     private Context mContext;
@@ -106,7 +109,6 @@ public class GestureController implements GestureCallback {
     public void getQuestionsAPI() {
         try {
             JSONObject obj = new JSONObject();
-            // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
 
@@ -145,6 +147,12 @@ public class GestureController implements GestureCallback {
 
     public void setGestureHomeCallbackListener(GestureHomeCallBackListener callbackListener) {
         this.gestureListener = callbackListener;
+    }
+
+
+    @Override
+    public void onJSONObjectListenerGestureAnswer(JSONObject report, String status, JSONObject req) {
+
     }
 
     /**
@@ -440,6 +448,7 @@ public class GestureController implements GestureCallback {
         if (index >= questionDataList.size()) {
             if (listener != null) {
                 listener.onAllQuestionsAnswered();
+                sendAnswers();
             }
             return;
         }
@@ -488,7 +497,7 @@ public class GestureController implements GestureCallback {
     private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer) {
         QuestionSurveyOptions qSurveyOption = null;
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
-            QuestionData questionData = (QuestionData) entry.getValue();
+            QuestionData questionData = (QuestionData) entry.getKey();
             List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
             if (qSurveyOptionList != null) {
                 for (int i = 0; i < qSurveyOptionList.size(); i++) {
@@ -513,6 +522,35 @@ public class GestureController implements GestureCallback {
             }
         }
         //Call API
+        sendAnswersAPI(qSurveyOptionList);
+
+    }
+
+    private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList) {
+        try {
+            JSONObject obj = new JSONObject();
+            JSONObject jsonCustomFields = new JSONObject();
+            JSONArray jsonArrayCustoms = new JSONArray();
+
+            obj.put("VisitId", 0);
+            obj.put("anonymousGuid", "tr16e14d411e4a404d92d51d010e865900");
+            obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
+
+
+            for(int i=0;i<qSurveyOptionList.size();i++) {
+                jsonCustomFields.put("questionId", qSurveyOptionList.get(i).questionId);
+                jsonCustomFields.put("optionId", qSurveyOptionList.get(i).optionId);
+                jsonArrayCustoms.put(jsonCustomFields);
+
+            }
+            obj.put("QuestionOptions",jsonArrayCustoms);
+
+
+            new AsyncGestureAnswer(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.SaveAnswer, mContext).execute();
+
+        } catch (Exception e) {
+            Logger.error(TAG, "sendReqAddDevice " + e.getMessage());
+        }
     }
 
     public String getAnswers(){
