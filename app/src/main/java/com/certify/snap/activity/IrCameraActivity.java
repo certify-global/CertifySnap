@@ -2543,7 +2543,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         boolean result = false;
         if (face3DAngle != null) {
             float yaw = face3DAngle.getYaw();
-            if (yaw > -10 && yaw < 10) {
+            //With mask, the yaw value is ranging from 30 - 50 with the face straight up
+            if ((yaw > -10 && yaw < 10) ||
+                    ((maskStatus == 1) && (yaw > -10 && yaw < 50))) {
                 result = true;
             }
         }

@@ -497,9 +497,9 @@ public class TemperatureController {
                     String errorCode = obj.getString("err");
 
                     if (errorCode != null) {
-                        float temNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
+                        /*float temNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
                         Log.e(TAG, "SnapXT Temperature Failed Tem no correct: " + temNoCorrect);
-                        updateAllowLowOnTemperatureFail(errorCode, temNoCorrect);
+                        updateAllowLowOnTemperatureFail(errorCode, temNoCorrect);*/
 
                         Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + errorCode);
                         if (TemperatureController.getInstance().getTrackIdMap().isEmpty()) return;
