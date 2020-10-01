@@ -44,6 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 public class GestureController implements GestureCallback, GestureAnswerCallback {
     private static final String TAG = GestureController.class.getSimpleName();
@@ -112,7 +113,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
-
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
         }
@@ -150,7 +150,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.gestureListener = callbackListener;
     }
 
-
+    
     /**
      * Method that initializes the voice
      *
@@ -524,12 +524,13 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList) {
         try {
+            String uniqueID = UUID.randomUUID().toString();
             JSONObject obj = new JSONObject();
             JSONObject jsonCustomFields = new JSONObject();
             JSONArray jsonArrayCustoms = new JSONArray();
 
             obj.put("VisitId", 0);
-            obj.put("anonymousGuid", "tr16e14d411e4a404d92d51d010e865900");
+            obj.put("anonymousGuid", uniqueID);
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
 
 
