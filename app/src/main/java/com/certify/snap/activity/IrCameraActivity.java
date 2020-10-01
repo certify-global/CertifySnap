@@ -346,6 +346,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().init();
         CameraController.getInstance().startProDeviceInitTimer(this);
         initAccessControl();
+        initGesture();
         SoundController.getInstance().init(this);
 
         logo = findViewById(R.id.loginLogo);
@@ -400,9 +401,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            if (qrCodeEnable) {
-                initGestureFromHome();
-            }
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -1856,7 +1854,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!faceDetectEnabled) {
             isReadyToScan = false;
         }
-        initGestureFromHome();
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
@@ -2725,18 +2722,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tvFaceMessage.setVisibility(View.GONE);
         });
         clearData();
+        if (AppSettings.isEnableHandGesture()) {
+            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+            initGesture();
+            resumeGestureAfterScan();
+        }
         resetRfid();
         if (qrCodeEnable) {
             resetQrCode();
-            resumeGestureAfterScan();
             return;
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
-        if (AppSettings.isEnableHandGesture()) {
-            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
-            resumeGestureAfterScan();
-        }
     }
 
     private void resetRfid() {
@@ -3377,6 +3374,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 this.cancel();
             }
         }, 10 * 1000);//wait 10 seconds for the temperature to be captured, go to home otherwise
+    }
+
+    private void initGesture() {
+        if (qrCodeEnable || rfIdEnable) {
+            initGestureFromHome();
+        }
     }
 
     private void resumeGestureAfterScan() {
