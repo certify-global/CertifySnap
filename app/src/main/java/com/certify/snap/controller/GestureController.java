@@ -95,6 +95,10 @@ public class GestureController implements GestureCallback {
         getQuestionsAPI();
     }
 
+    public void initContext(Context context) {
+        this.mContext = context;
+    }
+
     public boolean isGestureFlowComplete() {
         return isGestureFlow;
     }
@@ -407,6 +411,7 @@ public class GestureController implements GestureCallback {
         Log.d(TAG, "Right Hand wave");
         if (gestureListener != null) {
             gestureListener.onGestureDetected();
+            clearData();
             return;
         }
         if (wait) {

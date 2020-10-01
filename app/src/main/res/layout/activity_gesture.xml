@@ -100,7 +100,12 @@
 
         </LinearLayout>
 
+        <include layout="@layout/q_two_layout" />
         <include layout="@layout/q_three_layout" />
+        <include layout="@layout/q_four_layout" />
+        <include layout="@layout/q_five_layout" />
+        <include layout="@layout/q_six_layout" />
+        <include layout="@layout/q_seven_layout" />
 
         <RelativeLayout
             android:id="@+id/hand_gesture_layout"

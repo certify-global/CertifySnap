@@ -400,7 +400,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            if (AppSettings.isEnableHandGesture()) {
+            if (qrCodeEnable && AppSettings.isEnableHandGesture()) {
+                GestureController.getInstance().initContext(this);
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
                 GestureController.getInstance().initHandGesture();
             }
@@ -1825,7 +1826,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
-        if (isProDevice) {
+        if (isProDevice && !AppSettings.isEnableHandGesture()) {
             CameraController.getInstance().setScanCloseProximityEnabled(true);
             Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, true);
         } else {
@@ -2491,7 +2492,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvFaceMessage.setVisibility(View.GONE);
             });
             if (AppSettings.isEnableVoice() || AppSettings.isEnableHandGesture()) {
-                initGestureFragment(faceFeature, requestId);
+                if (Util.isGestureDeviceConnected(this)) {
+                    pauseCameraScan();
+                    mFaceFeature = faceFeature;
+                    mRequestId = requestId;
+                    launchGestureFragment();
+                    return;
+                }
+                runOnUiThread(() -> Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
             }
             if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
@@ -3378,7 +3386,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             preview.stop();
             clearQrCodePreview();
             resetCameraView();
-            GestureController.getInstance().clearData();
+            isReadyToScan = true;
+            frameLayout.setVisibility(View.GONE);
+            Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
         });
     }
 }
