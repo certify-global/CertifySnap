@@ -831,15 +831,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
                 if (faceFeature != null) {
-                    if (GestureController.getInstance().isGestureFlowComplete()) {
-                        clearLeftFace(null);
-                        return;
-                    }
-                    if (CameraController.getInstance().getScanState() == CameraController.ScanState.GESTURE_SCAN) {
-                        cancelImageTimer();
-                        checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
-                        return;
-                    }
                     isFaceIdentified = false;
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + ",tempServiceColes ");
 
@@ -1450,7 +1441,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
-            if ((rfIdEnable || qrCodeEnable) && !isReadyToScan) return;
+            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan) return;
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -1816,7 +1807,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         isHomeViewEnabled = sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) ||
                 sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false);
         isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
-        if (isProDevice && !AppSettings.isEnableHandGesture()) {
+        if (isProDevice) {
             CameraController.getInstance().setScanCloseProximityEnabled(true);
             Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, true);
         } else {
@@ -2510,18 +2501,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
                 tvFaceMessage.setVisibility(View.GONE);
             });
-            if (AppSettings.isEnableVoice() || AppSettings.isEnableHandGesture()) {
-                if (!GestureController.getInstance().isSkipGesture()) {
-                    if (Util.isGestureDeviceConnected(this)) {
-                        pauseCameraScan();
-                        mFaceFeature = faceFeature;
-                        mRequestId = requestId;
-                        launchGestureFragment();
-                        return;
-                    }
-                    runOnUiThread(() -> Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
-                }
-            }
             if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
                         !isFaceIdentified) {
@@ -2661,7 +2640,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
             BLEController.getInstance().connectToDevice();
         }
-        resetGesture();
     }
 
     private void setPreviewIdleTimer() {
@@ -2723,9 +2701,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         });
         clearData();
         if (AppSettings.isEnableHandGesture()) {
-            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
-            initGesture();
-            resumeGestureAfterScan();
+            resetGesture();
         }
         resetRfid();
         if (qrCodeEnable) {
@@ -3245,13 +3221,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void resumeFromGesture() {
         runOnUiThread(() -> {
-            resumeCameraScan();
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            new Handler().postDelayed(() -> {
-                changeVerifyBackground(R.color.transparency, true);
-                relative_main.setVisibility(View.GONE);
-                runTemperature(mRequestId, new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0));
-            }, 300);
+            setCameraPreview();
         });
     }
 
@@ -3377,49 +3348,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initGesture() {
-        if (qrCodeEnable || rfIdEnable) {
-            initGestureFromHome();
+        if (AppSettings.isEnableHandGesture()) {
+            if (Util.isGestureDeviceConnected(this)) {
+                isReadyToScan = false;
+                CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+                GestureController.getInstance().initContext(this);
+                GestureController.getInstance().setGestureHomeCallbackListener(this);
+                GestureController.getInstance().initHandGesture();
+            }
+            Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show();
         }
-    }
-
-    private void resumeGestureAfterScan() {
-        runOnUiThread(() -> new Handler().postDelayed(() -> {
-            Log.d(TAG, "Reset Gesture flow");
-            GestureController.getInstance().reset();
-        }, 2 * 1000));
     }
 
     private void resetGesture() {
-        if (AppSettings.isEnableHandGesture()) {
-            CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
-            GestureController.getInstance().reset();
-        }
-    }
-
-    private void initGestureFromHome() {
-        if (AppSettings.isEnableHandGesture()) {
-            GestureController.getInstance().initContext(this);
-            GestureController.getInstance().setGestureHomeCallbackListener(this);
-            GestureController.getInstance().initHandGesture();
-        }
+        initGesture();
     }
 
     @Override
     public void onGestureDetected() {
         runOnUiThread(() -> {
-            if (qrCodeEnable) {
-                preview.stop();
-                clearQrCodePreview();
-                frameLayout.setVisibility(View.GONE);
-            }
-            if (rfIdEnable) {
-                resetRfid();
-            }
             GestureController.getInstance().clearData();
-            resetCameraView();
-            isReadyToScan = true;
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
-            setCameraPreviewTimer();
+            launchGestureFragment();
         });
     }
 

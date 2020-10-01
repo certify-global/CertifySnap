@@ -62,6 +62,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private QuestionData currentQuestionData = null;
     private GestureHomeCallBackListener gestureListener = null;
     private boolean isSkipGesture = false;
+    private boolean isCallback = false;
 
     //Hand Gesture
     int leftRangeValue = 200;
@@ -156,6 +157,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public void setGestureHomeCallbackListener(GestureHomeCallBackListener callbackListener) {
+        isCallback = false;
         this.gestureListener = callbackListener;
     }
 
@@ -429,11 +431,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void rightHandWave() {
         Log.d(TAG, "Right Hand wave");
+        if (gestureListener != null && !isCallback) {
+            isCallback = true;
+            gestureListener.onGestureDetected();
+            return;
+        }
         if (wait) {
-            if (gestureListener != null) {
-                gestureListener.onGestureDetected();
-                return;
-            }
             updateOnWave("N");
         }
     }
@@ -613,5 +616,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         currentQuestionData = null;
         gestureListener = null;
         isSkipGesture = false;
+        isCallback = false;
     }
 }
