@@ -3380,6 +3380,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             isReadyToScan = true;
             frameLayout.setVisibility(View.GONE);
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
+            setCameraPreviewTimer();
         });
     }
 }
