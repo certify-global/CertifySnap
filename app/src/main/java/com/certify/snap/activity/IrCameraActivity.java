@@ -304,6 +304,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
     private boolean highTemperature = false;
+    Fragment acknowledgementFragment;
 
     private void instanceStart() {
         try {
@@ -1938,6 +1939,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        resetAcknowledgementScreen();
                         clearData();
                         resetHomeScreen();
                         resetRfid();
@@ -2259,6 +2261,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 AccessCardController.getInstance().isWeigandEnabled())) {
             AccessCardController.getInstance().setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
+                //launch the fargment
+                if(AppSettings.isAcknowledgementScreen()){
+                    if(AccessCardController.getInstance().getTapCount() ==0){
+                        AccessCardController.getInstance().setTapCount(1);
+                        launchAcknowledgementFragment();
+                        setCameraPreviewTimer();
+                        return;
+                    }
+                    new Handler().postDelayed(() -> {
+                        closeFragment();
+                        AccessCardController.getInstance().setTapCount(0);
+                    },300);
+                }
                 enableLedPower();
                 showSnackBarMessage(getString(R.string.access_granted));
                 setCameraPreview();
@@ -2277,6 +2292,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 resetRfid();
             }
             return;
+        }
+        //launch the isAcknowledgementScreen fargment
+        if(AppSettings.isAcknowledgementScreen() ){
+            if(AccessCardController.getInstance().getTapCount() ==0){
+                AccessCardController.getInstance().setTapCount(1);
+                launchAcknowledgementFragment();
+                setCameraPreviewTimer();
+                return;
+            }
+            new Handler().postDelayed(() -> {
+                closeFragment();
+                AccessCardController.getInstance().setTapCount(0);
+            },300);
+
         }
         enableLedPower();
         AccessCardController.getInstance().setAccessCardId(cardId);
@@ -3389,6 +3418,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             isReadyToScan = true;
             frameLayout.setVisibility(View.GONE);
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
+            setCameraPreviewTimer();
         });
+    }
+
+    private void launchAcknowledgementFragment() {
+        acknowledgementFragment = new AcknowledgementFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.dynamic_fragment_frame_layout, acknowledgementFragment, "AcknowledgementFragment");
+        transaction.addToBackStack("AcknowledgementFragment");
+        transaction.commitAllowingStateLoss();
+    }
+
+    private void closeFragment() {
+        if(acknowledgementFragment != null) {
+            getFragmentManager().beginTransaction().remove(acknowledgementFragment).commitAllowingStateLoss();
+        }
+    }
+
+    private void resetAcknowledgementScreen() {
+        if (AppSettings.isAcknowledgementScreen()) {
+            closeFragment();
+            AccessCardController.getInstance().setTapCount(0);
+        }
     }
 }

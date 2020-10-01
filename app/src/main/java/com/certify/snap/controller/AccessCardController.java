@@ -40,6 +40,7 @@ public class AccessCardController implements AccessCallback {
     private String mAccessCardID = "";
     private String mAccessIdDb = "";
     private Context context;
+    int tapCount = 0;
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -306,9 +307,18 @@ public class AccessCardController implements AccessCallback {
         }
     }
 
+    public int getTapCount() {
+        return tapCount;
+    }
+
+    public void setTapCount(int tapCount) {
+        this.tapCount = tapCount;
+    }
+
     public void clearData() {
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
+        tapCount = 0;
     }
 }

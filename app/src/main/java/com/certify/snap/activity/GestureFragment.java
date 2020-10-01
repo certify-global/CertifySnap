@@ -245,6 +245,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             } else if (questionsCount == 7) {
                 q7Layout.setVisibility(View.VISIBLE);
             }
+            resetQuestionProgressView();
         });
     }
 
@@ -355,6 +356,70 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         } else if (index == 7) {
             q7image7.setImageResource(R.drawable.tick);
         }
+    }
+    
+    private void resetQuestionProgressView(){
+        // reset all the views
+        q2image1.setImageResource(R.drawable.no_tick);
+        q2image1.setImageResource(R.drawable.no_tick);
+
+        q3image1.setImageResource(R.drawable.no_tick);
+        q3image1.setImageResource(R.drawable.no_tick);
+        q3image1.setImageResource(R.drawable.no_tick);
+
+        q4image1.setImageResource(R.drawable.no_tick);
+        q4image2.setImageResource(R.drawable.no_tick);
+        q4image3.setImageResource(R.drawable.no_tick);
+        q4image4.setImageResource(R.drawable.no_tick);
+
+        q5image1.setImageResource(R.drawable.no_tick);
+        q5image2.setImageResource(R.drawable.no_tick);
+        q5image3.setImageResource(R.drawable.no_tick);
+        q5image4.setImageResource(R.drawable.no_tick);
+        q5image5.setImageResource(R.drawable.no_tick);
+
+        q6image1.setImageResource(R.drawable.no_tick);
+        q6image2.setImageResource(R.drawable.no_tick);
+        q6image3.setImageResource(R.drawable.no_tick);
+        q6image4.setImageResource(R.drawable.no_tick);
+        q6image5.setImageResource(R.drawable.no_tick);
+        q6image6.setImageResource(R.drawable.no_tick);
+
+        q7image1.setImageResource(R.drawable.no_tick);
+        q7image2.setImageResource(R.drawable.no_tick);
+        q7image3.setImageResource(R.drawable.no_tick);
+        q7image4.setImageResource(R.drawable.no_tick);
+        q7image5.setImageResource(R.drawable.no_tick);
+        q7image6.setImageResource(R.drawable.no_tick);
+        q7image7.setImageResource(R.drawable.no_tick);
+
+
+        q2view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+
+        q3view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q3view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+
+        q4view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q4view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q4view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+
+        q5view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q5view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q5view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q5view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+
+        q6view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q6view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q6view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q6view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q6view5.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+
+        q7view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q7view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q7view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q7view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q7view5.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q7view6.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
     }
 
 }

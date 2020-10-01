@@ -16,10 +16,12 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
 
+import com.certify.callback.GestureAnswerCallback;
 import com.certify.callback.GestureCallback;
 import com.certify.snap.api.response.QuestionData;
 import com.certify.snap.api.response.QuestionListResponse;
 import com.certify.snap.api.response.QuestionSurveyOptions;
+import com.certify.snap.async.AsyncGestureAnswer;
 import com.certify.snap.async.AsyncJSONObjectGesture;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -28,6 +30,8 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -40,8 +44,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
-public class GestureController implements GestureCallback {
+public class GestureController implements GestureCallback, GestureAnswerCallback {
     private static final String TAG = GestureController.class.getSimpleName();
     private static GestureController instance = null;
     private Context mContext;
@@ -58,8 +63,8 @@ public class GestureController implements GestureCallback {
     private GestureHomeCallBackListener gestureListener = null;
 
     //Hand Gesture
-    int leftRangeValue = 50;
-    int rightRangeValue = 50;
+    int leftRangeValue = 100;
+    int rightRangeValue = 100;
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
@@ -106,10 +111,8 @@ public class GestureController implements GestureCallback {
     public void getQuestionsAPI() {
         try {
             JSONObject obj = new JSONObject();
-            // obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
-
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
         }
@@ -147,6 +150,7 @@ public class GestureController implements GestureCallback {
         this.gestureListener = callbackListener;
     }
 
+    
     /**
      * Method that initializes the voice
      *
@@ -264,17 +268,25 @@ public class GestureController implements GestureCallback {
                 while (runCheck) {
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
-                        try {
-                            final int left = Integer.valueOf(map.get("leftPower"));
-                            final int right = Integer.valueOf(map.get("rightPower"));
+                        Log.e(TAG, map.toString() + "");
+                        if (map.containsKey("leftPower") && map.containsKey("rightPower")) {
+                            try {
+                                final int left = Integer.valueOf(map.get("leftPower"));
+                                final int right = Integer.valueOf(map.get("rightPower"));
 
-                            if (left >= 200) {
-                                leftHandWave();
-                            } else if (right >= 200) {
-                                rightHandWave();
+                                if (left > leftRangeValue && right > rightRangeValue) {
+                                    index = 0;
+                                    if(listener != null){
+                                        listener.onQuestionsReceived();
+                                    }
+                                } else if (left > leftRangeValue && right <= rightRangeValue) {
+                                    leftHandWave();
+                                } else if (left <= leftRangeValue && right > rightRangeValue) {
+                                    rightHandWave();
+                                }
+                            } catch (Exception e) {
+                                Log.d(TAG, "handleGestureByGesture: " + e.toString());
                             }
-                        } catch (Exception e) {
-                            Log.d(TAG, "handleGestureByGesture: " + e.toString());
                         }
                     }
                 }
@@ -440,6 +452,7 @@ public class GestureController implements GestureCallback {
         if (index >= questionDataList.size()) {
             if (listener != null) {
                 listener.onAllQuestionsAnswered();
+                sendAnswers();
             }
             return;
         }
@@ -488,12 +501,12 @@ public class GestureController implements GestureCallback {
     private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer) {
         QuestionSurveyOptions qSurveyOption = null;
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
-            QuestionData questionData = (QuestionData) entry.getValue();
+            QuestionData questionData = (QuestionData) entry.getKey();
             List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
             if (qSurveyOptionList != null) {
                 for (int i = 0; i < qSurveyOptionList.size(); i++) {
                      QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
-                     if (qOption.name.toLowerCase().equals(answer.toLowerCase())) {
+                     if (qOption.name.charAt(0)== answer.charAt(0)) {
                          qSurveyOption = qOption;
                          break;
                      }
@@ -513,6 +526,54 @@ public class GestureController implements GestureCallback {
             }
         }
         //Call API
+        sendAnswersAPI(qSurveyOptionList);
+
+    }
+
+    private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList) {
+        try {
+            String uniqueID = UUID.randomUUID().toString();
+            JSONObject obj = new JSONObject();
+            JSONObject jsonCustomFields = new JSONObject();
+            JSONArray jsonArrayCustoms = new JSONArray();
+
+            obj.put("VisitId", 0);
+            obj.put("anonymousGuid", uniqueID);
+            obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
+
+
+            for(int i=0;i<qSurveyOptionList.size();i++) {
+                jsonCustomFields.put("questionId", qSurveyOptionList.get(i).questionId);
+                jsonCustomFields.put("optionId", qSurveyOptionList.get(i).optionId);
+                jsonArrayCustoms.put(jsonCustomFields);
+
+            }
+            obj.put("QuestionOptions",jsonArrayCustoms);
+
+
+            new AsyncGestureAnswer(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.SaveAnswer, mContext).execute();
+
+        } catch (Exception e) {
+            Logger.error(TAG, "sendReqAddDevice " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerGestureAnswer(JSONObject response, String status, JSONObject req) {
+        if (response == null) {
+            Logger.error(TAG, "Gesture Save Answers", "send answers Log api failed");
+            return;
+        }
+        if (response.isNull("responseCode")) {
+            return;
+        }
+        try {
+            if (response.getString("responseCode").equals("1")) {
+                Log.i(TAG, "Gesture Save Answers: SUCCESS");
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Gesture Save Answers: "+ e.getMessage() );
+        }
     }
 
     public String getAnswers(){
