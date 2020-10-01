@@ -49,6 +49,7 @@ public class AppSettings {
     private static boolean printQrCodeUsers = false;
     private static boolean printWaveUsers = false;
     private static boolean printHighTemperatureUsers = false;
+    private static boolean acknowledgementScreen = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -98,6 +99,7 @@ public class AppSettings {
         printQrCodeUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS,false);
         printWaveUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_WAVE_USERS,false);
         printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
+        acknowledgementScreen = sharedPreferences.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
     }
 
     public static String getThermalScanTitle() {
@@ -262,5 +264,9 @@ public class AppSettings {
 
     public static boolean isPrintHighTemperatureUsers() {
         return printHighTemperatureUsers;
+    }
+
+    public static boolean isAcknowledgementScreen() {
+        return acknowledgementScreen;
     }
 }

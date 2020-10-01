@@ -172,8 +172,8 @@ public class GlobalParameters {
     public static final String PRINT_QR_CODE_USERS = "printQRCode";
     public static final String PRINT_WAVE_USERS = "printWaveUsers";
     public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
-    public static final String AcknowledgeText = "acknowledge_text";
-    public static final String AcknowledgeRadio = "acknowledge_radio";
+    public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
+    public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";
 
 
 }

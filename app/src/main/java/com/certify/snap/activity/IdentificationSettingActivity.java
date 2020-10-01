@@ -117,7 +117,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             qr_skip_button_enable_text.setTypeface(rubiklight);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
-            editTextAcknowledge.setText(sp.getString(GlobalParameters.AcknowledgeText, "Welcome"));
+            editTextAcknowledge.setText(sp.getString(GlobalParameters.ACKNOWLEDGEMENT_TEXT, "All the acknowledge"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
             editTextQRButton.setText(sp.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
@@ -198,7 +198,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                 }
             });
             //Acknowledge
-            if (sp.getBoolean(GlobalParameters.AcknowledgeRadio, false)) {
+            if (sp.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false)) {
                 radio_yes_acknowledge.setChecked(true);
             } else {
                 radio_no_acknowledge.setChecked(true);
@@ -209,9 +209,9 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     System.out.println("Test radioack" + checkedId);
                     if (checkedId == R.id.radio_yes_acknowledge) {
                         radio_yes_acknowledge.setChecked(true);
-                        Util.writeBoolean(sp, GlobalParameters.AcknowledgeRadio, true);
+                        Util.writeBoolean(sp, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, true);
                     } else {
-                        Util.writeBoolean(sp, GlobalParameters.AcknowledgeRadio, false);
+                        Util.writeBoolean(sp, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
                     }
                 }
             });
@@ -230,7 +230,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.QR_BUTTON_TEXT, editTextQRButton.getText().toString().trim());
-                    Util.writeString(sp, GlobalParameters.AcknowledgeText, editTextAcknowledge.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.ACKNOWLEDGEMENT_TEXT, editTextAcknowledge.getText().toString().trim());
                     saveScanModeSetting();
                     finish();
                 }

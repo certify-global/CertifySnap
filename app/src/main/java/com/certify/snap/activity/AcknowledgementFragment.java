@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
 
 
 public class AcknowledgementFragment extends Fragment {
@@ -21,6 +22,7 @@ public class AcknowledgementFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_acknowledge, container, false);
         this.view = view;
+        sharedPreferences = Util.getSharedPreferences(getContext());
 
         initView();
         return view;
@@ -28,17 +30,9 @@ public class AcknowledgementFragment extends Fragment {
 
     void initView() {
         acknowledge_text = view.findViewById(R.id.acknowledge_text);
-        acknowledge_text.setText(sharedPreferences.getString(GlobalParameters.AcknowledgeText,"Welcome"));
+        acknowledge_text.setTextColor(getResources().getColor(R.color.black));
+        acknowledge_text.setText(sharedPreferences.getString(GlobalParameters.ACKNOWLEDGEMENT_TEXT,"All the acknowledge"));
 
-    }
-
-
-    private void closeFragment() {
-        if (getActivity() != null) {
-            getActivity().getFragmentManager().beginTransaction().remove(AcknowledgementFragment.this).commitAllowingStateLoss();
-            IrCameraActivity activity = (IrCameraActivity) getActivity();
-            activity.resumeFromGesture();
-        }
     }
 
 }
