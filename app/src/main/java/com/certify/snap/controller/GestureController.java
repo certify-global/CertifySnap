@@ -64,8 +64,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private boolean isSkipGesture = false;
 
     //Hand Gesture
-    int leftRangeValue = 100;
-    int rightRangeValue = 100;
+    int leftRangeValue = 200;
+    int rightRangeValue = 200;
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
@@ -279,7 +279,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
                         Log.e(TAG, map.toString() + "");
-                        if (map.containsKey("leftPower") && map.containsKey("rightPower")) {
                             try {
                                 final int left = Integer.valueOf(map.get("leftPower"));
                                 final int right = Integer.valueOf(map.get("rightPower"));
@@ -299,7 +298,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                             }
                         }
                     }
-                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
