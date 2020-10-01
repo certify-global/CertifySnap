@@ -270,6 +270,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
      * Method that initializes the Hand Gesture
      */
     public void initHandGesture() {
+        if (!Util.isGestureDeviceConnected(mContext)) return;
         runCheck = true;
         new Thread(new Runnable() {
             @Override
