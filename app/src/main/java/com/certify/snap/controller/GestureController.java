@@ -31,6 +31,7 @@ import com.certify.snap.common.Util;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -149,11 +150,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.gestureListener = callbackListener;
     }
 
-
-    @Override
-    public void onJSONObjectListenerGestureAnswer(JSONObject report, String status, JSONObject req) {
-
-    }
 
     /**
      * Method that initializes the voice
@@ -502,7 +498,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             if (qSurveyOptionList != null) {
                 for (int i = 0; i < qSurveyOptionList.size(); i++) {
                      QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
-                     if (qOption.name.toLowerCase().equals(answer.toLowerCase())) {
+                     if (qOption.name.charAt(0)== answer.charAt(0)) {
                          qSurveyOption = qOption;
                          break;
                      }
@@ -550,6 +546,24 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
         } catch (Exception e) {
             Logger.error(TAG, "sendReqAddDevice " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerGestureAnswer(JSONObject response, String status, JSONObject req) {
+        if (response == null) {
+            Logger.error(TAG, "Gesture Save Answers", "send answers Log api failed");
+            return;
+        }
+        if (response.isNull("responseCode")) {
+            return;
+        }
+        try {
+            if (response.getString("responseCode").equals("1")) {
+                Log.i(TAG, "Gesture Save Answers: SUCCESS");
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Gesture Save Answers: "+ e.getMessage() );
         }
     }
 
