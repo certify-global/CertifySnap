@@ -405,10 +405,6 @@ public class GestureController implements GestureCallback {
 
     private void rightHandWave() {
         Log.d(TAG, "Right Hand wave");
-        if (gestureListener != null) {
-            gestureListener.onGestureDetected();
-            return;
-        }
         if (wait) {
             updateOnWave("N");
         }
