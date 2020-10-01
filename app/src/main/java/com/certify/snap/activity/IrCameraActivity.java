@@ -399,6 +399,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
+            if (AppSettings.isEnableHandGesture()) {
+                GestureController.getInstance().initContext(this);
+                GestureController.getInstance().setGestureHomeCallbackListener(this);
+                GestureController.getInstance().initHandGesture();
+            }
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -3372,7 +3377,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             preview.stop();
             clearQrCodePreview();
             resetCameraView();
-            GestureController.getInstance().clearData();
+            isReadyToScan = true;
+            frameLayout.setVisibility(View.GONE);
+            Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
         });
     }
 }
