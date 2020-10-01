@@ -63,8 +63,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private GestureHomeCallBackListener gestureListener = null;
 
     //Hand Gesture
-    int leftRangeValue = 50;
-    int rightRangeValue = 50;
+    int leftRangeValue = 100;
+    int rightRangeValue = 100;
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
@@ -268,17 +268,25 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 while (runCheck) {
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
-                        try {
-                            final int left = Integer.valueOf(map.get("leftPower"));
-                            final int right = Integer.valueOf(map.get("rightPower"));
+                        Log.e(TAG, map.toString() + "");
+                        if (map.containsKey("leftPower") && map.containsKey("rightPower")) {
+                            try {
+                                final int left = Integer.valueOf(map.get("leftPower"));
+                                final int right = Integer.valueOf(map.get("rightPower"));
 
-                            if (left >= 200) {
-                                leftHandWave();
-                            } else if (right >= 200) {
-                                rightHandWave();
+                                if (left > leftRangeValue && right > rightRangeValue) {
+                                    index = 0;
+                                    if(listener != null){
+                                        listener.onQuestionsReceived();
+                                    }
+                                } else if (left > leftRangeValue && right <= rightRangeValue) {
+                                    leftHandWave();
+                                } else if (left <= leftRangeValue && right > rightRangeValue) {
+                                    rightHandWave();
+                                }
+                            } catch (Exception e) {
+                                Log.d(TAG, "handleGestureByGesture: " + e.toString());
                             }
-                        } catch (Exception e) {
-                            Log.d(TAG, "handleGestureByGesture: " + e.toString());
                         }
                     }
                 }

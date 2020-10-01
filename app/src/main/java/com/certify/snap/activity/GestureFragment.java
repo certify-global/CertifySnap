@@ -245,6 +245,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             } else if (questionsCount == 7) {
                 q7Layout.setVisibility(View.VISIBLE);
             }
+            resetQuestionProgressView();
         });
     }
 
@@ -355,6 +356,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         } else if (index == 7) {
             q7image7.setImageResource(R.drawable.tick);
         }
+    }
+    
+    private void resetQuestionProgressView(){
+        // reset all the views
     }
 
 }
