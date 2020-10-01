@@ -122,13 +122,14 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7view3 = view.findViewById(R.id.sevenQ_view3);
         q7view4 = view.findViewById(R.id.sevenQ_view4);
         q7view5 = view.findViewById(R.id.sevenQ_view5);
+        q7view6 = view.findViewById(R.id.sevenQ_view6);
         q7image1 = view.findViewById(R.id.sevenQ_image1);
         q7image2 = view.findViewById(R.id.sevenQ_image2);
         q7image3 = view.findViewById(R.id.sevenQ_image3);
         q7image4 = view.findViewById(R.id.sevenQ_image4);
         q7image5 = view.findViewById(R.id.sevenQ_image5);
         q7image6 = view.findViewById(R.id.sevenQ_image6);
-        q7image7 = view.findViewById(R.id.sevenQ_image6);
+        q7image7 = view.findViewById(R.id.sevenQ_image7);
 
 
         rubiklight = Typeface.createFromAsset(getActivity().getAssets(),

@@ -399,7 +399,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            if (AppSettings.isEnableHandGesture()) {
+            if (qrCodeEnable && AppSettings.isEnableHandGesture()) {
                 GestureController.getInstance().initContext(this);
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
                 GestureController.getInstance().initHandGesture();
