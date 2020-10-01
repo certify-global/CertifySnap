@@ -400,10 +400,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            if (qrCodeEnable && AppSettings.isEnableHandGesture()) {
-                GestureController.getInstance().initContext(this);
-                GestureController.getInstance().setGestureHomeCallbackListener(this);
-                GestureController.getInstance().initHandGesture();
+            if (qrCodeEnable) {
+                initGestureFromHome();
             }
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
@@ -840,6 +838,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         return;
                     }
                     if (CameraController.getInstance().getScanState() == CameraController.ScanState.GESTURE_SCAN) {
+                        cancelImageTimer();
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                         return;
                     }
@@ -1738,6 +1737,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onBarcodeData(String guid) {
         try {
             mTriggerType = CameraController.triggerValue.CODEID.toString();
+            GestureController.getInstance().setSkipGesture(true);
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -1856,6 +1856,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!faceDetectEnabled) {
             isReadyToScan = false;
         }
+        initGestureFromHome();
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
@@ -2247,6 +2248,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty()) return;
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
+        GestureController.getInstance().setSkipGesture(true);
         if (!AccessCardController.getInstance().isAllowAnonymous()
                 && (AccessCardController.getInstance().isEnableRelay() ||
                 AccessCardController.getInstance().isWeigandEnabled())) {
@@ -2512,14 +2514,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvFaceMessage.setVisibility(View.GONE);
             });
             if (AppSettings.isEnableVoice() || AppSettings.isEnableHandGesture()) {
-                if (Util.isGestureDeviceConnected(this)) {
-                    pauseCameraScan();
-                    mFaceFeature = faceFeature;
-                    mRequestId = requestId;
-                    launchGestureFragment();
-                    return;
+                if (!GestureController.getInstance().isSkipGesture()) {
+                    if (Util.isGestureDeviceConnected(this)) {
+                        pauseCameraScan();
+                        mFaceFeature = faceFeature;
+                        mRequestId = requestId;
+                        launchGestureFragment();
+                        return;
+                    }
+                    runOnUiThread(() -> Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
                 }
-                runOnUiThread(() -> Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
             }
             if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
                 if (CameraController.getInstance().isScanCloseProximityEnabled() &&
@@ -3234,17 +3238,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         });
     }
 
-    private void initGestureFragment(FaceFeature faceFeature, int requestId) {
-        if (Util.isGestureDeviceConnected(this)) {
-            pauseCameraScan();
-            mFaceFeature = faceFeature;
-            mRequestId = requestId;
-            launchGestureFragment();
-            return;
-        }
-        runOnUiThread(() -> Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
-    }
-
     private void launchGestureFragment() {
         Fragment gestureFragment = new GestureFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -3400,14 +3393,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    private void initGestureFromHome() {
+        if (AppSettings.isEnableHandGesture()) {
+            GestureController.getInstance().initContext(this);
+            GestureController.getInstance().setGestureHomeCallbackListener(this);
+            GestureController.getInstance().initHandGesture();
+        }
+    }
+
     @Override
     public void onGestureDetected() {
         runOnUiThread(() -> {
-            preview.stop();
-            clearQrCodePreview();
+            if (qrCodeEnable) {
+                preview.stop();
+                clearQrCodePreview();
+                frameLayout.setVisibility(View.GONE);
+            }
+            if (rfIdEnable) {
+                resetRfid();
+            }
+            GestureController.getInstance().clearData();
             resetCameraView();
             isReadyToScan = true;
-            frameLayout.setVisibility(View.GONE);
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
             setCameraPreviewTimer();
         });

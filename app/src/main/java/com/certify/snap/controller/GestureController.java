@@ -61,6 +61,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private LinkedHashMap<QuestionData, String> questionAnswerMap = new LinkedHashMap<>();
     private QuestionData currentQuestionData = null;
     private GestureHomeCallBackListener gestureListener = null;
+    private boolean isSkipGesture = false;
 
     //Hand Gesture
     int leftRangeValue = 100;
@@ -106,6 +107,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public boolean isGestureFlowComplete() {
         return isGestureFlow;
+    }
+
+    public boolean isSkipGesture() {
+        return isSkipGesture;
+    }
+
+    public void setSkipGesture(boolean skipGesture) {
+        this.isSkipGesture = skipGesture;
     }
 
     public void getQuestionsAPI() {
@@ -423,7 +432,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         Log.d(TAG, "Right Hand wave");
         if (gestureListener != null) {
             gestureListener.onGestureDetected();
-            clearData();
             return;
         }
         if (wait) {
@@ -590,6 +598,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public void reset() {
         isGestureFlow = false;
+        isSkipGesture = false;
     }
 
     public void clearData() {
@@ -604,5 +613,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
+        isSkipGesture = false;
     }
 }
