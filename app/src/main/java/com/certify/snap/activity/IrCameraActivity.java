@@ -223,7 +223,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private FaceHelper faceHelperIr;
     private List<CompareResult> compareResultList;
     private SharedPreferences sharedPreferences;
-    private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
     private Toast faceThermalToast = null;
 
     private static final String[] NEEDED_PERMISSIONS = new String[]{
@@ -1580,7 +1579,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
                     data.maskStatus = String.valueOf(maskStatus);
-                    data.triggerType = mTriggerType;
+                    data.triggerType = CameraController.getInstance().getTriggerType();
                     data.machineTemperature = String.valueOf(TemperatureController.getInstance().getMachineTemperature());
                     data.ambientTemperature = String.valueOf(TemperatureController.getInstance().getAmbientTemperature());
                     userData = data;
@@ -1724,7 +1723,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onBarcodeData(String guid) {
         try {
-            mTriggerType = CameraController.triggerValue.CODEID.toString();
+            CameraController.getInstance().setTriggerType(CameraController.triggerValue.CODEID.toString());
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -2171,8 +2170,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     data.compareResult = compareResult;
                                     CameraController.getInstance().setCompareResult(compareResult);
                                     CameraController.getInstance().setFaceVisible(true);
-                                    if (mTriggerType.equals(CameraController.triggerValue.CAMERA.toString())) {
-                                        mTriggerType = CameraController.triggerValue.FACE.toString();
+                                    if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
+                                        CameraController.getInstance().setTriggerType(CameraController.triggerValue.FACE.toString());
                                     }
                                     runTemperature(requestId, data);   //TODO1: Optimize
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
@@ -2257,7 +2256,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty()) return;
-        mTriggerType = CameraController.triggerValue.ACCESSID.toString();
+        CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
         if (!AccessCardController.getInstance().isAllowAnonymous()
                 && (AccessCardController.getInstance().isEnableRelay() ||
                 AccessCardController.getInstance().isWeigandEnabled())) {
@@ -2651,7 +2650,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         compareResultList.clear();
         resetMaskStatus();
         mFaceMatchRetry = 0;
-        mTriggerType = CameraController.triggerValue.CAMERA.toString();
+        CameraController.getInstance().setTriggerType(CameraController.triggerValue.CAMERA.toString());
         clearLeftFace(null);
         TemperatureController.getInstance().clearData();
         if (progressDialog != null && progressDialog.isShowing()) {
@@ -3100,12 +3099,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (data != null) {
             member = data.member;
         }
-        if (mTriggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if (AppSettings.isPrintQrCodeUsers() && data != null && data.getQrCodeData() != null) {
                 nameTitle = "Name:";
                 name = data.getQrCodeData().getFirstName();
             }
-        } else if (mTriggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
+        } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
                 bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
                 if (bitmap == null) {
@@ -3114,7 +3114,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 nameTitle = "Name:";
                 name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
             }
-        } else if (mTriggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+        } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if (AppSettings.isPrintWaveUsers()) {
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
@@ -3125,14 +3125,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
             }
         } else {
-            if (AppSettings.isPrintAllScan() && (AppSettings.isFacialDetect() && member != null)) {
-                bitmap = BitmapFactory.decodeFile(member.image);
+            if (AppSettings.isPrintAllScan()) {
+                if (AppSettings.isFacialDetect() && member != null) {
+                    bitmap = BitmapFactory.decodeFile(member.image);
+                    if (member.firstname != null) {
+                        nameTitle = "Name:";
+                        name = member.firstname;
+                    }
+                } else {
+                    nameTitle = "Name:";
+                    name = "Anonymous";
+                }
                 if (bitmap == null) {
                     bitmap = rgbBitmap;
-                }
-                if (member.firstname != null) {
-                    nameTitle = "Name:";
-                    name = member.firstname;
                 }
             }
         }
@@ -3405,7 +3410,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onGestureDetected() {
         runOnUiThread(() -> {
             GestureController.getInstance().clearData();
-            mTriggerType = CameraController.triggerValue.WAVE.toString();
+            CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
             new Handler().postDelayed(this::launchGestureFragment, 1000);
         });
