@@ -301,7 +301,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
     private boolean highTemperature = false;
-    Fragment acknowledgementFragment;
+    private Fragment acknowledgementFragment;
+    private Fragment gestureFragment;
 
     private void instanceStart() {
         try {
@@ -1931,6 +1932,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
+    private void setCameraPreviewTimer(int timeInSeconds) {
+        cancelImageTimer();
+        imageTimer = new Timer();
+        imageTimer.schedule(new TimerTask() {
+            public void run() {
+                disableLedPower();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resetAcknowledgementScreen();
+                        clearData();
+                        resetHomeScreen();
+                        resetRfid();
+                        resetQrCode();
+                        resetGesture();
+                    }
+                });
+                this.cancel();
+            }
+        }, timeInSeconds * 1000); //wait in seconds for the temperature to be captured, go to home otherwise
+    }
+
     private void clearQrCodePreview() {
         if (graphicOverlay != null) {
             graphicOverlay.clear();
@@ -2245,17 +2268,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     if(AccessCardController.getInstance().getTapCount() ==0){
                         AccessCardController.getInstance().setTapCount(1);
                         launchAcknowledgementFragment();
-                        setCameraPreviewTimer();
+                        setCameraPreviewTimer(15);
                         return;
                     }
-                    new Handler().postDelayed(() -> {
-                        closeFragment();
-                        AccessCardController.getInstance().setTapCount(0);
-                    },300);
                 }
                 enableLedPower();
                 showSnackBarMessage(getString(R.string.access_granted));
                 setCameraPreview();
+                if(AppSettings.isAcknowledgementScreen() ) {
+                    new Handler().postDelayed(() -> {
+                        closeFragment();
+                        AccessCardController.getInstance().setTapCount(0);
+                    }, 2000);
+                }
                 return;
             }
             showSnackBarMessage(getString(R.string.access_denied));
@@ -2277,19 +2302,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if(AccessCardController.getInstance().getTapCount() ==0){
                 AccessCardController.getInstance().setTapCount(1);
                 launchAcknowledgementFragment();
-                setCameraPreviewTimer();
+                setCameraPreviewTimer(15);
                 return;
             }
-            new Handler().postDelayed(() -> {
-                closeFragment();
-                AccessCardController.getInstance().setTapCount(0);
-            },300);
-
         }
         enableLedPower();
         AccessCardController.getInstance().setAccessCardId(cardId);
         showSnackBarMessage(getString(R.string.access_granted));
         setCameraPreview();
+        if(AppSettings.isAcknowledgementScreen() ) {
+            new Handler().postDelayed(() -> {
+                closeFragment();
+                AccessCardController.getInstance().setTapCount(0);
+            }, 2000);
+        }
     }
 
     private void showSnackBarMessage(String message) {
@@ -3211,7 +3237,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchGestureFragment() {
-        Fragment gestureFragment = new GestureFragment();
+        gestureFragment = new GestureFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
         transaction.addToBackStack("GestureFragment");
