@@ -285,14 +285,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                                 final int left = Integer.valueOf(map.get("leftPower"));
                                 final int right = Integer.valueOf(map.get("rightPower"));
 
-                                if (left > leftRangeValue && right > rightRangeValue) {
-                                    index = 0;
-                                    if(listener != null){
-                                        listener.onQuestionsReceived();
-                                    }
-                                } else if (left > leftRangeValue && right <= rightRangeValue) {
+                               if (left > 200) {
                                     leftHandWave();
-                                } else if (left <= leftRangeValue && right > rightRangeValue) {
+                                } else if (right > 200) {
                                     rightHandWave();
                                 }
                             } catch (Exception e) {
