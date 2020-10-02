@@ -1724,7 +1724,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onBarcodeData(String guid) {
         try {
             mTriggerType = CameraController.triggerValue.CODEID.toString();
-            GestureController.getInstance().setSkipGesture(true);
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
             tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
@@ -1877,6 +1876,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void setCameraPreview() {
         long delay = 1000;
+        if(AppSettings.isEnableHandGesture()){
+            delay = 2 * 250;
+        }
         if (qrCodeEnable) {
             resetCameraView();
             if (rfIdEnable) {
@@ -2235,7 +2237,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty()) return;
         mTriggerType = CameraController.triggerValue.ACCESSID.toString();
-        GestureController.getInstance().setSkipGesture(true);
         if (!AccessCardController.getInstance().isAllowAnonymous()
                 && (AccessCardController.getInstance().isEnableRelay() ||
                 AccessCardController.getInstance().isWeigandEnabled())) {
