@@ -200,8 +200,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         getActivity().runOnUiThread(() -> {
            int index = GestureController.getInstance().getIndex();
            int questionsCount = GestureController.getInstance().getQuestionAnswerMap().size();
-            fourQuestions(index);
-           /* if (questionsCount == 2) {
+            if (questionsCount == 2) {
                 twoQuestions(index);
             } else if (questionsCount == 3) {
                 threeQuestions(index);
@@ -213,7 +212,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 sixQuestions(index);
             } else if (questionsCount == 7) {
                 sevenQuestions(index);
-            }*/
+            }
             uiUpdate();
             setQuestion();
         });
@@ -382,19 +381,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     
     private void resetQuestionProgressView(){
         // reset all the views
-//        q2image1.setImageResource(R.drawable.no_tick);
-//        q2image1.setImageResource(R.drawable.no_tick);
-//
-//        q3image1.setImageResource(R.drawable.no_tick);
-//        q3image1.setImageResource(R.drawable.no_tick);
-//        q3image1.setImageResource(R.drawable.no_tick);
+       q2image1.setImageResource(R.drawable.no_tick);
+       q2image2.setImageResource(R.drawable.no_tick);
+
+       q3image1.setImageResource(R.drawable.no_tick);
+       q3image2.setImageResource(R.drawable.no_tick);
+       q3image3.setImageResource(R.drawable.no_tick);
 
         q4image1.setImageResource(R.drawable.no_tick);
         q4image2.setImageResource(R.drawable.no_tick);
         q4image3.setImageResource(R.drawable.no_tick);
         q4image4.setImageResource(R.drawable.no_tick);
 
-        /*q5image1.setImageResource(R.drawable.no_tick);
+        q5image1.setImageResource(R.drawable.no_tick);
         q5image2.setImageResource(R.drawable.no_tick);
         q5image3.setImageResource(R.drawable.no_tick);
         q5image4.setImageResource(R.drawable.no_tick);
@@ -420,12 +419,12 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
         q3view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q3view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-*/
+
         q4view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q4view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q4view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
 
-        /*q5view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q5view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q5view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q5view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q5view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
@@ -441,7 +440,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q7view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
         q7view5.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q7view6.setBackgroundColor(getResources().getColor(R.color.very_light_gray));*/
+        q7view6.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
     }
 
 }

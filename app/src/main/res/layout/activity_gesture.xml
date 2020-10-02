@@ -95,29 +95,33 @@
 
     </LinearLayout>
 
-<!--    <LinearLayout
+    <include
+        android:id="@+id/two_questions_layout"
+        layout="@layout/q_two_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_30"
         android:layout_marginLeft="@dimen/margin_5"
         android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/covid_questions_text">
+        android:visibility="gone"/>
 
-        <include layout="@layout/q_two_layout" />
-
-        <include layout="@layout/q_three_layout" />
-
-        <include layout="@layout/q_four_layout" />
-
-        <include layout="@layout/q_five_layout" />
-
-        <include layout="@layout/q_six_layout" />
-
-        <include layout="@layout/q_seven_layout" />
-    </LinearLayout>-->
-
+    <include
+        android:id="@+id/three_questions_layout"
+        layout="@layout/q_three_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone" />
 
     <include
         android:id="@+id/four_questions_layout"
@@ -130,7 +134,50 @@
         app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/five_questions_layout"
+        layout="@layout/q_five_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/six_questions_layout"
+        layout="@layout/q_six_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/seven_questions_layout"
+        layout="@layout/q_seven_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/hand_yes_button"
