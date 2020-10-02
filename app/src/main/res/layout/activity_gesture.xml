@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,149 +10,211 @@
     tools:context=".activity.GestureActivity">
 
 
+    <TextView
+        android:id="@+id/covid_questions_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_40"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:layout_marginRight="@dimen/margin_10"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/voice_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="vertical">
-
-
-        <TextView
-            android:id="@+id/covid_questions_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="32dp"
-            android:layout_marginTop="@dimen/margin_50"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginRight="@dimen/margin_20"/>
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
-            android:id="@+id/voice_layout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="150dp"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/margin_20"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/mic_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:src="@drawable/mic_nobackground_1" />
-
-                <TextView
-                    android:id="@+id/listening_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="45dp"
-                    android:text="Listening..."
-                    android:textColor="@color/black"
-                    android:textSize="25dp" />
-
-                <com.certify.snap.view.TimerAnimationView
-                    android:id="@+id/timer_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    app:circleColor="@color/gray" />
-
-            </LinearLayout>
-
-            <LinearLayout
+            <ImageView
+                android:id="@+id/mic_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
+                android:src="@drawable/mic_nobackground_1" />
 
-                <Button
-                    android:id="@+id/voice_yes_button"
-                    android:layout_width="150dp"
-                    android:layout_height="70dp"
-                    android:background="@color/gray"
-                    android:text="YES"
-                    android:visibility="gone" />
+            <TextView
+                android:id="@+id/listening_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="45dp"
+                android:text="Listening..."
+                android:textColor="@color/black"
+                android:textSize="25dp" />
 
-                <Button
-                    android:id="@+id/voice_no_button"
-                    android:layout_width="150dp"
-                    android:layout_height="70dp"
-                    android:layout_marginLeft="80dp"
-                    android:background="@color/gray"
-                    android:text="NO"
-                    android:visibility="gone" />
-            </LinearLayout>
+            <com.certify.snap.view.TimerAnimationView
+                android:id="@+id/timer_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                app:circleColor="@color/gray" />
 
         </LinearLayout>
 
-        <include layout="@layout/q_two_layout" />
-        <include layout="@layout/q_three_layout" />
-        <include layout="@layout/q_four_layout" />
-        <include layout="@layout/q_five_layout" />
-        <include layout="@layout/q_six_layout" />
-        <include layout="@layout/q_seven_layout" />
-
-        <RelativeLayout
-            android:id="@+id/hand_gesture_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="90dp"
-            android:orientation="horizontal"
-            android:visibility="visible">
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/hand_yes_button"
+            <Button
+                android:id="@+id/voice_yes_button"
                 android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="250dp"
-                android:src="@drawable/icon_yes"
-                android:layout_marginRight="@dimen/font_10"/>
+                android:layout_height="70dp"
+                android:background="@color/gray"
+                android:text="YES"
+                android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/title_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/bottom_text"
-                android:textColor="@color/black"
-                android:textSize="30dp"
-                android:visibility="visible"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"
-                android:layout_marginBottom="@dimen/font_10"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginRight="@dimen/margin_20"/>
-
-            <ImageView
-                android:id="@+id/hand_no_button"
+            <Button
+                android:id="@+id/voice_no_button"
                 android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="250dp"
-                android:src="@drawable/icon_no"
-                android:layout_marginLeft="@dimen/font_10"/>
-
-        </RelativeLayout>
+                android:layout_height="70dp"
+                android:layout_marginLeft="80dp"
+                android:background="@color/gray"
+                android:text="NO"
+                android:visibility="gone" />
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+    <include
+        android:id="@+id/two_questions_layout"
+        layout="@layout/q_two_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/three_questions_layout"
+        layout="@layout/q_three_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/four_questions_layout"
+        layout="@layout/q_four_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/five_questions_layout"
+        layout="@layout/q_five_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/six_questions_layout"
+        layout="@layout/q_six_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/seven_questions_layout"
+        layout="@layout/q_seven_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_5"
+        android:layout_marginRight="@dimen/margin_5"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/hand_yes_button"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginRight="@dimen/margin_30"
+        android:layout_marginBottom="@dimen/margin_30"
+        android:src="@drawable/icon_yes"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/hand_no_button"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="@dimen/margin_30"
+        android:layout_marginBottom="@dimen/margin_30"
+        android:src="@drawable/icon_no"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_30"
+        android:layout_marginLeft="@dimen/margin_10"
+        android:layout_marginRight="@dimen/margin_10"
+        android:gravity="center"
+        android:text="@string/bottom_text"
+        android:textColor="@color/black"
+        android:textSize="30dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

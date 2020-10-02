@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private RelativeLayout handGestureLayout;
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
+    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +56,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             handleQuestionnaireByGesture();
         }
 
+        progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
         return view;
     }
 
@@ -61,7 +64,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
         titleView = view.findViewById(R.id.title_text_view);
         voiceLayout = view.findViewById(R.id.voice_layout);
-        handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
+        //handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
         mTimerView = view.findViewById(R.id.timer_view);
 
         //q2 Layout
@@ -140,10 +143,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (AppSettings.isEnableVoice()) {
             //  titleView.setText("Please answer the questions by saying Yes or No");
             // voiceLayout.setVisibility(View.VISIBLE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+            //handGestureLayout.setVisibility(View.VISIBLE);
         } else {
             // voiceLayout.setVisibility(View.GONE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+            //handGestureLayout.setVisibility(View.VISIBLE);
 
         }
     }
@@ -168,11 +171,11 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void uiUpdate() {
         titleView.setVisibility(View.VISIBLE);
         if (AppSettings.isEnableHandGesture()) {
-            handGestureLayout.setVisibility(View.VISIBLE);
+           // handGestureLayout.setVisibility(View.VISIBLE);
         }
         if (AppSettings.isEnableVoice()) {
             //voiceLayout.setVisibility(View.VISIBLE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+            //handGestureLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -230,6 +233,9 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionsReceived() {
         getActivity().runOnUiThread(() -> {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             covidQuestionsText.setText(GestureController.getInstance().getQuestion());
             int questionsCount = GestureController.getInstance().getQuestionAnswerMap().size();
             if (questionsCount == 2) {
@@ -246,6 +252,21 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 q7Layout.setVisibility(View.VISIBLE);
             }
             resetQuestionProgressView();
+        });
+    }
+
+    @Override
+    public void onQuestionsNotReceived() {
+        getActivity().runOnUiThread(() -> {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            Toast.makeText(this.getContext(), "Failed to get the Questions, Closing Gesture screen", Toast.LENGTH_LONG).show();
+            if (getActivity() != null) {
+                getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
+                IrCameraActivity activity = (IrCameraActivity) getActivity();
+                activity.resetGesture();
+            }
         });
     }
 
@@ -360,12 +381,12 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     
     private void resetQuestionProgressView(){
         // reset all the views
-        q2image1.setImageResource(R.drawable.no_tick);
-        q2image1.setImageResource(R.drawable.no_tick);
+       q2image1.setImageResource(R.drawable.no_tick);
+       q2image2.setImageResource(R.drawable.no_tick);
 
-        q3image1.setImageResource(R.drawable.no_tick);
-        q3image1.setImageResource(R.drawable.no_tick);
-        q3image1.setImageResource(R.drawable.no_tick);
+       q3image1.setImageResource(R.drawable.no_tick);
+       q3image2.setImageResource(R.drawable.no_tick);
+       q3image3.setImageResource(R.drawable.no_tick);
 
         q4image1.setImageResource(R.drawable.no_tick);
         q4image2.setImageResource(R.drawable.no_tick);
