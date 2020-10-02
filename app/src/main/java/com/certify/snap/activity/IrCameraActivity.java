@@ -3110,12 +3110,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-            if (AppSettings.isPrintQrCodeUsers() && data != null && data.getQrCodeData() != null) {
+            if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
                 nameTitle = "Name:";
                 name = data.getQrCodeData().getFirstName();
             }
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
-            if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+            if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
                 bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
                 if (bitmap == null) {
                     bitmap = rgbBitmap;
@@ -3124,7 +3124,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
-            if (AppSettings.isPrintWaveUsers()) {
+            if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");

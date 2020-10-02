@@ -169,15 +169,15 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         boolean result = false;
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
-            if (AppSettings.isPrintAccessCardUsers()) {
+            if (AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) {
                 result = true;
             }
         } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-            if (AppSettings.isPrintQrCodeUsers()) {
+            if (AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) {
                 result = true;
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
-            if (AppSettings.isPrintWaveUsers()) {
+            if (AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan()) {
                 result = true;
             }
         } else {
