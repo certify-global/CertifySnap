@@ -3100,33 +3100,41 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (data != null) {
             member = data.member;
         }
-        if (AppSettings.isPrintAllScan() && (AppSettings.isFacialDetect() && member != null)) {
-            bitmap = BitmapFactory.decodeFile(member.image);
-            if (bitmap == null) {
-                bitmap = rgbBitmap;
-            }
-            if (member.firstname != null) {
+        if (mTriggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+            if (AppSettings.isPrintQrCodeUsers() && data != null && data.getQrCodeData() != null) {
                 nameTitle = "Name:";
-                name = member.firstname;
+                name = data.getQrCodeData().getFirstName();
             }
-        } else if (AppSettings.isPrintQrCodeUsers() && data != null && data.getQrCodeData() != null) {
-            nameTitle = "Name:";
-            name = data.getQrCodeData().getFirstName();
-        } else if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-            bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
-            if (bitmap == null) {
-                bitmap = rgbBitmap;
+        } else if (mTriggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
+            if (AppSettings.isPrintAccessCardUsers() && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
+                if (bitmap == null) {
+                    bitmap = rgbBitmap;
+                }
+                nameTitle = "Name:";
+                name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
             }
-            nameTitle = "Name:";
-            name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
-        } else if (AppSettings.isPrintWaveUsers()) {
-            String answers = GestureController.getInstance().getAnswers();
-            answers = answers.replace(",", "");
-            answers = answers.replace("[", "");
-            answers = answers.replace("]", "");
-            int numOfQ = GestureController.getInstance().getQuestionAnswerMap().size();
-            int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
-            thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
+        } else if (mTriggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+            if (AppSettings.isPrintWaveUsers()) {
+                String answers = GestureController.getInstance().getAnswers();
+                answers = answers.replace(",", "");
+                answers = answers.replace("[", "");
+                answers = answers.replace("]", "");
+                int numOfQ = GestureController.getInstance().getQuestionAnswerMap().size();
+                int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
+                thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
+            }
+        } else {
+            if (AppSettings.isPrintAllScan() && (AppSettings.isFacialDetect() && member != null)) {
+                bitmap = BitmapFactory.decodeFile(member.image);
+                if (bitmap == null) {
+                    bitmap = rgbBitmap;
+                }
+                if (member.firstname != null) {
+                    nameTitle = "Name:";
+                    name = member.firstname;
+                }
+            }
         }
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
@@ -3397,6 +3405,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onGestureDetected() {
         runOnUiThread(() -> {
             GestureController.getInstance().clearData();
+            mTriggerType = CameraController.triggerValue.WAVE.toString();
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
             new Handler().postDelayed(this::launchGestureFragment, 1000);
         });
