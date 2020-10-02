@@ -792,7 +792,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         PrinterController.getInstance().clearData();
-        GestureController.getInstance().reset();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
