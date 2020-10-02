@@ -146,7 +146,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     public boolean isPrintScan() {
         boolean result = false;
-        if (isUserPrintEnabled || AppSettings.isPrintHighTemperatureUsers()) {
+        if (isPrintForUser() || AppSettings.isPrintHighTemperatureUsers()) {
             if (AppSettings.isEnablePrinter()) {
                 try {
                     if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
