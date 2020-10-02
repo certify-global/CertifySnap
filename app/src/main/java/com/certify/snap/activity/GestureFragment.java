@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private RelativeLayout handGestureLayout;
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
+    private ProgressDialog progressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,6 +56,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             handleQuestionnaireByGesture();
         }
 
+        progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
         return view;
     }
 
@@ -230,6 +233,9 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionsReceived() {
         getActivity().runOnUiThread(() -> {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             covidQuestionsText.setText(GestureController.getInstance().getQuestion());
             int questionsCount = GestureController.getInstance().getQuestionAnswerMap().size();
             if (questionsCount == 2) {

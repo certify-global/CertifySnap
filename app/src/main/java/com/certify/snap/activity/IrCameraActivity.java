@@ -297,8 +297,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Button qrSkipButton;
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
-    private FaceFeature mFaceFeature;
-    private int mRequestId;
     private Timer mQRTimer;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
@@ -1360,6 +1358,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     resetHomeScreen();
                     resetRfid();
                     resetQrCode();
+                    resetGesture();
                 }
             });
         } catch (Exception e) {
@@ -1924,6 +1923,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         resetHomeScreen();
                         resetRfid();
                         resetQrCode();
+                        resetGesture();
                     }
                 });
                 this.cancel();
@@ -3340,6 +3340,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         disableLedPower();
                         resetRfid();
                         resetQrCode();
+                        resetGesture();
                     }
                 });
                 this.cancel();
