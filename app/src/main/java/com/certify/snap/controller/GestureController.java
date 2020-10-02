@@ -64,8 +64,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private Timer mQuestionsTimer;
 
     //Hand Gesture
-    int leftRangeValue = 200;
-    int rightRangeValue = 200;
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
@@ -270,20 +268,25 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
                         Log.e(TAG, map.toString() + "");
-                            try {
-                                final int left = Integer.valueOf(map.get("leftPower"));
-                                final int right = Integer.valueOf(map.get("rightPower"));
+                        try {
+                            final int left = Integer.valueOf(map.get("leftPower"));
+                            final int right = Integer.valueOf(map.get("rightPower"));
 
-                               if (left > 200) {
-                                    leftHandWave();
-                                } else if (right > 200) {
-                                    rightHandWave();
+                            if (left > 200 && right > 200) {
+                                index = 0;
+                                if (listener != null) {
+                                    listener.onQuestionsReceived();
                                 }
-                            } catch (Exception e) {
-                                Log.d(TAG, "handleGestureByGesture: " + e.toString());
+                            } else if (left > 200) {
+                                leftHandWave();
+                            } else if (right > 200) {
+                                rightHandWave();
                             }
+                        } catch (Exception e) {
+                            Log.d(TAG, "handleGestureByGesture: " + e.toString());
                         }
                     }
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
