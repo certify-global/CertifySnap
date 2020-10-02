@@ -3356,8 +3356,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 GestureController.getInstance().initContext(this);
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
                 GestureController.getInstance().initHandGesture();
+                return;
             }
-            Toast.makeText(this, "Please connect the Gesture device", Toast.LENGTH_LONG).show();
+            runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
         }
     }
 
@@ -3370,7 +3371,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             GestureController.getInstance().clearData();
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
-            launchGestureFragment();
+            new Handler().postDelayed(this::launchGestureFragment, 1000);
         });
     }
 
