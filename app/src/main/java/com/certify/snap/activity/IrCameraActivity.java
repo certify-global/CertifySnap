@@ -2640,6 +2640,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
             BLEController.getInstance().connectToDevice();
         }
+        GestureController.getInstance().clearData();
     }
 
     private void setPreviewIdleTimer() {
