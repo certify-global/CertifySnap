@@ -1876,9 +1876,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void setCameraPreview() {
         long delay = 1000;
-        if(AppSettings.isEnableHandGesture()){
-            delay = 2 * 250;
-        }
+       
         if (qrCodeEnable) {
             resetCameraView();
             if (rfIdEnable) {
@@ -3364,7 +3362,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetGesture() {
-        initGesture();
+        GestureController.getInstance().clearData();
+        runOnUiThread(() -> new Handler().postDelayed(this::initGesture, 1000));
     }
 
     @Override

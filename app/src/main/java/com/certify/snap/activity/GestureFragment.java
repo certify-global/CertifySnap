@@ -200,7 +200,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         getActivity().runOnUiThread(() -> {
            int index = GestureController.getInstance().getIndex();
            int questionsCount = GestureController.getInstance().getQuestionAnswerMap().size();
-            if (questionsCount == 2) {
+            fourQuestions(index);
+           /* if (questionsCount == 2) {
                 twoQuestions(index);
             } else if (questionsCount == 3) {
                 threeQuestions(index);
@@ -212,7 +213,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 sixQuestions(index);
             } else if (questionsCount == 7) {
                 sevenQuestions(index);
-            }
+            }*/
             uiUpdate();
             setQuestion();
         });
