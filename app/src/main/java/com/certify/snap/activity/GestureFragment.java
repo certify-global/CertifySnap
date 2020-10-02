@@ -64,7 +64,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
         titleView = view.findViewById(R.id.title_text_view);
         voiceLayout = view.findViewById(R.id.voice_layout);
-        handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
+        //handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
         mTimerView = view.findViewById(R.id.timer_view);
 
         //q2 Layout
@@ -143,10 +143,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (AppSettings.isEnableVoice()) {
             //  titleView.setText("Please answer the questions by saying Yes or No");
             // voiceLayout.setVisibility(View.VISIBLE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+            //handGestureLayout.setVisibility(View.VISIBLE);
         } else {
             // voiceLayout.setVisibility(View.GONE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+            //handGestureLayout.setVisibility(View.VISIBLE);
 
         }
     }
@@ -171,11 +171,11 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void uiUpdate() {
         titleView.setVisibility(View.VISIBLE);
         if (AppSettings.isEnableHandGesture()) {
-            handGestureLayout.setVisibility(View.VISIBLE);
+           // handGestureLayout.setVisibility(View.VISIBLE);
         }
         if (AppSettings.isEnableVoice()) {
             //voiceLayout.setVisibility(View.VISIBLE);
-            handGestureLayout.setVisibility(View.VISIBLE);
+            //handGestureLayout.setVisibility(View.VISIBLE);
         }
     }
 
