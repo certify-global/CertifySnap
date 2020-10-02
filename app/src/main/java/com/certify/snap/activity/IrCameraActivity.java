@@ -3361,7 +3361,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private void resetGesture() {
+    public void resetGesture() {
         GestureController.getInstance().clearData();
         runOnUiThread(() -> new Handler().postDelayed(this::initGesture, 1000));
     }

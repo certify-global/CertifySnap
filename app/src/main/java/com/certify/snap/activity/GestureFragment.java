@@ -259,9 +259,15 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionsNotReceived() {
         getActivity().runOnUiThread(() -> {
+            if (progressDialog != null && progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
             Toast.makeText(this.getContext(), "Failed to get the Questions, Closing Gesture screen", Toast.LENGTH_LONG).show();
-            GestureController.getInstance().clearData();
-            closeFragment();
+            if (getActivity() != null) {
+                getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
+                IrCameraActivity activity = (IrCameraActivity) getActivity();
+                activity.resetGesture();
+            }
         });
     }
 
