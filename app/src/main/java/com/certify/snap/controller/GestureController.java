@@ -534,6 +534,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             JSONObject jsonCustomFields = new JSONObject();
             JSONArray jsonArrayCustoms = new JSONArray();
 
+            CameraController.getInstance().setQrCodeId(uniqueID);
             obj.put("VisitId", 0);
             obj.put("anonymousGuid", uniqueID);
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
