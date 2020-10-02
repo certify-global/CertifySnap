@@ -18,7 +18,7 @@ public class CameraController {
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private boolean isFaceVisible = false; //flag to let know when the face is detected
-    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA, MULTIUSER}
+    public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA, WAVE, MULTIUSER}
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
@@ -30,6 +30,7 @@ public class CameraController {
     public ScanState scanState = ScanState.IDLE;
     private  int deviceMode =0;
     private long scannerRemainingTime = 0;
+    private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
 
     public enum ScanState {
         IDLE,
@@ -122,6 +123,14 @@ public class CameraController {
         this.scanState = scanState;
     }
 
+    public String getTriggerType() {
+        return mTriggerType;
+    }
+
+    public void setTriggerType(String mTriggerType) {
+        this.mTriggerType = mTriggerType;
+    }
+
     public boolean isAppExitTriggered() {
         return isAppExitTriggered;
     }
@@ -189,6 +198,7 @@ public class CameraController {
         }
         isAppExitTriggered = false;
         scanState = ScanState.IDLE;
+        mTriggerType = triggerValue.CAMERA.toString();
     }
 
 }

@@ -113,7 +113,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void printOnNormalTemperature() {
-        if (isUserPrintEnabled) {
+        if (isPrintForUser()) {
             new Thread(() -> {
                 if (AppSettings.isEnablePrinter()) {
                     print();
@@ -146,7 +146,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     public boolean isPrintScan() {
         boolean result = false;
-        if (isUserPrintEnabled || AppSettings.isPrintHighTemperatureUsers()) {
+        if (isPrintForUser() || AppSettings.isPrintHighTemperatureUsers()) {
             if (AppSettings.isEnablePrinter()) {
                 try {
                     if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
@@ -160,6 +160,29 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
                 }
             } else if (AppSettings.isPrintUsbEnabled()) {
                 result = true;
+            }
+        }
+        return result;
+    }
+
+    private boolean isPrintForUser() {
+        boolean result = false;
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
+            if (AppSettings.isPrintAccessCardUsers()) {
+                result = true;
+            }
+        } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+            if (AppSettings.isPrintQrCodeUsers()) {
+                result = true;
+            }
+        } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+            if (AppSettings.isPrintWaveUsers()) {
+                result = true;
+            }
+        } else {
+            if (AppSettings.isPrintAllScan()) {
+                result= true;
             }
         }
         return result;
