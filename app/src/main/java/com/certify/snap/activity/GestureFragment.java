@@ -222,7 +222,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onAllQuestionsAnswered() {
         GestureController.getInstance().clearData();
-        getActivity().runOnUiThread(this::closeFragment);
+        getActivity().runOnUiThread(() -> {
+            IrCameraActivity activity = (IrCameraActivity) getActivity();
+            activity.resumeFromGesture();
+        });
     }
 
     @Override
@@ -269,14 +272,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             }
         });
     }
-
-    private void closeFragment() {
-        if (getActivity() != null) {
-            getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
-            IrCameraActivity activity = (IrCameraActivity) getActivity();
-            activity.resumeFromGesture();
-        }
-    }
+    
 
     private void twoQuestions(int index) {
         if (index == 1) {

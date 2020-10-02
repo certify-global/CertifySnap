@@ -3248,6 +3248,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
             setCameraPreview();
+            new Handler().postDelayed(this::closeGestureFragment, 2000);
         });
     }
 
@@ -3412,6 +3413,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void closeFragment() {
         if(acknowledgementFragment != null) {
             getFragmentManager().beginTransaction().remove(acknowledgementFragment).commitAllowingStateLoss();
+        }
+    }
+
+    private void closeGestureFragment() {
+        if (gestureFragment != null) {
+            getFragmentManager().beginTransaction().remove(gestureFragment).commitAllowingStateLoss();
         }
     }
 
