@@ -120,7 +120,7 @@ public class TemperatureController {
             temperatureUnit = context.getString(R.string.centi);
             MIN_TEMPERATURE_THRESHOLD = 34;
         }
-        tempRect = new Rect(160, 70, 220, 145);
+        tempRect = new Rect(135, 55, 230, 195);
     }
 
     /**
