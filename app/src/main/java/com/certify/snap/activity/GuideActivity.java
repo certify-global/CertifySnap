@@ -366,6 +366,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
+                    ApplicationController.getInstance().setFcmPushToken(token);
                     Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
                     Logger.verbose(TAG,"firebase token",token);
 
