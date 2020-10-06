@@ -1940,7 +1940,9 @@ public class Util {
         }
         DatabaseController.getInstance().deleteAllMember();
         // Saving the token, after clearing the sharedPreference
-        Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        if (sharedPreferences != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        }
     }
 
     public static void stopMemberSyncService(Context context) {
