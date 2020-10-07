@@ -36,11 +36,6 @@ import android.os.Debug;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -51,12 +46,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.PushCallback;
-import com.certify.callback.SettingCallback;
-import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
@@ -71,18 +70,17 @@ import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
-import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
-import com.certify.snap.controller.GestureController;
+import com.certify.snap.controller.CameraController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
-import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
@@ -799,8 +797,8 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) {
+            } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && !data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -1392,7 +1390,6 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(cameraScanMode));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, enableAckScreen.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, ackText);
 

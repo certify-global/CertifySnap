@@ -35,7 +35,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             q5image1, q5image2, q5image3, q5image4, q5image5, q6image1, q6image2, q6image3, q6image4, q6image5, q6image6,
             q7image1, q7image2, q7image3, q7image4, q7image5, q7image6, q7image7;
     private LinearLayout voiceLayout, q2Layout, q3Layout, q4Layout, q5Layout, q6Layout, q7Layout;
-    private RelativeLayout handGestureLayout;
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
     private ProgressDialog progressDialog;
@@ -64,7 +63,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
         titleView = view.findViewById(R.id.title_text_view);
         voiceLayout = view.findViewById(R.id.voice_layout);
-        //handGestureLayout = view.findViewById(R.id.hand_gesture_layout);
         mTimerView = view.findViewById(R.id.timer_view);
 
         //q2 Layout
@@ -139,16 +137,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 "rubiklight.ttf");
         covidQuestionsText.setTypeface(rubiklight);
         titleView.setTypeface(rubiklight);
-
-        if (AppSettings.isEnableVoice()) {
-            //  titleView.setText("Please answer the questions by saying Yes or No");
-            // voiceLayout.setVisibility(View.VISIBLE);
-            //handGestureLayout.setVisibility(View.VISIBLE);
-        } else {
-            // voiceLayout.setVisibility(View.GONE);
-            //handGestureLayout.setVisibility(View.VISIBLE);
-
-        }
     }
 
     private void handleQuestionnaireByVoice() {
@@ -170,20 +158,11 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     private void uiUpdate() {
         titleView.setVisibility(View.VISIBLE);
-        if (AppSettings.isEnableHandGesture()) {
-           // handGestureLayout.setVisibility(View.VISIBLE);
-        }
-        if (AppSettings.isEnableVoice()) {
-            //voiceLayout.setVisibility(View.VISIBLE);
-            //handGestureLayout.setVisibility(View.VISIBLE);
-        }
     }
 
     //-----> Voice code
     private void checkPermission() {
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-        //}
     }
 
     @Override
@@ -272,7 +251,23 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             }
         });
     }
-    
+
+
+    @Override
+    public void onBothHandWave() {
+        getActivity().runOnUiThread(() -> {
+            if (getActivity() != null) {
+                getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
+                IrCameraActivity activity = (IrCameraActivity) getActivity();
+                activity.resetGesture();
+            }
+        });
+    }
+
+
+    private void showProgressBar(){
+        progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
+    }
 
     private void twoQuestions(int index) {
         if (index == 1) {

@@ -79,6 +79,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onVoiceListeningStart();
         void onQuestionsReceived();
         void onQuestionsNotReceived();
+        void onBothHandWave();
     }
 
     public interface GestureHomeCallBackListener {
@@ -96,19 +97,25 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.mContext = context;
         index = 0;
         sharedPreferences = Util.getSharedPreferences(mContext);
-        getQuestionsAPI();
+        getQuestionsAPI(mContext);
         startGetQuestionsTimer();
     }
 
     public void initContext(Context context) {
         this.mContext = context;
+        sharedPreferences = Util.getSharedPreferences(mContext);
     }
 
-    public void getQuestionsAPI() {
+    public void getGestureQuestions(){
+        getQuestionsAPI(mContext);
+        startGetQuestionsTimer();
+    }
+
+    public void getQuestionsAPI(Context context) {
         try {
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
-            new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
+            new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, context).execute();
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
         }
@@ -275,7 +282,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                             if (left > 200 && right > 200) {
                                 index = 0;
                                 if (listener != null) {
-                                    listener.onQuestionsReceived();
+                                    listener.onBothHandWave();
                                 }
                             } else if (left > 200) {
                                 leftHandWave();
