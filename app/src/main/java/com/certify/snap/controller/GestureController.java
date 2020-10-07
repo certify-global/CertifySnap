@@ -495,18 +495,15 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }, 1 * 1000);
     }
 
-    private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer) {
+    private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer, QuestionData questionData) {
         QuestionSurveyOptions qSurveyOption = null;
-        for (Map.Entry entry : questionAnswerMap.entrySet()) {
-            QuestionData questionData = (QuestionData) entry.getKey();
-            List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
-            if (qSurveyOptionList != null) {
-                for (int i = 0; i < qSurveyOptionList.size(); i++) {
-                     QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
-                     if (qOption.name.charAt(0)== answer.charAt(0)) {
-                         qSurveyOption = qOption;
-                         break;
-                     }
+        List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
+        if (qSurveyOptionList != null) {
+            for (int i = 0; i < qSurveyOptionList.size(); i++) {
+                QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
+                if (qOption.name.charAt(0) == answer.charAt(0)) {
+                    qSurveyOption = qOption;
+                    break;
                 }
             }
         }
@@ -517,7 +514,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
             String answer = (String) entry.getValue();
-            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer);
+            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer, (QuestionData) entry.getKey());
             if (qSurveyOption != null) {
                 qSurveyOptionList.add(qSurveyOption);
             }
@@ -531,7 +528,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             String uniqueID = UUID.randomUUID().toString();
             JSONObject obj = new JSONObject();
-            JSONObject jsonCustomFields = new JSONObject();
             JSONArray jsonArrayCustoms = new JSONArray();
 
             CameraController.getInstance().setQrCodeId(uniqueID);
@@ -541,10 +537,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
 
             for(int i=0;i<qSurveyOptionList.size();i++) {
+                JSONObject jsonCustomFields = new JSONObject();
                 jsonCustomFields.put("questionId", qSurveyOptionList.get(i).questionId);
                 jsonCustomFields.put("optionId", qSurveyOptionList.get(i).optionId);
-                jsonArrayCustoms.put(jsonCustomFields);
-
+                jsonArrayCustoms.put(i, jsonCustomFields);
             }
             obj.put("QuestionOptions",jsonArrayCustoms);
 
