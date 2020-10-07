@@ -91,6 +91,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
                 Util.getMemberID(this,CertifyId);
             }else if(command.equals("RESET")){
+                Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
+                Thread.sleep(1000);
                 Util.deleteAppData(this);
                 sendBroadcastMessage();
                 Util.restartApp(this);
@@ -98,6 +100,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 sendBroadcastMessage();
                 Util.restartApp(this);
             }else if(command.equals("DEACTIVATE")){
+                Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
+                Thread.sleep(1000);
                 Util.deleteAppData(this);
                 Util.writeBoolean(sharedPreferences,GlobalParameters.ONLINE_MODE,false);
             }else if(command.equals("CHECKHEALTH")){
@@ -113,9 +117,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
                 Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
             }
-            Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
-
-
+            if (!command.equals("RESET") && !command.equals("DEACTIVATE")) {
+                Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
+            }
         } catch (Exception e) {
             Logger.error(TAG + "sendNotification()", e.getMessage());
         }

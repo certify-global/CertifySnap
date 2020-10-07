@@ -102,7 +102,7 @@ public class License {
         }
         //check if /sdcard/active_result.dat exists, fetch from server if not
         if (!activeResultPath.exists() && onlineMode) {
-            writeRemoteLicenseToExternalStorage(activeResultPath);
+            writeRemoteLicenseToExternalStorage(activeResultPath, context);
         }
         if (activeResultPath.exists()) {
             activated = activateOffline(context, activeResultPath.getAbsolutePath());
@@ -110,10 +110,10 @@ public class License {
         return activated;
     }
 
-    private static void writeRemoteLicenseToExternalStorage(File activeResultPath) {
+    private static void writeRemoteLicenseToExternalStorage(File activeResultPath, Context context) {
         String url = Util.getSharedPreferences(Application.getInstance().getApplicationContext())
                 .getString(GlobalParameters.URL, EndPoints.prod_url);
-        String activeResultDat = getLicenseRemote(url, Util.getSNCode());
+        String activeResultDat = getLicenseRemote(url, Util.getSNCode(context));
         if (activeResultDat != null && !activeResultDat.isEmpty()) {
             writeToFile(activeResultPath, activeResultDat);
         }

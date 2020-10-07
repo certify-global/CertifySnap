@@ -17,7 +17,7 @@ public class GlobalParameters {
     public static String OfflineVerify="detect/offlineVerify";
     public static String GuestlistURL = "member/guest";
 
-    public static String SN = Util.getSNCode();
+    public static String SN = "";//Util.getSNCode();
     public static String Client_id = "";
     public static String Client_secret = "";
     public static String Access_limit = "";

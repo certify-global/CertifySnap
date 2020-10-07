@@ -175,7 +175,7 @@ public class RecordActivity extends AppCompatActivity {
     private String selectValue(int i,OfflineVerifyMembers members){
         String value = "";
         if(i==0) value = Build.MODEL;
-        if(i==1) value = Util.getSNCode();
+        if(i==1) value = Util.getSNCode(this);
         if(i==2) value = members.getName();
         if(i==3) value = members.getMobile();
         if(i==4) value = members.getTemperature()+" ℃";

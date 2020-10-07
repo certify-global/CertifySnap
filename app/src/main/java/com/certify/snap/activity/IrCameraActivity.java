@@ -296,6 +296,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Button qrSkipButton;
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
+    private int orientationValue = 0;
     private Timer mQRTimer;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
@@ -957,9 +958,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!isNavigationBarOn) {
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
+        if (Build.VERSION.SDK_INT >= 26) {
+            orientationValue = 270;
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelper = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
-                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
+                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
                 .cameraListener(rgbCameraListener)
@@ -980,9 +985,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!isNavigationBarOn) {
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
+        if (Build.VERSION.SDK_INT >= 26) {
+            orientationValue = 270;
+            previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
         cameraHelperIr = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
-                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, 0))
+                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)
                 .cameraListener(irCameraListener)
@@ -2603,7 +2612,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         boolean result = false;
         if (face3DAngle != null) {
             float yaw = face3DAngle.getYaw();
-            if (yaw > -10 && yaw < 10) {
+            //With mask, the yaw value is ranging from 30 - 50 with the face straight up
+            if ((yaw > -10 && yaw < 10) ||
+                    ((maskStatus == 1) && (yaw > -10 && yaw < 50))) {
                 result = true;
             }
         }
