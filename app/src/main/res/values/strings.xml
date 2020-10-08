@@ -734,4 +734,10 @@
     <string name="choose_questionnaire">Choose Questionnaire</string>
     <string name="enable_acknowledge">Enable Acknowledgement Screen</string>
     <string name="enter_full_screen">Enter Full Screen Text</string>
+    <string name="tv_result_bar">Display Result Bar</string>
+    <string name="tv_text_display">Text to display</string>
+    <string name="tv_temp_text_normal">Normal</string>
+    <string name="tv_temp_text_high">High</string>
+    <string name="et_normal">Enter normal temperature text</string>
+    <string name="et_high">Enter high  temperature text</string>
 </resources>

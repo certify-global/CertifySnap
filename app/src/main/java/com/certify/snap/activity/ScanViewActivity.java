@@ -17,13 +17,13 @@ import com.google.android.material.textfield.TextInputLayout;
 public class ScanViewActivity extends SettingBaseActivity {
 
     private SharedPreferences sp;
-    EditText et_screen_delay,editTextDialogUserInput_low;
+    EditText et_screen_delay,editTextDialogUserInput_low,et_normal,et_high;
     Typeface rubiklight;
     TextView tv_delay,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask,
-            voiceRecognitionTextView ,  handGestureTextView;
+            voiceRecognitionTextView ,  handGestureTextView,tv_temp_result_bar,tv_temp_text,tv_temp_text_normal,tv_temp_text_high;
     TextInputLayout text_input_low_temp;
-    RadioGroup radio_group_mask;
-    RadioButton radio_yes_mask;
+    RadioGroup radio_group_mask,radio_group_bar;
+    RadioButton radio_yes_mask,radio_yes_bar,radio_no_bar;
     RadioButton radio_no_mask;
     private TextView scanProximityView;
     private RadioGroup scanProximityRg;
@@ -60,9 +60,11 @@ public class ScanViewActivity extends SettingBaseActivity {
             if(sp.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL,false))
                 rbCaptureAllYes.setChecked(true);
             else rbCaptureAllNo.setChecked(true);
-            if(sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true))
+            if(sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)) {
                 radio_yes_temp.setChecked(true);
-            else radio_no_temp.setChecked(true);
+            }else {
+                radio_no_temp.setChecked(true);
+            }
 
             if(sp.getBoolean(GlobalParameters.ALLOW_ALL,false)) {
                 radio_yes_reg.setChecked(true);
@@ -77,8 +79,26 @@ public class ScanViewActivity extends SettingBaseActivity {
             } else {
                 radio_no_mask.setChecked(true);
             }
+            if (sp.getBoolean(GlobalParameters.RESULT_BAR, false) && sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)==false) {
+                radio_yes_bar.setChecked(true);
+                et_high.setEnabled(true);
+                et_normal.setEnabled(true);
+            } else {
+                radio_no_bar.setChecked(true);
+                et_high.setEnabled(false);
+                et_normal.setEnabled(false);
+            }
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
             editTextDialogUserInput_low.setText(sp.getString(GlobalParameters.TEMP_TEST_LOW, "93.2"));
+
+            if(sp.getString(GlobalParameters.RESULT_BAR_NORMAL,"").equals("") || sp.getString(GlobalParameters.RESULT_BAR_HIGH,"").equals("")) {
+                et_normal.setText("Temperature Normal");
+                et_high.setText("Temperature High");
+            }else {
+                et_normal.setText(sp.getString(GlobalParameters.RESULT_BAR_NORMAL, "Temperature Normal"));
+                et_high.setText(sp.getString(GlobalParameters.RESULT_BAR_HIGH, "Temperature High"));
+            }
+
 
             setDefaultScanProximity();
             setScanProximityClickListener();
@@ -105,9 +125,13 @@ public class ScanViewActivity extends SettingBaseActivity {
             radio_group_tempe.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if(checkedId==R.id.radio_yes_temp)
+                    if(checkedId==R.id.radio_yes_temp) {
                         Util.writeBoolean(sp, GlobalParameters.CAPTURE_TEMPERATURE, true);
-                    else Util.writeBoolean(sp, GlobalParameters.CAPTURE_TEMPERATURE, false);
+                        setRadioValues();
+                    }else {
+                        Util.writeBoolean(sp, GlobalParameters.CAPTURE_TEMPERATURE, false);
+                        setRadioValues();
+                    }
                 }
             });
 
@@ -134,12 +158,28 @@ public class ScanViewActivity extends SettingBaseActivity {
                     }
                 }
             });
+
+            radio_group_bar.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    System.out.println("Test CheckId" + checkedId);
+                    if (checkedId == R.id.radio_yes_bar) {
+                        Util.writeBoolean(sp, GlobalParameters.RESULT_BAR, true);
+                        setRadioValues();
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.RESULT_BAR, false);
+                        setRadioValues();
+                    }
+                }
+            });
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     Util.writeString(sp,GlobalParameters.DELAY_VALUE,et_screen_delay.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.RESULT_BAR_NORMAL, et_normal.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.RESULT_BAR_HIGH, et_high.getText().toString().trim());
                     Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
                     saveScanProximity();
                     finish();
@@ -147,6 +187,16 @@ public class ScanViewActivity extends SettingBaseActivity {
             });
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+    private void setRadioValues() {
+        if (sp.getBoolean(GlobalParameters.RESULT_BAR, false) && sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)==false) {
+            et_high.setEnabled(true);
+            et_normal.setEnabled(true);
+        } else {
+            et_high.setEnabled(false);
+            et_normal.setEnabled(false);
         }
     }
 
@@ -171,6 +221,15 @@ public class ScanViewActivity extends SettingBaseActivity {
         scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
         voiceRecognitionTextView = findViewById(R.id.voice_recognition_textView);
         handGestureTextView = findViewById(R.id.hand_gesture_text_view);
+        tv_temp_result_bar = findViewById(R.id.tv_temp_result_bar);
+        tv_temp_text = findViewById(R.id.tv_temp_text);
+        tv_temp_text_normal = findViewById(R.id.tv_temp_text_normal);
+        tv_temp_text_high = findViewById(R.id.tv_temp_text_high);
+        radio_yes_bar = findViewById(R.id.radio_yes_bar);
+        radio_no_bar = findViewById(R.id.radio_no_bar);
+        radio_group_bar = findViewById(R.id.radio_group_bar);
+        et_normal = findViewById(R.id.et_normal);
+        et_high = findViewById(R.id.et_high);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -185,6 +244,10 @@ public class ScanViewActivity extends SettingBaseActivity {
         scanProximityView.setTypeface(rubiklight);
         voiceRecognitionTextView.setTypeface(rubiklight);
         handGestureTextView.setTypeface(rubiklight);
+        tv_temp_result_bar.setTypeface(rubiklight);
+        tv_temp_text.setTypeface(rubiklight);
+        tv_temp_text_normal.setTypeface(rubiklight);
+        tv_temp_text_high.setTypeface(rubiklight);
 
     }
 

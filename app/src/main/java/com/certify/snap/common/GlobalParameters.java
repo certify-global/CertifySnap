@@ -174,6 +174,8 @@ public class GlobalParameters {
     public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
     public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
     public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";
-
+    public static final String RESULT_BAR = "result_bar";
+    public static final String RESULT_BAR_NORMAL = "result_bar_normal";
+    public static final String RESULT_BAR_HIGH = "result_bar_high";
 
 }
