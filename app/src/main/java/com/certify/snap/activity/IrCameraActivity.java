@@ -2932,16 +2932,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String tempString = String.valueOf(temperature);
         String text = "";
         if (isLowTempRead || !AppSettings.isCaptureTemperature()) {
-            text = getString(R.string.temperature_normal_text);
+            text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL,"Temperature Normal");
         } else {
-            text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL,"Temperature Normal") + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
         isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
             if (AppSettings.isCaptureTemperature()) {
-                text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+                text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH,"Temperature High") + tempString + TemperatureController.getInstance().getTemperatureUnit();
             } else {
-                text = getString(R.string.temperature_high_text);
+                text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH,"Temperature High");
             }
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
@@ -3188,16 +3188,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String tempString = String.valueOf(temperature);
         String text = "";
         if (isLowTempRead || !AppSettings.isCaptureTemperature()) {
-            text = getString(R.string.temperature_normal_text);
+            text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL,"Temperature Normal");
         } else {
-            text = getString(R.string.temperature_normal) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+            text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL,"Temperature Normal") + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
         isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
             if (AppSettings.isCaptureTemperature()) {
-                text = getString(R.string.temperature_anormaly) + tempString + TemperatureController.getInstance().getTemperatureUnit();
+                text =sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH,"Temperature High") + tempString + TemperatureController.getInstance().getTemperatureUnit();
             } else {
-                text = getString(R.string.temperature_high_text);
+                text = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH,"Temperature High");
             }
             TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
             TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
