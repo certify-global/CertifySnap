@@ -36,11 +36,6 @@ import android.os.Debug;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -51,12 +46,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.PushCallback;
-import com.certify.callback.SettingCallback;
-import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
@@ -71,18 +70,17 @@ import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
-import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
-import com.certify.snap.controller.GestureController;
+import com.certify.snap.controller.CameraController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
-import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
@@ -127,6 +125,7 @@ import java.util.concurrent.TimeUnit;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
+    private static final String TODO = "TODO";
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
     private static String tokenRequestModule = ""; //Optimize
@@ -222,8 +221,24 @@ public class Util {
      *
      * @return
      */
-    public static String getSNCode() {
-        if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 28) {
+    @SuppressLint("MissingPermission")
+    public static String getSNCode(Context context) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                Log.d("TAG", "Naga.........No permissions getSNCode: ");
+                return TODO;
+            }
+            Log.d("TAG", "Naga.........permissions getSNCode: ");
+            return android.os.Build.getSerial();
+        }
+        else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
             return getSerialNumber();
@@ -605,7 +620,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
+            obj.put("deviceSN", Util.getSNCode(context));//Util.getSNCode()
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
@@ -620,7 +635,7 @@ public class Util {
 
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
             }
@@ -649,7 +664,7 @@ public class Util {
 
     public static String getJSONObjectAddmember(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
             }
@@ -782,8 +797,8 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) {
+            } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && !data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -1113,7 +1128,7 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             obj.put("lastUpdateDateTime", getUTCDate(""));
-            obj.put("deviceSN", getSNCode());
+            obj.put("deviceSN", getSNCode(context));
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", getAppState());
@@ -1377,8 +1392,8 @@ public class Util {
                 String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
                 String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
                 String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "1" : jsonValueIdentification.getString("cameraScanMode");
-                String enableAcknowledgementScreen = jsonValueIdentification.isNull("enableAcknowledgementScreen") ? "0" : jsonValueIdentification.getString("enableAcknowledgementScreen");
-                String acknowledgementText = jsonValueIdentification.isNull("enableAcknowledgementScreen") ? "All the acknowledge" : jsonValueIdentification.getString("enableAcknowledgementScreen");
+                String enableAckScreen = jsonValueIdentification.isNull("enableAcknowledgementScreen") ? "0" : jsonValueIdentification.getString("enableAcknowledgementScreen");
+                String ackText = jsonValueIdentification.isNull("acknowledgementText") ? "" : jsonValueIdentification.getString("acknowledgementText");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1388,9 +1403,8 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(cameraScanMode));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, enableAcknowledgementScreen.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, acknowledgementText);
-
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, enableAckScreen.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, ackText);
 
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
@@ -1523,7 +1537,7 @@ public class Util {
 
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);
+                    openDialogactivate(context, "This device SN: " + Util.getSNCode(context) + " " + context.getResources().getString(R.string.device_inactive), toast);
                 }
             } else {
                 if (json1.isNull("access_token")) {
@@ -1754,7 +1768,7 @@ public class Util {
 
     public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1768,7 +1782,7 @@ public class Util {
 
     public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -2007,7 +2021,9 @@ public class Util {
         }
         DatabaseController.getInstance().deleteAllMember();
         // Saving the token, after clearing the sharedPreference
-        Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        if (sharedPreferences != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        }
     }
 
     public static void stopMemberSyncService(Context context) {

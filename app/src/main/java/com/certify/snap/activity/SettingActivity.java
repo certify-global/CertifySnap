@@ -269,7 +269,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         touchless_interaction_setting.setTypeface(rubiklight);
         printer_setting_text.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
-        tv_serial_no.setText("Serial No: " + Util.getSNCode());
+        tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
         accessControlTv.setTypeface(rubiklight);
 
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";

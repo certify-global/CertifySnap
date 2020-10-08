@@ -51,7 +51,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private static GestureController instance = null;
     private Context mContext;
     private SharedPreferences sharedPreferences;
-    private boolean isGestureFlow = false;
 
     private Timer mTimer;
     private boolean wait = true;
@@ -61,11 +60,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private LinkedHashMap<QuestionData, String> questionAnswerMap = new LinkedHashMap<>();
     private QuestionData currentQuestionData = null;
     private GestureHomeCallBackListener gestureListener = null;
-    private boolean isSkipGesture = false;
+    private boolean isCallback = false;
+    private Timer mQuestionsTimer;
 
     //Hand Gesture
-    int leftRangeValue = 200;
-    int rightRangeValue = 200;
     private UsbDevice usbReader = null;
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
@@ -80,6 +78,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onAllQuestionsAnswered();
         void onVoiceListeningStart();
         void onQuestionsReceived();
+        void onQuestionsNotReceived();
+        void onBothHandWave();
     }
 
     public interface GestureHomeCallBackListener {
@@ -95,33 +95,27 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public void init(Context context) {
         this.mContext = context;
-        isGestureFlow = true;
         index = 0;
         sharedPreferences = Util.getSharedPreferences(mContext);
-        getQuestionsAPI();
+        getQuestionsAPI(mContext);
+        startGetQuestionsTimer();
     }
 
     public void initContext(Context context) {
         this.mContext = context;
+        sharedPreferences = Util.getSharedPreferences(mContext);
     }
 
-    public boolean isGestureFlowComplete() {
-        return isGestureFlow;
+    public void getGestureQuestions(){
+        getQuestionsAPI(mContext);
+        startGetQuestionsTimer();
     }
 
-    public boolean isSkipGesture() {
-        return isSkipGesture;
-    }
-
-    public void setSkipGesture(boolean skipGesture) {
-        this.isSkipGesture = skipGesture;
-    }
-
-    public void getQuestionsAPI() {
+    public void getQuestionsAPI(Context context) {
         try {
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
-            new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, mContext).execute();
+            new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, context).execute();
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
         }
@@ -135,6 +129,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 Logger.error(TAG, "onJSONObjectListenerGesture", "GetQuestions Log api failed");
                 return;
             }
+            cancelQuestionsTimer();
             Gson gson = new Gson();
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
             List<QuestionData> questionList = response.questionList;
@@ -156,6 +151,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public void setGestureHomeCallbackListener(GestureHomeCallBackListener callbackListener) {
+        isCallback = false;
         this.gestureListener = callbackListener;
     }
 
@@ -279,25 +275,25 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     Map<String, String> map = sendCMD(1);
                     if (map != null) {
                         Log.e(TAG, map.toString() + "");
-                            try {
-                                final int left = Integer.valueOf(map.get("leftPower"));
-                                final int right = Integer.valueOf(map.get("rightPower"));
+                        try {
+                            final int left = Integer.valueOf(map.get("leftPower"));
+                            final int right = Integer.valueOf(map.get("rightPower"));
 
-                                if (left > leftRangeValue && right > rightRangeValue) {
-                                    index = 0;
-                                    if(listener != null){
-                                        listener.onQuestionsReceived();
-                                    }
-                                } else if (left > leftRangeValue && right <= rightRangeValue) {
-                                    leftHandWave();
-                                } else if (left <= leftRangeValue && right > rightRangeValue) {
-                                    rightHandWave();
+                            if (left > 200 && right > 200) {
+                                index = 0;
+                                if (listener != null) {
+                                    listener.onBothHandWave();
                                 }
-                            } catch (Exception e) {
-                                Log.d(TAG, "handleGestureByGesture: " + e.toString());
+                            } else if (left > 200) {
+                                leftHandWave();
+                            } else if (right > 200) {
+                                rightHandWave();
                             }
+                        } catch (Exception e) {
+                            Log.d(TAG, "handleGestureByGesture: " + e.toString());
                         }
                     }
+                }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -429,11 +425,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void rightHandWave() {
         Log.d(TAG, "Right Hand wave");
+        if (gestureListener != null && !isCallback) {
+            isCallback = true;
+            gestureListener.onGestureDetected();
+            return;
+        }
         if (wait) {
-            if (gestureListener != null) {
-                gestureListener.onGestureDetected();
-                return;
-            }
             updateOnWave("N");
         }
     }
@@ -505,18 +502,15 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }, 1 * 1000);
     }
 
-    private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer) {
+    private QuestionSurveyOptions getQuestionOptionOnAnswer(String answer, QuestionData questionData) {
         QuestionSurveyOptions qSurveyOption = null;
-        for (Map.Entry entry : questionAnswerMap.entrySet()) {
-            QuestionData questionData = (QuestionData) entry.getKey();
-            List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
-            if (qSurveyOptionList != null) {
-                for (int i = 0; i < qSurveyOptionList.size(); i++) {
-                     QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
-                     if (qOption.name.charAt(0)== answer.charAt(0)) {
-                         qSurveyOption = qOption;
-                         break;
-                     }
+        List<QuestionSurveyOptions> qSurveyOptionList = questionData.surveyOptions;
+        if (qSurveyOptionList != null) {
+            for (int i = 0; i < qSurveyOptionList.size(); i++) {
+                QuestionSurveyOptions qOption = qSurveyOptionList.get(i);
+                if (qOption.name.charAt(0) == answer.charAt(0)) {
+                    qSurveyOption = qOption;
+                    break;
                 }
             }
         }
@@ -527,7 +521,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
             String answer = (String) entry.getValue();
-            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer);
+            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer, (QuestionData) entry.getKey());
             if (qSurveyOption != null) {
                 qSurveyOptionList.add(qSurveyOption);
             }
@@ -541,19 +535,19 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             String uniqueID = UUID.randomUUID().toString();
             JSONObject obj = new JSONObject();
-            JSONObject jsonCustomFields = new JSONObject();
             JSONArray jsonArrayCustoms = new JSONArray();
 
+            CameraController.getInstance().setQrCodeId(uniqueID);
             obj.put("VisitId", 0);
             obj.put("anonymousGuid", uniqueID);
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
 
 
             for(int i=0;i<qSurveyOptionList.size();i++) {
+                JSONObject jsonCustomFields = new JSONObject();
                 jsonCustomFields.put("questionId", qSurveyOptionList.get(i).questionId);
                 jsonCustomFields.put("optionId", qSurveyOptionList.get(i).optionId);
-                jsonArrayCustoms.put(jsonCustomFields);
-
+                jsonArrayCustoms.put(i, jsonCustomFields);
             }
             obj.put("QuestionOptions",jsonArrayCustoms);
 
@@ -595,9 +589,23 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         return questionAnswerMap;
     }
 
-    public void reset() {
-        isGestureFlow = false;
-        isSkipGesture = false;
+    private void startGetQuestionsTimer() {
+        cancelQuestionsTimer();
+        mQuestionsTimer = new Timer();
+        mQuestionsTimer.schedule(new TimerTask() {
+            public void run() {
+                this.cancel();
+                if (listener != null) {
+                    listener.onQuestionsNotReceived();
+                }
+            }
+        }, 5 * 1000);
+    }
+
+    private void cancelQuestionsTimer() {
+        if (mQuestionsTimer != null) {
+            mQuestionsTimer.cancel();
+        }
     }
 
     public void clearData() {
@@ -612,6 +620,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
-        isSkipGesture = false;
+        isCallback = false;
     }
 }

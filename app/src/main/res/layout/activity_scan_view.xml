@@ -350,7 +350,8 @@
             android:layout_marginRight="@dimen/margin_20"
             android:text="@string/allow_low"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/font_18"
+            android:visibility="gone"/>
 
         <RadioGroup
             android:id="@+id/radio_group_reg"
@@ -358,7 +359,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <RadioButton
                 android:id="@+id/radio_yes_reg"

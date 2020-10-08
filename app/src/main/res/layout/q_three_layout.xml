@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/three_questions_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="100dp"
@@ -19,7 +18,7 @@
 
     <View
         android:id="@+id/threeQ_view1"
-        android:layout_width="170dp"
+        android:layout_width="205dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
         android:background="@color/very_light_gray" />
@@ -33,7 +32,7 @@
 
     <View
         android:id="@+id/threeQ_view2"
-        android:layout_width="170dp"
+        android:layout_width="205dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
         android:background="@color/very_light_gray" />
