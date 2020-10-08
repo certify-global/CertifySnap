@@ -1311,7 +1311,7 @@ public class Util {
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
                 String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
-                String displayResultBar = jsonValueScan.isNull("displayResultBar") ? "0" : jsonValueScan.getString("displayResultBar");
+                String displayResultBar = jsonValueScan.isNull("displayResultBar") ? "1" : jsonValueScan.getString("displayResultBar");
                 String temperatureNormal = jsonValueScan.isNull("temperatureNormal") ? "" : jsonValueScan.getString("temperatureNormal");
                 String temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
 
@@ -1342,15 +1342,16 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, displayResultBar.equals("1"));
 
-                if(!temperatureNormal.isEmpty())
-                Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,temperatureNormal);
-                else  Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,"Temperature Normal");
-
-                if(!temperatureHigh.isEmpty())
-                Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
-                else Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, "Temperature High");
-
-
+                if (!temperatureNormal.isEmpty()) {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
+                } else {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,StringConstants.TEMPERATURE_NORMAL);
+                }
+                if (!temperatureHigh.isEmpty()) {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
+                } else {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
+                }
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");

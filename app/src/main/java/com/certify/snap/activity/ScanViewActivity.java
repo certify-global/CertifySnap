@@ -79,7 +79,7 @@ public class ScanViewActivity extends SettingBaseActivity {
             } else {
                 radio_no_mask.setChecked(true);
             }
-            if (sp.getBoolean(GlobalParameters.RESULT_BAR, false) && sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)==false) {
+            if (sp.getBoolean(GlobalParameters.RESULT_BAR, false)) {
                 radio_yes_bar.setChecked(true);
                 et_high.setEnabled(true);
                 et_normal.setEnabled(true);
@@ -186,7 +186,7 @@ public class ScanViewActivity extends SettingBaseActivity {
     }
 
     private void setRadioValues() {
-        if (sp.getBoolean(GlobalParameters.RESULT_BAR, false) && sp.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE,true)==false) {
+        if (sp.getBoolean(GlobalParameters.RESULT_BAR, false)) {
             et_high.setEnabled(true);
             et_normal.setEnabled(true);
         } else {

@@ -50,6 +50,9 @@ public class AppSettings {
     private static boolean printWaveUsers = false;
     private static boolean printHighTemperatureUsers = false;
     private static boolean acknowledgementScreen = false;
+    private static boolean temperatureResultBar = false;
+    private static String tempResultBarNormal = "";
+    private static String tempResultBarHigh = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -94,12 +97,16 @@ public class AppSettings {
         enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
+        printUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER,false);
         printAllScan = sharedPreferences.getBoolean(GlobalParameters.PRINT_ALL_SCAN,false);
         printAccessCardUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS,false);
         printQrCodeUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS,false);
         printWaveUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_WAVE_USERS,false);
         printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
         acknowledgementScreen = sharedPreferences.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
+        temperatureResultBar = sharedPreferences.getBoolean(GlobalParameters.RESULT_BAR, true);
+        tempResultBarNormal = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL, StringConstants.TEMPERATURE_NORMAL);
+        tempResultBarHigh = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
     }
 
     public static String getThermalScanTitle() {
@@ -268,5 +275,17 @@ public class AppSettings {
 
     public static boolean isAcknowledgementScreen() {
         return acknowledgementScreen;
+    }
+
+    public static boolean isTemperatureResultBar() {
+        return temperatureResultBar;
+    }
+
+    public static String getTempResultBarNormal() {
+        return tempResultBarNormal;
+    }
+
+    public static String getTempResultBarHigh() {
+        return tempResultBarHigh;
     }
 }
