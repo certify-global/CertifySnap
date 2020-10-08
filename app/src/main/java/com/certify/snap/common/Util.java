@@ -1326,8 +1326,15 @@ public class Util {
                 Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, displayResultBar.equals("1"));
+
+                if(!temperatureNormal.isEmpty())
                 Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,temperatureNormal);
+                else  Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,"Temperature Normal");
+
+                if(!temperatureHigh.isEmpty())
                 Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
+                else Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, "Temperature High");
+
 
 
                 //ConfirmationView
