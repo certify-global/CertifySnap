@@ -1582,6 +1582,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tv_message.setTypeface(rubiklight);
                 } else {
                     tv_message.setVisibility(View.GONE);
+                    if (maskEnabled) {
+                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, mask_message.getLayoutParams().height);
+                        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                        mask_message.setLayoutParams(params);
+                    }
                 }
 
                 showMaskStatus();
