@@ -3030,6 +3030,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void updatePrinterParameters() {
         Bitmap bitmap = rgbBitmap;
         String name = "Anonymous";
+        PrinterController.getInstance().updateImageForPrint(bitmap);
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {
