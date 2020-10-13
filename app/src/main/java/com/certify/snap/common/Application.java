@@ -86,7 +86,7 @@ public class Application extends android.app.Application {
         BlockDetectByPrinter.start(false);//检测卡顿
 
         if (BuildConfig.BUILD_TYPE != "debug") {
-            //initAppCenter();
+            initAppCenter();
         }
 
         CrashHandler crashHandler = CrashHandler.getInstance();
