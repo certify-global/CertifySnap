@@ -3114,6 +3114,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String name = "";
         String nameTitle = "";
         String thermalText = "Thermal Scan";
+        PrinterController.getInstance().updateImageForPrint(bitmap);
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {

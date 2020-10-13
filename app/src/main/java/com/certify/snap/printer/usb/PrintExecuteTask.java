@@ -22,6 +22,7 @@ import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -231,35 +232,24 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 		return true;
 	}
 
-	private String readFile(){
-		// read file
-		String content = null;
-
-		String fileNamePath = util.getPreferences(mContext, PORTSETTING_FILE_PATH_KEYNAME );
-		File fl = new File(fileNamePath);
+	private byte[] readFile(){
+		byte[] content = null;
 		try {
-			FileInputStream fin = new FileInputStream(fl);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
-			StringBuilder sb = new StringBuilder();
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line).append("\n");
-			}
-			reader.close();
-			content = sb.toString();
-			//Make sure you close all streams.
-			fin.close();
-		} catch (FileNotFoundException fex){
-			// file not found!
+			String fileNamePath = util.getPreferences(mContext, PORTSETTING_FILE_PATH_KEYNAME );
+			File fl = new File(fileNamePath);
 
+			content = new byte[(int) fl.length()];
+			DataInputStream dis = new DataInputStream(new FileInputStream(fl));
+			dis.readFully(content);
+			dis.close();
 		}
 		catch (IOException iex){
 			// error reading!
 		}
 
 		return content;
-
 	}
+
 	private boolean printUSB(){
 		if ( connectToUSBPrinter(0x08A6, 0xFFFF) == false){
 			return false;
@@ -270,7 +260,7 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 
 		// write
 		do {
-			final String content = readFile();
+			final byte[] content = readFile();
 			if (content == null){
 				break;
 			}
@@ -322,14 +312,14 @@ public class PrintExecuteTask extends AsyncTask<PrintData, Void, String  >{
 					}
 
 					int idx = 0;
-					int size = content.length();
+					int size = content.length;
 
 					while (size > 0 && writeEp != null) {
 						int epSize = writeEp.getMaxPacketSize();
 						int sendSize = Math.min(size, epSize);
 
 						// Write the data as a bulk transfer with defined data length.
-						int sentSize = writeConnection.bulkTransfer(writeEp, content.getBytes(), idx, sendSize, 0);
+						int sentSize = writeConnection.bulkTransfer(writeEp, content, idx, sendSize, 0);
 						if (sentSize != -1) {
 							if (sentSize == 0) break;
 						} else {
