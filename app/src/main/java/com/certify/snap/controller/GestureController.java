@@ -138,6 +138,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 questionAnswerMap.put(questionData, "NA");
             }
             Log.d(TAG, "Gesture Questions list updated");
+            initHandGesture();
             if (listener != null) {
                 listener.onQuestionsReceived();
             }

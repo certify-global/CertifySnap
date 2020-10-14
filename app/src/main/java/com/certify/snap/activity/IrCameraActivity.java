@@ -2755,6 +2755,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
+
+        if (AppSettings.isEnableHandGesture()) {
+            if (Util.isGestureDeviceConnected(this)) {
+                isReadyToScan = false;
+            }
+            resetGesture();
+        }
     }
 
     private void resetRfid() {
