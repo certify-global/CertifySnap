@@ -2594,6 +2594,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mFaceMatchRetry = 0;
         mTriggerType = CameraController.triggerValue.CAMERA.toString();
         clearLeftFace(null);
+        TemperatureController.getInstance().setTemperatureRetry(0);
         TemperatureController.getInstance().clearData();
         if(progressDialog!=null && progressDialog.isShowing()) {
             progressDialog.dismiss();
@@ -2863,6 +2864,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onTemperatureRead(float temperature) {
+        TemperatureController.getInstance().setTemperatureRetry(0);
         if (PrinterController.getInstance().isPrintScan()) {
             updatePrintOnTemperatureRead(temperature);
             return;
@@ -2974,6 +2976,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().setScanState(CameraController.ScanState.IDLE);
         TemperatureController.getInstance().setTemperatureListener(this);
         clearLeftFace(null);
+    }
+
+    @Override
+    public void onFaceDistanceNotInRange() {
+        runOnUiThread(() -> tvErrorMessage.setText(getResources().getString(R.string.step_closer)));
     }
 
     private void initBluetoothPrinter() {

@@ -62,7 +62,7 @@ public class TemperatureController {
     private boolean isTempAboveThreshold = false;
     private boolean isGuideInited = false;
     private Timer guideTempTimer = null;
-    private float MIN_TEMPERATURE_THRESHOLD = 93.2f;
+    private float MIN_TEMPERATURE_THRESHOLD = 96.2f;
     private int mTemperatureRetry = 0;
     private float machineTemperature = 0;
     private float ambientTemperature = 0;
@@ -74,6 +74,7 @@ public class TemperatureController {
         void onFaceNotInRangeOfThermal();
         void onThermalGuideReset();
         void onTemperatureLow(int retryCount, float temperature);
+        void onFaceDistanceNotInRange();
     }
 
     public enum GuideMessage {
@@ -115,10 +116,10 @@ public class TemperatureController {
         thermalImageUtil = ApplicationController.getInstance().getTemperatureUtil();
         if (AppSettings.getfToC().equals("F")) {
             temperatureUnit = context.getString(R.string.fahrenheit_symbol);
-            MIN_TEMPERATURE_THRESHOLD = 93.2f;
+            MIN_TEMPERATURE_THRESHOLD = 96.2f;
         } else {
             temperatureUnit = context.getString(R.string.centi);
-            MIN_TEMPERATURE_THRESHOLD = 34;
+            MIN_TEMPERATURE_THRESHOLD = 35.6f;
         }
         tempRect = new Rect(135, 55, 230, 195);
     }
@@ -199,6 +200,12 @@ public class TemperatureController {
                         cancelGuideTempTimer();
                         if (listener != null) {
                             listener.onFaceNotInRangeOfThermal();
+                        }
+                        continue;
+                    }
+                    if (fix > 120) {
+                        if (listener != null) {
+                            listener.onFaceDistanceNotInRange();
                         }
                         continue;
                     }
@@ -320,8 +327,26 @@ public class TemperatureController {
             }
 
             @Override
-            public void callBackError(String s) throws RemoteException {
-
+            public void callBackError(String reason) {
+                Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + reason);
+                JSONObject obj = null;
+                try {
+                    obj = new JSONObject(reason);
+                    String error = obj.getString("err");
+                    String tempNoCorrect = obj.getString("temNoCorrect");
+                    float lowTemperature = Float.parseFloat(tempNoCorrect);
+                    if (AppSettings.getfToC().equals("F")) {
+                        lowTemperature = (float) Util.celsiusToFahrenheit(lowTemperature);
+                    }
+                    if (error.contains("wrong tem , too cold")) {
+                        if (listener != null) {
+                            mTemperatureRetry++;
+                            listener.onTemperatureLow(mTemperatureRetry, lowTemperature);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         isGuideInited = true;
@@ -503,7 +528,7 @@ public class TemperatureController {
 
                         Log.e(TAG, "SnapXT Temperature Failed Reason Error Code: " + errorCode);
                         if (TemperatureController.getInstance().getTrackIdMap().isEmpty()) return;
-                        updateGuideMsgOnTemperatureFail(errorCode);
+                        updateGuideMsgOnTemperatureFail(errorCode, reason);
                     }
                 }
             } catch (JSONException e) {
@@ -515,21 +540,38 @@ public class TemperatureController {
          * Method that checks and handles the Guide message settings
          * @param errorCode error value
          */
-        private void updateGuideMsgOnTemperatureFail(String errorCode) {
+        private void updateGuideMsgOnTemperatureFail(String errorCode, String reason) {
             GuideMessage value = GuideMessage.GENERIC_ERROR;
             if (AppSettings.isGuideScreen()) {
                 Log.e(TAG, "SnapXT Temperature updateGuideMsgOnTemperatureFail " + errorCode);
                 if (errorCode.contains("face out of range or for head too low") ||
                         errorCode.contains("face out of range or forhead too low")) {
                     value = GuideMessage.FACE_OUT_OF_RANGE;
+                    if (callbackListener != null) {
+                        callbackListener.onTemperatureFail(value);
+                    }
                 } else if (errorCode.contains("wrong tem , too cold")) {
                     value = GuideMessage.WRONG_TEMP_TOO_COLD;
+                    try {
+                        JSONObject obj = new JSONObject(reason);
+                        float tempNoCorrect = Float.parseFloat(obj.getString("temNoCorrect"));
+                        float lowTemperature = tempNoCorrect;
+                        if (AppSettings.getfToC().equals("F")) {
+                            lowTemperature = (float) Util.celsiusToFahrenheit(tempNoCorrect);
+                        }
+                        if (callbackListener != null) {
+                            TemperatureController.getInstance().mTemperatureRetry++;
+                            callbackListener.onTemperatureLow(TemperatureController.getInstance().mTemperatureRetry, lowTemperature);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } else if (errorCode.contains("not enough validData , get tem fail")) {
                     value = GuideMessage.NOT_ENOUGH_DATA;
+                    if (callbackListener != null) {
+                        callbackListener.onTemperatureFail(value);
+                    }
                 }
-            }
-            if (callbackListener != null) {
-                callbackListener.onTemperatureFail(value);
             }
         }
 
@@ -663,10 +705,18 @@ public class TemperatureController {
         }
     }
 
+    /**
+     * Method that get the Guide interface device temperature
+     * @return value
+     */
     public float getMachineTemperature() {
         return machineTemperature;
     }
 
+    /**
+     * Method that get the Guide interface atmospheric temperature
+     * @return value
+     */
     public float getAmbientTemperature() {
         return ambientTemperature;
     }
