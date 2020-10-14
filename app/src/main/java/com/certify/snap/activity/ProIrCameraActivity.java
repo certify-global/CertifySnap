@@ -889,8 +889,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                     tempRect = new Rect(sharedPreferences.getInt("rect_left", 23), sharedPreferences.getInt("rect_top", 30),
                             sharedPreferences.getInt("rect_right", 33), sharedPreferences.getInt("rect_bottom", 40));
                 }else if(module == 27){
-                    tempRect = new Rect(sharedPreferences.getInt("rect_left", 140), sharedPreferences.getInt("rect_top", 105),
-                            sharedPreferences.getInt("rect_right", 200), sharedPreferences.getInt("rect_bottom", 165));
+                    tempRect = new Rect(135, 55, 230, 195);
                     UserExportedData data = new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0);
                     startTempMeasure(data);
                 }
