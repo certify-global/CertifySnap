@@ -49,12 +49,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         GestureController.getInstance().init(this.getContext());
         GestureController.getInstance().setCallbackListener(this);
 
-        if (AppSettings.isEnableVoice()) {
-            handleQuestionnaireByVoice();
-        } else {
-            handleQuestionnaireByGesture();
-        }
-
         progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
         return view;
     }
@@ -150,6 +144,14 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     private void handleQuestionnaireByGesture() {
         GestureController.getInstance().initHandGesture();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     private void setQuestion() {
