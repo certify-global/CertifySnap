@@ -11,10 +11,8 @@ import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.model.TemperatureRect;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.Application;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
-import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.GuideDataCallBack;
@@ -620,8 +618,7 @@ public class TemperatureController {
         BLEController.getInstance().setLightOnNormalTemperature();
         PrinterController.getInstance().printOnNormalTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
-        AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature,
                 TemperatureController.getInstance().getTemperatureRecordData());
     }
 
@@ -638,8 +635,7 @@ public class TemperatureController {
         BLEController.getInstance().setLightOnHighTemperature();
         PrinterController.getInstance().printOnHighTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
-        AccessCardController.getInstance().accessCardLog(context,
-                AccessControlModel.getInstance().getRfidScanMatchedMember(), temperature,
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature,
                 TemperatureController.getInstance().getTemperatureRecordData());
     }
 

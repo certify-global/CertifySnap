@@ -2304,7 +2304,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             //Access Log api call
             RegisteredMembers member = new RegisteredMembers();
             member.setAccessid(cardId);
-            AccessCardController.getInstance().accessCardLog(this, member, 0,
+            AccessCardController.getInstance().sendAccessLogInvalid(this, member, 0,
                     new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
 
             //If Access denied, stop the reader and start again
@@ -2825,9 +2825,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         imageqr.setBackgroundColor(getResources().getColor(R.color.white));
         Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
 
-        RegisteredMembers member = new RegisteredMembers();
-        member.setAccessid("");
-        AccessCardController.getInstance().accessCardLog(this, member, 0,
+        AccessCardController.getInstance().sendAccessLogInvalid(this, new RegisteredMembers(), 0,
                 new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
 
     }

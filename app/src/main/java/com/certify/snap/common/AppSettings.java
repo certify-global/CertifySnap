@@ -53,6 +53,9 @@ public class AppSettings {
     private static boolean temperatureResultBar = false;
     private static String tempResultBarNormal = "";
     private static String tempResultBarHigh = "";
+    private static boolean qrCodeEnabled = false;
+    private static boolean rfidEnabled = false;
+    private static boolean accessLogEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -107,6 +110,10 @@ public class AppSettings {
         temperatureResultBar = sharedPreferences.getBoolean(GlobalParameters.RESULT_BAR, true);
         tempResultBarNormal = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL, StringConstants.TEMPERATURE_NORMAL);
         tempResultBarHigh = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
+        qrCodeEnabled = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
+                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
+        rfidEnabled = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
+        accessLogEnabled = sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false);
     }
 
     public static String getThermalScanTitle() {
@@ -287,5 +294,17 @@ public class AppSettings {
 
     public static String getTempResultBarHigh() {
         return tempResultBarHigh;
+    }
+
+    public static boolean isQrCodeEnabled() {
+        return qrCodeEnabled;
+    }
+
+    public static boolean isRfidEnabled() {
+        return rfidEnabled;
+    }
+
+    public static boolean isAccessLogEnabled() {
+        return accessLogEnabled;
     }
 }
