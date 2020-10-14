@@ -119,7 +119,7 @@ public class TemperatureController {
             MIN_TEMPERATURE_THRESHOLD = 96.2f;
         } else {
             temperatureUnit = context.getString(R.string.centi);
-            MIN_TEMPERATURE_THRESHOLD = 35.6f;
+            MIN_TEMPERATURE_THRESHOLD = 35.7f;
         }
         tempRect = new Rect(135, 55, 230, 195);
     }
@@ -333,8 +333,8 @@ public class TemperatureController {
                 try {
                     obj = new JSONObject(reason);
                     String error = obj.getString("err");
-                    String tempNoCorrect = obj.getString("temNoCorrect");
-                    float lowTemperature = Float.parseFloat(tempNoCorrect);
+                    String temperatureVal = obj.getString("temperature");
+                    float lowTemperature = Float.parseFloat(temperatureVal);
                     if (AppSettings.getfToC().equals("F")) {
                         lowTemperature = (float) Util.celsiusToFahrenheit(lowTemperature);
                     }
