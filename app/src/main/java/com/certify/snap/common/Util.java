@@ -1427,6 +1427,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, enableAckScreen.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, ackText);
 
+
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
                 String allowAnonymous = jsonValueAccessControl.isNull("allowAnonymous") ? "0" : jsonValueAccessControl.getString("allowAnonymous");
@@ -1435,6 +1436,8 @@ public class Util {
                 int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 : jsonValueAccessControl.getInt("doorControlTimeWired");
                 String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
                 int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
+                String enableLogging = jsonValueAccessControl.isNull("enableLogging") ? "0" : jsonValueAccessControl.getString("enableLogging");
+
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
@@ -1443,6 +1446,8 @@ public class Util {
                 Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESS_LOGGING, enableLogging.equals("1"));
+
 
                 //Audio Visual alerts
                 if (jsonValue.has("AudioVisualAlerts")) {

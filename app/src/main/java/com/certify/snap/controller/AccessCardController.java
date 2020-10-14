@@ -227,56 +227,66 @@ public class AccessCardController implements AccessCallback {
 
     public void accessCardLog(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
         boolean isFacialEnabled = AppSettings.isFacialDetect();
-        if (isFacialEnabled) {
-            if (data != null) {
-                if ((AccessControlModel.getInstance().getRfidScanMatchedMember() == null) ||
-                         data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
-                    registeredMembers = data.member;
-                }
-            }
-        }
-        if (registeredMembers == null) {
-            registeredMembers = new RegisteredMembers();
-        }
-        try {
-            if (mAllowAnonymous && !isFacialEnabled) {
-                registeredMembers.setAccessid(AccessCardController.getInstance().getAccessCardID());
-            }
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-            if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false) && (mEnableRelay || mEnableWeigan))
-                    || isFacialEnabled) {
-                JSONObject obj = new JSONObject();
-                obj.put("id", 0);
-                obj.put("firstName", registeredMembers.getFirstname());
-                obj.put("lastName", registeredMembers.getLastname());
-                obj.put("temperature", temperature);
-                obj.put("memberId", registeredMembers.getMemberid());
-                obj.put("accessId", registeredMembers.getAccessid());
-                obj.put("qrCodeId", "");
-                obj.put("deviceId", Util.getSNCode(context));
-                obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
-                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                obj.put("facilityId", 0);
-                obj.put("locationId", 0);
-                obj.put("facilityName", "");
-                obj.put("locationName", "");
-                obj.put("deviceTime", Util.getMMDDYYYYDate());
-                obj.put("sourceIP", Util.getLocalIpAddress());
-                obj.put("deviceData", Util.MobileDetails(context));
-                obj.put("guid", "");
-                obj.put("faceParameters", Util.FaceParameters(context, data));
-                obj.put("eventType", "");
-                obj.put("evenStatus", "");
-                obj.put("utcRecordDate", Util.getUTCDate(""));
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
-                if (Util.isOfflineMode(context)){
-                    saveOfflineAccessLogRecord(obj);
-                } else {
-                    new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+        if(sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false)) {
+            if (isFacialEnabled) {
+                if (data != null) {
+                    if ((AccessControlModel.getInstance().getRfidScanMatchedMember() == null) ||
+                            data.triggerType.equals(CameraController.triggerValue.FACE.toString())) {
+                        registeredMembers = data.member;
+                    }
                 }
             }
-        } catch (Exception e) {
-            Logger.error(TAG + "AccessLog Error", e.getMessage());
+            if (registeredMembers == null) {
+                registeredMembers = new RegisteredMembers();
+            }
+            try {
+                if (mAllowAnonymous && !isFacialEnabled) {
+                    registeredMembers.setAccessid(AccessCardController.getInstance().getAccessCardID());
+                }
+                if ((sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))
+                        || isFacialEnabled) {
+                    JSONObject obj = new JSONObject();
+                    obj.put("id", 0);
+                    obj.put("firstName", registeredMembers.getFirstname());
+                    obj.put("lastName", registeredMembers.getLastname());
+                    obj.put("temperature", temperature);
+                    obj.put("memberId", registeredMembers.getMemberid());
+                    obj.put("accessId", registeredMembers.getAccessid());
+                    obj.put("qrCodeId", "");
+                    obj.put("deviceId", Util.getSNCode(context));
+                    obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
+                    obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                    obj.put("facilityId", 0);
+                    obj.put("locationId", 0);
+                    obj.put("facilityName", "");
+                    obj.put("locationName", "");
+                    obj.put("deviceTime", Util.getMMDDYYYYDate());
+                    obj.put("sourceIP", Util.getLocalIpAddress());
+                    obj.put("deviceData", Util.MobileDetails(context));
+                    obj.put("guid", "");
+                    obj.put("faceParameters", Util.FaceParameters(context, data));
+                    obj.put("eventType", "");
+                    obj.put("evenStatus", "");
+                    obj.put("utcRecordDate", Util.getUTCDate(""));
+
+                    int syncStatus;
+                    if (Util.isOfflineMode(context)) {
+                        syncStatus = 1;
+                    } else {
+                        syncStatus = -1;
+                    }
+
+                    if (Util.isOfflineMode(context)) {
+                        saveOfflineAccessLogRecord(obj, syncStatus);
+                    } else {
+                        new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                    }
+                }
+            } catch (Exception e) {
+                Logger.error(TAG + "AccessLog Error", e.getMessage());
+            }
         }
     }
 
@@ -285,22 +295,23 @@ public class AccessCardController implements AccessCallback {
         try {
             if (reportInfo == null) {
                 Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
-                saveOfflineAccessLogRecord(req);
+                saveOfflineAccessLogRecord(req,0);
                 return;
             }
             if (!reportInfo.getString("responseCode").equals("1")) {
-                saveOfflineAccessLogRecord(req);
+                saveOfflineAccessLogRecord(req,0);
             }
         } catch (Exception e) {
             Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
         }
     }
 
-    private void saveOfflineAccessLogRecord(JSONObject obj) {
+    private void saveOfflineAccessLogRecord(JSONObject obj,int syncStatus) {
         AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
         try {
             accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
             accessLogOfflineRecord.setJsonObj(obj.toString());
+            accessLogOfflineRecord.setOfflineSync(syncStatus);
             DatabaseController.getInstance().insertOfflineAccessLog(accessLogOfflineRecord);
         } catch (Exception e) {
             e.printStackTrace();

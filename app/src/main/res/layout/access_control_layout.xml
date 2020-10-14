@@ -164,10 +164,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:text="@string/access_control_card_format"
                 android:textColor="@color/black"
-                android:text="@string/access_control_card_format">
-            </TextView>
+                android:textSize="18sp"></TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -286,6 +285,81 @@
 
             </RadioGroup>
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/lightgray">
+        </View>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/enable_logging"
+                android:textColor="@color/black"
+                android:textSize="18sp"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/rg_logging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb_logging_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:text="Yes"
+                        android:textSize="@dimen/font_14"
+                        android:checked="true"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/rb_logging_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="10dp"
+                        android:textSize="@dimen/font_14"
+                        android:text="No"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@color/lightgray">
+        </View>
+
+
 
     </LinearLayout>
 

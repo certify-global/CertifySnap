@@ -740,4 +740,5 @@
     <string name="tv_temp_text_high">High</string>
     <string name="et_normal">Enter normal temperature text</string>
     <string name="et_high">Enter high  temperature text</string>
+    <string name="enable_logging">Enable Logging for Access and Attendance Reporting</string>
 </resources>

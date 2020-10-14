@@ -177,5 +177,6 @@ public class GlobalParameters {
     public static final String RESULT_BAR = "result_bar";
     public static final String RESULT_BAR_NORMAL = "result_bar_normal";
     public static final String RESULT_BAR_HIGH = "result_bar_high";
+    public static final String ACCESS_LOGGING = "access_logging";
 
 }

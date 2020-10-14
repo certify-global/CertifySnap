@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.certify.callback.AccessCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.async.AsyncTaskExecutorService;
@@ -282,6 +283,11 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("eventType", json.getString("eventType"));
             jsonObject.put("evenStatus", json.getString("evenStatus"));
             jsonObject.put("utcRecordDate", json.getString("utcRecordDate"));
+
+            if (logList.get(i).getOfflineSync()==1){
+                jsonObject.put("utcOfflineDateTime",json.getString("deviceTime"));
+                jsonObject.put("offlineSync", logList.get(i).getOfflineSync());
+            }
 
             primaryid = logList.get(i).getPrimaryId();
             if (taskExecutorService != null) {

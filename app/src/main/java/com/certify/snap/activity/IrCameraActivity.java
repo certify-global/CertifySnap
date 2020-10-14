@@ -2823,6 +2823,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_scan.setTextColor(getResources().getColor(R.color.black));
         imageqr.setBackgroundColor(getResources().getColor(R.color.white));
         Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
+
+        RegisteredMembers member = new RegisteredMembers();
+        member.setAccessid("");
+        AccessCardController.getInstance().accessCardLog(this, member, 0,
+                new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
+
     }
 
     private void startHidService() {

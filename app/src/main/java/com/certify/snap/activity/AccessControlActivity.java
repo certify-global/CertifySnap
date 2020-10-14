@@ -32,6 +32,10 @@ public class AccessControlActivity extends SettingBaseActivity {
     private RadioButton m26BitRb;
     private RadioButton m34BitRb;
     private TextView saveButton;
+    private RadioGroup rg_logging;
+    private RadioButton rb_logging_yes;
+    private RadioButton rb_logging_no;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +54,9 @@ public class AccessControlActivity extends SettingBaseActivity {
         m26BitRb = findViewById(R.id.twentysix_bit_rb);
         m34BitRb = findViewById(R.id.thirtyfour_bit_rb);
         saveButton = findViewById(R.id.btn_save);
+        rg_logging = findViewById(R.id.rg_logging);
+        rb_logging_yes = findViewById(R.id.rb_logging_yes);
+        rb_logging_no = findViewById(R.id.rb_logging_no);
 
         setDefaults();
         handleClickListeners();
@@ -73,6 +80,13 @@ public class AccessControlActivity extends SettingBaseActivity {
         } else {
             m34BitRb.setChecked(true);
             m26BitRb.setChecked(false);
+        }
+        if (Util.getSharedPreferences(this).getBoolean(GlobalParameters.ACCESS_LOGGING,false)) {
+            rb_logging_yes.setChecked(true);
+            rb_logging_no.setChecked(false);
+        } else {
+            rb_logging_no.setChecked(true);
+            rb_logging_yes.setChecked(false);
         }
     }
 
@@ -138,6 +152,19 @@ public class AccessControlActivity extends SettingBaseActivity {
                 }
             }
         });
+
+        rg_logging.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.rb_logging_yes) {
+                    rb_logging_yes.setChecked(true);
+                    rb_logging_no.setChecked(false);
+                } else if (checkedId == R.id.rb_logging_no) {
+                    rb_logging_no.setChecked(true);
+                    rb_logging_yes.setChecked(false);
+                }
+            }
+        });
     }
 
     private void saveSetting() {
@@ -153,6 +180,11 @@ public class AccessControlActivity extends SettingBaseActivity {
             Util.writeInt(sp, GlobalParameters.WeiganFormatMessage, 26);
         } else if(m34BitRb.isChecked()) {
             Util.writeInt(sp, GlobalParameters.WeiganFormatMessage, 34);
+        }
+        if (rb_logging_yes.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.ACCESS_LOGGING, true);
+        } else if(rb_logging_no.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.ACCESS_LOGGING, false);
         }
         finish();
         Toast.makeText(getApplicationContext(), getString(R.string.save_success), Toast.LENGTH_LONG).show();
