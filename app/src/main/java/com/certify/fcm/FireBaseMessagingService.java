@@ -40,6 +40,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     private static NotificationChannel mChannel;
     private static NotificationManager notifManager;
     public static final String NOTIFICATION_BROADCAST_ACTION = "com.action.notification.restart";
+    public static final String NOTIFICATION_SETTING_BROADCAST_ACTION = "com.action.notification.update.setting";
      SharedPreferences sharedPreferences;
 
     @Override
@@ -83,7 +84,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             String institutionId=jsonObject.isNull("institutionId") ? "":jsonObject.getString("institutionId");
 
             if(command.equals("SETTINGS")){
-                Util.getSettings(this,this);
+                //Util.getSettings(this,this);
+                sendSettingBroadcastMessage();
+                Thread.sleep(1000);
+                Util.restartApp(this);
             }else if(command.equals("ALLMEMBER")){
                 startService(new Intent(this, MemberSyncService.class));
                 Application.StartService(this);
@@ -210,6 +214,12 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
     private void sendBroadcastMessage() {
         Intent intent = new Intent();
         intent.setAction(NOTIFICATION_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+    }
+
+    private void sendSettingBroadcastMessage(){
+        Intent intent = new Intent();
+        intent.setAction(NOTIFICATION_SETTING_BROADCAST_ACTION);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

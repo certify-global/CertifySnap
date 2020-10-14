@@ -41,6 +41,7 @@ public abstract class BaseActivity extends Activity {
         super.onResume();
         if (activityReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, new IntentFilter(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION));
+            LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, new IntentFilter(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION));
         }
         if (networkReceiver != null) {
             IntentFilter intentFilter = new IntentFilter();
@@ -75,6 +76,10 @@ public abstract class BaseActivity extends Activity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent != null && intent.getAction().equals(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION)) {
+                    finishAffinity();
+                }
+                if (intent != null && intent.getAction().equals(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION)) {
+                    Toast.makeText(BaseActivity.this, "Updating settings, App will restart", Toast.LENGTH_SHORT).show();
                     finishAffinity();
                 }
             }
