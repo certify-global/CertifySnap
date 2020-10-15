@@ -3266,6 +3266,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         TemperatureCallBackUISetup(false, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
         updatePrinterParameters(false);
         TemperatureController.getInstance().updateControllersOnNormalTempRead(registeredMemberslist);
+        TemperatureController.getInstance().clearData();
     }
 
     /**
