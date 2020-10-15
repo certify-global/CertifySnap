@@ -71,7 +71,8 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         this.context = context;
         this.activity = activity;
         initWifiBTPrinter();
-        initUsbPrint();
+        if (AppSettings.isPrintUsbEnabled())
+            initUsbPrint();
         initUserPrintSettings();
     }
 
@@ -286,12 +287,14 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void setPrintData(String name, String dateTime) {
-        HashMap<String , String> labelItemList = new HashMap<>();
-        labelItemList.put( "Name Data",  name );
-        labelItemList.put( "TimeScan Data",  dateTime );
-        labelItemList.put( "Status Data", "   PASS   " );
-        labelItemList.put( "Type Data",  "  Thermal Scan  " );
-        mPrintData.setObjectDataList(labelItemList);
+        if(AppSettings.isPrintUsbEnabled()){
+            HashMap<String , String> labelItemList = new HashMap<>();
+            labelItemList.put( "Name Data",  name );
+            labelItemList.put( "TimeScan Data",  dateTime );
+            labelItemList.put( "Status Data", "   PASS   " );
+            labelItemList.put( "Type Data",  "  Thermal Scan  " );
+            mPrintData.setObjectDataList(labelItemList);
+        }
     }
 
     public BCPControl getUsbPrintControl() {
