@@ -303,6 +303,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean highTemperature = false;
     private Fragment acknowledgementFragment;
     private Fragment gestureFragment;
+    private boolean qrCodeReceived = false;
 
     private void instanceStart() {
         try {
@@ -1741,6 +1742,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onBarcodeData(String guid) {
         try {
+            if (!qrCodeReceived) {
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.CODEID.toString());
             preview.stop();
             frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
@@ -1754,6 +1756,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 clearQrCodePreview();
                 setCameraPreview();
                 SoundController.getInstance().playValidQrSound();
+                qrCodeReceived = false;
                 return;
             }
             tv_scan.setText(R.string.tv_qr_validating);
@@ -1768,11 +1771,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             CameraController.getInstance().setQrCodeId(guid);
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                qrCodeReceived = true;
                 startQRTimer(guid);
                 JSONObject obj = new JSONObject();
                 obj.put("qrCodeID", guid);
                 obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                 new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+            }
+            } else {
+                qrCodeReceived = false;
             }
         } catch (Exception e) {
             cancelQRTimer();
@@ -1793,6 +1800,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 runOnUiThread(() -> {
                     if (isReadyToScan) return;
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
+                    qrCodeReceived = false;
                     preview.stop();
                     clearQrCodePreview();
                     setCameraPreview();
