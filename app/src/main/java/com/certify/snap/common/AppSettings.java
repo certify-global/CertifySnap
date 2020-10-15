@@ -110,8 +110,8 @@ public class AppSettings {
         temperatureResultBar = sharedPreferences.getBoolean(GlobalParameters.RESULT_BAR, true);
         tempResultBarNormal = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL, StringConstants.TEMPERATURE_NORMAL);
         tempResultBarHigh = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
-        qrCodeEnabled = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
-                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
+        qrCodeEnabled = (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
+                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false));
         rfidEnabled = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         accessLogEnabled = sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false);
     }

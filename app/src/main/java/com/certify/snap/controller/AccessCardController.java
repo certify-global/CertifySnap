@@ -316,14 +316,13 @@ public class AccessCardController implements AccessCallback {
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
                 JSONObject obj = new JSONObject();
-                if (triggerType.equals(CameraController.triggerValue.CODEID.toString()) &&
-                        CameraController.getInstance().getQrCodeData() != null) {
+                if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
-                    obj.put("id", qrCodeData.getUniqueId());
-                    obj.put("accessId", qrCodeData.getAccessId());
-                    obj.put("firstName", qrCodeData.getFirstName());
-                    obj.put("lastName", qrCodeData.getLastName());
-                    obj.put("memberId", qrCodeData.getMemberId());
+                    obj.put("id", 0);
+                    obj.put("firstName", "");
+                    obj.put("lastName", "");
+                    obj.put("accessId", "");
+                    obj.put("memberId", "");
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     accessId = mAccessCardID;
                     obj.put("id", 0);
