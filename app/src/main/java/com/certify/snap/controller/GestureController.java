@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -277,12 +278,13 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     if (map != null) {
                         Log.e(TAG, map.toString() + "");
                         try {
-                            final int left = Integer.valueOf(map.get("leftPower"));
-                            final int right = Integer.valueOf(map.get("rightPower"));
+                            final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
+                            final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
 
                             if (left > 200 && right > 200) {
                                 index = 0;
                                 if (listener != null) {
+                                    runCheck = false;
                                     listener.onBothHandWave();
                                 }
                             } else if (left > 200) {
