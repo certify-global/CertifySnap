@@ -27,21 +27,23 @@ public abstract class BaseActivity extends Activity {
     private NetworkReceiver networkReceiver;
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
+    private IntentFilter activityReceiverFilter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initActivityReceiver();
         networkReceiver = new NetworkReceiver();
-
+        activityReceiverFilter = new IntentFilter();
+        activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
+        activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (activityReceiver != null) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, new IntentFilter(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION));
-            LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, new IntentFilter(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION));
+            LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, activityReceiverFilter);
         }
         if (networkReceiver != null) {
             IntentFilter intentFilter = new IntentFilter();

@@ -276,7 +276,6 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("locationName", json.getString("locationName"));
 
             jsonObject.put("deviceTime", json.getString("deviceTime"));
-            jsonObject.put("sourceIP", json.getString("sourceIP"));
             jsonObject.put("deviceData", json.getString("deviceData"));
             jsonObject.put("guid", json.getString("guid"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
