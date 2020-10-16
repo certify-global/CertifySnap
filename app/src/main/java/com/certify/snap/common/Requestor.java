@@ -318,5 +318,70 @@ public class Requestor {
         return responseStr;
     }
 
+    public static String postJsonLog(String urlStr, JSONObject reqPing, Context context) {
+        String responseStr = null;
+        String[] endPoint = urlStr.split(".me/");
+        SharedPreferences sp = Util.getSharedPreferences(context);
+        try {
+            if (EndPoints.deployment == EndPoints.Mode.Demo)
+                Logger.debug("urlStr", urlStr);
+            HttpPost httpost = new HttpPost(urlStr);
+            httpost.addHeader("Content-type", "application/json");
+            httpost.setHeader("Authorization", "bearer " + sp.getString(GlobalParameters.ACCESS_TOKEN, ""));
+            DefaultHttpClient httpclient1 = (DefaultHttpClient) WebClientDevWrapper
+                    .getNewHttpClient();
+            httpost.setEntity(new StringEntity(reqPing.toString()));
+            HttpResponse responseHttp = httpclient1.execute(httpost);
+            StatusLine status = responseHttp.getStatusLine();
+            if (status.getStatusCode() == HttpStatus.SC_OK) {
+                responseStr = EntityUtils
+                        .toString(responseHttp.getEntity());
+            } else if (status.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                JSONObject objMessage = new JSONObject();
+                objMessage.put("Message", "token expired");
+                responseStr = objMessage.toString();
+
+                Map<String, String> properties = new HashMap<>();
+                for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
+                    String key = iter.next();
+                    String value = reqPing.optString(key);
+                    properties.put(key, value);
+                }
+                //properties.put("URL:", urlStr);
+                //properties.put("Response:", responseStr);
+                Analytics.trackEvent(endPoint[1], properties);
+            } else {
+                responseStr = EntityUtils
+                        .toString(responseHttp.getEntity());
+            }
+
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            Map<String, String> properties = new HashMap<>();
+            for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
+                String key = iter.next();
+                String value = reqPing.optString(key);
+                properties.put(key, value);
+            }
+            properties.put("URL:", urlStr);
+            properties.put("Response:", responseStr);
+            Analytics.trackEvent(endPoint[1], properties);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, String> properties = new HashMap<>();
+            for (Iterator<String> iter = reqPing.keys(); iter.hasNext(); ) {
+                String key = iter.next();
+                String value = reqPing.optString(key);
+                properties.put(key, value);
+            }
+            properties.put("Device Serial No:", Util.getSNCode());
+            properties.put("URL:", urlStr);
+            properties.put("Response:", responseStr);
+            Analytics.trackEvent(endPoint[1], properties);
+        }
+        return responseStr;
+    }
 
 }

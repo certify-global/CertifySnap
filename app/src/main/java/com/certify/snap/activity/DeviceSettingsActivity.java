@@ -90,6 +90,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private RelativeLayout addrRelativeLayout;
     private LinearLayout localServerLayout;
     private boolean deviceOnlineSwitch = false;
+    private Button saveLogButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,6 +106,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             seekBarSettings();
             setDefaultLedBrightnessLevel();
             localServerSetting();
+            captureLogSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -265,6 +267,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         ivClipBoard = findViewById(R.id.iv_clipBoard);
         addrRelativeLayout = findViewById(R.id.addr_relative_layout);
         localServerLayout = findViewById(R.id.local_server_parent_layout);
+        saveLogButton = findViewById(R.id.send_log_button);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -704,6 +707,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 String message = String.format(getResources().getString(R.string.text_copied), serverAddress);
                 Toast.makeText(DeviceSettingsActivity.this, message, Toast.LENGTH_LONG).show();
             }
+        });
+    }
+
+    private void captureLogSetting() {
+        saveLogButton.setOnClickListener(view -> {
+            Util.sendDeviceLogs(DeviceSettingsActivity.this);
+            Toast.makeText(DeviceSettingsActivity.this, "Logs sent", Toast.LENGTH_LONG).show();
         });
     }
 

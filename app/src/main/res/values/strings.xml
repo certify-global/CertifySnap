@@ -722,4 +722,7 @@
     <string name="productCodeName">Name Data</string>
     <string name="barCode">Code Data</string>
     <string name="productCodeData">Code Data</string>
+    <string name="capture_logs">Capture Logs</string>
+    <string name="send_logs">Send Logs</string>
+
 </resources>
