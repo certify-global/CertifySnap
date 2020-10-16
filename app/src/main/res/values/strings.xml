@@ -741,4 +741,7 @@
     <string name="et_normal">Enter normal temperature text</string>
     <string name="et_high">Enter high  temperature text</string>
     <string name="enable_logging">Enable Logging for Access and Attendance Reporting</string>
+    <string name="capture_logs">Capture Logs</string>
+    <string name="send_logs">Send Logs</string>
+
 </resources>

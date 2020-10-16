@@ -63,6 +63,7 @@ import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncDeviceLog;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectPush;
@@ -1792,6 +1793,26 @@ public class Util {
         }
     }
 
+    public static void sendDeviceLogs(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        String dirPath = Environment.getExternalStorageDirectory() + File.separator + "CertifySnap" + File.separator + "Log" + File.separator;
+        String filePath = dirPath + "Applog.txt";
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("deviceSN", Util.getSNCode());
+            LoggerUtil.logMessagesToFile(context, "AppLog");
+            String encodedData = Base64.encodeToString(Util.getBytesFromFile(filePath), Base64.NO_WRAP);
+            obj.put("deviceLog", encodedData);
+            obj.put("deviceData", MobileDetails(context));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new AsyncDeviceLog(obj, null, sharedPreferences.getString(GlobalParameters.URL,
+                EndPoints.prod_url) + EndPoints.DeviceLogs, context).execute();
+
+    }
+
     public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
@@ -2135,6 +2156,21 @@ public class Util {
     public static JSONObject getJSONObjectAccessLog(JSONObject req, String url, String header, Context context) {
         try {
             String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectAccessLog " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static JSONObject getJSONObjectDeviceLog(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJsonLog(url, req, context);
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }

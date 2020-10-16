@@ -38,5 +38,6 @@ public class EndPoints {
     public static final String GetQuestions = domainUrl + "GetQuestionList";
     public static final String GetWorkflowList = domainUrl + "GetWorkflowList";
     public static final String SaveAnswer = domainUrl + "SaveAnswer";
+    public static final String DeviceLogs = domainUrl + "SaveDeviceLogs";
 
 }
