@@ -1795,12 +1795,10 @@ public class Util {
 
     public static void sendDeviceLogs(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        String dirPath = Environment.getExternalStorageDirectory() + File.separator + "CertifySnap" + File.separator + "Log" + File.separator;
-        String filePath = dirPath + "Applog.txt";
         JSONObject obj = new JSONObject();
         try {
-            obj.put("deviceSN", Util.getSNCode());
-            LoggerUtil.logMessagesToFile(context, "AppLog");
+            obj.put("deviceSN", Util.getSNCode(context));
+            String filePath = LoggerUtil.logMessagesToFile(context, "AppLog");
             String encodedData = Base64.encodeToString(Util.getBytesFromFile(filePath), Base64.NO_WRAP);
             obj.put("deviceLog", encodedData);
             obj.put("deviceData", MobileDetails(context));

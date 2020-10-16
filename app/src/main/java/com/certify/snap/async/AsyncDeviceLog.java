@@ -32,8 +32,6 @@ public class AsyncDeviceLog extends AsyncTask<Void, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(final JSONObject reportInfo) {
-        Log.d("AsyncDeviceLog", "Deep reportInfo");
-        /*if (myComponent == null) return;
-        myComponent.onJSONObjectListenerMemberID(reportInfo, url,req);*/
+        Log.d("AsyncDeviceLog", " reportInfo");
     }
 }

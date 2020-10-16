@@ -49,7 +49,7 @@ public class LoggerUtil {
         }
     }
 
-    public static void logMessagesToFile(Context context, String filename) {
+    public static String logMessagesToFile(Context context, String filename) {
         Date date = new Date();
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy 'T'HH:mm", Locale.US);
         String dirPath = Environment.getExternalStorageDirectory() + File.separator + "CertifySnap" + File.separator + "Log" + File.separator;
@@ -82,5 +82,6 @@ public class LoggerUtil {
         } catch (IOException e) {
             Logger.error("LoggerUtil", "logMessagesToFile()","Error in writing to File");
         }
+        return fileName;
     }
 }
