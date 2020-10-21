@@ -17,6 +17,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
+    public static final int DB_VERSION = 2;
 
     public static DatabaseController getInstance() {
         if (mInstance == null) {
