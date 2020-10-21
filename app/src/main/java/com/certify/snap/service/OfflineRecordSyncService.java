@@ -186,6 +186,12 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("maskStatus", json.getString("maskStatus"));
             jsonObject.put("faceScore", json.getString("faceScore"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
+            if (json.has("memberTypeId")) {
+                jsonObject.put("memberTypeId", json.getString("memberTypeId"));
+            }
+            if (json.has("memberTypeName")) {
+                jsonObject.put("memberTypeName", json.getString("memberTypeName"));
+            }
 
             if (json.has("irTemplate")){
                 jsonObject.put("irTemplate", json.getString("irTemplate"));
@@ -227,16 +233,16 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             }
             if (reportInfo.getString("responseCode").equals("1")) {
                 try {
-                        OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
-                        if (firstMember != null) {
-                            Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
-                            DatabaseController.getInstance().deleteOfflineRecord(primaryid);
-                        } else {
-                            if (DatabaseController.getInstance().isOfflineAccessLogExist())
-                                findAllOfflineAccessLogRecord();
-                            else
-                                stopService(new Intent(context, OfflineRecordSyncService.class));
-                        }
+                    OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
+                    if (firstMember != null) {
+                        Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
+                        DatabaseController.getInstance().deleteOfflineRecord(primaryid);
+                    } else {
+                        if (DatabaseController.getInstance().isOfflineAccessLogExist())
+                            findAllOfflineAccessLogRecord();
+                        else
+                            stopService(new Intent(context, OfflineRecordSyncService.class));
+                    }
                 } catch (Exception e) {
                     Log.e(TAG, "OfflineRecord Exception occurred while querying for first member from db");
                 }
@@ -246,9 +252,9 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                 uploadTemperatureRecordData(datalist, index);
             } else {
                 if (DatabaseController.getInstance().isOfflineAccessLogExist())
-                findAllOfflineAccessLogRecord();
+                    findAllOfflineAccessLogRecord();
                 else
-                stopService(new Intent(context, OfflineRecordSyncService.class));
+                    stopService(new Intent(context, OfflineRecordSyncService.class));
             }
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
@@ -282,6 +288,12 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("eventType", json.getString("eventType"));
             jsonObject.put("evenStatus", json.getString("evenStatus"));
             jsonObject.put("utcRecordDate", json.getString("utcRecordDate"));
+            if (json.has("memberTypeId")) {
+                jsonObject.put("memberTypeId", json.getString("memberTypeId"));
+            }
+            if (json.has("memberTypeName")) {
+                jsonObject.put("memberTypeName", json.getString("memberTypeName"));
+            }
 
             if (logList.get(i).getOfflineSync()==1){
                 jsonObject.put("utcOfflineDateTime",json.getString("deviceTime"));

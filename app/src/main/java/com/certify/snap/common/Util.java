@@ -818,8 +818,10 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
+                obj.put("memberTypeId", qrCodeData.getMemberTypeId());
+                obj.put("memberTypeName", qrCodeData.getMemberTypeName());
             } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && !data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && !data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -1568,12 +1570,10 @@ public class Util {
                 }
             } else {
                 if (json1.isNull("access_token")) {
-                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
                 if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
-                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
@@ -1582,6 +1582,12 @@ public class Util {
                 String institutionId = json1.getString("InstitutionID");
                 String expire_time = json1.getString(".expires");
                 String command = json1.isNull("command") ? "" : json1.getString("command");
+
+                String institutionIdOld = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+
+                if(!institutionId.isEmpty() && !institutionIdOld.equals(institutionId)){
+                    deleteAppData(context);
+                }
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
@@ -1606,6 +1612,8 @@ public class Util {
             String lastName = responseData.getString("lastName") == null ? "" : responseData.getString("lastName");
             String trqStatus = responseData.getString("trqStatus") == null ? "" : responseData.getString("trqStatus");
             String memberId = responseData.getString("memberId") == null ? "" : responseData.getString("memberId");
+            int memberTypeId = responseData.isNull("memberTypeId") ? 0 : responseData.getInt("memberTypeId");
+            String memberTypeName = responseData.getString("memberTypeName") == null ? "" : responseData.getString("memberTypeName");
             String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
 
             QrCodeData qrCodeData = new QrCodeData();
@@ -1615,6 +1623,8 @@ public class Util {
             qrCodeData.setTrqStatus(trqStatus);
             qrCodeData.setMemberId(memberId);
             qrCodeData.setAccessId(qrAccessid);
+            qrCodeData.setMemberTypeId(memberTypeId);
+            qrCodeData.setMemberTypeName(memberTypeName);
             CameraController.getInstance().setQrCodeData(qrCodeData);
         } catch (Exception e) {
             Logger.error("getQRCode(JSONObject reportInfo, String status, Context context, String toast) ", e.getMessage());
@@ -2210,18 +2220,18 @@ public class Util {
     }
 
     public static JSONObject getJSONObjectGesture(JSONObject req, String url, String header, Context context) {
-            try {
-                String responseTemp = Requestor.postJson(url, req, context);
-                if (responseTemp != null && !responseTemp.equals("")) {
-                    return new JSONObject(responseTemp);
-                }
-            } catch (Exception e) {
-                Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
-                        + ", url = " + url, e.getMessage());
-                return null;
-
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
             }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
             return null;
+
+        }
+        return null;
     }
 
     public static JSONObject getJSONObjectFlowList(JSONObject req, String url, String header, Context context) {

@@ -7,7 +7,6 @@ import android.util.Log;
 import com.certify.callback.AccessCallback;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -154,11 +153,13 @@ public class AccessCardController implements AccessCallback {
 
     private void unLockWeiganDoorController() {
         if (!mEnableWeigan) return;
-        //Check if its 34 Bit or 26 Bit Weigan controller and send signal accordingly
+        //Check if its 34 Bit, 48 Bit or 26 Bit Weigan controller and send signal accordingly
         if (mWeiganControllerFormat == 26) {
             unlock26BitDoorController();
         } else if (mWeiganControllerFormat == 34) {
             unlock34BitDoorController();
+        } else if (mWeiganControllerFormat == 48) {
+            unlock48BitDoorController();
         }
     }
 
@@ -198,9 +199,30 @@ public class AccessCardController implements AccessCallback {
         sendWg34BitSignal(mAccessCardID);
     }
 
+    private void unlock48BitDoorController() {
+        if (mAccessCardID.isEmpty()) {
+            if (!mAccessIdDb.isEmpty()) {
+                sendWg48BitSignal(mAccessIdDb);
+            }
+            return;
+        }
+        sendWg48BitSignal(mAccessCardID);
+    }
+
     private void sendWg34BitSignal(String cardId) {
         if (!mEnableWeigan) return;
         int result = PosUtil.getWg34Status(Long.parseLong(cardId));
+        if (result != 0) {
+            Log.d(TAG, "Error in opening the door");
+        }
+    }
+
+    private void sendWg48BitSignal(String cardId) {
+        if (!mEnableWeigan) return;
+        String binaryValue = Long.toBinaryString(Long.parseLong(cardId));
+        String binaryConvertedValue = String.format("%46s", binaryValue).replace(' ', '0');
+        binaryConvertedValue = "1" + binaryConvertedValue + "0";
+        int result = PosUtil.sendSpecialWG(binaryConvertedValue);
         if (result != 0) {
             Log.d(TAG, "Error in opening the door");
         }
@@ -245,6 +267,8 @@ public class AccessCardController implements AccessCallback {
                         obj.put("firstName", qrCodeData.getFirstName());
                         obj.put("lastName", qrCodeData.getLastName());
                         obj.put("memberId", qrCodeData.getMemberId());
+                        obj.put("memberTypeId", qrCodeData.getMemberTypeId());
+                        obj.put("memberTypeName", qrCodeData.getMemberTypeName());
                     } else {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
                         obj.put("id", 0);
@@ -252,6 +276,8 @@ public class AccessCardController implements AccessCallback {
                         obj.put("firstName", "");
                         obj.put("lastName", "");
                         obj.put("memberId", "");
+                        obj.put("memberTypeId", 0);
+                        obj.put("memberTypeName", "");
                     }
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {

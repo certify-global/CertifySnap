@@ -202,6 +202,16 @@
                         android:text="34 Bit"
                         android:theme="@style/MyCheckBox" />
 
+                    <RadioButton
+                        android:id="@+id/fourtyEight_bit_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="10dp"
+                        android:textSize="@dimen/font_14"
+                        android:text="48 Bit"
+                        android:theme="@style/MyCheckBox" />
+
                 </RadioGroup>
 
             </LinearLayout>
