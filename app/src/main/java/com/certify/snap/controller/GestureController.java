@@ -54,7 +54,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private SharedPreferences sharedPreferences;
 
     private Timer mTimer;
-    private boolean wait = true;
+    private boolean wait = false;
     private boolean runCheck = true;
     private boolean allQuestionAnswered = false;
     private GestureCallbackListener listener = null;
@@ -81,6 +81,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onQuestionsReceived();
         void onQuestionsNotReceived();
         void onBothHandWave();
+        void onFetchingQuestions();
     }
 
     public interface GestureHomeCallBackListener {
@@ -97,14 +98,38 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public void init(Context context) {
         this.mContext = context;
         index = 0;
+        wait = true;
         sharedPreferences = Util.getSharedPreferences(mContext);
-        getQuestionsAPI(mContext);
-        startGetQuestionsTimer();
+    }
+
+    public void getQuestions() {
+        List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
+        if (questionDataList.isEmpty()) {
+            Log.d(TAG, "Gesture Fetch questions");
+            if (listener != null) {
+                listener.onFetchingQuestions();
+            }
+            getQuestionsAPI(mContext);
+            startGetQuestionsTimer();
+            return;
+        }
+        Log.d(TAG, "Gesture Start flow");
+        startGestureFlow();
     }
 
     public void initContext(Context context) {
         this.mContext = context;
+        wait = false;
         sharedPreferences = Util.getSharedPreferences(mContext);
+    }
+
+    private void startGestureFlow() {
+        index = 0;
+        resetQuestionAnswerMap();
+        initHandGesture();
+        if (listener != null) {
+            listener.onQuestionsReceived();
+        }
     }
 
     public void getGestureQuestions(){
@@ -157,7 +182,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.gestureListener = callbackListener;
     }
 
-    
+
     /**
      * Method that initializes the voice
      *
@@ -592,6 +617,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         return questionAnswerMap;
     }
 
+    public int getQuestionsSize() {
+        Log.d(TAG, "Gesture Questions size " + questionAnswerMap.size());
+        return (questionAnswerMap.size());
+    }
+
     private void startGetQuestionsTimer() {
         cancelQuestionsTimer();
         mQuestionsTimer = new Timer();
@@ -608,6 +638,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private void cancelQuestionsTimer() {
         if (mQuestionsTimer != null) {
             mQuestionsTimer.cancel();
+        }
+    }
+
+    private void resetQuestionAnswerMap() {
+        List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
+        for (int i = 0; i < questionDataList.size(); i++) {
+            QuestionData questionData = questionDataList.get(i);
+            questionAnswerMap.put(questionData, "NA");
         }
     }
 
