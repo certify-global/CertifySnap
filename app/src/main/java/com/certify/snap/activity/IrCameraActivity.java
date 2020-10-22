@@ -3164,7 +3164,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");
                 answers = answers.replace("]", "");
-                int numOfQ = GestureController.getInstance().getQuestionAnswerMap().size();
+                int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
             }

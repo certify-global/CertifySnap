@@ -48,8 +48,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         initView();
         GestureController.getInstance().init(this.getContext());
         GestureController.getInstance().setCallbackListener(this);
+        GestureController.getInstance().getQuestions();
 
-        progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
         return view;
     }
 
@@ -180,7 +180,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     public void onQuestionAnswered(String answeredQ) {
         getActivity().runOnUiThread(() -> {
            int index = GestureController.getInstance().getIndex();
-           int questionsCount = GestureController.getInstance().getQuestionAnswerMap().size();
+           int questionsCount = GestureController.getInstance().getQuestionsSize();
             if (questionsCount == 2) {
                 twoQuestions(index);
             } else if (questionsCount == 3) {
@@ -221,7 +221,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 progressDialog.dismiss();
             }
             covidQuestionsText.setText(GestureController.getInstance().getQuestion());
-            int questionsCount = GestureController.getInstance().getQuestionAnswerMap().size();
+            int questionsCount = GestureController.getInstance().getQuestionsSize();
             if (questionsCount == 2) {
                 q2Layout.setVisibility(View.VISIBLE);
             } else if (questionsCount == 3) {
@@ -266,8 +266,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         });
     }
 
+    @Override
+    public void onFetchingQuestions() {
+        getActivity().runOnUiThread(this::showProgressBar);
+    }
 
-    private void showProgressBar(){
+
+    private void showProgressBar() {
         progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
     }
 
