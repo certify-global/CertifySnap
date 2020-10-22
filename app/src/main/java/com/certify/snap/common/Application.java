@@ -58,7 +58,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
-        validateDB();
+        //validateDB();
         String password = getPragmaKey(this);
         DatabaseController.getInstance().init(this, password);
         preference = new SimplePreference(this);
@@ -182,11 +182,8 @@ public class Application extends android.app.Application {
     }
 
     public String getPragmaKey(Context context) {
-        /*wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
-        String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");*/
-        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wInfo = wifi.getConnectionInfo();
-        String macAddress = wInfo.getMacAddress();
+        wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
+        String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
         String deviceSerialNo = Util.getSNCode(this);
         return getSha256Hash(deviceSerialNo + macAddress);
     }
