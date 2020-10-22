@@ -1038,6 +1038,9 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                 cancelGuideTempTimer();
                 continue;
             }
+            if (fix > 120) {
+                continue;
+            }
             float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
             float verticalOffset = (rect.top + rect.bottom) / 2.00f - 575;
             Rect newRect;
