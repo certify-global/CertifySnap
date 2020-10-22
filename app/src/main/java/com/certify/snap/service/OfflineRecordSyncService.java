@@ -334,7 +334,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             }
             logIndex++;
             if(logIndex < accessLogDatalist.size()) {
-                uploadAccessLogData(accessLogDatalist, index);
+                uploadAccessLogData(accessLogDatalist, logIndex);
             } else {
                 stopService(new Intent(context, OfflineRecordSyncService.class));
             }
