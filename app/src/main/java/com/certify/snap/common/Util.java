@@ -1585,7 +1585,8 @@ public class Util {
 
                 String institutionIdOld = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
 
-                if(!institutionId.isEmpty() && !institutionIdOld.equals(institutionId)){
+                if(institutionIdOld != null && !institutionId.isEmpty()
+                        && !institutionIdOld.equals(institutionId)) {
                     deleteAppData(context);
                 }
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
