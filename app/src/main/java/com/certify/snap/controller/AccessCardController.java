@@ -273,7 +273,7 @@ public class AccessCardController implements AccessCallback {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
                         obj.put("id", 0);
                         obj.put("accessId", "");
-                        obj.put("firstName", "");
+                        obj.put("firstName", "Anonymous");
                         obj.put("lastName", "");
                         obj.put("memberId", "");
                         obj.put("memberTypeId", 0);
@@ -286,6 +286,7 @@ public class AccessCardController implements AccessCallback {
                         registeredMember = data.member;
                         registeredMember.setAccessid(mAccessCardID);
                     } else {
+                        registeredMember.setFirstname("Anonymous");
                         registeredMember.setAccessid(mAccessCardID);
                     }
                     obj.put("id", 0);
@@ -345,7 +346,7 @@ public class AccessCardController implements AccessCallback {
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
                     obj.put("id", 0);
-                    obj.put("firstName", "");
+                    obj.put("firstName", "Anonymous");
                     obj.put("lastName", "");
                     obj.put("accessId", "");
                     obj.put("memberId", "");
