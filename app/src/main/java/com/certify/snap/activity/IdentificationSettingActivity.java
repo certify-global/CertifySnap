@@ -53,6 +53,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     private boolean isHomeScreenViewEnabled;
     private LinearLayout parentLayout;
     private boolean isHomeScreenTextOnlyEnabled;
+    private LinearLayout acknowledgmentLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +98,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             radio_yes_acknowledge =findViewById(R.id.radio_yes_acknowledge);
             radio_no_acknowledge =findViewById(R.id.radio_no_acknowledge);
             radio_group_acknowledge =findViewById(R.id.radio_group_acknowledge);
+            acknowledgmentLayout = findViewById(R.id.acknowledgement_layout);
             mAnonymousTv.setTypeface(rubiklight);
             tv_facial.setTypeface(rubiklight);
             tv_display.setTypeface(rubiklight);
@@ -275,9 +277,11 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
         if (sp.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
             rfidYesRb.setChecked(true);
             rfidNoRb.setChecked(false);
+            acknowledgmentLayout.setVisibility(View.VISIBLE);
         } else {
             rfidNoRb.setChecked(true);
             rfidYesRb.setChecked(false);
+            acknowledgmentLayout.setVisibility(View.GONE);
         }
     }
 
@@ -293,9 +297,11 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     }
                     rfidYesRb.setChecked(true);
                     rfidNoRb.setChecked(false);
+                    acknowledgmentLayout.setVisibility(View.VISIBLE);
                 } else if (id == R.id.radio_no_rfid) {
                     rfidNoRb.setChecked(true);
                     rfidYesRb.setChecked(false);
+                    acknowledgmentLayout.setVisibility(View.GONE);
                 }
             }
         });
