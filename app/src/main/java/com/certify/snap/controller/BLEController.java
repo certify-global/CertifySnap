@@ -29,7 +29,7 @@ public class BLEController {
     private static BLEController bleServiceInstance = null;
     private BluetoothLeService mBluetoothLeService;
     private byte[] ledrgb = new byte[3];
-    private int mRelayTime = 3;
+    private int mRelayTime = 2;
     private Timer mRelayTimer;
     private boolean isNormalTempLightEnabled =false;
     private boolean isHighTempLightEnabled = false;
