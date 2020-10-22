@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
@@ -26,6 +27,7 @@ import com.microsoft.appcenter.crashes.ingestion.models.ErrorAttachmentLog;
 import com.microsoft.appcenter.crashes.model.ErrorReport;
 import com.tamic.novate.Novate;
 
+import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
@@ -46,7 +48,7 @@ public class Application extends android.app.Application {
     private Novate novate;
     //    private MyOkHttp mMyOkHttp;
     // private DownloadMgr mDownloadMgr;
-    public static boolean member=false;
+    public static boolean member = false;
     private List<Activity> activityList = new LinkedList();
     private static SimplePreference preference;
     private int deviceMode = 0;
@@ -56,6 +58,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
 
+        validateDB();
         String password = getPragmaKey(this);
         DatabaseController.getInstance().init(this, password);
         preference = new SimplePreference(this);
@@ -143,10 +146,10 @@ public class Application extends android.app.Application {
     private void initAppCenter() {
         setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
         AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",
-    Analytics.class, Crashes.class);
+                Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
         Crashes.setEnabled(true);
-}
+    }
 
     private void setAppCenterCrashListener() {
         AbstractCrashesListener crashesListener = new AbstractCrashesListener() {
@@ -178,9 +181,12 @@ public class Application extends android.app.Application {
         Crashes.setListener(crashesListener);
     }
 
-    public String getPragmaKey(Context context){
-        wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
-        String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
+    public String getPragmaKey(Context context) {
+        /*wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
+        String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");*/
+        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wInfo = wifi.getConnectionInfo();
+        String macAddress = wInfo.getMacAddress();
         String deviceSerialNo = Util.getSNCode(this);
         return getSha256Hash(deviceSerialNo + macAddress);
     }
@@ -205,6 +211,20 @@ public class Application extends android.app.Application {
         for (byte b : data)
             hex.append(String.format("%02x", b & 0xFF));
         return hex.toString();
+    }
+
+    public void validateDB() {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        if (BuildConfig.VERSION_CODE == 144 && !sharedPreferences.getBoolean(GlobalParameters.VALIDATE_DB, false)) {
+            File databasesDir = new File(this.getApplicationInfo().dataDir + "/databases");
+            File file = new File(databasesDir, Database.DB_NAME);
+            if (file.exists()) {
+                file.delete();
+                new File(databasesDir, "snap_face.db-shm").delete();
+                new File(databasesDir, "snap_face.db-wal").delete();
+                Util.writeBoolean(sharedPreferences, GlobalParameters.VALIDATE_DB, true);
+            }
+        }
     }
 
 }

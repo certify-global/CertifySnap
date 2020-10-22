@@ -26,7 +26,7 @@ import com.certify.snap.model.RegisteredMembers;
 public abstract class Database extends RoomDatabase {
     public abstract DatabaseStore databaseStore();
 
-    static final String DB_NAME = "snap_face.db";
+    public static final String DB_NAME = "snap_face.db";
     private static volatile Database INSTANCE=null;
 
     public static Database create(Context ctxt, String passphrase) {
