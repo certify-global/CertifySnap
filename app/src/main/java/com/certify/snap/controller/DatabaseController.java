@@ -256,4 +256,12 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
+
+    public void clearAll() {
+        if (databaseStore != null) {
+            databaseStore.deleteAll();
+            databaseStore.deleteAllOfflineRecord();
+            databaseStore.deleteAllOfflineAccessLogRecords();
+        }
+    }
 }

@@ -1587,7 +1587,7 @@ public class Util {
 
                 if(institutionIdOld != null && !institutionId.isEmpty()
                         && !institutionIdOld.equals(institutionId)) {
-                    deleteAppData(context);
+                    DatabaseController.getInstance().clearAll();
                 }
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
