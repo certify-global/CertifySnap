@@ -1542,21 +1542,10 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Device Activated");
-                    } /*else {
-                        Util.switchRgbOrIrActivity(context, true);
-                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Already Activated");
-                    } /*else {
-                        //The IrCameraActivity would be launched after AppSettings are completely retrieved and set
-                        Util.switchRgbOrIrActivity(context, true);
-                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {

@@ -320,6 +320,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (isDestroyed()) return;
                 memberCount = intent.getIntExtra("memberCount", 0);
                 totalCount = intent.getIntExtra("count", 0);
                 snackMessage = intent.getStringExtra("message");
