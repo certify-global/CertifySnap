@@ -15,6 +15,7 @@ import androidx.multidex.MultiDexApplication;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.Database;
 import com.certify.snap.service.AlarmReceiver;
@@ -53,11 +54,16 @@ public class Application extends android.app.Application {
     private static SimplePreference preference;
     private int deviceMode = 0;
     WifiManager wifi;
+    SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        sharedPreferences = Util.getSharedPreferences(this);
+        if (!sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
+            ApplicationController.getInstance().clearSharedPrefData(this);
+        }
         //validateDB();
         String password = getPragmaKey(this);
         DatabaseController.getInstance().init(this, password);
@@ -211,7 +217,6 @@ public class Application extends android.app.Application {
     }
 
     public void validateDB() {
-        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
         if (BuildConfig.VERSION_CODE == 144 && !sharedPreferences.getBoolean(GlobalParameters.VALIDATE_DB, false)) {
             File databasesDir = new File(this.getApplicationInfo().dataDir + "/databases");
             File file = new File(databasesDir, Database.DB_NAME);
