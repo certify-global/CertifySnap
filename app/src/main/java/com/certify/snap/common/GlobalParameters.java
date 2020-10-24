@@ -179,5 +179,6 @@ public class GlobalParameters {
     public static final String RESULT_BAR_HIGH = "result_bar_high";
     public static final String ACCESS_LOGGING = "access_logging";
     public static final String VALIDATE_DB = "validateDB";
+    public static final String CLEAR_SHARED_PREF = "clearSharedPref";
 
 }

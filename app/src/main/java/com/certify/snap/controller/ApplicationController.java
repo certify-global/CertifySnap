@@ -101,4 +101,11 @@ public class ApplicationController {
             }
         }
     }
+    public void clearSharedPrefData(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            sharedPreferences.edit().clear().apply();
+            Util.writeBoolean(sharedPreferences, GlobalParameters.CLEAR_SHARED_PREF, true);
+        }
+    }
 }
