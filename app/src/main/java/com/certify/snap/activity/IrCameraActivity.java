@@ -2906,7 +2906,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void initRecordUserTempService() {
         if (!Util.isOfflineMode(IrCameraActivity.this) && !Util.isServiceRunning(OfflineRecordSyncService.class, this)) {
-            Log.d(TAG, "Deep Offline service ");
+            Log.d(TAG, "Offline service ");
             startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
         }
     }

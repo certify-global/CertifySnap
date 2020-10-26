@@ -93,14 +93,19 @@ public class ApplicationController {
      */
     public void releaseThermalUtil() {
         if (temperatureUtil != null) {
-            if (temperatureUtil.getUsingModule() != null && isTempServiceBound) {
-                Log.d(TAG, "App Release Thermal Util");
-                temperatureUtil.release();
-                temperatureUtil = null;
-                isTempServiceBound = false;
+            try {
+                if (temperatureUtil.getUsingModule() != null && isTempServiceBound) {
+                    Log.d(TAG, "App Release Thermal Util");
+                    temperatureUtil.release();
+                    temperatureUtil = null;
+                    isTempServiceBound = false;
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Thermal release error " + e.getMessage());
             }
         }
     }
+
     public void clearSharedPrefData(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         if (sharedPreferences != null) {
