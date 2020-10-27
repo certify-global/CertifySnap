@@ -2180,7 +2180,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                                 String[] split = compareResult.getUserName().split("-");
                                 String id = "";
-                                if (split != null && split.length > 1) id = split[1];
+                                if (split != null && split.length > 1) id = split[split.length-1];
 
                                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date curDate = new Date(System.currentTimeMillis());
@@ -2189,7 +2189,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
                                 //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
-                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
+                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length-1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 
