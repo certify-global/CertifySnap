@@ -936,7 +936,6 @@ public class Util {
         } catch (Exception e) {
             Logger.error(LOG, "getToken " + e.getMessage());
             //TODO:warn failed to activate
-            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
     }
 
@@ -1516,11 +1515,10 @@ public class Util {
 
 
             } else {
-                Logger.toast(context, "Something went wrong please try again");
+                Log.e(LOG, "Setting retrieval Something went wrong please try again");
             }
         } catch (Exception e) {
-            Logger.error(LOG + "retrieveSetting(JSONObject reportInfo)", e.getMessage());
-            Logger.toast(context, "Retrieving Settings failed.");
+            Logger.error(LOG + "retrieveSetting failed", e.getMessage());
         }
 
     }

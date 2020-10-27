@@ -15,7 +15,6 @@ public class ApplicationController {
     private String fcmPushToken = "";
     private ThermalImageUtil temperatureUtil = null;
     private boolean isDeviceBoot = false;
-    private boolean isTempServiceBound = false;
 
     public static ApplicationController getInstance() {
         if (instance == null)
@@ -54,7 +53,6 @@ public class ApplicationController {
     public void initThermalUtil(Context context) {
         Log.d(TAG, "App Init Thermal Util");
         temperatureUtil = new ThermalImageUtil(context);
-        isTempServiceBound = true;
     }
 
     public ThermalImageUtil getTemperatureUtil() {
@@ -94,11 +92,11 @@ public class ApplicationController {
     public void releaseThermalUtil() {
         if (temperatureUtil != null) {
             try {
-                if (temperatureUtil.getUsingModule() != null && isTempServiceBound) {
+                if (temperatureUtil.getUsingModule() != null &&
+                        temperatureUtil.getIsConnected()) {
                     Log.d(TAG, "App Release Thermal Util");
                     temperatureUtil.release();
                     temperatureUtil = null;
-                    isTempServiceBound = false;
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Thermal release error " + e.getMessage());

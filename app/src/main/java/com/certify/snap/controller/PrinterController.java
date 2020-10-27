@@ -49,7 +49,8 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     private PrintDialogDelegate mPrintDialogDelegate = null;
     private int mCurrentIssueMode = AsynchronousMode;
     private Activity activity;
-    boolean isUserPrintEnabled = false;
+    private boolean isUserPrintEnabled = false;
+    private boolean isPrinting = false;
 
 
     public interface PrinterCallbackListener {
@@ -104,8 +105,10 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void print() {
+        if (isPrinting) return;
         if(printImage!= null) {
             ((ImagePrint) mPrint).setBitmap(printImage);
+            isPrinting = true;
             mPrint.print();
         }
     }
@@ -159,9 +162,6 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "isPrintScan exception occurred");
-                    if (listener != null) {
-                        listener.onPrintError();
-                    }
                 }
             } else if (AppSettings.isPrintUsbEnabled()) {
                 result = true;
@@ -196,6 +196,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     public void printComplete() {
         if (listener != null) {
             listener.onPrintComplete();
+            isPrinting = false;
         }
     }
 
@@ -203,6 +204,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         Log.e(TAG, "Print Error");
         if (listener != null) {
             listener.onPrintError();
+            isPrinting = false;
         }
     }
 
@@ -457,5 +459,6 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         mConnectData = null;
         mConnectionDelegate = null;
         mPrintDialogDelegate = null;
+        isPrinting = false;
     }
 }
