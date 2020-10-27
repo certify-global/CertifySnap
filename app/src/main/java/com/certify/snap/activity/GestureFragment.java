@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
@@ -11,16 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.certify.snap.R;
-import com.certify.snap.common.AppSettings;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;
 
@@ -38,6 +38,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
     private ProgressDialog progressDialog;
+    private Activity mActivity;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,7 +134,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7image7 = view.findViewById(R.id.sevenQ_image7);
 
 
-        rubiklight = Typeface.createFromAsset(getActivity().getAssets(),
+        rubiklight = Typeface.createFromAsset(mActivity.getAssets(),
                 "rubiklight.ttf");
         covidQuestionsText.setTypeface(rubiklight);
         titleView.setTypeface(rubiklight);
@@ -140,10 +147,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         GestureController.getInstance().initVoice(getContext());
         GestureController.getInstance().setSpeechRecognitionListener();
         GestureController.getInstance().startListening();
-    }
-
-    private void handleQuestionnaireByGesture() {
-        GestureController.getInstance().initHandGesture();
     }
 
     @Override
@@ -164,7 +167,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     //-----> Voice code
     private void checkPermission() {
-        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+        ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
     }
 
     @Override
@@ -178,97 +181,109 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     @Override
     public void onQuestionAnswered(String answeredQ) {
-        getActivity().runOnUiThread(() -> {
-           int index = GestureController.getInstance().getIndex();
-           int questionsCount = GestureController.getInstance().getQuestionsSize();
-            if (questionsCount == 2) {
-                twoQuestions(index);
-            } else if (questionsCount == 3) {
-                threeQuestions(index);
-            } else if (questionsCount == 4) {
-                fourQuestions(index);
-            } else if (questionsCount == 5) {
-                fiveQuestions(index);
-            } else if (questionsCount == 6) {
-                sixQuestions(index);
-            } else if (questionsCount == 7) {
-                sevenQuestions(index);
-            }
-            uiUpdate();
-            setQuestion();
-        });
-        GestureController.getInstance().setTimer();
+        if (mActivity != null) {
+            mActivity.runOnUiThread(() -> {
+                int index = GestureController.getInstance().getIndex();
+                int questionsCount = GestureController.getInstance().getQuestionsSize();
+                if (questionsCount == 2) {
+                    twoQuestions(index);
+                } else if (questionsCount == 3) {
+                    threeQuestions(index);
+                } else if (questionsCount == 4) {
+                    fourQuestions(index);
+                } else if (questionsCount == 5) {
+                    fiveQuestions(index);
+                } else if (questionsCount == 6) {
+                    sixQuestions(index);
+                } else if (questionsCount == 7) {
+                    sevenQuestions(index);
+                }
+                uiUpdate();
+                setQuestion();
+            });
+            GestureController.getInstance().setTimer();
+        }
     }
 
     @Override
     public void onAllQuestionsAnswered() {
         GestureController.getInstance().clearData();
-        getActivity().runOnUiThread(() -> {
-            IrCameraActivity activity = (IrCameraActivity) getActivity();
-            activity.resumeFromGesture();
+        mActivity.runOnUiThread(() -> {
+            IrCameraActivity activity = (IrCameraActivity) mActivity;
+            if (activity != null) {
+                activity.resumeFromGesture();
+            }
         });
     }
 
     @Override
     public void onVoiceListeningStart() {
-        getActivity().runOnUiThread(() -> mTimerView.start(8));
+        if (mActivity != null) {
+            mActivity.runOnUiThread(() -> mTimerView.start(8));
+        }
     }
 
     @Override
     public void onQuestionsReceived() {
-        getActivity().runOnUiThread(() -> {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            covidQuestionsText.setText(GestureController.getInstance().getQuestion());
-            int questionsCount = GestureController.getInstance().getQuestionsSize();
-            if (questionsCount == 2) {
-                q2Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 3) {
-                q3Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 4) {
-                q4Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 5) {
-                q5Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 6) {
-                q6Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 7) {
-                q7Layout.setVisibility(View.VISIBLE);
-            }
-            resetQuestionProgressView();
-        });
+        if (mActivity != null) {
+            mActivity.runOnUiThread(() -> {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                covidQuestionsText.setText(GestureController.getInstance().getQuestion());
+                int questionsCount = GestureController.getInstance().getQuestionsSize();
+                if (questionsCount == 2) {
+                    q2Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 3) {
+                    q3Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 4) {
+                    q4Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 5) {
+                    q5Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 6) {
+                    q6Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 7) {
+                    q7Layout.setVisibility(View.VISIBLE);
+                }
+                resetQuestionProgressView();
+            });
+        }
     }
 
     @Override
     public void onQuestionsNotReceived() {
-        getActivity().runOnUiThread(() -> {
-            if (progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            Toast.makeText(this.getContext(), "Failed to get the Questions, Closing Gesture screen", Toast.LENGTH_LONG).show();
-            if (getActivity() != null) {
-                getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
-                IrCameraActivity activity = (IrCameraActivity) getActivity();
-                activity.resetGesture();
-            }
-        });
+        if (mActivity != null) {
+            mActivity.runOnUiThread(() -> {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(this.getContext(), "Failed to get the Questions, Closing Gesture screen", Toast.LENGTH_LONG).show();
+                mActivity.getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
+                IrCameraActivity activity = (IrCameraActivity) mActivity;
+                if (activity != null) {
+                    activity.resetGesture();
+                }
+            });
+        }
     }
 
 
     @Override
     public void onBothHandWave() {
-        getActivity().runOnUiThread(() -> {
-            if (getActivity() != null) {
-                getActivity().getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
-                IrCameraActivity activity = (IrCameraActivity) getActivity();
-                activity.resetGesture();
-            }
-        });
+        if (mActivity != null) {
+            mActivity.runOnUiThread(() -> {
+                mActivity.getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
+                IrCameraActivity activity = (IrCameraActivity) mActivity;
+                if (activity != null) {
+                    activity.resetGesture();
+                }
+            });
+        }
     }
 
     @Override
     public void onFetchingQuestions() {
-        getActivity().runOnUiThread(this::showProgressBar);
+        mActivity.runOnUiThread(this::showProgressBar);
     }
 
 
