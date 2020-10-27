@@ -2427,7 +2427,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (isProDevice) {
             long scannerRemainingTime = CameraController.getInstance().getScannerRemainingTime();
             if (scannerRemainingTime > 0) {
-                Toast.makeText(this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(() -> Toast.makeText(IrCameraActivity.this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show(), 100);
             }
         }
     }
@@ -3307,7 +3307,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
             setCameraPreview();
-            new Handler().postDelayed(this::closeGestureFragment, 2000);
+            int delay = 2 * 1000;
+            if (isProDevice) {
+                delay = 1000;
+            }
+            new Handler().postDelayed(this::closeGestureFragment, delay);
         });
     }
 
@@ -3440,16 +3444,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
                 GestureController.getInstance().initContext(this);
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
-                GestureController.getInstance().initHandGesture();
                 return;
             }
             runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
+            return;
         }
+        GestureController.getInstance().checkGestureStatus();
     }
 
     public void resetGesture() {
-        GestureController.getInstance().clearData();
-        runOnUiThread(() -> new Handler().postDelayed(this::initGesture, 1000));
+        GestureController.getInstance().setGestureHomeCallbackListener(this);
+        CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
     }
 
     @Override

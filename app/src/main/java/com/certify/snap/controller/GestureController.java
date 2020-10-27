@@ -55,7 +55,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private Timer mTimer;
     private boolean wait = false;
-    private boolean runCheck = true;
+    private boolean runCheck = false;
     private boolean allQuestionAnswered = false;
     private GestureCallbackListener listener = null;
     private LinkedHashMap<QuestionData, String> questionAnswerMap = new LinkedHashMap<>();
@@ -73,6 +73,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
+    private UsbDeviceConnection connection;
 
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
@@ -126,7 +127,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private void startGestureFlow() {
         index = 0;
         resetQuestionAnswerMap();
-        initHandGesture();
         if (listener != null) {
             listener.onQuestionsReceived();
         }
@@ -164,7 +164,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 questionAnswerMap.put(questionData, "NA");
             }
             Log.d(TAG, "Gesture Questions list updated");
-            initHandGesture();
             if (listener != null) {
                 listener.onQuestionsReceived();
             }
@@ -293,40 +292,38 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
      * Method that initializes the Hand Gesture
      */
     public void initHandGesture() {
-        if (!Util.isGestureDeviceConnected(mContext)) return;
+        if (!Util.isGestureDeviceConnected(mContext) || runCheck) return;
         runCheck = true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (runCheck) {
-                    Map<String, String> map = sendCMD(1);
-                    if (map != null) {
-                        Log.e(TAG, map.toString() + "");
-                        try {
-                            final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
-                            final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
-
-                            if (left > 200 && right > 200) {
-                                index = 0;
-                                if (listener != null) {
-                                    runCheck = false;
-                                    listener.onBothHandWave();
-                                }
-                            } else if (left > 200) {
-                                leftHandWave();
-                            } else if (right > 200) {
-                                rightHandWave();
+        new Thread(() -> {
+            while (runCheck) {
+                Map<String, String> map = sendCMD(1);
+                if (map != null) {
+                    try {
+                        final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
+                        final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
+                        if (left > 200 && right > 200) {
+                            index = 0;
+                            if (listener != null) {
+                                listener.onBothHandWave();
+                                Thread.sleep(1500);
                             }
-                        } catch (Exception e) {
-                            Log.d(TAG, "handleGestureByGesture: " + e.toString());
+                        } else if (left > 200) {
+                            leftHandWave();
+                        } else if (right > 200) {
+                            rightHandWave();
+                        }
+                    } catch (Exception e) {
+                        Log.d(TAG, "Error in Gesture: " + e.getMessage());
+                        if (e.getMessage() == null) {
+                            restartGesture();
                         }
                     }
                 }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "Exception in initHandGesture Thread sleep" + e.getMessage());
-                }
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Exception in initHandGesture Thread sleep" + e.getMessage());
             }
         }).start();
     }
@@ -395,7 +392,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             UsbInterface usbInterface = usbReader.getInterface(0);// USBEndpoint为读写数据所需的节点
             UsbEndpoint inEndpoint = usbInterface.getEndpoint(0); // 读数据节点
             UsbEndpoint outEndpoint = usbInterface.getEndpoint(1);
-            UsbDeviceConnection connection = null;
+            connection = null;
             connection = mUsbManager.openDevice(usbReader);
             if (connection == null) {
                 return null;
@@ -406,14 +403,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             for (int i = 0; i < cmd.length; i++) {
                 bufferCMD.append(toHexString(new byte[]{cmd[i]}) + " ");
             }
-            Log.d("tagg", "send[" + bufferCMD.toString() + "]");
-
             int out = connection.bulkTransfer(outEndpoint, cmd, cmd.length, 1500);
-
             byte[] byte2 = new byte[64];
             int ret;
             ret = connection.bulkTransfer(inEndpoint, byte2, byte2.length, 1500);
-            Log.d("tagg", "receive ret[" + ret + "]");
             if (ret > 0) {
                 result = Arrays.copyOfRange(byte2, 0, ret);
                 resultData = new HashMap<String, String>();
@@ -421,7 +414,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 for (int i = 0; i < result.length; i++) {
                     buffer.append(toHexString(new byte[]{result[i]}) + " ");
                 }
-                Log.d("tagg", "receive[" + buffer.toString() + "]");
                 if (type == 1 && ret == 13 && result[7] == 0x01) {
                     String rightString = toHexString(new byte[]{result[9], result[8]});
                     int rightPower = Integer.valueOf(rightString, 16);
@@ -452,13 +444,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     private void rightHandWave() {
-        Log.d(TAG, "Right Hand wave");
         if (gestureListener != null && !isCallback) {
+            Log.d(TAG, "Right Hand wave");
             isCallback = true;
             gestureListener.onGestureDetected();
             return;
         }
         if (wait) {
+            Log.d(TAG, "Right Hand wave update");
             updateOnWave("N");
         }
     }
@@ -478,6 +471,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     private void onQuestionAnswered(String answer) {
+        if (currentQuestionData == null) return;
         questionAnswerMap.put(currentQuestionData, answer);
         index++;
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
@@ -649,18 +643,38 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
+    public void checkGestureStatus() {
+        if (runCheck) {
+            if (connection != null) {
+                connection.close();
+            }
+            clearData();
+        }
+    }
+
+    private void restartGesture() {
+        Log.d(TAG, "Restart gesture ");
+        runCheck = false;
+        if (connection != null) {
+            connection.close();
+        }
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                initHandGesture();
+            }
+        }, 2000);
+    }
+
     public void clearData() {
         if (speechRecognizer != null) {
             speechRecognizer.stopListening();
             speechRecognizer.destroy();
         }
-        runCheck = false;
         listener = null;
-        usbReader = null;
-        mUsbManager = null;
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
-        isCallback = false;
     }
 }
