@@ -61,7 +61,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         sharedPreferences = Util.getSharedPreferences(this);
-        if (!sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
+        if (sharedPreferences != null && !sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
             ApplicationController.getInstance().clearSharedPrefData(this);
         }
         //validateDB();
