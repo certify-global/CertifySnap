@@ -3276,8 +3276,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void onTemperatureUpdate() {
         disableLedPower();
         runOnUiThread(() -> {
+            boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
-            if (confirmBelowScreen) {
+            if (confirmBelowScreen || confirmAboveScreen) {
                 runOnUiThread(() -> {
                     if (isDestroyed()) return;
                     launchConfirmationFragment(false);
