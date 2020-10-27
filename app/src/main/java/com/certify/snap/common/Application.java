@@ -216,17 +216,4 @@ public class Application extends android.app.Application {
         return hex.toString();
     }
 
-    public void validateDB() {
-        if (BuildConfig.VERSION_CODE == 144 && !sharedPreferences.getBoolean(GlobalParameters.VALIDATE_DB, false)) {
-            File databasesDir = new File(this.getApplicationInfo().dataDir + "/databases");
-            File file = new File(databasesDir, Database.DB_NAME);
-            if (file.exists()) {
-                file.delete();
-                new File(databasesDir, "snap_face.db-shm").delete();
-                new File(databasesDir, "snap_face.db-wal").delete();
-                Util.writeBoolean(sharedPreferences, GlobalParameters.VALIDATE_DB, true);
-            }
-        }
-    }
-
 }
