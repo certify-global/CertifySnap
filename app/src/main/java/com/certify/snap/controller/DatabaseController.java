@@ -12,6 +12,7 @@ import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.model.AccessLogOfflineRecord;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
@@ -93,15 +94,17 @@ public class DatabaseController {
                 return databaseStore.findMemberByPrimaryId(primaryId);
             }
         } catch (SQLiteException e){
-            handleDBException(e);
-            if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
-                Util.stopMemberSyncService(mContext);
-            }
-            if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                    || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                    mContext.startService(new Intent(mContext, MemberSyncService.class));
-                    Application.StartService(mContext);
+            if (handleDBException(e)) {
+                if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
+                    Util.stopMemberSyncService(mContext);
+                    MemberSyncDataModel.getInstance().clear();
+                }
+                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        mContext.startService(new Intent(mContext, MemberSyncService.class));
+                        Application.StartService(mContext);
+                    }
                 }
             }
         }
@@ -397,7 +400,7 @@ public class DatabaseController {
         }
     }
 
-    public void handleDBException(SQLiteException e) {
+    private boolean handleDBException(SQLiteException e) {
         if (e.getMessage().contains("file is not a database")) {
             SQLCipherUtils.State state = SQLCipherUtils.getDatabaseState(mContext.getApplicationContext(), Database.DB_NAME);
             if (state == SQLCipherUtils.State.ENCRYPTED){
@@ -406,16 +409,24 @@ public class DatabaseController {
             } else if (state == SQLCipherUtils.State.DOES_NOT_EXIST){
                 init(mContext, Application.getInstance().getPragmaKey(mContext));
             }
+            return true;
         }
+        return false;
     }
 
     public void validateDB() {
-            File databasesDir = new File(mContext.getApplicationInfo().dataDir + "/databases");
-            File file = new File(databasesDir, Database.DB_NAME);
-            if (file.exists()) {
-                file.delete();
-                new File(databasesDir, "snap_face.db-shm").delete();
-                new File(databasesDir, "snap_face.db-wal").delete();
+        File databasesDir = new File(mContext.getApplicationInfo().dataDir + "/databases");
+        File file = new File(databasesDir, Database.DB_NAME);
+        if (file.exists()) {
+            file.delete();
+            File fileDbShm = new File(databasesDir, "snap_face.db-shm");
+            if (fileDbShm.exists()) {
+                fileDbShm.delete();
             }
+            File fileDbWal = new File(databasesDir, "snap_face.db-wal");
+            if (fileDbWal.exists()) {
+                fileDbWal.delete();
+            }
+        }
     }
 }
