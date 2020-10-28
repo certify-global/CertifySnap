@@ -3397,6 +3397,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void cancelQRTimer() {
         if (mQRTimer != null) {
             mQRTimer.cancel();
+            mQRTimer = null;
         }
     }
 
