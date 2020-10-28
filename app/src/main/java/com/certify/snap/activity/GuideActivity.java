@@ -124,6 +124,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         cancelActivationTimer();
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
+            startUpCountDownTimer = null;
         }
         ApplicationController.getInstance().releaseThermalUtil();
         if (localServer == null){
@@ -196,6 +197,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
+                initGesture();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -285,6 +287,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      */
     private void onSettingsUpdated() {
         AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+        initGesture();
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
@@ -324,6 +327,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void cancelActivationTimer() {
         if (mActivationTimer != null) {
             mActivationTimer.cancel();
+            mActivationTimer = null;
         }
     }
 
@@ -441,6 +445,13 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 localServer = new LocalServer(this);
                 new LocalServerTask(localServer).executeOnExecutor(taskExecutorService);
             }
+        }
+    }
+
+    private void initGesture() {
+        if (AppSettings.isEnableHandGesture()) {
+            GestureController.getInstance().initContext(this);
+            GestureController.getInstance().initHandGesture();
         }
     }
 }

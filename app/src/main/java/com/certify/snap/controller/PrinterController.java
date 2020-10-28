@@ -49,7 +49,8 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     private PrintDialogDelegate mPrintDialogDelegate = null;
     private int mCurrentIssueMode = AsynchronousMode;
     private Activity activity;
-    boolean isUserPrintEnabled = false;
+    private boolean isUserPrintEnabled = false;
+    private boolean isPrinting = false;
 
 
     public interface PrinterCallbackListener {
@@ -103,9 +104,15 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         this.printImage = image;
     }
 
+    public void setPrinting(boolean printing) {
+        isPrinting = printing;
+    }
+
     public void print() {
+        if (isPrinting) return;
         if(printImage!= null) {
             ((ImagePrint) mPrint).setBitmap(printImage);
+            isPrinting = true;
             mPrint.print();
         }
     }
@@ -159,9 +166,6 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "isPrintScan exception occurred");
-                    if (listener != null) {
-                        listener.onPrintError();
-                    }
                 }
             } else if (AppSettings.isPrintUsbEnabled()) {
                 result = true;
@@ -196,6 +200,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     public void printComplete() {
         if (listener != null) {
             listener.onPrintComplete();
+            isPrinting = false;
         }
     }
 
@@ -203,6 +208,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         Log.e(TAG, "Print Error");
         if (listener != null) {
             listener.onPrintError();
+            isPrinting = false;
         }
     }
 
@@ -291,8 +297,18 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
             HashMap<String , String> labelItemList = new HashMap<>();
             labelItemList.put( "Name Data",  name );
             labelItemList.put( "TimeScan Data",  dateTime );
-            labelItemList.put( "Status Data", "   PASS   " );
+            labelItemList.put( "Status Data", "PASS" );
             labelItemList.put( "Type Data",  "  Thermal Scan  " );
+            mPrintData.setObjectDataList(labelItemList);
+        }
+    }
+
+    public void setPrintWaveData(String name, String dateTime, String waveData) {
+        if(AppSettings.isPrintUsbEnabled()){
+            HashMap<String , String> labelItemList = new HashMap<>();
+            labelItemList.put("TimeScan Data", dateTime);
+            labelItemList.put("Status Data", "PASS");
+            labelItemList.put("Type Data", waveData);
             mPrintData.setObjectDataList(labelItemList);
         }
     }
@@ -309,11 +325,13 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void printUsb() {
+        if (isPrinting) return;
         mPrintData.setCurrentIssueMode( mCurrentIssueMode );
         int printCount = 1;
         mPrintData.setPrintCount( printCount );
         String filePathName = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName() + "/" + "tempLabel.lfm";
         mPrintData.setLfmFileFullPath( filePathName );
+        isPrinting = true;
         if (listener != null) {
             listener.onPrintUsbCommand();
         }
@@ -457,5 +475,6 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         mConnectData = null;
         mConnectionDelegate = null;
         mPrintDialogDelegate = null;
+        isPrinting = false;
     }
 }

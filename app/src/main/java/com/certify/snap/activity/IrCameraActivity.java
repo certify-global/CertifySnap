@@ -320,6 +320,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (isDestroyed()) return;
                 memberCount = intent.getIntExtra("memberCount", 0);
                 totalCount = intent.getIntExtra("count", 0);
                 snackMessage = intent.getStringExtra("message");
@@ -733,12 +734,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             nfcDialog.dismiss();
             nfcDialog = null;
         }
-        if (tTimer != null)
+        if (tTimer != null) {
             tTimer.cancel();
-        if (pTimer != null)
+            tTimer = null;
+        }
+        if (pTimer != null) {
             pTimer.cancel();
-        if (imageTimer != null)
+            pTimer = null;
+        }
+        if (imageTimer != null) {
             imageTimer.cancel();
+            imageTimer = null;
+        }
         if (cameraHelper != null) {
             cameraHelper.release();
             cameraHelper = null;
@@ -1261,8 +1268,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void cancelImageTimer() {
-        if (imageTimer != null)
+        if (imageTimer != null){
             imageTimer.cancel();
+            imageTimer = null;
+        }
+
     }
 
     private void showSnackbar(final String snackMessage) {
@@ -1614,8 +1624,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (PrinterController.getInstance().isPrintScan()) {
                     return;
                 }
-                if (lanchTimer != null)
+                if (lanchTimer != null) {
                     lanchTimer.cancel();
+                    lanchTimer = null;
+                }
                 lanchTimer = new Timer();
                 lanchTimer.schedule(new TimerTask() {
                     public void run() {
@@ -2179,7 +2191,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                                 String[] split = compareResult.getUserName().split("-");
                                 String id = "";
-                                if (split != null && split.length > 1) id = split[1];
+                                if (split != null && split.length > 1) id = split[split.length-1];
 
                                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date curDate = new Date(System.currentTimeMillis());
@@ -2188,7 +2200,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
                                 //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
-                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[1]));
+                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length-1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 
@@ -2426,7 +2438,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (isProDevice) {
             long scannerRemainingTime = CameraController.getInstance().getScannerRemainingTime();
             if (scannerRemainingTime > 0) {
-                Toast.makeText(this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(() -> Toast.makeText(IrCameraActivity.this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show(), 100);
             }
         }
     }
@@ -2905,7 +2917,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void initRecordUserTempService() {
         if (!Util.isOfflineMode(IrCameraActivity.this) && !Util.isServiceRunning(OfflineRecordSyncService.class, this)) {
-            Log.d(TAG, "Deep Offline service ");
+            Log.d(TAG, "Offline service ");
             startService(new Intent(IrCameraActivity.this, OfflineRecordSyncService.class));
         }
     }
@@ -3129,6 +3141,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onPrintStatus(String status, int code) {
         Log.d(TAG, "Print status " + status);
+        PrinterController.getInstance().setPrinting(false);
         runOnUiThread(this::onPrintComplete);
     }
 
@@ -3143,6 +3156,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (data != null) {
             member = data.member;
         }
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+        String dateTime = date + " " + currentTime;
+        PrinterController.getInstance().setPrintData(name, dateTime);
+
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
@@ -3167,6 +3185,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
+                PrinterController.getInstance().setPrintWaveData("", dateTime, thermalText);
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
@@ -3178,17 +3197,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     }
                 } else {
                     nameTitle = "Name:";
-                    name = "Anonymous";
+                    name = "";
                 }
                 if (bitmap == null) {
                     bitmap = rgbBitmap;
                 }
             }
         }
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
-        String dateTime = date + " " + currentTime;
-        PrinterController.getInstance().setPrintData(name, dateTime);
 
         convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }
@@ -3275,8 +3290,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void onTemperatureUpdate() {
         disableLedPower();
         runOnUiThread(() -> {
+            boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
-            if (confirmBelowScreen) {
+            if (confirmBelowScreen || confirmAboveScreen) {
                 runOnUiThread(() -> {
                     if (isDestroyed()) return;
                     launchConfirmationFragment(false);
@@ -3306,7 +3322,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
             setCameraPreview();
-            new Handler().postDelayed(this::closeGestureFragment, 2000);
+            int delay = 2 * 1000;
+            if (isProDevice) {
+                delay = 1000;
+            }
+            new Handler().postDelayed(this::closeGestureFragment, delay);
         });
     }
 
@@ -3391,6 +3411,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void cancelQRTimer() {
         if (mQRTimer != null) {
             mQRTimer.cancel();
+            mQRTimer = null;
         }
     }
 
@@ -3439,16 +3460,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
                 GestureController.getInstance().initContext(this);
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
-                GestureController.getInstance().initHandGesture();
                 return;
             }
             runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
+            return;
         }
+        GestureController.getInstance().checkGestureStatus();
     }
 
     public void resetGesture() {
-        GestureController.getInstance().clearData();
-        runOnUiThread(() -> new Handler().postDelayed(this::initGesture, 1000));
+        GestureController.getInstance().setGestureHomeCallbackListener(this);
+        CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
     }
 
     @Override

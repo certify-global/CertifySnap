@@ -936,7 +936,6 @@ public class Util {
         } catch (Exception e) {
             Logger.error(LOG, "getToken " + e.getMessage());
             //TODO:warn failed to activate
-            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
     }
 
@@ -1516,11 +1515,10 @@ public class Util {
 
 
             } else {
-                Logger.toast(context, "Something went wrong please try again");
+                Log.e(LOG, "Setting retrieval Something went wrong please try again");
             }
         } catch (Exception e) {
-            Logger.error(LOG + "retrieveSetting(JSONObject reportInfo)", e.getMessage());
-            Logger.toast(context, "Retrieving Settings failed.");
+            Logger.error(LOG + "retrieveSetting failed", e.getMessage());
         }
 
     }
@@ -1542,21 +1540,10 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Device Activated");
-                    } /*else {
-                        Util.switchRgbOrIrActivity(context, true);
-                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Already Activated");
-                    } /*else {
-                        //The IrCameraActivity would be launched after AppSettings are completely retrieved and set
-                        Util.switchRgbOrIrActivity(context, true);
-                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
@@ -1587,7 +1574,7 @@ public class Util {
 
                 if(institutionIdOld != null && !institutionId.isEmpty()
                         && !institutionIdOld.equals(institutionId)) {
-                    deleteAppData(context);
+                    DatabaseController.getInstance().clearAll();
                 }
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);

@@ -1034,7 +1034,11 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
             if (rect.right > 750 || rect.left < 20) {
                 final Rect[] rects = new Rect[temperatureRectList.size()];
                 int[] distances = new int[distanceList.size()];
-                util.setGuideRect(rects, distances);
+                try {
+                    util.setGuideRect(rects, distances);
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in setGuideRect");
+                }
                 cancelGuideTempTimer();
                 continue;
             }
@@ -1091,7 +1095,11 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
         for(int i = 0; i < distanceList.size(); i++){
             distances[i] = distanceList.get(i);
         }
-        util.setGuideRect(rects, distances);
+        try {
+            util.setGuideRect(rects, distances);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in setGuideRect");
+        }
         Log.e(TAG,"distance :" + distance);
     }
 
