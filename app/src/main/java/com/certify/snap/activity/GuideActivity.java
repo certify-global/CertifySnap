@@ -124,6 +124,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         cancelActivationTimer();
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
+            startUpCountDownTimer = null;
         }
         ApplicationController.getInstance().releaseThermalUtil();
         if (localServer == null){
@@ -326,6 +327,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void cancelActivationTimer() {
         if (mActivationTimer != null) {
             mActivationTimer.cancel();
+            mActivationTimer = null;
         }
     }
 

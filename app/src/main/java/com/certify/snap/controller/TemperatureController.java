@@ -683,6 +683,7 @@ public class TemperatureController {
         if (guideTempTimer != null) {
             Log.d(TAG, "Temp Cancel Guide Temperature timer");
             guideTempTimer.cancel();
+            guideTempTimer = null;
         }
     }
 

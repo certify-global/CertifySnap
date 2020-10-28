@@ -734,12 +734,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             nfcDialog.dismiss();
             nfcDialog = null;
         }
-        if (tTimer != null)
+        if (tTimer != null) {
             tTimer.cancel();
-        if (pTimer != null)
+            tTimer = null;
+        }
+        if (pTimer != null) {
             pTimer.cancel();
-        if (imageTimer != null)
+            pTimer = null;
+        }
+        if (imageTimer != null) {
             imageTimer.cancel();
+            imageTimer = null;
+        }
         if (cameraHelper != null) {
             cameraHelper.release();
             cameraHelper = null;
@@ -1262,8 +1268,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void cancelImageTimer() {
-        if (imageTimer != null)
+        if (imageTimer != null){
             imageTimer.cancel();
+            imageTimer = null;
+        }
+
     }
 
     private void showSnackbar(final String snackMessage) {
@@ -1615,8 +1624,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (PrinterController.getInstance().isPrintScan()) {
                     return;
                 }
-                if (lanchTimer != null)
+                if (lanchTimer != null) {
                     lanchTimer.cancel();
+                    lanchTimer = null;
+                }
                 lanchTimer = new Timer();
                 lanchTimer.schedule(new TimerTask() {
                     public void run() {

@@ -632,6 +632,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private void cancelQuestionsTimer() {
         if (mQuestionsTimer != null) {
             mQuestionsTimer.cancel();
+            mQuestionsTimer = null;
         }
     }
 

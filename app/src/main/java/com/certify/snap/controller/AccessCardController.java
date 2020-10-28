@@ -164,7 +164,10 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void lockStandAloneDoor() {
-        if (mRelayTimer != null) mRelayTimer.cancel();
+        if (mRelayTimer != null) {
+            mRelayTimer.cancel();
+            mRelayTimer = null;
+        }
         int result = PosUtil.setRelayPower(0);
         if (result != 0) {
             Log.d(TAG, "Error in closing the door");
