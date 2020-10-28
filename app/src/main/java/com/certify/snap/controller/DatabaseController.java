@@ -95,17 +95,16 @@ public class DatabaseController {
             }
         } catch (SQLiteException e){
             if (handleDBException(e)) {
-                if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
-                    Util.stopMemberSyncService(mContext);
-                    MemberSyncDataModel.getInstance().clear();
-                }
-                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        mContext.startService(new Intent(mContext, MemberSyncService.class));
-                        Application.StartService(mContext);
+                if (!Util.isServiceRunning(MemberSyncService.class, mContext)) {
+                    if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                        if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                            mContext.startService(new Intent(mContext, MemberSyncService.class));
+                            Application.StartService(mContext);
+                        }
                     }
                 }
+
             }
         }
         return new ArrayList<>();
