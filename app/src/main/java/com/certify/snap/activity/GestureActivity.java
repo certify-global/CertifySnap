@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -30,14 +31,15 @@ import java.util.HashMap;
 
 public class GestureActivity extends SettingBaseActivity implements FlowListCallback {
     public static String TAG = "GestureActivity";
-    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition;
-    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice;
+    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition,enable_progress_bar,btn_save;
+    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice,radio_group_progress;
     Spinner spinnerQuestionSelector;
     RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesMask, radioNoMask,
-            radioYesVoice, radioNoVoice;
+            radioYesVoice, radioNoVoice,radio_yes_progress,radio_no_progress;
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
+    private EditText editTextWaveFooter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         waveQuestionCheck();
         maskEnforcementCheck();
         voiceRecognitionCheck();
+        progressbarCheck();
     }
 
     private void initView() {
@@ -73,6 +76,12 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         radioGroupVoice = findViewById(R.id.radio_group_voice_recognition);
         radioYesVoice = findViewById(R.id.radio_yes_voice_recognition);
         radioNoVoice = findViewById(R.id.radio_no_voice_recognition);
+        enable_progress_bar = findViewById(R.id.enable_progress_bar);
+        radio_group_progress = findViewById(R.id.radio_group_progress);
+        radio_yes_progress = findViewById(R.id.radio_yes_progress);
+        radio_no_progress = findViewById(R.id.radio_no_progress);
+        btn_save = findViewById(R.id.btn_exit);
+        editTextWaveFooter = findViewById(R.id.editTextWaveFooter);
 
         rubikLight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -81,8 +90,19 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         enableWaveQuestions.setTypeface(rubikLight);
         enableVoiceRecognition.setTypeface(rubikLight);
         enableMask.setTypeface(rubikLight);
+        enable_progress_bar.setTypeface(rubikLight);
         sharedPreferences = Util.getSharedPreferences(this);
         getFlowListAPI();
+
+        editTextWaveFooter.setText(sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, getResources().getString(R.string.bottom_text)));
+
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Util.writeString(sharedPreferences,GlobalParameters.WAVE_INDICATOR,editTextWaveFooter.getText().toString());
+                finish();
+            }
+        });
     }
 
     private void waveCheck(){
@@ -147,6 +167,21 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         });
     }
 
+    private void progressbarCheck() {
+        if(sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR,false))
+            radio_yes_progress.setChecked(true);
+        else radio_no_progress.setChecked(true);
+
+        radio_group_progress.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_progress)
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, true);
+                else Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, false);
+            }
+        });
+    }
+
 
     private void setValues() {
         ArrayList<String> values = new ArrayList<>(flowHashmap.keySet());
@@ -199,7 +234,7 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
 
             if (report.getInt("responseCode") == 1) {
                 JSONArray jsonArray = report.getJSONArray("responseData");
-                 flowHashmap.put("Choose Questionnaire","header");
+                flowHashmap.put("Choose Questionnaire","header");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
                     String id = jsonObject.getString("id");

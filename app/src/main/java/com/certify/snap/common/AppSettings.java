@@ -56,6 +56,8 @@ public class AppSettings {
     private static boolean qrCodeEnabled = false;
     private static boolean rfidEnabled = false;
     private static boolean accessLogEnabled = false;
+    private static boolean gestureProgressEnabled = false;
+    private static String gestureMessage = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -114,6 +116,8 @@ public class AppSettings {
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false));
         rfidEnabled = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         accessLogEnabled = sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false);
+        gestureProgressEnabled = sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR, false);
+        gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, StringConstants.GESTURE_MESSAGE);
     }
 
     public static String getThermalScanTitle() {
@@ -306,5 +310,13 @@ public class AppSettings {
 
     public static boolean isAccessLogEnabled() {
         return accessLogEnabled;
+    }
+
+    public static boolean isGestureProgressEnabled() {
+        return gestureProgressEnabled;
+    }
+
+    public static String getGestureMessage() {
+        return gestureMessage;
     }
 }

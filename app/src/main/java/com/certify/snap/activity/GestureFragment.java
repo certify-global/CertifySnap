@@ -159,6 +159,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     private void uiUpdate() {
+        titleView.setText(AppSettings.getGestureMessage());
         titleView.setVisibility(View.VISIBLE);
     }
 
@@ -179,20 +180,22 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onQuestionAnswered(String answeredQ) {
         getActivity().runOnUiThread(() -> {
-           int index = GestureController.getInstance().getIndex();
-           int questionsCount = GestureController.getInstance().getQuestionsSize();
-            if (questionsCount == 2) {
-                twoQuestions(index);
-            } else if (questionsCount == 3) {
-                threeQuestions(index);
-            } else if (questionsCount == 4) {
-                fourQuestions(index);
-            } else if (questionsCount == 5) {
-                fiveQuestions(index);
-            } else if (questionsCount == 6) {
-                sixQuestions(index);
-            } else if (questionsCount == 7) {
-                sevenQuestions(index);
+            if (AppSettings.isGestureProgressEnabled()) {
+                int index = GestureController.getInstance().getIndex();
+                int questionsCount = GestureController.getInstance().getQuestionsSize();
+                if (questionsCount == 2) {
+                    twoQuestions(index);
+                } else if (questionsCount == 3) {
+                    threeQuestions(index);
+                } else if (questionsCount == 4) {
+                    fourQuestions(index);
+                } else if (questionsCount == 5) {
+                    fiveQuestions(index);
+                } else if (questionsCount == 6) {
+                    sixQuestions(index);
+                } else if (questionsCount == 7) {
+                    sevenQuestions(index);
+                }
             }
             uiUpdate();
             setQuestion();
@@ -221,21 +224,23 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 progressDialog.dismiss();
             }
             covidQuestionsText.setText(GestureController.getInstance().getQuestion());
-            int questionsCount = GestureController.getInstance().getQuestionsSize();
-            if (questionsCount == 2) {
-                q2Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 3) {
-                q3Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 4) {
-                q4Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 5) {
-                q5Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 6) {
-                q6Layout.setVisibility(View.VISIBLE);
-            } else if (questionsCount == 7) {
-                q7Layout.setVisibility(View.VISIBLE);
+            if (AppSettings.isGestureProgressEnabled()) {
+                int questionsCount = GestureController.getInstance().getQuestionsSize();
+                if (questionsCount == 2) {
+                    q2Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 3) {
+                    q3Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 4) {
+                    q4Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 5) {
+                    q5Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 6) {
+                    q6Layout.setVisibility(View.VISIBLE);
+                } else if (questionsCount == 7) {
+                    q7Layout.setVisibility(View.VISIBLE);
+                }
+                resetQuestionProgressView();
             }
-            resetQuestionProgressView();
         });
     }
 

@@ -208,7 +208,6 @@
         android:layout_marginLeft="@dimen/margin_10"
         android:layout_marginRight="@dimen/margin_10"
         android:gravity="center"
-        android:text="@string/bottom_text"
         android:textColor="@color/black"
         android:textSize="30dp"
         android:visibility="visible"

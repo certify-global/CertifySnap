@@ -743,5 +743,6 @@
     <string name="enable_logging">Enable Logging for Access and Attendance Reporting</string>
     <string name="capture_logs">Capture Logs</string>
     <string name="send_logs">Send Logs</string>
+    <string name="wave_instructions">Enter wave indicator instructions</string>
 
 </resources>
