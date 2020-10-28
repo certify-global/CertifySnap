@@ -37,7 +37,6 @@
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Naga Kottam"
                 android:textColor="@color/colorBlack"
                 android:textSize="15dp"
                 android:textStyle="bold" />

@@ -3141,6 +3141,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onPrintStatus(String status, int code) {
         Log.d(TAG, "Print status " + status);
+        PrinterController.getInstance().setPrinting(false);
         runOnUiThread(this::onPrintComplete);
     }
 
@@ -3155,6 +3156,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (data != null) {
             member = data.member;
         }
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+        String dateTime = date + " " + currentTime;
+        PrinterController.getInstance().setPrintData(name, dateTime);
+
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
@@ -3179,6 +3185,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
+                PrinterController.getInstance().setPrintWaveData("", dateTime, thermalText);
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
@@ -3190,17 +3197,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     }
                 } else {
                     nameTitle = "Name:";
-                    name = "Anonymous";
+                    name = "";
                 }
                 if (bitmap == null) {
                     bitmap = rgbBitmap;
                 }
             }
         }
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-        String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
-        String dateTime = date + " " + currentTime;
-        PrinterController.getInstance().setPrintData(name, dateTime);
 
         convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }
