@@ -6,20 +6,15 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
-
-import androidx.multidex.MultiDexApplication;
 
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
-import com.certify.snap.database.Database;
 import com.certify.snap.service.AlarmReceiver;
-import com.common.thermalimage.ThermalImageUtil;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.AbstractCrashesListener;
@@ -28,14 +23,12 @@ import com.microsoft.appcenter.crashes.ingestion.models.ErrorAttachmentLog;
 import com.microsoft.appcenter.crashes.model.ErrorReport;
 import com.tamic.novate.Novate;
 
-import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
