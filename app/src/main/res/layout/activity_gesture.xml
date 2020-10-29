@@ -179,7 +179,33 @@
         app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"/>
 
-    <ImageView
+    <TextView
+        android:id="@+id/hand_yes_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wave_no"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/margin_30"
+        android:layout_marginRight="@dimen/margin_30"
+        android:layout_marginBottom="@dimen/margin_30"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/hand_no_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_30"
+        android:layout_marginBottom="@dimen/margin_30"
+        android:text="@string/wave_yes"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/margin_30"
+        android:src="@drawable/icon_no"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
+ <!--   <ImageView
         android:id="@+id/hand_yes_button"
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -198,7 +224,7 @@
         android:layout_marginBottom="@dimen/margin_30"
         android:src="@drawable/icon_no"
         app:layout_constraintBottom_toTopOf="@+id/title_text_view"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />-->
 
     <TextView
         android:id="@+id/title_text_view"

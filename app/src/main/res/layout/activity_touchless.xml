@@ -253,7 +253,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_15"
-            android:text="Show wave question progress bar"
+            android:text="Show wave question progress view bar"
             android:textColor="@color/black"
             android:textSize="@dimen/font_18" />
 
@@ -300,7 +300,6 @@
                 android:layout_height="100dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/wave_instructions"
-                android:inputType="text"
                 android:paddingLeft="05dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
