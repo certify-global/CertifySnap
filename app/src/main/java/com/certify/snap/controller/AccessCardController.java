@@ -297,6 +297,8 @@ public class AccessCardController implements AccessCallback {
                     obj.put("lastName", registeredMember.getLastname());
                     obj.put("accessId", registeredMember.getAccessid());
                     obj.put("memberId", registeredMember.getMemberid());
+                    obj.put("memberTypeId", registeredMember.getMemberType());
+                    obj.put("memberTypeName", registeredMember.getMemberTypeName());
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
                     obj.put("id", 0);
@@ -304,6 +306,8 @@ public class AccessCardController implements AccessCallback {
                     obj.put("lastName", registeredMember.getLastname());
                     obj.put("accessId", registeredMember.getAccessid());
                     obj.put("memberId", registeredMember.getMemberid());
+                    obj.put("memberTypeId", registeredMember.getMemberType());
+                    obj.put("memberTypeName", registeredMember.getMemberTypeName());
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);
@@ -353,6 +357,8 @@ public class AccessCardController implements AccessCallback {
                     obj.put("lastName", "");
                     obj.put("accessId", "");
                     obj.put("memberId", "");
+                    obj.put("memberTypeId", "");
+                    obj.put("memberTypeName", "");
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     accessId = mAccessCardID;
                     obj.put("id", 0);
@@ -360,12 +366,16 @@ public class AccessCardController implements AccessCallback {
                     obj.put("lastName", registeredMembers.getLastname());
                     obj.put("accessId", accessId);
                     obj.put("memberId", registeredMembers.getMemberid());
+                    obj.put("memberTypeId", registeredMembers.getMemberType());
+                    obj.put("memberTypeName", registeredMembers.getMemberTypeName());
                 } else {
                     obj.put("id", 0);
                     obj.put("firstName", registeredMembers.getFirstname());
                     obj.put("lastName", registeredMembers.getLastname());
                     obj.put("accessId", accessId);
                     obj.put("memberId", registeredMembers.getMemberid());
+                    obj.put("memberTypeId", registeredMembers.getMemberType());
+                    obj.put("memberTypeName", registeredMembers.getMemberTypeName());
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);
