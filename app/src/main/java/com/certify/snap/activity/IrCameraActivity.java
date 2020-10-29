@@ -3329,7 +3329,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             setCameraPreview();
             int delay = 2 * 1000;
             if (isProDevice) {
-                delay = 1000;
+                delay = 1500;
             }
             new Handler().postDelayed(this::closeGestureFragment, delay);
         });
