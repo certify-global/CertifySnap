@@ -30,7 +30,7 @@ CutAdj=0
 BFeedAdj=0
 Sensore=0
 PrintSpeed=4
-IMAGE="/storage/emulated/0/image.jpg",1
+IMAGE="/storage/emulated/0/CertifySnap/Pic/image.jpg",1
 [Object]
 1=2,"RECTANGLE",0,0,720,500,0,0
 2=6,"BITMAP",10,10,270,290,0,0

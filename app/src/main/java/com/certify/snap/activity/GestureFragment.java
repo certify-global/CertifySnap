@@ -29,7 +29,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     private final String TAG = GestureFragment.class.getSimpleName();
 
-    private TextView covidQuestionsText, titleView;
+    private TextView covidQuestionsText, titleView, handYesText , handNoText;
     private View view, q2view1, q3view1, q3view2, q4view1, q4view2, q4view3, q5view1, q5view2, q5view3, q5view4,
             q6view1, q6view2, q6view3, q6view4, q6view5, q7view1, q7view2, q7view3, q7view4, q7view5, q7view6;
     private ImageView q2image1, q2image2, q3image1, q3image2, q3image3, q4image1, q4image2, q4image3, q4image4,
@@ -66,6 +66,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         titleView = view.findViewById(R.id.title_text_view);
         voiceLayout = view.findViewById(R.id.voice_layout);
         mTimerView = view.findViewById(R.id.timer_view);
+        handYesText = view.findViewById(R.id.hand_yes_text);
+        handNoText = view.findViewById(R.id.hand_no_text);
 
         //q2 Layout
         q2Layout = view.findViewById(R.id.two_questions_layout);
@@ -139,6 +141,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 "rubiklight.ttf");
         covidQuestionsText.setTypeface(rubiklight);
         titleView.setTypeface(rubiklight);
+        handNoText.setTypeface(rubiklight);
+        handYesText.setTypeface(rubiklight);
     }
 
     private void handleQuestionnaireByVoice() {

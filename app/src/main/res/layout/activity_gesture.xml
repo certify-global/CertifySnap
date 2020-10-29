@@ -180,7 +180,7 @@
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/hand_yes_button"
+        android:id="@+id/hand_yes_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/wave_no"
@@ -193,7 +193,7 @@
 
 
     <TextView
-        android:id="@+id/hand_no_button"
+        android:id="@+id/hand_no_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margin_30"
@@ -235,7 +235,7 @@
         android:layout_marginRight="@dimen/margin_10"
         android:gravity="center"
         android:textColor="@color/black"
-        android:textSize="30dp"
+        android:textSize="24sp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
