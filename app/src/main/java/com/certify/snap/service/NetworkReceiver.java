@@ -58,11 +58,12 @@ public class NetworkReceiver extends BroadcastReceiver {
 
     private void updateHealthService(Context context) {
         try {
-            if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
+            if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 if (!Util.isServiceRunning(DeviceHealthService.class, context)) {
                     context.startService(new Intent(context, DeviceHealthService.class));
                     Application.StartService(context);
                 }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());

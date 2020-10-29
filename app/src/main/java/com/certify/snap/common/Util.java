@@ -807,7 +807,9 @@ public class Util {
                 obj.put("firstName", rfidScanMatchedMember.getFirstname());
                 obj.put("lastName", rfidScanMatchedMember.getLastname());
                 obj.put("memberId", rfidScanMatchedMember.getMemberid());
-                obj.put("trqStatus", "");// Send this empty if not Qr
+                obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
+                obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
+                obj.put("trqStatus", ""); // Send this empty if not Qr
             } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()) {
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
                 updateFaceMemberValues(obj, data);
@@ -901,6 +903,8 @@ public class Util {
             obj.put("firstName", data.member.getFirstname());
             obj.put("lastName", data.member.getLastname());
             obj.put("memberId", data.member.getMemberid());
+            obj.put("memberTypeId", data.member.getMemberType());
+            obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
         } catch (JSONException e) {
             e.printStackTrace();
