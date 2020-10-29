@@ -175,6 +175,12 @@ public class MemberSyncDataModel {
                             member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
+                            if (c.has("memberType")) {
+                                member.setMemberType(c.getString("memberType"));
+                            }
+                            if (c.has("memberTypeName")) {
+                                member.setMemberTypeName(c.getString("memberTypeName"));
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);

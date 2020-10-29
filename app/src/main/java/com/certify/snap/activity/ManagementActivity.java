@@ -1222,8 +1222,14 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     String emailstr = responseData.getString("email");
                     String mobilestr = responseData.getString("phoneNumber");
                     String memberidstr = responseData.getString("memberId");
-                    String memberType = responseData.getString("memberType");
-                    String memberTypeName = responseData.getString("memberTypeName");
+                    String memberType = "";
+                    if (responseData.has("memberType")) {
+                        memberType = responseData.getString("memberType");
+                    }
+                    String memberTypeName = "";
+                    if (responseData.has("memberTypeName")) {
+                        memberTypeName = responseData.getString("memberTypeName");
+                    }
                     String accessstr = responseData.getString("accessId");
                     String uniquestr = json.getString("id");
                     String image = responseData.getString("faceTemplate");
