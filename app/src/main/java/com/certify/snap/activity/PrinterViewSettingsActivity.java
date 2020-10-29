@@ -337,12 +337,12 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     @Override
     public void onPrintComplete() {
-        //add code here
+        PrinterController.getInstance().setPrinting(false);
     }
 
     @Override
     public void onPrintError() {
-        //add code here
+        PrinterController.getInstance().setPrinting(false);
     }
 
     @Override
@@ -354,7 +354,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
 
     @Override
     public void onPrintUsbSuccess(String status, long resultCode) {
-        //add code here
+        PrinterController.getInstance().setPrinting(false);
     }
 
     public void saveAudioSettings(View view) {
@@ -418,5 +418,6 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
     @Override
     public void onPrintStatus(String status, int code) {
         Log.d(TAG, "Print Status " + status);
+        PrinterController.getInstance().setPrinting(false);
     }
 }

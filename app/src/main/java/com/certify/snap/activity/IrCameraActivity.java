@@ -2709,6 +2709,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             BLEController.getInstance().connectToDevice();
         }
         GestureController.getInstance().clearData();
+        PrinterController.getInstance().setPrinting(false);
     }
 
     private void setPreviewIdleTimer() {
