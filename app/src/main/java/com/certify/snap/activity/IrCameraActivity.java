@@ -670,7 +670,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         enableNfc();
         enableHidReader();
-        startCameraSource();
+        //startCameraSource();
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "1");
         if (longVal.equals("")) {
             delayMilli = 1;
@@ -682,16 +682,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             clearLeftFace(null);
         }
 
-        try {
-            if (cameraHelper != null) {
-                cameraHelper.start();
+        if (qrCodeEnable) {
+            resetQrCode();
+        } else {
+            try {
+                if (cameraHelper != null) {
+                    cameraHelper.start();
+                }
+                if (cameraHelperIr != null) {
+                    cameraHelperIr.start();
+                }
+            } catch (RuntimeException e) {
+                Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
+                Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
             }
-            if (cameraHelperIr != null) {
-                cameraHelperIr.start();
-            }
-        } catch (RuntimeException e) {
-            Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
-            Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
         }
         if (ApplicationController.getInstance().isDeviceBoot()) {
             showPrintMsgDialog();

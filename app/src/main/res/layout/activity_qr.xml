@@ -328,7 +328,6 @@
                 android:layout_height="100dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/enter_full_screen"
-                android:inputType="text"
                 android:paddingLeft="2dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
