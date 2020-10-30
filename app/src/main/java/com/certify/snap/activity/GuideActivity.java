@@ -76,6 +76,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public LocalServer localServer;
     ResetOfflineDataReceiver resetOfflineDataReceiver;
     public ExecutorService taskExecutorService;
+    private String gestureWorkFlow = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -355,6 +356,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 e.printStackTrace();
             }
             AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+            gestureWorkFlow = AppSettings.getGestureWorkFlow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WindowManager.LayoutParams attributes = getWindow().getAttributes();
                 attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -450,6 +452,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
     private void initGesture() {
         if (AppSettings.isEnableHandGesture()) {
+            if (!gestureWorkFlow.isEmpty() && !gestureWorkFlow.equals(AppSettings.getGestureWorkFlow())) {
+                GestureController.getInstance().clearQuestionAnswerMap();
+            }
             GestureController.getInstance().initContext(this);
             GestureController.getInstance().initHandGesture();
         }
