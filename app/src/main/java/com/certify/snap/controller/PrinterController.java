@@ -298,7 +298,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
             labelItemList.put( "Name Data",  name );
             labelItemList.put( "TimeScan Data",  dateTime );
             labelItemList.put( "Status Data", "PASS" );
-            labelItemList.put( "Type Data",  "  Thermal Scan  " );
+            labelItemList.put( "Type Data",  "Thermal Scan" );
             mPrintData.setObjectDataList(labelItemList);
         }
     }

@@ -3151,7 +3151,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void updatePrinterParameters(boolean highTemperature) {
-        Bitmap bitmap = rgbBitmap;
+        Bitmap bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
         String name = "";
         String nameTitle = "";
         String thermalText = "Thermal Scan";
