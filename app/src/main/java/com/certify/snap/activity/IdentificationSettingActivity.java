@@ -362,12 +362,16 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
                 if (charSequence.toString().isEmpty()) {
                     text_input_timeout.setError("");
                     return;
                 }
                 if (Integer.parseInt(charSequence.toString()) < 5) {
                     text_input_timeout.setError(getResources().getString(R.string.screen_timeout_msg));
+                }
+                } catch(NumberFormatException ex){
+                    Log.d(TAG, ex.getMessage());
                 }
             }
 
