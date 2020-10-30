@@ -19,9 +19,11 @@ import androidx.annotation.Nullable;
 import com.certify.callback.FlowListCallback;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectFlowList;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.GestureController;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,6 +42,7 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
     private EditText editTextWaveFooter;
+    private String gestureWorkFlow = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,6 +95,7 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         enableMask.setTypeface(rubikLight);
         enable_progress_bar.setTypeface(rubikLight);
         sharedPreferences = Util.getSharedPreferences(this);
+        gestureWorkFlow = AppSettings.getGestureWorkFlow();
         getFlowListAPI();
 
         editTextWaveFooter.setText(sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, getResources().getString(R.string.bottom_text)));
@@ -99,6 +103,9 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!gestureWorkFlow.isEmpty() && !gestureWorkFlow.equals(sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""))) {
+                    GestureController.getInstance().clearQuestionAnswerMap();
+                }
                 Util.writeString(sharedPreferences,GlobalParameters.WAVE_INDICATOR,editTextWaveFooter.getText().toString());
                 finish();
             }

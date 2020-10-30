@@ -58,6 +58,7 @@ public class AppSettings {
     private static boolean accessLogEnabled = false;
     private static boolean gestureProgressEnabled = false;
     private static String gestureMessage = "";
+    private static String gestureWorkFlow = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -118,6 +119,7 @@ public class AppSettings {
         accessLogEnabled = sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false);
         gestureProgressEnabled = sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR, false);
         gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, StringConstants.GESTURE_MESSAGE);
+        gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
     }
 
     public static String getThermalScanTitle() {
@@ -318,5 +320,9 @@ public class AppSettings {
 
     public static String getGestureMessage() {
         return gestureMessage;
+    }
+
+    public static String getGestureWorkFlow() {
+        return gestureWorkFlow;
     }
 }

@@ -644,6 +644,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
+    public void clearQuestionAnswerMap() {
+        questionAnswerMap.clear();
+    }
+
     public void checkGestureStatus() {
         if (runCheck) {
             if (connection != null) {
