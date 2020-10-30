@@ -2643,6 +2643,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
      */
     private boolean isFaceAngleCentered(Face3DAngle face3DAngle) {
         boolean result = false;
+        //In Pro-devices with mask on, face angle is not meeting the below criteria, so skip the face angle check
+        if (isProDevice && maskEnabled) return true;
+
         if (face3DAngle != null) {
             float yaw = face3DAngle.getYaw();
             //With mask, the yaw value is ranging from 30 - 50 with the face straight up
@@ -3151,7 +3154,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void updatePrinterParameters(boolean highTemperature) {
-        Bitmap bitmap = rgbBitmap;
+        Bitmap bitmap = Bitmap.createScaledBitmap(rgbBitmap, 288, 398, true);
         String name = "";
         String nameTitle = "";
         String thermalText = "Thermal Scan";
@@ -3329,7 +3332,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             setCameraPreview();
             int delay = 2 * 1000;
             if (isProDevice) {
-                delay = 1000;
+                delay = 1500;
             }
             new Handler().postDelayed(this::closeGestureFragment, delay);
         });
