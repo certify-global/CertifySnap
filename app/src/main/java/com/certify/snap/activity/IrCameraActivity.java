@@ -3206,7 +3206,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         name = member.firstname;
                     }
                 } else {
-                    nameTitle = "Name:";
+                    nameTitle = "";
                     name = "";
                 }
                 if (bitmap == null) {
