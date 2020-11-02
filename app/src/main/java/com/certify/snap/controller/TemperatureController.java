@@ -552,9 +552,16 @@ public class TemperatureController {
                 Log.e(TAG, "SnapXT Temperature updateGuideMsgOnTemperatureFail " + errorCode);
                 if (errorCode.contains("face out of range or for head too low") ||
                         errorCode.contains("face out of range or forhead too low")) {
-                    value = GuideMessage.FACE_OUT_OF_RANGE;
-                    if (callbackListener != null) {
-                        callbackListener.onTemperatureFail(value);
+                    if (AppSettings.getScanType() == 1) {
+                        if (callbackListener != null) {
+                            TemperatureController.getInstance().mTemperatureRetry++;
+                            callbackListener.onTemperatureLow(TemperatureController.getInstance().mTemperatureRetry, 0);
+                        }
+                    } else {
+                        value = GuideMessage.FACE_OUT_OF_RANGE;
+                        if (callbackListener != null) {
+                            callbackListener.onTemperatureFail(value);
+                        }
                     }
                 } else if (errorCode.contains("wrong tem , too cold")) {
                     value = GuideMessage.WRONG_TEMP_TOO_COLD;
@@ -573,9 +580,16 @@ public class TemperatureController {
                         e.printStackTrace();
                     }
                 } else if (errorCode.contains("not enough validData , get tem fail")) {
-                    value = GuideMessage.NOT_ENOUGH_DATA;
-                    if (callbackListener != null) {
-                        callbackListener.onTemperatureFail(value);
+                    if (AppSettings.getScanType() == 1) {
+                        if (callbackListener != null) {
+                            TemperatureController.getInstance().mTemperatureRetry++;
+                            callbackListener.onTemperatureLow(TemperatureController.getInstance().mTemperatureRetry, 0);
+                        }
+                    } else {
+                        value = GuideMessage.NOT_ENOUGH_DATA;
+                        if (callbackListener != null) {
+                            callbackListener.onTemperatureFail(value);
+                        }
                     }
                 }
             }

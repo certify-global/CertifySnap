@@ -3074,7 +3074,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onTemperatureLow(int retryCount, float temperature) {
         if (TemperatureController.getInstance().getTemperatureRetry() == Constants.TEMPERATURE_MAX_RETRY) {
             TemperatureController.getInstance().setTemperatureRetry(0);
-            if (temperature < MIN_TEMP_DISPLAY_THRESHOLD) {
+            if (temperature < MIN_TEMP_DISPLAY_THRESHOLD && (AppSettings.getScanType() != 1)) {
                 Log.d(TAG, "onTemperatureLow Temperature less than display threshold" + temperature);
                 return;
             }
