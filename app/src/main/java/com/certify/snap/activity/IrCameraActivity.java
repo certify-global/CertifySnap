@@ -3171,7 +3171,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
         String dateTime = date + " " + currentTime;
-        PrinterController.getInstance().setPrintData(name, dateTime);
+        PrinterController.getInstance().setPrintData(name, dateTime, highTemperature);
 
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
@@ -3197,7 +3197,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
-                PrinterController.getInstance().setPrintWaveData("", dateTime, thermalText);
+                PrinterController.getInstance().setPrintWaveData("", dateTime, thermalText, highTemperature);
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
@@ -3235,12 +3235,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (highTemperature) {
             tempPass.setText("");
             tempPass.setBackgroundColor(getColor(R.color.white));
+        } else {
+            tempPass.setText("PASS ");
         }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
         expireDate.setText(dateTime);
-        tempPass.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
