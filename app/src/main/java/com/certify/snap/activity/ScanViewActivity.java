@@ -184,6 +184,7 @@ public class ScanViewActivity extends SettingBaseActivity {
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_HIGH, et_high.getText().toString().trim());
                     Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
                     saveScanProximity();
+                    saveScanType();
                     finish();
                 }
             });
@@ -349,5 +350,13 @@ public class ScanViewActivity extends SettingBaseActivity {
                 scanTypeQuick.setChecked(false);
             }
         });
+    }
+
+    private void saveScanType() {
+        if (scanTypeQuick.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanType, 1);
+        } else if(scanTypeStandard.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.ScanType, 0);
+        }
     }
 }
