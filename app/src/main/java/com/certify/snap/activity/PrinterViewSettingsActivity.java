@@ -409,7 +409,7 @@ public class PrinterViewSettingsActivity extends SettingBaseActivity implements 
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
                 String dateTime = date + " " + currentTime;
-                PrinterController.getInstance().setPrintData("Test", dateTime, false);
+                PrinterController.getInstance().setPrintData("Name:", "Test", dateTime, "Thermal Scan", false);
                 PrinterController.getInstance().printUsb();
             }
         }).start();

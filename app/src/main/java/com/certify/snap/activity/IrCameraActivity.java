@@ -3172,8 +3172,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
         String dateTime = date + " " + currentTime;
-        PrinterController.getInstance().setPrintData(name, dateTime, highTemperature);
-
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
@@ -3198,7 +3196,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
-                PrinterController.getInstance().setPrintWaveData("", dateTime, thermalText, highTemperature);
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
@@ -3209,7 +3206,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         name = member.firstname;
                     }
                 } else {
-                    nameTitle = "Name:";
+                    nameTitle = "";
                     name = "";
                 }
                 if (bitmap == null) {
@@ -3217,6 +3214,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         }
+
+        PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText, highTemperature);
 
         convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }

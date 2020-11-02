@@ -292,9 +292,10 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         return mPrintData;
     }
 
-    public void setPrintData(String name, String dateTime, boolean highTemperature) {
+    public void setPrintData(String nameTitle, String name, String dateTime, String thermalText, boolean highTemperature) {
         if(AppSettings.isPrintUsbEnabled()){
             HashMap<String , String> labelItemList = new HashMap<>();
+            labelItemList.put( "Name",  nameTitle );
             labelItemList.put( "Name Data",  name );
             labelItemList.put( "TimeScan Data",  dateTime );
             if (!highTemperature) {
@@ -302,7 +303,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
             } else {
                 labelItemList.put("Status Data", "");
             }
-            labelItemList.put( "Type Data",  "Thermal Scan" );
+            labelItemList.put( "Type Data",  thermalText);
             mPrintData.setObjectDataList(labelItemList);
         }
     }
