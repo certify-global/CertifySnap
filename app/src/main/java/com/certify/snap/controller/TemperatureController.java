@@ -364,6 +364,7 @@ public class TemperatureController {
         isTemperatureInProcess = true;
         temperature = 0;
         if (AppSettings.getScanType() == 1) {
+            Log.d(TAG, "Temp set quick retry");
             mTemperatureRetry = Constants.TEMPERATURE_MAX_RETRY - 1;
         }
         if (trackIdMap.containsKey(requestId)) {
