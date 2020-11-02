@@ -2648,7 +2648,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isFaceAngleCentered(Face3DAngle face3DAngle) {
         boolean result = false;
         //In Pro-devices with mask on, face angle is not meeting the below criteria, so skip the face angle check
-        if (isProDevice && maskStatus == 1) return true;
+        //For quick scan, skip the face angle check
+        if ((isProDevice && maskStatus == 1) || (AppSettings.getScanType() == 1)) return true;
 
         if (face3DAngle != null) {
             float yaw = face3DAngle.getYaw();
