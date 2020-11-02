@@ -747,4 +747,8 @@
 
     <string name="wave_yes">&lt; YES </string>
     <string name="wave_no"> NO &gt; </string>
+    <string name="scan_type">Scan Type</string>
+    <string name="scan_type_quick">Quick</string>
+    <string name="scan_type_standard">Standard</string>
+
 </resources>

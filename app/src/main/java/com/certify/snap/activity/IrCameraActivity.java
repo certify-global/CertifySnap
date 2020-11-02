@@ -1611,7 +1611,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     data.temperature = tempValue;
                     data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
                     data.thermal = temperatureBitmap;
-                    data.maskStatus = String.valueOf(maskStatus);
+                    if (maskEnabled) {
+                        data.maskStatus = String.valueOf(maskStatus);
+                    } else {
+                        data.maskStatus = String.valueOf(-2);
+                    }
                     data.triggerType = CameraController.getInstance().getTriggerType();
                     data.machineTemperature = String.valueOf(TemperatureController.getInstance().getMachineTemperature());
                     data.ambientTemperature = String.valueOf(TemperatureController.getInstance().getAmbientTemperature());
@@ -2644,7 +2648,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isFaceAngleCentered(Face3DAngle face3DAngle) {
         boolean result = false;
         //In Pro-devices with mask on, face angle is not meeting the below criteria, so skip the face angle check
-        if (isProDevice && maskEnabled) return true;
+        if (isProDevice && maskStatus == 1) return true;
 
         if (face3DAngle != null) {
             float yaw = face3DAngle.getYaw();

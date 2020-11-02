@@ -1340,6 +1340,7 @@ public class Util {
                 String displayResultBar = jsonValueScan.isNull("displayResultBar") ? "1" : jsonValueScan.getString("displayResultBar");
                 String temperatureNormal = jsonValueScan.isNull("temperatureNormal") ? "" : jsonValueScan.getString("temperatureNormal");
                 String temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
+                String scanType = jsonValueScan.isNull("scanType") ? "1" : jsonValueScan.getString("scanType");
 
                 if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
@@ -1367,6 +1368,7 @@ public class Util {
                 Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, displayResultBar.equals("1"));
+                Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanType));
 
                 if (!temperatureNormal.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
@@ -1508,13 +1510,17 @@ public class Util {
                     String settingsID = touchlessInteractionSettings.isNull("settingId") ? "0" : touchlessInteractionSettings.getString("settingId");
                     String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
                     String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
-                    Log.d("CertifyXT flow",settingsID);
+                    String showWaveProgress = touchlessInteractionSettings.isNull("showWaveProgress") ? "0" : touchlessInteractionSettings.getString("showWaveProgress");
+                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? StringConstants.GESTURE_MESSAGE : touchlessInteractionSettings.getString("waveIndicatorInstructions");
+                    Log.d("CertifyXT flow", settingsID);
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
                     Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, settingsID);
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, showWaveProgress.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, waveInstructions);
                 }
 
 

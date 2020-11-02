@@ -10,6 +10,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.google.android.material.textfield.TextInputLayout;
@@ -29,6 +30,10 @@ public class ScanViewActivity extends SettingBaseActivity {
     private RadioGroup scanProximityRg;
     private RadioButton scanProximityYes;
     private RadioButton scanProximityNo;
+    private TextView scanType;
+    private RadioGroup scanTypeRg;
+    private RadioButton scanTypeQuick;
+    private RadioButton scanTypeStandard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +102,8 @@ public class ScanViewActivity extends SettingBaseActivity {
 
             setDefaultScanProximity();
             setScanProximityClickListener();
+            setScanTypeDefault();
+            setScanTypeClickListener();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -225,6 +232,10 @@ public class ScanViewActivity extends SettingBaseActivity {
         radio_group_bar = findViewById(R.id.radio_group_bar);
         et_normal = findViewById(R.id.et_normal);
         et_high = findViewById(R.id.et_high);
+        scanType = findViewById(R.id.scan_type);
+        scanTypeRg = findViewById(R.id.scan_type_rg);
+        scanTypeQuick = findViewById(R.id.scan_type_quick);
+        scanTypeStandard = findViewById(R.id.scan_type_standard);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -243,6 +254,7 @@ public class ScanViewActivity extends SettingBaseActivity {
         tv_temp_text.setTypeface(rubiklight);
         tv_temp_text_normal.setTypeface(rubiklight);
         tv_temp_text_high.setTypeface(rubiklight);
+        scanType.setTypeface(rubiklight);
 
     }
 
@@ -315,5 +327,27 @@ public class ScanViewActivity extends SettingBaseActivity {
         } else if(scanProximityNo.isChecked()) {
             Util.writeBoolean(sp, GlobalParameters.ScanProximity, false);
         }
+    }
+
+    private void setScanTypeDefault() {
+        if (sp.getInt(GlobalParameters.ScanType, Constants.DEFAULT_SCAN_TYPE) == 1) {
+            scanTypeQuick.setChecked(true);
+            scanTypeStandard.setChecked(false);
+        } else {
+            scanTypeStandard.setChecked(true);
+            scanTypeQuick.setChecked(false);
+        }
+    }
+
+    private void setScanTypeClickListener() {
+        scanTypeRg.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            if (checkedId == R.id.radio_scanmode_easy) {
+                scanTypeQuick.setChecked(true);
+                scanTypeStandard.setChecked(false);
+            } else if (checkedId == R.id.radio_scanmode_strict) {
+                scanTypeStandard.setChecked(true);
+                scanTypeQuick.setChecked(false);
+            }
+        });
     }
 }
