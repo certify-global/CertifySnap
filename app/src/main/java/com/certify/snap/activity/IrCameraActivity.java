@@ -3171,7 +3171,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
         String dateTime = date + " " + currentTime;
-        PrinterController.getInstance().setPrintData(name, dateTime);
 
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
@@ -3216,6 +3215,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         }
+
+        PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText);
 
         convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }

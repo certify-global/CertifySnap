@@ -292,13 +292,14 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         return mPrintData;
     }
 
-    public void setPrintData(String name, String dateTime) {
+    public void setPrintData(String nameTitle, String name, String dateTime, String thermalText) {
         if(AppSettings.isPrintUsbEnabled()){
             HashMap<String , String> labelItemList = new HashMap<>();
+            labelItemList.put( "Name",  nameTitle );
             labelItemList.put( "Name Data",  name );
             labelItemList.put( "TimeScan Data",  dateTime );
             labelItemList.put( "Status Data", "PASS" );
-            labelItemList.put( "Type Data",  "Thermal Scan" );
+            labelItemList.put( "Type Data",  thermalText);
             mPrintData.setObjectDataList(labelItemList);
         }
     }
