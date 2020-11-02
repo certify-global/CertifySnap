@@ -11,6 +11,7 @@ import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.model.TemperatureRect;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.MemberSyncDataModel;
@@ -362,6 +363,9 @@ public class TemperatureController {
         if (thermalImageUtil == null || isTemperatureInProcess) return;
         isTemperatureInProcess = true;
         temperature = 0;
+        if (AppSettings.getScanType() == 1) {
+            mTemperatureRetry = Constants.TEMPERATURE_MAX_RETRY - 1;
+        }
         if (trackIdMap.containsKey(requestId)) {
             Log.d(TAG, "Track Id already exist");
             return;

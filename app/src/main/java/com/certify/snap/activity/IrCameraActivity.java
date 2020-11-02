@@ -2648,7 +2648,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isFaceAngleCentered(Face3DAngle face3DAngle) {
         boolean result = false;
         //In Pro-devices with mask on, face angle is not meeting the below criteria, so skip the face angle check
-        if (isProDevice && maskStatus == 1) return true;
+        //For quick scan, skip the face angle check
+        if ((isProDevice && maskStatus == 1) || (AppSettings.getScanType() == 1)) return true;
 
         if (face3DAngle != null) {
             float yaw = face3DAngle.getYaw();
@@ -3171,7 +3172,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
         String dateTime = date + " " + currentTime;
-
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
@@ -3196,7 +3196,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
                 thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
-                PrinterController.getInstance().setPrintWaveData("", dateTime, thermalText);
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
@@ -3216,7 +3215,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
 
-        PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText);
+        PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText, highTemperature);
 
         convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }
@@ -3236,12 +3235,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (highTemperature) {
             tempPass.setText("");
             tempPass.setBackgroundColor(getColor(R.color.white));
+        } else {
+            tempPass.setText("PASS ");
         }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
         }
         expireDate.setText(dateTime);
-        tempPass.setText("PASS ");
         linearLayout.setDrawingCacheEnabled(true);
         linearLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
