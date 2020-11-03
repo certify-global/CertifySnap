@@ -3,9 +3,6 @@
 
     <!--settings、choose function page-->
     <string name="active_failed">License activation failed,Please contact Certify.</string>
-    <string name="notification">notification</string>
-    <string name="confirm_delete">delete the images , face features and clear database ?</string>
-    <string name="ok">OK</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="registering_please_wait">registering,please wait</string>
@@ -32,16 +29,6 @@
     <string name="living_type_1">Yes</string>
 
     <string name="txt_data_management_title">Data Management</string>
-    <string name="txt_initialize_title">Initialization</string>
-    <string name="dialog_initialize_wait">Processing...please wait for a while</string>
-    <string name="txt_data_clear_all">Clear all data</string>
-    <string name="txt_initialize_delete">clear</string>
-    <string name="txt_initialize_import_data_wait_dialog_title">The result of import data to database</string>
-    <string name="txt_initialize_import_data_wait_dialog_result">Database initialization completed</string>
-
-    <string name="txt_update_title">Update</string>
-    <string name="txt_update_auto">Auto update</string>
-    <string name="txt_update_manual">Manual update</string>
 
 
     <string name="led_switch">LED Switch: </string>
@@ -50,20 +37,8 @@
 
     <string name="relayinfo">Please input a time!</string>
 
-    <string name="text_batchimport">batch import</string>
-    <string name="text_batchimporthint">Note:\nTo batch import, you need to put the picture file in this path.\n\n Path: /sdcard/offline/register/ \n File format: .jpg \n Name format:\n peter_12345678901_2020-04-09-12-10-00.jpg\n Note that the third parameter time is the validity time.</string>
-    <string name="toast_filenotexist">No files found. Please add at least one picture file to this folder</string>
-    <string name="toast_batch_translateBitmapfail">Translate failed! Fail to translate bitmap!</string>
-
-    <string name="text_nfc_activatecard">Activate Card</string>
-    <string name="text_nfc_title">Activate Card</string>
     <string name="toast_guide_permission">Please give permission manually!</string>
-    <string name="toast_init_deleteinfo"> faces cleared!</string>
 
-    <string name="toast_init_batchtotal">total count =&#160;</string>
-    <string name="toast_init_batchsuccess">success count =&#160;</string>
-    <string name="toast_init_batchfailed">failed count =&#160;</string>
-    <string name="toast_init_batchresult">failed images are in directory: /sdcard/offline/failed/</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="welcome">Welcome&#160;</string>
@@ -156,15 +131,9 @@
     <string name="temperature_calibration">Temperature Calibration</string>
     <string name="app_serial">Serial No:</string>
     <string name="tv_guide_setting">Guide Settings</string>
-    <string name="enable_guide">Enable Guide</string>
-    <string name="enter_text1">Text1</string>
-    <string name="enter_text2">Text2</string>
-    <string name="enter_text3">Text3</string>
-    <string name="enter_text4">Text4</string>
     <string name="text_value1">Please center your face to the screen.</string>
     <string name="text_value2">Move closer and center your face.</string>
     <string name="text_value3">Please wait, preparing to scan.</string>
-    <string name="text_value4">Please step closer</string>
     <string name="snack_msg">Retrieving updated settings</string>
     <string name="invalid_pwd">Invalid Password</string>
     <string name="allow_low">Allow low temperature scanning</string>
