@@ -15,7 +15,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class ScanViewActivity extends SettingBaseActivity {
+public class ScanSettingsActivity extends SettingsBaseActivity {
 
     private SharedPreferences sp;
     EditText et_screen_delay,editTextDialogUserInput_low,et_normal,et_high;
@@ -182,7 +182,7 @@ public class ScanViewActivity extends SettingBaseActivity {
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_NORMAL, et_normal.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_HIGH, et_high.getText().toString().trim());
-                    Util.showToast(ScanViewActivity.this, getString(R.string.save_success));
+                    Util.showToast(ScanSettingsActivity.this, getString(R.string.save_success));
                     saveScanProximity();
                     saveScanType();
                     finish();

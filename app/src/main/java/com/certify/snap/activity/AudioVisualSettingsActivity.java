@@ -2,7 +2,6 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -15,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -25,13 +23,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -50,18 +46,16 @@ import com.certify.snap.bluetooth.data.DeviceInfoManager;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.BLEController;
-import com.certify.snap.controller.PrinterController;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.ButterKnife;
 
 import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
-public class AudioVisualActivity extends SettingBaseActivity {
+public class AudioVisualSettingsActivity extends SettingsBaseActivity {
 
     private SharedPreferences sp ;
     TextView tv_sound_high, tv_sound, btn_save, tv_light_low, tv_light_high, tv_ble_test, tv_ble_connect, tv_ble_status,
@@ -70,7 +64,7 @@ public class AudioVisualActivity extends SettingBaseActivity {
     Typeface rubiklight;
     LinearLayout visul_alert_layout;
 
-    private final String TAG = AudioVisualActivity.this.getClass().getSimpleName();
+    private final String TAG = AudioVisualSettingsActivity.this.getClass().getSimpleName();
 
     private boolean mConnected = false;
 
@@ -256,8 +250,8 @@ public class AudioVisualActivity extends SettingBaseActivity {
     }
 
     public void saveAudioSettings(View view){
-        Util.showToast(AudioVisualActivity.this, getString(R.string.save_success));
-        startActivity(new Intent(this, SettingActivity.class));
+        Util.showToast(AudioVisualSettingsActivity.this, getString(R.string.save_success));
+        startActivity(new Intent(this, SettingsActivity.class));
         finish();
     }
 

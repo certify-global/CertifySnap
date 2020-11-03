@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class ConnectivityStatusActivity extends SettingBaseActivity implements JSONObjectCallback{
+public class ConnectivityStatusActivity extends SettingsBaseActivity implements JSONObjectCallback{
 
     private static final String TAG = ConnectivityStatusActivity.class.getSimpleName();
     LinearLayout mRelativeConnectivity;

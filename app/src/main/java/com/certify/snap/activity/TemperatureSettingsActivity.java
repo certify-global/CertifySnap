@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -9,25 +8,19 @@ import androidx.annotation.Nullable;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
-import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.CameraController;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class TemperatureActivity extends SettingBaseActivity {
+public class TemperatureSettingsActivity extends SettingsBaseActivity {
     EditText editTextDialogUserInput,editTextcompensation, editTextTemperatureThreshold;
     SharedPreferences sp;
     TextView btn_save, temperatureThresholdText;
@@ -115,7 +108,7 @@ public class TemperatureActivity extends SettingBaseActivity {
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Util.showToast(TemperatureActivity.this, getString(R.string.save_success));
+                Util.showToast(TemperatureSettingsActivity.this, getString(R.string.save_success));
                 Util.writeString(sp, GlobalParameters.TEMP_TEST, editTextDialogUserInput.getText().toString().trim());
                 Util.writeFloat(sp, GlobalParameters.COMPENSATION,Float.parseFloat(editTextcompensation.getText().toString().trim()));
                 Util.writeFloat(sp, GlobalParameters.DISPLAY_TEMP_THRESHOLD,Float.parseFloat(editTextTemperatureThreshold.getText().toString().trim()));

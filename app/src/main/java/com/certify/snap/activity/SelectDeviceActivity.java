@@ -31,7 +31,7 @@ import butterknife.ButterKnife;
 
 import static com.tamic.novate.Novate.TAG;
 
-public class SelectDeviceActivity extends SettingBaseActivity {
+public class SelectDeviceActivity extends SettingsBaseActivity {
 
     public boolean mScanning;
     private BluetoothAdapter mBluetoothAdapter;
@@ -195,7 +195,7 @@ public class SelectDeviceActivity extends SettingBaseActivity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, AudioVisualActivity.class));
+        startActivity(new Intent(this, AudioVisualSettingsActivity.class));
         finish();
     }
 }

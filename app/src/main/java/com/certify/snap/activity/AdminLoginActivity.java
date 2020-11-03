@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,7 +15,6 @@ import androidx.annotation.Nullable;
 import com.certify.callback.JSONObjectCallbackLogin;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectLogin;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -32,7 +30,7 @@ import java.util.List;
 
 import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
-public class AdminLoginActivity extends SettingBaseActivity implements JSONObjectCallbackLogin {
+public class AdminLoginActivity extends SettingsBaseActivity implements JSONObjectCallbackLogin {
     private static String TAG = "AdminLoginActivity -> ";
     EditText etPassword,etEmail;
     SharedPreferences sharedPreferences;

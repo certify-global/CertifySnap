@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,7 +8,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
-public abstract class SettingBaseActivity extends BaseActivity {
+public abstract class SettingsBaseActivity extends BaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,7 +30,7 @@ public abstract class SettingBaseActivity extends BaseActivity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, SettingActivity.class));
+        startActivity(new Intent(this, SettingsActivity.class));
         finish();
     }
 }

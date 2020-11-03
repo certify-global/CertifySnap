@@ -51,9 +51,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class RecordActivity extends AppCompatActivity {
+public class OfflineRecordsActivity extends AppCompatActivity {
 
-    protected static final String TAG = RecordActivity.class.getSimpleName();
+    protected static final String TAG = OfflineRecordsActivity.class.getSimpleName();
     private RecyclerView recyclerView;
     private RecordAdapter recordAdapter;
     private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
@@ -127,7 +127,7 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     private void initMember() {
-        recordAdapter = new RecordAdapter(RecordActivity.this, datalist);
+        recordAdapter = new RecordAdapter(OfflineRecordsActivity.this, datalist);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(recordAdapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -254,7 +254,7 @@ public class RecordActivity extends AppCompatActivity {
                     Log.e("exportdate---",starttime+"-"+endtime);
                     Log.e("isvaliddate---", Util.isValidDate(starttime,"yyyy-MM")+"-"+ Util.isValidDate(endtime,"yyyy-MM"));
                 }else{
-                    Toast.makeText(RecordActivity.this,"Please input full date!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OfflineRecordsActivity.this,"Please input full date!",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -284,7 +284,7 @@ public class RecordActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.record_back:
-                startActivity(new Intent(RecordActivity.this, SettingActivity.class));
+                startActivity(new Intent(OfflineRecordsActivity.this, SettingsActivity.class));
                 finish();
                 break;
             case R.id.record_export:

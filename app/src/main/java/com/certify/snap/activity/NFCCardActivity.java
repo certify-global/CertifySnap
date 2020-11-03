@@ -60,7 +60,7 @@ public class NFCCardActivity extends AppCompatActivity {
                 new InitTask().execute();
                 break;
             case R.id.nfc_back:
-                startActivity(new Intent(NFCCardActivity.this,SettingActivity.class));
+                startActivity(new Intent(NFCCardActivity.this, SettingsActivity.class));
                 finish();
                 break;
         }

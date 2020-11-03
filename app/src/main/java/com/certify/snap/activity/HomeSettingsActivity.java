@@ -1,7 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.TextInputLayout;
 
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -22,7 +19,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
-public class ThermalSetting extends SettingBaseActivity {
+public class HomeSettingsActivity extends SettingsBaseActivity {
     TextInputLayout text_input_title, text_input_subtitle;
     EditText edittext_subtitle, edittext_title, etDisplayTime, etOnlyText;
     SharedPreferences sp;
@@ -83,7 +80,7 @@ public class ThermalSetting extends SettingBaseActivity {
                         Util.writeInt(sp, GlobalParameters.HOME_DISPLAY_TIME, Integer.parseInt(etDisplayTime.getText().toString()));
                     if (!etOnlyText.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, etOnlyText.getText().toString());
-                    Util.showToast(ThermalSetting.this, getString(R.string.save_success));
+                    Util.showToast(HomeSettingsActivity.this, getString(R.string.save_success));
                     finish();
                 }
             });

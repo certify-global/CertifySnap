@@ -12,7 +12,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
@@ -93,7 +92,7 @@ public class LoginActivity extends BaseActivity {
                                 Util.openDialogSetting(LoginActivity.this);
                                 // finish();
                             } else {
-                                Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, SettingsActivity.class);
                                 startActivity(intent);
                                 finish();
                                 updateAppStatusInfo("LOGIN SUCCESS", AppStatusInfo.LOGIN_SUCCESS);
@@ -146,7 +145,7 @@ public class LoginActivity extends BaseActivity {
             Util.openDialogSetting(LoginActivity.this);
             // finish();
         }else {
-            Intent intent = new Intent(LoginActivity.this, SettingActivity.class);
+            Intent intent = new Intent(LoginActivity.this, SettingsActivity.class);
             startActivity(intent);
             finish();
             updateAppStatusInfo("LOGIN SUCCESS", AppStatusInfo.LOGIN_SUCCESS);

@@ -1,7 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -10,8 +8,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -19,12 +15,11 @@ import android.widget.TextView;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 
-public class ConfirmationViewSetting extends SettingBaseActivity {
-    private static final String TAG = ConfirmationViewSetting.class.getSimpleName();
+public class ConfirmationSettingsActivity extends SettingsBaseActivity {
+    private static final String TAG = ConfirmationSettingsActivity.class.getSimpleName();
     Typeface rubiklight;
     TextView confirmation_screen, tv_confirm_above, tv_confirm_below,confirmation_above;
     TextInputLayout text_input_title_below, text_input_subtitle_below, text_input_title_above, text_input_subtitle_above, text_input_delay;
@@ -111,7 +106,7 @@ public class ConfirmationViewSetting extends SettingBaseActivity {
                         Util.writeString(sp, GlobalParameters.Confirm_title_above, edittext_title_above.getText().toString());
                     if (!edittext_subtitle_above.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.Confirm_subtitle_above, edittext_subtitle_above.getText().toString());
-                    Util.showToast(ConfirmationViewSetting.this, getString(R.string.save_success));
+                    Util.showToast(ConfirmationSettingsActivity.this, getString(R.string.save_success));
                     finish();
                 }
             });

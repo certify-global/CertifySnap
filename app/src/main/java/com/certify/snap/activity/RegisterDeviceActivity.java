@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import com.certify.callback.AddDeviceCallback;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectAddDevice;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -28,7 +27,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONObject;
 
 
-public class RegisterDeviceActivity extends SettingBaseActivity implements AddDeviceCallback {
+public class RegisterDeviceActivity extends SettingsBaseActivity implements AddDeviceCallback {
     private static String TAG = "RegisterDeviceActivity -> ";
 
     EditText edittext_device_name,edittext_sno,edittext_imei;

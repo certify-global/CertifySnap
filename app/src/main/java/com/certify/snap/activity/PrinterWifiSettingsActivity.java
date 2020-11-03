@@ -19,7 +19,7 @@ import com.certify.snap.view.PrinterMsgDialog;
 
 import java.util.ArrayList;
 
-public class NetPrinterActivity extends ListActivity {
+public class PrinterWifiSettingsActivity extends ListActivity {
 
     // information
     private final PrinterMsgDialog msgDialog = new PrinterMsgDialog(this);
@@ -111,7 +111,7 @@ public class NetPrinterActivity extends ListActivity {
         if (!item.equalsIgnoreCase(getString(R.string.no_network_device))) {
             // send the selected printer info. to Settings Activity and close
             // the current Activity
-            final Intent settings = new Intent(this, PrinterSettingsActivity.class);
+            final Intent settings = new Intent(this, PrinterWifiBTSettingsActivity.class);
             settings.putExtra("ipAddress", mNetPrinter[position].ipAddress);
             settings.putExtra("macAddress", mNetPrinter[position].macAddress);
             settings.putExtra("localName", "");
@@ -175,9 +175,9 @@ public class NetPrinterActivity extends ListActivity {
                     @Override
                     public void run() {
                         final ArrayAdapter<String> fileList = new ArrayAdapter<String>(
-                                NetPrinterActivity.this,
+                                PrinterWifiSettingsActivity.this,
                                 android.R.layout.test_list_item, mItems);
-                        NetPrinterActivity.this.setListAdapter(fileList);
+                        PrinterWifiSettingsActivity.this.setListAdapter(fileList);
                     }
                 });
             }
@@ -217,7 +217,7 @@ public class NetPrinterActivity extends ListActivity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, PrinterSettingsActivity.class));
+        startActivity(new Intent(this, PrinterWifiBTSettingsActivity.class));
         finish();
     }
 }

@@ -70,11 +70,7 @@ import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
-import com.certify.snap.database.Database;
-import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
-import com.certify.snap.model.GuestMembers;
-import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.HotImageCallback;
@@ -346,7 +342,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 if (etPassword.getText().toString().equals(sp.getString("device_password", "123456"))) {
-                                    Intent loginIt = new Intent(RgbCameraActivity.this, SettingActivity.class);
+                                    Intent loginIt = new Intent(RgbCameraActivity.this, SettingsActivity.class);
                                     startActivity(loginIt);
                                     finish();
                                 } else {

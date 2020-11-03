@@ -27,16 +27,12 @@ import android.widget.TextView;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
-import com.certify.snap.database.Database;
-import com.certify.snap.database.DatabaseStore;
-import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.bean.ImageInfo;
 import com.certify.snap.bean.Members;
 import com.certify.snap.bean.Pages;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
-import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
 import java.io.File;
@@ -411,7 +407,7 @@ public class InitializationActivity extends Activity {
     }
 
     public void onDataManagementback(View view) {
-        startActivity(new Intent(InitializationActivity.this, SettingActivity.class));
+        startActivity(new Intent(InitializationActivity.this, SettingsActivity.class));
         finish();
     }
 

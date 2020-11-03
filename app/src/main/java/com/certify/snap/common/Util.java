@@ -62,7 +62,7 @@ import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
-import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.activity.SettingsActivity;
 import com.certify.snap.async.AsyncDeviceLog;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
@@ -1748,7 +1748,7 @@ public class Util {
             @Override
             public void onClick(View v) {
                 d.dismiss();
-                Intent intent = new Intent(context, SettingActivity.class);
+                Intent intent = new Intent(context, SettingsActivity.class);
                 context.startActivity(intent);
             }
         });

@@ -12,7 +12,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Util;
 
-public class ParameterActivity extends SettingBaseActivity {
+public class ParameterActivity extends SettingsBaseActivity {
 
     private EditText relaytime;
     RadioGroup radioGroupCamera,radioGroupLiving,radioGroupOrientation,radioGroupFtOrient;

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
@@ -13,8 +12,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.certify.snap.R;
 import com.common.thermalimage.CalibrationCallBack;
@@ -25,7 +22,7 @@ import com.common.thermalimage.ThermalImageUtil;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class TemperatureCalibrationGuideActivity extends SettingBaseActivity {
+public class TemperatureCalibrationGuideActivity extends SettingsBaseActivity {
 
 
     ThermalImageUtil util;
@@ -52,7 +49,7 @@ public class TemperatureCalibrationGuideActivity extends SettingBaseActivity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, TemperatureActivity.class));
+        startActivity(new Intent(this, TemperatureSettingsActivity.class));
         finish();
     }
 

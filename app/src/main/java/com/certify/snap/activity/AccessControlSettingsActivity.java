@@ -19,7 +19,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 
-public class AccessControlActivity extends SettingBaseActivity {
+public class AccessControlSettingsActivity extends SettingsBaseActivity {
     private CheckBox mEnableRelayCb;
     private CheckBox mAllowAnonymousCb;
     private RadioGroup mModesRg;

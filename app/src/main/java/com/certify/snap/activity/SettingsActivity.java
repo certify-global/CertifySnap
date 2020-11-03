@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,7 +15,6 @@ import android.provider.MediaStore;
 import androidx.annotation.RequiresApi;
 
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.License;
 import com.certify.snap.controller.DatabaseController;
 import com.google.android.material.snackbar.Snackbar;
@@ -26,8 +24,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -49,7 +45,6 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
-import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.DeviceHealthService;
 
 import org.json.JSONObject;
@@ -62,12 +57,11 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.GlobalParameters.DEVICE_NAME;
-import static com.certify.snap.common.GlobalParameters.DEVICE_SETTINGS_NAME;
 import static com.certify.snap.common.GlobalParameters.ONLINE_MODE;
 
-public class SettingActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
+public class SettingsActivity extends SettingsBaseActivity implements JSONObjectCallback, SettingCallback {
 
-    private static final String TAG = SettingActivity.class.getSimpleName();
+    private static final String TAG = SettingsActivity.class.getSimpleName();
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature,
@@ -99,7 +93,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_setting);
-            Util.getNumberVersion(SettingActivity.this);
+            Util.getNumberVersion(SettingsActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sharedPreferences = Util.getSharedPreferences(this);
@@ -131,7 +125,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                     if (isChecked) {
                         Toast.makeText(getApplicationContext(), getString(R.string.online_msg), Toast.LENGTH_LONG).show();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, true);
-                        Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                        Util.activateApplication(SettingsActivity.this, SettingsActivity.this);
 
                     } else {
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
@@ -155,7 +149,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 @Override
                 public void onClick(View v) {
                     if (sharedPreferences.getBoolean(ONLINE_MODE, true)) {
-                        Util.getSettings(SettingActivity.this, SettingActivity.this);
+                        Util.getSettings(SettingsActivity.this, SettingsActivity.this);
                         Snackbar snackbar = Snackbar
                                 .make(relative_layout, R.string.snack_msg, Snackbar.LENGTH_LONG);
                         snackbar.show();
@@ -171,7 +165,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             mConnectivityStatus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(SettingActivity.this, ConnectivityStatusActivity.class));
+                    startActivity(new Intent(SettingsActivity.this, ConnectivityStatusActivity.class));
                 }
             });
             if (sharedPreferences.getBoolean(ONLINE_MODE, true)) {
@@ -291,7 +285,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
     @Override
     protected void onResume() {
         super.onResume();
-        if (Util.isNetworkOff(SettingActivity.this)) {
+        if (Util.isNetworkOff(SettingsActivity.this)) {
             record.setVisibility(View.VISIBLE);
             recordDivider.setVisibility(View.VISIBLE);
         }else {
@@ -319,8 +313,8 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         boolean isopen = sharedPreferences.getBoolean("activate", false);
         switch (view.getId()) {
             case R.id.setting_activate:
-                if (Util.isConnectingToInternet(SettingActivity.this) && sharedPreferences.getBoolean(ONLINE_MODE, true)) {
-                    Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                if (Util.isConnectingToInternet(SettingsActivity.this) && sharedPreferences.getBoolean(ONLINE_MODE, true)) {
+                    Util.activateApplication(SettingsActivity.this, SettingsActivity.this);
                 } else {
                     Snackbar snackbar = Snackbar
                             .make(relative_layout, R.string.offline_msg, Snackbar.LENGTH_LONG);
@@ -328,33 +322,33 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 }
                 break;
             case R.id.rl_device_setting:
-                startActivity(new Intent(SettingActivity.this, DeviceSettingsActivity.class));
+                startActivity(new Intent(SettingsActivity.this, DeviceSettingsActivity.class));
                 break;
             case R.id.setting_init:
                 if (isopen)
-                    startActivity(new Intent(SettingActivity.this, InitializationActivity.class));
+                    startActivity(new Intent(SettingsActivity.this, InitializationActivity.class));
                 break;
             case R.id.setting_managment:
                 if (isopen)
-                    startActivity(new Intent(SettingActivity.this, ManagementActivity.class));
+                    startActivity(new Intent(SettingsActivity.this, MemberManagementActivity.class));
                 break;
             case R.id.setting_register:
                 break;
             case R.id.setting_parameter:
                 if (isopen)
-                    startActivity(new Intent(SettingActivity.this, ParameterActivity.class));
+                    startActivity(new Intent(SettingsActivity.this, ParameterActivity.class));
                 break;
             case R.id.setting_led:
                 break;
             case R.id.setting_activate_card:
-                if (isopen) startActivity(new Intent(SettingActivity.this, NFCCardActivity.class));
+                if (isopen) startActivity(new Intent(SettingsActivity.this, NFCCardActivity.class));
                 break;
             case R.id.setting_record:
-                if (isopen) startActivity(new Intent(SettingActivity.this, RecordActivity.class));
+                if (isopen) startActivity(new Intent(SettingsActivity.this, OfflineRecordsActivity.class));
                 break;
             case R.id.setting_temperature:
                 //temperatureDialog();
-                Intent tempIntent = new Intent(SettingActivity.this, TemperatureActivity.class);
+                Intent tempIntent = new Intent(SettingsActivity.this, TemperatureSettingsActivity.class);
                 startActivity(tempIntent);
                 break;
             case R.id.setting_upload:
@@ -371,43 +365,43 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 endpointDialog();
                 break;
             case R.id.thermal_check_setting:
-                Intent intent = new Intent(SettingActivity.this, ThermalSetting.class);
+                Intent intent = new Intent(SettingsActivity.this, HomeSettingsActivity.class);
                 startActivity(intent);
                 break;
             case R.id.scan_setting:
-                Intent intent1 = new Intent(SettingActivity.this, ScanViewActivity.class);
+                Intent intent1 = new Intent(SettingsActivity.this, ScanSettingsActivity.class);
                 startActivity(intent1);
                 break;
             case R.id.confirmation_setting:
-                Intent confirmationIntent = new Intent(SettingActivity.this, ConfirmationViewSetting.class);
+                Intent confirmationIntent = new Intent(SettingsActivity.this, ConfirmationSettingsActivity.class);
                 startActivity(confirmationIntent);
                 break;
             case R.id.guide_setting:
-                Intent guideIntent = new Intent(SettingActivity.this, GuideViewSetting.class);
+                Intent guideIntent = new Intent(SettingsActivity.this, GuideSettingsActivity.class);
                 startActivity(guideIntent);
                 break;
             case R.id.qr_setting:
-                Intent qrintent = new Intent(SettingActivity.this, IdentificationSettingActivity.class);
+                Intent qrintent = new Intent(SettingsActivity.this, IdentificationSettingsActivity.class);
                 startActivity(qrintent);
                 break;
             case R.id.access_control:
-                Intent acIntent = new Intent(SettingActivity.this, AccessControlActivity.class);
+                Intent acIntent = new Intent(SettingsActivity.this, AccessControlSettingsActivity.class);
                 startActivity(acIntent);
                 break;
             case R.id.management_setting:
-                Intent memberIntent = new Intent(SettingActivity.this, ManagementActivity.class);
+                Intent memberIntent = new Intent(SettingsActivity.this, MemberManagementActivity.class);
                 startActivity(memberIntent);
                 break;
             case R.id.audio_visual_setting:
-                Intent visualIntent = new Intent(SettingActivity.this, AudioVisualActivity.class);
+                Intent visualIntent = new Intent(SettingsActivity.this, AudioVisualSettingsActivity.class);
                 startActivity(visualIntent);
                 break;
             case R.id.printer_settings_layout:
-                Intent printerIntent = new Intent(SettingActivity.this, PrinterViewSettingsActivity.class);
+                Intent printerIntent = new Intent(SettingsActivity.this, PrinterSettingsActivity.class);
                 startActivity(printerIntent);
                 break;
             case R.id.touchless_interaction:
-                Intent touchlessIntent = new Intent(SettingActivity.this, GestureActivity.class);
+                Intent touchlessIntent = new Intent(SettingsActivity.this, TouchlessSettingsActivity.class);
                 startActivity(touchlessIntent);
                 break;
             case R.id.btn_exit:
@@ -444,7 +438,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                                     //LitePal.deleteAll(RegisteredMembers.class);
                                     DatabaseController.getInstance().deleteAllMember();
                                     Util.clearAllSharedPreferences(sharedPreferences);
-                                    Util.activateApplication(SettingActivity.this, SettingActivity.this);
+                                    Util.activateApplication(SettingsActivity.this, SettingsActivity.this);
                                 }
                                 String url = userInput.getText().toString().trim();
                                 if (url.endsWith("/"))
@@ -472,7 +466,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
 
         final EditText acceptUserInput = view.findViewById(R.id.access_pwd);
 
-        final AlertDialog alertDialog = new AlertDialog.Builder(SettingActivity.this)
+        final AlertDialog alertDialog = new AlertDialog.Builder(SettingsActivity.this)
                 .setView(view)
                 .setCancelable(false)
                 .setPositiveButton("Ok", null)
@@ -568,7 +562,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 json1 = new JSONObject(reportInfo.replace("\\", ""));
             }
 
-            Util.getTokenActivate(reportInfo, status, SettingActivity.this, "setting");
+            Util.getTokenActivate(reportInfo, status, SettingsActivity.this, "setting");
             startHealthCheckService();
             if (json1.isNull("responseSubCode")) return;
             if (json1.getString("responseSubCode").equals("104")) {
@@ -600,7 +594,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             } else {
                 if (reportInfo.isNull("responseCode")) return;
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    Util.retrieveSetting(reportInfo, SettingActivity.this);
+                    Util.retrieveSetting(reportInfo, SettingsActivity.this);
                 } else {
                     Logger.toast(this, "Something went wrong please try again");
                 }
@@ -700,7 +694,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         ProgressDialog.show(this, "", "Launching Home Screen, Please wait...");
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
-                    AppSettings.getInstance().getSettingsFromSharedPref(SettingActivity.this);
+                    AppSettings.getInstance().getSettingsFromSharedPref(SettingsActivity.this);
                     emitter.onNext(true);
                 })
                 .subscribeOn(Schedulers.computation())
@@ -742,7 +736,7 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
                 startActivity(new Intent(this, ProIrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
         } else {
-            Util.switchRgbOrIrActivity(SettingActivity.this, true);
+            Util.switchRgbOrIrActivity(SettingsActivity.this, true);
         }
     }
 }

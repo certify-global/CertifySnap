@@ -40,7 +40,7 @@ import static com.certify.snap.printer.usb.Defines.PRINTER_LIST;
 import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
 import static com.certify.snap.printer.usb.Defines.SynchronousMode;
 
-public class UsbPrinterSettingsActivity extends AppCompatActivity implements BCPControl.LIBBcpControlCallBack, PrintStatusCallback {
+public class PrinterUsbSettingsActivity extends AppCompatActivity implements BCPControl.LIBBcpControlCallBack, PrintStatusCallback {
 
     private BCPControl m_bcpControl = null;
     private ConnectionData mConnectData = new ConnectionData();

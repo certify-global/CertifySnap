@@ -1,4 +1,4 @@
-package com.certify.snap.activity;
+package com.certify.snap.fragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.certify.snap.R;
+import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;

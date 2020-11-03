@@ -1,6 +1,5 @@
 package com.certify.snap.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -16,11 +15,10 @@ import android.widget.TextView;
 
 import com.certify.snap.R;
 import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
-public class GuideViewSetting extends SettingBaseActivity {
-   private static String  TAG = GuideViewSetting.class.getSimpleName();
+public class GuideSettingsActivity extends SettingsBaseActivity {
+   private static String  TAG = GuideSettingsActivity.class.getSimpleName();
     Typeface rubiklight;
     SharedPreferences sp;
     EditText edittext_text1,edittext_text3,edittext_text2,edittext_text4;
@@ -78,8 +76,8 @@ public class GuideViewSetting extends SettingBaseActivity {
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT3, edittext_text3.getText().toString());
                     if (!edittext_text4.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT4, edittext_text4.getText().toString());
-                    startActivity(new Intent(GuideViewSetting.this,SettingActivity.class));
-                    Util.showToast(GuideViewSetting.this, getString(R.string.save_success));
+                    startActivity(new Intent(GuideSettingsActivity.this, SettingsActivity.class));
+                    Util.showToast(GuideSettingsActivity.this, getString(R.string.save_success));
                     finish();
                 }
             });

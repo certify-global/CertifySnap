@@ -95,10 +95,10 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.certify.snap.common.Util.getnumberString;
 
-public class ManagementActivity extends SettingBaseActivity implements ManageMemberCallback,
+public class MemberManagementActivity extends SettingsBaseActivity implements ManageMemberCallback,
         MemberListCallback, MemberIDCallback, MemberSyncDataModel.SyncDataCallBackListener {
 
-    protected static final String TAG = ManagementActivity.class.getSimpleName();
+    protected static final String TAG = MemberManagementActivity.class.getSimpleName();
     private EditText msearch;
     private TextView mCountTv;
     private RecyclerView recyclerView, failed_recyclerView;
@@ -239,7 +239,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         testCount = 1;
                         activeMemberCount = totalMemberCount = 0;
                         datalist.clear();
-                        mloadingprogress = ProgressDialog.show(ManagementActivity.this, "Loading", "Loading please wait...");
+                        mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, "Loading", "Loading please wait...");
                         Util.getmemberList(this, this);
                     }
                 }
@@ -307,7 +307,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
     private void initMember() {
         mCountTv.setText(String.valueOf(datalist.size()));
         if (memberAdapter == null) {
-            memberAdapter = new MemberAdapter(ManagementActivity.this, datalist);
+            memberAdapter = new MemberAdapter(MemberManagementActivity.this, datalist);
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(memberAdapter);
@@ -464,16 +464,16 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         }
 
                         if (!idstr.equals(updateMember.getMemberid()) && DatabaseController.getInstance().isMemberIdExist(idstr)) {
-                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MemberManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         if (!accessstr.equals(null) && !accessstr.equals(updateMember.getAccessid()) &&
                                 DatabaseController.getInstance().isAccessIdExist(accessstr)) {
-                            Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MemberManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
+                        mprogressDialog = ProgressDialog.show(MemberManagementActivity.this, "Update", "Update! Please wait...");
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
@@ -496,7 +496,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                                 obj.put("status", true);
                                 obj.put("memberType", member.getMemberType());
                                 obj.put("memberTypeName", member.getMemberTypeName());
-                                new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                                new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                             } catch (Exception e) {
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
@@ -519,7 +519,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 }
             });
 
-            View parent = LayoutInflater.from(ManagementActivity.this).inflate(R.layout.activity_management, null);
+            View parent = LayoutInflater.from(MemberManagementActivity.this).inflate(R.layout.activity_management, null);
             if (mpopupwindowUpdate != null) {
                 mpopupwindowUpdate.showAtLocation(parent, Gravity.CENTER, 0, 0);
             }
@@ -646,7 +646,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     if (members.getUniqueid() != null) {
 
-                        mdeleteprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
+                        mdeleteprogressDialog = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.delete), getString(R.string.delete_wait));
                         try {
                             isDeleted = true;
                             JSONObject obj = new JSONObject();
@@ -660,7 +660,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             obj.put("faceTemplate", Util.encodeImagePath(members.getImage()));
                             obj.put("status", false);
                             obj.put("memberType", 1);
-                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                            new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                         } catch (Exception e) {
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
@@ -778,15 +778,15 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
                 if (!TextUtils.isEmpty(memberidstr)) {
                     if (DatabaseController.getInstance().isMemberIdExist(memberidstr)) {
-                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MemberManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     if (DatabaseController.getInstance().isAccessIdExist(accessstr) && !accessstr.equals(null)) {
-                        Toast.makeText(ManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MemberManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
+                    mprogressDialog = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                            localRegister(namestr, mobilestr, timestr, registerpath);
@@ -806,7 +806,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             obj.put("faceTemplate", Util.encodeImagePath(registerpath));
                             obj.put("status", true);
                             obj.put("memberType", 1);
-                            new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
+                            new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                         } catch (Exception e) {
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
@@ -822,7 +822,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             }
         });
 
-        View parent = LayoutInflater.from(ManagementActivity.this).inflate(R.layout.activity_management, null);
+        View parent = LayoutInflater.from(MemberManagementActivity.this).inflate(R.layout.activity_management, null);
         if (mpopupwindow != null && !mpopupwindow.isShowing()) {
             mpopupwindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
         }
@@ -830,7 +830,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
 
     private void showResult(String data) {
         DismissProgressDialog(mprogressDialog);
-        Util.showToast(ManagementActivity.this, data);
+        Util.showToast(MemberManagementActivity.this, data);
     }
 
     private void localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId,
@@ -1007,7 +1007,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             e.printStackTrace();
         }
         if (Build.VERSION.SDK_INT >= 24) {
-            registerUri = FileProvider.getUriForFile(ManagementActivity.this, "com.certify.snap.fileprovider", outputImage);
+            registerUri = FileProvider.getUriForFile(MemberManagementActivity.this, "com.certify.snap.fileprovider", outputImage);
         } else {
             registerUri = Uri.fromFile(outputImage);
         }
@@ -1043,7 +1043,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
             e.printStackTrace();
         }
         if (Build.VERSION.SDK_INT >= 24) {
-            updateUri = FileProvider.getUriForFile(ManagementActivity.this, "com.certify.snap.fileprovider", outputImage);
+            updateUri = FileProvider.getUriForFile(MemberManagementActivity.this, "com.certify.snap.fileprovider", outputImage);
         } else {
             updateUri = Uri.fromFile(outputImage);
         }
@@ -1139,7 +1139,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     setViewclick(mfaceimg, false);
                     break;
                 case TOAST:
-                    Util.showToast(ManagementActivity.this, info);
+                    Util.showToast(MemberManagementActivity.this, info);
                     break;
                 case REGISTER:
                     if (mpopupwindow != null && mpopupwindow.isShowing()) {

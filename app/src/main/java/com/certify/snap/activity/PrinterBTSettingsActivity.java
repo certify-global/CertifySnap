@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class BluetoothPrinterActivity extends ListActivity {
+public class PrinterBTSettingsActivity extends ListActivity {
 
     private NetPrinter[] mBluetoothPrinter; // array of storing Printer information
     private ArrayList<String> mItems = null; // List of storing the printer's information
@@ -133,9 +133,9 @@ public class BluetoothPrinterActivity extends ListActivity {
                 @Override
                 public void run() {
                     ArrayAdapter<String> fileList = new ArrayAdapter<String>(
-                            BluetoothPrinterActivity.this,
+                            PrinterBTSettingsActivity.this,
                             android.R.layout.test_list_item, mItems);
-                    BluetoothPrinterActivity.this.setListAdapter(fileList);
+                    PrinterBTSettingsActivity.this.setListAdapter(fileList);
                 }
             });
         } catch (Exception ignored) {
@@ -174,7 +174,7 @@ public class BluetoothPrinterActivity extends ListActivity {
         if (!item.equalsIgnoreCase(getString(R.string.no_bluetooth_device))) {
             // send the selected printer info. to Settings Activity and close
             // the current Activity
-            final Intent settings = new Intent(this, PrinterSettingsActivity.class);
+            final Intent settings = new Intent(this, PrinterWifiBTSettingsActivity.class);
             settings.putExtra("ipAddress",
                     mBluetoothPrinter[position].ipAddress);
             settings.putExtra("macAddress",
@@ -187,7 +187,7 @@ public class BluetoothPrinterActivity extends ListActivity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, PrinterSettingsActivity.class));
+        startActivity(new Intent(this, PrinterWifiBTSettingsActivity.class));
         finish();
     }
 }

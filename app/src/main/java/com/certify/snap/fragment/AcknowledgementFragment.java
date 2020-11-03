@@ -1,4 +1,4 @@
-package com.certify.snap.activity;
+package com.certify.snap.fragment;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;

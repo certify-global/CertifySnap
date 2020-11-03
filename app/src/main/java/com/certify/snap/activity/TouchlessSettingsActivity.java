@@ -31,7 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class GestureActivity extends SettingBaseActivity implements FlowListCallback {
+public class TouchlessSettingsActivity extends SettingsBaseActivity implements FlowListCallback {
     public static String TAG = "GestureActivity";
     TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition,enable_progress_bar,btn_save;
     RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice,radio_group_progress;
@@ -228,7 +228,7 @@ public class GestureActivity extends SettingBaseActivity implements FlowListCall
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, SettingActivity.class));
+        startActivity(new Intent(this, SettingsActivity.class));
         finish();
     }
 

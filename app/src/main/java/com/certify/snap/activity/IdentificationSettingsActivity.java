@@ -25,8 +25,8 @@ import com.certify.snap.common.Util;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class IdentificationSettingActivity extends SettingBaseActivity {
-    private static String TAG = IdentificationSettingActivity.class.getSimpleName();
+public class IdentificationSettingsActivity extends SettingsBaseActivity {
+    private static String TAG = IdentificationSettingsActivity.class.getSimpleName();
     Typeface rubiklight;
     SharedPreferences sp;
     TextView btn_save, titles, qr_screen, tv_facial;
@@ -227,8 +227,8 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                         return;
                     }
                     saveRfidSettings();
-                    startActivity(new Intent(IdentificationSettingActivity.this, SettingActivity.class));
-                    Util.showToast(IdentificationSettingActivity.this, getString(R.string.save_success));
+                    startActivity(new Intent(IdentificationSettingsActivity.this, SettingsActivity.class));
+                    Util.showToast(IdentificationSettingsActivity.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.QR_BUTTON_TEXT, editTextQRButton.getText().toString().trim());
