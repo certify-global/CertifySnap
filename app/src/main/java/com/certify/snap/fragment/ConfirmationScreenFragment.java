@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
-import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +45,7 @@ public class ConfirmationScreenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_confirmation_screen, container, false);
+        View view = inflater.inflate(R.layout.fragment_confirmation_screen, container, false);
         rubiklight = Typeface.createFromAsset(getActivity().getAssets(), "rubiklight.ttf");
         sp = Util.getSharedPreferences(getContext());
         tv_title = view.findViewById(R.id.tv_title);

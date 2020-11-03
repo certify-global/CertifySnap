@@ -51,7 +51,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_gesture, container, false);
+        View view = inflater.inflate(R.layout.fragment_gesture, container, false);
         this.view = view;
 
         initView();
