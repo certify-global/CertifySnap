@@ -8,11 +8,11 @@
 
     <ImageView
         android:id="@+id/img_internet_indicator"
-        android:layout_width="@dimen/margin_40"
-        android:layout_height="@dimen/margin_40"
+        android:layout_width="@dimen/size_40"
+        android:layout_height="@dimen/size_40"
         android:src="@drawable/red_circle"
         android:layout_alignParentRight="true"
-        android:padding="@dimen/margin_15"
+        android:padding="@dimen/size_15"
         android:visibility="gone"/>
 
     <ImageView
@@ -29,7 +29,7 @@
         android:layout_marginBottom="60dp"
         android:gravity="bottom|center"
         android:text="CERTIFY SnapXT"
-        android:textColor="@color/dark_text_color"
+        android:textColor="@color/colorDark"
         android:textSize="30dp" />
 
     <TextView

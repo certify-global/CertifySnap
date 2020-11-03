@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:gravity="center_vertical">
 
         <ImageView
@@ -57,7 +57,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/lightwhite" />
+        android:background="@color/colorLightWhite" />
 
 
 </LinearLayout>

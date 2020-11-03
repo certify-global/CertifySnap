@@ -161,7 +161,7 @@ public class RegisterDeviceActivity extends SettingsBaseActivity implements AddD
                         public void run() {
                             finish();
                           //  Util.switchRgbOrIrActivity(RegisterDeviceActivity.this,true);
-                            startActivity(new Intent(RegisterDeviceActivity.this,GuideActivity.class));
+                            startActivity(new Intent(RegisterDeviceActivity.this, HomeActivity.class));
 
                         }
                     }, 3 * 1000);

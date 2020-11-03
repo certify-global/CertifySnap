@@ -18,7 +18,7 @@
             android:layout_height="50dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:background="@color/bg_green">
+            android:background="@color/colorBgGreen">
 
             <ImageView
                 android:layout_width="30dp"
@@ -126,7 +126,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            android:background="@color/lightgray">
+            android:background="@color/colorLightGray">
         </View>
 
         <LinearLayout
@@ -179,7 +179,7 @@
                     android:id="@+id/card_format_rg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -188,7 +188,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
                         android:text="26 Bit"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:checked="true"
                         android:theme="@style/MyCheckBox" />
 
@@ -198,7 +198,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
                         android:layout_marginStart="10dp"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:text="34 Bit"
                         android:theme="@style/MyCheckBox" />
 
@@ -208,7 +208,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
                         android:layout_marginStart="10dp"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:text="48 Bit"
                         android:theme="@style/MyCheckBox" />
 
@@ -224,7 +224,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            android:background="@color/lightgray">
+            android:background="@color/colorLightGray">
         </View>
 
         <LinearLayout
@@ -263,7 +263,7 @@
                 android:id="@+id/access_rg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginTop="@dimen/size_05"
                 android:orientation="vertical">
 
                 <RadioButton
@@ -272,7 +272,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
                     android:text="@string/normal_mode"
-                    android:textSize="@dimen/font_14"
+                    android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
                 <CheckBox
@@ -302,7 +302,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            android:background="@color/lightgray">
+            android:background="@color/colorLightGray">
         </View>
 
         <LinearLayout
@@ -331,7 +331,7 @@
                     android:id="@+id/rg_logging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -340,7 +340,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
                         android:text="Yes"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:checked="true"
                         android:theme="@style/MyCheckBox" />
 
@@ -350,7 +350,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/black"
                         android:layout_marginStart="10dp"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:text="No"
                         android:theme="@style/MyCheckBox" />
 
@@ -366,7 +366,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            android:background="@color/lightgray">
+            android:background="@color/colorLightGray">
         </View>
 
 

@@ -168,10 +168,10 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         if (sharedPreferences != null) {
             if (!sharedPreferences.getString("printer", "NONE").equals("NONE")) {
                 brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.green));
-                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.bg_blue));
+                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.colorBgBlue));
             } else {
-                brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.red));
-                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.gray));
+                brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.colorRed));
+                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
             }
             brotherBluetoothPrinterStatus.setText(sharedPreferences.getString("printer", "NONE"));
         }

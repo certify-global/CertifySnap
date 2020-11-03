@@ -31,7 +31,7 @@
                     android:layout_marginTop="10dp"
                     android:paddingLeft="5sp"
                     android:text="Settings"
-                    android:textColor="@color/dark_text_color"
+                    android:textColor="@color/colorDark"
                     android:textSize="30sp" />
 
                 <ImageView
@@ -40,7 +40,7 @@
                     android:layout_height="32dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginRight="@dimen/margin_10"
+                    android:layout_marginRight="@dimen/size_10"
                     android:src="@drawable/sync" />
 
             </RelativeLayout>
@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginTop="05dp"
-                android:background="@color/gray" />
+                android:background="@color/colorGray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,7 +89,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone" />
 
             <RelativeLayout
@@ -137,7 +137,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone" />
 
             <RelativeLayout
@@ -271,7 +271,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/setting_register"
@@ -305,7 +305,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone" />
 
             <RelativeLayout
@@ -342,7 +342,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone" />
 
             <RelativeLayout
@@ -378,7 +378,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone"/>
 
             <RelativeLayout
@@ -417,7 +417,7 @@
                 android:id="@+id/temperature_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/setting_upload"
@@ -453,7 +453,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone" />
 
 
@@ -492,7 +492,7 @@
                 android:id="@+id/upload_logo_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/setting_endpoint"
@@ -528,7 +528,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone" />
 
             <RelativeLayout
@@ -566,7 +566,7 @@
                 android:id="@+id/home_view_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
 
             <RelativeLayout
@@ -604,7 +604,7 @@
                 android:id="@+id/scan_view_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/confirmation_setting"
@@ -641,7 +641,7 @@
                 android:id="@+id/confirmation_screen_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/qr_setting"
@@ -678,7 +678,7 @@
                 android:id="@+id/identification_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/audio_visual_setting"
@@ -715,7 +715,7 @@
                 android:id="@+id/audio_visual_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/printer_settings_layout"
@@ -752,7 +752,7 @@
                 android:id="@+id/printer_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/access_control"
@@ -790,7 +790,7 @@
                 android:id="@+id/access_control_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/guide_setting"
@@ -827,7 +827,7 @@
                 android:id="@+id/guide_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/management_setting"
@@ -864,7 +864,7 @@
                 android:id="@+id/member_management_setting_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
             <RelativeLayout
                 android:id="@+id/touchless_interaction"
                 android:layout_width="match_parent"
@@ -900,7 +900,7 @@
                 android:id="@+id/touchless_interaction_view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
             <RelativeLayout
                 android:id="@+id/setting_record"
@@ -937,7 +937,7 @@
                 android:id="@+id/record_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue"
+                android:background="@color/colorBlue"
                 android:visibility="gone"/>
 
             <Button
@@ -956,8 +956,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/margin_20"
-                android:layout_marginBottom="@dimen/margin_5">
+                android:layout_marginTop="@dimen/size_20"
+                android:layout_marginBottom="@dimen/size_05">
 
 
                 <TextView
@@ -965,9 +965,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:paddingStart="@dimen/margin_20"
+                    android:paddingStart="@dimen/size_20"
                     android:text="@string/app_serial"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <TextView
                     android:id="@+id/tv_version"
@@ -977,7 +977,7 @@
                     android:layout_marginEnd="20dp"
                     android:paddingEnd="20dp"
                     android:text="@string/app_version"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
             </RelativeLayout>
 
             <TextView
@@ -986,9 +986,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:gravity="start"
-                android:paddingStart="@dimen/margin_20"
+                android:paddingStart="@dimen/size_20"
                 android:text="@string/device_name"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
             <TextView
                 android:id="@+id/tv_device_setting"
@@ -996,9 +996,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:gravity="start"
-                android:paddingStart="@dimen/margin_20"
+                android:paddingStart="@dimen/size_20"
                 android:text="@string/device_settings"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
             <TextView
                 android:id="@+id/tv_device_model"
@@ -1006,9 +1006,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:gravity="start"
-                android:paddingStart="@dimen/margin_20"
+                android:paddingStart="@dimen/size_20"
                 android:text="@string/device_mode"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
             <TextView
                 android:id="@+id/tv_online"
@@ -1016,9 +1016,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:gravity="start"
-                android:paddingStart="@dimen/margin_20"
+                android:paddingStart="@dimen/size_20"
                 android:text="@string/online_device_activation_status"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
         </LinearLayout>
     </ScrollView>
 
@@ -1028,9 +1028,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="@dimen/margin_10"
+        android:layout_marginRight="@dimen/size_10"
         android:layout_marginBottom="13dp"
-        android:paddingStart="@dimen/margin_20"
+        android:paddingStart="@dimen/size_20"
         android:text="@string/connectivity_status"
-        android:textSize="@dimen/font_18" />
+        android:textSize="@dimen/text_size_18" />
 </RelativeLayout>

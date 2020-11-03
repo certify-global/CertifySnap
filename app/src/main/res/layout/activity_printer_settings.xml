@@ -13,7 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/bg_green"
+            android:background="@color/colorBgGreen"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -59,8 +59,8 @@
                 android:id="@+id/title_bother_bluetooth_printer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_5"
-                android:layout_marginTop="@dimen/margin_15"
+                android:layout_marginLeft="@dimen/size_05"
+                android:layout_marginTop="@dimen/size_15"
                 android:text="Wifi/Bluetooth Printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
@@ -74,28 +74,28 @@
                     android:id="@+id/enable_bother_printer_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/enable_printer"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_brother_printer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_bother_printer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -104,7 +104,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -113,8 +113,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
@@ -139,7 +139,7 @@
                     android:maxLength="25"
                     android:maxLines="1"
                     android:text="NONE"
-                    android:textColor="@color/red"
+                    android:textColor="@color/colorRed"
                     android:textSize="20sp" />
 
                 <TextView
@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginBottom="@dimen/margin_10"
+                    android:layout_marginBottom="@dimen/size_10"
                     android:onClick="selectBluetoothPrinter"
                     android:text="@string/printer_settings"
                     android:textSize="20sp" />
@@ -157,8 +157,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
@@ -176,11 +176,11 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:background="@color/gray"
+                    android:background="@color/colorGray"
                     android:onClick="printImage"
                     android:padding="10dp"
                     android:text="Print"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorWhite"
                     android:textSize="15sp" />
 
             </LinearLayout>
@@ -210,7 +210,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="-35dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -221,8 +221,8 @@
                 android:id="@+id/title_toshiba_bluetooth_printer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_5"
-                android:layout_marginTop="@dimen/margin_15"
+                android:layout_marginLeft="@dimen/size_05"
+                android:layout_marginTop="@dimen/size_15"
                 android:text="USB Printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
@@ -236,28 +236,28 @@
                     android:id="@+id/enable_toshiba_printer_textview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/enable_printer"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_toshiba_printer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_toshiba_printer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -266,7 +266,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -275,8 +275,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal"
                 android:visibility="gone">
@@ -302,7 +302,7 @@
                     android:maxLength="25"
                     android:maxLines="1"
                     android:text="NONE"
-                    android:textColor="@color/red"
+                    android:textColor="@color/colorRed"
                     android:textSize="20sp" />
 
                 <TextView
@@ -311,7 +311,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_marginTop="4dp"
-                    android:layout_marginBottom="@dimen/margin_10"
+                    android:layout_marginBottom="@dimen/size_10"
                     android:onClick="selectToshibaBluetoothPrinter"
                     android:text="@string/printer_settings"
                     android:textSize="20sp" />
@@ -320,7 +320,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginLeft="@dimen/size_20"
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="20dp"
                 android:orientation="horizontal"
@@ -341,11 +341,11 @@
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:background="@color/gray"
+                    android:background="@color/colorGray"
                     android:onClick="onClickButtonPrint"
                     android:padding="10dp"
                     android:text="Print"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorWhite"
                     android:textSize="15sp" />
 
             </LinearLayout>
@@ -355,7 +355,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="15dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -366,8 +366,8 @@
                 android:id="@+id/title_printer_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_5"
-                android:layout_marginTop="@dimen/margin_15"
+                android:layout_marginLeft="@dimen/size_05"
+                android:layout_marginTop="@dimen/size_15"
                 android:text="Printing Options"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
@@ -381,28 +381,28 @@
                     android:id="@+id/print_all_scan_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_all_scan"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_all_scan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_print_all_scan"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -411,7 +411,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -426,28 +426,28 @@
                     android:id="@+id/print_access_card_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_access_card"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_access_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_print_access_card"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -456,7 +456,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -471,28 +471,28 @@
                     android:id="@+id/print_qr_code_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_qr_code_users"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_qr_code"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_print_qr_code"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -501,7 +501,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -516,28 +516,28 @@
                     android:id="@+id/print_wave_users_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_wave_users"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_wave_users"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_print_wave_users"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -546,7 +546,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -561,28 +561,28 @@
                     android:id="@+id/print_high_temperature_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_15"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_high_temperature"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_high_temperature"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_print_high_temperature"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -591,7 +591,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -619,7 +619,7 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_15"
+                android:layout_margin="@dimen/size_15"
                 android:visibility="gone">
 
                 <TextView
@@ -639,7 +639,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
 
-                android:layout_margin="@dimen/margin_15"
+                android:layout_margin="@dimen/size_15"
                 android:visibility="gone">
 
                 <TextView
@@ -658,7 +658,7 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_15"
+                android:layout_margin="@dimen/size_15"
                 android:visibility="gone">
 
                 <TextView

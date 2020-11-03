@@ -59,7 +59,7 @@ import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
-import com.certify.snap.activity.GuideActivity;
+import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingsActivity;
@@ -2086,7 +2086,7 @@ public class Util {
 
     public static void restartApp(Context context) {
         stopMemberSyncService(context);
-        Intent intent = new Intent(context, GuideActivity.class);
+        Intent intent = new Intent(context, HomeActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

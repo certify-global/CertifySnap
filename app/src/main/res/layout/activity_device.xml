@@ -8,7 +8,7 @@
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_green"
+        android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -37,8 +37,8 @@
         android:id="@+id/tv_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_50"
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_50"
         android:text="@string/not_configure"
         android:textSize="24sp" />
 
@@ -46,8 +46,8 @@
         android:id="@+id/tv_header1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_30"
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_30"
         android:text="@string/cloud"
         android:textSize="24sp"/>
 
@@ -67,8 +67,8 @@
         android:id="@+id/tv_header2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_50"
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_50"
         android:textSize="24sp" />
 
     <Button
@@ -87,11 +87,11 @@
         android:id="@+id/tv_skip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_50"
+        android:layout_marginTop="@dimen/size_50"
         android:drawablePadding="5dp"
         android:gravity="center"
         android:text="@string/skip"
-        android:textColor="@color/bg_green"
+        android:textColor="@color/colorBgGreen"
         android:textSize="24sp"/>
 
 

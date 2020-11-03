@@ -12,7 +12,7 @@
         android:id="@+id/fourQ_image1"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -20,13 +20,13 @@
         android:layout_width="130dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/fourQ_image2"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -34,13 +34,13 @@
         android:layout_width="130dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/fourQ_image3"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -48,13 +48,13 @@
         android:layout_width="130dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/fourQ_image4"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
 </LinearLayout>

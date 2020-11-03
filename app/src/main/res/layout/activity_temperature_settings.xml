@@ -9,7 +9,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="@color/bg_green">
+        android:background="@color/colorBgGreen">
 
         <ImageView
             android:layout_width="30dp"
@@ -64,18 +64,18 @@
         android:id="@+id/radio_group_f_c"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginTop="@dimen/size_05"
         android:orientation="vertical"
-        android:paddingTop="@dimen/margin_20">
+        android:paddingTop="@dimen/size_20">
 
         <RadioButton
             android:id="@+id/radio_f"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_30"
+            android:layout_marginEnd="@dimen/size_30"
             android:textColor="@color/black"
             android:text="@string/fahrenheit"
-            android:textSize="@dimen/font_14"
+            android:textSize="@dimen/text_size_14"
             android:theme="@style/MyCheckBox" />
 
         <RadioButton
@@ -83,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_14"
+            android:textSize="@dimen/text_size_14"
             android:text="@string/celcius"
             android:theme="@style/MyCheckBox" />
 
@@ -112,8 +112,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/tv_compensation"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_10"
         android:textSize="14sp"
         android:textColor="@color/black">
     </TextView>
@@ -128,28 +128,28 @@
             android:id="@+id/temperature_threshold_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_10"
-            android:layout_marginTop="@dimen/margin_15"
+            android:layout_marginLeft="@dimen/size_10"
+            android:layout_marginTop="@dimen/size_15"
             android:text="Set temperature threshold for display"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/text_size_18" />
 
         <RadioGroup
             android:id="@+id/temperature_threshold_radio_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/margin_20"
-            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginLeft="@dimen/size_20"
+            android:layout_marginTop="@dimen/size_05"
             android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/temperature_threshold_radio_yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_30"
+                android:layout_marginEnd="@dimen/size_30"
                 android:text="@string/living_type_1"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
+                android:textSize="@dimen/text_size_14"
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton
@@ -158,7 +158,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/living_type_0"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_14"
+                android:textSize="@dimen/text_size_14"
                 android:theme="@style/MyCheckBox" />
         </RadioGroup>
 

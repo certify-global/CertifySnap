@@ -320,14 +320,14 @@ public class AudioVisualSettingsActivity extends SettingsBaseActivity {
         tv_ble_status.setTextColor(getResources().getColor(R.color.green));
         light_on.setEnabled(true);
         light_off.setEnabled(true);
-        light_on.setBackgroundColor(getResources().getColor(R.color.bg_blue));
-        light_off.setBackgroundColor(getResources().getColor(R.color.bg_blue));
+        light_on.setBackgroundColor(getResources().getColor(R.color.colorBgBlue));
+        light_off.setBackgroundColor(getResources().getColor(R.color.colorBgBlue));
     }
 
     private void uiDisConnect(){
         //tv_ble_connect_btn.setText("CONNECT");
         tv_ble_status.setText("NONE");
-        tv_ble_status.setTextColor(getResources().getColor(R.color.red));
+        tv_ble_status.setTextColor(getResources().getColor(R.color.colorRed));
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
@@ -336,8 +336,8 @@ public class AudioVisualSettingsActivity extends SettingsBaseActivity {
         }
         light_on.setEnabled(false);
         light_off.setEnabled(false);
-        light_on.setBackgroundColor(getResources().getColor(R.color.gray));
-        light_off.setBackgroundColor(getResources().getColor(R.color.gray));
+        light_on.setBackgroundColor(getResources().getColor(R.color.colorGray));
+        light_off.setBackgroundColor(getResources().getColor(R.color.colorGray));
     }
 
     /**

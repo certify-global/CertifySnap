@@ -8,7 +8,7 @@
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_green"
+        android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -51,7 +51,7 @@
             android:background="@drawable/edittextbackground"
             android:hint="@string/device_name"
             android:inputType="text"
-            android:paddingLeft="@dimen/margin_05" />
+            android:paddingLeft="@dimen/size_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,7 +71,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="SERIAL NUMBER:"
-            android:textSize="@dimen/margin_20"
+            android:textSize="@dimen/size_20"
             android:textColor="@color/black"/>
 
     </LinearLayout>
@@ -92,7 +92,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="IMEI NUMBER:"
-            android:textSize="@dimen/margin_20"
+            android:textSize="@dimen/size_20"
             android:textColor="@color/black"/>
 
     </LinearLayout>
@@ -114,7 +114,7 @@
             android:background="@drawable/edittextbackground"
             android:hint="@string/sno"
             android:inputType="text"
-            android:paddingLeft="@dimen/margin_05" />
+            android:paddingLeft="@dimen/size_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
@@ -134,7 +134,7 @@
             android:background="@drawable/edittextbackground"
             android:hint="@string/imei"
             android:inputType="text"
-            android:paddingLeft="@dimen/margin_05" />
+            android:paddingLeft="@dimen/size_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
    <TextView
@@ -144,7 +144,7 @@
         android:layout_height="wrap_content"
         android:text="@string/status"
         android:textColor="@color/black"
-        android:textSize="@dimen/margin_20"
+        android:textSize="@dimen/size_20"
         android:layout_below="@+id/text_input_imei"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
@@ -165,10 +165,10 @@
             android:id="@+id/radio_active"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_30"
+            android:layout_marginEnd="@dimen/size_30"
             android:text="@string/active"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_18"
+            android:textSize="@dimen/text_size_18"
             android:theme="@style/MyCheckBox" />
 
         <RadioButton
@@ -177,7 +177,7 @@
             android:layout_height="wrap_content"
             android:text="@string/in_active"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_18"
+            android:textSize="@dimen/text_size_18"
             android:theme="@style/MyCheckBox" />
 
     </RadioGroup>
@@ -200,8 +200,8 @@
         android:textSize="25sp"
         android:gravity="center"
         android:layout_weight="1"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginRight="@dimen/margin_20"/>
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginRight="@dimen/size_20"/>
 
     <Button
         android:id="@+id/btn_save"
@@ -213,8 +213,8 @@
         android:text="Save"
         android:textSize="25sp"
         android:layout_weight="1"
-        android:layout_marginLeft="@dimen/margin_20"
-        android:layout_marginRight="@dimen/margin_20"/>
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginRight="@dimen/size_20"/>
 
 </LinearLayout>
 
@@ -225,7 +225,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="left"
-        android:paddingLeft="@dimen/margin_20"
+        android:paddingLeft="@dimen/size_20"
         android:paddingBottom="20dp"
         android:text="@string/app_serial"
         android:textSize="22dp"/>

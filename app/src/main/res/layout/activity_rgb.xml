@@ -55,7 +55,7 @@
         android:gravity="center_horizontal"
         android:clickable="true"
         android:textSize="15sp"
-        android:textColor="@color/yellow"
+        android:textColor="@color/colorYellow"
         android:padding="1dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="120dp"
@@ -73,7 +73,7 @@
         android:id="@+id/img_telpo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:scaleType="centerCrop"
         android:src="@drawable/final_landing_bg"
         android:visibility="visible"/>
@@ -86,7 +86,7 @@
         android:layout_alignParentBottom="true"
         android:background="#1A000000"
         android:gravity="center"
-        android:textColor="@color/white"
+        android:textColor="@color/colorWhite"
         android:textSize="30sp"
         android:visibility="gone"/>
 

@@ -10,7 +10,7 @@
         android:id="@+id/temp_calibration_header"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_green"
+        android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:gravity="center"
-            android:textColor="@color/red"
+            android:textColor="@color/colorRed"
             android:textSize="25sp"/>
 
         <TextView

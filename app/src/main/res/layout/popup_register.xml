@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/colorWhite">
 
     <TextView
         android:layout_width="wrap_content"
@@ -194,8 +194,8 @@
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_alignParentRight="true"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:layout_weight=".25"
                     android:background="@drawable/btn_shape"
                     android:text="@string/access_control_enroll"
@@ -213,8 +213,8 @@
             android:hint="unique Id"
             android:inputType="number"
             android:padding="5dp"
-            android:textColor="@color/skyblue"
-            android:textColorHint="@color/skyblue"
+            android:textColor="@color/colorSkyBlue"
+            android:textColorHint="@color/colorSkyBlue"
             android:visibility="gone" />
     </LinearLayout>
 

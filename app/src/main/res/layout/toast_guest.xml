@@ -22,7 +22,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="Unrecognized"
-        android:textColor="@color/skyblue"
+        android:textColor="@color/colorSkyBlue"
         android:textSize="30sp"/>
 
 </RelativeLayout>

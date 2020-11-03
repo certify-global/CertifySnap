@@ -3,39 +3,36 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#1F51FE</color>
-    <color name="transparency">#00000000</color>
-    <color name="blue">#33A1C9</color>
-    <color name="white">#ffffff</color>
+    <color name="colorTransparency">#00000000</color>
 
-    <color name="lilyblue">#38ADFF</color>
-    <color name="gray">#8B8989</color>
-    <color name="backwhite">#5C5C5C</color>
-    <color name="lightblue">#87CEFA</color>
-    <color name="lightwhite">#CCCCCC</color>
-    <color name="skyblue">#1F51FE</color>
-    <color name="bg_green">#00CC74</color>
-    <color name="bg_blue">#3A95EF</color>
     <color name="black">#302726</color>
-    <color name="lightgray">#ffcccccc</color>
-    <color name="lightergray">#4DCCCCCC</color>
-    <color name="half_transparent">#50000000</color>
     <color name="green">#008B00</color>
-    <color name="dark_orange">#FF8C00</color>
-    <color name="red">#EE0000</color>
-    <color name="orange">#FFA500</color>
-
-    <color name="yellow">#FFFF00</color>
-    <color name="snow">#FFFAFA</color>
-
-    <color name="dark_text_color">#2C2C2C</color>
-    <color name="qr_code_reader_square">#FFFFFF</color>
-    <color name="translucent_black">#80000000</color>
 
     <color name="colorWhite">#ffffff</color>
     <color name="colorBlack">#000</color>
     <color name="colorGreen">#4CAF50</color>
+    <color name="colorBlue">#33A1C9</color>
+    <color name="colorGray">#8B8989</color>
+    <color name="colorRed">#EE0000</color>
+    <color name="colorOrange">#FFA500</color>
+    <color name="colorYellow">#FFFF00</color>
+    <color name="colorSnow">#FFFAFA</color>
 
-    <color name="parrot_green">#29EF29</color>
-    <color name="very_light_gray">#EAE6E6</color>
-    
+    <color name="colorLilyBlue">#38ADFF</color>
+    <color name="colorBlackWhite">#5C5C5C</color>
+    <color name="colorLightBlue">#87CEFA</color>
+    <color name="colorLightWhite">#CCCCCC</color>
+    <color name="colorSkyBlue">#1F51FE</color>
+    <color name="colorLightGray">#ffcccccc</color>
+    <color name="colorLighterGray">#4DCCCCCC</color>
+    <color name="colorHalfTransparent">#50000000</color>
+    <color name="colorDarkOrange">#FF8C00</color>
+    <color name="colorParrotGreen">#29EF29</color>
+    <color name="colorVeryLightGray">#EAE6E6</color>
+    <color name="colorTranslucentBlack">#80000000</color>
+    <color name="colorDark">#2C2C2C</color>
+
+    <color name="colorBgGreen">#00CC74</color>
+    <color name="colorBgBlue">#3A95EF</color>
+
 </resources>

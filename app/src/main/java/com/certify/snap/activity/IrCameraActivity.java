@@ -410,7 +410,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 tv_scan.setText(R.string.tv_qr_scan);
             }
-            tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+            tv_scan.setBackgroundColor(getResources().getColor(R.color.colorWhite));
             tv_scan.setTextColor(getResources().getColor(R.color.black));
             tv_scan.setTypeface(rubiklight);
             Animation animation =
@@ -859,7 +859,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     if (CameraController.getInstance().isScanCloseProximityEnabled()) {
                         if (isProDevice) {
                             runOnUiThread(() -> {
-                                changeVerifyBackground(R.color.transparency, true);
+                                changeVerifyBackground(R.color.colorTransparency, true);
                                 relative_main.setVisibility(View.GONE);
                                 startCameraPreviewTimer();
                             });
@@ -1593,8 +1593,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 if (AppSettings.isTemperatureResultBar()) {
                     tv_message.setVisibility(View.VISIBLE);
-                    tv_message.setTextColor(getResources().getColor(R.color.white));
-                    tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.red) : getResources().getColor(R.color.bg_green));
+                    tv_message.setTextColor(getResources().getColor(R.color.colorWhite));
+                    tv_message.setBackgroundColor(aboveThreshold ? getResources().getColor(R.color.colorRed) : getResources().getColor(R.color.colorBgGreen));
                     tv_message.setText(temperature);
                     tv_message.setTypeface(rubiklight);
                 } else {
@@ -1767,10 +1767,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (!qrCodeReceived) {
                 CameraController.getInstance().setTriggerType(CameraController.triggerValue.CODEID.toString());
                 preview.stop();
-                frameLayout.setBackgroundColor(getResources().getColor(R.color.white));
-                tv_scan.setBackgroundColor(getResources().getColor(R.color.orange));
+                frameLayout.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
-                qr_main.setBackgroundColor(getResources().getColor(R.color.transparency));
+                qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
                 if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
                     tv_scan.setText(R.string.tv_bar_validating);
                     CameraController.getInstance().setQrCodeId(guid);
@@ -1950,7 +1950,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (relative_main != null) {
                 relative_main.setVisibility(View.GONE);
             }
-            changeVerifyBackground(R.color.transparency, true);
+            changeVerifyBackground(R.color.colorTransparency, true);
             disableNfc();
         }, delay);
         setCameraPreviewTimer();
@@ -2095,24 +2095,24 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             public void run() {
                 switch (maskStatus) {
                     case 0: {
-                        mask_message.setTextColor(getResources().getColor(R.color.red));
+                        mask_message.setTextColor(getResources().getColor(R.color.colorRed));
                         mask_message.setText("Without Mask");
                         mask_message.setVisibility(View.VISIBLE);
-                        mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                        mask_message.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     }
                     break;
                     case 1: {
                         mask_message.setTextColor(getResources().getColor(R.color.green));
                         mask_message.setText("Mask Detected");
                         mask_message.setVisibility(View.VISIBLE);
-                        mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                        mask_message.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     }
                     break;
                     case -1: {
-                        mask_message.setTextColor(getResources().getColor(R.color.dark_orange));
+                        mask_message.setTextColor(getResources().getColor(R.color.colorDarkOrange));
                         mask_message.setText("Unable to detect Mask");
                         mask_message.setVisibility(View.VISIBLE);
-                        mask_message.setBackgroundColor(getResources().getColor(R.color.white));
+                        mask_message.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     }
                     break;
                 }
@@ -2426,7 +2426,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 new Handler().postDelayed(() -> {
                     //logo.setVisibility(View.GONE);
                     relative_main.setVisibility(View.GONE);
-                    changeVerifyBackground(R.color.transparency, true);
+                    changeVerifyBackground(R.color.colorTransparency, true);
                 }, 150);
             }
         } catch (Exception e) {
@@ -2678,7 +2678,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             if (rl_header == null) return;
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            changeVerifyBackground(R.color.transparency, true);
+            changeVerifyBackground(R.color.colorTransparency, true);
             relative_main.setVisibility(View.GONE);
             // rl_header.setVisibility(View.GONE);
             //logo.setVisibility(View.GONE);
@@ -2855,12 +2855,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
         snackbar.show();
         img_qr.setBackgroundResource(R.drawable.invalid_qr);
-        imageqr.setBackgroundColor(getResources().getColor(R.color.red));
+        imageqr.setBackgroundColor(getResources().getColor(R.color.colorRed));
         img_qr.setVisibility(View.GONE);
         tv_scan.setText(R.string.tv_qr_scan);
-        tv_scan.setBackgroundColor(getResources().getColor(R.color.white));
+        tv_scan.setBackgroundColor(getResources().getColor(R.color.colorWhite));
         tv_scan.setTextColor(getResources().getColor(R.color.black));
-        imageqr.setBackgroundColor(getResources().getColor(R.color.white));
+        imageqr.setBackgroundColor(getResources().getColor(R.color.colorWhite));
         Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
 
         AccessCardController.getInstance().sendAccessLogInvalid(this, new RegisteredMembers(), 0,
@@ -3236,7 +3236,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         thermalDisplayText.setText(thermalText);
         if (highTemperature) {
             tempPass.setText("");
-            tempPass.setBackgroundColor(getColor(R.color.white));
+            tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {
             tempPass.setText("PASS ");
         }

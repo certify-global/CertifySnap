@@ -10,7 +10,7 @@
     <LinearLayout android:id="@+id/managetitle"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_green"
+        android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -59,7 +59,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        app:rippleColor="@color/lightblue"
+        app:rippleColor="@color/colorLightBlue"
         android:src="@mipmap/export"
         android:visibility="gone"/>
 </RelativeLayout>

@@ -76,7 +76,7 @@ public class ShowFaceInfoAdapter extends RecyclerView.Adapter<ShowFaceInfoAdapte
             if (!(Float.parseFloat(compareResultList.get(position).getTemperature()) > Float.parseFloat(AppSettings.getTemperatureThreshold()))) {
                 holder.item_layout.setBackgroundColor(mContext.getColor(R.color.green));
             } else {
-                holder.item_layout.setBackgroundColor(mContext.getColor(R.color.red));
+                holder.item_layout.setBackgroundColor(mContext.getColor(R.color.colorRed));
             }
         }
         else{

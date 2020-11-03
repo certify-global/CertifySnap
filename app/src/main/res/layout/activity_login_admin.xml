@@ -8,7 +8,7 @@
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_green"
+        android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -50,7 +50,7 @@
             android:background="@drawable/edittextbackground"
             android:hint="@string/enter_email"
             android:inputType="textEmailAddress"
-            android:paddingLeft="@dimen/margin_05" />
+            android:paddingLeft="@dimen/size_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
@@ -69,7 +69,7 @@
             android:background="@drawable/edittextbackground"
             android:hint="@string/enter_password"
             android:inputType="textPassword"
-            android:paddingLeft="@dimen/margin_05" />
+            android:paddingLeft="@dimen/size_05" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -95,7 +95,7 @@
         android:textSize="22dp"
         android:layout_below="@+id/btn_login"
         android:gravity="left"
-        android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginTop="@dimen/size_20"
         android:layout_marginLeft="50dp"
         android:textStyle="bold"/>
 
@@ -106,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="left"
-        android:paddingLeft="@dimen/margin_20"
+        android:paddingLeft="@dimen/size_20"
         android:paddingBottom="20dp"
         android:text="@string/app_serial"
         android:textSize="22dp"/>

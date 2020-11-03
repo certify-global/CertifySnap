@@ -7,7 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/bg_green"
+        android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -53,9 +53,9 @@
             android:id="@+id/cb_enable_home"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_20"
+            android:layout_marginTop="@dimen/size_20"
             android:text="@string/enable_home_screen"
-            android:textSize="@dimen/text_18"
+            android:textSize="@dimen/text_size_18"
             android:checked="true"
 
             />
@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/welcome_thermal"
-            android:textSize="@dimen/text_18" />
+            android:textSize="@dimen/text_size_18" />
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -106,9 +106,9 @@
             android:id="@+id/tv_time_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_20"
+            android:layout_marginTop="@dimen/size_20"
             android:text="@string/screen_delay"
-            android:textSize="@dimen/text_18" />
+            android:textSize="@dimen/text_size_18" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_input_below"
@@ -131,9 +131,9 @@
             android:id="@+id/cb_enable_text_only"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_20"
+            android:layout_marginTop="@dimen/size_20"
             android:text="@string/enable_text_only_screen"
-            android:textSize="@dimen/text_18"
+            android:textSize="@dimen/text_size_18"
 
             />
 
@@ -149,7 +149,7 @@
                 android:layout_height="200dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/enable_text_only_hint"
-                android:padding="@dimen/margin_05" />
+                android:padding="@dimen/size_05" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

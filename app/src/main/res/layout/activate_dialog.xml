@@ -8,8 +8,8 @@
     android:orientation="vertical"
     android:layout_margin="10dp"
     android:background="@drawable/rectangle"
-    android:layout_marginLeft="@dimen/margin_10"
-    android:layout_marginRight="@dimen/margin_10">
+    android:layout_marginLeft="@dimen/size_10"
+    android:layout_marginRight="@dimen/size_10">
 
 
 
@@ -37,18 +37,18 @@
         />
 
     <View
-        android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginTop="@dimen/size_20"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:background="@color/gray" />
+        android:background="@color/colorGray" />
 
     <TextView
         android:id="@+id/btn_continue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/tv_ok"
-        android:textColor="@color/bg_green"
-        android:layout_marginTop="@dimen/margin_10"
+        android:textColor="@color/colorBgGreen"
+        android:layout_marginTop="@dimen/size_10"
         android:layout_marginBottom="10dp"
         android:textSize="24dp"
         android:gravity="center"

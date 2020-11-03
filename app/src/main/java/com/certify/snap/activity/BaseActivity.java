@@ -125,7 +125,7 @@ public abstract class BaseActivity extends Activity {
 
     protected void restartApplication() {
         finishAffinity();
-        Intent intent = new Intent(this, GuideActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);

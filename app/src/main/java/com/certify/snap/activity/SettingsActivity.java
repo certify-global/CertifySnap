@@ -363,6 +363,10 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
                 Intent confirmationIntent = new Intent(SettingsActivity.this, ConfirmationSettingsActivity.class);
                 startActivity(confirmationIntent);
                 break;
+            case R.id.guide_setting:
+                Intent guideIntent = new Intent(SettingsActivity.this, GuideSettingsActivity.class);
+                startActivity(guideIntent);
+                break;
             case R.id.qr_setting:
                 Intent qrintent = new Intent(SettingsActivity.this, IdentificationSettingsActivity.class);
                 startActivity(qrintent);

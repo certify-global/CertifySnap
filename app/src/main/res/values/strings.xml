@@ -7,12 +7,6 @@
     <string name="cancel">Cancel</string>
     <string name="registering_please_wait">registering,please wait</string>
 
-    <!--face attributes detect(image) page-->
-
-    <!--face compare 1:n(image vs image) page-->
-
-    <!--global get picture failed notification-->
-
     <!--global permission denied notification-->
     <string name="permission_denied">permission denied!</string>
 
@@ -134,6 +128,7 @@
     <string name="text_value1">Please center your face to the screen.</string>
     <string name="text_value2">Move closer and center your face.</string>
     <string name="text_value3">Please wait, preparing to scan.</string>
+    <string name="text_value4">Please step closer</string>
     <string name="snack_msg">Retrieving updated settings</string>
     <string name="invalid_pwd">Invalid Password</string>
     <string name="allow_low">Allow low temperature scanning</string>
@@ -475,12 +470,12 @@
     <string name="issueEndAndpaperEnd">Finish issue and Label end</string>
     <string name="msg_executePrintError">Execute Print Error</string>
     <string name="processComplete">Process Completion</string>
-    <string name ="productName">Name</string>
-    <string name ="code">Code</string>
-    <string name ="print">Print</string>
-    <string name ="noOfPrints">NoOfPrint</string>
-    <string name ="msg_PortCloseErrorcode">Port Close Error code</string>
-    <string name ="msg_PortCloseSuccess">Port Close Success</string>
+    <string name="productName">Name</string>
+    <string name="code">Code</string>
+    <string name="print">Print</string>
+    <string name="noOfPrints">NoOfPrint</string>
+    <string name="msg_PortCloseErrorcode">Port Close Error code</string>
+    <string name="msg_PortCloseSuccess">Port Close Success</string>
     <string name="statusReception"> OnStatus Reception</string>
     <string name="dataName">Name Data</string>
     <string name="bottom_text">Please block a light with your \n hand to make a selection \n\n Made a mistake? \n Block both lights to go back</string>
@@ -503,4 +498,10 @@
     <string name="scan_type_quick">Quick</string>
     <string name="scan_type_standard">Standard</string>
 
+    <string name="enter_text1">Text1</string>
+    <string name="enter_text2">Text2</string>
+    <string name="enter_text3">Text3</string>
+    <string name="enter_text4">Text4</string>
+    <string name="enable_guide">Enable Guide</string>
+    
 </resources>

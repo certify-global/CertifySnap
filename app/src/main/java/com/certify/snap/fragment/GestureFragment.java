@@ -305,7 +305,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void twoQuestions(int index) {
         if (index == 1) {
             q2image1.setImageResource(R.drawable.tick);
-            q2view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q2view1.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 2) {
             q2image2.setImageResource(R.drawable.tick);
         }
@@ -314,10 +314,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void threeQuestions(int index) {
         if (index == 1) {
             q3image1.setImageResource(R.drawable.tick);
-            q3view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q3view1.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 2) {
             q3image2.setImageResource(R.drawable.tick);
-            q3view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q3view2.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 3) {
             q3image3.setImageResource(R.drawable.tick);
         }
@@ -327,13 +327,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
         if (index == 1) {
             q4image1.setImageResource(R.drawable.tick);
-            q4view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q4view1.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 2) {
             q4image2.setImageResource(R.drawable.tick);
-            q4view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q4view2.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 3) {
             q4image3.setImageResource(R.drawable.tick);
-            q4view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q4view3.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 4) {
             q4image4.setImageResource(R.drawable.tick);
         }
@@ -343,16 +343,16 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void fiveQuestions(int index) {
         if (index == 1) {
             q5image1.setImageResource(R.drawable.tick);
-            q5view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q5view1.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 2) {
             q5image2.setImageResource(R.drawable.tick);
-            q5view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q5view2.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 3) {
             q5image3.setImageResource(R.drawable.tick);
-            q5view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q5view3.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 4) {
             q5image4.setImageResource(R.drawable.tick);
-            q5view4.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q5view4.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 5) {
             q5image5.setImageResource(R.drawable.tick);
         }
@@ -361,19 +361,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void sixQuestions(int index) {
         if (index == 1) {
             q6image1.setImageResource(R.drawable.tick);
-            q6view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q6view1.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 2) {
             q6image2.setImageResource(R.drawable.tick);
-            q6view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q6view2.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 3) {
             q6image3.setImageResource(R.drawable.tick);
-            q6view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q6view3.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 4) {
             q6image4.setImageResource(R.drawable.tick);
-            q6view4.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q6view4.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 5) {
             q6image5.setImageResource(R.drawable.tick);
-            q6view5.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q6view5.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 6) {
             q6image6.setImageResource(R.drawable.tick);
         }
@@ -382,22 +382,22 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private void sevenQuestions(int index) {
         if (index == 1) {
             q7image1.setImageResource(R.drawable.tick);
-            q7view1.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q7view1.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 2) {
             q7image2.setImageResource(R.drawable.tick);
-            q7view2.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q7view2.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 3) {
             q7image3.setImageResource(R.drawable.tick);
-            q7view3.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q7view3.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 4) {
             q7image4.setImageResource(R.drawable.tick);
-            q7view4.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q7view4.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 5) {
             q7image5.setImageResource(R.drawable.tick);
-            q7view5.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q7view5.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 6) {
             q7image6.setImageResource(R.drawable.tick);
-            q7view6.setBackgroundColor(getResources().getColor(R.color.parrot_green));
+            q7view6.setBackgroundColor(getResources().getColor(R.color.colorParrotGreen));
         } else if (index == 7) {
             q7image7.setImageResource(R.drawable.tick);
         }
@@ -439,32 +439,32 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7image7.setImageResource(R.drawable.no_tick);
 
 
-        q2view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q2view1.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
 
-        q3view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q3view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q3view1.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q3view2.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
 
-        q4view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q4view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q4view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q4view1.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q4view2.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q4view3.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
 
-        q5view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q5view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q5view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q5view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q5view1.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q5view2.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q5view3.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q5view4.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
 
-        q6view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q6view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q6view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q6view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q6view5.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q6view1.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q6view2.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q6view3.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q6view4.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q6view5.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
 
-        q7view1.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q7view2.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q7view3.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q7view4.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q7view5.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
-        q7view6.setBackgroundColor(getResources().getColor(R.color.very_light_gray));
+        q7view1.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q7view2.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q7view3.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q7view4.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q7view5.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+        q7view6.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
     }
 
 }

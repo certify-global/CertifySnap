@@ -4,7 +4,7 @@
     android:layout_width="300dp"
     android:layout_height="171dp"
     android:layout_gravity="center"
-    android:background="@color/white"
+    android:background="@color/colorWhite"
     android:orientation="vertical">
 
     <LinearLayout

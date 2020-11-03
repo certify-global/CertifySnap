@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.certify.snap.activity.GuideActivity;
+import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.common.Logger;
 
 
@@ -27,7 +27,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
          * 如果 系统 启动的消息，则启动 APP 主页活动
          */
         if (ACTION_BOOT.equals(intent.getAction())) {
-            Intent guideintent = new Intent(context, GuideActivity.class);
+            Intent guideintent = new Intent(context, HomeActivity.class);
             guideintent.putExtra("DEVICE_BOOT", "BootCompleted");
             guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(guideintent);

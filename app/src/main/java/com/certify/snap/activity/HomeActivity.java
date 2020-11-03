@@ -56,9 +56,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 
-public class GuideActivity extends Activity implements SettingCallback, JSONObjectCallback {
+public class HomeActivity extends Activity implements SettingCallback, JSONObjectCallback {
 
-    public static final String TAG = GuideActivity.class.getSimpleName();
+    public static final String TAG = HomeActivity.class.getSimpleName();
     public static Activity mActivity;
     private ImageView imgPic;
     private Animation myAnimation;
@@ -77,7 +77,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_guide);
+        setContentView(R.layout.activity_home);
 
         mActivity = this;
         ApplicationController.getInstance().initThermalUtil(this);
@@ -167,37 +167,37 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 start();
             } else {
-                Util.showToast(GuideActivity.this, getString(R.string.toast_guide_permission));
+                Util.showToast(HomeActivity.this, getString(R.string.toast_guide_permission));
                 finish();
             }
         }
     }
 
     private void start() {
-        if (!License.activateLicense(GuideActivity.this)) {
+        if (!License.activateLicense(HomeActivity.this)) {
             String message = getResources().getString(R.string.active_failed);
             Log.e(TAG, message);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Util.openDialogactivate(GuideActivity.this, message, "");
+                    Util.openDialogactivate(HomeActivity.this, message, "");
                 }
             });
         } else if (!onlineMode) {
             //startActivity(new Intent(GuideActivity.this, IrCameraActivity.class));
             startLocalServer();
-            Util.switchRgbOrIrActivity(GuideActivity.this, true);
+            Util.switchRgbOrIrActivity(HomeActivity.this, true);
         } else {
             //TODO: This dialog is required when the connection fails to API server
             //Util.openDialogactivate(this, getString(R.string.onlinemode_nointernet), "guide");
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
-            if (Util.isNetworkOff(GuideActivity.this)) {
+            if (Util.isNetworkOff(HomeActivity.this)) {
                 initGesture();
-                new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(HomeActivity.this, true), 2 * 1000);
                 return;
             }
-            Util.activateApplication(GuideActivity.this, GuideActivity.this);
+            Util.activateApplication(HomeActivity.this, HomeActivity.this);
             startActivationTimer();
         }
     }
@@ -215,7 +215,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 onSettingsUpdated();
                 return;
             }
-            Util.retrieveSetting(reportInfo, GuideActivity.this);
+            Util.retrieveSetting(reportInfo, HomeActivity.this);
             onSettingsUpdated();
         } catch (Exception e) {
             onSettingsUpdated();
@@ -232,11 +232,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             }
             cancelActivationTimer();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Util.getTokenActivate(reportInfo, status, GuideActivity.this, "guide");
+                Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
             }
             startHealthCheckService();
         } catch (Exception e) {
-            Util.switchRgbOrIrActivity(GuideActivity.this, true);
+            Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
         }
 
@@ -268,11 +268,11 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             @Override
             public void run() {
 
-                if (!Util.isServiceRunning(MemberSyncService.class, GuideActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
                     || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
-                        startService(new Intent(GuideActivity.this, MemberSyncService.class));
-                    Application.StartService(GuideActivity.this);
+                        startService(new Intent(HomeActivity.this, MemberSyncService.class));
+                    Application.StartService(HomeActivity.this);
                 }
             }
         }, 100);
@@ -282,7 +282,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      * Method that processes next steps after the App settings are updated in the SharedPref on app launch
      */
     private void onSettingsUpdated() {
-        AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+        AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
         initGesture();
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
@@ -311,8 +311,8 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(GuideActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
-                        Util.switchRgbOrIrActivity(GuideActivity.this, true);
+                        Toast.makeText(HomeActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Util.switchRgbOrIrActivity(HomeActivity.this, true);
                     }
                 });
                 this.cancel();
@@ -350,7 +350,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+            AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
             gestureWorkFlow = AppSettings.getGestureWorkFlow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WindowManager.LayoutParams attributes = getWindow().getAttributes();
@@ -382,17 +382,17 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
             AppCenter.setEnabled(onlineMode);
             Logger.verbose(TAG, "onCreate() Online mode value is onCreate onlineMode: %b", onlineMode);
 
-            myAnimation = AnimationUtils.loadAnimation(GuideActivity.this, R.anim.alpha);
+            myAnimation = AnimationUtils.loadAnimation(HomeActivity.this, R.anim.alpha);
             imgPic = findViewById(R.id.img_telpo);
             imgPic.startAnimation(myAnimation);
             checkStatus();
-            boolean navigationBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
-            boolean statusBar = Util.getSharedPreferences(GuideActivity.this).getBoolean(GlobalParameters.StatusBar, true);
+            boolean navigationBar = Util.getSharedPreferences(HomeActivity.this).getBoolean(GlobalParameters.NavigationBar, true);
+            boolean statusBar = Util.getSharedPreferences(HomeActivity.this).getBoolean(GlobalParameters.StatusBar, true);
 
             sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
 
-            if (!Util.isNetworkOff(GuideActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            if (!Util.isNetworkOff(HomeActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
                 internetIndicatorImage.setVisibility(View.GONE);
             } else {
                 internetIndicatorImage.setVisibility(View.VISIBLE);

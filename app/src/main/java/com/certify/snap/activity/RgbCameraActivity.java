@@ -623,7 +623,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    changeVerifyBackground(R.color.transparency, true);
+                                    changeVerifyBackground(R.color.colorTransparency, true);
                                     img_telpo.setVisibility(View.GONE);
                                     logo.setVisibility(View.GONE);
                                     showAnimation();
@@ -639,7 +639,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                                     if(result) malertBeep.playBeepSoundAndVibrate();
                                                     img_temperature.setVisibility(View.VISIBLE);
                                                     img_temperature.setBackgroundResource(result?R.mipmap.temp_red:R.mipmap.temp_green);
-                                                    tv_message.setTextColor(getResources().getColor(R.color.dark_text_color));
+                                                    tv_message.setTextColor(getResources().getColor(R.color.colorDark));
                                                    // tv_message.setTextColor(result? getResources().getColor(R.color.red) : getResources().getColor(R.color.green));
                                                     tv_message.setText(temperature);
                                                 }
@@ -1278,7 +1278,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             switch (msg.what){
                 case HIDE_VERIFY_UI:
                     rgbCameraActivity.stopAnimation();
-                    rgbCameraActivity.changeVerifyBackground(R.color.transparency,false);
+                    rgbCameraActivity.changeVerifyBackground(R.color.colorTransparency,false);
                     break;
                 case CARD_ID_ERROR:
 //                    rgbCameraActivity.mBeepManager2.playBeepSoundAndVibrate();

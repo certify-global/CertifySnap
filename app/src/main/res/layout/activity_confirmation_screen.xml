@@ -4,17 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/colorWhite">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/margin_10"
-        android:layout_marginTop="@dimen/margin_10">
+        android:layout_marginRight="@dimen/size_10"
+        android:layout_marginTop="@dimen/size_10">
         <ImageView
             android:id="@+id/img_internet_indicator"
-            android:layout_width="@dimen/margin_10"
-            android:layout_height="@dimen/margin_10"
+            android:layout_width="@dimen/size_10"
+            android:layout_height="@dimen/size_10"
             android:src="@drawable/red_circle"
             android:layout_alignParentRight="true"
             android:visibility="gone"/>
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="16dp"
-            android:textColor="@color/lightergray"
+            android:textColor="@color/colorLighterGray"
             android:gravity="center"
             android:layout_alignTop="@+id/iv_item_head_img"/>
 
@@ -43,7 +43,7 @@
             android:layout_height="170dp"
             android:scaleType="centerCrop"
             android:visibility="visible"
-            android:layout_marginTop="@dimen/margin_20"/>
+            android:layout_marginTop="@dimen/size_20"/>
         <TextView
             android:id="@+id/tv_item_name"
             android:layout_width="match_parent"
@@ -52,7 +52,7 @@
             android:textSize="20dp"
             android:layout_alignBottom="@+id/iv_item_head_img"
             android:gravity="center"
-            android:layout_marginTop="@dimen/margin_5"/>
+            android:layout_marginTop="@dimen/size_05"/>
 
 
     <TextView

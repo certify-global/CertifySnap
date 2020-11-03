@@ -13,7 +13,7 @@
         android:id="@+id/sixQ_image1"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -21,13 +21,13 @@
         android:layout_width="73dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sixQ_image2"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -35,13 +35,13 @@
         android:layout_width="73dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sixQ_image3"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -49,39 +49,39 @@
         android:layout_width="73dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sixQ_image4"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
     <View
         android:id="@+id/sixQ_view4"
         android:layout_width="73dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sixQ_image5"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
     <View
         android:id="@+id/sixQ_view5"
         android:layout_width="73dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sixQ_image6"
         android:layout_width="26dp"
         android:layout_height="26dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
 </LinearLayout>

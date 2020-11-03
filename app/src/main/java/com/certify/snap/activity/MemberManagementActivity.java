@@ -692,7 +692,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         mpopupwindow.setOutsideTouchable(false);
         mpopupwindow.setFocusable(true);
         mpopupwindow.setAnimationStyle(R.style.animTranslate);
-        mpopupwindow.setBackgroundDrawable(new ColorDrawable(R.color.backwhite));
+        mpopupwindow.setBackgroundDrawable(new ColorDrawable(R.color.colorBlackWhite));
 
         registerpath = "";
         final EditText mfirstname = view.findViewById(R.id.popup_first_name);

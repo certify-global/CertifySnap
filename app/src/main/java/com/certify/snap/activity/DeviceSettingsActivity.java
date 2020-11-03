@@ -550,7 +550,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
-        Intent intent = new Intent(this, GuideActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);

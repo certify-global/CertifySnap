@@ -13,7 +13,7 @@
         android:id="@+id/sevenQ_image1"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -21,13 +21,13 @@
         android:layout_width="60dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sevenQ_image2"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -35,13 +35,13 @@
         android:layout_width="60dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sevenQ_image3"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
     <View
@@ -49,52 +49,52 @@
         android:layout_width="60dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sevenQ_image4"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
     <View
         android:id="@+id/sevenQ_view4"
         android:layout_width="60dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sevenQ_image5"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
     <View
         android:id="@+id/sevenQ_view5"
         android:layout_width="60dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sevenQ_image6"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
     <View
         android:id="@+id/sevenQ_view6"
         android:layout_width="60dp"
         android:layout_height="10dp"
         android:layout_gravity="center"
-        android:background="@color/very_light_gray" />
+        android:background="@color/colorVeryLightGray" />
 
     <ImageView
         android:id="@+id/sevenQ_image7"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:src="@drawable/no_tick" />
 
 </LinearLayout>
