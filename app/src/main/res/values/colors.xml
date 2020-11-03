@@ -5,7 +5,6 @@
     <color name="colorAccent">#1F51FE</color>
     <color name="transparency">#00000000</color>
     <color name="blue">#33A1C9</color>
-    <color name="gray_blue">#bdeadc</color>
     <color name="white">#ffffff</color>
 
     <color name="lilyblue">#38ADFF</color>
@@ -16,8 +15,6 @@
     <color name="skyblue">#1F51FE</color>
     <color name="bg_green">#00CC74</color>
     <color name="bg_blue">#3A95EF</color>
-    <color name="heavyblue">#183473</color>
-    <color name="midblue">#27B5DD</color>
     <color name="black">#302726</color>
     <color name="lightgray">#ffcccccc</color>
     <color name="lightergray">#4DCCCCCC</color>
@@ -28,35 +25,18 @@
     <color name="red">#EE0000</color>
     <color name="orange">#FFA500</color>
 
-    <color name="ivory">#FFFFF0</color><!--象牙色 -->
-    <color name="lightyellow">#FFFFE0</color><!--亮黄色 -->
-    <color name="yellow">#FFFF00</color><!--黄色 -->
-    <color name="snow">#FFFAFA</color><!--雪白色 -->
-    <color name="floralwhite">#FFFAF0</color><!--花白色 -->
-    <color name="lemonchiffon">#FFFACD</color><!--柠檬绸色 -->
-    <color name="cornsilk">#FFF8DC</color><!--米绸色 -->
-    <color name="seashell">#FFF5EE</color><!--海贝色 -->
-    <color name="lavenderblush">#FFF0F5</color><!--淡紫红 -->
-    <color name="papayawhip">#FFEFD5</color><!--番木色 -->
-    <color name="blanchedalmond">#FFEBCD</color><!--白杏色 -->
-    <color name="mistyrose">#FFE4E1</color><!--浅玫瑰色 -->
-    <color name="bisque">#FFE4C4</color><!--桔黄色 -->
-    <color name="moccasin">#FFE4B5</color><!--鹿皮色 -->
-    <color name="navajowhite">#FFDEAD</color><!--纳瓦白 -->
+    <color name="yellow">#FFFF00</color>
+    <color name="snow">#FFFAFA</color>
+
     <color name="dark_text_color">#2C2C2C</color>
-    <color name="light_text_color">#666669</color>
     <color name="qr_code_reader_square">#FFFFFF</color>
     <color name="translucent_black">#80000000</color>
 
-    <drawable name="table_background">#444</drawable>
-
     <color name="colorWhite">#ffffff</color>
     <color name="colorBlack">#000</color>
-    <color name="darkGreen">#006400</color>
     <color name="colorGreen">#4CAF50</color>
 
     <color name="parrot_green">#29EF29</color>
     <color name="very_light_gray">#EAE6E6</color>
-
-
+    
 </resources>

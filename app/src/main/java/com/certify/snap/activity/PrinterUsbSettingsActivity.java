@@ -160,16 +160,6 @@ public class PrinterUsbSettingsActivity extends AppCompatActivity implements BCP
         printLabel();
     }
 
-    private void resizeReturnButton() {
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-
-        Button btnReturn = (Button)this.findViewById(R.id.BttonReturn);
-        Point size = new Point();
-        display.getSize(size);
-        btnReturn.setWidth(size.x);
-    }
-
     private void callFILE() {
         String filePath = util.getPreferences(this, PORTSETTING_FILE_PATH_KEYNAME);
         if (filePath.length() == 0) {
