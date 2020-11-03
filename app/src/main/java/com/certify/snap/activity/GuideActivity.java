@@ -2,7 +2,6 @@ package com.certify.snap.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,13 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncTaskExecutorService;
-import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
@@ -41,7 +37,6 @@ import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
-import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.localserver.LocalServerTask;
@@ -82,7 +77,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.guide);
+        setContentView(R.layout.activity_guide);
 
         mActivity = this;
         ApplicationController.getInstance().initThermalUtil(this);

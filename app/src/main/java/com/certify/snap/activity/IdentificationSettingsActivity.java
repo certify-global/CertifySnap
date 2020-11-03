@@ -58,7 +58,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qr);
+        setContentView(R.layout.activity_identification_settings);
         try {
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");

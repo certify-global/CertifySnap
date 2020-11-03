@@ -29,7 +29,7 @@ public class TemperatureSettingsActivity extends SettingsBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_temperature);
+        setContentView(R.layout.activity_temperature_settings);
         editTextDialogUserInput = findViewById(R.id.editTextDialogUserInput);
         editTextcompensation = findViewById(R.id.editTextcompensation);
         editTextTemperatureThreshold = findViewById(R.id.edit_text_temperature_threshold);

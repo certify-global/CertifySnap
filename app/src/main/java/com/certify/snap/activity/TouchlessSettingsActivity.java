@@ -47,7 +47,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_touchless);
+        setContentView(R.layout.activity_touchless_settings);
         initView();
         waveCheck();
         waveQuestionCheck();

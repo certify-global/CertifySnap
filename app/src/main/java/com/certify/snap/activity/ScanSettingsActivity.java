@@ -39,7 +39,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            setContentView(R.layout.activity_scan_view);
+            setContentView(R.layout.activity_scan_settings);
             sp = Util.getSharedPreferences(this);
 
             initView();

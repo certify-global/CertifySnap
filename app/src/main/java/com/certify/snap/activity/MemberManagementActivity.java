@@ -146,7 +146,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_management);
+        setContentView(R.layout.activity_member_management);
         relative_management = findViewById(R.id.relative_management);
         mCountTv = findViewById(R.id.count_tv);
         refresh = findViewById(R.id.refresh);
@@ -519,7 +519,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 }
             });
 
-            View parent = LayoutInflater.from(MemberManagementActivity.this).inflate(R.layout.activity_management, null);
+            View parent = LayoutInflater.from(MemberManagementActivity.this).inflate(R.layout.activity_member_management, null);
             if (mpopupwindowUpdate != null) {
                 mpopupwindowUpdate.showAtLocation(parent, Gravity.CENTER, 0, 0);
             }
@@ -822,7 +822,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             }
         });
 
-        View parent = LayoutInflater.from(MemberManagementActivity.this).inflate(R.layout.activity_management, null);
+        View parent = LayoutInflater.from(MemberManagementActivity.this).inflate(R.layout.activity_member_management, null);
         if (mpopupwindow != null && !mpopupwindow.isShowing()) {
             mpopupwindow.showAtLocation(parent, Gravity.CENTER, 0, 0);
         }

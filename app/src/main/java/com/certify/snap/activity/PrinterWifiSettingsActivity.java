@@ -35,7 +35,7 @@ public class PrinterWifiSettingsActivity extends ListActivity {
         // get the modelName
         final Bundle extras = getIntent().getExtras();
         modelName = extras.getString(Common.MODEL_NAME);
-        setContentView(R.layout.activity_net_printer);
+        setContentView(R.layout.activity_printer_wifi_settings);
 
         Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
         btnRefresh.setOnClickListener(new View.OnClickListener() {

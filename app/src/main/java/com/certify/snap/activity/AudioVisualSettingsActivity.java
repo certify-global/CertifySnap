@@ -78,7 +78,7 @@ public class AudioVisualSettingsActivity extends SettingsBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_audio_visual);
+        setContentView(R.layout.activity_audio_visual_settings);
         ButterKnife.bind(this);
         BusProvider.getInstance().register(this);
         sp = Util.getSharedPreferences(this);

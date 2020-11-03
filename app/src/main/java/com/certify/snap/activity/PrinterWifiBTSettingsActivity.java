@@ -32,7 +32,7 @@ public class PrinterWifiBTSettingsActivity extends PreferenceActivity implements
 
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        addPreferencesFromResource(R.xml.printer_settings);
+        addPreferencesFromResource(R.xml.activity_printer_wifibt_settings);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // initialize the printerModel ListPreference

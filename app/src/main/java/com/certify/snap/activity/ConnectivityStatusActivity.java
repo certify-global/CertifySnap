@@ -63,7 +63,7 @@ public class ConnectivityStatusActivity extends SettingsBaseActivity implements 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connectivity);
+        setContentView(R.layout.activity_connectivity_status);
 
         Util.getDeviceHealthCheck((JSONObjectCallback) this,this);
         rubiklight = Typeface.createFromAsset(getAssets(),

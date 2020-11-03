@@ -45,7 +45,7 @@ public class RegisterDeviceActivity extends SettingsBaseActivity implements AddD
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            setContentView(R.layout.activity_register_admin);
+            setContentView(R.layout.activity_register_device);
             tv_version = findViewById(R.id.tv_version);
             tv_serial_no = findViewById(R.id.tv_serial_no);
             textview_name = findViewById(R.id.textview_name);

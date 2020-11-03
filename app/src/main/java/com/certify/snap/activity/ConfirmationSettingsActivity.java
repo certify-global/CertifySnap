@@ -31,7 +31,7 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            setContentView(R.layout.activity_confirmation_setting);
+            setContentView(R.layout.activity_confirmation_settings);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);

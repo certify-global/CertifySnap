@@ -92,7 +92,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            setContentView(R.layout.activity_setting);
+            setContentView(R.layout.activity_settings);
             Util.getNumberVersion(SettingsActivity.this);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -324,24 +324,11 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
             case R.id.rl_device_setting:
                 startActivity(new Intent(SettingsActivity.this, DeviceSettingsActivity.class));
                 break;
-            case R.id.setting_init:
-                if (isopen)
-                    startActivity(new Intent(SettingsActivity.this, InitializationActivity.class));
-                break;
             case R.id.setting_managment:
                 if (isopen)
                     startActivity(new Intent(SettingsActivity.this, MemberManagementActivity.class));
                 break;
-            case R.id.setting_register:
-                break;
-            case R.id.setting_parameter:
-                if (isopen)
-                    startActivity(new Intent(SettingsActivity.this, ParameterActivity.class));
-                break;
             case R.id.setting_led:
-                break;
-            case R.id.setting_activate_card:
-                if (isopen) startActivity(new Intent(SettingsActivity.this, NFCCardActivity.class));
                 break;
             case R.id.setting_record:
                 if (isopen) startActivity(new Intent(SettingsActivity.this, OfflineRecordsActivity.class));
@@ -375,10 +362,6 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
             case R.id.confirmation_setting:
                 Intent confirmationIntent = new Intent(SettingsActivity.this, ConfirmationSettingsActivity.class);
                 startActivity(confirmationIntent);
-                break;
-            case R.id.guide_setting:
-                Intent guideIntent = new Intent(SettingsActivity.this, GuideSettingsActivity.class);
-                startActivity(guideIntent);
                 break;
             case R.id.qr_setting:
                 Intent qrintent = new Intent(SettingsActivity.this, IdentificationSettingsActivity.class);

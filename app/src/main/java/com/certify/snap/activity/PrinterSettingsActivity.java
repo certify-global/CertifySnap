@@ -64,7 +64,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_printer_view_settings);
+        setContentView(R.layout.activity_printer_settings);
         sp = Util.getSharedPreferences(this);
 
         initView();

@@ -5,15 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -53,18 +49,8 @@ public class PrinterUsbSettingsActivity extends AppCompatActivity implements BCP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_toshiba_printer_settings);
+        setContentView(R.layout.activity_printer_usb_settings);
         final Context context = this.getApplicationContext();
-
-     /*   try {
-            resizeReturnButton();
-            printerList(context);
-            portList(context);
-            copyIniFile();
-            initPrint();
-        } catch( Exception e ) {
-            Log.d("TAG", "onCreate: ");
-        }*/
 
     }
 

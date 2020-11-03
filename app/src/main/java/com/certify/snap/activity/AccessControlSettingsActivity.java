@@ -42,7 +42,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.access_control_layout);
+        setContentView(R.layout.activity_access_control_settings);
         mEnableRelayCb = findViewById(R.id.enable_relay_cb);
         mAllowAnonymousCb = findViewById(R.id.allow_anonymous_cb);
         mModesRg = findViewById(R.id.access_rg);

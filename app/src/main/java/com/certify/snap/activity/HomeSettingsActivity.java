@@ -27,19 +27,13 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
     Typeface rubiklight;
     TextView tv_welcome, titles;
     CheckBox cbHomeText, cbTextOnly;
-//    String deffat ="if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to" +
-//            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";//+
-//               "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for "+
-//            "if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report toif your answer to all 3covid questions is no please tap your badge  at the bottom of the device for ";
-    String title = "";
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            setContentView(R.layout.activity_thermal_setting);
+            setContentView(R.layout.activity_home_settings);
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             text_input_title = findViewById(R.id.text_input_title);
