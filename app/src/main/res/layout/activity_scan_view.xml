@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -87,6 +86,141 @@
                 android:theme="@style/MyCheckBox" />
 
         </RadioGroup>
+
+        <TextView
+            android:id="@+id/tv_temp_result_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="10dp"
+            android:text="@string/tv_result_bar"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_yes_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/radio_no_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+
+        <TextView
+            android:id="@+id/tv_temp_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="10dp"
+            android:text="@string/tv_text_display"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_18" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/font_10"
+            android:weightSum="2"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/tv_temp_text_normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="10dp"
+                android:text="@string/tv_temp_text_normal"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18"
+                android:layout_gravity="center"
+                android:layout_weight="1"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_normal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_marginRight="@dimen/margin_40">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_normal"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittextbackground"
+                    android:inputType="text"
+                    android:maxLength="25"
+                    android:paddingStart="@dimen/margin_5"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/font_10"
+            android:weightSum="2"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_temp_text_high"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="10dp"
+                android:text="@string/tv_temp_text_high"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18"
+                android:layout_gravity="center"
+                android:layout_weight="1"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_high"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="40dp"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_high"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittextbackground"
+                    android:inputType="text"
+                    android:maxLength="25"
+                    android:paddingStart="@dimen/margin_5"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/tv_temp_all"
@@ -208,6 +342,45 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/scan_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/scan_type"
+            android:textColor="@color/black"
+            android:layout_marginStart="@dimen/margin_20"
+            android:layout_marginTop="@dimen/font_10"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/scan_type_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/scan_type_quick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_30"
+                android:text="@string/scan_type_quick"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/scan_type_standard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/scan_type_standard"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+        <TextView
             android:id="@+id/tv_reg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -216,7 +389,8 @@
             android:layout_marginRight="@dimen/margin_20"
             android:text="@string/allow_low"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_18" />
+            android:textSize="@dimen/font_18"
+            android:visibility="gone"/>
 
         <RadioGroup
             android:id="@+id/radio_group_reg"
@@ -224,7 +398,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_20"
             android:layout_marginTop="@dimen/margin_5"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <RadioButton
                 android:id="@+id/radio_yes_reg"
@@ -324,10 +499,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_30"
+                android:checked="true"
                 android:text="@string/living_type_1"
                 android:textColor="@color/black"
                 android:textSize="@dimen/font_14"
-                android:checked="true"
                 android:theme="@style/MyCheckBox" />
 
             <RadioButton
@@ -340,6 +515,99 @@
                 android:theme="@style/MyCheckBox" />
 
         </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/voice_recognition_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="Enable voice recognition"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_voice_recognition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_yes_voice_recognition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_no_voice_recognition"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/hand_gesture_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_15"
+                android:text="Enable Hand Gesture"
+                android:textColor="@color/black"
+                android:textSize="@dimen/font_18" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_hand_gesture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_5"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_yes_hand_gesture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_no_hand_gesture"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/font_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+        </LinearLayout>
 
     </LinearLayout>
 

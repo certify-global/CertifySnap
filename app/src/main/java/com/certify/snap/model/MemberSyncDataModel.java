@@ -102,6 +102,12 @@ public class MemberSyncDataModel {
                             member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
+                            if (c.has("memberType")) {
+                                member.setMemberType(c.getString("memberType"));
+                            }
+                            if (c.has("memberTypeName")) {
+                                member.setMemberTypeName(c.getString("memberTypeName"));
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
@@ -169,6 +175,12 @@ public class MemberSyncDataModel {
                             member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
+                            if (c.has("memberType")) {
+                                member.setMemberType(c.getString("memberType"));
+                            }
+                            if (c.has("memberTypeName")) {
+                                member.setMemberTypeName(c.getString("memberTypeName"));
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
@@ -319,13 +331,15 @@ public class MemberSyncDataModel {
      * @param context context
      * @param member member
      * @return true or false accordingly
+     *
      */
     private boolean localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid,
                                   String uniqueid, String imgpath, String sync, Context context, RegisteredMembers member, long primaryId) {
         boolean result = false;
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
-            if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId)) {
+            if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
+                                 member.memberType, member.memberTypeName)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -386,7 +400,7 @@ public class MemberSyncDataModel {
      * @return true or false accordingly
      */
     public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
-                                    String dateTime, long primaryId) {
+                                    String dateTime, long primaryId, String memberType, String memberTypeName) {
         try {
             String username = firstname + "-" + primaryId;
             String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
@@ -408,6 +422,8 @@ public class MemberSyncDataModel {
             registeredMembers.setImage(image);
             registeredMembers.setFeatures(feature);
             registeredMembers.setPrimaryId(primaryId);
+            registeredMembers.setMemberType(memberType);
+            registeredMembers.setMemberTypeName(memberTypeName);
             DatabaseController.getInstance().insertMemberToDB(registeredMembers);
             return true;
         } catch (Exception e) {

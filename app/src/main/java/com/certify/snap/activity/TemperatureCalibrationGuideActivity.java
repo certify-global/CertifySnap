@@ -159,7 +159,11 @@ public class TemperatureCalibrationGuideActivity extends SettingBaseActivity {
                 });
             }
         });
-        util.setGuideRect(new Rect[]{new Rect(0, 0, 400, 400)}, 0);
+        try {
+            util.setGuideRect(new Rect[]{new Rect(0, 0, 400, 400)}, 0);
+        } catch (Exception e) {
+            Log.e("TempCalibrationGuide", "Exception in setGuideRect");
+        }
     }
 
     public void calibrate(View view){

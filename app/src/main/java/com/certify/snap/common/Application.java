@@ -12,10 +12,9 @@ import android.util.Log;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
+import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
-import com.certify.snap.database.Database;
 import com.certify.snap.service.AlarmReceiver;
-import com.common.thermalimage.ThermalImageUtil;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.AbstractCrashesListener;
@@ -30,7 +29,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -44,16 +42,22 @@ public class Application extends android.app.Application {
     private Novate novate;
     //    private MyOkHttp mMyOkHttp;
     // private DownloadMgr mDownloadMgr;
-    public static boolean member=false;
+    public static boolean member = false;
     private List<Activity> activityList = new LinkedList();
     private static SimplePreference preference;
     private int deviceMode = 0;
     WifiManager wifi;
+    SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        sharedPreferences = Util.getSharedPreferences(this);
+        if (sharedPreferences != null && !sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
+            ApplicationController.getInstance().clearSharedPrefData(this);
+        }
+        //validateDB();
         String password = getPragmaKey(this);
         DatabaseController.getInstance().init(this, password);
         preference = new SimplePreference(this);
@@ -141,10 +145,10 @@ public class Application extends android.app.Application {
     private void initAppCenter() {
         setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
         AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",
-    Analytics.class, Crashes.class);
+                Analytics.class, Crashes.class);
         AppCenter.setUserId(Util.getSerialNumber());
         Crashes.setEnabled(true);
-}
+    }
 
     private void setAppCenterCrashListener() {
         AbstractCrashesListener crashesListener = new AbstractCrashesListener() {
@@ -176,10 +180,10 @@ public class Application extends android.app.Application {
         Crashes.setListener(crashesListener);
     }
 
-    public String getPragmaKey(Context context){
+    public String getPragmaKey(Context context) {
         wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
         String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
-        String deviceSerialNo = Util.getSNCode();
+        String deviceSerialNo = Util.getSNCode(this);
         return getSha256Hash(deviceSerialNo + macAddress);
     }
 

@@ -494,13 +494,14 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                                 obj.put("accessId", accessstr);
                                 obj.put("faceTemplate", bitmap1 == null ? "" : Util.encodeToBase64(bitmap1));
                                 obj.put("status", true);
-                                obj.put("memberType", 1);
+                                obj.put("memberType", member.getMemberType());
+                                obj.put("memberTypeName", member.getMemberTypeName());
                                 new AsyncJSONObjectManageMember(obj, ManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, ManagementActivity.this).execute();
                             } catch (Exception e) {
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
-                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId());
+                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "");
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError("Member Id should not be empty");
@@ -810,7 +811,7 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember());
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "");
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -832,12 +833,13 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         Util.showToast(ManagementActivity.this, data);
     }
 
-    private void localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId) {
+    private void localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId,
+                               String memberType, String memberTypeName) {
         String data = "";
         Log.d(TAG, "Snap Primary id : " + primaryId);
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
-            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId)) {
+            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId, memberType, memberTypeName)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -859,7 +861,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
         }
     }
 
-    public void localUpdate(String fistname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId) {
+    public void localUpdate(String fistname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId,
+                            String memberType, String memberTypeName) {
         String data = "";
         List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
         if (list != null && list.size() > 0) {
@@ -883,6 +886,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     Members.setFeatures(Members.getFeatures());
                     Members.setDateTime(Util.currentDate());
                     Members.setPrimaryId(primaryId);
+                    Members.setMemberType(memberType);
+                    Members.setMemberTypeName(memberTypeName);
                     //Members.save();
                     DatabaseController.getInstance().updateMember(Members);
 
@@ -1217,13 +1222,22 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                     String emailstr = responseData.getString("email");
                     String mobilestr = responseData.getString("phoneNumber");
                     String memberidstr = responseData.getString("memberId");
+                    String memberType = "";
+                    if (responseData.has("memberType")) {
+                        memberType = responseData.getString("memberType");
+                    }
+                    String memberTypeName = "";
+                    if (responseData.has("memberTypeName")) {
+                        memberTypeName = responseData.getString("memberTypeName");
+                    }
                     String accessstr = responseData.getString("accessId");
                     String uniquestr = json.getString("id");
                     String image = responseData.getString("faceTemplate");
                     String statusStr = responseData.getString("status");
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
-                        localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId());
+                        localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId(),
+                                    memberType, memberTypeName);
                     } else if (isDeleted) {
                         RegisteredMembers members = new RegisteredMembers();
                         members.setFirstname(firstnamestr);
@@ -1241,7 +1255,8 @@ public class ManagementActivity extends SettingBaseActivity implements ManageMem
                         localDelete(members);
                         isDeleted = false;
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember());
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "",
+                                Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), memberType, memberTypeName);
                     }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));

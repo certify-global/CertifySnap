@@ -8,6 +8,8 @@ public class QrCodeData {
     private String memberId;
     private String accessId;
     private String qrCodeId;
+    private int memberTypeId;
+    private String memberTypeName;
 
     public String getUniqueId() {
         return uniqueId;
@@ -63,5 +65,21 @@ public class QrCodeData {
 
     public void setQrCodeId(String qrCodeId) {
         this.qrCodeId = qrCodeId;
+    }
+
+    public int getMemberTypeId() {
+        return memberTypeId;
+    }
+
+    public void setMemberTypeId(int memberTypeId) {
+        this.memberTypeId = memberTypeId;
+    }
+
+    public String getMemberTypeName() {
+        return memberTypeName;
+    }
+
+    public void setMemberTypeName(String memberTypeName) {
+        this.memberTypeName = memberTypeName;
     }
 }

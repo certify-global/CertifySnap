@@ -1,15 +1,26 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.snap.common.Application;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
+import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.model.AccessLogOfflineRecord;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
+import com.certify.snap.service.MemberSyncService;
 
+import net.sqlcipher.database.SQLiteException;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +28,9 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
+    public static final int DB_VERSION = 3;
+    public static Context mContext;
+    SharedPreferences sharedPreferences;
 
     public static DatabaseController getInstance() {
         if (mInstance == null) {
@@ -26,6 +40,8 @@ public class DatabaseController {
     }
 
     public void init(Context context, String passphrase){
+        mContext = context;
+        sharedPreferences = Util.getSharedPreferences(context);
         databaseStore = Database.create(context, passphrase).databaseStore();
     }
 
@@ -38,58 +54,102 @@ public class DatabaseController {
     }
 
     public boolean isMemberIdExist(String memberId){
-        if (databaseStore != null) {
-            List<RegisteredMembers> membersList = databaseStore.findMemberByMemberId(memberId);
-            return membersList != null && membersList.size() > 0;
+        try {
+            if (databaseStore != null) {
+                List<RegisteredMembers> membersList = databaseStore.findMemberByMemberId(memberId);
+                return membersList != null && membersList.size() > 0;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return false;
     }
 
     public boolean isAccessIdExist(String accessId) {
-        if (databaseStore != null) {
-            List<RegisteredMembers> membersList = databaseStore.findMemberByAccessId(accessId);
-            return membersList != null && membersList.size() > 0;
+        try {
+            if (databaseStore != null) {
+                List<RegisteredMembers> membersList = databaseStore.findMemberByAccessId(accessId);
+                return membersList != null && membersList.size() > 0;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return false;
     }
 
     public List<RegisteredMembers> findMemberByAccessId(String accessId) {
-        if (databaseStore != null) {
-            return databaseStore.findMemberByAccessId(accessId);
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findMemberByAccessId(accessId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
 
     public List<RegisteredMembers> findMember(long primaryId) {
-        if (databaseStore != null) {
-            return databaseStore.findMemberByPrimaryId(primaryId);
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findMemberByPrimaryId(primaryId);
+            }
+        } catch (SQLiteException e){
+            if (handleDBException(e)) {
+                if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
+                    Util.stopMemberSyncService(mContext);
+                    MemberSyncDataModel.getInstance().clear();
+                }
+                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        mContext.startService(new Intent(mContext, MemberSyncService.class));
+                        Application.StartService(mContext);
+                    }
+                }
+            }
         }
         return new ArrayList<>();
     }
 
     public int deleteMember(long primaryId) {
-        if (databaseStore != null) {
-            return databaseStore.deleteMember(primaryId);
+        try {
+            if (databaseStore != null) {
+                return databaseStore.deleteMember(primaryId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return -1;
     }
 
     public List<RegisteredMembers> isUniqueIdExit(String uniqueID) {
-        if (databaseStore != null) {
-            return databaseStore.findMemberByUniqueId(uniqueID);
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findMemberByUniqueId(uniqueID);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
 
     public void insertMemberToDB(RegisteredMembers member) {
-        if (databaseStore != null) {
-            databaseStore.insertMember(member);
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertMember(member);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
     public void insertOfflineMemberIntoDB(OfflineRecordTemperatureMembers offlineRecordTemperatureMembers) {
-        if (databaseStore != null) {
-            databaseStore.insertOfflineRecordTemperatureMembers(offlineRecordTemperatureMembers);
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertOfflineRecordTemperatureMembers(offlineRecordTemperatureMembers);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
@@ -100,22 +160,34 @@ public class DatabaseController {
     }
 
     public List<RegisteredMembers> findAll() {
-        if (databaseStore != null) {
-            return databaseStore.findAllRegisterMembersList();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllRegisterMembersList();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
 
     public OfflineRecordTemperatureMembers getLastPrimaryId() {
-        if (databaseStore != null) {
-            return databaseStore.OfflineRecordTemperatureMembers();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.OfflineRecordTemperatureMembers();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return null;
     }
 
     private RegisteredMembers getLastPrimaryIdOnMember() {
-        if (databaseStore != null) {
-            return databaseStore.getLastMember();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getLastMember();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return null;
     }
@@ -132,34 +204,54 @@ public class DatabaseController {
     }
 
     public void deleteAllMember(){
-        if (databaseStore != null){
-            databaseStore.deleteAll();
+        try {
+            if (databaseStore != null){
+                databaseStore.deleteAll();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
     public void updateMember(RegisteredMembers registermember){
-        if (databaseStore != null){
-            databaseStore.updateMember(registermember);
+        try {
+            if (databaseStore != null){
+                databaseStore.updateMember(registermember);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
     public List<OfflineRecordTemperatureMembers> findAllOfflineRecord() {
-        if (databaseStore != null) {
-            return databaseStore.findAllOfflineRecordTempMember();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllOfflineRecordTempMember();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
 
     public OfflineRecordTemperatureMembers getFirstOfflineRecord() {
-        if (databaseStore != null) {
-            return databaseStore.OfflineRecordTempFirstMember();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.OfflineRecordTempFirstMember();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return null;
     }
 
     public void deleteOfflineRecord(long primaryId){
-        if (databaseStore != null){
-            databaseStore.deleteOfflineRecord(primaryId);
+        try {
+            if (databaseStore != null){
+                databaseStore.deleteOfflineRecord(primaryId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
@@ -171,80 +263,124 @@ public class DatabaseController {
     }
 
     public int deleteMemberByCertifyId(String certifyId){
-        if (databaseStore != null){
-            return databaseStore.deleteMemberByCertifyId(certifyId);
+        try {
+            if (databaseStore != null){
+                return databaseStore.deleteMemberByCertifyId(certifyId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return 0;
     }
 
     public void deleteAllOfflineRecord() {
-        if (databaseStore != null){
-            databaseStore.deleteAllOfflineRecord();
-            databaseStore.deleteAllOfflineAccessLogRecords();
+        try {
+            if (databaseStore != null){
+                databaseStore.deleteAllOfflineRecord();
+                databaseStore.deleteAllOfflineAccessLogRecords();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
     public void insertOfflineAccessLog(AccessLogOfflineRecord accessLogOfflineRecord) {
-        if (databaseStore != null) {
-            databaseStore.insertAccessLogOfflineRecord(accessLogOfflineRecord);
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertAccessLogOfflineRecord(accessLogOfflineRecord);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
     public AccessLogOfflineRecord getFirstOfflineAccessLogRecord() {
-        if (databaseStore != null) {
-            return databaseStore.firstAccessLogOfflineRecord();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.firstAccessLogOfflineRecord();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return null;
     }
 
     public void deleteOfflineAccessLogRecord(long primaryId){
-        if (databaseStore != null){
-            databaseStore.deleteOfflineAccessLogRecord(primaryId);
+        try {
+            if (databaseStore != null){
+                databaseStore.deleteOfflineAccessLogRecord(primaryId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
     }
 
     public AccessLogOfflineRecord getLastAccessLogPrimaryId() {
-        if (databaseStore != null) {
-            return databaseStore.OfflineAccessLogRecord();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.OfflineAccessLogRecord();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return null;
     }
 
     public List<AccessLogOfflineRecord> findAllOfflineAccessLogRecord() {
-        if (databaseStore != null) {
-            return databaseStore.findAllOfflineAccessLogRecord();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllOfflineAccessLogRecord();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
 
     public boolean isOfflineRecordTempExist() {
         boolean result = false;
-        OfflineRecordTemperatureMembers firstMember =  getFirstOfflineRecord();
-        if (firstMember != null){
-            result = true;
+        try {
+            OfflineRecordTemperatureMembers firstMember =  getFirstOfflineRecord();
+            if (firstMember != null){
+                result = true;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return result;
     }
 
     public boolean isOfflineAccessLogExist() {
         boolean result = false;
-        AccessLogOfflineRecord firstAccessLogRecord = getFirstOfflineAccessLogRecord();
-        if (firstAccessLogRecord != null){
-            result = true;
+        try {
+            AccessLogOfflineRecord firstAccessLogRecord = getFirstOfflineAccessLogRecord();
+            if (firstAccessLogRecord != null){
+                result = true;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return result;
     }
 
     public List<OfflineRecordTemperatureMembers> lastTenOfflineTempRecord() {
-        if (databaseStore != null) {
-            return databaseStore.LastTenOfflineTempRecord();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.LastTenOfflineTempRecord();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
 
     public List<AccessLogOfflineRecord> lastTenOfflineAccessLog() {
-        if (databaseStore != null) {
-            return databaseStore.LastTenOfflineAccessLog();
+        try {
+            if (databaseStore != null) {
+                return databaseStore.LastTenOfflineAccessLog();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
         }
         return new ArrayList<>();
     }
@@ -254,5 +390,43 @@ public class DatabaseController {
             return databaseStore.lastTenMembers();
         }
         return new ArrayList<>();
+    }
+
+    public void clearAll() {
+        if (databaseStore != null) {
+            databaseStore.deleteAll();
+            databaseStore.deleteAllOfflineRecord();
+            databaseStore.deleteAllOfflineAccessLogRecords();
+        }
+    }
+
+    private boolean handleDBException(SQLiteException e) {
+        if (e.getMessage().contains("file is not a database")) {
+            SQLCipherUtils.State state = SQLCipherUtils.getDatabaseState(mContext.getApplicationContext(), Database.DB_NAME);
+            if (state == SQLCipherUtils.State.ENCRYPTED){
+                validateDB();
+                init(mContext, Application.getInstance().getPragmaKey(mContext));
+            } else if (state == SQLCipherUtils.State.DOES_NOT_EXIST){
+                init(mContext, Application.getInstance().getPragmaKey(mContext));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void validateDB() {
+        File databasesDir = new File(mContext.getApplicationInfo().dataDir + "/databases");
+        File file = new File(databasesDir, Database.DB_NAME);
+        if (file.exists()) {
+            file.delete();
+            File fileDbShm = new File(databasesDir, "snap_face.db-shm");
+            if (fileDbShm.exists()) {
+                fileDbShm.delete();
+            }
+            File fileDbWal = new File(databasesDir, "snap_face.db-wal");
+            if (fileDbWal.exists()) {
+                fileDbWal.delete();
+            }
+        }
     }
 }

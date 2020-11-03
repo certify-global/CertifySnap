@@ -24,6 +24,7 @@ import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -32,6 +33,7 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 
+import com.certify.snap.controller.CameraController;
 import com.google.android.gms.common.images.Size;
 import java.io.IOException;
 import java.lang.Thread.State;
@@ -515,6 +517,9 @@ public class CameraSource {
         WindowManager windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
         int degrees = 0;
         int rotation = 1;
+        if (Build.VERSION.SDK_INT >= 26) {
+            rotation = 0;
+        }
         switch (rotation) {
             case Surface.ROTATION_0:
                 degrees = 0;

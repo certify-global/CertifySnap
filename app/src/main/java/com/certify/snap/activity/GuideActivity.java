@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
@@ -35,6 +36,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -74,6 +76,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     public LocalServer localServer;
     ResetOfflineDataReceiver resetOfflineDataReceiver;
     public ExecutorService taskExecutorService;
+    private String gestureWorkFlow = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
         cancelActivationTimer();
         if (startUpCountDownTimer != null) {
             startUpCountDownTimer.cancel();
+            startUpCountDownTimer = null;
         }
         ApplicationController.getInstance().releaseThermalUtil();
         if (localServer == null){
@@ -142,6 +146,9 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     }
 
     private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= 26 && (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)) {
+            requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, 1000);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
@@ -191,6 +198,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(GuideActivity.this)) {
+                initGesture();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(GuideActivity.this, true), 2 * 1000);
                 return;
             }
@@ -280,6 +288,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
      */
     private void onSettingsUpdated() {
         AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+        initGesture();
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
@@ -319,6 +328,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
     private void cancelActivationTimer() {
         if (mActivationTimer != null) {
             mActivationTimer.cancel();
+            mActivationTimer = null;
         }
     }
 
@@ -346,6 +356,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 e.printStackTrace();
             }
             AppSettings.getInstance().getSettingsFromSharedPref(GuideActivity.this);
+            gestureWorkFlow = AppSettings.getGestureWorkFlow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WindowManager.LayoutParams attributes = getWindow().getAttributes();
                 attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -361,6 +372,7 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
 
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
+                    ApplicationController.getInstance().setFcmPushToken(token);
                     Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
                     Logger.verbose(TAG,"firebase token",token);
 
@@ -435,6 +447,16 @@ public class GuideActivity extends Activity implements SettingCallback, JSONObje
                 localServer = new LocalServer(this);
                 new LocalServerTask(localServer).executeOnExecutor(taskExecutorService);
             }
+        }
+    }
+
+    private void initGesture() {
+        if (AppSettings.isEnableHandGesture()) {
+            if (!gestureWorkFlow.isEmpty() && !gestureWorkFlow.equals(AppSettings.getGestureWorkFlow())) {
+                GestureController.getInstance().clearQuestionAnswerMap();
+            }
+            GestureController.getInstance().initContext(this);
+            GestureController.getInstance().initHandGesture();
         }
     }
 }

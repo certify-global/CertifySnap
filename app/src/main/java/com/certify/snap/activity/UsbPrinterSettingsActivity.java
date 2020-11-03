@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
+import com.certify.snap.controller.PrinterController;
 import com.certify.snap.printer.usb.ConnectionData;
 import com.certify.snap.printer.usb.ConnectionDelegate;
 import com.certify.snap.printer.usb.PrintData;
@@ -284,6 +285,6 @@ public class UsbPrinterSettingsActivity extends AppCompatActivity implements BCP
 
     @Override
     public void onPrintStatus(String status, int code) {
-        //do noop
+        PrinterController.getInstance().setPrinting(false);
     }
 }

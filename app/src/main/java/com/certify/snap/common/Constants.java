@@ -45,5 +45,7 @@ public class Constants {
     public static final int PRO_SCANNER_INIT_INTERVAL = 60000;
 
     public static final int TEMPERATURE_MAX_RETRY = 5;
+
+    public static final int DEFAULT_SCAN_TYPE = 1;
 }
 

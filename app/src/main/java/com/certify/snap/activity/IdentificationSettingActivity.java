@@ -39,18 +39,21 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
     RadioButton radio_no_facial, rAnonymousNoRb;
     RadioButton rbguideyes,radio_yes_display,radio_no_display;
     RadioButton rbguideno;
-    EditText editTextDialogUserInput, editTextQRButton;
+    EditText editTextDialogUserInput, editTextQRButton,editTextAcknowledge;
     TextView tv_display;
-    TextView mAnonymousTv, qr_skip_button_enable_text;
-    TextInputLayout text_input_timeout, text_input_qr_button;
+    TextView mAnonymousTv, qr_skip_button_enable_text,tv_acknowledge;
+    TextInputLayout text_input_timeout, text_input_qr_button,text_input_acknowledge;
     LinearLayout qr_scanner_layout, anonymous_qr_bar_code_layout, rfid_layout, display_image_layout;
     private TextView scanMode;
-    private RadioGroup scanModeRg;
+    private RadioGroup scanModeRg,radio_group_acknowledge;
     private RadioButton scanModeRbEasy;
     private RadioButton scanModeRbFirm;
+    private RadioButton radio_no_acknowledge;
+    private RadioButton radio_yes_acknowledge;
     private boolean isHomeScreenViewEnabled;
     private LinearLayout parentLayout;
     private boolean isHomeScreenTextOnlyEnabled;
+    private LinearLayout acknowledgmentLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,9 +94,15 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             scanModeRg = findViewById(R.id.radio_group_scan_mode);
             scanModeRbEasy = findViewById(R.id.radio_scanmode_easy);
             scanModeRbFirm = findViewById(R.id.radio_scanmode_strict);
+            tv_acknowledge =findViewById(R.id.tv_acknowledge);
+            radio_yes_acknowledge =findViewById(R.id.radio_yes_acknowledge);
+            radio_no_acknowledge =findViewById(R.id.radio_no_acknowledge);
+            radio_group_acknowledge =findViewById(R.id.radio_group_acknowledge);
+            acknowledgmentLayout = findViewById(R.id.acknowledgement_layout);
             mAnonymousTv.setTypeface(rubiklight);
             tv_facial.setTypeface(rubiklight);
             tv_display.setTypeface(rubiklight);
+            tv_acknowledge.setTypeface(rubiklight);
             rAnonymousYesRb = findViewById(R.id.radio_yes_anonymous);
             rAnonymousNoRb = findViewById(R.id.radio_no_anonymous);
             radio_group_anonymous = findViewById(R.id.radio_group_anonymous);
@@ -103,11 +112,14 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
             qr_scanner_layout = findViewById(R.id.qr_scanner_layout);
             anonymous_qr_bar_code_layout = findViewById(R.id.anonymous_qr_bar_code_layout);
             rfid_layout = findViewById(R.id.rfid_layout);
+            editTextAcknowledge = findViewById(R.id.editTextAcknowledge);
+            text_input_acknowledge = findViewById(R.id.text_input_acknowledge);
             display_image_layout = findViewById(R.id.display_image_layout);
             qr_skip_button_enable_text = findViewById(R.id.qr_skip_button_enable_text);
             qr_skip_button_enable_text.setTypeface(rubiklight);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
+            editTextAcknowledge.setText(sp.getString(GlobalParameters.ACKNOWLEDGEMENT_TEXT, "All the acknowledge"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
             editTextQRButton.setText(sp.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
             if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
@@ -187,6 +199,24 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     }
                 }
             });
+            //Acknowledge
+            if (sp.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false)) {
+                radio_yes_acknowledge.setChecked(true);
+            } else {
+                radio_no_acknowledge.setChecked(true);
+            }
+            radio_group_acknowledge.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    System.out.println("Test radioack" + checkedId);
+                    if (checkedId == R.id.radio_yes_acknowledge) {
+                        radio_yes_acknowledge.setChecked(true);
+                        Util.writeBoolean(sp, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, true);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
+                    }
+                }
+            });
 
             btn_save = findViewById(R.id.btn_exit);
             btn_save.setOnClickListener(new View.OnClickListener() {
@@ -202,6 +232,7 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.FACIAL_THRESHOLD, editTextDialogUserInput.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.QR_BUTTON_TEXT, editTextQRButton.getText().toString().trim());
+                    Util.writeString(sp, GlobalParameters.ACKNOWLEDGEMENT_TEXT, editTextAcknowledge.getText().toString().trim());
                     saveScanModeSetting();
                     finish();
                 }
@@ -246,9 +277,11 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
         if (sp.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
             rfidYesRb.setChecked(true);
             rfidNoRb.setChecked(false);
+            acknowledgmentLayout.setVisibility(View.VISIBLE);
         } else {
             rfidNoRb.setChecked(true);
             rfidYesRb.setChecked(false);
+            acknowledgmentLayout.setVisibility(View.GONE);
         }
     }
 
@@ -264,9 +297,11 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
                     }
                     rfidYesRb.setChecked(true);
                     rfidNoRb.setChecked(false);
+                    acknowledgmentLayout.setVisibility(View.VISIBLE);
                 } else if (id == R.id.radio_no_rfid) {
                     rfidNoRb.setChecked(true);
                     rfidYesRb.setChecked(false);
+                    acknowledgmentLayout.setVisibility(View.GONE);
                 }
             }
         });
@@ -327,12 +362,16 @@ public class IdentificationSettingActivity extends SettingBaseActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                try {
                 if (charSequence.toString().isEmpty()) {
                     text_input_timeout.setError("");
                     return;
                 }
                 if (Integer.parseInt(charSequence.toString()) < 5) {
                     text_input_timeout.setError(getResources().getString(R.string.screen_timeout_msg));
+                }
+                } catch(NumberFormatException ex){
+                    Log.d(TAG, ex.getMessage());
                 }
             }
 

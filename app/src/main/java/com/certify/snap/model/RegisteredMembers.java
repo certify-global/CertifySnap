@@ -27,6 +27,7 @@ public class RegisteredMembers {
     public String uniqueid;
     public String memberType;
     public String dateTime;
+    public String memberTypeName;
 
     public long getPrimaryId() {
         return primaryid;
@@ -137,6 +138,14 @@ public class RegisteredMembers {
 
     public void setMemberType(String memberType) {
         this.memberType = memberType;
+    }
+
+    public String getMemberTypeName() {
+        return memberTypeName;
+    }
+
+    public void setMemberTypeName(String memberTypeName) {
+        this.memberTypeName = memberTypeName;
     }
 
     @Override

@@ -155,7 +155,10 @@ public class SoundController {
             soundPool.release();
             soundPool = null;
         }
-        if (mTimer != null) mTimer.cancel();
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
 
     }
 

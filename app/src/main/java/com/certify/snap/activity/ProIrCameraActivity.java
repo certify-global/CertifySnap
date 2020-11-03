@@ -889,8 +889,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                     tempRect = new Rect(sharedPreferences.getInt("rect_left", 23), sharedPreferences.getInt("rect_top", 30),
                             sharedPreferences.getInt("rect_right", 33), sharedPreferences.getInt("rect_bottom", 40));
                 }else if(module == 27){
-                    tempRect = new Rect(sharedPreferences.getInt("rect_left", 140), sharedPreferences.getInt("rect_top", 105),
-                            sharedPreferences.getInt("rect_right", 200), sharedPreferences.getInt("rect_bottom", 165));
+                    tempRect = new Rect(135, 55, 230, 195);
                     UserExportedData data = new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), 0);
                     startTempMeasure(data);
                 }
@@ -1035,8 +1034,15 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
             if (rect.right > 750 || rect.left < 20) {
                 final Rect[] rects = new Rect[temperatureRectList.size()];
                 int[] distances = new int[distanceList.size()];
-                util.setGuideRect(rects, distances);
+                try {
+                    util.setGuideRect(rects, distances);
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in setGuideRect");
+                }
                 cancelGuideTempTimer();
+                continue;
+            }
+            if (fix > 120) {
                 continue;
             }
             float horizontalOffset = (rect.left + rect.right) / 2.00f - 400;
@@ -1089,7 +1095,11 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
         for(int i = 0; i < distanceList.size(); i++){
             distances[i] = distanceList.get(i);
         }
-        util.setGuideRect(rects, distances);
+        try {
+            util.setGuideRect(rects, distances);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in setGuideRect");
+        }
         Log.e(TAG,"distance :" + distance);
     }
 

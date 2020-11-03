@@ -24,6 +24,8 @@ import android.graphics.Typeface;
 import android.graphics.YuvImage;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -34,11 +36,6 @@ import android.os.Debug;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -49,12 +46,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.PushCallback;
-import com.certify.callback.SettingCallback;
-import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.RecordTemperatureCallback;
+import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.activity.AddDeviceActivity;
@@ -62,6 +63,7 @@ import com.certify.snap.activity.GuideActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingActivity;
+import com.certify.snap.async.AsyncDeviceLog;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectPush;
@@ -69,17 +71,17 @@ import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
 import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
-import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.CameraController;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
-import com.certify.snap.model.RegisteredMembers;
-import com.certify.snap.controller.CameraController;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
@@ -112,7 +114,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -121,6 +126,7 @@ import java.util.concurrent.TimeUnit;
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
     private static final String LOG = Util.class.getSimpleName();
+    private static final String TODO = "TODO";
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
     private static String tokenRequestModule = ""; //Optimize
@@ -216,8 +222,24 @@ public class Util {
      *
      * @return
      */
-    public static String getSNCode() {
-        if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 28) {
+    @SuppressLint("MissingPermission")
+    public static String getSNCode(Context context) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                Log.d("TAG", "Naga.........No permissions getSNCode: ");
+                return TODO;
+            }
+            Log.d("TAG", "Naga.........permissions getSNCode: ");
+            return android.os.Build.getSerial();
+        }
+        else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
             return getSerialNumber();
@@ -269,6 +291,26 @@ public class Util {
             e.printStackTrace();
         }
         return myCaptureFile.getPath();
+
+    }
+
+    public static void saveBitmapImage(Bitmap bm, String fileName) throws IOException {
+
+        String path = Environment.getExternalStorageDirectory() + "/CertifySnap/Pic/";
+        File dirFile = new File(path);
+        if (!dirFile.exists()) {
+            dirFile.mkdir();
+        }
+        File myCaptureFile = new File(path + fileName);
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(myCaptureFile));
+            bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+            bos.flush();
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        myCaptureFile.getPath();
 
     }
 
@@ -599,7 +641,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("deviceSN", Util.getSNCode());//Util.getSNCode()
+            obj.put("deviceSN", Util.getSNCode(context));//Util.getSNCode()
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
 
             new AsyncJSONObjectSetting(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICESETTING, context).execute();
@@ -614,7 +656,7 @@ public class Util {
 
     public static String getJSONObject(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
             }
@@ -643,7 +685,7 @@ public class Util {
 
     public static String getJSONObjectAddmember(JSONObject req, String url, String header, Context context) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new String(responseTemp);
             }
@@ -765,7 +807,9 @@ public class Util {
                 obj.put("firstName", rfidScanMatchedMember.getFirstname());
                 obj.put("lastName", rfidScanMatchedMember.getLastname());
                 obj.put("memberId", rfidScanMatchedMember.getMemberid());
-                obj.put("trqStatus", "");// Send this empty if not Qr
+                obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
+                obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
+                obj.put("trqStatus", ""); // Send this empty if not Qr
             } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()) {
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
                 updateFaceMemberValues(obj, data);
@@ -776,8 +820,10 @@ public class Util {
                 obj.put("lastName", qrCodeData.getLastName());
                 obj.put("memberId", qrCodeData.getMemberId());
                 obj.put("trqStatus", qrCodeData.getTrqStatus());
-            } else if (isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                       !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) {
+                obj.put("memberTypeId", qrCodeData.getMemberTypeId());
+                obj.put("memberTypeName", qrCodeData.getMemberTypeName());
+            } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && !data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {
@@ -857,6 +903,8 @@ public class Util {
             obj.put("firstName", data.member.getFirstname());
             obj.put("lastName", data.member.getLastname());
             obj.put("memberId", data.member.getMemberid());
+            obj.put("memberTypeId", data.member.getMemberType());
+            obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
         } catch (JSONException e) {
             e.printStackTrace();
@@ -892,7 +940,6 @@ public class Util {
         } catch (Exception e) {
             Logger.error(LOG, "getToken " + e.getMessage());
             //TODO:warn failed to activate
-            Toast.makeText(context, "No Internet Connection", Toast.LENGTH_LONG);
         }
     }
 
@@ -1107,7 +1154,7 @@ public class Util {
 
             JSONObject obj = new JSONObject();
             obj.put("lastUpdateDateTime", getUTCDate(""));
-            obj.put("deviceSN", getSNCode());
+            obj.put("deviceSN", getSNCode(context));
             obj.put("deviceInfo", MobileDetails(context));
             obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
             obj.put("appState", getAppState());
@@ -1225,6 +1272,7 @@ public class Util {
                 JSONObject responseData = reportInfo.getJSONObject("responseData");
                 JSONObject jsonValue = responseData.getJSONObject("jsonValue");
                 JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
+
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
@@ -1240,6 +1288,8 @@ public class Util {
                     String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
                 }
+
+
                 JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
                 JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
                 JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
@@ -1287,6 +1337,10 @@ public class Util {
                 String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
                 String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
+                String displayResultBar = jsonValueScan.isNull("displayResultBar") ? "1" : jsonValueScan.getString("displayResultBar");
+                String temperatureNormal = jsonValueScan.isNull("temperatureNormal") ? "" : jsonValueScan.getString("temperatureNormal");
+                String temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
+                String scanType = jsonValueScan.isNull("scanType") ? "1" : jsonValueScan.getString("scanType");
 
                 if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
@@ -1313,6 +1367,19 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
                 Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, displayResultBar.equals("1"));
+                Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanType));
+
+                if (!temperatureNormal.isEmpty()) {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
+                } else {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,StringConstants.TEMPERATURE_NORMAL);
+                }
+                if (!temperatureHigh.isEmpty()) {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
+                } else {
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
+                }
 
                 //ConfirmationView
                 String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");
@@ -1354,6 +1421,8 @@ public class Util {
                 String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
                 String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
                 String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "1" : jsonValueIdentification.getString("cameraScanMode");
+                String enableAckScreen = jsonValueIdentification.isNull("enableAcknowledgementScreen") ? "0" : jsonValueIdentification.getString("enableAcknowledgementScreen");
+                String ackText = jsonValueIdentification.isNull("acknowledgementText") ? "" : jsonValueIdentification.getString("acknowledgementText");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
@@ -1363,6 +1432,9 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(cameraScanMode));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, enableAckScreen.equals("1"));
+                Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, ackText);
+
 
                 //access control setting
                 String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
@@ -1372,6 +1444,8 @@ public class Util {
                 int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 : jsonValueAccessControl.getInt("doorControlTimeWired");
                 String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
                 int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
+                String enableLogging = jsonValueAccessControl.isNull("enableLogging") ? "0" : jsonValueAccessControl.getString("enableLogging");
+
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
@@ -1380,6 +1454,8 @@ public class Util {
                 Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESS_LOGGING, enableLogging.equals("1"));
+
 
                 //Audio Visual alerts
                 if (jsonValue.has("AudioVisualAlerts")) {
@@ -1405,12 +1481,54 @@ public class Util {
                         SoundController.getInstance().deleteAudioFile("Invalid.mp3");
                     }
                 }
+
+                //Printer Settings
+                if (jsonValue.has("PrinterSettings")) {
+                    JSONObject printerSettings = jsonValue.getJSONObject("PrinterSettings");
+                    String enableWifiBluetoothPrint = printerSettings.isNull("enableWBPrint") ? "0" : printerSettings.getString("enableWBPrint");
+                    String enableUSBPrint = printerSettings.isNull("enableUSBPrint") ? "0" : printerSettings.getString("enableUSBPrint");
+                    String printAllScan = printerSettings.isNull("printAllScan") ? "0" : printerSettings.getString("printAllScan");
+                    String printAccessCard = printerSettings.isNull("printAccessCard") ? "0" : printerSettings.getString("printAccessCard");
+                    String printQRCode = printerSettings.isNull("printQRCode") ? "0" : printerSettings.getString("printQRCode");
+                    String printWaveUsers = printerSettings.isNull("printWaveUsers") ? "0" : printerSettings.getString("printWaveUsers");
+                    String printHighTempScans = printerSettings.isNull("printHighTempScans") ? "0" : printerSettings.getString("printHighTempScans");
+
+
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printAllScan.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printAccessCard.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
+                }
+                //Touch less Interaction
+                if (jsonValue.has("TouchlessInteraction")) {
+                    JSONObject touchlessInteractionSettings = jsonValue.getJSONObject("TouchlessInteraction");
+                    String enableWave = touchlessInteractionSettings.isNull("enableWave") ? "0" : touchlessInteractionSettings.getString("enableWave");
+                    String enableQuestionAndAnswer = touchlessInteractionSettings.isNull("enableQuestionAndAnswer") ? "0" : touchlessInteractionSettings.getString("enableQuestionAndAnswer");
+                    String settingsID = touchlessInteractionSettings.isNull("settingId") ? "0" : touchlessInteractionSettings.getString("settingId");
+                    String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
+                    String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
+                    String showWaveProgress = touchlessInteractionSettings.isNull("showWaveProgress") ? "0" : touchlessInteractionSettings.getString("showWaveProgress");
+                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? StringConstants.GESTURE_MESSAGE : touchlessInteractionSettings.getString("waveIndicatorInstructions");
+                    Log.d("CertifyXT flow", settingsID);
+
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, settingsID);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, showWaveProgress.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, waveInstructions);
+                }
+
+
             } else {
-                Logger.toast(context, "Something went wrong please try again");
+                Log.e(LOG, "Setting retrieval Something went wrong please try again");
             }
         } catch (Exception e) {
-            Logger.error(LOG + "retrieveSetting(JSONObject reportInfo)", e.getMessage());
-            Logger.toast(context, "Retrieving Settings failed.");
+            Logger.error(LOG + "retrieveSetting failed", e.getMessage());
         }
 
     }
@@ -1432,21 +1550,10 @@ public class Util {
             if (status.contains("ActivateApplication")) {
                 if (json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Device Activated");
-                    } /*else {
-                        Util.switchRgbOrIrActivity(context, true);
-                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("103")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
-                    if (!toast.equals("guide")) {
-                        Logger.toast(context, "Already Activated");
-                    } /*else {
-                        //The IrCameraActivity would be launched after AppSettings are completely retrieved and set
-                        Util.switchRgbOrIrActivity(context, true);
-                    }*/
                     Util.getToken((JSONObjectCallback) context, context);
 
                 } else if (json1.getString("responseSubCode").equals("104")) {
@@ -1456,16 +1563,14 @@ public class Util {
 
                 } else if (json1.getString("responseSubCode").equals("105")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, false);
-                    openDialogactivate(context, "This device SN: " + Util.getSNCode() + " " + context.getResources().getString(R.string.device_inactive), toast);
+                    openDialogactivate(context, "This device SN: " + Util.getSNCode(context) + " " + context.getResources().getString(R.string.device_inactive), toast);
                 }
             } else {
                 if (json1.isNull("access_token")) {
-                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
                 if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
-                    Toast.makeText(context, "Get access token failed", Toast.LENGTH_SHORT).show();
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
@@ -1474,6 +1579,13 @@ public class Util {
                 String institutionId = json1.getString("InstitutionID");
                 String expire_time = json1.getString(".expires");
                 String command = json1.isNull("command") ? "" : json1.getString("command");
+
+                String institutionIdOld = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+
+                if(institutionIdOld != null && !institutionId.isEmpty()
+                        && !institutionIdOld.equals(institutionId)) {
+                    DatabaseController.getInstance().clearAll();
+                }
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
@@ -1498,6 +1610,8 @@ public class Util {
             String lastName = responseData.getString("lastName") == null ? "" : responseData.getString("lastName");
             String trqStatus = responseData.getString("trqStatus") == null ? "" : responseData.getString("trqStatus");
             String memberId = responseData.getString("memberId") == null ? "" : responseData.getString("memberId");
+            int memberTypeId = responseData.isNull("memberTypeId") ? 0 : responseData.getInt("memberTypeId");
+            String memberTypeName = responseData.getString("memberTypeName") == null ? "" : responseData.getString("memberTypeName");
             String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
 
             QrCodeData qrCodeData = new QrCodeData();
@@ -1507,6 +1621,8 @@ public class Util {
             qrCodeData.setTrqStatus(trqStatus);
             qrCodeData.setMemberId(memberId);
             qrCodeData.setAccessId(qrAccessid);
+            qrCodeData.setMemberTypeId(memberTypeId);
+            qrCodeData.setMemberTypeName(memberTypeName);
             CameraController.getInstance().setQrCodeData(qrCodeData);
         } catch (Exception e) {
             Logger.error("getQRCode(JSONObject reportInfo, String status, Context context, String toast) ", e.getMessage());
@@ -1685,9 +1801,27 @@ public class Util {
         }
     }
 
+    public static void sendDeviceLogs(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("deviceSN", Util.getSNCode(context));
+            String filePath = LoggerUtil.logMessagesToFile(context, "AppLog");
+            String encodedData = Base64.encodeToString(Util.getBytesFromFile(filePath), Base64.NO_WRAP);
+            obj.put("deviceLog", encodedData);
+            obj.put("deviceData", MobileDetails(context));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new AsyncDeviceLog(obj, null, sharedPreferences.getString(GlobalParameters.URL,
+                EndPoints.prod_url) + EndPoints.DeviceLogs, context).execute();
+
+    }
+
     public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1701,7 +1835,7 @@ public class Util {
 
     public static JSONObject getJSONObjectMemberData(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
-            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(), context, "device_sn");
+            String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
             if (responseTemp != null && !responseTemp.equals("")) {
                 return new JSONObject(responseTemp);
             }
@@ -1940,7 +2074,9 @@ public class Util {
         }
         DatabaseController.getInstance().deleteAllMember();
         // Saving the token, after clearing the sharedPreference
-        Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        if (sharedPreferences != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        }
     }
 
     public static void stopMemberSyncService(Context context) {
@@ -2038,6 +2174,21 @@ public class Util {
         return null;
     }
 
+    public static JSONObject getJSONObjectDeviceLog(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJsonLog(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObjectAccessLog " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
     private static String getAppUpTime(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
@@ -2065,4 +2216,63 @@ public class Util {
                         .toMinutes(uptimeMillis)));
         return deviceUptime;
     }
+
+    public static JSONObject getJSONObjectGesture(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static JSONObject getJSONObjectFlowList(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
+    }
+
+    public static String getKeyFromValue(Map hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return String.valueOf(o);
+            }
+        }
+        return null;
+    }
+
+    public static boolean isGestureDeviceConnected(Context context) {
+        boolean result = false;
+        UsbManager mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        HashMap<String, UsbDevice> deviceHashMap = mUsbManager.getDeviceList();
+        Iterator<UsbDevice> iterator = deviceHashMap.values().iterator();
+        while (iterator.hasNext()) {
+            UsbDevice usbDevice = iterator.next();
+            int pid = usbDevice.getProductId();
+            int vid = usbDevice.getVendorId();
+            if (pid == 0x5790 && vid == 0x0483) {
+                if (mUsbManager.hasPermission(usbDevice)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
 }

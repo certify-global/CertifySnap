@@ -17,7 +17,7 @@ public class GlobalParameters {
     public static String OfflineVerify="detect/offlineVerify";
     public static String GuestlistURL = "member/guest";
 
-    public static String SN = Util.getSNCode();
+    public static String SN = "";//Util.getSNCode();
     public static String Client_id = "";
     public static String Client_secret = "";
     public static String Access_limit = "";
@@ -45,6 +45,7 @@ public class GlobalParameters {
     public static final String ScanMode = "ScanMode";
     public static final String ScanProximity = "ScanProximity";
     public static final String PRAGMA_KEY = "pragmakey";
+    public static final String ScanType = "ScanType";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -144,6 +145,10 @@ public class GlobalParameters {
     public static final String Temp_ACCESS_TOKEN = "Temp_access_token";
     public static final String QR_BUTTON_TEXT = "QR_button_text";
     public static final String QR_SKIP_BUTTON_ENABLE_DISABLE = "QR_skip_button_enable";
+    public static final String VISUAL_RECOGNITION = "VisualRecognition";
+    public static final String HAND_GESTURE = "HandGesture";
+    public static final String WAVE_QUESTIONS = "WaveQuestions";
+    public static final String MASK_ENFORCEMENT = "maskEnforcement";
     public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
 
     public static final String Temperature = "temperature";
@@ -159,6 +164,24 @@ public class GlobalParameters {
     public static final String Fahrenheits = "fahrenheit";
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
     public static final String APP_LAUNCH_TIME = "app_launch_time";
+    public static final String Touchless_setting_id = "touchless_setting_id";
 
     public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
+
+    public static final String PRINT_ALL_SCAN = "printAllScan";
+    public static final String PRINT_ACCESS_CARD_USERS = "printAccessCard";
+    public static final String PRINT_QR_CODE_USERS = "printQRCode";
+    public static final String PRINT_WAVE_USERS = "printWaveUsers";
+    public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
+    public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
+    public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";
+    public static final String RESULT_BAR = "result_bar";
+    public static final String RESULT_BAR_NORMAL = "result_bar_normal";
+    public static final String RESULT_BAR_HIGH = "result_bar_high";
+    public static final String ACCESS_LOGGING = "access_logging";
+    public static final String VALIDATE_DB = "validateDB";
+    public static final String PROGRESS_BAR = "progress_bar";
+    public static final String WAVE_INDICATOR = "wave_indicator";
+    public static final String CLEAR_SHARED_PREF = "clearSharedPref";
+
 }

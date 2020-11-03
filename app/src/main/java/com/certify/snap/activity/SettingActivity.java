@@ -72,12 +72,12 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature,
                     setting_upload, setting_access_password, setting_endpoint, thermal_check_setting, scan_setting,
-                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting, printer_settings_layout;
+                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting, printer_settings_layout,touchless_interaction;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
     TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting,
             tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management,
-            tv_visual_settings, printer_setting_text;
+            tv_visual_settings, printer_setting_text,touchless_interaction_setting;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -243,6 +243,9 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         printer_setting_text = findViewById(R.id.printer_setting_text);
 
         recordDivider = findViewById(R.id.record_divider);
+        touchless_interaction = findViewById(R.id.touchless_interaction);
+        touchless_interaction_setting = findViewById(R.id.touchless_interaction_setting);
+
         access_pwd.setTypeface(rubiklight);
         setTemp.setTypeface(rubiklight);
         upload_logo.setTypeface(rubiklight);
@@ -263,9 +266,10 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
         tvDeviceSettings.setTypeface(rubiklight);
         tvDeviceMode.setTypeface(rubiklight);
         tvRecord.setTypeface(rubiklight);
+        touchless_interaction_setting.setTypeface(rubiklight);
         printer_setting_text.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
-        tv_serial_no.setText("Serial No: " + Util.getSNCode());
+        tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
         accessControlTv.setTypeface(rubiklight);
 
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";
@@ -401,6 +405,10 @@ public class SettingActivity extends SettingBaseActivity implements JSONObjectCa
             case R.id.printer_settings_layout:
                 Intent printerIntent = new Intent(SettingActivity.this, PrinterViewSettingsActivity.class);
                 startActivity(printerIntent);
+                break;
+            case R.id.touchless_interaction:
+                Intent touchlessIntent = new Intent(SettingActivity.this, GestureActivity.class);
+                startActivity(touchlessIntent);
                 break;
             case R.id.btn_exit:
                 initiateLaunchHomeScreen();

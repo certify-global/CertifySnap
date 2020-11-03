@@ -16,6 +16,16 @@ public class AccessLogOfflineRecord {
     @NonNull
     public long primaryId;
     public String jsonObj;
+    public int offlineSync;
+
+
+    public int getOfflineSync() {
+        return offlineSync;
+    }
+
+    public void setOfflineSync(int offlineSync) {
+        this.offlineSync = offlineSync;
+    }
 
     public long getPrimaryId() {
         return primaryId;
@@ -49,6 +59,7 @@ public class AccessLogOfflineRecord {
         return "AccessOfflineLog{" +
                 "id='" + primaryId + '\'' +
                 " jsonObj='"+ jsonObj +'\'' +
+                " offlineSync='"+ offlineSync +'\'' +
                 '}';
     }
 }
