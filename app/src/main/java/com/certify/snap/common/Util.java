@@ -850,6 +850,10 @@ public class Util {
     }
 
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
+        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)
+                && !AppSettings.isLogOfflineDataEnabled()) {
+            return;
+        }
         try {
             OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
             offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));

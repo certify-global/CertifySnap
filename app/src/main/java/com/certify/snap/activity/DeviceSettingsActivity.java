@@ -66,7 +66,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members,
-                navigation_bar_textview, sync_online_members_textview, led_switch_textview;
+                navigation_bar_textview, sync_online_members_textview, led_switch_textview, saveLogsTv, logOfflineData;
     private Button tvClearData, not_activate;
     private Typeface rubiklight;
     private String url_end;
@@ -75,8 +75,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
     private View pro_settings_border;
-    RadioGroup sync_member_radio_group;
-    RadioButton sync_member_radio_yes, sync_member_radio_no;
+    RadioGroup sync_member_radio_group, logOfflineDataRg;
+    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo;
     RadioGroup radio_group_local_server;
     RadioButton radio_yes_server, radio_no_server;
     TextView tvLocalServer, tvServerIp;
@@ -91,6 +91,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout localServerLayout;
     private boolean deviceOnlineSwitch = false;
     private Button saveLogButton;
+    private LinearLayout logOfflineDataLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,6 +108,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             setDefaultLedBrightnessLevel();
             localServerSetting();
             captureLogSetting();
+            logOfflineDataSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -121,6 +123,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     if (isChecked) {
                         isOnline = true;
                         localServerLayout.setVisibility(View.GONE);
+                        logOfflineDataLayout.setVisibility(View.GONE);
                         LocalServer localServer = new LocalServer(DeviceSettingsActivity.this);
                         localServer.stopServer();
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
@@ -129,6 +132,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     } else {
                         isOnline = false;
                         localServerLayout.setVisibility(View.VISIBLE);
+                        logOfflineDataLayout.setVisibility(View.VISIBLE);
                         activateStatus();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
@@ -198,6 +202,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     saveLedBrightnessSetting();
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.LogOfflineData, logOfflineDataYes.isChecked());
                     AppSettings.setProSettings(proSettingValue);
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         deleteAppData();
@@ -267,7 +272,13 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         ivClipBoard = findViewById(R.id.iv_clipBoard);
         addrRelativeLayout = findViewById(R.id.addr_relative_layout);
         localServerLayout = findViewById(R.id.local_server_parent_layout);
+        saveLogsTv = findViewById(R.id.capture_logs);
         saveLogButton = findViewById(R.id.send_log_button);
+        logOfflineDataLayout = findViewById(R.id.log_offline_data_parent_layout);
+        logOfflineData = findViewById(R.id.log_offline_data);
+        logOfflineDataRg = findViewById(R.id.log_offline_data_rg);
+        logOfflineDataYes = findViewById(R.id.log_od_rb_yes);
+        logOfflineDataNo = findViewById(R.id.log_od_rb_no);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -291,9 +302,13 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         led_switch_textview.setTypeface(rubiklight);
         tvLocalServer.setTypeface(rubiklight);
         tvServerIp.setTypeface(rubiklight);
+        saveLogsTv.setTypeface(rubiklight);
+        saveLogButton.setTypeface(rubiklight);
+        logOfflineData.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
+            logOfflineDataLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -714,6 +729,22 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         saveLogButton.setOnClickListener(view -> {
             Util.sendDeviceLogs(DeviceSettingsActivity.this);
             Toast.makeText(DeviceSettingsActivity.this, "Logs sent", Toast.LENGTH_LONG).show();
+        });
+    }
+
+    private void logOfflineDataSetting() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false)) {
+            logOfflineDataYes.setChecked(true);
+        } else {
+            logOfflineDataNo.setChecked(true);
+        }
+
+        logOfflineDataRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.log_od_rb_yes) {
+                logOfflineDataYes.setChecked(true);
+            } else if (checkedId == R.id.log_od_rb_no) {
+                logOfflineDataNo.setChecked(true);
+            }
         });
     }
 

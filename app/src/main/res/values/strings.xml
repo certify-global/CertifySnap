@@ -505,5 +505,6 @@
     <string name="enable_guide">Enable Guide</string>
     <string name="allow_temp_scan">Allow Temperature Scan</string>
     <string name="enable_wiegand_passthrough">Enable Wiegand Pass-through</string>
+    <string name="log_offline_data">Log Data in Offline Mode</string>
 
 </resources>

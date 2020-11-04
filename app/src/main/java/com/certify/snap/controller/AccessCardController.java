@@ -442,7 +442,11 @@ public class AccessCardController implements AccessCallback {
         }
     }
 
-    private void saveOfflineAccessLogRecord(JSONObject obj,int syncStatus) {
+    private void saveOfflineAccessLogRecord(JSONObject obj, int syncStatus) {
+        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)
+                && !AppSettings.isLogOfflineDataEnabled()) {
+            return;
+        }
         AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
         try {
             accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
