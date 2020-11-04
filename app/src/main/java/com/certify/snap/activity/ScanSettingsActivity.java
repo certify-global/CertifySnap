@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private RadioGroup tempScanRg;
     private RadioButton tempScanYes;
     private RadioButton tempScanNo;
+    private LinearLayout tempScanSettingsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,6 +250,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         tempScanRg = findViewById(R.id.temp_scan_rg);
         tempScanYes = findViewById(R.id.temp_scan_yes);
         tempScanNo = findViewById(R.id.temp_scan_no);
+        tempScanSettingsLayout = findViewById(R.id.temp_scan_settings_layout);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -375,9 +378,11 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         if (sp.getBoolean(GlobalParameters.AllowTempScan, true)) {
             tempScanYes.setChecked(true);
             tempScanNo.setChecked(false);
+            tempScanSettingsLayout.setVisibility(View.VISIBLE);
         } else {
             tempScanNo.setChecked(true);
             tempScanYes.setChecked(false);
+            tempScanSettingsLayout.setVisibility(View.GONE);
         }
     }
 
@@ -386,9 +391,11 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             if (checkedId == R.id.temp_scan_yes) {
                 tempScanYes.setChecked(true);
                 tempScanNo.setChecked(false);
+                tempScanSettingsLayout.setVisibility(View.VISIBLE);
             } else if (checkedId == R.id.temp_scan_no) {
                 tempScanNo.setChecked(true);
                 tempScanYes.setChecked(false);
+                tempScanSettingsLayout.setVisibility(View.GONE);
             }
         });
     }
