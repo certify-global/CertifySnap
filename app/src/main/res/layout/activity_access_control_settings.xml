@@ -156,6 +156,25 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="5dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/enable_weigand_pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@string/enable_wiegand_passthrough"
+                android:textColor="@color/black"
+                android:checked="false">
+            </CheckBox>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
@@ -166,7 +185,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/access_control_card_format"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"

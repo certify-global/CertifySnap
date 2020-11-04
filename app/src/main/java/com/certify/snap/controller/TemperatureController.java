@@ -659,6 +659,18 @@ public class TemperatureController {
     }
 
     /**
+     * Method that updates the corresponding Controllers for further processing when
+     * Temperature Scan is disabled
+     * @param membersList Members list
+     */
+    public void updateControllersOnTempScanDisabled(List<RegisteredMembers> membersList) {
+        CameraController.getInstance().setFaceVisible(false);
+        AccessCardController.getInstance().processUnlockDoor(membersList);
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
+    }
+
+    /**
      * Method that returns the value if the temperature read is above threshold
      * @return true or false accordingly
      */

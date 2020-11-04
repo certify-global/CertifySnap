@@ -160,7 +160,7 @@
     <!-- Access control related strings start -->
     <string name="access_control">Access Control</string>
     <string name="access_control_parameter">sec</string>
-    <string name="enable_access_control">Enable Weigand Output (ID Required)</string>
+    <string name="enable_access_control">Enable Wiegand Output (ID Required)</string>
     <string name="access_control_card_format">Message Format</string>
     <string name="access_control_enroll">Enroll</string>
     <string name="access_granted">Wait for Thermal Scan</string>
@@ -169,12 +169,12 @@
     <string name="allow_anonymous">Allow Anonymous</string>
     <string name="relay_timeout">Relay Timeout:</string>
     <string name="normal_mode">
-        <font size="16">Normal Mode</font><font size="14"> (Operate Relay/Weigand for every scan)</font>
+        <font size="16">Normal Mode</font><font size="14"> (Operate Relay/Wiegand for every scan)</font>
     </string>
     <string name="reverse_mode">
         <font size="16">Reverse Mode</font><font size="14"> (Operate Relay on High Temperature Scan Only)</font>
     </string>
-    <string name="stop_relay">Stop Relay/Weigand on High Temperature Scan</string>
+    <string name="stop_relay">Stop Relay/Wiegand on High Temperature Scan</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
@@ -504,5 +504,6 @@
     <string name="enter_text4">Text4</string>
     <string name="enable_guide">Enable Guide</string>
     <string name="allow_temp_scan">Allow Temperature Scan</string>
+    <string name="enable_wiegand_passthrough">Enable Wiegand Pass-through</string>
 
 </resources>

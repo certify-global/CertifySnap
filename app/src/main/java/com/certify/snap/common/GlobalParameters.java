@@ -40,6 +40,7 @@ public class GlobalParameters {
     public static final String RelayReverseMode = "relayReverseMode";
     public static final String StopRelayOnHighTemp = "stopRelayOnHighTemp";
     public static final String EnableWeigand = "enableWeigand";
+    public static final String EnableWeigandPassThrough = "enableWeigandPassThrough";
     public static final String WeiganFormatMessage = "weiganFormatMessage";
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
     public static final String ScanMode = "ScanMode";

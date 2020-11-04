@@ -36,7 +36,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     private RadioGroup rg_logging;
     private RadioButton rb_logging_yes;
     private RadioButton rb_logging_no;
-
+    private CheckBox mEnableWiegandPt;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +59,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         rg_logging = findViewById(R.id.rg_logging);
         rb_logging_yes = findViewById(R.id.rb_logging_yes);
         rb_logging_no = findViewById(R.id.rb_logging_no);
+        mEnableWiegandPt = findViewById(R.id.enable_weigand_pt);
 
         setDefaults();
         handleClickListeners();
@@ -76,6 +77,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         mStopRelayHighTemp.setChecked(Util.getSharedPreferences(this).getBoolean(GlobalParameters.StopRelayOnHighTemp, false));
         mRelayTimeEt.setText(String.valueOf(Util.getSharedPreferences(this).getInt(GlobalParameters.RelayTime, Constants.DEFAULT_RELAY_TIME)));
         mEnableWeigand.setChecked(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableWeigand, false));
+        mEnableWiegandPt.setChecked(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableWeigandPassThrough, false));
         if (Util.getSharedPreferences(this).getInt(GlobalParameters.WeiganFormatMessage, Constants.DEFAULT_WEIGAN_CONTROLLER_FORMAT) == 26) {
             m26BitRb.setChecked(true);
             m34BitRb.setChecked(false);
@@ -99,84 +101,54 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     }
 
     private void handleClickListeners() {
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mRelayTimeEt.getText().toString().trim().isEmpty()) return;
-                saveSetting();
+        saveButton.setOnClickListener(view -> {
+            if (mRelayTimeEt.getText().toString().trim().isEmpty()) return;
+            saveSetting();
+        });
+
+        mEnableRelayCb.setOnCheckedChangeListener((compoundButton, value) -> mEnableRelayCb.setChecked(value));
+
+        mAllowAnonymousCb.setOnCheckedChangeListener((compoundButton, value) -> mAllowAnonymousCb.setChecked(value));
+
+        mModesRg.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            if (checkedId == R.id.normal_mode_rb) {
+                mNormalModeRb.setChecked(true);
+                mReverseModeRb.setChecked(false);
+            } else if (checkedId == R.id.reverse_mode_rb) {
+                mReverseModeRb.setChecked(true);
+                mNormalModeRb.setChecked(false);
             }
         });
 
-        mEnableRelayCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
-                mEnableRelayCb.setChecked(value);
+        mStopRelayHighTemp.setOnCheckedChangeListener((compoundButton, value) -> mStopRelayHighTemp.setChecked(value));
+
+        mEnableWeigand.setOnCheckedChangeListener((compoundButton, value) -> mEnableWeigand.setChecked(value));
+
+        mEnableWiegandPt.setOnCheckedChangeListener((compoundButton, value) -> mEnableWiegandPt.setChecked(value));
+
+        mCardFormatRg.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            if (checkedId == R.id.twentysix_bit_rb) {
+                m26BitRb.setChecked(true);
+                m34BitRb.setChecked(false);
+                m48BitRb.setChecked(false);
+            } else if (checkedId == R.id.thirtyfour_bit_rb) {
+                m34BitRb.setChecked(true);
+                m26BitRb.setChecked(false);
+                m48BitRb.setChecked(false);
+            }else if (checkedId == R.id.fourtyEight_bit_rb) {
+                m34BitRb.setChecked(false);
+                m26BitRb.setChecked(false);
+                m48BitRb.setChecked(true);
             }
         });
 
-        mAllowAnonymousCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
-                mAllowAnonymousCb.setChecked(value);
-            }
-        });
-
-        mModesRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (checkedId == R.id.normal_mode_rb) {
-                    mNormalModeRb.setChecked(true);
-                    mReverseModeRb.setChecked(false);
-                } else if (checkedId == R.id.reverse_mode_rb) {
-                    mReverseModeRb.setChecked(true);
-                    mNormalModeRb.setChecked(false);
-                }
-            }
-        });
-
-        mStopRelayHighTemp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
-                mStopRelayHighTemp.setChecked(value);
-            }
-        });
-
-        mEnableWeigand.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean value) {
-                mEnableWeigand.setChecked(value);
-            }
-        });
-
-        mCardFormatRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (checkedId == R.id.twentysix_bit_rb) {
-                    m26BitRb.setChecked(true);
-                    m34BitRb.setChecked(false);
-                    m48BitRb.setChecked(false);
-                } else if (checkedId == R.id.thirtyfour_bit_rb) {
-                    m34BitRb.setChecked(true);
-                    m26BitRb.setChecked(false);
-                    m48BitRb.setChecked(false);
-                }else if (checkedId == R.id.fourtyEight_bit_rb) {
-                    m34BitRb.setChecked(false);
-                    m26BitRb.setChecked(false);
-                    m48BitRb.setChecked(true);
-                }
-            }
-        });
-
-        rg_logging.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                if (checkedId == R.id.rb_logging_yes) {
-                    rb_logging_yes.setChecked(true);
-                    rb_logging_no.setChecked(false);
-                } else if (checkedId == R.id.rb_logging_no) {
-                    rb_logging_no.setChecked(true);
-                    rb_logging_yes.setChecked(false);
-                }
+        rg_logging.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            if (checkedId == R.id.rb_logging_yes) {
+                rb_logging_yes.setChecked(true);
+                rb_logging_no.setChecked(false);
+            } else if (checkedId == R.id.rb_logging_no) {
+                rb_logging_no.setChecked(true);
+                rb_logging_yes.setChecked(false);
             }
         });
     }
@@ -190,6 +162,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         Util.writeBoolean(sp, GlobalParameters.StopRelayOnHighTemp, mStopRelayHighTemp.isChecked());
         Util.writeInt(sp, GlobalParameters.RelayTime, Integer.parseInt(mRelayTimeEt.getText().toString()));
         Util.writeBoolean(sp, GlobalParameters.EnableWeigand, mEnableWeigand.isChecked());
+        Util.writeBoolean(sp, GlobalParameters.EnableWeigandPassThrough, mEnableWiegandPt.isChecked());
         if (m26BitRb.isChecked()) {
             Util.writeInt(sp, GlobalParameters.WeiganFormatMessage, 26);
         } else if(m34BitRb.isChecked()) {

@@ -1888,6 +1888,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().setEnableWeigan(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableWeigand, false));
         AccessCardController.getInstance().setRelayTime(Util.getSharedPreferences(this).getInt(GlobalParameters.RelayTime, Constants.DEFAULT_RELAY_TIME));
         AccessCardController.getInstance().setWeiganControllerFormat(Util.getSharedPreferences(this).getInt(GlobalParameters.WeiganFormatMessage, Constants.DEFAULT_WEIGAN_CONTROLLER_FORMAT));
+        AccessCardController.getInstance().setEnableWiegandPt(Util.getSharedPreferences(this).getBoolean(GlobalParameters.EnableWeigandPassThrough, false));
     }
 
     private void getAudioVisualSettings() {
@@ -2323,15 +2324,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty()) return;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
-        if (!AccessCardController.getInstance().isAllowAnonymous()
-                && (AccessCardController.getInstance().isEnableRelay() ||
-                AccessCardController.getInstance().isWeigandEnabled())) {
-            AccessCardController.getInstance().setAccessCardId(cardId);
+        AccessCardController accessCardController = AccessCardController.getInstance();
+        if (accessCardController.isDoMemberMatch()) {
+            accessCardController.setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
-                //launch the fargment
-                if(AppSettings.isAcknowledgementScreen()){
-                    if(AccessCardController.getInstance().getTapCount() ==0){
-                        AccessCardController.getInstance().setTapCount(1);
+                //launch the fragment
+                if (AppSettings.isAcknowledgementScreen()){
+                    if(accessCardController.getTapCount() ==0){
+                        accessCardController.setTapCount(1);
                         launchAcknowledgementFragment();
                         setCameraPreviewTimer(15);
                         return;
@@ -2345,46 +2345,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if(AppSettings.isAcknowledgementScreen() ) {
                     new Handler().postDelayed(() -> {
                         closeFragment();
-                        AccessCardController.getInstance().setTapCount(0);
+                        accessCardController.setTapCount(0);
                     }, 2000);
                 }
                 return;
             }
-            showSnackBarMessage(getString(R.string.access_denied));
-            //Access Log api call
-            RegisteredMembers member = new RegisteredMembers();
-            member.setAccessid(cardId);
-            AccessCardController.getInstance().sendAccessLogInvalid(this, member, 0,
-                    new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
-
-            //If Access denied, stop the reader and start again
-            //Optimize: Not to close the stream
-            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-                resetRfid();
-            }
+            onRfidNoMemberMatch(cardId);
             return;
         }
-        //launch the isAcknowledgementScreen fargment
-        if(AppSettings.isAcknowledgementScreen() ){
-            if(AccessCardController.getInstance().getTapCount() ==0){
-                AccessCardController.getInstance().setTapCount(1);
-                launchAcknowledgementFragment();
-                setCameraPreviewTimer(15);
-                return;
-            }
-        }
-        AccessCardController.getInstance().setAccessCardId(cardId);
-        if (AppSettings.isAllowTempScan()) {
-            enableLedPower();
-            showSnackBarMessage(getString(R.string.access_granted));
-        }
-        setCameraPreview();
-        if(AppSettings.isAcknowledgementScreen() ) {
-            new Handler().postDelayed(() -> {
-                closeFragment();
-                AccessCardController.getInstance().setTapCount(0);
-            }, 2000);
-        }
+        onRfidOnlyEnabled(cardId);
     }
 
     private void showSnackBarMessage(String message) {
@@ -3360,12 +3329,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void resumeFromGesture() {
         runOnUiThread(() -> {
-            CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            setCameraPreview();
             int delay = 2 * 1000;
             if (isProDevice) {
                 delay = 1500;
             }
+            if (AppSettings.isAllowTempScan()) {
+                CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+            }
+            setCameraPreview();
             new Handler().postDelayed(this::closeGestureFragment, delay);
         });
     }
@@ -3552,10 +3523,54 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void onTemperatureScanDisabled() {
         disableLedPower();
+        TemperatureController.getInstance().updateControllersOnTempScanDisabled(registeredMemberslist);
         launchConfirmationFragment(false);
         if (isHomeViewEnabled) {
             pauseCameraScan();
         }
         resetHomeScreen();
+    }
+
+    private void onRfidOnlyEnabled(String cardId) {
+        AccessCardController accessCardController = AccessCardController.getInstance();
+        if (AppSettings.isAcknowledgementScreen()) {
+            if (accessCardController.getTapCount() ==0){
+                accessCardController.setTapCount(1);
+                launchAcknowledgementFragment();
+                setCameraPreviewTimer(15);
+                return;
+            }
+        }
+        accessCardController.setAccessCardId(cardId);
+        if (AppSettings.isAllowTempScan()) {
+            enableLedPower();
+            showSnackBarMessage(getString(R.string.access_granted));
+        }
+        setCameraPreview();
+        if (AppSettings.isAcknowledgementScreen()) {
+            new Handler().postDelayed(() -> {
+                closeFragment();
+                accessCardController.setTapCount(0);
+            }, 2 * 1000);
+        }
+    }
+
+    private void onRfidNoMemberMatch(String cardId) {
+        if (AccessCardController.getInstance().isEnableWiegandPt()) {
+            onRfidOnlyEnabled(cardId);
+            return;
+        }
+        showSnackBarMessage(getString(R.string.access_denied));
+        //Access Log api call
+        RegisteredMembers member = new RegisteredMembers();
+        member.setAccessid(cardId);
+        AccessCardController.getInstance().sendAccessLogInvalid(this, member, 0,
+                new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
+
+        //If Access denied, stop the reader and start again
+        //Optimize: Not to close the stream
+        if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+            resetRfid();
+        }
     }
 }

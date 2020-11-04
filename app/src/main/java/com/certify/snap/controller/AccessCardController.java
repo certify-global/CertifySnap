@@ -33,6 +33,7 @@ public class AccessCardController implements AccessCallback {
     private boolean mReverseRelayMode = false;
     private boolean mStopRelayOnHighTemp = false;
     private boolean mEnableWeigan = false;
+    private boolean mEnableWiegandPt = false;
     private int mRelayTime = 0;
     private Timer mRelayTimer;
     private int mWeiganControllerFormat = 26;
@@ -100,6 +101,23 @@ public class AccessCardController implements AccessCallback {
         mWeiganControllerFormat = value;
     }
 
+    public boolean isEnableWiegandPt() {
+        return mEnableWiegandPt;
+    }
+
+    public void setEnableWiegandPt(boolean mEnableWiegandPt) {
+        this.mEnableWiegandPt = mEnableWiegandPt;
+    }
+
+    public boolean isDoMemberMatch() {
+        boolean result = false;
+        if ((!mAllowAnonymous && (mEnableRelay || mEnableWeigan))
+                || mEnableWiegandPt) {
+            result = true;
+        }
+        return result;
+    }
+
     public void setAccessCardId(String cardId) {
         mAccessCardID = cardId;
     }
@@ -152,7 +170,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     private void unLockWeiganDoorController() {
-        if (!mEnableWeigan) return;
+        if (!mEnableWeigan && !mEnableWiegandPt) return;
         //Check if its 34 Bit, 48 Bit or 26 Bit Weigan controller and send signal accordingly
         if (mWeiganControllerFormat == 26) {
             unlock26BitDoorController();
