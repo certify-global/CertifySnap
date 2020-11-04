@@ -34,6 +34,10 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private RadioGroup scanTypeRg;
     private RadioButton scanTypeQuick;
     private RadioButton scanTypeStandard;
+    private TextView allowTempScan;
+    private RadioGroup tempScanRg;
+    private RadioButton tempScanYes;
+    private RadioButton tempScanNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,8 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             setScanProximityClickListener();
             setScanTypeDefault();
             setScanTypeClickListener();
+            setDefaultAllowTempScan();
+            setTempScanClickListener();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -185,6 +191,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
                     Util.showToast(ScanSettingsActivity.this, getString(R.string.save_success));
                     saveScanProximity();
                     saveScanType();
+                    saveTempScan();
                     finish();
                 }
             });
@@ -237,6 +244,10 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         scanTypeRg = findViewById(R.id.scan_type_rg);
         scanTypeQuick = findViewById(R.id.scan_type_quick);
         scanTypeStandard = findViewById(R.id.scan_type_standard);
+        allowTempScan = findViewById(R.id.temp_scan);
+        tempScanRg = findViewById(R.id.temp_scan_rg);
+        tempScanYes = findViewById(R.id.temp_scan_yes);
+        tempScanNo = findViewById(R.id.temp_scan_no);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -256,7 +267,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         tv_temp_text_normal.setTypeface(rubiklight);
         tv_temp_text_high.setTypeface(rubiklight);
         scanType.setTypeface(rubiklight);
-
+        allowTempScan.setTypeface(rubiklight);
     }
 
     private void voiceRecognitionCheck(){
@@ -342,10 +353,10 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
 
     private void setScanTypeClickListener() {
         scanTypeRg.setOnCheckedChangeListener((radioGroup, checkedId) -> {
-            if (checkedId == R.id.radio_scanmode_easy) {
+            if (checkedId == R.id.scan_type_quick) {
                 scanTypeQuick.setChecked(true);
                 scanTypeStandard.setChecked(false);
-            } else if (checkedId == R.id.radio_scanmode_strict) {
+            } else if (checkedId == R.id.scan_type_standard) {
                 scanTypeStandard.setChecked(true);
                 scanTypeQuick.setChecked(false);
             }
@@ -357,6 +368,36 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             Util.writeInt(sp, GlobalParameters.ScanType, 1);
         } else if(scanTypeStandard.isChecked()) {
             Util.writeInt(sp, GlobalParameters.ScanType, 0);
+        }
+    }
+
+    private void setDefaultAllowTempScan() {
+        if (sp.getBoolean(GlobalParameters.AllowTempScan, true)) {
+            tempScanYes.setChecked(true);
+            tempScanNo.setChecked(false);
+        } else {
+            tempScanNo.setChecked(true);
+            tempScanYes.setChecked(false);
+        }
+    }
+
+    private void setTempScanClickListener() {
+        tempScanRg.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            if (checkedId == R.id.temp_scan_yes) {
+                tempScanYes.setChecked(true);
+                tempScanNo.setChecked(false);
+            } else if (checkedId == R.id.temp_scan_no) {
+                tempScanNo.setChecked(true);
+                tempScanYes.setChecked(false);
+            }
+        });
+    }
+
+    private void saveTempScan() {
+        if (tempScanYes.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.AllowTempScan, true);
+        } else if(tempScanNo.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.AllowTempScan, false);
         }
     }
 }

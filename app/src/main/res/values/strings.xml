@@ -503,5 +503,6 @@
     <string name="enter_text3">Text3</string>
     <string name="enter_text4">Text4</string>
     <string name="enable_guide">Enable Guide</string>
-    
+    <string name="allow_temp_scan">Allow Temperature Scan</string>
+
 </resources>

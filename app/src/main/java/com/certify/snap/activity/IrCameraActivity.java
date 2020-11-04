@@ -685,7 +685,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
 
         if (qrCodeEnable) {
-            resetQrCode();
+            runOnUiThread(() -> {
+                img_qr.setVisibility(View.GONE);
+                clearQrCodePreview();
+                initQRCode();
+                startCameraSource();
+            });
         } else {
             try {
                 if (cameraHelper != null) {
@@ -817,6 +822,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
+        if (!AppSettings.isAllowTempScan()) {
+            onTemperatureScanDisabled();
+            return;
+        }
         Log.d(TAG, "runTemperature");
         CameraController.getInstance().setScanState(CameraController.ScanState.THERMAL_SCAN);
         TemperatureController.getInstance().setTemperatureRecordData(data);
@@ -842,6 +851,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap rgbBitmapClone = rgbBitmap == null ? null : rgbBitmap.copy(rgbBitmap.getConfig(), false);
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
+                if (!AppSettings.isAllowTempScan()) {
+                    if (!faceDetectEnabled && !rfIdEnable) {
+                        return;
+                    }
+                }
                 if (faceFeature != null) {
                     isFaceIdentified = false;
                     Logger.verbose(TAG, "initRgbCamera.FaceListener.onFaceFeatureInfoGet()", " compareResultList= " + compareResult + " trackId = " + requestId + " isIdentified = " + ",tempServiceColes ");
@@ -1923,6 +1937,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreview() {
+        if (!AppSettings.isAllowTempScan()) {
+            onTemperatureScanDisabled();
+            return;
+        }
         long delay = 1000;
        
         if (qrCodeEnable) {
@@ -2319,8 +2337,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         return;
                     }
                 }
-                enableLedPower();
-                showSnackBarMessage(getString(R.string.access_granted));
+                if (AppSettings.isAllowTempScan()) {
+                    enableLedPower();
+                    showSnackBarMessage(getString(R.string.access_granted));
+                }
                 setCameraPreview();
                 if(AppSettings.isAcknowledgementScreen() ) {
                     new Handler().postDelayed(() -> {
@@ -2353,9 +2373,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
         }
-        enableLedPower();
         AccessCardController.getInstance().setAccessCardId(cardId);
-        showSnackBarMessage(getString(R.string.access_granted));
+        if (AppSettings.isAllowTempScan()) {
+            enableLedPower();
+            showSnackBarMessage(getString(R.string.access_granted));
+        }
         setCameraPreview();
         if(AppSettings.isAcknowledgementScreen() ) {
             new Handler().postDelayed(() -> {
@@ -2665,6 +2687,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
+        if (!AppSettings.isAllowTempScan() && !AppSettings.isFacialDetect()) {
+            return;
+        }
         checkDeviceMode();
         cancelPreviewIdleTimer();
         enableLedPower();
@@ -3523,5 +3548,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             closeFragment();
             AccessCardController.getInstance().setTapCount(0);
         }
+    }
+
+    private void onTemperatureScanDisabled() {
+        disableLedPower();
+        launchConfirmationFragment(false);
+        if (isHomeViewEnabled) {
+            pauseCameraScan();
+        }
+        resetHomeScreen();
     }
 }

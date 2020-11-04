@@ -49,6 +49,45 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/temp_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/allow_temp_scan"
+            android:textColor="@color/black"
+            android:layout_marginStart="@dimen/size_20"
+            android:layout_marginTop="@dimen/size_10"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/temp_scan_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_20"
+            android:layout_marginTop="@dimen/size_05"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/temp_scan_yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size_30"
+                android:text="@string/msg_Ok"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/temp_scan_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/msg_No"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+        <TextView
             android:id="@+id/tv_temp_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

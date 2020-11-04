@@ -60,6 +60,7 @@ public class AppSettings {
     private static String gestureMessage = "";
     private static String gestureWorkFlow = "";
     private static int scanType = 1;
+    private static boolean allowTempScan = true;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -122,6 +123,7 @@ public class AppSettings {
         gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, StringConstants.GESTURE_MESSAGE);
         gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
         scanType = sharedPreferences.getInt(GlobalParameters.ScanType,1);
+        allowTempScan = sharedPreferences.getBoolean(GlobalParameters.AllowTempScan, true);
     }
 
     public static String getThermalScanTitle() {
@@ -330,5 +332,9 @@ public class AppSettings {
 
     public static int getScanType() {
         return scanType;
+    }
+
+    public static boolean isAllowTempScan() {
+        return allowTempScan;
     }
 }
