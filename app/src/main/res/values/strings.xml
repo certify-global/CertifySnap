@@ -480,7 +480,7 @@
     <string name="dataName">Name Data</string>
     <string name="bottom_text">Please block a light with your \n hand to make a selection \n\n Made a mistake? \n Block both lights to go back</string>
     <string name="touchless_interaction_setting">Touchless Interaction</string>
-    <string name="wave_setting">Wave Setting</string>
+    <string name="touchless_setting">Touchless Interaction Settings</string>
     <string name="enable_acknowledge">Enable Acknowledgement Screen</string>
     <string name="enter_full_screen">Enter Full Screen Text</string>
     <string name="tv_result_bar">Display Result Bar</string>
@@ -503,7 +503,7 @@
     <string name="enter_text3">Text3</string>
     <string name="enter_text4">Text4</string>
     <string name="enable_guide">Enable Guide</string>
-    <string name="allow_temp_scan">Allow Temperature Scan</string>
+    <string name="enable_temp_scan">Enable Temperature Scan</string>
     <string name="enable_wiegand_passthrough">Enable Wiegand Pass-through</string>
     <string name="log_offline_data">Log Data in Offline Mode</string>
 

@@ -822,7 +822,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
-        if (!AppSettings.isAllowTempScan()) {
+        if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
         }
@@ -851,7 +851,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap rgbBitmapClone = rgbBitmap == null ? null : rgbBitmap.copy(rgbBitmap.getConfig(), false);
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
-                if (!AppSettings.isAllowTempScan()) {
+                if (!AppSettings.isTemperatureScanEnabled()) {
                     if (!faceDetectEnabled && !rfIdEnable) {
                         return;
                     }
@@ -1939,7 +1939,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreview() {
-        if (!AppSettings.isAllowTempScan()) {
+        if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
         }
@@ -2338,7 +2338,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         return;
                     }
                 }
-                if (AppSettings.isAllowTempScan()) {
+                if (AppSettings.isTemperatureScanEnabled()) {
                     enableLedPower();
                     showSnackBarMessage(getString(R.string.access_granted));
                 }
@@ -2657,7 +2657,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
-        if (!AppSettings.isAllowTempScan() && !AppSettings.isFacialDetect()) {
+        if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) {
             return;
         }
         checkDeviceMode();
@@ -3350,7 +3350,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (isProDevice) {
                 delay = 1500;
             }
-            if (AppSettings.isAllowTempScan()) {
+            if (AppSettings.isTemperatureScanEnabled()) {
                 CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
             }
             setCameraPreview();
@@ -3559,7 +3559,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         accessCardController.setAccessCardId(cardId);
-        if (AppSettings.isAllowTempScan()) {
+        if (AppSettings.isTemperatureScanEnabled()) {
             enableLedPower();
             showSnackBarMessage(getString(R.string.access_granted));
         }

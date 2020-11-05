@@ -47,7 +47,7 @@ public class GlobalParameters {
     public static final String ScanProximity = "ScanProximity";
     public static final String PRAGMA_KEY = "pragmakey";
     public static final String ScanType = "ScanType";
-    public static final String AllowTempScan = "AllowTempScan";
+    public static final String EnableTempScan = "EnableTempScan";
     public static final String LogOfflineData = "logOfflineData";
 
     public static String Access_token = "";
@@ -193,5 +193,6 @@ public class GlobalParameters {
     public static final String PROGRESS_BAR = "progress_bar";
     public static final String WAVE_INDICATOR = "wave_indicator";
     public static final String CLEAR_SHARED_PREF = "clearSharedPref";
+    public static final String WAVE_IMAGE = "WaveImage";
 
 }

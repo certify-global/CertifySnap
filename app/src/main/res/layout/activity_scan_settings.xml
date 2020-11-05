@@ -52,7 +52,7 @@
             android:id="@+id/temp_scan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/allow_temp_scan"
+            android:text="@string/enable_temp_scan"
             android:textColor="@color/black"
             android:layout_marginStart="@dimen/size_20"
             android:layout_marginTop="@dimen/size_10"
