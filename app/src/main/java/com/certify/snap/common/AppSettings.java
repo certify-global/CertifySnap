@@ -60,7 +60,7 @@ public class AppSettings {
     private static String gestureMessage = "";
     private static String gestureWorkFlow = "";
     private static int scanType = 1;
-    private static boolean allowTempScan = true;
+    private static boolean enableTempScan = true;
     private static boolean logOfflineData = false;
 
     public static AppSettings getInstance() {
@@ -124,7 +124,7 @@ public class AppSettings {
         gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, StringConstants.GESTURE_MESSAGE);
         gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
         scanType = sharedPreferences.getInt(GlobalParameters.ScanType,1);
-        allowTempScan = sharedPreferences.getBoolean(GlobalParameters.AllowTempScan, true);
+        enableTempScan = sharedPreferences.getBoolean(GlobalParameters.EnableTempScan, true);
         logOfflineData = sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false);
     }
 
@@ -336,8 +336,8 @@ public class AppSettings {
         return scanType;
     }
 
-    public static boolean isAllowTempScan() {
-        return allowTempScan;
+    public static boolean isTemperatureScanEnabled() {
+        return enableTempScan;
     }
 
     public static boolean isLogOfflineDataEnabled() {

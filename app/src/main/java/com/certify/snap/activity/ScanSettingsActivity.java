@@ -35,7 +35,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private RadioGroup scanTypeRg;
     private RadioButton scanTypeQuick;
     private RadioButton scanTypeStandard;
-    private TextView allowTempScan;
+    private TextView enableTempScan;
     private RadioGroup tempScanRg;
     private RadioButton tempScanYes;
     private RadioButton tempScanNo;
@@ -246,7 +246,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         scanTypeRg = findViewById(R.id.scan_type_rg);
         scanTypeQuick = findViewById(R.id.scan_type_quick);
         scanTypeStandard = findViewById(R.id.scan_type_standard);
-        allowTempScan = findViewById(R.id.temp_scan);
+        enableTempScan = findViewById(R.id.temp_scan);
         tempScanRg = findViewById(R.id.temp_scan_rg);
         tempScanYes = findViewById(R.id.temp_scan_yes);
         tempScanNo = findViewById(R.id.temp_scan_no);
@@ -270,7 +270,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         tv_temp_text_normal.setTypeface(rubiklight);
         tv_temp_text_high.setTypeface(rubiklight);
         scanType.setTypeface(rubiklight);
-        allowTempScan.setTypeface(rubiklight);
+        enableTempScan.setTypeface(rubiklight);
     }
 
     private void voiceRecognitionCheck(){
@@ -375,7 +375,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     }
 
     private void setDefaultAllowTempScan() {
-        if (sp.getBoolean(GlobalParameters.AllowTempScan, true)) {
+        if (sp.getBoolean(GlobalParameters.EnableTempScan, true)) {
             tempScanYes.setChecked(true);
             tempScanNo.setChecked(false);
             tempScanSettingsLayout.setVisibility(View.VISIBLE);
@@ -402,9 +402,9 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
 
     private void saveTempScan() {
         if (tempScanYes.isChecked()) {
-            Util.writeBoolean(sp, GlobalParameters.AllowTempScan, true);
+            Util.writeBoolean(sp, GlobalParameters.EnableTempScan, true);
         } else if(tempScanNo.isChecked()) {
-            Util.writeBoolean(sp, GlobalParameters.AllowTempScan, false);
+            Util.writeBoolean(sp, GlobalParameters.EnableTempScan, false);
         }
     }
 }
