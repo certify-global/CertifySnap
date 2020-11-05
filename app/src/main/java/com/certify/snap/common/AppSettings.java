@@ -2,6 +2,7 @@ package com.certify.snap.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 
 import com.certify.snap.R;
 
@@ -62,6 +63,11 @@ public class AppSettings {
     private static int scanType = 1;
     private static boolean allowTempScan = true;
     private static boolean logOfflineData = false;
+    private static boolean printLabelFace = false;
+    private static boolean printLabelName = false;
+    private static boolean printLabelNormalTemperature = false;
+    private static boolean printLabelHighTemperature = false;
+    private static boolean printLabelWaveAnswers = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -126,6 +132,11 @@ public class AppSettings {
         scanType = sharedPreferences.getInt(GlobalParameters.ScanType,1);
         allowTempScan = sharedPreferences.getBoolean(GlobalParameters.AllowTempScan, true);
         logOfflineData = sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false);
+        printLabelFace = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_FACE, false);
+        printLabelName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NAME, false);
+        printLabelNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);
+        printLabelHighTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
+        printLabelWaveAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
     }
 
     public static String getThermalScanTitle() {
@@ -342,5 +353,25 @@ public class AppSettings {
 
     public static boolean isLogOfflineDataEnabled() {
         return logOfflineData;
+    }
+
+    public static boolean isPrintLabelFace() {
+        return printLabelFace;
+    }
+
+    public static boolean isPrintLabelName() {
+        return printLabelName;
+    }
+
+    public static boolean isPrintLabelNormalTemperature() {
+        return printLabelNormalTemperature;
+    }
+
+    public static boolean isPrintLabelHighTemperature() {
+        return printLabelHighTemperature;
+    }
+
+    public static boolean isPrintLabelWaveAnswers() {
+        return printLabelWaveAnswers;
     }
 }

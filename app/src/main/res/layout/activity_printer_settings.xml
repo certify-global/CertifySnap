@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
@@ -59,33 +59,34 @@
                 android:id="@+id/title_bother_bluetooth_printer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/size_05"
+                android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
                 android:text="Wifi/Bluetooth Printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/enable_bother_printer_textview"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/enable_printer"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_18" />
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_brother_printer"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -108,14 +109,13 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/size_20"
                 android:layout_marginTop="@dimen/size_05"
-                android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -159,7 +159,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/size_20"
                 android:layout_marginTop="@dimen/size_05"
-                android:layout_marginBottom="20dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -189,7 +188,7 @@
                 android:id="@+id/bother_imageView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="5dp"
+                android:paddingTop="10dp"
                 android:paddingBottom="5dp" />
 
             <TextView
@@ -221,33 +220,34 @@
                 android:id="@+id/title_toshiba_bluetooth_printer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/size_05"
+                android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
                 android:text="USB Printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/enable_toshiba_printer_textview"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/enable_printer"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_18" />
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_toshiba_printer"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -270,7 +270,7 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -354,45 +354,47 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/title_printer_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/size_05"
+                android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
                 android:text="Printing Options"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/print_all_scan_title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_all_scan"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_18" />
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true"/>
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_all_scan"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -415,29 +417,30 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/print_access_card_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
-                    android:text="@string/print_access_card"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_18" />
+                android:id="@+id/print_access_card_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/print_access_card"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_18"
+                android:layout_alignParentStart="true"/>
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_access_card"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -460,29 +463,30 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_10"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/print_qr_code_title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_qr_code_users"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_18" />
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true"/>
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_qr_code"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -505,29 +509,29 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/print_wave_users_title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_wave_users"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_wave_users"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -550,29 +554,30 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/print_high_temperature_title"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_15"
                     android:text="@string/print_high_temperature"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_18" />
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_high_temperature"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/size_20"
-                    android:layout_marginTop="@dimen/size_05"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
                     <RadioButton
@@ -595,86 +600,362 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </LinearLayout>
+            </RelativeLayout>
 
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ListView
-                android:id="@+id/StartMenuButtonlist1"
+            <TextView
+                android:id="@+id/title_label_options"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone" />
-
-            <ListView
-                android:id="@+id/port_menu_list"
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
-                android:visibility="gone" />
-
-            <LinearLayout
-                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/size_15"
-                android:visibility="gone">
+                android:layout_marginStart="@dimen/size_05"
+                android:layout_marginTop="@dimen/size_15"
+                android:text="Label Options"
+                android:textColor="@color/black"
+                android:textSize="22sp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/print_label_face_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/productName" />
+                    android:text="Print Face"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
 
-                <EditText
-                    android:id="@+id/EditTextName"
+                <RadioGroup
+                    android:id="@+id/radio_group_print_label_face"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_span="2"
-                    android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-" />
-            </LinearLayout>
+                    android:layout_gravity="end"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_yes_print_label_face"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/radio_no_print_label_face"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+            </RelativeLayout>
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_10"
+                android:orientation="vertical">
 
-                android:layout_margin="@dimen/size_15"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/code" />
+                    android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/EditTextCode"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/print_label_name_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Print Name(if Identified else blank)"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_18"
+                        android:layout_alignParentStart="true" />
+
+                    <RadioGroup
+                        android:id="@+id/radio_group_print_label_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_20"
+                        android:layout_alignParentEnd="true"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/radio_yes_print_label_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/size_30"
+                            android:text="@string/living_type_1"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_14"
+                            android:theme="@style/MyCheckBox" />
+
+                        <RadioButton
+                            android:id="@+id/radio_no_print_label_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/living_type_0"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size_14"
+                            android:theme="@style/MyCheckBox" />
+
+                    </RadioGroup>
+                </RelativeLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_input_wave_footer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_span="2"
-                    android:inputType="number" />
+                    android:layout_marginRight="10dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextWaveFooter"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/edittextbackground"
+                        android:hint="Enter Visitor text"
+                        android:paddingLeft="05dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/size_15"
-                android:visibility="gone">
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_10"
+                android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/print_label_normal_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/noOfPrints" />
+                    android:text="Print Normal Temperature Value"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
 
-                <EditText
-                    android:id="@+id/EditTextPrintNum"
+                <RadioGroup
+                    android:id="@+id/radio_group_print_label_normal_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_span="2"
-                    android:inputType="number" />
-            </LinearLayout>
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
 
+                    <RadioButton
+                        android:id="@+id/radio_yes_print_label_normal_temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/radio_no_print_label_normal_temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/print_label_high_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Print High Temperature Value"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_print_label_high_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_yes_print_label_high_temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/radio_no_print_label_high_temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_15"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/print_label_wave_answers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Print Wave Answers"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_alignParentStart="true" />
+
+                <RadioGroup
+                    android:id="@+id/radio_group_print_label_wave_answers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_yes_print_label_wave_answers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/radio_no_print_label_wave_answers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+            </RelativeLayout>
         </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/StartMenuButtonlist1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <ListView
+            android:id="@+id/port_menu_list"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_15"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/productName" />
+
+            <EditText
+                android:id="@+id/EditTextName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890-" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_margin="@dimen/size_15"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/code" />
+
+            <EditText
+                android:id="@+id/EditTextCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_15"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/noOfPrints" />
+
+            <EditText
+                android:id="@+id/EditTextPrintNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_span="2"
+                android:inputType="number" />
+        </LinearLayout>
+
     </LinearLayout>
+</LinearLayout>
 
 </ScrollView>

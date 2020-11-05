@@ -48,13 +48,19 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             brotherBluetoothPrinterStatus, brotherTestPrint,
             titleToshibaBluetoothPrinter, enableToshibaPrinterTextView, toshibaBluetoothPrinterConnect, toshibaBluetoothPrinterConnection,
             toshibaBluetoothPrinterStatus,
-            printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle;
+            printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle,
+            titleLabelOptions,
+            printLabelFaceTitle, printLabelNameTitle, printLabelNormalTemp, printLabelHighTemp, printLabelWaveAnswers;
     RadioGroup radioGroupPrinter, radioGroupToshibaPrinter, radioGroupPrintAllScan, radioGroupPrintAccessCard, radioGroupPrintQRCode,
-            radioGroupPrintWave, radioGroupPrintHighTemperature;
+            radioGroupPrintWave, radioGroupPrintHighTemperature,
+            radioGroupPrintLabelFace, radioGroupPrintLabelName, radioGroupPrintLabelNormalTemp, radioGroupPrintLabelHighTemp,
+            radioGroupPrintLabelWaveAnswers;
     RadioButton radioEnableBrotherPrinter, radioDisableBrotherPrinter, radioEnableToshibaPrinter, radioDisableToshibaPrinter,
-            radioButtonYesPrintAllScans, radioButtonNoPrintAllScans,radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
+            radioButtonYesPrintAllScans, radioButtonNoPrintAllScans, radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
             radioButtonYesPrintQRCode, radioButtonNoPrintQRCode, radioButtonYesPrintWave, radioButtonNoPrintWave,
-            radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature;
+            radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature, radioYesPrintLabelFace, radioNoPrintLabelFace,
+            radioYesPrintLabelName, radioNoPrintLabelName, radioYesPrintLabelNormalTemp, radioNoPrintLabelNormalTemp,
+            radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers;
     Button brotherPrintButton, toshibaPrintButton;
     ImageView brotherImageView;
 
@@ -118,6 +124,33 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         radioGroupPrintHighTemperature = findViewById(R.id.radio_group_print_high_temperature);
         radioButtonYesPrintHighTemperature = findViewById(R.id.radio_yes_print_high_temperature);
         radioButtonNoPrintHighTemperature = findViewById(R.id.radio_no_print_high_temperature);
+        // Label options
+        titleLabelOptions = findViewById(R.id.title_label_options);
+        //print label face
+        printLabelFaceTitle = findViewById(R.id.print_label_face_title);
+        radioGroupPrintLabelFace = findViewById(R.id.radio_group_print_label_face);
+        radioYesPrintLabelFace = findViewById(R.id.radio_yes_print_label_face);
+        radioNoPrintLabelFace = findViewById(R.id.radio_no_print_label_face);
+        //Print label name
+        printLabelNameTitle = findViewById(R.id.print_label_name_title);
+        radioGroupPrintLabelName = findViewById(R.id.radio_group_print_label_name);
+        radioYesPrintLabelName = findViewById(R.id.radio_yes_print_label_name);
+        radioNoPrintLabelName = findViewById(R.id.radio_no_print_label_name);
+        //Print label normal temp Value
+        printLabelNormalTemp = findViewById(R.id.print_label_normal_temp);
+        radioGroupPrintLabelNormalTemp = findViewById(R.id.radio_group_print_label_normal_temp);
+        radioYesPrintLabelNormalTemp = findViewById(R.id.radio_yes_print_label_normal_temp);
+        radioNoPrintLabelNormalTemp = findViewById(R.id.radio_no_print_label_normal_temp);
+        //Print label high temp value
+        printLabelHighTemp = findViewById(R.id.print_label_high_temp);
+        radioGroupPrintLabelHighTemp = findViewById(R.id.radio_group_print_label_high_temp);
+        radioYesPrintLabelHighTemp = findViewById(R.id.radio_yes_print_label_high_temp);
+        radioNoPrintLabelHighTemp = findViewById(R.id.radio_no_print_label_high_temp);
+        //Print label wave answers
+        printLabelWaveAnswers = findViewById(R.id.print_label_wave_answers);
+        radioGroupPrintLabelWaveAnswers = findViewById(R.id.radio_group_print_label_wave_answers);
+        radioYesPrintLabelWaveAnswers = findViewById(R.id.radio_yes_print_label_wave_answers);
+        radioNoPrintLabelWaveAnswers = findViewById(R.id.radio_no_print_label_wave_answers);
 
         brotherTestPrint.setText("Brother Printer");
 
@@ -149,6 +182,13 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         printQRCodeTitle.setTypeface(rubiklight);
         printWaveUsersTitle.setTypeface(rubiklight);
         printHighTemperatureTitle.setTypeface(rubiklight);
+
+        titleLabelOptions.setTypeface(rubiklight);
+        printLabelFaceTitle.setTypeface(rubiklight);
+        printLabelNameTitle.setTypeface(rubiklight);
+        printLabelNormalTemp.setTypeface(rubiklight);
+        printLabelHighTemp.setTypeface(rubiklight);
+        printLabelWaveAnswers.setTypeface(rubiklight);
 
         String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
@@ -229,7 +269,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         });
     }
 
-    private void printerOptionCheck(){
+    private void printerOptionCheck() {
         //All Scan
         if (sp.getBoolean(GlobalParameters.PRINT_ALL_SCAN, false))
             radioButtonYesPrintAllScans.setChecked(true);
@@ -301,6 +341,66 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             }
         });
 
+    }
+
+    private void printerLabelOptionsCheck() {
+        //Print Label Face
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_FACE, false))
+            radioYesPrintLabelFace.setChecked(true);
+        else radioNoPrintLabelFace.setChecked(true);
+
+        radioGroupPrintLabelFace.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_face) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_FACE, true);
+            } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_FACE, false);
+        });
+
+        // Print Label Name
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_NAME, false))
+            radioYesPrintLabelName.setChecked(true);
+        else radioNoPrintLabelName.setChecked(true);
+
+        radioGroupPrintLabelName.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_name) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NAME, true);
+            } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NAME, false);
+        });
+
+        // Print Normal Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false))
+            radioYesPrintLabelNormalTemp.setChecked(true);
+        else radioNoPrintLabelNormalTemp.setChecked(true);
+
+        radioGroupPrintLabelNormalTemp.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_normal_temp) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, true);
+            } else
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);
+        });
+
+        // Print High Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false))
+            radioYesPrintLabelHighTemp.setChecked(true);
+        else radioNoPrintLabelHighTemp.setChecked(true);
+
+        radioGroupPrintLabelNormalTemp.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_high_temp) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, true);
+            } else
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
+        });
+
+        //Print Wave Answers
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false))
+            radioYesPrintLabelWaveAnswers.setChecked(true);
+        else radioNoPrintLabelWaveAnswers.setChecked(true);
+
+        radioGroupPrintLabelNormalTemp.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_wave_answers) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, true);
+            } else
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
+        });
     }
 
     public void selectBluetoothPrinter(View view) {

@@ -1288,7 +1288,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void cancelImageTimer() {
-        if (imageTimer != null){
+        if (imageTimer != null) {
             imageTimer.cancel();
             imageTimer = null;
         }
@@ -1479,7 +1479,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
-            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan) return;
+            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan)
+                return;
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -1943,7 +1944,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         long delay = 1000;
-       
+
         if (qrCodeEnable) {
             resetCameraView();
             if (rfIdEnable) {
@@ -2220,7 +2221,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                                 String[] split = compareResult.getUserName().split("-");
                                 String id = "";
-                                if (split != null && split.length > 1) id = split[split.length-1];
+                                if (split != null && split.length > 1) id = split[split.length - 1];
 
                                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 Date curDate = new Date(System.currentTimeMillis());
@@ -2229,7 +2230,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 String cpmpareTime = simpleDateFormat.format(curDate);
 
                                 //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
-                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length-1]));
+                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length - 1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
 
@@ -2329,8 +2330,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             accessCardController.setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 //launch the fragment
-                if (AppSettings.isAcknowledgementScreen()){
-                    if(accessCardController.getTapCount() ==0){
+                if (AppSettings.isAcknowledgementScreen()) {
+                    if (accessCardController.getTapCount() == 0) {
                         accessCardController.setTapCount(1);
                         launchAcknowledgementFragment();
                         setCameraPreviewTimer(15);
@@ -2342,7 +2343,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     showSnackBarMessage(getString(R.string.access_granted));
                 }
                 setCameraPreview();
-                if(AppSettings.isAcknowledgementScreen() ) {
+                if (AppSettings.isAcknowledgementScreen()) {
                     new Handler().postDelayed(() -> {
                         closeFragment();
                         accessCardController.setTapCount(0);
@@ -3155,10 +3156,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void updatePrinterParameters(boolean highTemperature) {
-        Bitmap bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
+        Bitmap bitmap = null;
         String name = "";
         String nameTitle = "";
         String thermalText = "Thermal Scan";
+        if(AppSettings.isPrintLabelFace()) {
+            bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
+        }
         PrinterController.getInstance().updateImageForPrint(bitmap);
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
@@ -3171,8 +3175,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
-                nameTitle = "Name:";
-                name = data.getQrCodeData().getFirstName();
+                if (AppSettings.isPrintLabelName()) {
+                    nameTitle = "Name:";
+                    name = data.getQrCodeData().getFirstName();
+                }
             }
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
@@ -3180,8 +3186,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (bitmap == null) {
                     bitmap = rgbBitmap;
                 }
-                nameTitle = "Name:";
-                name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
+                if (AppSettings.isPrintLabelName()) {
+                    nameTitle = "Name:";
+                    name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
+                }
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
@@ -3190,16 +3198,25 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 answers = answers.replace("[", "");
                 answers = answers.replace("]", "");
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
-                int tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
-                thermalText = numOfQ + ": " + answers + " " + String.format("%4s", tempValue).replace(' ', '0');
+                int tempValue = 0;
+                String tempValueStr = "";
+                if (AppSettings.isPrintLabelNormalTemperature()) {
+                    tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
+                    tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
+                }
+
+                thermalText = numOfQ + ": " + answers + " " + tempValueStr;
+
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
                 if (AppSettings.isFacialDetect() && member != null) {
                     bitmap = BitmapFactory.decodeFile(member.image);
                     if (member.firstname != null) {
-                        nameTitle = "Name:";
-                        name = member.firstname;
+                        if (AppSettings.isPrintLabelName()) {
+                            nameTitle = "Name:";
+                            name = member.firstname;
+                        }
                     }
                 } else {
                     nameTitle = "";
@@ -3503,7 +3520,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void closeFragment() {
-        if(acknowledgementFragment != null) {
+        if (acknowledgementFragment != null) {
             getFragmentManager().beginTransaction().remove(acknowledgementFragment).commitAllowingStateLoss();
         }
     }
@@ -3534,7 +3551,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void onRfidOnlyEnabled(String cardId) {
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (AppSettings.isAcknowledgementScreen()) {
-            if (accessCardController.getTapCount() ==0){
+            if (accessCardController.getTapCount() == 0) {
                 accessCardController.setTapCount(1);
                 launchAcknowledgementFragment();
                 setCameraPreviewTimer(15);

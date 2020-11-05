@@ -176,6 +176,13 @@ public class GlobalParameters {
     public static final String PRINT_QR_CODE_USERS = "printQRCode";
     public static final String PRINT_WAVE_USERS = "printWaveUsers";
     public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
+    //print Label Options
+    public static final String PRINT_LABEL_FACE = "printLabelFace";
+    public static final String PRINT_LABEL_NAME = "printLabelName";
+    public static final String PRINT_LABEL_NORMAL_TEMPERATURE = "printLabelNormalTemperature";
+    public static final String PRINT_LABEL_HIGH_TEMPERATURE = "printLabelHighTemperature";
+    public static final String PRINT_LABEL_WAVE_ANSWERS = "printLabelWaveAnswers";
+
     public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
     public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";
     public static final String RESULT_BAR = "result_bar";
