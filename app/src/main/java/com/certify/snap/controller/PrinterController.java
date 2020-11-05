@@ -226,7 +226,12 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         copyIniFile();
         final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
         try {
-            util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
+            if(AppSettings.isPrintWaveUsers() && !AppSettings.isPrintLabelFace()){
+                util.asset2file(context, "SmpFV4D1.lfm", myMemotyPath, "tempLabel.lfm");
+            }
+            else {
+                util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -308,16 +313,12 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
-    public void setPrintWaveData(String name, String dateTime, String waveData, boolean highTemperature) {
+    public void setPrintWaveData(String dateTime, String waveData) {
         if(AppSettings.isPrintUsbEnabled()){
             HashMap<String , String> labelItemList = new HashMap<>();
-            labelItemList.put("TimeScan Data", dateTime);
-            if (!highTemperature) {
-                labelItemList.put("Status Data", "PASS");
-            } else {
-                labelItemList.put("Status Data", "");
-            }
-            labelItemList.put("Type Data", waveData);
+            labelItemList.put("name field", "Screened");
+            labelItemList.put("scan result field", waveData);
+            labelItemList.put("date time field", dateTime);
             mPrintData.setObjectDataList(labelItemList);
         }
     }

@@ -77,6 +77,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         printerOptionCheck();
         initBrotherPrinter();
         initToshibaPrinter();
+        printerLabelOptionsCheck();
 
         initBluetoothPrinter();
         PrinterController.getInstance().setPrinterListener(this);
@@ -383,7 +384,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             radioYesPrintLabelHighTemp.setChecked(true);
         else radioNoPrintLabelHighTemp.setChecked(true);
 
-        radioGroupPrintLabelNormalTemp.setOnCheckedChangeListener((group, checkedId) -> {
+        radioGroupPrintLabelHighTemp.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.radio_yes_print_label_high_temp) {
                 Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, true);
             } else
@@ -395,7 +396,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             radioYesPrintLabelWaveAnswers.setChecked(true);
         else radioNoPrintLabelWaveAnswers.setChecked(true);
 
-        radioGroupPrintLabelNormalTemp.setOnCheckedChangeListener((group, checkedId) -> {
+        radioGroupPrintLabelWaveAnswers.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.radio_yes_print_label_wave_answers) {
                 Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, true);
             } else

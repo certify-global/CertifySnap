@@ -3162,8 +3162,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String thermalText = "Thermal Scan";
         if(AppSettings.isPrintLabelFace()) {
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
+            PrinterController.getInstance().updateImageForPrint(bitmap);
         }
-        PrinterController.getInstance().updateImageForPrint(bitmap);
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {
@@ -3193,10 +3193,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
+                dateTime = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");
                 answers = answers.replace("]", "");
+                if(AppSettings.isPrintLabelWaveAnswers()){
+                    answers = answers.replace("Y", "1");
+                    answers = answers.replace("N", "0");
+                }
                 int numOfQ = GestureController.getInstance().getQuestionsSize();
                 int tempValue = 0;
                 String tempValueStr = "";
@@ -3205,7 +3210,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
                 }
 
-                thermalText = numOfQ + ": " + answers + " " + tempValueStr;
+                thermalText = answers + " " + tempValueStr;
 
             }
         } else {
@@ -3227,8 +3232,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         }
-
-        PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText, highTemperature);
+        if(AppSettings.isPrintWaveUsers() && !AppSettings.isPrintLabelFace()){
+            PrinterController.getInstance().setPrintWaveData(dateTime, thermalText);
+        }else {
+            PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText, highTemperature);
+        }
 
         convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
     }
