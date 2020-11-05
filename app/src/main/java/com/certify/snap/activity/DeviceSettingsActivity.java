@@ -91,7 +91,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout localServerLayout;
     private boolean deviceOnlineSwitch = false;
     private Button saveLogButton;
-    private LinearLayout logOfflineDataLayout;
+    private LinearLayout logOfflineDataLayout, captureLogsLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,6 +124,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         isOnline = true;
                         localServerLayout.setVisibility(View.GONE);
                         logOfflineDataLayout.setVisibility(View.GONE);
+                        captureLogsLayout.setVisibility(View.VISIBLE);
                         LocalServer localServer = new LocalServer(DeviceSettingsActivity.this);
                         localServer.stopServer();
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
@@ -133,6 +134,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         isOnline = false;
                         localServerLayout.setVisibility(View.VISIBLE);
                         logOfflineDataLayout.setVisibility(View.VISIBLE);
+                        captureLogsLayout.setVisibility(View.GONE);
                         activateStatus();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
@@ -279,6 +281,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         logOfflineDataRg = findViewById(R.id.log_offline_data_rg);
         logOfflineDataYes = findViewById(R.id.log_od_rb_yes);
         logOfflineDataNo = findViewById(R.id.log_od_rb_no);
+        captureLogsLayout = findViewById(R.id.capture_logs_layout);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -309,6 +312,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
             logOfflineDataLayout.setVisibility(View.VISIBLE);
+            captureLogsLayout.setVisibility(View.GONE);
         }
     }
 
