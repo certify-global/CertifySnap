@@ -33,11 +33,11 @@ import java.util.HashMap;
 
 public class TouchlessSettingsActivity extends SettingsBaseActivity implements FlowListCallback {
     public static String TAG = "GestureActivity";
-    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition,enable_progress_bar,btn_save;
-    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice,radio_group_progress;
+    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition,enable_progress_bar,btn_save, tvWaveImage;
+    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice,radio_group_progress, radioGroupWaveImage;
     Spinner spinnerQuestionSelector;
     RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesMask, radioNoMask,
-            radioYesVoice, radioNoVoice,radio_yes_progress,radio_no_progress;
+            radioYesVoice, radioNoVoice,radio_yes_progress,radio_no_progress, radioYesWaveImage, radioNoWaveImage;
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
@@ -54,6 +54,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         maskEnforcementCheck();
         voiceRecognitionCheck();
         progressbarCheck();
+        waveImageCheck();
     }
 
     private void initView() {
@@ -85,6 +86,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         radio_no_progress = findViewById(R.id.radio_no_progress);
         btn_save = findViewById(R.id.btn_exit);
         editTextWaveFooter = findViewById(R.id.editTextWaveFooter);
+        radioYesWaveImage = findViewById(R.id.radio_yes_wave_image);
+        radioNoWaveImage = findViewById(R.id.radio_no_wave_image);
+        tvWaveImage = findViewById(R.id.tv_wave_image);
+        radioGroupWaveImage = findViewById(R.id.radio_group_wave_image);
 
         rubikLight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -94,6 +99,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         enableVoiceRecognition.setTypeface(rubikLight);
         enableMask.setTypeface(rubikLight);
         enable_progress_bar.setTypeface(rubikLight);
+        tvWaveImage.setTypeface(rubikLight);
         sharedPreferences = Util.getSharedPreferences(this);
         gestureWorkFlow = AppSettings.getGestureWorkFlow();
         getFlowListAPI();
@@ -185,6 +191,21 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
                 if(checkedId==R.id.radio_yes_progress)
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, true);
                 else Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, false);
+            }
+        });
+    }
+
+    private void waveImageCheck(){
+        if(sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE,false))
+            radioYesWaveImage.setChecked(true);
+        else radioNoWaveImage.setChecked(true);
+
+        radioGroupWaveImage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId==R.id.radio_yes_wave_image)
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, true);
+                else Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, false);
             }
         });
     }

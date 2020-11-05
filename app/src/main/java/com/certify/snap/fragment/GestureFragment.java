@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import androidx.core.content.ContextCompat;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;
 
@@ -35,12 +38,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             q6view1, q6view2, q6view3, q6view4, q6view5, q7view1, q7view2, q7view3, q7view4, q7view5, q7view6;
     private ImageView q2image1, q2image2, q3image1, q3image2, q3image3, q4image1, q4image2, q4image3, q4image4,
             q5image1, q5image2, q5image3, q5image4, q5image5, q6image1, q6image2, q6image3, q6image4, q6image5, q6image6,
-            q7image1, q7image2, q7image3, q7image4, q7image5, q7image6, q7image7;
+            q7image1, q7image2, q7image3, q7image4, q7image5, q7image6, q7image7, handYesImage, handNoImage;
     private LinearLayout voiceLayout, q2Layout, q3Layout, q4Layout, q5Layout, q6Layout, q7Layout;
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
     private ProgressDialog progressDialog;
     private Activity mActivity;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +62,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         GestureController.getInstance().init(this.getContext());
         GestureController.getInstance().setCallbackListener(this);
         GestureController.getInstance().getQuestions();
+        sharedPreferences = Util.getSharedPreferences(this.getContext());
+        waveImage();
 
         return view;
     }
@@ -136,6 +142,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7image5 = view.findViewById(R.id.sevenQ_image5);
         q7image6 = view.findViewById(R.id.sevenQ_image6);
         q7image7 = view.findViewById(R.id.sevenQ_image7);
+        handYesImage = view.findViewById(R.id.hand_yes_button);
+        handNoImage = view.findViewById(R.id.hand_no_button);
 
 
         rubiklight = Typeface.createFromAsset(mActivity.getAssets(),
@@ -465,6 +473,16 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7view4.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
         q7view5.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
         q7view6.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
+    }
+
+    private void waveImage(){
+        if(sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE,false)) {
+            handYesImage.setVisibility(View.VISIBLE);
+            handNoImage.setVisibility(View.VISIBLE);
+        } else {
+            handYesImage.setVisibility(View.GONE);
+            handNoImage.setVisibility(View.GONE);
+        }
     }
 
 }

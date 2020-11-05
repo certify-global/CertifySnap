@@ -186,5 +186,6 @@ public class GlobalParameters {
     public static final String PROGRESS_BAR = "progress_bar";
     public static final String WAVE_INDICATOR = "wave_indicator";
     public static final String CLEAR_SHARED_PREF = "clearSharedPref";
+    public static final String WAVE_IMAGE = "WaveImage";
 
 }
