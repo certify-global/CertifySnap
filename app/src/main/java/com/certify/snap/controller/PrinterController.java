@@ -226,7 +226,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         copyIniFile();
         final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
         try {
-            if(AppSettings.isPrintWaveUsers() && !AppSettings.isPrintLabelFace()){
+            if(!AppSettings.isPrintLabelFace()){
                 util.asset2file(context, "SmpFV4D1.lfm", myMemotyPath, "tempLabel.lfm");
             }
             else {

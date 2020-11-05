@@ -46,8 +46,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
 
     TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
             brotherBluetoothPrinterStatus, brotherTestPrint,
-            titleToshibaBluetoothPrinter, enableToshibaPrinterTextView, toshibaBluetoothPrinterConnect, toshibaBluetoothPrinterConnection,
-            toshibaBluetoothPrinterStatus,
+            titleToshibaBluetoothPrinter, enableToshibaPrinterTextView,
             printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle,
             titleLabelOptions,
             printLabelFaceTitle, printLabelNameTitle, printLabelNormalTemp, printLabelHighTemp, printLabelWaveAnswers;
@@ -61,7 +60,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature, radioYesPrintLabelFace, radioNoPrintLabelFace,
             radioYesPrintLabelName, radioNoPrintLabelName, radioYesPrintLabelNormalTemp, radioNoPrintLabelNormalTemp,
             radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers;
-    Button brotherPrintButton, toshibaPrintButton;
+    Button brotherPrintButton;
     ImageView brotherImageView;
 
     Typeface rubiklight;
@@ -157,10 +156,6 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
 
         titleToshibaBluetoothPrinter = findViewById(R.id.title_toshiba_bluetooth_printer);
         enableToshibaPrinterTextView = findViewById(R.id.enable_toshiba_printer_textview);
-        toshibaBluetoothPrinterStatus = findViewById(R.id.tv_bluetooth_toshiba_printer_status);
-        toshibaBluetoothPrinterConnect = findViewById(R.id.bluetooth_toshiba_printer_connect);
-        toshibaBluetoothPrinterConnection = findViewById(R.id.tv_bluetooth_toshiba_printer_connection);
-        toshibaPrintButton = findViewById(R.id.toshiba_print_button);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -173,9 +168,6 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
 
         titleToshibaBluetoothPrinter.setTypeface(rubiklight);
         enableToshibaPrinterTextView.setTypeface(rubiklight);
-        toshibaBluetoothPrinterConnect.setTypeface(rubiklight);
-        toshibaBluetoothPrinterConnection.setTypeface(rubiklight);
-        toshibaBluetoothPrinterStatus.setTypeface(rubiklight);
 
         printerOptionsTitle.setTypeface(rubiklight);
         printAllScanTitle.setTypeface(rubiklight);
@@ -194,10 +186,8 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
-            toshibaBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
         } else {
             brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings));
-            toshibaBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings));
         }
     }
 

@@ -3232,7 +3232,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         }
-        if(AppSettings.isPrintWaveUsers() && !AppSettings.isPrintLabelFace()){
+        if(!AppSettings.isPrintLabelFace()){
             PrinterController.getInstance().setPrintWaveData(dateTime, thermalText);
         }else {
             PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText, highTemperature);
