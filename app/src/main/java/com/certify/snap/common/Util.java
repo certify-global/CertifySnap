@@ -1449,7 +1449,7 @@ public class Util {
                 String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
                 int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
                 String enableLogging = jsonValueAccessControl.isNull("enableLogging") ? "0" : jsonValueAccessControl.getString("enableLogging");
-
+                String enableWiegandPt = jsonValueAccessControl.isNull("enableWeigandPassThrough") ? "0" : jsonValueAccessControl.getString("enableWeigandPassThrough");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
@@ -1459,7 +1459,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESS_LOGGING, enableLogging.equals("1"));
-
+                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigandPassThrough, enableWiegandPt.equals("1"));
 
                 //Audio Visual alerts
                 if (jsonValue.has("AudioVisualAlerts")) {
@@ -1496,7 +1496,13 @@ public class Util {
                     String printQRCode = printerSettings.isNull("printQRCode") ? "0" : printerSettings.getString("printQRCode");
                     String printWaveUsers = printerSettings.isNull("printWaveUsers") ? "0" : printerSettings.getString("printWaveUsers");
                     String printHighTempScans = printerSettings.isNull("printHighTempScans") ? "0" : printerSettings.getString("printHighTempScans");
-
+                    String printFace = printerSettings.isNull("printFace") ? "0" : printerSettings.getString("printFace");
+                    String printName = printerSettings.isNull("printName") ? "0" : printerSettings.getString("printName");
+                    String printUnidentifiedText = printerSettings.isNull("unidentifiedPrintText") ? "0" : printerSettings.getString("unidentifiedPrintText");
+                    String printUnidentifiedTextVal = printerSettings.isNull("unidentifiedPrintTextValue") ? "0" : printerSettings.getString("unidentifiedPrintTextValue");
+                    String printNormalTemperature = printerSettings.isNull("printNormalTemperature") ? "0" : printerSettings.getString("printNormalTemperature");
+                    String printHighTemperature = printerSettings.isNull("printHighTemperature") ? "0" : printerSettings.getString("printHighTemperature");
+                    String printWaveAnswers = printerSettings.isNull("printWaveAnswers") ? "0" : printerSettings.getString("printWaveAnswers");
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
@@ -1505,6 +1511,13 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_FACE, printFace.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NAME, printName.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, printUnidentifiedText.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, printUnidentifiedTextVal);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, printNormalTemperature.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, printHighTemperature.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printWaveAnswers.equals("1"));
                 }
                 //Touch less Interaction
                 if (jsonValue.has("TouchlessInteraction")) {
