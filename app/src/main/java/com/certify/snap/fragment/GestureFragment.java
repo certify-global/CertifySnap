@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private ProgressDialog progressDialog;
     private Activity mActivity;
     private SharedPreferences sharedPreferences;
+    private String maskStatus = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +59,12 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gesture, container, false);
         this.view = view;
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            maskStatus = bundle.getString("maskStatus");
+            Log.d(TAG, "Mask status " + maskStatus);
+        }
 
         initView();
         GestureController.getInstance().init(this.getContext());

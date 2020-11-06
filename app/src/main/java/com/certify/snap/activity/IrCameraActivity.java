@@ -822,6 +822,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
+        if (AppSettings.isMaskEnforced()) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
@@ -873,9 +874,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     if (CameraController.getInstance().isScanCloseProximityEnabled()) {
                         if (isProDevice) {
                             runOnUiThread(() -> {
-                                changeVerifyBackground(R.color.colorTransparency, true);
-                                relative_main.setVisibility(View.GONE);
-                                startCameraPreviewTimer();
+                                if (!AppSettings.isMaskEnforced()) {
+                                    changeVerifyBackground(R.color.colorTransparency, true);
+                                    relative_main.setVisibility(View.GONE);
+                                    startCameraPreviewTimer();
+                                }
                             });
                         }
                         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
@@ -2657,7 +2660,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
-        if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) {
+        if ((!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) ||
+             AppSettings.isMaskEnforced()) {
             return;
         }
         checkDeviceMode();
@@ -3352,6 +3356,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void launchGestureFragment() {
         gestureFragment = new GestureFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("maskStatus", String.valueOf(maskStatus));
+        gestureFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
         transaction.addToBackStack("GestureFragment");
@@ -3498,7 +3505,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initGesture() {
         if (AppSettings.isEnableHandGesture()) {
             if (Util.isGestureDeviceConnected(this)) {
-                isReadyToScan = false;
+                if (AppSettings.isMaskEnforced()) {
+                    isReadyToScan = true;
+                } else {
+                    isReadyToScan = false;
+                }
                 CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
                 GestureController.getInstance().initContext(this);
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
@@ -3521,6 +3532,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
+            if (AppSettings.isMaskEnforced()) {
+                isReadyToScan = false;
+            }
             new Handler().postDelayed(this::launchGestureFragment, 1000);
         });
     }
