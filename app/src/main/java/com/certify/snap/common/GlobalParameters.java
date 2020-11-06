@@ -182,6 +182,7 @@ public class GlobalParameters {
     public static final String PRINT_LABEL_NORMAL_TEMPERATURE = "printLabelNormalTemperature";
     public static final String PRINT_LABEL_HIGH_TEMPERATURE = "printLabelHighTemperature";
     public static final String PRINT_LABEL_WAVE_ANSWERS = "printLabelWaveAnswers";
+    public static final String PRINT_LABEL_WAVE_EDIT_NAME = "printLabelWaveEditName";
 
     public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
     public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";

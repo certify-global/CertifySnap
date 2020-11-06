@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -62,6 +63,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers;
     Button brotherPrintButton;
     ImageView brotherImageView;
+    EditText editTextNameLabel;
 
     Typeface rubiklight;
     private SharedPreferences sp;
@@ -152,6 +154,8 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         radioYesPrintLabelWaveAnswers = findViewById(R.id.radio_yes_print_label_wave_answers);
         radioNoPrintLabelWaveAnswers = findViewById(R.id.radio_no_print_label_wave_answers);
 
+        editTextNameLabel = findViewById(R.id.edit_text_name_label);
+
         brotherTestPrint.setText("Brother Printer");
 
         titleToshibaBluetoothPrinter = findViewById(R.id.title_toshiba_bluetooth_printer);
@@ -182,6 +186,8 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         printLabelNormalTemp.setTypeface(rubiklight);
         printLabelHighTemp.setTypeface(rubiklight);
         printLabelWaveAnswers.setTypeface(rubiklight);
+
+        editTextNameLabel.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, "Screened"));
 
         String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
@@ -449,6 +455,9 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
     }
 
     public void saveAudioSettings(View view) {
+        if (!editTextNameLabel.getText().toString().isEmpty())
+            Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextNameLabel.getText().toString());
+
         Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();
     }

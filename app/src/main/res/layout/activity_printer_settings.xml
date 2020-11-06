@@ -646,17 +646,18 @@
                 </RelativeLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/text_input_wave_footer"
+                    android:id="@+id/text_input_name_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editTextWaveFooter"
+                        android:id="@+id/edit_text_name_label"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:background="@drawable/edittextbackground"
                         android:hint="Enter Visitor text"
+                        android:maxLength="12"
                         android:paddingLeft="05dp" />
 
                 </com.google.android.material.textfield.TextInputLayout>

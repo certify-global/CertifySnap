@@ -68,6 +68,7 @@ public class AppSettings {
     private static boolean printLabelNormalTemperature = false;
     private static boolean printLabelHighTemperature = false;
     private static boolean printLabelWaveAnswers = false;
+    private static String editTextNameLabel = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -137,6 +138,7 @@ public class AppSettings {
         printLabelNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);
         printLabelHighTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
         printLabelWaveAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
+        editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
     }
 
     public static String getThermalScanTitle() {
@@ -373,5 +375,9 @@ public class AppSettings {
 
     public static boolean isPrintLabelWaveAnswers() {
         return printLabelWaveAnswers;
+    }
+
+    public static String getEditTextNameLabel() {
+        return editTextNameLabel;
     }
 }

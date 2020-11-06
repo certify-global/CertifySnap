@@ -313,10 +313,10 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
-    public void setPrintWaveData(String dateTime, String waveData) {
+    public void setPrintWaveData(String name, String dateTime, String waveData) {
         if(AppSettings.isPrintUsbEnabled()){
             HashMap<String , String> labelItemList = new HashMap<>();
-            labelItemList.put("name field", "Screened");
+            labelItemList.put("name field", name);
             labelItemList.put("scan result field", waveData);
             labelItemList.put("date time field", dateTime);
             mPrintData.setObjectDataList(labelItemList);
