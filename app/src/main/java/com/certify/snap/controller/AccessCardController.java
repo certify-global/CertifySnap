@@ -251,7 +251,8 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoor(List<RegisteredMembers> membersList) {
         if (AppSettings.isFacialDetect()) {
-            if (membersList != null && membersList.size() > 0 ) {
+            if ((membersList != null && membersList.size() > 0) ||
+                    AccessCardController.getInstance().isEnableWiegandPt()) {
                 unlockDoor();
             }
             return;
@@ -261,7 +262,8 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
         if (AppSettings.isFacialDetect()) {
-            if (membersList != null && membersList.size() > 0 ) {
+            if ((membersList != null && membersList.size() > 0) ||
+                    AccessCardController.getInstance().isEnableWiegandPt()) {
                 unlockDoorOnHighTemp();
             }
             return;
