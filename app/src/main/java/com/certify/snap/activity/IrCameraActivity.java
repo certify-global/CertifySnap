@@ -3164,6 +3164,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
             PrinterController.getInstance().updateImageForPrint(bitmap);
         }
+        if (AppSettings.isPrintLabelUnidentifiedName()) {
+            name = AppSettings.getEditTextNameLabel();
+        }
         RegisteredMembers member = null;
         UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
         if (data != null) {
@@ -3226,14 +3229,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 } else {
                     nameTitle = "";
                     name = "";
+                    if (AppSettings.isPrintLabelUnidentifiedName()) {
+                        name = AppSettings.getEditTextNameLabel();
+                    }
                 }
                 if (bitmap == null) {
                     bitmap = rgbBitmap;
                 }
             }
-        }
-        if(AppSettings.isPrintLabelUnidentifiedName()){
-            name = AppSettings.getEditTextNameLabel();
         }
         if(!AppSettings.isPrintLabelFace()){
             PrinterController.getInstance().setPrintWaveData(name, dateTime, thermalText);
