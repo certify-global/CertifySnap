@@ -50,17 +50,19 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             titleToshibaBluetoothPrinter, enableToshibaPrinterTextView,
             printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle,
             titleLabelOptions,
-            printLabelFaceTitle, printLabelNameTitle, printLabelNormalTemp, printLabelHighTemp, printLabelWaveAnswers;
+            printLabelFaceTitle, printLabelNameTitle, printLabelNormalTemp, printLabelHighTemp, printLabelWaveAnswers,
+            printLabelUnidentifiedName;
     RadioGroup radioGroupPrinter, radioGroupToshibaPrinter, radioGroupPrintAllScan, radioGroupPrintAccessCard, radioGroupPrintQRCode,
             radioGroupPrintWave, radioGroupPrintHighTemperature,
             radioGroupPrintLabelFace, radioGroupPrintLabelName, radioGroupPrintLabelNormalTemp, radioGroupPrintLabelHighTemp,
-            radioGroupPrintLabelWaveAnswers;
+            radioGroupPrintLabelWaveAnswers, radioGroupPrintLabelUnidentifiedName;
     RadioButton radioEnableBrotherPrinter, radioDisableBrotherPrinter, radioEnableToshibaPrinter, radioDisableToshibaPrinter,
             radioButtonYesPrintAllScans, radioButtonNoPrintAllScans, radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
             radioButtonYesPrintQRCode, radioButtonNoPrintQRCode, radioButtonYesPrintWave, radioButtonNoPrintWave,
             radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature, radioYesPrintLabelFace, radioNoPrintLabelFace,
             radioYesPrintLabelName, radioNoPrintLabelName, radioYesPrintLabelNormalTemp, radioNoPrintLabelNormalTemp,
-            radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers;
+            radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers,
+            radioYesPrintLabelUnidentifiedName, radioNoPrintLabelUnidentifiedName;
     Button brotherPrintButton;
     ImageView brotherImageView;
     EditText editTextNameLabel;
@@ -138,6 +140,11 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         radioGroupPrintLabelName = findViewById(R.id.radio_group_print_label_name);
         radioYesPrintLabelName = findViewById(R.id.radio_yes_print_label_name);
         radioNoPrintLabelName = findViewById(R.id.radio_no_print_label_name);
+        //print label unidentified name
+        printLabelUnidentifiedName = findViewById(R.id.print_label_unidentified_name);
+        radioGroupPrintLabelUnidentifiedName = findViewById(R.id.radio_group_print_label_unidentified_name);
+        radioYesPrintLabelUnidentifiedName= findViewById(R.id.radio_yes_print_label_unidentified_name);
+        radioNoPrintLabelUnidentifiedName = findViewById(R.id.radio_no_print_label_unidentified_name);
         //Print label normal temp Value
         printLabelNormalTemp = findViewById(R.id.print_label_normal_temp);
         radioGroupPrintLabelNormalTemp = findViewById(R.id.radio_group_print_label_normal_temp);
@@ -186,6 +193,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         printLabelNormalTemp.setTypeface(rubiklight);
         printLabelHighTemp.setTypeface(rubiklight);
         printLabelWaveAnswers.setTypeface(rubiklight);
+        printLabelUnidentifiedName.setTypeface(rubiklight);
 
         editTextNameLabel.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, "Screened"));
 
@@ -361,6 +369,17 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             if (checkedId == R.id.radio_yes_print_label_name) {
                 Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NAME, true);
             } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NAME, false);
+        });
+
+        // Print Label Unidentified Name
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false))
+            radioYesPrintLabelUnidentifiedName.setChecked(true);
+        else radioNoPrintLabelUnidentifiedName.setChecked(true);
+
+        radioGroupPrintLabelUnidentifiedName.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_unidentified_name) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, true);
+            } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false);
         });
 
         // Print Normal Temperature

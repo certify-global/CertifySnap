@@ -179,6 +179,7 @@ public class GlobalParameters {
     //print Label Options
     public static final String PRINT_LABEL_FACE = "printLabelFace";
     public static final String PRINT_LABEL_NAME = "printLabelName";
+    public static final String PRINT_LABEL_UNIDENTIFIED_NAME = "printLabelUnidentifiedName";
     public static final String PRINT_LABEL_NORMAL_TEMPERATURE = "printLabelNormalTemperature";
     public static final String PRINT_LABEL_HIGH_TEMPERATURE = "printLabelHighTemperature";
     public static final String PRINT_LABEL_WAVE_ANSWERS = "printLabelWaveAnswers";

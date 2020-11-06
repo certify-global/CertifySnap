@@ -65,6 +65,7 @@ public class AppSettings {
     private static boolean logOfflineData = false;
     private static boolean printLabelFace = false;
     private static boolean printLabelName = false;
+    private static boolean printLabelUnidentifiedName = false;
     private static boolean printLabelNormalTemperature = false;
     private static boolean printLabelHighTemperature = false;
     private static boolean printLabelWaveAnswers = false;
@@ -138,6 +139,7 @@ public class AppSettings {
         printLabelNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);
         printLabelHighTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
         printLabelWaveAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
+        printLabelUnidentifiedName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false);
         editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
     }
 
@@ -379,5 +381,9 @@ public class AppSettings {
 
     public static String getEditTextNameLabel() {
         return editTextNameLabel;
+    }
+
+    public static boolean isPrintLabelUnidentifiedName() {
+        return printLabelUnidentifiedName;
     }
 }

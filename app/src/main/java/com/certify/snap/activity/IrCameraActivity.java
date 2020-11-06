@@ -3232,7 +3232,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         }
-        if(AppSettings.isPrintLabelName()){
+        if(AppSettings.isPrintLabelUnidentifiedName()){
             name = AppSettings.getEditTextNameLabel();
         }
         if(!AppSettings.isPrintLabelFace()){
