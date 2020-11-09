@@ -302,10 +302,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Timer mQRTimer;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
-    private boolean highTemperature = false;
     private Fragment acknowledgementFragment;
     private Fragment gestureFragment;
     private boolean qrCodeReceived = false;
+    private boolean resumedFromGesture = false;
 
     private void instanceStart() {
         try {
@@ -822,7 +822,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
-        if (AppSettings.isMaskEnforced()) return;
+        if (AppSettings.isMaskEnforced() &&
+                CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString())
+                && !resumedFromGesture) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
@@ -2712,6 +2714,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         face3DAngle = null;
         faceThermalToast = null;
+        resumedFromGesture = false;
 
         if (isDisconnected) {
             runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
@@ -2999,7 +3002,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (!AppSettings.isCaptureTemperature()) {
                 text = AppSettings.getTempResultBarNormal();
             } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
-                String tempRead = String.valueOf(TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1);
+                float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
+                String tempRead = String.valueOf(tempValue);
                 text = AppSettings.getTempResultBarNormal() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
             } else {
                 text = AppSettings.getTempResultBarNormal() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
@@ -3374,6 +3378,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void resumeFromGesture() {
         runOnUiThread(() -> {
+            resumedFromGesture = true;
             int delay = 2 * 1000;
             if (isProDevice) {
                 delay = 1500;
