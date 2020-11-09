@@ -3246,7 +3246,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         name = AppSettings.getEditTextNameLabel();
                     }
                 }
-                if (bitmap == null) {
+                if (bitmap == null && AppSettings.isPrintLabelFace()) {
                     bitmap = rgbBitmap;
                 }
             }
@@ -3276,7 +3276,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tempPass.setText("");
             tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {
-            tempPass.setText("PASS ");
+            tempPass.setText("Screened");
         }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);
