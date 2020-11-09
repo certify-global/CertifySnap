@@ -29,6 +29,8 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;
+import com.certify.snap.view.voicebar.Extensions;
+import com.certify.snap.view.voicebar.RecognitionProgressView;
 
 public class GestureFragment extends Fragment implements GestureController.GestureCallbackListener {
 
@@ -47,6 +49,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private Activity mActivity;
     private SharedPreferences sharedPreferences;
     private String maskStatus = "";
+    public RecognitionProgressView recognitionProgressView;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +75,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         GestureController.getInstance().getQuestions();
         sharedPreferences = Util.getSharedPreferences(this.getContext());
         waveImage();
+        initProgressBarView();
+        handleQuestionnaireByVoice();
 
         return view;
     }
@@ -152,6 +157,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7image7 = view.findViewById(R.id.sevenQ_image7);
         handYesImage = view.findViewById(R.id.hand_yes_button);
         handNoImage = view.findViewById(R.id.hand_no_button);
+        recognitionProgressView = view.findViewById(R.id.recognitionProgressView);
 
 
         rubiklight = Typeface.createFromAsset(mActivity.getAssets(),
@@ -491,6 +497,17 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             handYesImage.setVisibility(View.GONE);
             handNoImage.setVisibility(View.GONE);
         }
+    }
+
+    private void initProgressBarView(){
+        recognitionProgressView.setColors(Extensions.PV_COLORS);
+        recognitionProgressView.setBarMaxHeightsInDp(Extensions.PV_BARS_HEIGHT);
+        recognitionProgressView.setCircleRadiusInDp(Extensions.PV_CIRCLE_RADIUS);
+        recognitionProgressView.setSpacingInDp(Extensions.PV_CIRCLE_SPACING);
+        recognitionProgressView.setIdleStateAmplitudeInDp(Extensions.PV_IDLE_STATE);
+        recognitionProgressView.setRotationRadiusInDp(Extensions.PV_ROTATION_RADIUS);
+        recognitionProgressView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, Extensions.PV_HEIGHT));
+        recognitionProgressView.play();
     }
 
 }

@@ -27,35 +27,24 @@
         android:id="@+id/voice_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="180dp"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/mic_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/mic_nobackground_1" />
-
-            <TextView
-                android:id="@+id/listening_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="45dp"
-                android:text="Listening..."
-                android:textColor="@color/black"
-                android:textSize="25dp" />
+                android:src="@drawable/mic_nobackground_1"
+                android:visibility="gone"/>
 
             <com.certify.snap.view.TimerAnimationView
                 android:id="@+id/timer_view"
@@ -63,7 +52,23 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                app:circleColor="@color/colorGray" />
+                app:circleColor="@color/colorGray"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/listening_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Listening..."
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+
+            <com.certify.snap.view.voicebar.RecognitionProgressView
+                android:id="@+id/recognitionProgressView"
+                android:layout_width="130dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center" />
 
         </LinearLayout>
 
@@ -72,7 +77,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/voice_yes_button"

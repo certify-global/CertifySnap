@@ -3516,6 +3516,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
+            new Handler().postDelayed(this::launchGestureFragment, 1000);
             return;
         }
         GestureController.getInstance().checkGestureStatus();
