@@ -62,7 +62,7 @@ public class TemperatureController {
     private boolean isTempAboveThreshold = false;
     private boolean isGuideInited = false;
     private Timer guideTempTimer = null;
-    private float MIN_TEMPERATURE_THRESHOLD = 96.2f;
+    public static float MIN_TEMPERATURE_THRESHOLD = 96.2f;
     private int mTemperatureRetry = 0;
     private String machineTemperature;
     private String ambientTemperature;

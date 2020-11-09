@@ -2996,7 +2996,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String tempString = String.valueOf(temperature);
         String text = "";
         if (isLowTempRead || !AppSettings.isCaptureTemperature()) {
-            text = AppSettings.getTempResultBarNormal();
+            if (!AppSettings.isCaptureTemperature()) {
+                text = AppSettings.getTempResultBarNormal();
+            } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
+                String tempRead = String.valueOf(TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1);
+                text = AppSettings.getTempResultBarNormal() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
+            } else {
+                text = AppSettings.getTempResultBarNormal();
+            }
         } else {
             text = AppSettings.getTempResultBarNormal() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
