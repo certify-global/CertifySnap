@@ -822,9 +822,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
-        if (AppSettings.isMaskEnforced() &&
-                CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString())
-                && !resumedFromGesture) return;
+        if (AppSettings.isMaskEnforced() && !resumedFromGesture) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
