@@ -173,7 +173,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private static final int CARD_ID_ERROR = 335;
     private static final int ENTER = 336;
     private static final int TIME_ERROR = 337;
-    List<RegisteredMembers> registeredMemberslist;
+    List<RegisteredMembers> registeredMemberslist = null;
     private boolean isFaceIdentified;
     RelativeLayout rl_header;
 
@@ -2148,6 +2148,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
         Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
+        registeredMemberslist = null;
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
