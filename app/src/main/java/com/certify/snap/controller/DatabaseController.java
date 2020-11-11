@@ -89,21 +89,21 @@ public class DatabaseController {
     }
 
     public List<RegisteredMembers> findMember(long primaryId) {
-        try {
-            if (databaseStore != null) {
+        if (databaseStore != null) {
+            try {
                 return databaseStore.findMemberByPrimaryId(primaryId);
-            }
-        } catch (SQLiteException e){
-            if (handleDBException(e)) {
-                if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
-                    Util.stopMemberSyncService(mContext);
-                    MemberSyncDataModel.getInstance().clear();
-                }
-                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        mContext.startService(new Intent(mContext, MemberSyncService.class));
-                        Application.StartService(mContext);
+            } catch (SQLiteException e) {
+                if (handleDBException(e)) {
+                    if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
+                        Util.stopMemberSyncService(mContext);
+                        MemberSyncDataModel.getInstance().clear();
+                    }
+                    if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                        if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                            mContext.startService(new Intent(mContext, MemberSyncService.class));
+                            Application.StartService(mContext);
+                        }
                     }
                 }
             }

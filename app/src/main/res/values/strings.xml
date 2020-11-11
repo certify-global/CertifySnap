@@ -507,7 +507,9 @@
     <string name="enable_temp_scan">Enable Temperature Scan</string>
     <string name="enable_wiegand_passthrough">Enable Wiegand Pass-through</string>
     <string name="log_offline_data">Log Data in Offline Mode</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="wear_a_mask">"Please wear a mask and Wave Left Hand to start over or else Wave Right Hand to continue"</string>
+    <string name="access_control_granted">Access Granted</string>
+    <string name="access_control_denied">Access Denied!</string>
 
 </resources>

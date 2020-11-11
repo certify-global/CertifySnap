@@ -161,7 +161,7 @@ import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
-        PrintStatusCallback, GestureController.GestureHomeCallBackListener {
+        PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -174,7 +174,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private static final int CARD_ID_ERROR = 335;
     private static final int ENTER = 336;
     private static final int TIME_ERROR = 337;
-    List<RegisteredMembers> registeredMemberslist;
+    List<RegisteredMembers> registeredMemberslist = null;
     private boolean isFaceIdentified;
     RelativeLayout rl_header;
 
@@ -1410,6 +1410,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    @Override
+    public void onAccessGranted() {
+        SoundController.getInstance().playAccessGrantedSound();
+        runOnUiThread(() -> {
+            Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @Override
+    public void onAccessDenied() {
+        SoundController.getInstance().playAccessDeniedSound();
+        runOnUiThread(() -> {
+            Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_denied), Toast.LENGTH_SHORT).show();
+        });
+    }
+
     private class IrCameraListener implements CameraListener {
         private Camera.Parameters cameraParameters;
 
@@ -1907,6 +1923,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
      */
     private void initAccessControl() {
         AccessCardController.getInstance().init(this);
+        AccessCardController.getInstance().setCallbackListener(this);
         if (!rfIdEnable) return;
         if (!faceDetectEnabled) {
             isReadyToScan = false;
@@ -2150,6 +2167,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
         Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
+        registeredMemberslist = null;
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2238,7 +2256,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length - 1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
-
+                                    RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                                    RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+                                    if (rfidScanMatchMember != null) {
+                                        if (rfidScanMatchMember.primaryid != registeredMembers.primaryid) {
+                                            AccessCardController.getInstance().setAccessFaceNotMatch(true);
+                                            runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
+                                            return;
+                                        }
+                                    }
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
                                     CameraController.getInstance().setCompareResult(compareResult);
@@ -2247,7 +2273,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         CameraController.getInstance().setTriggerType(CameraController.triggerValue.FACE.toString());
                                     }
                                     runTemperature(requestId, data);   //TODO1: Optimize
-                                    RegisteredMembers registeredMembers = registeredMemberslist.get(0);
 
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
