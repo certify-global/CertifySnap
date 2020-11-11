@@ -3503,8 +3503,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initGesture() {
-        if (AppSettings.isEnableHandGesture()) {
-            if (Util.isGestureDeviceConnected(this)) {
+        if (AppSettings.isEnableVoice()) {
+            if (ContextCompat.checkSelfPermission(IrCameraActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                checkPermission();
+            }
+            GestureController.getInstance().initVoice(IrCameraActivity.this);
+            GestureController.getInstance().setSpeechRecognitionListener();
+            GestureController.getInstance().startListening();
+        }
+        if (AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
+            if (Util.isGestureDeviceConnected(this) || AppSettings.isEnableVoice()) {
                 if (AppSettings.isMaskEnforced()) {
                     isReadyToScan = true;
                 } else {
@@ -3516,12 +3524,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
-            new Handler().postDelayed(this::launchGestureFragment, 1000);
             return;
         }
         GestureController.getInstance().checkGestureStatus();
     }
 
+    //-----> Voice code
+    private void checkPermission() {
+        ActivityCompat.requestPermissions(IrCameraActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+    }
     public void resetGesture() {
         GestureController.getInstance().setGestureHomeCallbackListener(this);
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);

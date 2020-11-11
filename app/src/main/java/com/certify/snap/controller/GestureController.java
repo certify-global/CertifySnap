@@ -9,6 +9,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognitionListener;
@@ -74,6 +75,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private UsbDeviceConnection connection;
+    private AudioManager audioManager;
 
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
@@ -194,6 +196,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 120000);
+
+        // Initializing the audio Manager
+        audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_MUTE, 0);
     }
 
     /**
@@ -245,7 +251,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     if (data.get(0).toLowerCase().equals("yes")
                             || data.get(0).toLowerCase().equals("no")) {
                         onQuestionAnswered(data.get(0).toLowerCase());
-                    } else {
+                    } else if (data.get(0).toLowerCase().equals("start")){
+                        if (gestureListener != null && !isCallback) {
+                            isCallback = true;
+                            gestureListener.onGestureDetected();
+                    }
+                    }else {
                         startListening();
                     }
                 } else {
@@ -681,5 +692,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
+        audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0);
     }
 }
