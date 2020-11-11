@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -35,14 +34,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     private final String TAG = GestureFragment.class.getSimpleName();
 
-    private TextView covidQuestionsText, titleView, handYesText , handNoText;
+    private TextView covidQuestionsText, titleView, handYesText, handNoText;
     private View view, q2view1, q3view1, q3view2, q4view1, q4view2, q4view3, q5view1, q5view2, q5view3, q5view4,
             q6view1, q6view2, q6view3, q6view4, q6view5, q7view1, q7view2, q7view3, q7view4, q7view5, q7view6;
     private ImageView q2image1, q2image2, q3image1, q3image2, q3image3, q4image1, q4image2, q4image3, q4image4,
             q5image1, q5image2, q5image3, q5image4, q5image5, q6image1, q6image2, q6image3, q6image4, q6image5, q6image6,
             q7image1, q7image2, q7image3, q7image4, q7image5, q7image6, q7image7, handYesImage, handNoImage;
-    private LinearLayout voiceLayout, q2Layout, q3Layout, q4Layout, q5Layout, q6Layout, q7Layout, maskEnforceLayout;
-    private ConstraintLayout questionViewLayout;
+    private LinearLayout voiceLayout, q2Layout, q3Layout, q4Layout, q5Layout, q6Layout, q7Layout;
     private Typeface rubiklight;
     private TimerAnimationView mTimerView;
     private ProgressDialog progressDialog;
@@ -78,19 +76,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         return view;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (AppSettings.isMaskEnforced() &&( maskStatus.equals("0") || maskStatus.equals("-1")) ) {
-            questionViewLayout.setVisibility(View.GONE);
-            maskEnforceLayout.setVisibility(View.VISIBLE);
-            GestureController.getInstance().setEnforceMask(true);
-        }else {
-            questionViewLayout.setVisibility(View.VISIBLE);
-            maskEnforceLayout.setVisibility(View.GONE);
-        }
-    }
-
     void initView() {
         covidQuestionsText = view.findViewById(R.id.covid_questions_text);
         titleView = view.findViewById(R.id.title_text_view);
@@ -98,8 +83,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         mTimerView = view.findViewById(R.id.timer_view);
         handYesText = view.findViewById(R.id.hand_yes_text);
         handNoText = view.findViewById(R.id.hand_no_text);
-        questionViewLayout = view.findViewById(R.id.question_view_layout);
-        maskEnforceLayout = view.findViewById(R.id.mask_enforce_layout);
 
         //q2 Layout
         q2Layout = view.findViewById(R.id.two_questions_layout);
@@ -330,27 +313,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         mActivity.runOnUiThread(this::showProgressBar);
     }
 
-    @Override
-    public void onRightHandWave() {
-        mActivity.runOnUiThread(() -> {
-            maskEnforceLayout.setVisibility(View.GONE);
-            questionViewLayout.setVisibility(View.VISIBLE);
-        });
-    }
-
-    @Override
-    public void onLeftHandWave() {
-        if (mActivity != null) {
-            mActivity.runOnUiThread(() -> {
-                mActivity.getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
-                IrCameraActivity activity = (IrCameraActivity) mActivity;
-                if (activity != null) {
-                    activity.resetGesture();
-                }
-            });
-        }
-    }
-
 
     private void showProgressBar() {
         progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
@@ -521,8 +483,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7view6.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
     }
 
-    private void waveImage(){
-        if(sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE,false)) {
+    private void waveImage() {
+        if (sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE, false)) {
             handYesImage.setVisibility(View.VISIBLE);
             handNoImage.setVisibility(View.VISIBLE);
         } else {

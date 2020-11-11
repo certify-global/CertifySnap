@@ -114,6 +114,7 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.fragment.AcknowledgementFragment;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.fragment.GestureFragment;
+import com.certify.snap.fragment.MaskEnforceFragment;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
@@ -304,6 +305,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
     private Fragment acknowledgementFragment;
     private Fragment gestureFragment;
+    private Fragment maskEnforceFragment;
     private boolean qrCodeReceived = false;
     private boolean resumedFromGesture = false;
 
@@ -2712,7 +2714,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         face3DAngle = null;
         faceThermalToast = null;
-        resumedFromGesture = false;
 
         if (isDisconnected) {
             runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
@@ -2782,7 +2783,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         clearData();
         if (AppSettings.isEnableHandGesture()) {
             if (Util.isGestureDeviceConnected(this)) {
-                isReadyToScan = false;
+                if (AppSettings.isMaskEnforced()) {
+                    resetMaskEnforceStatus();
+                } else {
+                    isReadyToScan = false;
+                }
             }
             resetGesture();
         }
@@ -3375,16 +3380,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeFromGesture() {
+        resumedFromGesture = true;
         runOnUiThread(() -> {
-            resumedFromGesture = true;
             int delay = 2 * 1000;
             if (isProDevice) {
                 delay = 1500;
             }
             if (AppSettings.isTemperatureScanEnabled()) {
                 CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+                setCameraPreview();
             }
-            setCameraPreview();
             new Handler().postDelayed(this::closeGestureFragment, delay);
         });
     }
@@ -3539,11 +3544,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onGestureDetected() {
         runOnUiThread(() -> {
+            resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
             Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
             if (AppSettings.isMaskEnforced()) {
                 isReadyToScan = false;
+                clearLeftFace(null);
+                if (maskStatus == 1) {
+                    new Handler().postDelayed(this::launchGestureFragment, 1000);
+                } else {
+                    new Handler().postDelayed(this::launchMaskEnforceFragment, 1000);
+                }
+                return;
             }
             new Handler().postDelayed(this::launchGestureFragment, 1000);
         });
@@ -3627,5 +3640,38 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
             resetRfid();
         }
+    }
+
+    private void launchMaskEnforceFragment() {
+        maskEnforceFragment = new MaskEnforceFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.dynamic_fragment_frame_layout, maskEnforceFragment, "MaskEnforceFragment");
+        transaction.addToBackStack("MaskEnforceFragment");
+        transaction.commitAllowingStateLoss();
+    }
+
+    private void closeMaskEnforceFragment() {
+        if (maskEnforceFragment != null) {
+            getFragmentManager().beginTransaction().remove(maskEnforceFragment).commitAllowingStateLoss();
+        }
+    }
+
+    public void resumeFromMaskEnforcement() {
+        runOnUiThread(() -> {
+            new Handler().postDelayed(() -> {
+                launchGestureFragment();
+                closeMaskEnforceFragment();
+            }, 300);
+        });
+    }
+
+    private void resetMaskEnforceStatus() {
+        resumedFromGesture = false;
+        isReadyToScan = true;
+    }
+
+    public void resetMaskEnforcementGesture() {
+        resetMaskEnforceStatus();
+        resetGesture();
     }
 }

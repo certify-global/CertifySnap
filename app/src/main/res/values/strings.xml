@@ -491,6 +491,7 @@
     <string name="capture_logs">Capture Logs</string>
     <string name="send_logs">Send Logs</string>
     <string name="wave_instructions">Enter wave indicator instructions</string>
+    <string name="mask_enforce_instructions">Enter mask enforce text</string>
 
     <string name="wave_yes">&lt; YES </string>
     <string name="wave_no"> NO &gt; </string>
@@ -506,5 +507,7 @@
     <string name="enable_temp_scan">Enable Temperature Scan</string>
     <string name="enable_wiegand_passthrough">Enable Wiegand Pass-through</string>
     <string name="log_offline_data">Log Data in Offline Mode</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="wear_a_mask">"Please wear a mask and Wave Left Hand to start over or else Wave Right Hand to continue"</string>
 
 </resources>

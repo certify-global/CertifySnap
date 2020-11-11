@@ -63,7 +63,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private GestureHomeCallBackListener gestureListener = null;
     private boolean isCallback = false;
     private Timer mQuestionsTimer;
-    private boolean enforceMask = false;
+    private GestureMECallbackListener gestureMEListener = null;
+    private boolean isMECallback = false;
 
     //Hand Gesture
     private UsbDevice usbReader = null;
@@ -84,12 +85,15 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onQuestionsNotReceived();
         void onBothHandWave();
         void onFetchingQuestions();
-        void onRightHandWave();
-        void onLeftHandWave();
     }
 
     public interface GestureHomeCallBackListener {
         void onGestureDetected();
+    }
+
+    public interface GestureMECallbackListener {
+        void onGestureMEDetected();
+        void onLeftHandWave();
     }
 
     public static GestureController getInstance() {
@@ -184,6 +188,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.gestureListener = callbackListener;
     }
 
+    public void setGestureMECallbackListener(GestureMECallbackListener callbackListener) {
+        wait = false;
+        isMECallback = false;
+        this.gestureMEListener = callbackListener;
+    }
 
     /**
      * Method that initializes the voice
@@ -441,12 +450,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
-        if (AppSettings.isMaskEnforced() && enforceMask) {
-            if (listener != null) {
-                listener.onLeftHandWave();
-                enforceMask = false;
-                return;
-            }
+        if (gestureMEListener != null && !isMECallback) {
+            Log.d(TAG, "Right Hand wave");
+            isMECallback = true;
+            gestureMEListener.onLeftHandWave();
+            return;
         }
         if (wait) {
             updateOnWave("Y");
@@ -460,12 +468,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             gestureListener.onGestureDetected();
             return;
         }
-        if (AppSettings.isMaskEnforced() && enforceMask) {
-            if (listener != null) {
-                listener.onRightHandWave();
-                enforceMask = false;
-                return;
-            }
+        if (gestureMEListener != null && !isMECallback) {
+            Log.d(TAG, "Right Hand wave");
+            isMECallback = true;
+            gestureMEListener.onGestureMEDetected();
+            return;
         }
         if (wait) {
             Log.d(TAG, "Right Hand wave update");
@@ -624,10 +631,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         return index;
     }
 
-    public void setEnforceMask(boolean enforceMask) {
-        this.enforceMask = enforceMask;
-    }
-
     public HashMap<QuestionData, String> getQuestionAnswerMap() {
         return questionAnswerMap;
     }
@@ -702,6 +705,5 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
-        enforceMask = false;
     }
 }
