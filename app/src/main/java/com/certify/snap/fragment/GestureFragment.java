@@ -266,7 +266,10 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     @Override
     public void onQuestionsReceived() {
-        uiUpdate(false);
+        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture() && !Util.isGestureDeviceConnected(getContext()))
+        uiUpdate(true);
+        else
+            uiUpdate(false);
         if (mActivity != null) {
             mActivity.runOnUiThread(() -> {
                 if (progressDialog != null && progressDialog.isShowing()) {
