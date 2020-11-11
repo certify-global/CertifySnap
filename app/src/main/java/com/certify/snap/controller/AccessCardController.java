@@ -42,6 +42,13 @@ public class AccessCardController implements AccessCallback {
     private String mAccessIdDb = "";
     private Context context;
     int tapCount = 0;
+    private AccessCallbackListener listener;
+    private boolean isAccessFaceNotMatch = false;
+
+    public interface AccessCallbackListener {
+        void onAccessGranted();
+        void onAccessDenied();
+    }
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -107,6 +114,14 @@ public class AccessCardController implements AccessCallback {
 
     public void setEnableWiegandPt(boolean mEnableWiegandPt) {
         this.mEnableWiegandPt = mEnableWiegandPt;
+    }
+
+    public void setAccessFaceNotMatch(boolean accessFaceNotMatch) {
+        isAccessFaceNotMatch = accessFaceNotMatch;
+    }
+
+    public void setCallbackListener(AccessCallbackListener listener) {
+        this.listener = listener;
     }
 
     public boolean isDoMemberMatch() {
@@ -253,7 +268,20 @@ public class AccessCardController implements AccessCallback {
         if (AppSettings.isFacialDetect()) {
             if ((membersList != null && membersList.size() > 0) ||
                     AccessCardController.getInstance().isEnableWiegandPt()) {
+                if (isAccessFaceNotMatch) {
+                    if (listener != null) {
+                        listener.onAccessDenied();
+                    }
+                    return;
+                }
+                if (listener != null) {
+                    listener.onAccessGranted();
+                }
                 unlockDoor();
+                return;
+            }
+            if (listener != null) {
+                listener.onAccessDenied();
             }
             return;
         }
@@ -473,5 +501,6 @@ public class AccessCardController implements AccessCallback {
         mAccessCardID = "";
         mAccessIdDb = "";
         tapCount = 0;
+        isAccessFaceNotMatch = false;
     }
 }
