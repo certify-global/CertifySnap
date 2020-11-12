@@ -164,6 +164,10 @@ public class AccessCardController implements AccessCallback {
         }
     }
 
+    private boolean isAccessSignalEnabled() {
+        return (mEnableRelay || mEnableWeigan || mEnableWiegandPt);
+    }
+
     private void startRelayTimer() {
         mRelayTimer = new Timer();
         mRelayTimer.schedule(new TimerTask() {
@@ -268,20 +272,24 @@ public class AccessCardController implements AccessCallback {
         if (AppSettings.isFacialDetect()) {
             if ((membersList != null && membersList.size() > 0) ||
                     AccessCardController.getInstance().isEnableWiegandPt()) {
-                if (isAccessFaceNotMatch) {
-                    if (listener != null) {
-                        listener.onAccessDenied();
+                if (isAccessSignalEnabled()) {
+                    if (isAccessFaceNotMatch) {
+                        if (listener != null) {
+                            listener.onAccessDenied();
+                        }
+                        return;
                     }
-                    return;
-                }
-                if (listener != null) {
-                    listener.onAccessGranted();
+                    if (listener != null) {
+                        listener.onAccessGranted();
+                    }
                 }
                 unlockDoor();
                 return;
             }
-            if (listener != null) {
-                listener.onAccessDenied();
+            if (isAccessSignalEnabled()) {
+                if (listener != null) {
+                    listener.onAccessDenied();
+                }
             }
             return;
         }
@@ -292,7 +300,25 @@ public class AccessCardController implements AccessCallback {
         if (AppSettings.isFacialDetect()) {
             if ((membersList != null && membersList.size() > 0) ||
                     AccessCardController.getInstance().isEnableWiegandPt()) {
+                if (isAccessSignalEnabled()) {
+                    if (isAccessFaceNotMatch) {
+                        if (listener != null) {
+                            listener.onAccessDenied();
+                        }
+                        return;
+                    }
+                    if (listener != null) {
+                        if (!mStopRelayOnHighTemp) {
+                            listener.onAccessGranted();
+                        }
+                    }
+                }
                 unlockDoorOnHighTemp();
+            }
+            if (isAccessSignalEnabled()) {
+                if (listener != null) {
+                    listener.onAccessDenied();
+                }
             }
             return;
         }
