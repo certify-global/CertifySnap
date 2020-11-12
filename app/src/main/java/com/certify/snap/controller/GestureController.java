@@ -64,6 +64,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private GestureHomeCallBackListener gestureListener = null;
     private boolean isCallback = false;
     private Timer mQuestionsTimer;
+    private GestureMECallbackListener gestureMEListener = null;
+    private boolean isMECallback = false;
 
     //Hand Gesture
     private UsbDevice usbReader = null;
@@ -89,6 +91,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public interface GestureHomeCallBackListener {
         void onGestureDetected();
+    }
+
+    public interface GestureMECallbackListener {
+        void onGestureMEDetected();
+        void onLeftHandWave();
     }
 
     public static GestureController getInstance() {
@@ -183,6 +190,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.gestureListener = callbackListener;
     }
 
+    public void setGestureMECallbackListener(GestureMECallbackListener callbackListener) {
+        wait = false;
+        isMECallback = false;
+        this.gestureMEListener = callbackListener;
+    }
 
     /**
      * Method that initializes the voice
@@ -449,6 +461,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
+        if (gestureMEListener != null && !isMECallback) {
+            Log.d(TAG, "Right Hand wave");
+            isMECallback = true;
+            gestureMEListener.onLeftHandWave();
+            return;
+        }
         if (wait) {
             updateOnWave("Y");
         }
@@ -459,6 +477,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             Log.d(TAG, "Right Hand wave");
             isCallback = true;
             gestureListener.onGestureDetected();
+            return;
+        }
+        if (gestureMEListener != null && !isMECallback) {
+            Log.d(TAG, "Right Hand wave");
+            isMECallback = true;
+            gestureMEListener.onGestureMEDetected();
             return;
         }
         if (wait) {

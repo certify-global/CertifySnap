@@ -72,6 +72,7 @@ public class AppSettings {
     private static String editTextNameLabel = "";
     private static boolean maskEnforced = false;
     private static boolean waveImage = false;
+    private static String maskEnforceMessage = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -145,6 +146,7 @@ public class AppSettings {
         editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
         maskEnforced = sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT, false);
         waveImage = sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE,false);
+        maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, StringConstants.MASK_ENFORCE_MESSAGE);
     }
 
     public static String getThermalScanTitle() {
@@ -397,6 +399,10 @@ public class AppSettings {
 
     public static boolean isWaveImage() {
         return waveImage;
+    }
+
+    public static String getMaskEnforceMessage() {
+        return maskEnforceMessage;
     }
 
 }

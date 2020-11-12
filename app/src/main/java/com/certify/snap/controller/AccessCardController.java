@@ -42,6 +42,13 @@ public class AccessCardController implements AccessCallback {
     private String mAccessIdDb = "";
     private Context context;
     int tapCount = 0;
+    private AccessCallbackListener listener;
+    private boolean isAccessFaceNotMatch = false;
+
+    public interface AccessCallbackListener {
+        void onAccessGranted();
+        void onAccessDenied();
+    }
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -109,6 +116,14 @@ public class AccessCardController implements AccessCallback {
         this.mEnableWiegandPt = mEnableWiegandPt;
     }
 
+    public void setAccessFaceNotMatch(boolean accessFaceNotMatch) {
+        isAccessFaceNotMatch = accessFaceNotMatch;
+    }
+
+    public void setCallbackListener(AccessCallbackListener listener) {
+        this.listener = listener;
+    }
+
     public boolean isDoMemberMatch() {
         boolean result = false;
         if ((!mAllowAnonymous && (mEnableRelay || mEnableWeigan))
@@ -147,6 +162,10 @@ public class AccessCardController implements AccessCallback {
         if (mReverseRelayMode) {
             unLockStandAloneDoor();
         }
+    }
+
+    private boolean isAccessSignalEnabled() {
+        return (mEnableRelay || mEnableWeigan || mEnableWiegandPt);
     }
 
     private void startRelayTimer() {
@@ -253,7 +272,24 @@ public class AccessCardController implements AccessCallback {
         if (AppSettings.isFacialDetect()) {
             if ((membersList != null && membersList.size() > 0) ||
                     AccessCardController.getInstance().isEnableWiegandPt()) {
+                if (isAccessSignalEnabled()) {
+                    if (isAccessFaceNotMatch) {
+                        if (listener != null) {
+                            listener.onAccessDenied();
+                        }
+                        return;
+                    }
+                    if (listener != null) {
+                        listener.onAccessGranted();
+                    }
+                }
                 unlockDoor();
+                return;
+            }
+            if (isAccessSignalEnabled()) {
+                if (listener != null) {
+                    listener.onAccessDenied();
+                }
             }
             return;
         }
@@ -264,7 +300,25 @@ public class AccessCardController implements AccessCallback {
         if (AppSettings.isFacialDetect()) {
             if ((membersList != null && membersList.size() > 0) ||
                     AccessCardController.getInstance().isEnableWiegandPt()) {
+                if (isAccessSignalEnabled()) {
+                    if (isAccessFaceNotMatch) {
+                        if (listener != null) {
+                            listener.onAccessDenied();
+                        }
+                        return;
+                    }
+                    if (listener != null) {
+                        if (!mStopRelayOnHighTemp) {
+                            listener.onAccessGranted();
+                        }
+                    }
+                }
                 unlockDoorOnHighTemp();
+            }
+            if (isAccessSignalEnabled()) {
+                if (listener != null) {
+                    listener.onAccessDenied();
+                }
             }
             return;
         }
@@ -473,5 +527,6 @@ public class AccessCardController implements AccessCallback {
         mAccessCardID = "";
         mAccessIdDb = "";
         tapCount = 0;
+        isAccessFaceNotMatch = false;
     }
 }

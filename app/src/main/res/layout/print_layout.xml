@@ -42,15 +42,6 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/vaid_thru_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="7dp"
-                android:text="Scan Time:"
-                android:textColor="@color/colorBlack"
-                android:textSize="10dp" />
-
-            <TextView
                 android:id="@+id/expire_date"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -67,7 +58,7 @@
         android:layout_height="30dp"
         android:background="@color/colorGreen"
         android:gravity="center"
-        android:text="Pass"
+        android:text="Screened"
         android:textColor="@color/colorWhite"
         android:textSize="20dp"
         android:textStyle="bold" />

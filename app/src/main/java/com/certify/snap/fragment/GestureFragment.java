@@ -4,11 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,14 +29,12 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;
-import com.certify.snap.view.voicebar.Extensions;
-import com.certify.snap.view.voicebar.RecognitionProgressView;
 
 public class GestureFragment extends Fragment implements GestureController.GestureCallbackListener {
 
     private final String TAG = GestureFragment.class.getSimpleName();
 
-    private TextView covidQuestionsText, titleView, handYesText , handNoText;
+    private TextView covidQuestionsText, titleView, handYesText, handNoText;
     private View view, q2view1, q3view1, q3view2, q4view1, q4view2, q4view3, q5view1, q5view2, q5view3, q5view4,
             q6view1, q6view2, q6view3, q6view4, q6view5, q7view1, q7view2, q7view3, q7view4, q7view5, q7view6;
     private ImageView q2image1, q2image2, q3image1, q3image2, q3image3, q4image1, q4image2, q4image3, q4image4,
@@ -51,9 +47,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private Activity mActivity;
     private SharedPreferences sharedPreferences;
     private String maskStatus = "";
-    public RecognitionProgressView recognitionProgressView;
-    private AudioManager audioManager;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,9 +71,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         GestureController.getInstance().setCallbackListener(this);
         GestureController.getInstance().getQuestions();
         sharedPreferences = Util.getSharedPreferences(this.getContext());
-        waveImage(false);
-        initProgressBarView();
-        handleVoiceHandWaveGesture();
+        waveImage();
 
         return view;
     }
@@ -159,9 +150,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7image5 = view.findViewById(R.id.sevenQ_image5);
         q7image6 = view.findViewById(R.id.sevenQ_image6);
         q7image7 = view.findViewById(R.id.sevenQ_image7);
-        handYesImage = view.findViewById(R.id.hand_yes_iv);
-        handNoImage = view.findViewById(R.id.hand_no_iv);
-        recognitionProgressView = view.findViewById(R.id.recognitionProgressView);
+        handYesImage = view.findViewById(R.id.hand_yes_button);
+        handNoImage = view.findViewById(R.id.hand_no_button);
 
 
         rubiklight = Typeface.createFromAsset(mActivity.getAssets(),
@@ -187,22 +177,15 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        // Initializing the audio Manager
-        audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_MUTE, 0);
     }
 
     private void setQuestion() {
         covidQuestionsText.setText(GestureController.getInstance().getQuestion());
     }
 
-    private void uiUpdate(boolean isEnableAudio) {
+    private void uiUpdate() {
+        titleView.setText(AppSettings.getGestureMessage());
         titleView.setVisibility(View.VISIBLE);
-        if (isEnableAudio) {
-            titleView.setText("Please say yes or no");
-        } else {
-            titleView.setText(AppSettings.getGestureMessage());
-        }
     }
 
     //-----> Voice code
@@ -266,10 +249,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     @Override
     public void onQuestionsReceived() {
-        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture() && !Util.isGestureDeviceConnected(getContext()))
-        uiUpdate(true);
-        else
-            uiUpdate(false);
+        uiUpdate();
         if (mActivity != null) {
             mActivity.runOnUiThread(() -> {
                 if (progressDialog != null && progressDialog.isShowing()) {
@@ -503,57 +483,14 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7view6.setBackgroundColor(getResources().getColor(R.color.colorVeryLightGray));
     }
 
-    private void waveImage(boolean isEnableAudio){
-        if (isEnableAudio) {
+    private void waveImage() {
+        if (sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE, false)) {
+            handYesImage.setVisibility(View.VISIBLE);
+            handNoImage.setVisibility(View.VISIBLE);
+        } else {
             handYesImage.setVisibility(View.GONE);
             handNoImage.setVisibility(View.GONE);
-        } else {
-            if(AppSettings.isWaveImage()) {
-                handYesImage.setVisibility(View.VISIBLE);
-                handNoImage.setVisibility(View.VISIBLE);
-            } else {
-                handYesImage.setVisibility(View.GONE);
-                handNoImage.setVisibility(View.GONE);
-            }
         }
-    }
-
-    private void initProgressBarView(){
-        recognitionProgressView.setColors(Extensions.PV_COLORS);
-        recognitionProgressView.setBarMaxHeightsInDp(Extensions.PV_BARS_HEIGHT);
-        recognitionProgressView.setCircleRadiusInDp(Extensions.PV_CIRCLE_RADIUS);
-        recognitionProgressView.setSpacingInDp(Extensions.PV_CIRCLE_SPACING);
-        recognitionProgressView.setIdleStateAmplitudeInDp(Extensions.PV_IDLE_STATE);
-        recognitionProgressView.setRotationRadiusInDp(Extensions.PV_ROTATION_RADIUS);
-        recognitionProgressView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, Extensions.PV_HEIGHT));
-        recognitionProgressView.play();
-    }
-
-    public void handleGestureOnVoiceRecognition(){
-        if (AppSettings.isEnableHandGesture()) {
-            if (Util.isGestureDeviceConnected(this.getContext())) {
-                Toast.makeText(getContext(), "Sorry failed to hear your message. Please use gesture to answer", Toast.LENGTH_SHORT).show();
-                voiceLayout.setVisibility(View.GONE);
-            } else {
-                voiceLayout.setVisibility(View.VISIBLE);
-                Toast.makeText(getContext(), "Sorry failed to hear your message. Please retry with no background sound", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public void handleVoiceHandWaveGesture() {
-        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture() && !Util.isGestureDeviceConnected(getContext())) {
-            handYesText.setVisibility(View.GONE);
-            handNoText.setVisibility(View.GONE);
-            uiUpdate(true);
-            waveImage(true);
-        } else {
-            handYesText.setVisibility(View.VISIBLE);
-            handNoText.setVisibility(View.VISIBLE);
-            uiUpdate(false);
-            waveImage(false);
-        }
-        handleQuestionnaireByVoice();
     }
 
 }

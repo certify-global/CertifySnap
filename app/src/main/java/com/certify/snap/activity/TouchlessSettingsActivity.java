@@ -41,7 +41,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
-    private EditText editTextWaveFooter;
+    private EditText editTextWaveFooter, editTextMaskEnforce;
     private String gestureWorkFlow = "";
 
     @Override
@@ -86,6 +86,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         radio_no_progress = findViewById(R.id.radio_no_progress);
         btn_save = findViewById(R.id.btn_exit);
         editTextWaveFooter = findViewById(R.id.editTextWaveFooter);
+        editTextMaskEnforce = findViewById(R.id.editTextMaskEnforce);
         radioYesWaveImage = findViewById(R.id.radio_yes_wave_image);
         radioNoWaveImage = findViewById(R.id.radio_no_wave_image);
         tvWaveImage = findViewById(R.id.tv_wave_image);
@@ -105,6 +106,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         getFlowListAPI();
 
         editTextWaveFooter.setText(sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, getResources().getString(R.string.bottom_text)));
+        editTextMaskEnforce.setText(sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, getResources().getString(R.string.wear_a_mask)));
 
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +115,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
                     GestureController.getInstance().clearQuestionAnswerMap();
                 }
                 Util.writeString(sharedPreferences,GlobalParameters.WAVE_INDICATOR,editTextWaveFooter.getText().toString());
+                Util.writeString(sharedPreferences,GlobalParameters.MASK_ENFORCE_INDICATOR,editTextMaskEnforce.getText().toString());
                 finish();
             }
         });
