@@ -71,6 +71,7 @@ public class AppSettings {
     private static boolean printLabelWaveAnswers = false;
     private static String editTextNameLabel = "";
     private static boolean maskEnforced = false;
+    private static String maskEnforceMessage = "";
     private static boolean waveImage = false;
 
     public static AppSettings getInstance() {
@@ -144,6 +145,8 @@ public class AppSettings {
         printLabelUnidentifiedName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false);
         editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
         maskEnforced = sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT, false);
+        maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, StringConstants.MASK_ENFORCE_MESSAGE);
+
         waveImage = sharedPreferences.getBoolean(GlobalParameters.WAVE_IMAGE,false);
     }
 
@@ -395,6 +398,9 @@ public class AppSettings {
         return maskEnforced;
     }
 
+    public static String getMaskEnforceMessage() {
+        return maskEnforceMessage;
+    }
     public static boolean isWaveImage() {
         return waveImage;
     }

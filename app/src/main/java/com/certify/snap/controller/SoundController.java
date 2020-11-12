@@ -14,9 +14,7 @@ import com.certify.snap.common.Util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -104,6 +102,52 @@ public class SoundController {
         startTimer();
         if (AppSettings.isQrSoundInvalid()) {
             Util.qrSoundPool(context, soundPool, false);
+        }
+    }
+
+    /**
+     * Method that initiates playing on granting access to door
+     */
+    public void playAccessGrantedSound() {
+        if (soundPool == null) return;
+        try {
+            File file = new File(Environment.getExternalStorageDirectory() + "/Audio/MatchingSuccess.mp3");
+            if (file.exists()) {
+                soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/MatchingSuccess.mp3", 1);
+                soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                    int lastStreamId = -1;
+                    @Override
+                    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                        //soundPool.release();
+                        lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in playing the access sound" + e.getMessage());
+        }
+    }
+
+    /**
+     * Method that initiates playing of the valid QrCode sound
+     */
+    public void playAccessDeniedSound() {
+        if (soundPool == null) return;
+        try {
+            File file = new File(Environment.getExternalStorageDirectory() + "/Audio/MatchingFailed.mp3");
+            if (file.exists()) {
+                soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/MatchingFailed.mp3", 1);
+                soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                    int lastStreamId = -1;
+                    @Override
+                    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                        //soundPool.release();
+                        lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in playing the access sound" + e.getMessage());
         }
     }
 
