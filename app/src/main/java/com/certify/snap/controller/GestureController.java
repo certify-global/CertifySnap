@@ -29,6 +29,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.view.voicebar.Extensions;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -206,8 +207,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
         speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.getPackageName());
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 120000);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, Extensions.MAX_VOICE_RESULTS);
+        speechRecognizer.startListening(speechRecognizerIntent);
 
         // Initializing the audio Manager
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -716,6 +721,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
+        if (audioManager != null)
         audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0);
     }
 }
