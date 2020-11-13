@@ -1531,7 +1531,7 @@ public class Util {
                     String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
                     String showWaveProgress = touchlessInteractionSettings.isNull("showWaveProgress") ? "0" : touchlessInteractionSettings.getString("showWaveProgress");
                     String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? StringConstants.GESTURE_MESSAGE : touchlessInteractionSettings.getString("waveIndicatorInstructions");
-                    String waveImage = touchlessInteractionSettings.isNull("showWaveImage") ? "0" : touchlessInteractionSettings.getString("showWaveImage");
+                    String showWaveImage = touchlessInteractionSettings.isNull("showWaveImage") ? "0" : touchlessInteractionSettings.getString("showWaveImage");
                     Log.d("CertifyXT flow", settingsID);
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
@@ -1541,7 +1541,7 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, showWaveProgress.equals("1"));
                     Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, waveInstructions);
-                    Util.writeBoolean(sharedPreferences,GlobalParameters.WAVE_IMAGE, waveImage.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, showWaveImage.equals("1"));
                 }
 
 

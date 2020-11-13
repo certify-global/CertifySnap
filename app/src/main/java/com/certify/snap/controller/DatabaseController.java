@@ -3,6 +3,7 @@ package com.certify.snap.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 
 import com.certify.snap.common.Application;
@@ -11,6 +12,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.database.secureDB.SQLCipherUtils;
+import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -397,6 +399,8 @@ public class DatabaseController {
             databaseStore.deleteAll();
             databaseStore.deleteAllOfflineRecord();
             databaseStore.deleteAllOfflineAccessLogRecords();
+            deleteMemberData();
+            FaceServer.getInstance().clearAllFaces(mContext);
         }
     }
 
@@ -428,5 +432,15 @@ public class DatabaseController {
                 fileDbWal.delete();
             }
         }
+    }
+
+    private void deleteMemberData() {
+        String path = Environment.getExternalStorageDirectory() + "/pic";
+        File file = new File(path);
+        String[] children = file.list();
+        for (String child : children) {
+            new File(file, child).delete();
+        }
+        file.delete();
     }
 }
