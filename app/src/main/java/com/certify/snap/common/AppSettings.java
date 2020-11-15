@@ -90,7 +90,7 @@ public class AppSettings {
         allowLow = sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false);
         tempTestLow = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
         fToC = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
-        temperatureThreshold = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
+        temperatureThreshold = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
         guideScreen = sharedPreferences.getBoolean(GlobalParameters.GUIDE_SCREEN, true);
         guideText1 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, context.getString(R.string.text_value1));
         guideText2 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, context.getString(R.string.text_value2));
