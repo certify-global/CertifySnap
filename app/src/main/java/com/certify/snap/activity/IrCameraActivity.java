@@ -2353,7 +2353,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        if (cardId.isEmpty()) return;
+        if (cardId.isEmpty() || isTopFragmentGesture()) return;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (accessCardController.isDoMemberMatch()) {
@@ -3383,38 +3383,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
             if (TemperatureController.getInstance().isTemperatureAboveThreshold(TemperatureController.getInstance().getTemperature())) {
-                if (confirmAboveScreen) {
-                    runOnUiThread(() -> {
-                        if (isDestroyed()) return;
-                        launchConfirmationFragment(false);
-                        if (isHomeViewEnabled) {
-                            pauseCameraScan();
-                        } else {
-                            isReadyToScan = false;
-                        }
-                        resetHomeScreen();
-                    });
-                    compareResultList.clear();
-                } else {
-                    ShowLauncherView();
-                }
+                updateUIOnPrint(confirmAboveScreen);
                 return;
             }
-            if (confirmBelowScreen) {
-                runOnUiThread(() -> {
-                    if (isDestroyed()) return;
-                    launchConfirmationFragment(false);
-                    if (isHomeViewEnabled) {
-                        pauseCameraScan();
-                    } else {
-                        isReadyToScan = false;
-                    }
-                    resetHomeScreen();
-                });
-                compareResultList.clear();
-            } else {
-                ShowLauncherView();
-            }
+            updateUIOnPrint(confirmBelowScreen);
         });
     }
 
@@ -3606,6 +3578,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onGestureDetected() {
         runOnUiThread(() -> {
+            if ((relative_main.getVisibility() == View.GONE) ||
+                    AccessCardController.getInstance().getTapCount() != 0) return;
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
@@ -3735,5 +3709,30 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resetMaskEnforcementGesture() {
         resetMaskEnforceStatus();
         resetGesture();
+    }
+
+    private void updateUIOnPrint(boolean displayCScreen) {
+        if (displayCScreen) {
+            if (isDestroyed()) return;
+            launchConfirmationFragment(false);
+            if (isHomeViewEnabled) {
+                pauseCameraScan();
+            } else {
+                isReadyToScan = false;
+            }
+            resetHomeScreen();
+            compareResultList.clear();
+        } else {
+            ShowLauncherView();
+        }
+    }
+
+    private boolean isTopFragmentGesture() {
+        boolean result = false;
+        Fragment fragment = getFragmentManager().findFragmentByTag("GestureFragment");
+        if (fragment != null && fragment.isVisible()) {
+            result = true;
+        }
+        return result;
     }
 }
