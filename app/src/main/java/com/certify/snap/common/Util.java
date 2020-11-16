@@ -774,7 +774,7 @@ public class Util {
                 Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
                 return;
             }
-            if (!isValidInstitutionId(context)) return;
+            if (!isInstitutionIdValid(context)) return;
             SharedPreferences sp = Util.getSharedPreferences(context);
             JSONObject obj = new JSONObject();
             obj.put("deviceId", Util.getSerialNumber());
@@ -2296,17 +2296,16 @@ public class Util {
         return result;
     }
 
-    public static boolean isValidInstitutionId(Context context) {
-        boolean result = true;
+    public static boolean isInstitutionIdValid(Context context) {
+        boolean result = false;
         SharedPreferences sp = Util.getSharedPreferences(context);
         String institutionId = sp.getString(GlobalParameters.INSTITUTION_ID, "");
-        if (institutionId != null) {
-            if (institutionId.isEmpty()) {
-                result = false;
-            }
+        if (institutionId != null && !institutionId.isEmpty()) {
             long institutionIdVal = Long.parseLong(institutionId);
-            if (institutionIdVal == 0) {
-                result = false;
+            if (institutionIdVal > 0) {
+                result = true;
+            } else {
+                Log.e(LOG, "Institution Id is 0");
             }
         }
         return result;

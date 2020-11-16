@@ -437,10 +437,12 @@ public class DatabaseController {
     private void deleteMemberData() {
         String path = Environment.getExternalStorageDirectory() + "/pic";
         File file = new File(path);
-        String[] children = file.list();
-        for (String child : children) {
-            new File(file, child).delete();
+        if (file.isDirectory() && file.exists()) {
+            String[] children = file.list();
+            for (String child : children) {
+                new File(file, child).delete();
+            }
+            file.delete();
         }
-        file.delete();
     }
 }
