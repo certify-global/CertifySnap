@@ -3245,20 +3245,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");
                 answers = answers.replace("]", "");
-                if(AppSettings.isPrintLabelWaveAnswers()){
+
+                if (AppSettings.isPrintLabelWaveAnswers()) {
                     answers = answers.replace("Y", "1");
                     answers = answers.replace("N", "0");
+                    int numOfQ = GestureController.getInstance().getQuestionsSize();
+                    int tempValue = 0;
+                    String tempValueStr = "";
+                    if (highTemperature) {
+                        if (AppSettings.isPrintLabelHighTemperature()) {
+                            tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
+                            tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
+                        }
+                    } else {
+                        if (AppSettings.isPrintLabelNormalTemperature()) {
+                            tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
+                            tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
+                        }
+                    }
+                    thermalText = answers + " " + tempValueStr;
                 }
-                int numOfQ = GestureController.getInstance().getQuestionsSize();
-                int tempValue = 0;
-                String tempValueStr = "";
-                if (AppSettings.isPrintLabelNormalTemperature()) {
-                    tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
-                    tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
-                }
-
-                thermalText = answers + " " + tempValueStr;
-
             }
         } else {
             if (AppSettings.isPrintAllScan()) {
@@ -3376,7 +3382,25 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
-            if (confirmBelowScreen || confirmAboveScreen) {
+            if (TemperatureController.getInstance().isTemperatureAboveThreshold(TemperatureController.getInstance().getTemperature())) {
+                if (confirmAboveScreen) {
+                    runOnUiThread(() -> {
+                        if (isDestroyed()) return;
+                        launchConfirmationFragment(false);
+                        if (isHomeViewEnabled) {
+                            pauseCameraScan();
+                        } else {
+                            isReadyToScan = false;
+                        }
+                        resetHomeScreen();
+                    });
+                    compareResultList.clear();
+                } else {
+                    ShowLauncherView();
+                }
+                return;
+            }
+            if (confirmBelowScreen) {
                 runOnUiThread(() -> {
                     if (isDestroyed()) return;
                     launchConfirmationFragment(false);

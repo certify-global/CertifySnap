@@ -326,6 +326,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void sendAccessLogValid(Context context, float temperature, UserExportedData data) {
+        if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         RegisteredMembers registeredMember = new RegisteredMembers();
         if (AppSettings.isAccessLogEnabled() &&
@@ -415,6 +416,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void sendAccessLogInvalid(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
+        if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         if (AppSettings.isAccessLogEnabled() &&
                 (AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {

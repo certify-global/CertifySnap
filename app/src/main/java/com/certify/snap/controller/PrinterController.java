@@ -141,7 +141,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void printOnHighTemperature() {
-        if (AppSettings.isPrintHighTemperatureUsers()) {
+        if (AppSettings.isPrintHighTemperatureUsers() || AppSettings.isPrintWaveUsers()) {
             new Thread(() -> {
                 if (AppSettings.isEnablePrinter()) {
                     print();
