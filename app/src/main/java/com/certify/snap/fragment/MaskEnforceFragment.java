@@ -64,7 +64,7 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
     }
 
     @Override
-    public void onLeftHandWave() {
+    public void onMaskEnforceYes() {
         if (mActivity != null) {
             mActivity.runOnUiThread(() -> {
                 mActivity.getFragmentManager().beginTransaction().remove(MaskEnforceFragment.this).commitAllowingStateLoss();

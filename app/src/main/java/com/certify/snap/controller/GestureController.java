@@ -95,7 +95,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public interface GestureMECallbackListener {
         void onGestureMEDetected();
-        void onLeftHandWave();
+        void onMaskEnforceYes();
     }
 
     public static GestureController getInstance() {
@@ -263,6 +263,18 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 Log.d(TAG, "Voice onResults");
                 ArrayList<String> data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 if (data != null && data.size() > 0) {
+                    if (data.get(0).toLowerCase().equals("yes") &&
+                            gestureMEListener != null && !isMECallback) {
+                        isMECallback = true;
+                        gestureMEListener.onMaskEnforceYes();
+                        return;
+                    }
+                    if (data.get(0).toLowerCase().equals("no") &&
+                            gestureMEListener != null && !isMECallback) {
+                        isMECallback = true;
+                        gestureMEListener.onGestureMEDetected();
+                        return;
+                    }
                     if (data.get(0).toLowerCase().equals("yes")
                             || data.get(0).toLowerCase().equals("no")) {
                         onQuestionAnswered(data.get(0).toLowerCase());
@@ -465,7 +477,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (gestureMEListener != null && !isMECallback) {
             Log.d(TAG, "Right Hand wave");
             isMECallback = true;
-            gestureMEListener.onLeftHandWave();
+            gestureMEListener.onMaskEnforceYes();
             return;
         }
         if (wait) {
