@@ -826,7 +826,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
-        if (AppSettings.isMaskEnforced() && !resumedFromGesture) return;
+        if (!isScanWithMaskEnforced()) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
@@ -1502,8 +1502,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
-            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan)
+            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan) {
                 return;
+            }
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -2169,6 +2170,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
         Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
+        if (!isScanWithMaskEnforced()) return;
         registeredMemberslist = null;
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
@@ -2356,6 +2358,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture()) return;
+        isReadyToScan = false;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (accessCardController.isDoMemberMatch()) {
@@ -2690,7 +2693,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         if ((!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) ||
-             AppSettings.isMaskEnforced()) {
+                (AppSettings.isMaskEnforced() && GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
             return;
         }
         checkDeviceMode();
@@ -3719,10 +3722,23 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    private boolean isScanWithMaskEnforced() {
+        boolean result = true;
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()
+                && AppSettings.isMaskEnforced() && !resumedFromGesture
+                && triggerType.equals(CameraController.triggerValue.CAMERA.toString())) {
+            result = false;
+        }
+        return result;
+    }
+
     private boolean isTopFragmentGesture() {
         boolean result = false;
-        Fragment fragment = getFragmentManager().findFragmentByTag("GestureFragment");
-        if (fragment != null && fragment.isVisible()) {
+        Fragment gFragment = getFragmentManager().findFragmentByTag("GestureFragment");
+        Fragment mFragment = getFragmentManager().findFragmentByTag("MaskEnforceFragment");
+        if ((gFragment != null && gFragment.isVisible()) ||
+                mFragment != null && mFragment.isVisible()) {
             result = true;
         }
         return result;

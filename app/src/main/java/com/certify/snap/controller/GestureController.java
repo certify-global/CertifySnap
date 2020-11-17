@@ -65,6 +65,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private Timer mQuestionsTimer;
     private GestureMECallbackListener gestureMEListener = null;
     private boolean isMECallback = false;
+    private boolean isGestureDeviceConnected = false;
 
     //Hand Gesture
     private UsbDevice usbReader = null;
@@ -129,6 +130,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.mContext = context;
         wait = false;
         sharedPreferences = Util.getSharedPreferences(mContext);
+        isGestureDeviceConnected = Util.isGestureDeviceConnected(context);
     }
 
     private void startGestureFlow() {
@@ -694,6 +696,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 initHandGesture();
             }
         }, 2000);
+    }
+
+    public boolean isGestureEnabledAndDeviceConnected() {
+        boolean result = false;
+        if (AppSettings.isEnableHandGesture() && isGestureDeviceConnected) {
+            result = true;
+        }
+        return result;
     }
 
     public void clearData() {
