@@ -83,7 +83,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
         void onAllQuestionsAnswered();
-        void onVoiceListeningStart();
         void onQuestionsReceived();
         void onQuestionsNotReceived();
         void onBothHandWave();
@@ -271,6 +270,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         if (gestureListener != null && !isCallback) {
                             isCallback = true;
                             gestureListener.onGestureDetected();
+                            startListening();
                         }
                     } else {
                         startListening();
@@ -299,11 +299,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         new Handler().postDelayed(() -> {
             if (speechRecognizer != null) {
                 speechRecognizer.startListening(speechRecognizerIntent);
-                if (listener != null) {
-                    listener.onVoiceListeningStart();
-                }
             }
-        }, 2000);
+        }, 500);
     }
 
     /**
@@ -709,6 +706,16 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 initHandGesture();
             }
         }, 2000);
+    }
+
+    public void clearVoice() {
+        if (speechRecognizer != null) {
+            speechRecognizer.stopListening();
+            speechRecognizer.destroy();
+        }
+        if (audioManager != null) {
+            audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0);
+        }
     }
 
     public void clearData() {

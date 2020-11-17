@@ -814,6 +814,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         PrinterController.getInstance().clearData();
+        GestureController.getInstance().clearVoice();
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
@@ -3574,7 +3575,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void checkPermission() {
         ActivityCompat.requestPermissions(IrCameraActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
     }
+
     public void resetGesture() {
+        runOnUiThread(() -> {
+            if (AppSettings.isEnableVoice()) {
+                GestureController.getInstance().startListening();
+            }
+        });
         GestureController.getInstance().setGestureHomeCallbackListener(this);
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
     }

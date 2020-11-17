@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;
@@ -255,13 +254,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 activity.resumeFromGesture();
             }
         });
-    }
-
-    @Override
-    public void onVoiceListeningStart() {
-        if (mActivity != null) {
-            mActivity.runOnUiThread(() -> mTimerView.start(8));
-        }
     }
 
     @Override
