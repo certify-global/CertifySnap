@@ -254,8 +254,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             public void onError(int i) {
                 Log.d(TAG, "Voice onError");
                 if (allQuestionAnswered) {
-                    stopListening();
-                    return;
+                    //stopListening();
                 }
                 startListening();
             }
@@ -272,8 +271,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         if (gestureListener != null && !isCallback) {
                             isCallback = true;
                             gestureListener.onGestureDetected();
-                    }
-                    }else {
+                        }
+                    } else {
                         startListening();
                     }
                 } else {
@@ -713,15 +712,15 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public void clearData() {
-        if (speechRecognizer != null) {
+        /*if (speechRecognizer != null) {
             speechRecognizer.stopListening();
             speechRecognizer.destroy();
-        }
+        }*/
         listener = null;
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
-        if (audioManager != null)
-        audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0);
+        /*if (audioManager != null)
+            audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION, AudioManager.ADJUST_UNMUTE, 0);*/
     }
 }

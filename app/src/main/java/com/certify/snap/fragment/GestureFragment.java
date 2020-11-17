@@ -159,8 +159,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         q7image5 = view.findViewById(R.id.sevenQ_image5);
         q7image6 = view.findViewById(R.id.sevenQ_image6);
         q7image7 = view.findViewById(R.id.sevenQ_image7);
-        handYesImage = view.findViewById(R.id.hand_yes_iv);
-        handNoImage = view.findViewById(R.id.hand_no_iv);
+        handYesImage = view.findViewById(R.id.hand_yes_button);
+        handNoImage = view.findViewById(R.id.hand_no_button);
         recognitionProgressView = view.findViewById(R.id.recognitionProgressView);
 
 
@@ -266,10 +266,11 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     @Override
     public void onQuestionsReceived() {
-        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture() && !Util.isGestureDeviceConnected(getContext()))
-        uiUpdate(true);
-        else
+        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture()) {
+            uiUpdate(true);
+        } else {
             uiUpdate(false);
+        }
         if (mActivity != null) {
             mActivity.runOnUiThread(() -> {
                 if (progressDialog != null && progressDialog.isShowing()) {
@@ -542,7 +543,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     public void handleVoiceHandWaveGesture() {
-        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture() && !Util.isGestureDeviceConnected(getContext())) {
+        if (AppSettings.isEnableVoice() && !AppSettings.isEnableHandGesture()) {
             handYesText.setVisibility(View.GONE);
             handNoText.setVisibility(View.GONE);
             uiUpdate(true);
@@ -553,7 +554,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             uiUpdate(false);
             waveImage(false);
         }
-        handleQuestionnaireByVoice();
     }
 
 }

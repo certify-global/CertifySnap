@@ -1500,8 +1500,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
-            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan)
+            if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) && !isReadyToScan) {
                 return;
+            }
             processPreviewData(nv21);
             runOnUiThread(new Runnable() {
                 @Override
@@ -2807,8 +2808,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tvFaceMessage.setVisibility(View.GONE);
         });
         clearData();
-        if (AppSettings.isEnableHandGesture()) {
-            if (Util.isGestureDeviceConnected(this)) {
+        if (AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
+            if (Util.isGestureDeviceConnected(this) || AppSettings.isEnableVoice()) {
                 if (AppSettings.isMaskEnforced()) {
                     resetMaskEnforceStatus();
                 } else {
@@ -3549,7 +3550,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             GestureController.getInstance().startListening();
         }
         if (AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
-            if (Util.isGestureDeviceConnected(this) || AppSettings.isEnableVoice()) {
+            boolean isGDeviceConnected = Util.isGestureDeviceConnected(this);
+            if (AppSettings.isEnableHandGesture() && !isGDeviceConnected) {
+                runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
+            }
+            if (isGDeviceConnected || AppSettings.isEnableVoice()) {
                 if (AppSettings.isMaskEnforced()) {
                     isReadyToScan = true;
                 } else {
@@ -3560,7 +3565,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
                 return;
             }
-            runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
             return;
         }
         GestureController.getInstance().checkGestureStatus();
