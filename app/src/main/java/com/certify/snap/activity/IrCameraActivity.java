@@ -382,6 +382,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_thermal_subtitle.setTypeface(rubiklight);
 
         initView();
+        if (qrCodeEnable) {
+            isReadyToScan = false;
+        }
         initQRCode();
         String onlyTextMes = sharedPreferences.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, "");
         tvOnlyText.setText(onlyTextMes);
@@ -422,7 +425,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
-            if ((sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) == true) || (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) == true)) {
+            if ((sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false)) || (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false))) {
                 //Move the logo to the top
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -431,7 +434,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 frameLayout.setVisibility(View.VISIBLE);
                 //qrSkipButton.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
-                isReadyToScan = false;
                 qrSkipButton.setText(sharedPreferences.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
             } else {
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
@@ -825,7 +827,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             return;
         }
-        if (AppSettings.isMaskEnforced() && !resumedFromGesture) return;
+        if (!isScanWithMaskEnforced()) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             onTemperatureScanDisabled();
             return;
@@ -2169,6 +2171,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
         Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
+        if (!isScanWithMaskEnforced()) return;
         registeredMemberslist = null;
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
@@ -2356,6 +2359,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture()) return;
+        isReadyToScan = false;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (accessCardController.isDoMemberMatch()) {
@@ -2690,7 +2694,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         if ((!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) ||
-             AppSettings.isMaskEnforced()) {
+                (AppSettings.isMaskEnforced() && GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
             return;
         }
         checkDeviceMode();
@@ -3393,6 +3397,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchGestureFragment() {
+        if (isDestroyed()) return;
         gestureFragment = new GestureFragment();
         Bundle bundle = new Bundle();
         bundle.putString("maskStatus", String.valueOf(maskStatus));
@@ -3690,6 +3695,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchMaskEnforceFragment() {
+        if (isDestroyed()) return;
         maskEnforceFragment = new MaskEnforceFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.dynamic_fragment_frame_layout, maskEnforceFragment, "MaskEnforceFragment");
@@ -3738,10 +3744,23 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    private boolean isScanWithMaskEnforced() {
+        boolean result = true;
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()
+                && AppSettings.isMaskEnforced() && !resumedFromGesture
+                && triggerType.equals(CameraController.triggerValue.CAMERA.toString())) {
+            result = false;
+        }
+        return result;
+    }
+
     private boolean isTopFragmentGesture() {
         boolean result = false;
-        Fragment fragment = getFragmentManager().findFragmentByTag("GestureFragment");
-        if (fragment != null && fragment.isVisible()) {
+        Fragment gFragment = getFragmentManager().findFragmentByTag("GestureFragment");
+        Fragment mFragment = getFragmentManager().findFragmentByTag("MaskEnforceFragment");
+        if ((gFragment != null && gFragment.isVisible()) ||
+                mFragment != null && mFragment.isVisible()) {
             result = true;
         }
         return result;
