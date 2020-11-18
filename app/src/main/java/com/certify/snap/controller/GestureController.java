@@ -211,6 +211,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 120000);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, Extensions.MAX_VOICE_RESULTS);
+        speechRecognizerIntent.putExtra("android.speech.extra.DICTATION_MODE", true);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 500);
         speechRecognizer.startListening(speechRecognizerIntent);
 
         // Initializing the audio Manager
