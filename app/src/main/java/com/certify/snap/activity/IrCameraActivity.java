@@ -3388,10 +3388,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
             if (TemperatureController.getInstance().isTemperatureAboveThreshold(TemperatureController.getInstance().getTemperature())) {
-                updateUIOnPrint(confirmAboveScreen);
+                updateUIOnPrint(confirmAboveScreen, true);
                 return;
             }
-            updateUIOnPrint(confirmBelowScreen);
+            updateUIOnPrint(confirmBelowScreen, false);
         });
     }
 
@@ -3706,10 +3706,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resetGesture();
     }
 
-    private void updateUIOnPrint(boolean displayCScreen) {
+    private void updateUIOnPrint(boolean displayCScreen, boolean aboveThreshold) {
         if (displayCScreen) {
             if (isDestroyed()) return;
-            launchConfirmationFragment(false);
+            launchConfirmationFragment(aboveThreshold);
             if (isHomeViewEnabled) {
                 pauseCameraScan();
             } else {
