@@ -6,14 +6,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.brother.ptouch.sdk.NetPrinter;
 import com.brother.ptouch.sdk.Printer;
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
+import com.certify.snap.common.IpAddressValidator;
+import com.certify.snap.common.Util;
 import com.certify.snap.printer.Common;
 import com.certify.snap.view.PrinterMsgDialog;
 
@@ -27,6 +32,8 @@ public class PrinterWifiSettingsActivity extends ListActivity {
     private NetPrinter[] mNetPrinter; // array of storing Printer informations.
     private ArrayList<String> mItems = null; // List of storing the printer's
     private SearchThread searchPrinter;
+    private EditText printerIp, printerMac;
+    private TextView printerIpError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,34 +44,52 @@ public class PrinterWifiSettingsActivity extends ListActivity {
         modelName = extras.getString(Common.MODEL_NAME);
         setContentView(R.layout.activity_printer_wifi_settings);
 
+        printerIp = findViewById(R.id.edittext_printer_ip);
+        printerMac = findViewById(R.id.edittext_printer_mac);
+        printerIpError = findViewById(R.id.ip_input_error);
+
         Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                refreshButtonOnClick();
-
-            }
+        btnRefresh.setOnClickListener(view -> {
+            Util.hideSoftKeyboard(this);
+            setDialog();
+            // launch printer searching thread
+            searchPrinter = new SearchThread();
+            searchPrinter.start();
         });
-
 
         Button btPrinterSettings = (Button) findViewById(R.id.btPrinterSettings);
-        btPrinterSettings.setOnClickListener(new View.OnClickListener() {
+        btPrinterSettings.setOnClickListener(view -> {
+            settingsButtonOnClick();
+        });
+
+        Button addPrinter = (Button) findViewById(R.id.printer_add);
+        addPrinter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                settingsButtonOnClick();
-
+                if (printerIp.getText().toString().isEmpty() || printerMac.getText().toString().isEmpty() ||
+                        !IpAddressValidator.isValid(printerIp.getText().toString())) {
+                    printerIpError.setText("Please input a valid number");
+                    return;
+                }
+                updatePrinterSettings();
             }
         });
 
-
         // show searching dialog
-        setDialog();
+        //setDialog();
 
         // launch printer searching thread
-        searchPrinter = new SearchThread();
-        searchPrinter.start();
+       /* searchPrinter = new SearchThread();
+        searchPrinter.start();*/
 
         this.setTitle(R.string.netPrinterListTitle_label);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        this.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     /**
@@ -214,6 +239,15 @@ public class PrinterWifiSettingsActivity extends ListActivity {
             }
             msgDialog.close();
         }
+    }
+
+    private void updatePrinterSettings() {
+        final Intent settings = new Intent(this, PrinterWifiBTSettingsActivity.class);
+        settings.putExtra("ipAddress", printerIp.getText().toString());
+        settings.putExtra("printer", "Brother QL-820NWB");
+        settings.putExtra("macAddress", printerMac.getText().toString());
+        setResult(RESULT_OK, settings);
+        finish();
     }
 
     public void onParamterback(View view) {
