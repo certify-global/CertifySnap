@@ -61,8 +61,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            debuggable true
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "ENDPOINT_URL", "\"https://api.certify.me\""
         }
         qa {
