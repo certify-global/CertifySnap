@@ -29,4 +29,7 @@ public class QuestionData {
 
     @SerializedName("settingId")
     public int settingId;
+
+    @SerializedName("expectedOutcome")
+    public String expectedOutcome;
 }

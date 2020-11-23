@@ -493,4 +493,13 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         }
     }
 
+    @Override
+    public void onNegativeAnswer() {
+        mActivity.runOnUiThread(() -> {
+            IrCameraActivity activity = (IrCameraActivity) mActivity;
+            if (activity != null) {
+                activity.onGestureNegativeAnswer();
+            }
+        });
+    }
 }

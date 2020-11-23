@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.CameraController;
@@ -36,10 +37,11 @@ public class ConfirmationScreenFragment extends Fragment {
     private SharedPreferences sp;
     private String value = "";
     private long delayMilli = 0;
-    private String longVal;
+    private String longVal = "";
     private ImageView user_img;
     private CompareResult compareResultValues;
-    private String confirm_title, confirm_subtitle;
+    private String confirm_title = "";
+    private String confirm_subtitle = "";
     private int count = 1;
 
     @Override
@@ -68,18 +70,24 @@ public class ConfirmationScreenFragment extends Fragment {
         } else {
             onAccessCardMatch();
         }
-        if (value != null && value.equals("high")) {
-            confirm_title = sp.getString(GlobalParameters.Confirm_title_above, getResources().getString(R.string.confirmation_text_above));
-            confirm_subtitle = sp.getString(GlobalParameters.Confirm_subtitle_above, "");
-            longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1");
-            tv_title.setText(confirm_title);
-            tv_subtitle.setText(confirm_subtitle);
-        } else {
-            confirm_title = sp.getString(GlobalParameters.Confirm_title_below, getResources().getString(R.string.confirm_title_below));
-            confirm_subtitle = sp.getString(GlobalParameters.Confirm_subtitle_below, "");
-            longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1");
-            tv_title.setText(confirm_title);
-            tv_subtitle.setText(confirm_subtitle);
+        if (value != null) {
+            if (value.equals("high")) {
+                confirm_title = sp.getString(GlobalParameters.Confirm_title_above, getResources().getString(R.string.confirmation_text_above));
+                confirm_subtitle = sp.getString(GlobalParameters.Confirm_subtitle_above, "");
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1");
+                tv_title.setText(confirm_title);
+                tv_subtitle.setText(confirm_subtitle);
+            } else if (value.equals("gestureExit")) {
+                confirm_title = AppSettings.getGestureExitConfirmText();
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1");
+                tv_title.setText(confirm_title);
+            } else {
+                confirm_title = sp.getString(GlobalParameters.Confirm_title_below, getResources().getString(R.string.confirm_title_below));
+                confirm_subtitle = sp.getString(GlobalParameters.Confirm_subtitle_below, "");
+                longVal = sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1");
+                tv_title.setText(confirm_title);
+                tv_subtitle.setText(confirm_subtitle);
+            }
         }
 
         tv_title.setTypeface(rubiklight);

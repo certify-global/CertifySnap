@@ -511,5 +511,8 @@
     <string name="wear_a_mask">"Please wear a mask and Wave Left Hand to start over or else Wave Right Hand to continue"</string>
     <string name="access_control_granted">Access Granted</string>
     <string name="access_control_denied">Access Denied!</string>
+    <string name="gesture_exit_title">Exit on negative outcome</string>
+    <string name="gesture_exit_default">Please contact Admin</string>
+    <string name="gesture_exit_hint">Message to display on exit of negative outcome</string>
 
 </resources>

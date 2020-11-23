@@ -152,6 +152,70 @@
         android:layout_marginLeft="@dimen/size_20"
         android:layout_marginTop="@dimen/size_15" />
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/gesture_exit_op"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_20"
+            android:layout_marginTop="@dimen/size_15"
+            android:text="@string/gesture_exit_title"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_18" />
+
+        <RadioGroup
+            android:id="@+id/gesture_exit_rg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_20"
+            android:layout_marginTop="@dimen/size_05"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/gesture_exit_rb_yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size_30"
+                android:text="@string/living_type_1"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
+
+            <RadioButton
+                android:id="@+id/gesture_exit_rb_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/living_type_0"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
+
+        </RadioGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/gesture_exit_text_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/gesture_exit_text"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/edittextbackground"
+                android:hint="@string/gesture_exit_hint"
+                android:paddingLeft="05dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

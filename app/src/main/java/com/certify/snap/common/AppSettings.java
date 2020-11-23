@@ -2,7 +2,6 @@ package com.certify.snap.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.Settings;
 
 import com.certify.snap.R;
 
@@ -72,6 +71,8 @@ public class AppSettings {
     private static String editTextNameLabel = "";
     private static boolean maskEnforced = false;
     private static String maskEnforceMessage = "";
+    private static boolean gestureExitOnNegativeOp = false;
+    private static String gestureExitConfirmText = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -145,7 +146,8 @@ public class AppSettings {
         editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
         maskEnforced = sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT, false);
         maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, StringConstants.MASK_ENFORCE_MESSAGE);
-
+        gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
+        gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, StringConstants.GESTURE_EXIT_MESSAGE);
     }
 
     public static String getThermalScanTitle() {
@@ -398,5 +400,13 @@ public class AppSettings {
 
     public static String getMaskEnforceMessage() {
         return maskEnforceMessage;
+    }
+
+    public static boolean isGestureExitOnNegativeOp() {
+        return gestureExitOnNegativeOp;
+    }
+
+    public static String getGestureExitConfirmText() {
+        return gestureExitConfirmText;
     }
 }

@@ -1687,7 +1687,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         if (confirmAboveScreen || confirmBelowScreen) {
                             runOnUiThread(() -> {
                                 if (isDestroyed()) return;
-                                launchConfirmationFragment(aboveThreshold);
+                                launchConfirmationFragment(String.valueOf(aboveThreshold));
                                 if (isHomeViewEnabled) {
                                     pauseCameraScan();
                                 } else {
@@ -2779,10 +2779,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private void launchConfirmationFragment(boolean aboveThreshold) {
+    private void launchConfirmationFragment(String value) {
         Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("tempVal", aboveThreshold ? "high" : "");
+        bundle.putString("tempVal", value);
         confirmationScreenFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.dynamic_fragment_frame_layout, confirmationScreenFragment, "ConfirmationScreenFragment");
@@ -3581,6 +3581,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
     }
 
+    public void onGestureNegativeAnswer() {
+        resumedFromGesture = true;
+        runOnUiThread(() -> {
+            resetGesture();
+            int delay = 500;
+            new Handler().postDelayed(this::closeGestureFragment, delay);
+            boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
+            boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
+            if (confirmAboveScreen || confirmBelowScreen) {
+                launchConfirmationFragment("gestureExit");
+                if (isHomeViewEnabled) {
+                    pauseCameraScan();
+                } else {
+                    isReadyToScan = false;
+                }
+                resetHomeScreen();
+            } else {
+                ShowLauncherView();
+            }
+        });
+    }
+
     @Override
     public void onGestureDetected() {
         runOnUiThread(() -> {
@@ -3634,7 +3656,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void onTemperatureScanDisabled() {
         disableLedPower();
         TemperatureController.getInstance().updateControllersOnTempScanDisabled(registeredMemberslist);
-        launchConfirmationFragment(false);
+        launchConfirmationFragment(String.valueOf(false));
         if (isHomeViewEnabled) {
             pauseCameraScan();
         }
@@ -3721,7 +3743,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void updateUIOnPrint(boolean displayCScreen, boolean aboveThreshold) {
         if (displayCScreen) {
             if (isDestroyed()) return;
-            launchConfirmationFragment(aboveThreshold);
+            launchConfirmationFragment(String.valueOf(aboveThreshold));
             if (isHomeViewEnabled) {
                 pauseCameraScan();
             } else {

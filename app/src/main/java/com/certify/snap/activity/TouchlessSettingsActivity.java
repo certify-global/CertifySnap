@@ -24,6 +24,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.GestureController;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,16 +34,17 @@ import java.util.HashMap;
 
 public class TouchlessSettingsActivity extends SettingsBaseActivity implements FlowListCallback {
     public static String TAG = "GestureActivity";
-    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition,enable_progress_bar,btn_save, tvWaveImage;
-    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice,radio_group_progress, radioGroupWaveImage;
+    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition,enable_progress_bar,btn_save, tvWaveImage, gestureExitTv;
+    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice,radio_group_progress, radioGroupWaveImage, gestureExitRg;
     Spinner spinnerQuestionSelector;
     RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesMask, radioNoMask,
-            radioYesVoice, radioNoVoice,radio_yes_progress,radio_no_progress, radioYesWaveImage, radioNoWaveImage;
+            radioYesVoice, radioNoVoice,radio_yes_progress,radio_no_progress, radioYesWaveImage, radioNoWaveImage, gestureExitRbYes, gestureExitRbNo;
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
-    private EditText editTextWaveFooter, editTextMaskEnforce;
+    private EditText editTextWaveFooter, editTextMaskEnforce, editGestureExitMsg;
     private String gestureWorkFlow = "";
+    private TextInputLayout maskEditLayout, gestureExitLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         voiceRecognitionCheck();
         progressbarCheck();
         waveImageCheck();
+        gestureExitCheck();
     }
 
     private void initView() {
@@ -64,6 +67,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         enableMask = findViewById(R.id.enable_mask_enforcement);
         enableVoiceRecognition = findViewById(R.id.enable_voice_recognition);
         spinnerQuestionSelector = findViewById(R.id.spinner_question_selector);
+        gestureExitTv = findViewById(R.id.gesture_exit_op);
+        editGestureExitMsg = findViewById(R.id.gesture_exit_text);
+        maskEditLayout = findViewById(R.id.text_input_mask_enforce);
+        gestureExitLayout = findViewById(R.id.gesture_exit_text_input);
 
         radioGroupWave = findViewById(R.id.radio_group_wave);
         radioYesWave = findViewById(R.id.radio_yes_wave);
@@ -76,6 +83,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         radioGroupMask = findViewById(R.id.radio_group_mask_enforcement);
         radioYesMask = findViewById(R.id.radio_yes_mask_enforcement);
         radioNoMask = findViewById(R.id.radio_no_mask_enforcement);
+
+        gestureExitRg = findViewById(R.id.gesture_exit_rg);
+        gestureExitRbYes = findViewById(R.id.gesture_exit_rb_yes);
+        gestureExitRbNo = findViewById(R.id.gesture_exit_rb_no);
 
         radioGroupVoice = findViewById(R.id.radio_group_voice_recognition);
         radioYesVoice = findViewById(R.id.radio_yes_voice_recognition);
@@ -101,23 +112,24 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         enableMask.setTypeface(rubikLight);
         enable_progress_bar.setTypeface(rubikLight);
         tvWaveImage.setTypeface(rubikLight);
+        gestureExitTv.setTypeface(rubikLight);
+
         sharedPreferences = Util.getSharedPreferences(this);
         gestureWorkFlow = AppSettings.getGestureWorkFlow();
         getFlowListAPI();
 
         editTextWaveFooter.setText(sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, getResources().getString(R.string.bottom_text)));
         editTextMaskEnforce.setText(sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, getResources().getString(R.string.wear_a_mask)));
+        editGestureExitMsg.setText(sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, getString(R.string.gesture_exit_default)));
 
-        btn_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!gestureWorkFlow.isEmpty() && !gestureWorkFlow.equals(sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""))) {
-                    GestureController.getInstance().clearQuestionAnswerMap();
-                }
-                Util.writeString(sharedPreferences,GlobalParameters.WAVE_INDICATOR,editTextWaveFooter.getText().toString());
-                Util.writeString(sharedPreferences,GlobalParameters.MASK_ENFORCE_INDICATOR,editTextMaskEnforce.getText().toString());
-                finish();
+        btn_save.setOnClickListener(v -> {
+            if (!gestureWorkFlow.isEmpty() && !gestureWorkFlow.equals(sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""))) {
+                GestureController.getInstance().clearQuestionAnswerMap();
             }
+            Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, editTextWaveFooter.getText().toString());
+            Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, editTextMaskEnforce.getText().toString());
+            Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, editGestureExitMsg.getText().toString());
+            finish();
         });
     }
 
@@ -126,13 +138,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             radioYesWave.setChecked(true);
         else radioNoWave.setChecked(true);
 
-        radioGroupWave.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_wave)
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, true);
-                else Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, false);
-            }
+        radioGroupWave.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId==R.id.radio_yes_wave)
+                Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, true);
+            else Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, false);
         });
     }
 
@@ -141,28 +150,29 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             radioYesWaveQuestions.setChecked(true);
         else radioNoWaveQuestions.setChecked(true);
 
-        radioGroupQuestions.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_wave_questions)
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, true);
-                else Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, false);
-            }
+        radioGroupQuestions.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId==R.id.radio_yes_wave_questions)
+                Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, true);
+            else Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, false);
         });
     }
 
-    private void maskEnforcementCheck(){
-
-        if(sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT,false))
+    private void maskEnforcementCheck() {
+        if (sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT,false)) {
             radioYesMask.setChecked(true);
-        else radioNoMask.setChecked(true);
+            maskEditLayout.setVisibility(View.VISIBLE);
+        } else {
+            radioNoMask.setChecked(true);
+            maskEditLayout.setVisibility(View.GONE);
+        }
 
-        radioGroupMask.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_mask_enforcement)
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, true);
-                else Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, false);
+        radioGroupMask.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId==R.id.radio_yes_mask_enforcement) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, true);
+                maskEditLayout.setVisibility(View.VISIBLE);
+            } else {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, false);
+                maskEditLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -173,13 +183,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             radioYesVoice.setChecked(true);
         else radioNoVoice.setChecked(true);
 
-        radioGroupVoice.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_voice_recognition)
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, true);
-                else Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, false);
-            }
+        radioGroupVoice.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId==R.id.radio_yes_voice_recognition)
+                Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, true);
+            else Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, false);
         });
     }
 
@@ -188,13 +195,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             radio_yes_progress.setChecked(true);
         else radio_no_progress.setChecked(true);
 
-        radio_group_progress.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_progress)
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, true);
-                else Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, false);
-            }
+        radio_group_progress.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId==R.id.radio_yes_progress)
+                Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, true);
+            else Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, false);
         });
     }
 
@@ -209,6 +213,26 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
                 if(checkedId==R.id.radio_yes_wave_image)
                     Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, true);
                 else Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, false);
+            }
+        });
+    }
+
+    private void gestureExitCheck() {
+        if (sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP,false)) {
+            gestureExitRbYes.setChecked(true);
+            gestureExitLayout.setVisibility(View.VISIBLE);
+        } else {
+            gestureExitRbNo.setChecked(true);
+            gestureExitLayout.setVisibility(View.GONE);
+        }
+
+        gestureExitRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.gesture_exit_rb_yes) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, true);
+                gestureExitLayout.setVisibility(View.VISIBLE);
+            } else {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
+                gestureExitLayout.setVisibility(View.GONE);
             }
         });
     }
