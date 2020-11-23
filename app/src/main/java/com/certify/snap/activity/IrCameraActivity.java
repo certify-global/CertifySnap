@@ -256,6 +256,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private String mNfcIdString = "";
     private Toast mToastbar;
     private Toast toastmSnackbar;
+    private Float temperature;
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
@@ -2735,6 +2736,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         compareResultList.clear();
         resetMaskStatus();
         mFaceMatchRetry = 0;
+        temperature = 0f;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.CAMERA.toString());
         clearLeftFace(null);
         TemperatureController.getInstance().setTemperatureRetry(0);
@@ -3026,6 +3028,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onTemperatureRead(float temperature) {
         TemperatureController.getInstance().setTemperatureRetry(0);
+        this.temperature = temperature;
         if (PrinterController.getInstance().isPrintScan()) {
             updatePrintOnTemperatureRead(temperature);
             return;
@@ -3038,6 +3041,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
                 float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
                 String tempRead = String.valueOf(tempValue);
+                if (TemperatureController.getInstance().isTemperatureAboveThreshold(tempValue)) {
+                    text = AppSettings.getTempResultBarHigh() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
+                    TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+                    TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
+                    TemperatureController.getInstance().clearData();
+                    isLowTempRead = false;
+                    return;
+                }
                 text = AppSettings.getTempResultBarNormal() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
             } else {
                 text = AppSettings.getTempResultBarNormal() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
@@ -3118,6 +3129,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onTemperatureLow(int retryCount, float temperature) {
+        this.temperature = temperature;
         if (TemperatureController.getInstance().getTemperatureRetry() == Constants.TEMPERATURE_MAX_RETRY) {
             TemperatureController.getInstance().setTemperatureRetry(0);
             if (temperature < MIN_TEMP_DISPLAY_THRESHOLD && (AppSettings.getScanType() != 1)) {
@@ -3387,7 +3399,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
-            if (TemperatureController.getInstance().isTemperatureAboveThreshold(TemperatureController.getInstance().getTemperature())) {
+            if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
                 updateUIOnPrint(confirmAboveScreen, true);
                 return;
             }
