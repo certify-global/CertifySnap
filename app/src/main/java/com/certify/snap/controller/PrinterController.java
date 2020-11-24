@@ -141,7 +141,9 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void printOnHighTemperature() {
-        if (AppSettings.isPrintHighTemperatureUsers() || AppSettings.isPrintWaveUsers()) {
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (AppSettings.isPrintHighTemperatureUsers() || (AppSettings.isPrintWaveUsers()
+            && triggerType.equals(CameraController.triggerValue.WAVE.toString()))) {
             new Thread(() -> {
                 if (AppSettings.isEnablePrinter()) {
                     print();
@@ -303,7 +305,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
             labelItemList.put( "Name",  "Name:" );
             labelItemList.put( "Name Data",  name );
             labelItemList.put( "TimeScan Data",  dateTime );
-            if (!highTemperature && name.isEmpty()) {
+            if (!highTemperature) {
                 labelItemList.put("Status Data", "PASS");
             } else {
                 labelItemList.put("Status Data", "");
