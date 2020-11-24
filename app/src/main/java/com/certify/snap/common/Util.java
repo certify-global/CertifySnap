@@ -1523,7 +1523,7 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, printNormalTemperature.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, printHighTemperature.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printWaveAnswers.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printIndicatorForQR.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, printIndicatorForQR.equals("1"));
                     Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, defaultBottomBarText);
                     Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, defaultResultPrint);
 
