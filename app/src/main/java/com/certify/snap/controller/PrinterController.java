@@ -303,7 +303,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
             labelItemList.put( "Name",  nameTitle );
             labelItemList.put( "Name Data",  name );
             labelItemList.put( "TimeScan Data",  dateTime );
-            if (!highTemperature && name.isEmpty()) {
+            if (!highTemperature) {
                 labelItemList.put("Status Data", "PASS");
             } else {
                 labelItemList.put("Status Data", "");
