@@ -1671,7 +1671,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
                 }
 
-                if (PrinterController.getInstance().isPrintScan()) {
+                if (PrinterController.getInstance().isPrintScan(aboveThreshold)) {
                     return;
                 }
                 if (lanchTimer != null) {
@@ -3029,7 +3029,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onTemperatureRead(float temperature) {
         TemperatureController.getInstance().setTemperatureRetry(0);
         this.temperature = temperature;
-        if (PrinterController.getInstance().isPrintScan()) {
+        boolean aboveThreshold = TemperatureController.getInstance().isTemperatureAboveThreshold(temperature);
+        if (PrinterController.getInstance().isPrintScan(aboveThreshold)) {
             updatePrintOnTemperatureRead(temperature);
             return;
         }
