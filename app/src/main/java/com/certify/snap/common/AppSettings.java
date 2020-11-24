@@ -71,6 +71,11 @@ public class AppSettings {
     private static String editTextNameLabel = "";
     private static boolean maskEnforced = false;
     private static String maskEnforceMessage = "";
+    private static boolean printLabelQRAnswers = false;
+    private static String editTextPrintQRAnswers = "";
+    private static String editTextPrintPassName = "";
+    private static String editTextPrintWaveYes = "";
+    private static String editTextPrintWaveNo = "";
     private static boolean gestureExitOnNegativeOp = false;
     private static String gestureExitConfirmText = "";
 
@@ -146,6 +151,11 @@ public class AppSettings {
         editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
         maskEnforced = sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT, false);
         maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, StringConstants.MASK_ENFORCE_MESSAGE);
+        printLabelQRAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false);
+        editTextPrintQRAnswers = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS,"XXXX");
+        editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,"PASS");
+        editTextPrintWaveYes = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER,"1");
+        editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER,"0");
         gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, StringConstants.GESTURE_EXIT_MESSAGE);
     }
@@ -400,6 +410,27 @@ public class AppSettings {
 
     public static String getMaskEnforceMessage() {
         return maskEnforceMessage;
+    }
+
+
+    public static boolean isPrintLabelQRAnswers() {
+        return printLabelQRAnswers;
+    }
+
+    public static String getEditTextPrintQRAnswers() {
+        return editTextPrintQRAnswers;
+    }
+
+    public static String getEditTextPrintPassName() {
+        return editTextPrintPassName;
+    }
+
+    public static String getEditTextPrintWaveYes() {
+        return editTextPrintWaveYes;
+    }
+
+    public static String getEditTextPrintWaveNo() {
+        return editTextPrintWaveNo;
     }
 
     public static boolean isGestureExitOnNegativeOp() {

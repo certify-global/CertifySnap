@@ -51,21 +51,21 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle,
             titleLabelOptions,
             printLabelFaceTitle, printLabelNameTitle, printLabelNormalTemp, printLabelHighTemp, printLabelWaveAnswers,
-            printLabelUnidentifiedName;
+            printLabelUnidentifiedName, printLabelPrintIndicatorForQRCode, waveYesText, waveNoText;
     RadioGroup radioGroupPrinter, radioGroupToshibaPrinter, radioGroupPrintAllScan, radioGroupPrintAccessCard, radioGroupPrintQRCode,
             radioGroupPrintWave, radioGroupPrintHighTemperature,
             radioGroupPrintLabelFace, radioGroupPrintLabelName, radioGroupPrintLabelNormalTemp, radioGroupPrintLabelHighTemp,
-            radioGroupPrintLabelWaveAnswers, radioGroupPrintLabelUnidentifiedName;
+            radioGroupPrintLabelWaveAnswers, radioGroupPrintLabelUnidentifiedName,radioGroupPrintLabelIndicatorQrCode;
     RadioButton radioEnableBrotherPrinter, radioDisableBrotherPrinter, radioEnableToshibaPrinter, radioDisableToshibaPrinter,
             radioButtonYesPrintAllScans, radioButtonNoPrintAllScans, radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
             radioButtonYesPrintQRCode, radioButtonNoPrintQRCode, radioButtonYesPrintWave, radioButtonNoPrintWave,
             radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature, radioYesPrintLabelFace, radioNoPrintLabelFace,
             radioYesPrintLabelName, radioNoPrintLabelName, radioYesPrintLabelNormalTemp, radioNoPrintLabelNormalTemp,
             radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers,
-            radioYesPrintLabelUnidentifiedName, radioNoPrintLabelUnidentifiedName;
+            radioYesPrintLabelUnidentifiedName, radioNoPrintLabelUnidentifiedName, radioYesPrintLabelIndicatorQrCode, radioNoPrintLabelIndicatorQrCode;
     Button brotherPrintButton;
     ImageView brotherImageView;
-    EditText editTextNameLabel;
+    EditText editTextNameLabel, editTextQRAnswers, editTextPassName, editTextWaveYes, editTextWaveNo;
 
     Typeface rubiklight;
     private SharedPreferences sp;
@@ -160,8 +160,20 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         radioGroupPrintLabelWaveAnswers = findViewById(R.id.radio_group_print_label_wave_answers);
         radioYesPrintLabelWaveAnswers = findViewById(R.id.radio_yes_print_label_wave_answers);
         radioNoPrintLabelWaveAnswers = findViewById(R.id.radio_no_print_label_wave_answers);
+        waveYesText = findViewById(R.id.wave_yes_text);
+        waveNoText = findViewById(R.id.wave_no_text);
+        //Print Indicator for QR code users
+        printLabelPrintIndicatorForQRCode = findViewById(R.id.print_label_print_indicator_qr_code);
+        radioGroupPrintLabelIndicatorQrCode = findViewById(R.id.radio_group_print_label_indicator_qr_code);
+        radioYesPrintLabelIndicatorQrCode = findViewById(R.id.radio_yes_print_label_indicator_qr_code);
+        radioNoPrintLabelIndicatorQrCode = findViewById(R.id.radio_no_print_label_indicator_qr_code);
 
         editTextNameLabel = findViewById(R.id.edit_text_name_label);
+        editTextQRAnswers = findViewById(R.id.edit_text_indicator_qr_code);
+        editTextPassName = findViewById(R.id.edit_text_result_print_pass_text);
+        editTextWaveYes = findViewById(R.id.gesture_yes_button);
+        editTextWaveNo = findViewById(R.id.gesture_no_button);
+
 
         brotherTestPrint.setText("Brother Printer");
 
@@ -194,8 +206,15 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         printLabelHighTemp.setTypeface(rubiklight);
         printLabelWaveAnswers.setTypeface(rubiklight);
         printLabelUnidentifiedName.setTypeface(rubiklight);
+        printLabelPrintIndicatorForQRCode.setTypeface(rubiklight);
+        waveYesText.setTypeface(rubiklight);
+        waveNoText.setTypeface(rubiklight);
 
         editTextNameLabel.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, "Screened"));
+        editTextQRAnswers.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, "XXXX"));
+        editTextPassName.setText(sp.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, "PASS"));
+        editTextWaveYes.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, "1"));
+        editTextWaveNo.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, "0"));
 
         String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
         if (Build.VERSION.SDK_INT >= 24) {
@@ -346,6 +365,20 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
             }
         });
 
+        //QR Code indicator for gesture Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false))
+            radioYesPrintLabelIndicatorQrCode.setChecked(true);
+        else radioNoPrintLabelIndicatorQrCode.setChecked(true);
+
+        radioGroupPrintLabelIndicatorQrCode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_label_indicator_qr_code) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false);
+            }
+        });
+
     }
 
     private void printerLabelOptionsCheck() {
@@ -474,8 +507,11 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
     }
 
     public void saveAudioSettings(View view) {
-        if (!editTextNameLabel.getText().toString().isEmpty())
-            Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextNameLabel.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextNameLabel.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, editTextQRAnswers.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, editTextPassName.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, editTextWaveYes.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextWaveNo.getText().toString());
 
         Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();
@@ -528,7 +564,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
                 String dateTime = date + " " + currentTime;
-                PrinterController.getInstance().setPrintData("Name:", "Test", dateTime, "Thermal Scan", false);
+                PrinterController.getInstance().setPrintData("Test", dateTime, "Thermal Scan", false);
                 PrinterController.getInstance().printUsb();
             }
         }).start();
