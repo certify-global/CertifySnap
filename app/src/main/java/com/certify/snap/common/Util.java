@@ -1505,6 +1505,9 @@ public class Util {
                     String printNormalTemperature = printerSettings.isNull("printNormalTemperature") ? "0" : printerSettings.getString("printNormalTemperature");
                     String printHighTemperature = printerSettings.isNull("printHighTemperature") ? "0" : printerSettings.getString("printHighTemperature");
                     String printWaveAnswers = printerSettings.isNull("printWaveAnswers") ? "0" : printerSettings.getString("printWaveAnswers");
+                    String printIndicatorForQR = printerSettings.isNull("printIndicatorForQR") ? "0" : printerSettings.getString("printIndicatorForQR");
+                    String defaultBottomBarText = printerSettings.isNull("defaultBottomBarText") ? "" : printerSettings.getString("defaultBottomBarText");
+                    String defaultResultPrint = printerSettings.isNull("defaultResultPrint") ? "" : printerSettings.getString("defaultResultPrint");
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
@@ -1520,6 +1523,10 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, printNormalTemperature.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, printHighTemperature.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printWaveAnswers.equals("1"));
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printIndicatorForQR.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, defaultBottomBarText);
+                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, defaultResultPrint);
+
                 }
                 //Touch less Interaction
                 if (jsonValue.has("TouchlessInteraction")) {
@@ -1533,6 +1540,8 @@ public class Util {
                     String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? StringConstants.GESTURE_MESSAGE : touchlessInteractionSettings.getString("waveIndicatorInstructions");
                     String showWaveImage = touchlessInteractionSettings.isNull("showWaveImage") ? "0" : touchlessInteractionSettings.getString("showWaveImage");
                     String maskEnforceText = touchlessInteractionSettings.isNull("maskEnforceText") ? StringConstants.MASK_ENFORCE_MESSAGE : touchlessInteractionSettings.getString("maskEnforceText");
+                    String exitOnNegativeOutcome = touchlessInteractionSettings.isNull("exitOnNegativeOutcome") ? "0" : touchlessInteractionSettings.getString("exitOnNegativeOutcome");
+                    String messageForNegativeOutcome = touchlessInteractionSettings.isNull("messageForNegativeOutcome") ? StringConstants.GESTURE_EXIT_MESSAGE : touchlessInteractionSettings.getString("messageForNegativeOutcome");
                     Log.d("CertifyXT flow", settingsID);
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
@@ -1544,8 +1553,9 @@ public class Util {
                     Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, waveInstructions);
                     Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, showWaveImage.equals("1"));
                     Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, maskEnforceText);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, exitOnNegativeOutcome.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, messageForNegativeOutcome);
                 }
-
 
             } else {
                 Log.e(LOG, "Setting retrieval Something went wrong please try again");
