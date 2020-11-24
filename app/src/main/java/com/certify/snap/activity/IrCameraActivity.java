@@ -3221,9 +3221,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Bitmap bitmap = null;
         String name = "";
         String thermalText = "";
-        if(AppSettings.isPrintLabelQRAnswers()){
-            thermalText = AppSettings.getEditTextPrintQRAnswers();
-        }
+
         if(AppSettings.isPrintLabelFace()) {
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
             PrinterController.getInstance().updateImageForPrint(bitmap);
@@ -3245,6 +3243,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (AppSettings.isPrintLabelName()) {
                     name = data.getQrCodeData().getFirstName();
                 }
+            }
+            if(AppSettings.isPrintLabelQRAnswers()){
+                thermalText = AppSettings.getEditTextPrintQRAnswers();
             }
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
