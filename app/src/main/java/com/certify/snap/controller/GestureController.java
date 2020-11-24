@@ -86,6 +86,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onQuestionsNotReceived();
         void onBothHandWave();
         void onFetchingQuestions();
+        void onNegativeAnswer();
     }
 
     public interface GestureHomeCallBackListener {
@@ -498,6 +499,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void onQuestionAnswered(String answer) {
         if (currentQuestionData == null) return;
+        if (!isAnExpectedAnswer(answer)) {
+            if (listener != null) {
+                listener.onNegativeAnswer();
+                return;
+            }
+        }
         questionAnswerMap.put(currentQuestionData, answer);
         index++;
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
@@ -702,6 +709,18 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         boolean result = false;
         if (AppSettings.isEnableHandGesture() && isGestureDeviceConnected) {
             result = true;
+        }
+        return result;
+    }
+
+    private boolean isAnExpectedAnswer(String answer) {
+        boolean result = true;
+        if (AppSettings.isGestureExitOnNegativeOp()) {
+            //TODO: Un-comment below when issue fixed in API
+            /*if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome)) {
+                result = false;
+            }*/
+            result = false;
         }
         return result;
     }

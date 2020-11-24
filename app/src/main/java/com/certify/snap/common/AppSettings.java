@@ -2,7 +2,6 @@ package com.certify.snap.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.Settings;
 
 import com.certify.snap.R;
 
@@ -77,6 +76,8 @@ public class AppSettings {
     private static String editTextPrintPassName = "";
     private static String editTextPrintWaveYes = "";
     private static String editTextPrintWaveNo = "";
+    private static boolean gestureExitOnNegativeOp = false;
+    private static String gestureExitConfirmText = "";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -155,6 +156,8 @@ public class AppSettings {
         editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,"PASS");
         editTextPrintWaveYes = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER,"1");
         editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER,"0");
+        gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
+        gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, StringConstants.GESTURE_EXIT_MESSAGE);
     }
 
     public static String getThermalScanTitle() {
@@ -409,6 +412,7 @@ public class AppSettings {
         return maskEnforceMessage;
     }
 
+
     public static boolean isPrintLabelQRAnswers() {
         return printLabelQRAnswers;
     }
@@ -427,5 +431,13 @@ public class AppSettings {
 
     public static String getEditTextPrintWaveNo() {
         return editTextPrintWaveNo;
+    }
+
+    public static boolean isGestureExitOnNegativeOp() {
+        return gestureExitOnNegativeOp;
+    }
+
+    public static String getGestureExitConfirmText() {
+        return gestureExitConfirmText;
     }
 }

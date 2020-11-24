@@ -153,6 +153,8 @@ public class GlobalParameters {
     public static final String WAVE_QUESTIONS = "WaveQuestions";
     public static final String MASK_ENFORCEMENT = "maskEnforcement";
     public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
+    public static final String GESTURE_EXIT_NEGATIVE_OP = "gestureExitNegativeOp";
+    public static final String GESTURE_EXIT_CONFIRM_TEXT = "gestureExitConfirmText";
 
     public static final String Temperature = "temperature";
     public static final String Temphint = "temphint";

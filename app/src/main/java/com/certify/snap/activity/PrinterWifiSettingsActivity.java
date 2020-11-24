@@ -33,7 +33,8 @@ public class PrinterWifiSettingsActivity extends ListActivity {
     private ArrayList<String> mItems = null; // List of storing the printer's
     private SearchThread searchPrinter;
     private EditText printerIp, printerMac;
-    private TextView printerIpError;
+    private TextView printerIpError, printerMacError;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,9 @@ public class PrinterWifiSettingsActivity extends ListActivity {
         printerIp = findViewById(R.id.edittext_printer_ip);
         printerMac = findViewById(R.id.edittext_printer_mac);
         printerIpError = findViewById(R.id.ip_input_error);
+        printerMacError = findViewById(R.id.mac_input_error);
+
+        setValues();
 
         Button btnRefresh = (Button) findViewById(R.id.btnRefresh);
         btnRefresh.setOnClickListener(view -> {
@@ -66,9 +70,12 @@ public class PrinterWifiSettingsActivity extends ListActivity {
         addPrinter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (printerIp.getText().toString().isEmpty() || printerMac.getText().toString().isEmpty() ||
-                        !IpAddressValidator.isValid(printerIp.getText().toString())) {
-                    printerIpError.setText("Please input a valid number");
+                if (printerIp.getText().toString().isEmpty() || !IpAddressValidator.isValid(printerIp.getText().toString())) {
+                    printerIpError.setText("Please input a valid Ip address");
+                    return;
+                }
+                if (printerMac.getText().toString().isEmpty()) {
+                    printerMacError.setText("Please input a valid Mac address");
                     return;
                 }
                 updatePrinterSettings();
@@ -248,6 +255,14 @@ public class PrinterWifiSettingsActivity extends ListActivity {
         settings.putExtra("macAddress", printerMac.getText().toString());
         setResult(RESULT_OK, settings);
         finish();
+    }
+
+    private void setValues() {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String ipAddress = sharedPreferences.getString("address", "");
+        String macAddress = sharedPreferences.getString("macAddress", "");
+        printerIp.setText(ipAddress);
+        printerMac.setText(macAddress);
     }
 
     public void onParamterback(View view) {
