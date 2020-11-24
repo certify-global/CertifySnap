@@ -11,7 +11,7 @@
             android:title="@string/printer_model_title" />
 
         <ListPreference
-            android:defaultValue="BLUETOOTH"
+            android:defaultValue="NET"
             android:enabled="true"
             android:key="port"
             android:summary="@string/port_value"
@@ -21,9 +21,11 @@
             android:defaultValue="@string/printer_text"
             android:key="printer"
             android:summary="@string/printer_text"
-            android:title="@string/printer_title"></PreferenceScreen>
+            android:title="@string/printer_title">
+        </PreferenceScreen>
 
         <ListPreference
+            android:defaultValue="W62"
             android:key="paperSize"
             android:summary="@string/paper_size_value"
             android:title="@string/paper_size_title" />
