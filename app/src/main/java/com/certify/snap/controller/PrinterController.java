@@ -141,7 +141,9 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void printOnHighTemperature() {
-        if (AppSettings.isPrintHighTemperatureUsers() || AppSettings.isPrintWaveUsers()) {
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (AppSettings.isPrintHighTemperatureUsers() || (AppSettings.isPrintWaveUsers()
+            && triggerType.equals(CameraController.triggerValue.WAVE.toString()))) {
             new Thread(() -> {
                 if (AppSettings.isEnablePrinter()) {
                     print();

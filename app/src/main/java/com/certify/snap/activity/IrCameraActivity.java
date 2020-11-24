@@ -3042,8 +3042,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
                 String tempRead = String.valueOf(tempValue);
                 if (TemperatureController.getInstance().isTemperatureAboveThreshold(tempValue)) {
-                    text = AppSettings.getTempResultBarHigh() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
-                    TemperatureCallBackUISetup(true, text, tempString, false, TemperatureController.getInstance().getTemperatureRecordData());
+                    text = AppSettings.getTempResultBarHigh() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
+                    TemperatureCallBackUISetup(true, text, tempRead, false, TemperatureController.getInstance().getTemperatureRecordData());
                     TemperatureController.getInstance().updateControllersOnHighTempRead(registeredMemberslist);
                     TemperatureController.getInstance().clearData();
                     isLowTempRead = false;
