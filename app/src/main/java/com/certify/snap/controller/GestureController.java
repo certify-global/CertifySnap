@@ -716,11 +716,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private boolean isAnExpectedAnswer(String answer) {
         boolean result = true;
         if (AppSettings.isGestureExitOnNegativeOp()) {
-            //TODO: Un-comment below when issue fixed in API
-            /*if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome)) {
-                result = false;
-            }*/
-            result = false;
+            if (currentQuestionData != null && currentQuestionData.expectedOutcome != null){
+                if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome.substring(0, 1))) {
+                    result = false;
+                }
+            }
         }
         return result;
     }

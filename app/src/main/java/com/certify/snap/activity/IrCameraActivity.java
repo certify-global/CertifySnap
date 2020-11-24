@@ -3604,7 +3604,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onGestureNegativeAnswer() {
         resumedFromGesture = true;
         runOnUiThread(() -> {
-            resetGesture();
             int delay = 500;
             new Handler().postDelayed(this::closeGestureFragment, delay);
             boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
