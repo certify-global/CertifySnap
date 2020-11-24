@@ -49,6 +49,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -3219,8 +3220,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void updatePrinterParameters(boolean highTemperature) {
         Bitmap bitmap = null;
         String name = "";
-        String nameTitle = "";
-        String thermalText = "Thermal Scan";
+        String thermalText = "";
+        if(AppSettings.isPrintLabelQRAnswers()){
+            thermalText = AppSettings.getEditTextPrintQRAnswers();
+        }
         if(AppSettings.isPrintLabelFace()) {
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
             PrinterController.getInstance().updateImageForPrint(bitmap);
@@ -3235,12 +3238,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
         String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
-        String dateTime = date + " " + currentTime;
+        //String dateTime = date;
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
                 if (AppSettings.isPrintLabelName()) {
-                    nameTitle = "Name:";
                     name = data.getQrCodeData().getFirstName();
                 }
             }
@@ -3251,22 +3253,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     bitmap = rgbBitmap;
                 }
                 if (AppSettings.isPrintLabelName()) {
-                    nameTitle = "Name:";
                     name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
                 }
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
-                dateTime = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
+                date = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");
                 answers = answers.replace("]", "");
 
                 if (AppSettings.isPrintLabelWaveAnswers()) {
-                    answers = answers.replace("Y", "1");
-                    answers = answers.replace("N", "0");
-                    int numOfQ = GestureController.getInstance().getQuestionsSize();
+                    String answerYes = AppSettings.getEditTextPrintWaveYes();
+                    String answerNo = AppSettings.getEditTextPrintWaveNo();
+                    answers = answers.replace("Y", answerYes);
+                    answers = answers.replace("N", answerNo);
                     int tempValue = 0;
                     String tempValueStr = "";
                     if (highTemperature) {
@@ -3289,12 +3291,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     bitmap = BitmapFactory.decodeFile(member.image);
                     if (member.firstname != null) {
                         if (AppSettings.isPrintLabelName()) {
-                            nameTitle = "Name:";
                             name = member.firstname;
                         }
                     }
                 } else {
-                    nameTitle = "";
                     name = "";
                     if (AppSettings.isPrintLabelUnidentifiedName()) {
                         name = AppSettings.getEditTextNameLabel();
@@ -3306,31 +3306,32 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         if(!AppSettings.isPrintLabelFace()){
-            PrinterController.getInstance().setPrintWaveData(name, dateTime, thermalText);
+            PrinterController.getInstance().setPrintWaveData(name, date, thermalText);
         }else {
-            PrinterController.getInstance().setPrintData(nameTitle, name, dateTime, thermalText, highTemperature);
+            PrinterController.getInstance().setPrintData( name, date, thermalText, highTemperature);
         }
 
-        convertUIToImage(bitmap, name, dateTime, nameTitle, thermalText, highTemperature);
+        convertUIToImage(bitmap, name, date, thermalText, currentTime, highTemperature);
     }
 
-    private void convertUIToImage(Bitmap bitmap, String name, String dateTime, String nameTitle, String thermalText, boolean highTemperature) {
+    private void convertUIToImage(Bitmap bitmap, String name, String dateTime, String thermalText, String scanTime, boolean highTemperature) {
         View view = getLayoutInflater().inflate(R.layout.print_layout, null);
         LinearLayout linearLayout = view.findViewById(R.id.screen);
         TextView expireDate = view.findViewById(R.id.expire_date);
-        TextView userNameTitle = view.findViewById(R.id.user_name_title);
         TextView userName = view.findViewById(R.id.user_name);
         ImageView userImage = view.findViewById(R.id.user_image);
         TextView tempPass = view.findViewById(R.id.temp_Pass);
+        TextView scanTimeText = view.findViewById(R.id.scan_time);
         TextView thermalDisplayText = view.findViewById(R.id.thermal_scan_text);
-        userNameTitle.setText(nameTitle);
+        scanTimeText.setText(scanTime);
         userName.setText(name);
         thermalDisplayText.setText(thermalText);
         if (highTemperature) {
             tempPass.setText("");
             tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {
-            tempPass.setText("Screened");
+            String passText = AppSettings.getEditTextPrintPassName();
+            tempPass.setText(passText);
         }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);

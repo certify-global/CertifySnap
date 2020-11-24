@@ -176,6 +176,8 @@ public class GlobalParameters {
     public static final String PRINT_QR_CODE_USERS = "printQRCode";
     public static final String PRINT_WAVE_USERS = "printWaveUsers";
     public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
+    public static final String PRINT_QR_CODE_FOR_WAVE_INDICATOR = "printQrCodeForWaveIndicator";
+
     //print Label Options
     public static final String PRINT_LABEL_FACE = "printLabelFace";
     public static final String PRINT_LABEL_NAME = "printLabelName";
@@ -184,6 +186,10 @@ public class GlobalParameters {
     public static final String PRINT_LABEL_HIGH_TEMPERATURE = "printLabelHighTemperature";
     public static final String PRINT_LABEL_WAVE_ANSWERS = "printLabelWaveAnswers";
     public static final String PRINT_LABEL_WAVE_EDIT_NAME = "printLabelWaveEditName";
+    public static final String PRINT_LABEL_WAVE_EDIT_QR_ANSWERS = "printLabelQRAnswers";
+    public static final String PRINT_LABEL_EDIT_PASS_NAME = "printLabelPassName";
+    public static final String PRINT_LABEL_WAVE_YES_ANSWER = "printLabelWaveYesAnswer";
+    public static final String PRINT_LABEL_WAVE_NO_ANSWER = "printLabelWaveNoAnswer";
 
     public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
     public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";
