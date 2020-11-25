@@ -1505,6 +1505,8 @@ public class Util {
                     String printNormalTemperature = printerSettings.isNull("printNormalTemperature") ? "0" : printerSettings.getString("printNormalTemperature");
                     String printHighTemperature = printerSettings.isNull("printHighTemperature") ? "0" : printerSettings.getString("printHighTemperature");
                     String printWaveAnswers = printerSettings.isNull("printWaveAnswers") ? "0" : printerSettings.getString("printWaveAnswers");
+                    String printWAYesText = printerSettings.isNull("printWaveAnswerYes") ? "1" : printerSettings.getString("printWaveAnswerYes");
+                    String printWANoText = printerSettings.isNull("printWaveAnswerNo") ? "0" : printerSettings.getString("printWaveAnswerNo");
                     String printIndicatorForQR = printerSettings.isNull("printIndicatorForQR") ? "0" : printerSettings.getString("printIndicatorForQR");
                     String defaultBottomBarText = printerSettings.isNull("defaultBottomBarText") ? "" : printerSettings.getString("defaultBottomBarText");
                     String defaultResultPrint = printerSettings.isNull("defaultResultPrint") ? "" : printerSettings.getString("defaultResultPrint");
@@ -1523,6 +1525,8 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, printNormalTemperature.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, printHighTemperature.equals("1"));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printWaveAnswers.equals("1"));
+                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, printWAYesText);
+                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, printWANoText);
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, printIndicatorForQR.equals("1"));
                     Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, defaultBottomBarText);
                     Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, defaultResultPrint);
