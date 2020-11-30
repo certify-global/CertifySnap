@@ -120,6 +120,7 @@ import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
+import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.printer.usb.PrintExecuteTask;
 import com.certify.snap.printer.usb.util;
@@ -1669,7 +1670,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     } else {
                         syncStatus = -1;
                     }
-                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+                    if (!isProDevice) {
+                        if (data.thermal != null) {
+                            Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+                        }
+                    }
                 }
 
                 if (PrinterController.getInstance().isPrintScan(aboveThreshold)) {
@@ -3022,6 +3027,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 temperatureBitmap = bitmap;
                 temperature_image.setVisibility(View.VISIBLE);
                 temperature_image.setImageBitmap(bitmap);
+                if (userData != null) {
+                    userData.thermal = temperatureBitmap;
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, -1);
+                }
             }
         });
     }
@@ -3240,9 +3249,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         //String dateTime = date;
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-            if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && data != null && data.getQrCodeData() != null) {
+            QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+            if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && qrCodeData != null) {
                 if (AppSettings.isPrintLabelName()) {
-                    name = data.getQrCodeData().getFirstName();
+                    name = qrCodeData.getFirstName();
                 }
             }
             if(AppSettings.isPrintLabelQRAnswers()){
