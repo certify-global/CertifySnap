@@ -1670,7 +1670,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     } else {
                         syncStatus = -1;
                     }
-                    if (!isProDevice) {
+                    if (isProDevice) {
+                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+                    } else {
                         if (data.thermal != null) {
                             Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
                         }
@@ -3027,7 +3029,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 temperatureBitmap = bitmap;
                 temperature_image.setVisibility(View.VISIBLE);
                 temperature_image.setImageBitmap(bitmap);
-                if (userData != null) {
+                if (!isProDevice && userData != null) {
                     userData.thermal = temperatureBitmap;
                     Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, -1);
                 }
