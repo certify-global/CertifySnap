@@ -49,7 +49,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -311,6 +310,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Fragment maskEnforceFragment;
     private boolean qrCodeReceived = false;
     private boolean resumedFromGesture = false;
+    private boolean isRecordNotSent = false;
 
     private void instanceStart() {
         try {
@@ -1674,7 +1674,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
                     } else {
                         if (data.thermal != null) {
+                            isRecordNotSent = false;
                             Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+                        } else {
+                            isRecordNotSent = true;
                         }
                     }
                 }
@@ -2754,6 +2757,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         face3DAngle = null;
         faceThermalToast = null;
+        isRecordNotSent = false;
         temperatureBitmap = null;
 
         if (isDisconnected) {
@@ -3029,8 +3033,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 temperatureBitmap = bitmap;
                 temperature_image.setVisibility(View.VISIBLE);
                 temperature_image.setImageBitmap(bitmap);
-                if (!isProDevice && userData != null) {
+                if (!isProDevice && userData != null && isRecordNotSent) {
                     userData.thermal = temperatureBitmap;
+                    isRecordNotSent = false;
                     Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, -1);
                 }
             }
