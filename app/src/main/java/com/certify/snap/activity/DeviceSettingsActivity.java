@@ -553,7 +553,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         if (sharedPreferences != null) {
             sharedPreferences.edit().clear().apply();
         }
-        //LitePal.deleteDatabase("telpo_face");
+        if (sharedPreferences != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        }
     }
 
     private void stopMemberSyncService() {
