@@ -25,7 +25,8 @@ public class GestureConfiguration {
         int rightVendorValue = getRKvendorCompensate(32);
 
         if (leftVendorValue != -1 && rightVendorValue != -1) {
-            Log.d(TAG, "Gesture Config values Left:" + leftVendorValue + " Right: " +rightVendorValue);
+            writeVendor(1, leftVendorValue+"");
+            writeVendor(2, rightVendorValue+"");
             GestureController.getInstance().setLeftHandRangeVal(leftVendorValue);
             GestureController.getInstance().setRightHandRangeVal(rightVendorValue);
         }
@@ -74,5 +75,14 @@ public class GestureConfiguration {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public int writeVendor(int handside, String value){
+        if (handside == 1) {
+            return PosUtil.write_VendorStorage(value, 31);
+        } else if (handside == 2) {
+            return PosUtil.write_VendorStorage(value, 32);
+        }
+        return -1;
     }
 }

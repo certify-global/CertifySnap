@@ -333,7 +333,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     try {
                         final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
                         final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
-                        Log.d(TAG, "Gesture Wave Values Left: " + left + " Right: " +right);
                         if (left > leftHandRangeVal && right > rightHandRangeVal) {
                             index = 0;
                             if (listener != null) {
