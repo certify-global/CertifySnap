@@ -449,6 +449,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         if (AppSettings.isEnableHandGesture()) {
             GestureController.getInstance().clearQuestionAnswerMap();
             GestureController.getInstance().initContext(this);
+            GestureController.getInstance().initGestureRangeValues();
             GestureController.getInstance().initHandGesture();
         }
     }

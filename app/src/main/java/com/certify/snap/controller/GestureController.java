@@ -28,6 +28,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.gesture.GestureConfiguration;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -72,6 +73,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private UsbManager mUsbManager = null;
     private static final String ACTION_USB_PERMISSION = "com.wch.multiport.USB_PERMISSION";
     private int index = 0;
+    private int leftHandRangeVal = 200;
+    private int rightHandRangeVal = 200;
 
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
@@ -132,6 +135,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         wait = false;
         sharedPreferences = Util.getSharedPreferences(mContext);
         isGestureDeviceConnected = Util.isGestureDeviceConnected(context);
+    }
+
+    public void initGestureRangeValues() {
+        if (isGestureDeviceConnected) {
+            GestureConfiguration.getInstance().initGestureRangeValue();
+        }
     }
 
     private void startGestureFlow() {
@@ -303,6 +312,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
+    public void setLeftHandRangeVal(int leftHandRangeVal) {
+        this.leftHandRangeVal = leftHandRangeVal;
+    }
+
+    public void setRightHandRangeVal(int rightHandRangeVal) {
+        this.rightHandRangeVal = rightHandRangeVal;
+    }
+
     /**
      * Method that initializes the Hand Gesture
      */
@@ -316,19 +333,20 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     try {
                         final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
                         final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
-                        if (left > 200 && right > 200) {
+                        Log.d(TAG, "Gesture Wave Values Left: " + left + " Right: " +right);
+                        if (left > leftHandRangeVal && right > rightHandRangeVal) {
                             index = 0;
                             if (listener != null) {
                                 listener.onBothHandWave();
                                 Thread.sleep(1500);
                             }
-                        } else if (left > 200) {
+                        } else if (left > leftHandRangeVal) {
                             leftHandWave();
-                        } else if (right > 200) {
+                        } else if (right > rightHandRangeVal) {
                             rightHandWave();
                         }
                     } catch (Exception e) {
-                        Log.d(TAG, "Error in Gesture: " + e.getMessage());
+                        Log.d(TAG, "Gesture Error in Gesture: " + e.getMessage());
                         if (e.getMessage() == null) {
                             restartGesture();
                         }
