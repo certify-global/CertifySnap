@@ -25,8 +25,9 @@ public class GestureConfiguration {
         int rightVendorValue = getRKvendorCompensate(32);
 
         if (leftVendorValue != -1 && rightVendorValue != -1) {
-            writeVendor(1, leftVendorValue+"");
-            writeVendor(2, rightVendorValue+"");
+            int leftResult = writeVendor(1, leftVendorValue+"");
+            int rightResult = writeVendor(2, rightVendorValue+"");
+            Log.d(TAG, "Gesture Config Write Left Res:" +leftResult + " Right Res:" +rightResult);
             GestureController.getInstance().setLeftHandRangeVal(leftVendorValue);
             GestureController.getInstance().setRightHandRangeVal(rightVendorValue);
         }
