@@ -519,6 +519,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (!isAnExpectedAnswer(answer)) {
             if (listener != null) {
                 listener.onNegativeAnswer();
+                sendAnswers();
                 return;
             }
         }
