@@ -233,10 +233,10 @@ public class Util {
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
-                Log.d("TAG", "Naga.........No permissions getSNCode: ");
+                Log.d(LOG, "No permissions getSNCode: ");
                 return TODO;
             }
-            Log.d("TAG", "Naga.........permissions getSNCode: ");
+            Log.d(LOG, "permissions getSNCode: ");
             return android.os.Build.getSerial();
         }
         else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {

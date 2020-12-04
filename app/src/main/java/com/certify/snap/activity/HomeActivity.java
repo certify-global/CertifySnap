@@ -351,6 +351,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 e.printStackTrace();
             }
             AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
+            ApplicationController.getInstance().initDeviceSettings(sharedPreferences);
             gestureWorkFlow = AppSettings.getGestureWorkFlow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WindowManager.LayoutParams attributes = getWindow().getAttributes();

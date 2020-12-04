@@ -8,6 +8,7 @@ import androidx.room.Transaction;
 import androidx.room.Update;
 
 import com.certify.snap.model.AccessLogOfflineRecord;
+import com.certify.snap.model.DeviceSettings;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -37,6 +38,9 @@ public interface DatabaseStore {
 
     @Insert
     void insertGuestMembers(GuestMembers guestMembers);
+
+    @Insert
+    void insertDeviceSetting(DeviceSettings deviceSettings);
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
@@ -116,4 +120,14 @@ public interface DatabaseStore {
 
     @Query("DELETE FROM AccessLogOfflineRecord")
     void deleteAllOfflineAccessLogRecords();
+
+    @Query("SELECT * FROM DeviceSettings")
+    List<DeviceSettings> findAllDeviceSettings();
+
+    @Transaction
+    @Query("SELECT * FROM DeviceSettings WHERE settingName=:settingName")
+    DeviceSettings findDeviceSettingByName(String settingName);
+
+    @Update
+    void updateSetting(DeviceSettings deviceSettings);
 }

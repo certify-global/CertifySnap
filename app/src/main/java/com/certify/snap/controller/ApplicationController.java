@@ -4,9 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.StringConstants;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.DeviceSettings;
 import com.common.thermalimage.ThermalImageUtil;
+
+import java.util.List;
 
 public class ApplicationController {
     private static final String TAG = ApplicationController.class.getSimpleName();
@@ -28,6 +33,11 @@ public class ApplicationController {
 
     public void setEndPointUrl(String endPointUrl) {
         this.endPointUrl = endPointUrl;
+        DeviceSettings deviceSetting = new DeviceSettings();
+        deviceSetting.id = 1;
+        deviceSetting.settingName = StringConstants.API_URL;
+        deviceSetting.settingValue = endPointUrl;
+        DatabaseController.getInstance().updateSetting(deviceSetting);
     }
 
     public String getFcmPushToken() {
@@ -84,6 +94,26 @@ public class ApplicationController {
             }
         }
         return result;
+    }
+
+    public void initDeviceSettings(SharedPreferences sharedPreferences) {
+        List<DeviceSettings> deviceSettingList = DatabaseController.getInstance().getDeviceSettings();
+        if (deviceSettingList == null || deviceSettingList.isEmpty()) {
+            DeviceSettings settings = new DeviceSettings();
+            settings.id = 1;
+            settings.settingName = StringConstants.API_URL;
+            String value = "";
+            if (sharedPreferences != null) {
+                value = sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url);
+            } else {
+                value = EndPoints.prod_url;
+            }
+            settings.settingValue = value;
+            DatabaseController.getInstance().insertDeviceSettingsToDB(settings);
+            return;
+        }
+        String apiUrl = DatabaseController.getInstance().getSetting(StringConstants.API_URL);
+        Util.writeString(sharedPreferences, GlobalParameters.URL, apiUrl);
     }
 
     /**

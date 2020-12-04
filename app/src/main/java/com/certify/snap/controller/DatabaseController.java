@@ -14,6 +14,7 @@ import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
+import com.certify.snap.model.DeviceSettings;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredFailedMembers;
@@ -30,7 +31,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 4;
     public static Context mContext;
     SharedPreferences sharedPreferences;
 
@@ -385,6 +386,49 @@ public class DatabaseController {
             handleDBException(e);
         }
         return new ArrayList<>();
+    }
+
+    public void insertDeviceSettingsToDB(DeviceSettings deviceSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertDeviceSetting(deviceSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public List<DeviceSettings> getDeviceSettings() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllDeviceSettings();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public String getSetting(String settingName) {
+        try {
+            if (databaseStore != null) {
+                DeviceSettings deviceSetting = databaseStore.findDeviceSettingByName(settingName);
+                return deviceSetting.settingValue;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return "";
+    }
+
+    public void updateSetting(DeviceSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateSetting(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
     }
 
     public List<RegisteredMembers> lastTenMembers() {
