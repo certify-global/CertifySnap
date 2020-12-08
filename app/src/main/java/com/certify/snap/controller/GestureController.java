@@ -519,7 +519,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (!isAnExpectedAnswer(answer)) {
             if (listener != null) {
                 listener.onNegativeAnswer();
-                sendAnswers();
+                sendAnswers(true);
                 return;
             }
         }
@@ -529,7 +529,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (index >= questionDataList.size()) {
             if (listener != null) {
                 listener.onAllQuestionsAnswered();
-                sendAnswers();
+                sendAnswers(false);
             }
             return;
         }
@@ -590,7 +590,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         return qSurveyOption;
     }
 
-    public void sendAnswers() {
+    public void sendAnswers(boolean negativeAnswer) {
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
             String answer = (String) entry.getValue();
@@ -600,11 +600,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             }
         }
         //Call API
-        sendAnswersAPI(qSurveyOptionList);
+        sendAnswersAPI(qSurveyOptionList, negativeAnswer);
 
     }
 
-    private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList) {
+    private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList, boolean answerNegative) {
         try {
             String uniqueID = UUID.randomUUID().toString();
             JSONObject obj = new JSONObject();
@@ -614,7 +614,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             obj.put("VisitId", 0);
             obj.put("anonymousGuid", uniqueID);
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
-
+            obj.put("questionaryFailed", answerNegative);
 
             for(int i=0;i<qSurveyOptionList.size();i++) {
                 JSONObject jsonCustomFields = new JSONObject();
