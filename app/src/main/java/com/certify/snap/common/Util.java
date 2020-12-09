@@ -830,6 +830,9 @@ public class Util {
                 obj.put("accessId", data.member.getAccessid());
                 updateFaceMemberValues(obj, data);
             }
+            if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+                obj.put("trqStatus", "0");
+            }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
             obj.put("faceScore", data.faceScore);
