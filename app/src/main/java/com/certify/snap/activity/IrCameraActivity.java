@@ -107,6 +107,7 @@ import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.PrinterController;
+import com.certify.snap.controller.QrCodeController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.CompareResult;
@@ -1822,7 +1823,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
                 qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
-                if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
+                if (QrCodeController.getInstance().isQrCodeDated(guid)) {
+                    tv_scan.setText(R.string.tv_qr_validating);
+                    if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
+                        CameraController.getInstance().setQrCodeId(guid);
+                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                        clearQrCodePreview();
+                        setCameraPreview();
+                        SoundController.getInstance().playValidQrSound();
+                    } else {
+                        resetInvalidQrCode();
+                        SoundController.getInstance().playInvalidQrSound();
+                    }
+                    qrCodeReceived = false;
+                    return;
+                } else if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
                     tv_scan.setText(R.string.tv_bar_validating);
                     CameraController.getInstance().setQrCodeId(guid);
                     Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);

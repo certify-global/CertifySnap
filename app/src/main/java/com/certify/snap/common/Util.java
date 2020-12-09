@@ -2326,4 +2326,28 @@ public class Util {
         }
         return result;
     }
+
+    public static String currentDate(String format) {
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        Date curDate = new Date(System.currentTimeMillis());
+        String currentDate = formatter.format(curDate);
+        return currentDate;
+    }
+
+    public static boolean isDateBigger(String expiryDate, String inputDate, String format) {
+        boolean result = false;
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        Date dt1 = null;
+        Date dt2 = null;
+        try {
+            dt1 = sdf.parse(expiryDate);
+            dt2 = sdf.parse(inputDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if (dt1.getTime() >= dt2.getTime()) {
+            result = true;
+        }
+        return result;
+    }
 }
