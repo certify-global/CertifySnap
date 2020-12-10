@@ -2807,9 +2807,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchConfirmationFragment(String value) {
+        String argVal = value;
+        if (value.equals("true")) {
+            argVal = "high";
+        }
         Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("tempVal", value);
+        bundle.putString("tempVal", argVal);
         confirmationScreenFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.dynamic_fragment_frame_layout, confirmationScreenFragment, "ConfirmationScreenFragment");
