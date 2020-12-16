@@ -3296,7 +3296,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
-                date = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
+                date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");
