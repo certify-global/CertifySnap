@@ -13,6 +13,7 @@ import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
+import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
@@ -41,6 +42,9 @@ public interface DatabaseStore {
 
     @Insert
     void insertDeviceSetting(DeviceSettings deviceSettings);
+
+    @Insert
+    void insertGestureQuestions(QuestionDataDb questionData);
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
@@ -130,4 +134,10 @@ public interface DatabaseStore {
 
     @Update
     void updateSetting(DeviceSettings deviceSettings);
+
+    @Query("SELECT * FROM QuestionDataDb")
+    List<QuestionDataDb> findAllQuestionsData();
+
+    @Query("DELETE FROM QuestionDataDb")
+    void deleteAllQuestions();
 }

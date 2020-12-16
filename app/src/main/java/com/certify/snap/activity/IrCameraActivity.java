@@ -3369,7 +3369,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {
             String passText = AppSettings.getEditTextPrintPassName();
-            tempPass.setText(passText);
+            String triggerType = CameraController.getInstance().getTriggerType();
+            if (triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
+                GestureController.getInstance().isQuestionnaireFailed()) {
+                tempPass.setText("");
+                tempPass.setBackgroundColor(getColor(R.color.colorWhite));
+            } else {
+                tempPass.setText(passText);
+            }
         }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);

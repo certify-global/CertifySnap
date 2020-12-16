@@ -29,12 +29,15 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.gesture.GestureConfiguration;
+import com.certify.snap.model.QuestionDataDb;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,6 +78,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private int index = 0;
     private int leftHandRangeVal = 200;
     private int rightHandRangeVal = 200;
+    private boolean isQuestionnaireFailed = false;
+    private LinkedHashMap<String, Boolean> waveHandProcessed = new LinkedHashMap<>();
+    private static final String LEFT_HAND = "LeftHand";
+    private static final String RIGHT_HAND = "RightHand";
+    private static final String BOTH_HANDS = "BothHands";
 
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
@@ -112,6 +120,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         this.mContext = context;
         index = 0;
         wait = true;
+        isQuestionnaireFailed = false;
         sharedPreferences = Util.getSharedPreferences(mContext);
     }
 
@@ -169,20 +178,33 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     @Override
     public void onJSONObjectListenerGesture(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            questionAnswerMap.clear();
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerGesture", "GetQuestions Log api failed");
+                getQuestionsFromDb();
+                if (listener != null) {
+                    listener.onQuestionsReceived();
+                }
                 return;
             }
+            questionAnswerMap.clear();
             cancelQuestionsTimer();
             Gson gson = new Gson();
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
-            List<QuestionData> questionList = response.questionList;
-            for (int i = 0; i < questionList.size(); i++) {
-                QuestionData questionData = questionList.get(i);
-                questionAnswerMap.put(questionData, "NA");
+            if (response.responseCode != null && response.responseCode.equals("1")) {
+                List<QuestionData> questionList = response.questionList;
+                if (questionList.size() > 0) {
+                    clearQuestionAnswerMap();
+                    DatabaseController.getInstance().deleteQuestionsFromDb();
+                    for (int i = 0; i < questionList.size(); i++) {
+                        QuestionData questionData = questionList.get(i);
+                        questionAnswerMap.put(questionData, "NA");
+                        DatabaseController.getInstance().insertQuestionsToDB(getDbQuestionData(questionData, i));
+                    }
+                }
+                Log.d(TAG, "Gesture Questions list updated");
+            } else {
+                getQuestionsFromDb();
             }
-            Log.d(TAG, "Gesture Questions list updated");
             if (listener != null) {
                 listener.onQuestionsReceived();
             }
@@ -496,6 +518,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
         if (wait) {
             Log.d(TAG, "Right Hand wave update");
+            //isWaveHandProcessed = true;
             updateOnWave("N");
         }
     }
@@ -517,7 +540,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private void onQuestionAnswered(String answer) {
         if (currentQuestionData == null) return;
         if (!isAnExpectedAnswer(answer)) {
-            if (listener != null) {
+            isQuestionnaireFailed = true;
+            if (AppSettings.isGestureExitOnNegativeOp() && listener != null) {
                 listener.onNegativeAnswer();
                 sendAnswers(true);
                 return;
@@ -732,14 +756,64 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private boolean isAnExpectedAnswer(String answer) {
         boolean result = true;
-        if (AppSettings.isGestureExitOnNegativeOp()) {
-            if (currentQuestionData != null && currentQuestionData.expectedOutcome != null){
-                if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome.substring(0, 1))) {
-                    result = false;
-                }
+        if (currentQuestionData != null && currentQuestionData.expectedOutcome != null){
+            if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome.substring(0, 1))) {
+                result = false;
             }
         }
         return result;
+    }
+
+    public boolean isQuestionnaireFailed() {
+        return isQuestionnaireFailed;
+    }
+
+    private QuestionDataDb getDbQuestionData(QuestionData questionData, int index) {
+        index = index + 1;
+        QuestionDataDb questionDataDb = new QuestionDataDb();
+        questionDataDb.primaryId = index;
+        questionDataDb.id = questionData.id;
+        questionDataDb.institutionId = questionData.institutionId;
+        questionDataDb.questionName = questionData.questionName;
+        questionDataDb.settingId = questionData.settingId;
+        questionDataDb.title = questionData.title;
+        questionDataDb.userId = questionData.userId;
+        questionDataDb.expectedOutcome = questionData.expectedOutcome;
+        questionDataDb.surveyQuestionaryDetails = questionData.surveyQuestionaryDetails;
+        Gson gson = new Gson();
+        questionDataDb.surveyOptions = gson.toJson(questionData.surveyOptions);
+        return questionDataDb;
+    }
+
+    public void getQuestionsFromDb () {
+        List<QuestionDataDb> questionDataDbList = DatabaseController.getInstance().getQuestionsFromDb();
+        if (questionDataDbList.size() > 0) {
+            questionAnswerMap.clear();
+            for (int i = 0; i < questionDataDbList.size(); i++) {
+                QuestionDataDb questionDataDb = questionDataDbList.get(i);
+                QuestionData questionData = new QuestionData();
+                questionData.id = questionDataDb.id;
+                questionData.institutionId = questionDataDb.institutionId;
+                questionData.questionName = questionDataDb.questionName;
+                questionData.title = questionDataDb.title;
+                questionData.settingId = questionDataDb.settingId;
+                questionData.userId = questionDataDb.userId;
+                questionData.expectedOutcome = questionDataDb.expectedOutcome;
+                questionData.surveyQuestionaryDetails = questionDataDb.surveyQuestionaryDetails;
+                Gson gson = new Gson();
+                Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
+                }.getType();
+                questionData.surveyOptions = gson.fromJson(questionDataDb.surveyOptions, listType);
+                questionAnswerMap.put(questionData, "NA");
+            }
+        }
+    }
+
+    private void resetWaveHandProcessed() {
+        waveHandProcessed.clear();
+        waveHandProcessed.put(LEFT_HAND, false);
+        waveHandProcessed.put(RIGHT_HAND, false);
+        waveHandProcessed.put(BOTH_HANDS, false);
     }
 
     public void clearData() {
