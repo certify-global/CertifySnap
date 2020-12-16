@@ -79,6 +79,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private int leftHandRangeVal = 200;
     private int rightHandRangeVal = 200;
     private boolean isQuestionnaireFailed = false;
+    private Timer waveHandTimer = null;
     private LinkedHashMap<String, Boolean> waveHandProcessed = new LinkedHashMap<>();
     private static final String LEFT_HAND = "LeftHand";
     private static final String RIGHT_HAND = "RightHand";
@@ -98,6 +99,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onBothHandWave();
         void onFetchingQuestions();
         void onNegativeAnswer();
+        void onWaveHandTimeout();
     }
 
     public interface GestureHomeCallBackListener {
@@ -365,6 +367,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                             leftHandWave();
                         } else if (right > rightHandRangeVal) {
                             rightHandWave();
+                        } else {
+                            cancelWaveHandTimer();
+                            resetWaveHandProcessed();
                         }
                     } catch (Exception e) {
                         Log.d(TAG, "Gesture Error in Gesture: " + e.getMessage());
@@ -498,7 +503,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             gestureMEListener.onLeftHandWave();
             return;
         }
-        if (wait) {
+        if (wait && !waveHandProcessed.get(LEFT_HAND)) {
+            waveHandProcessed.put(LEFT_HAND, true);
+            startWaveHandTimer();
             updateOnWave("Y");
         }
     }
@@ -516,9 +523,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             gestureMEListener.onGestureMEDetected();
             return;
         }
-        if (wait) {
+        if (wait && !waveHandProcessed.get(RIGHT_HAND)) {
             Log.d(TAG, "Right Hand wave update");
-            //isWaveHandProcessed = true;
+            waveHandProcessed.put(RIGHT_HAND, true);
+            startWaveHandTimer();
             updateOnWave("N");
         }
     }
@@ -542,6 +550,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (!isAnExpectedAnswer(answer)) {
             isQuestionnaireFailed = true;
             if (AppSettings.isGestureExitOnNegativeOp() && listener != null) {
+                cancelWaveHandTimer();
                 listener.onNegativeAnswer();
                 sendAnswers(true);
                 return;
@@ -552,6 +561,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
         if (index >= questionDataList.size()) {
             if (listener != null) {
+                cancelWaveHandTimer();
                 listener.onAllQuestionsAnswered();
                 sendAnswers(false);
             }
@@ -697,6 +707,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             public void run() {
                 this.cancel();
                 if (listener != null) {
+                    cancelWaveHandTimer();
                     listener.onQuestionsNotReceived();
                 }
             }
@@ -814,6 +825,32 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         waveHandProcessed.put(LEFT_HAND, false);
         waveHandProcessed.put(RIGHT_HAND, false);
         waveHandProcessed.put(BOTH_HANDS, false);
+    }
+
+    private void startWaveHandTimer() {
+        cancelWaveHandTimer();
+        waveHandTimer = new Timer();
+        waveHandTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                waveHandTimer.cancel();
+                if (listener != null) {
+                    listener.onWaveHandTimeout();
+                }
+                startWaveTimer();
+            }
+        }, 7 * 1000);
+    }
+
+    private void cancelWaveHandTimer() {
+        if (waveHandTimer != null) {
+            waveHandTimer.cancel();
+            waveHandTimer = null;
+        }
+    }
+
+    private void startWaveTimer() {
+        startWaveHandTimer();
     }
 
     public void clearData() {
