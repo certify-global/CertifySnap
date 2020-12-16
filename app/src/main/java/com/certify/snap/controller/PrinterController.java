@@ -160,6 +160,10 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     public boolean isPrintScan(boolean aboveThreshold) {
         boolean result = false;
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if ((!AppSettings.isPrintHighTemperatureUsers() && aboveThreshold) && !triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+            return false;
+        }
         if (isPrintForUser() || (AppSettings.isPrintHighTemperatureUsers() && aboveThreshold)) {
             if (AppSettings.isEnablePrinter()) {
                 try {

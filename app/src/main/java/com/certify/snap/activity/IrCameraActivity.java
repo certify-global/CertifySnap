@@ -2807,9 +2807,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchConfirmationFragment(String value) {
+        String argVal = value;
+        if (value.equals("true")) {
+            argVal = "high";
+        }
         Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("tempVal", value);
+        bundle.putString("tempVal", argVal);
         confirmationScreenFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.add(R.id.dynamic_fragment_frame_layout, confirmationScreenFragment, "ConfirmationScreenFragment");
@@ -3292,7 +3296,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
-                date = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
+                date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");
@@ -3365,7 +3369,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {
             String passText = AppSettings.getEditTextPrintPassName();
-            tempPass.setText(passText);
+            String triggerType = CameraController.getInstance().getTriggerType();
+            if (triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
+                GestureController.getInstance().isQuestionnaireFailed()) {
+                tempPass.setText("");
+                tempPass.setBackgroundColor(getColor(R.color.colorWhite));
+            } else {
+                tempPass.setText(passText);
+            }
         }
         if (bitmap != null) {
             userImage.setImageBitmap(bitmap);

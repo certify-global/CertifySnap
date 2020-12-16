@@ -514,5 +514,6 @@
     <string name="gesture_exit_title">Exit on negative outcome</string>
     <string name="gesture_exit_default">Please contact Admin</string>
     <string name="gesture_exit_hint">Message to display on exit of negative outcome</string>
+    <string name="gesture_timeout_msg">Please move Your Hand down to proceed to the next question</string>
 
 </resources>

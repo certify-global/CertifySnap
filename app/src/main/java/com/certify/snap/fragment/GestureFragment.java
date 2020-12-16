@@ -502,4 +502,9 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
             }
         });
     }
+
+    @Override
+    public void onWaveHandTimeout() {
+        mActivity.runOnUiThread(() -> Toast.makeText(mActivity, getString(R.string.gesture_timeout_msg), Toast.LENGTH_SHORT).show());
+    }
 }
