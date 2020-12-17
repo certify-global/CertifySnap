@@ -401,6 +401,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("eventType", "");
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
+                obj.put("loggingMode", AppSettings.getAccessControlLogMode());
 
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
@@ -470,6 +471,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("eventType", "");
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
+                obj.put("loggingMode", AppSettings.getAccessControlLogMode());
 
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
