@@ -47,5 +47,9 @@ public class Constants {
     public static final int TEMPERATURE_MAX_RETRY = 5;
 
     public static final int DEFAULT_SCAN_TYPE = 1;
+
+    public static final int DEFAULT_ACCESS_CONTROL_LOG_MODE = 0;
+
+    public static final int DEFAULT_ACCESS_CONTROL_SCAN_MODE = 1;
 }
 

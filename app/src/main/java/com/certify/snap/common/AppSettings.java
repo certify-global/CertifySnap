@@ -55,7 +55,6 @@ public class AppSettings {
     private static String tempResultBarHigh = "";
     private static boolean qrCodeEnabled = false;
     private static boolean rfidEnabled = false;
-    private static boolean accessLogEnabled = false;
     private static boolean gestureProgressEnabled = false;
     private static String gestureMessage = "";
     private static String gestureWorkFlow = "";
@@ -78,6 +77,8 @@ public class AppSettings {
     private static String editTextPrintWaveNo = "";
     private static boolean gestureExitOnNegativeOp = false;
     private static String gestureExitConfirmText = "";
+    private static int accessControlLogMode = Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE;
+    private static int accessControlScanMode = Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -135,7 +136,6 @@ public class AppSettings {
         qrCodeEnabled = (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false));
         rfidEnabled = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
-        accessLogEnabled = sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false);
         gestureProgressEnabled = sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR, false);
         gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, StringConstants.GESTURE_MESSAGE);
         gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
@@ -158,6 +158,8 @@ public class AppSettings {
         editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER,"0");
         gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, StringConstants.GESTURE_EXIT_MESSAGE);
+        accessControlLogMode = sharedPreferences.getInt(GlobalParameters.AccessControlLogMode,Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE);
+        accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode,Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
     }
 
     public static String getThermalScanTitle() {
@@ -349,7 +351,7 @@ public class AppSettings {
     }
 
     public static boolean isAccessLogEnabled() {
-        return accessLogEnabled;
+        return (accessControlLogMode != 0);
     }
 
     public static boolean isGestureProgressEnabled() {
@@ -439,5 +441,13 @@ public class AppSettings {
 
     public static String getGestureExitConfirmText() {
         return gestureExitConfirmText;
+    }
+
+    public static int getAccessControlLogMode() {
+        return accessControlLogMode;
+    }
+
+    public static int getAccessControlScanMode() {
+        return accessControlScanMode;
     }
 }

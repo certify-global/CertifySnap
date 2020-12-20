@@ -2198,6 +2198,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void searchFace(final FaceFeature frFace, final Integer requestId, final Bitmap rgb, final Bitmap ir) {
         Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
         if (!isScanWithMaskEnforced()) return;
+        if (AccessCardController.getInstance().isACFaceSearchDisabled()) {
+            runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
+            return;
+        }
         registeredMemberslist = null;
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
@@ -2288,12 +2292,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
-                                    RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-                                    if (rfidScanMatchMember != null) {
-                                        if (rfidScanMatchMember.primaryid != registeredMembers.primaryid) {
-                                            AccessCardController.getInstance().setAccessFaceNotMatch(true);
-                                            runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
-                                            return;
+                                    if (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) {
+                                        RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+                                        if (rfidScanMatchMember != null) {
+                                            if (rfidScanMatchMember.primaryid != registeredMembers.primaryid) {
+                                                AccessCardController.getInstance().setAccessFaceNotMatch(true);
+                                                runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
+                                                return;
+                                            }
                                         }
                                     }
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
@@ -2318,6 +2324,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     }
                                 } else {
                                     Log.e(TAG, "Snap Compare result database no match " + isAdded);
+                                    if (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.FACE_ONLY.getValue()) {
+                                        AccessCardController.getInstance().setAccessFaceNotMatch(true);
+                                    }
                                     if (Util.isOfflineMode(IrCameraActivity.this)) {
                                         runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
                                     }
