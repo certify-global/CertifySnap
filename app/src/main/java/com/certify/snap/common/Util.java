@@ -1452,7 +1452,7 @@ public class Util {
                 int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
                 String enableWiegandPt = jsonValueAccessControl.isNull("enableWeigandPassThrough") ? "0" : jsonValueAccessControl.getString("enableWeigandPassThrough");
                 int accessControlLogMode = jsonValueAccessControl.isNull("loggingMode") ? 0 : jsonValueAccessControl.getInt("loggingMode");
-                int accessControlScanMode = jsonValueAccessControl.isNull("validAccessOption") ? 1 : jsonValueAccessControl.getInt("validAccessOption");
+                int accessControlScanMode = jsonValueAccessControl.isNull("validAccessOption") ? 4 : jsonValueAccessControl.getInt("validAccessOption");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
