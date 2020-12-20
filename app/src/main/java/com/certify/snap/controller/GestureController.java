@@ -100,6 +100,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         void onFetchingQuestions();
         void onNegativeAnswer();
         void onWaveHandTimeout();
+        void onWaveHandReset();
     }
 
     public interface GestureHomeCallBackListener {
@@ -369,6 +370,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                             rightHandWave();
                         } else {
                             cancelWaveHandTimer();
+                            if (listener != null) {
+                                listener.onWaveHandReset();
+                            }
                             resetWaveHandProcessed();
                         }
                     } catch (Exception e) {
