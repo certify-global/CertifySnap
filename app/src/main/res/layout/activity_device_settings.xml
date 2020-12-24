@@ -241,7 +241,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@drawable/edittextbackground"
-                android:hint="@string/acces_password"
+                android:hint="@string/access_password"
                 android:inputType="numberPassword"
                 android:maxLength="20"
                 android:padding="@dimen/size_05" />
@@ -273,7 +273,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Local"
+                android:text="@string/local"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_18" />
 
@@ -295,7 +295,7 @@
                 android:id="@+id/pro_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Enable Pro Settings"
+                android:text="@string/enable_pro_setting"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_18" />
 
@@ -453,7 +453,7 @@
                 android:id="@+id/led_brightness_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="LED Brightness:"
+                android:text="@string/led_brightness"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_18" />
 
@@ -492,7 +492,7 @@
                     android:id="@+id/local_server_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Enable Local Server:"
+                    android:text="@string/enable_local_server"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 

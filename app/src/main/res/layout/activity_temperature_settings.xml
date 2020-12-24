@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_10"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Set temperature threshold for display"
+            android:text="@string/set_temp_text"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 
@@ -174,7 +174,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/edittextbackground"
-                android:hint="Display temperature above threshold"
+                android:hint="@string/temp_above_threshold"
                 android:inputType="numberDecimal"
                 android:paddingLeft="05dp"
                 android:textColorHint="@color/colorAccent" />
@@ -192,7 +192,7 @@
         android:layout_marginRight="10dp"
         android:background="@drawable/btn_shape"
         android:onClick="temperatureCalibration"
-        android:text="Temperature Calibration"
+        android:text="@string/temperature_calibration"
         android:textSize="25sp" />
 
 </LinearLayout>

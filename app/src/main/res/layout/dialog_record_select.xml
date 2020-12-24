@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:text="Please select Date"
+            android:text="@string/select_date"
             android:textColor="@color/colorLilyBlue"
             android:textSize="22sp" />
 
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:text="Please select the date range of the exported data. The location of the exported file is /sdcard/offline/record/"
+            android:text="@string/select_date_range"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -43,7 +43,7 @@
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Start Time(year/month): "/>
+                android:text="@string/start_time"/>
 
             <EditText
                 android:id="@+id/record_select_startyear"
@@ -82,7 +82,7 @@
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="End Time(year/month): "/>
+                android:text="@string/end_time"/>
 
             <EditText
                 android:id="@+id/record_select_endyear"
@@ -133,7 +133,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:lines="1"
-                android:text="Confirm"
+                android:text="@string/confirm"
                 android:textColor="@color/colorLilyBlue"
                 android:textSize="16sp" />
 
@@ -152,7 +152,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:lines="1"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 android:textColor="@color/colorLilyBlue"
                 android:textSize="16sp" />
 

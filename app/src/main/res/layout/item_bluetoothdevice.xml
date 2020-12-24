@@ -10,7 +10,7 @@
         android:id="@+id/item_bluetoothdevice_tv_deviceid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="deviced id"
+        android:text="@string/device_id"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"/>
@@ -21,6 +21,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:layout_below="@+id/item_bluetoothdevice_tv_deviceid"
-        android:text="uuid" />
+        android:text="@string/uuid" />
 
 </RelativeLayout>

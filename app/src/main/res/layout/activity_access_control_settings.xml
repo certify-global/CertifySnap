@@ -199,7 +199,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="26 Bit"
+                        android:text="@string/bit_26"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
@@ -209,7 +209,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="34 Bit"
+                        android:text="@string/bit_34"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
@@ -219,7 +219,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="48 Bit"
+                        android:text="@string/bit_48"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
@@ -345,7 +345,7 @@
                         android:id="@+id/rb_logging_access_control"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Access Control"
+                        android:text="@string/access_control"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -354,7 +354,7 @@
                         android:id="@+id/rb_logging_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Time and Attendance"
+                        android:text="@string/time_and_attendance"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -363,7 +363,7 @@
                         android:id="@+id/rb_logging_access_both"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Both"
+                        android:text="@string/both"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -372,7 +372,7 @@
                         android:id="@+id/rb_logging_none"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="None"
+                        android:text="@string/none"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -425,7 +425,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="ID Only"
+                        android:text="@string/id_only"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -435,7 +435,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="Face Only"
+                        android:text="@string/face_only"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -445,7 +445,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="ID + Face"
+                        android:text="@string/id_face"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -454,7 +454,7 @@
                         android:id="@+id/rb_id_or_face"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ID or Face"
+                        android:text="@string/id_or_face"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
