@@ -604,7 +604,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, YYYY hh:mm:ss a", Locale.getDefault());//yyyy-MM-dd HH:mm:ss
+                SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy hh:mm:ss a", Locale.getDefault()); //yyyy-MM-dd HH:mm:ss
                 Date curDate = new Date(System.currentTimeMillis());
                 final String str = formatter.format(curDate);
                 runOnUiThread(new Runnable() {
@@ -3293,6 +3293,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if(AppSettings.isPrintLabelQRAnswers()){
                 thermalText = AppSettings.getEditTextPrintQRAnswers();
             }
+            thermalText = thermalText + getTemperatureValue(highTemperature);
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
                 bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
@@ -3316,19 +3317,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     String answerNo = AppSettings.getEditTextPrintWaveNo();
                     answers = answers.replace("Y", answerYes);
                     answers = answers.replace("N", answerNo);
-                    int tempValue = 0;
-                    String tempValueStr = "";
-                    if (highTemperature) {
-                        if (AppSettings.isPrintLabelHighTemperature()) {
-                            tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
-                            tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
-                        }
-                    } else {
-                        if (AppSettings.isPrintLabelNormalTemperature()) {
-                            tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
-                            tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
-                        }
-                    }
+                    String tempValueStr = getTemperatureValue(highTemperature);
                     thermalText = answers + " " + tempValueStr;
                 }
             }
@@ -3847,5 +3836,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             result = true;
         }
         return result;
+    }
+
+    private String getTemperatureValue(boolean aboveThreshold) {
+        int tempValue = 0;
+        String tempValueStr = "";
+        if (aboveThreshold) {
+            if (AppSettings.isPrintLabelHighTemperature()) {
+                tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
+                tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
+            }
+        } else {
+            if (AppSettings.isPrintLabelNormalTemperature()) {
+                tempValue = (int) (TemperatureController.getInstance().getTemperature() * 10);
+                tempValueStr = String.format("%4s", tempValue).replace(' ', '0');
+            }
+        }
+        return tempValueStr;
     }
 }
