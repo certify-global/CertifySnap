@@ -74,6 +74,7 @@ import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
@@ -831,7 +832,11 @@ public class Util {
                 updateFaceMemberValues(obj, data);
             }
             if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
-                obj.put("trqStatus", "0");
+                if (!GestureController.getInstance().isQuestionnaireFailed()) {
+                    obj.put("trqStatus", "0");
+                } else {
+                    obj.put("trqStatus", "1");
+                }
             }
             obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
             obj.put("maskStatus", data.maskStatus);
