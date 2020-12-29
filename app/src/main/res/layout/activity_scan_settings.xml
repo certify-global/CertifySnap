@@ -571,7 +571,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/size_20"
                     android:layout_marginTop="@dimen/size_15"
-                    android:text="Enable voice recognition"
+                    android:text="@string/enable_voice_recognition"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
@@ -617,7 +617,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/size_20"
                     android:layout_marginTop="@dimen/size_15"
-                    android:text="Enable Hand Gesture"
+                    android:text="@string/enable_hand_gesture"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 

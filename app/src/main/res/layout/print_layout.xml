@@ -62,7 +62,7 @@
         android:layout_height="30dp"
         android:background="@color/colorGreen"
         android:gravity="center"
-        android:text="Screened"
+        android:text="@string/screened"
         android:textColor="@color/colorWhite"
         android:textSize="20dp"
         android:textStyle="bold" />
@@ -77,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:gravity="center"
-        android:text="Thermal Scan"
+        android:text="@string/thermal_scan_text"
         android:textColor="@color/colorBlack"
         android:textSize="20dp"
         android:textStyle="bold" />

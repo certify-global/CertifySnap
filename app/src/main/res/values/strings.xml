@@ -551,6 +551,7 @@
     <string name="use_photo">USE PHOTO</string>
     <string name="update_dialog">UPDATE</string>
     <string name="user_id">userid</string>
+    <string name="member_text">Member</string>
 
     <!--printer wifi page-->
     <string name="select_printer">Select Printer</string>
@@ -581,6 +582,9 @@
     <string name="imei_number">IMEI NUMBER:</string>
     <string name="close_button">Close</string>
     <string name="save_button">Save</string>
+    <string name="locale_setting">Language</string>
+    <string name="english">English</string>
+    <string name="spanish">Spanish</string>
 
     <!--setting page-->
     <string name="settings">Settings</string>
@@ -625,5 +629,18 @@
     <string name="start_time" >Start Time(year/month): </string>
     <string name="end_time" >End Time(year/month): </string>
     <string name="set_temp_text">Set temperature threshold for display</string>
+    <string name="enter_password_text">Enter Password</string>
+    <string name="enable_voice_recognition">Enable voice recognition</string>
+    <string name="enable_hand_gesture">Enable Hand Gesture</string>
+    <string name="enable_wave">Enable Wave</string>
+    <string name="wave_options">Wave Options</string>
+    <string name="enable_ques_ans">Enable Questions and Answers</string>
+    <string name="enable_mask_enforce">Enable Mask Enforcement(Prompt for mask Undetected Response)</string>
+    <string name="show_wave_image">Show wave image</string>
+    <string name="show_wave_ques">Show wave question progress view bar</string>
+    <string name="screened">Screened</string>
+    <string name="thermal_scan_text">Thermal Scan</string>
+    <string name="anonymous_text">Anonymous</string>
+    <string name="unrecognized">Unrecognized</string>
 
 </resources>
