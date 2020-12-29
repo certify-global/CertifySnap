@@ -3284,6 +3284,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         //String dateTime = date;
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+            date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && qrCodeData != null) {
                 if (AppSettings.isPrintLabelName()) {
@@ -3293,7 +3294,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if(AppSettings.isPrintLabelQRAnswers()){
                 thermalText = AppSettings.getEditTextPrintQRAnswers();
             }
-            thermalText = thermalText + getTemperatureValue(highTemperature);
+            thermalText = thermalText + " " + getTemperatureValue(highTemperature);
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
                 bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
