@@ -28,6 +28,16 @@ public class RegisteredMembers {
     public String memberType;
     public String dateTime;
     public String memberTypeName;
+    public String networkId;
+
+
+    public String getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(String networkId) {
+        this.networkId = networkId;
+    }
 
     public long getPrimaryId() {
         return primaryid;

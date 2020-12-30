@@ -85,6 +85,7 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
+import com.common.pos.api.util.Utils;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
@@ -810,6 +811,8 @@ public class Util {
                 obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
                 obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
                 obj.put("trqStatus", ""); // Send this empty if not Qr
+                obj.put("networkId", rfidScanMatchedMember.getNetworkId());
+
             } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()) {
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
                 updateFaceMemberValues(obj, data);
@@ -910,6 +913,7 @@ public class Util {
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
+            obj.put("networkId",data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1280,6 +1284,8 @@ public class Util {
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
+                    String groupId = jsonDeviceSettings.isNull("groupId") ? "" : jsonDeviceSettings.getString("groupId");
+                    Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, groupId);
                     if (syncOnlineMembers.equals("1")) {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
                     } else {
@@ -1829,6 +1835,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
+            obj.put("groupId",sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,""));
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 
