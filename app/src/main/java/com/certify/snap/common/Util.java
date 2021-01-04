@@ -1971,6 +1971,7 @@ public class Util {
 
     public static void getMemberID(Context context, String certifyId) {
         try {
+            MemberSyncDataModel.getInstance().clear();
             MemberSyncDataModel.getInstance().setNumOfRecords(1);
             doSendBroadcast(context, "start", 1, 1);
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
