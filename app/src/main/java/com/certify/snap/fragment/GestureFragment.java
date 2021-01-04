@@ -29,6 +29,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.view.TimerAnimationView;
+import com.google.android.material.snackbar.Snackbar;
 
 public class GestureFragment extends Fragment implements GestureController.GestureCallbackListener {
 
@@ -47,6 +48,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private Activity mActivity;
     private SharedPreferences sharedPreferences;
     private String maskStatus = "";
+    private Snackbar snackbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -501,5 +503,24 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 activity.onGestureNegativeAnswer();
             }
         });
+    }
+
+    @Override
+    public void onWaveHandTimeout() {
+        mActivity.runOnUiThread(() -> {
+            snackbar = Snackbar.make(view, getString(R.string.gesture_timeout_msg), Snackbar.LENGTH_INDEFINITE);
+            snackbar.show();
+        });
+    }
+
+    @Override
+    public void onWaveHandReset() {
+        mActivity.runOnUiThread(this::dismissSnackbar);
+    }
+
+    private void dismissSnackbar() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 }

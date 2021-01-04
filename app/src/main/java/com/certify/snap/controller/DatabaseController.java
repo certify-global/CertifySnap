@@ -17,6 +17,7 @@ import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceSettings;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.MemberSyncService;
@@ -431,21 +432,42 @@ public class DatabaseController {
         }
     }
 
+    public void insertQuestionsToDB(QuestionDataDb questionData) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertGestureQuestions(questionData);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public List<QuestionDataDb> getQuestionsFromDb() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllQuestionsData();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public void deleteQuestionsFromDb() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAllQuestions();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public List<RegisteredMembers> lastTenMembers() {
         if (databaseStore != null) {
             return databaseStore.lastTenMembers();
         }
         return new ArrayList<>();
-    }
-
-    public void clearAll() {
-        if (databaseStore != null) {
-            databaseStore.deleteAll();
-            databaseStore.deleteAllOfflineRecord();
-            databaseStore.deleteAllOfflineAccessLogRecords();
-            deleteMemberData();
-            FaceServer.getInstance().clearAllFaces(mContext);
-        }
     }
 
     private boolean handleDBException(SQLiteException e) {
@@ -487,6 +509,16 @@ public class DatabaseController {
                 new File(file, child).delete();
             }
             file.delete();
+        }
+    }
+
+    public void clearAll() {
+        if (databaseStore != null) {
+            databaseStore.deleteAll();
+            databaseStore.deleteAllOfflineRecord();
+            databaseStore.deleteAllOfflineAccessLogRecords();
+            deleteMemberData();
+            FaceServer.getInstance().clearAllFaces(mContext);
         }
     }
 }

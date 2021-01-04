@@ -198,7 +198,6 @@ public class GlobalParameters {
     public static final String RESULT_BAR = "result_bar";
     public static final String RESULT_BAR_NORMAL = "result_bar_normal";
     public static final String RESULT_BAR_HIGH = "result_bar_high";
-    public static final String ACCESS_LOGGING = "access_logging";
     public static final String VALIDATE_DB = "validateDB";
     public static final String PROGRESS_BAR = "progress_bar";
     public static final String WAVE_INDICATOR = "wave_indicator";
@@ -206,6 +205,6 @@ public class GlobalParameters {
     public static final String WAVE_IMAGE = "WaveImage";
     public static final String MASK_ENFORCE_INDICATOR = "mask_enforce_indicator";
     public static final String MEMBER_GROUP_ID = "member_group_id";
-
-
+    public static final String AccessControlLogMode = "accessControlLogging";
+    public static final String AccessControlScanMode = "accessControlScan";
 }

@@ -2,10 +2,8 @@ package com.certify.snap.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -34,8 +32,15 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     private RadioButton m48BitRb;
     private TextView saveButton;
     private RadioGroup rg_logging;
-    private RadioButton rb_logging_yes;
-    private RadioButton rb_logging_no;
+    private RadioButton rb_logging_none;
+    private RadioButton rb_logging_access_control;
+    private RadioButton rb_logging_time;
+    private RadioButton rb_logging_access_both;
+    private RadioGroup rg_valid_access;
+    private RadioButton rb_id_only;
+    private RadioButton rb_face_only;
+    private RadioButton rb_id_and_face;
+    private RadioButton rb_id_or_face;
     private CheckBox mEnableWiegandPt;
 
     @Override
@@ -57,9 +62,16 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         m48BitRb = findViewById(R.id.fourtyEight_bit_rb);
         saveButton = findViewById(R.id.btn_save);
         rg_logging = findViewById(R.id.rg_logging);
-        rb_logging_yes = findViewById(R.id.rb_logging_yes);
-        rb_logging_no = findViewById(R.id.rb_logging_no);
+        rb_logging_access_control = findViewById(R.id.rb_logging_access_control);
+        rb_logging_time = findViewById(R.id.rb_logging_time);
+        rb_logging_access_both = findViewById(R.id.rb_logging_access_both);
+        rb_logging_none = findViewById(R.id.rb_logging_none);
         mEnableWiegandPt = findViewById(R.id.enable_weigand_pt);
+        rg_valid_access = findViewById(R.id.rg_valid_access);
+        rb_id_only = findViewById(R.id.rb_id_only);
+        rb_face_only = findViewById(R.id.rb_face_only);
+        rb_id_and_face = findViewById(R.id.rb_id_and_face);
+        rb_id_or_face = findViewById(R.id.rb_id_or_face);
 
         setDefaults();
         handleClickListeners();
@@ -91,12 +103,48 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
             m34BitRb.setChecked(false);
             m48BitRb.setChecked(true);
         }
-        if (Util.getSharedPreferences(this).getBoolean(GlobalParameters.ACCESS_LOGGING,false)) {
-            rb_logging_yes.setChecked(true);
-            rb_logging_no.setChecked(false);
-        } else {
-            rb_logging_no.setChecked(true);
-            rb_logging_yes.setChecked(false);
+        if (Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlLogMode, Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE) ==1) {
+            rb_logging_access_control.setChecked(true);
+            rb_logging_time.setChecked(false);
+            rb_logging_access_both.setChecked(false);
+            rb_logging_none.setChecked(false);
+        } else if(Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlLogMode, Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE) ==2) {
+            rb_logging_access_control.setChecked(false);
+            rb_logging_time.setChecked(true);
+            rb_logging_access_both.setChecked(false);
+            rb_logging_none.setChecked(false);
+        } else if(Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlLogMode, Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE) ==3) {
+            rb_logging_access_control.setChecked(false);
+            rb_logging_time.setChecked(false);
+            rb_logging_access_both.setChecked(true);
+            rb_logging_none.setChecked(false);
+        }else{
+            rb_logging_access_control.setChecked(false);
+            rb_logging_time.setChecked(false);
+            rb_logging_access_both.setChecked(false);
+            rb_logging_none.setChecked(true);
+        }
+
+        if (Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlScanMode, Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE)==1) {
+            rb_id_only.setChecked(true);
+            rb_face_only.setChecked(false);
+            rb_id_and_face.setChecked(false);
+            rb_id_or_face.setChecked(false);
+        } else if(Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlScanMode, Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE)==2) {
+            rb_id_only.setChecked(false);
+            rb_face_only.setChecked(true);
+            rb_id_and_face.setChecked(false);
+            rb_id_or_face.setChecked(false);
+        } else if(Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlScanMode, Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE)==3) {
+            rb_id_only.setChecked(false);
+            rb_face_only.setChecked(false);
+            rb_id_and_face.setChecked(true);
+            rb_id_or_face.setChecked(false);
+        }else{
+            rb_id_only.setChecked(false);
+            rb_face_only.setChecked(false);
+            rb_id_and_face.setChecked(false);
+            rb_id_or_face.setChecked(true);
         }
     }
 
@@ -143,12 +191,53 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         });
 
         rg_logging.setOnCheckedChangeListener((radioGroup, checkedId) -> {
-            if (checkedId == R.id.rb_logging_yes) {
-                rb_logging_yes.setChecked(true);
-                rb_logging_no.setChecked(false);
-            } else if (checkedId == R.id.rb_logging_no) {
-                rb_logging_no.setChecked(true);
-                rb_logging_yes.setChecked(false);
+            if (checkedId == R.id.rb_logging_access_control) {
+                rb_logging_access_control.setChecked(true);
+                rb_logging_time.setChecked(false);
+                rb_logging_access_both.setChecked(false);
+                rb_logging_none.setChecked(false);
+            } else if (checkedId == R.id.rb_logging_time) {
+                rb_logging_access_control.setChecked(false);
+                rb_logging_time.setChecked(true);
+                rb_logging_access_both.setChecked(false);
+                rb_logging_none.setChecked(false);
+            }else if(checkedId==R.id.rb_logging_access_both){
+                rb_logging_access_control.setChecked(false);
+                rb_logging_time.setChecked(false);
+                rb_logging_access_both.setChecked(true);
+                rb_logging_none.setChecked(false);
+
+            }else if(checkedId==R.id.rb_logging_none){
+                rb_logging_access_control.setChecked(false);
+                rb_logging_time.setChecked(false);
+                rb_logging_access_both.setChecked(false);
+                rb_logging_none.setChecked(true);
+            }
+        });
+        rg_valid_access.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.rb_id_only) {
+                    rb_id_only.setChecked(true);
+                    rb_face_only.setChecked(false);
+                    rb_id_and_face.setChecked(false);
+                    rb_id_or_face.setChecked(false);
+                } else if (checkedId == R.id.rb_face_only) {
+                    rb_id_only.setChecked(false);
+                    rb_face_only.setChecked(true);
+                    rb_id_and_face.setChecked(false);
+                    rb_id_or_face.setChecked(false);
+                }else if(checkedId==R.id.rb_id_and_face){
+                    rb_id_only.setChecked(false);
+                    rb_face_only.setChecked(false);
+                    rb_id_and_face.setChecked(true);
+                    rb_id_or_face.setChecked(false);
+                }else if(checkedId==R.id.rb_id_or_face){
+                    rb_id_only.setChecked(false);
+                    rb_face_only.setChecked(false);
+                    rb_id_and_face.setChecked(false);
+                    rb_id_or_face.setChecked(true);
+                }
             }
         });
     }
@@ -170,10 +259,24 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         }else if(m48BitRb.isChecked()){
             Util.writeInt(sp, GlobalParameters.WeiganFormatMessage, 48);
         }
-        if (rb_logging_yes.isChecked()) {
-            Util.writeBoolean(sp, GlobalParameters.ACCESS_LOGGING, true);
-        } else if(rb_logging_no.isChecked()) {
-            Util.writeBoolean(sp, GlobalParameters.ACCESS_LOGGING, false);
+        if (rb_logging_access_control.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlLogMode, 1);
+        } else if(rb_logging_time.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlLogMode, 2);
+        }else if(rb_logging_access_both.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlLogMode, 3);
+        }else if(rb_logging_none.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlLogMode, 0);
+        }
+
+        if (rb_id_only.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlScanMode, 1);
+        } else if(rb_face_only.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlScanMode, 2);
+        }else if(rb_id_and_face.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlScanMode, 3);
+        }else if(rb_id_or_face.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.AccessControlScanMode, 4);
         }
         finish();
         Toast.makeText(getApplicationContext(), getString(R.string.save_success), Toast.LENGTH_LONG).show();

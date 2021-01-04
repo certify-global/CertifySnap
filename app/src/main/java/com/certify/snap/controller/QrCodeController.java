@@ -5,9 +5,9 @@ import com.certify.snap.common.Util;
 public class QrCodeController {
     private final String TAG = QrCodeController.class.getSimpleName();
     private static QrCodeController mInstance = null;
-    private final String QR_FORMAT_ON_DATE = "Certify/OD";
-    private final String QR_FORMAT_BEFORE_DATE = "Certify/OC";
-    private final String QR_FORMAT_GENERIC = "Certify/A:";
+    private final String QR_FORMAT_ON_DATE = "/OD";
+    private final String QR_FORMAT_BEFORE_DATE = "/OC";
+    private final String QR_FORMAT_GENERIC = "/A:";
     private final String QR_DATE_FORMAT = "yyyyMMdd";
 
     public static QrCodeController getInstance() {
@@ -41,14 +41,16 @@ public class QrCodeController {
         boolean result = false;
         if (qrCode.contains(QR_FORMAT_ON_DATE)) {
             String strSplit[] = qrCode.split("/");
-            String strFormatDate = strSplit[1];
+            int size = strSplit.length;
+            String strFormatDate = strSplit[size-1];
             String strDate = strFormatDate.substring(2);
             if (!strDate.isEmpty() && strDate.equals(Util.currentDate(QR_DATE_FORMAT))) {
                 result = true;
             }
         } else if (qrCode.contains(QR_FORMAT_BEFORE_DATE)) {
             String strSplit[] = qrCode.split("/");
-            String strFormatDate = strSplit[1];
+            int size = strSplit.length;
+            String strFormatDate = strSplit[size-1];
             String strDate = strFormatDate.substring(2);
             String currentDate = Util.currentDate(QR_DATE_FORMAT);
             if (!strDate.isEmpty() && currentDate != null) {
