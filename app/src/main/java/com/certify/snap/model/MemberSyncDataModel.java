@@ -113,7 +113,9 @@ public class MemberSyncDataModel {
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
                             member.setDateTime(Util.currentDate());
-                            member.setNetworkId(c.getString("networkId"));
+                            if (c.has("networkId")) {
+                                member.setNetworkId(c.getString("networkId"));
+                            }
                             index = index +1;
                             member.setPrimaryId(index);
                             emitter.onNext(member);
@@ -187,7 +189,9 @@ public class MemberSyncDataModel {
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
                             member.setDateTime(Util.currentDate());
-                            member.setNetworkId("networkId");
+                            if (c.has("networkId")) {
+                                member.setNetworkId(c.getString("networkId"));
+                            }
 
                             List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
                             if (membersList != null && memberList.length() > 0) {
@@ -253,12 +257,12 @@ public class MemberSyncDataModel {
                             deleteRecord(member.firstname, member.getPrimaryId());
                             localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                                     member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                    member.getImage(), "sync", context, member, member.getPrimaryId(),member.getNetworkId());
+                                    member.getImage(), "sync", context, member, member.getPrimaryId());
                         } else {
                             Log.d(TAG, "SnapXT New member update " +i);
                             localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                                     member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                    member.getImage(), "sync", context, member, member.getPrimaryId(),member.getNetworkId());
+                                    member.getImage(), "sync", context, member, member.getPrimaryId());
                         }
                     }
                 }
@@ -284,7 +288,7 @@ public class MemberSyncDataModel {
                     deleteRecord(member.firstname, member.getPrimaryId());
                     localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                            member.getImage(), "sync", context, member, member.getPrimaryId(),member.getNetworkId());
+                            member.getImage(), "sync", context, member, member.getPrimaryId());
                     if (listener != null) {
                         listener.onMemberAddedToDb(member);
                     }
@@ -293,7 +297,7 @@ public class MemberSyncDataModel {
                     Log.d(TAG, "SnapXT New member update " +i);
                     localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                            member.getImage(), "sync", context, member, member.getPrimaryId(),member.getNetworkId());
+                            member.getImage(), "sync", context, member, member.getPrimaryId());
                     if (listener != null) {
                         listener.onMemberAddedToDb(member);
                     }
@@ -336,12 +340,12 @@ public class MemberSyncDataModel {
      *
      */
     private boolean localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid,
-                                  String uniqueid, String imgpath, String sync, Context context, RegisteredMembers member, long primaryId,String networkId) {
+                                  String uniqueid, String imgpath, String sync, Context context, RegisteredMembers member, long primaryId) {
         boolean result = false;
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
-                                 member.memberType, member.memberTypeName,networkId)) {
+                                 member.memberType, member.memberTypeName, member.networkId)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -458,12 +462,12 @@ public class MemberSyncDataModel {
                         deleteRecord(member.firstname, member.getPrimaryId());
                         localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                                 member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                member.getImage(), "sync", context, member, member.getPrimaryId(),member.getNetworkId());
+                                member.getImage(), "sync", context, member, member.getPrimaryId());
                     } else {
                         Log.d(TAG, "SnapXT Error member update " +i);
                         localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                                 member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                member.getImage(), "sync", context, member, member.getPrimaryId(),member.getNetworkId());
+                                member.getImage(), "sync", context, member, member.getPrimaryId());
                     }
                 }
                 updateDbSyncErrorList();
