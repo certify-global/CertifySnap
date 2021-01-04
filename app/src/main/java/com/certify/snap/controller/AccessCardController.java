@@ -290,7 +290,7 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoor(List<RegisteredMembers> membersList) {
         if (isAccessSignalEnabled()) {
-            if (AppSettings.isRfidEnabled() && AccessCardController.getInstance().isEnableWiegandPt()) {
+            if (AppSettings.isRfidEnabled() && (isEnableWiegandPt() || isAllowAnonymous())) {
                 allowAccess();
                 return;
             }
@@ -349,7 +349,7 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
         if (isAccessSignalEnabled()) {
-            if (AppSettings.isRfidEnabled() && AccessCardController.getInstance().isEnableWiegandPt()) {
+            if (AppSettings.isRfidEnabled() && (isEnableWiegandPt() || isAllowAnonymous())) {
                 allowAccessOnHighTemp();
                 return;
             }

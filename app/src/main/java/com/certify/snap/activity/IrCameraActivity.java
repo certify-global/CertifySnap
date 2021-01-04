@@ -3749,7 +3749,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void onRfidNoMemberMatch(String cardId) {
-        if (AccessCardController.getInstance().isEnableWiegandPt()) {
+        if (AccessCardController.getInstance().isEnableWiegandPt() ||
+            AccessCardController.getInstance().isAllowAnonymous()) {
             onRfidOnlyEnabled(cardId);
             return;
         }
