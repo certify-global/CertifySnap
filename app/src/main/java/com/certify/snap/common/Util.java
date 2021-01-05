@@ -1284,7 +1284,10 @@ public class Util {
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
-                    String groupId = jsonDeviceSettings.isNull("groupId") ? "" : jsonDeviceSettings.getString("groupId");
+                    String groupId = jsonDeviceSettings.isNull("groupId") ? "0" : jsonDeviceSettings.getString("groupId");
+                    if (groupId.isEmpty()) {
+                        groupId = "0";
+                    }
                     Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, groupId);
                     if (syncOnlineMembers.equals("1")) {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
@@ -1837,7 +1840,7 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("groupId",sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,""));
+            obj.put("groupId", AppSettings.getMemberSyncGroupId());
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 

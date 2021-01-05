@@ -496,6 +496,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 obj.put("status", true);
                                 obj.put("memberType", member.getMemberType());
                                 obj.put("memberTypeName", member.getMemberTypeName());
+                                obj.put("networkId", member.getNetworkId());
                                 new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                             } catch (Exception e) {
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());

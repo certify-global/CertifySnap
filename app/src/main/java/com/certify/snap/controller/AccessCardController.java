@@ -455,6 +455,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMember.getMemberid());
                     obj.put("memberTypeId", registeredMember.getMemberType());
                     obj.put("memberTypeName", registeredMember.getMemberTypeName());
+                    obj.put("networkId", registeredMember.getNetworkId());
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
                     obj.put("id", 0);
@@ -464,6 +465,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMember.getMemberid());
                     obj.put("memberTypeId", registeredMember.getMemberType());
                     obj.put("memberTypeName", registeredMember.getMemberTypeName());
+                    obj.put("networkId", registeredMember.getNetworkId());
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);
@@ -527,6 +529,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMembers.getMemberid());
                     obj.put("memberTypeId", registeredMembers.getMemberType());
                     obj.put("memberTypeName", registeredMembers.getMemberTypeName());
+                    obj.put("networkId", registeredMembers.getNetworkId());
                 } else {
                     obj.put("id", 0);
                     obj.put("firstName", registeredMembers.getFirstname());
@@ -535,6 +538,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMembers.getMemberid());
                     obj.put("memberTypeId", registeredMembers.getMemberType());
                     obj.put("memberTypeName", registeredMembers.getMemberTypeName());
+                    obj.put("networkId", registeredMembers.getNetworkId());
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);

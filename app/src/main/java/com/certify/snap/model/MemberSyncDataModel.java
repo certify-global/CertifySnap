@@ -4,15 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
-import com.certify.snap.activity.MemberManagementActivity;
-import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
@@ -175,7 +175,7 @@ public class MemberSyncDataModel {
                             String certifyId = c.getString("id");
                             String memberId = c.getString("memberId");
                             String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
-                            String groupId=c.getString("groupId");
+                            String groupId = "0";
                             member.setFirstname(c.getString("firstName"));
                             member.setLastname(c.getString("lastName"));
                             member.setAccessid(c.getString("accessId"));
@@ -187,29 +187,38 @@ public class MemberSyncDataModel {
                             if (c.has("memberTypeName")) {
                                 member.setMemberTypeName(c.getString("memberTypeName"));
                             }
+                            if (c.has("networkId")) {
+                                member.setNetworkId(c.getString("networkId"));
+                            }
+                            if (c.has("groupId")) {
+                                groupId = c.getString("groupId");
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
                             member.setDateTime(Util.currentDate());
 
-                            if (c.has("networkId")) {
-                                member.setNetworkId(c.getString("networkId"));
-                            }
-
                             List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
-                            if (membersList != null &&  membersList.size() !=0 && memberList.length() > 0) {
-                                if(!Util.getSharedPreferences(context).getString(GlobalParameters.MEMBER_GROUP_ID,"").contentEquals(groupId)) {
-                                    deleteRecord(member.firstname,membersList.get(0).getPrimaryId());
-                                }else {
-                                    deleteRecord(member.firstname, membersList.get(0).getPrimaryId());
+                            if (membersList != null && membersList.size() > 0) {
+                                if (isMemberSyncGroupIdEnabled() &&
+                                    !AppSettings.getMemberSyncGroupId().contains(groupId)) {
+                                    deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId());
+                                    doSendBroadcast(SYNCING_COMPLETED, 0, 0);
+                                    emitter.onNext(null);
+                                } else {
                                     member.setPrimaryId(membersList.get(0).getPrimaryId());
                                     emitter.onNext(member);
                                 }
-                            }else if(membersList.size() ==0){
-                                emitter.onNext(member);
                             } else {
-                                emitter.onNext(null);
+                                if (isMemberSyncGroupIdEnabled() &&
+                                    AppSettings.getMemberSyncGroupId().contains(groupId)) {
+                                    index = index + 1;
+                                    member.setPrimaryId(index);
+                                    emitter.onNext(member);
+                                } else {
+                                    emitter.onNext(null);
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -582,6 +591,14 @@ public class MemberSyncDataModel {
         return false;
     }
 
+    public boolean isSyncing() {
+        return isSyncing;
+    }
+
+    private boolean isMemberSyncGroupIdEnabled() {
+        return (!AppSettings.getMemberSyncGroupId().equals("0"));
+    }
+
     /**
      * Method that clears the data model
      */
@@ -592,9 +609,5 @@ public class MemberSyncDataModel {
         dbSyncErrorMap.clear();
         dbAddType = DatabaseAddType.SCALE;
         index = 0;
-    }
-
-    public boolean isSyncing() {
-        return isSyncing;
     }
 }

@@ -79,6 +79,7 @@ public class AppSettings {
     private static String gestureExitConfirmText = "";
     private static int accessControlLogMode = Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE;
     private static int accessControlScanMode = Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE;
+    private static String memberSyncGroupId = "0";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -160,6 +161,7 @@ public class AppSettings {
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, StringConstants.GESTURE_EXIT_MESSAGE);
         accessControlLogMode = sharedPreferences.getInt(GlobalParameters.AccessControlLogMode,Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE);
         accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode,Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
+        memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,"0");
     }
 
     public static String getThermalScanTitle() {
@@ -449,5 +451,9 @@ public class AppSettings {
 
     public static int getAccessControlScanMode() {
         return accessControlScanMode;
+    }
+
+    public static String getMemberSyncGroupId() {
+        return memberSyncGroupId;
     }
 }

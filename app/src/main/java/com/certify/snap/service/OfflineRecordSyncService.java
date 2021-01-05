@@ -192,6 +192,9 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (json.has("memberTypeName")) {
                 jsonObject.put("memberTypeName", json.getString("memberTypeName"));
             }
+            if (json.has("networkId")) {
+                jsonObject.put("networkId", json.getString("networkId"));
+            }
 
             if (json.has("irTemplate")){
                 jsonObject.put("irTemplate", json.getString("irTemplate"));
@@ -294,7 +297,10 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (json.has("memberTypeName")) {
                 jsonObject.put("memberTypeName", json.getString("memberTypeName"));
             }
-
+            if (json.has("networkId")) {
+                jsonObject.put("networkId", json.getString("networkId"));
+            }
+            
             if (logList.get(i).getOfflineSync()==1){
                 jsonObject.put("utcOfflineDateTime",json.getString("deviceTime"));
                 jsonObject.put("offlineSync", logList.get(i).getOfflineSync());
