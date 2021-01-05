@@ -11,6 +11,8 @@ import android.util.Log;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.snap.activity.MemberManagementActivity;
+import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
@@ -173,6 +175,7 @@ public class MemberSyncDataModel {
                             String certifyId = c.getString("id");
                             String memberId = c.getString("memberId");
                             String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
+                            String groupId=c.getString("groupId");
                             member.setFirstname(c.getString("firstName"));
                             member.setLastname(c.getString("lastName"));
                             member.setAccessid(c.getString("accessId"));
@@ -189,13 +192,21 @@ public class MemberSyncDataModel {
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
                             member.setDateTime(Util.currentDate());
+
                             if (c.has("networkId")) {
                                 member.setNetworkId(c.getString("networkId"));
                             }
 
                             List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
-                            if (membersList != null && memberList.length() > 0) {
-                                member.setPrimaryId(membersList.get(0).getPrimaryId());
+                            if (membersList != null &&  membersList.size() !=0 && memberList.length() > 0) {
+                                if(!Util.getSharedPreferences(context).getString(GlobalParameters.MEMBER_GROUP_ID,"").contentEquals(groupId)) {
+                                    deleteRecord(member.firstname,membersList.get(0).getPrimaryId());
+                                }else {
+                                    deleteRecord(member.firstname, membersList.get(0).getPrimaryId());
+                                    member.setPrimaryId(membersList.get(0).getPrimaryId());
+                                    emitter.onNext(member);
+                                }
+                            }else if(membersList.size() ==0){
                                 emitter.onNext(member);
                             } else {
                                 emitter.onNext(null);

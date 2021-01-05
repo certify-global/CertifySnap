@@ -1323,8 +1323,10 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 }
                 totalMemberCount = activeMemberCount;
                 MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-            } else {
-                //DismissProgressDialog(mloadingprogress);
+            } else if(response.responseSubCode.equals("101")){
+                DismissProgressDialog(mloadingprogress);
+                DatabaseController.getInstance().deleteAllMember();
+                refresh();
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }
