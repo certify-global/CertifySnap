@@ -532,7 +532,6 @@
     <string name="gesture_exit_default">Please contact Admin</string>
     <string name="gesture_exit_hint">Message to display on exit of negative outcome</string>
     <string name="gesture_timeout_msg">Please move Your Hand down to proceed to the next question</string>
-    <string name="valid_access">Valid Access Options</string>
     <string name="listening">Listening...</string>
 
     <!--member management page-->
@@ -642,5 +641,6 @@
     <string name="thermal_scan_text">Thermal Scan</string>
     <string name="anonymous_text">Anonymous</string>
     <string name="unrecognized">Unrecognized</string>
+    <string name="valid_access">Valid Access Options (Not applicable for Anonymous and Wiegand Pass-through)</string>
 
 </resources>

@@ -564,7 +564,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
                 String dateTime = date + " " + currentTime;
-                PrinterController.getInstance().setPrintData("Test", dateTime, "Thermal Scan", false);
+                PrinterController.getInstance().setPrintData("Test", dateTime, "Thermal Scan", currentTime,false);
                 PrinterController.getInstance().printUsb();
             }
         }).start();

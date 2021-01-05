@@ -142,8 +142,8 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     public void printOnHighTemperature() {
         String triggerType = CameraController.getInstance().getTriggerType();
-        if (AppSettings.isPrintHighTemperatureUsers() || (AppSettings.isPrintWaveUsers()
-            && triggerType.equals(CameraController.triggerValue.WAVE.toString()))) {
+        if (AppSettings.isPrintHighTemperatureUsers() || (AppSettings.isPrintWaveUsers() && triggerType.equals(CameraController.triggerValue.WAVE.toString()))
+                || (AppSettings.isPrintQrCodeUsers() && triggerType.equals(CameraController.triggerValue.CODEID.toString()))) {
             new Thread(() -> {
                 if (AppSettings.isEnablePrinter()) {
                     print();
@@ -161,7 +161,9 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     public boolean isPrintScan(boolean aboveThreshold) {
         boolean result = false;
         String triggerType = CameraController.getInstance().getTriggerType();
-        if ((!AppSettings.isPrintHighTemperatureUsers() && aboveThreshold) && !triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+        if (!AppSettings.isPrintHighTemperatureUsers() && aboveThreshold) {
+            if (!triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
+                    !triggerType.equals(CameraController.triggerValue.CODEID.toString()))
             return false;
         }
         if (isPrintForUser() || (AppSettings.isPrintHighTemperatureUsers() && aboveThreshold)) {
@@ -303,16 +305,18 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         return mPrintData;
     }
 
-    public void setPrintData( String name, String dateTime, String thermalText, boolean highTemperature) {
-        if(AppSettings.isPrintUsbEnabled()){
+    public void setPrintData(String name, String dateTime, String thermalText, String scanTime, boolean highTemperature) {
+        if (AppSettings.isPrintUsbEnabled()) {
+            String triggerType = CameraController.getInstance().getTriggerType();
+            String passText = AppSettings.getEditTextPrintPassName();
             HashMap<String , String> labelItemList = new HashMap<>();
-            labelItemList.put( "Name",  "Name:" );
-            labelItemList.put( "Name Data",  name );
-            labelItemList.put( "TimeScan Data",  dateTime );
-            if (!highTemperature) {
-                labelItemList.put("Status Data", "PASS");
-            } else {
+            labelItemList.put("Name Data", name);
+            labelItemList.put("TimeScan Data", scanTime);
+            if (highTemperature || (triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
+                    GestureController.getInstance().isQuestionnaireFailed())) {
                 labelItemList.put("Status Data", "");
+            } else {
+                labelItemList.put("Status Data", passText);
             }
             labelItemList.put( "Type Data",  thermalText);
             mPrintData.setObjectDataList(labelItemList);

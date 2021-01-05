@@ -204,6 +204,7 @@ public class GlobalParameters {
     public static final String CLEAR_SHARED_PREF = "clearSharedPref";
     public static final String WAVE_IMAGE = "WaveImage";
     public static final String MASK_ENFORCE_INDICATOR = "mask_enforce_indicator";
+    public static final String MEMBER_GROUP_ID = "member_group_id";
     public static final String AccessControlLogMode = "accessControlLogging";
     public static final String AccessControlScanMode = "accessControlScan";
     public static final String languageType = "englishLanguage";

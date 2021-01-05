@@ -32,6 +32,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
@@ -269,12 +270,13 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
                     || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        DatabaseController.getInstance().clearAll();
                         startService(new Intent(HomeActivity.this, MemberSyncService.class));
-                    Application.StartService(HomeActivity.this);
+                        Application.StartService(HomeActivity.this);
+                    }
                 }
             }
         }, 100);
