@@ -1816,6 +1816,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onBarcodeData(String guid) {
         try {
+            if (isTopFragmentGesture() ||
+                CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString())) return;
             if (!qrCodeReceived) {
                 CameraController.getInstance().setTriggerType(CameraController.triggerValue.CODEID.toString());
                 preview.stop();
@@ -3342,12 +3344,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         }
-        if(!AppSettings.isPrintLabelFace()){
-            PrinterController.getInstance().setPrintWaveData(name, date, thermalText);
-        }else {
-            PrinterController.getInstance().setPrintData( name, date, thermalText, highTemperature);
-        }
-
+        PrinterController.getInstance().setPrintData(name, date, thermalText, currentTime, highTemperature);
         convertUIToImage(bitmap, name, date, thermalText, currentTime, highTemperature);
     }
 
@@ -3668,7 +3665,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onGestureDetected() {
         runOnUiThread(() -> {
             if ((relative_main.getVisibility() == View.GONE) ||
-                    AccessCardController.getInstance().getTapCount() != 0) return;
+                    (AccessCardController.getInstance().getTapCount() != 0) ||
+                    (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) return;
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
