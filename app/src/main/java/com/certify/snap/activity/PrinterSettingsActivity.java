@@ -216,7 +216,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         editTextWaveYes.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, "1"));
         editTextWaveNo.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, "0"));
 
-        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
+        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>"+getString(R.string.settings)+"</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
         } else {

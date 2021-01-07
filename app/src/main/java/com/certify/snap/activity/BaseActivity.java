@@ -100,7 +100,7 @@ public abstract class BaseActivity extends Activity {
                     finishAffinity();
                 }
                 if (intent != null && intent.getAction().equals(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION)) {
-                    Toast.makeText(BaseActivity.this, "Updating settings, App will restart", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BaseActivity.this, getString(R.string.update_setting_app_restart), Toast.LENGTH_SHORT).show();
                     finishAffinity();
                 }
             }
@@ -157,7 +157,7 @@ public abstract class BaseActivity extends Activity {
             int mode = CameraController.getInstance().getDeviceMode();
             Log.d(TAG, "Device mode " + mode);
             if (mode == 0 || ApplicationController.getInstance().getTemperatureUtil() == null) {
-                Toast.makeText(this, "App encountered a problem, will restart", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.app_restart_msg), Toast.LENGTH_SHORT).show();
                 finishAffinity();
                 restartApplication();
             }

@@ -573,7 +573,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void closeApp() {
-        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
+        Toast.makeText(DeviceSettingsActivity.this, getString(R.string.app_restart), Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
         Intent intent = new Intent(this, HomeActivity.class);

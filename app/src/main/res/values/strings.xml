@@ -288,7 +288,7 @@
     <string name="ble_light_test">Test : </string>
     <string name="ble_connect"><u>Connect</u></string>
 
-    <string name="bluetooth_printer_connect_status">Connected Printer : </string>
+    <string name="bluetooth_printer_connect_status">Connected Printer: </string>
 
 
     <string name="centigrade" translatable="false">&#160;℃</string>
@@ -583,7 +583,7 @@
     <string name="save_button">Save</string>
     <string name="locale_setting">Language</string>
     <string name="english">English</string>
-    <string name="spanish">Spanish</string>
+    <string name="spanish">Spanish (Español)</string>
 
     <!--setting page-->
     <string name="settings">Settings</string>
@@ -617,7 +617,7 @@
     <string name="normal_pass_scan">Default Result Print Text(Normal Pass Scan)</string>
     <string name="temp_above_threshold">Display temperature above threshold</string>
     <string name="ir_text">Press here if you do not have QR Code</string>
-    <string name="ir_ques_text">if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to</string>
+    <string name="ir_ques_text">if your answer to all 3 covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to</string>
     <string name="start">start</string>
     <string name="rect1">rect1</string>
     <string name="rect2">rect2</string>
@@ -675,5 +675,11 @@
     <string name="gesture_msg">Hold your palm on side of the screen where indicate to answer. If you have to start over, hold both hands.</string>
     <string name="mask_enforce_msg">Please wear a mask and Wave Left Hand to start over or else Wave Right Hand to continue.</string>
     <string name="gesture_exit_msg">Please contact Admin</string>
+    <string name="input_ip_address">Please input a valid Ip address</string>
+    <string name="input_mac_address">Please input a valid Mac address</string>
+    <string name="app_restart">App will restart</string>
+    <string name="update_setting_app_restart">Updating settings, App will restart</string>
+    <string name="app_restart_msg">App encountered a problem, will restart</string>
+    <string name="succeeded">Succeeded</string>
 
 </resources>

@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,16 +17,30 @@ import android.widget.ListView;
 
 import com.brother.ptouch.sdk.NetPrinter;
 import com.certify.snap.R;
+import com.certify.snap.common.ContextUtils;
 import com.certify.snap.printer.Common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class PrinterBTSettingsActivity extends ListActivity {
 
     private NetPrinter[] mBluetoothPrinter; // array of storing Printer information
     private ArrayList<String> mItems = null; // List of storing the printer's information
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale localeToSwitchTo;
+        if (HomeActivity.mSelectLanguage) {
+            localeToSwitchTo = new Locale("es");
+        } else {
+            localeToSwitchTo = new Locale("en");
+        }
+        ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
+        super.attachBaseContext(localeUpdatedContext);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

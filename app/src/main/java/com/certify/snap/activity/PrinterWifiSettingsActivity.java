@@ -1,6 +1,8 @@
 package com.certify.snap.activity;
 
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,12 +19,14 @@ import com.brother.ptouch.sdk.NetPrinter;
 import com.brother.ptouch.sdk.Printer;
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
+import com.certify.snap.common.ContextUtils;
 import com.certify.snap.common.IpAddressValidator;
 import com.certify.snap.common.Util;
 import com.certify.snap.printer.Common;
 import com.certify.snap.view.PrinterMsgDialog;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class PrinterWifiSettingsActivity extends ListActivity {
 
@@ -35,6 +39,18 @@ public class PrinterWifiSettingsActivity extends ListActivity {
     private EditText printerIp, printerMac;
     private TextView printerIpError, printerMacError;
     SharedPreferences sharedPreferences;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale localeToSwitchTo;
+        if (HomeActivity.mSelectLanguage) {
+            localeToSwitchTo = new Locale("es");
+        } else {
+            localeToSwitchTo = new Locale("en");
+        }
+        ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
+        super.attachBaseContext(localeUpdatedContext);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +87,11 @@ public class PrinterWifiSettingsActivity extends ListActivity {
             @Override
             public void onClick(View view) {
                 if (printerIp.getText().toString().isEmpty() || !IpAddressValidator.isValid(printerIp.getText().toString())) {
-                    printerIpError.setText("Please input a valid Ip address");
+                    printerIpError.setText(getString(R.string.input_ip_address));
                     return;
                 }
                 if (printerMac.getText().toString().isEmpty()) {
-                    printerMacError.setText("Please input a valid Mac address");
+                    printerMacError.setText(getString(R.string.input_mac_address));
                     return;
                 }
                 updatePrinterSettings();

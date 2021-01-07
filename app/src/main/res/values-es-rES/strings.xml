@@ -288,7 +288,7 @@
     <string name="ble_light_test">Prueba : </string>
     <string name="ble_connect"><u>Conectar</u></string>
 
-    <string name="bluetooth_printer_connect_status">Impresora conectada : </string>
+    <string name="bluetooth_printer_connect_status">Impresora conectada: </string>
 
     <string name="centigrade" translatable="false">&#160;℃</string>
     <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
@@ -508,7 +508,7 @@
     <string name="wave_instructions">Ingrese las instrucciones del indicador de ola</string>
     <string name="mask_enforce_instructions">Ingrese el texto de aplicación de máscara</string>
 
-    <string name="wave_yes">&lt; YES </string>
+    <string name="wave_yes">&lt; SI </string>
     <string name="wave_no"> NO &gt; </string>
     <string name="scan_type">Tipo de scaneado</string>
     <string name="scan_type_quick">Rápido</string>
@@ -674,5 +674,11 @@
     <string name="gesture_msg">Mantenga su palma en el lado de la pantalla donde indique responder. Si tiene que empezar de nuevo, sostenga ambas manos.</string>
     <string name="mask_enforce_msg">Use una máscara y haga un gesto con la mano izquierda para comenzar de nuevo o, de lo contrario, haga un gesto con la mano derecha para continuar.</string>
     <string name="gesture_exit_msg">Comuníquese con el administrador</string>
+    <string name="input_ip_address">Ingrese una dirección IP válida</string>
+    <string name="input_mac_address">Ingrese una dirección Mac válida</string>
+    <string name="app_restart">La aplicación se reiniciará</string>
+    <string name="update_setting_app_restart">Actualizando la configuración, la aplicación se reiniciará</string>
+    <string name="app_restart_msg">La aplicación encontró un problema, se reiniciará</string>
+    <string name="succeeded">Sucedido</string>
 
 </resources>

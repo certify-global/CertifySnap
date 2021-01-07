@@ -1,5 +1,7 @@
 package com.certify.snap.activity;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.certify.snap.R;
+import com.certify.snap.common.ContextUtils;
 import com.certify.snap.printer.Common;
 import com.certify.snap.printer.PrinterModelInfo;
 
@@ -20,11 +23,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class PrinterWifiBTSettingsActivity extends PreferenceActivity implements
         Preference.OnPreferenceChangeListener {
 
     private SharedPreferences sharedPreferences;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale localeToSwitchTo;
+        if (HomeActivity.mSelectLanguage) {
+            localeToSwitchTo = new Locale("es");
+        } else {
+            localeToSwitchTo = new Locale("en");
+        }
+        ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
+        super.attachBaseContext(localeUpdatedContext);
+    }
 
     @SuppressWarnings("deprecation")
     @Override

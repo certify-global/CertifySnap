@@ -298,7 +298,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     public void setData() {
         try {
             if (tvDeviceOnline == null) return;
-            tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? "Activated" : "Not Activated"));
+            tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? getString(R.string.activated) : getString(R.string.not_activated_msg)));
             tvDeviceName.setText(String.format("%s: %s", getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
             tvDeviceSettings.setText(String.format("%s: %s", getResources().getString(R.string.device_settings), sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local")));
             tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true) ? getString(R.string.online) : getString(R.string.offline)));

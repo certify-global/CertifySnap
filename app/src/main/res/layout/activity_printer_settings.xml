@@ -126,7 +126,7 @@
                     android:drawablePadding="5dp"
                     android:text="@string/bluetooth_printer_connect_status"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tv_bluetooth_bother_printer_status"
@@ -140,7 +140,7 @@
                     android:maxLines="1"
                     android:text="@string/audio_none"
                     android:textColor="@color/colorRed"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tv_bluetooth_bother_printer_connection"
@@ -151,7 +151,7 @@
                     android:layout_marginBottom="@dimen/size_10"
                     android:onClick="selectBluetoothPrinter"
                     android:text="@string/printer_settings"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
