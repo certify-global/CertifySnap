@@ -185,10 +185,10 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     try {
                         String strUserInput = etPassword.getText().toString().trim();
                         if (TextUtils.isEmpty(strUserInput)) {
-                            etPassword.setError("Password should not be empty");
+                            etPassword.setError(getString(R.string.password_empty_msg));
                             return;
                         } else if (etPassword.getText().toString().length() < 6) {
-                            etPassword.setError("Password should be minimum six digits");
+                            etPassword.setError(getString(R.string.password_length_msg));
                         } else {
                             etPassword.setError(null);
                             Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, etPassword.getText().toString().trim());
@@ -453,13 +453,13 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
+                activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
             } else {
                 switch_activate.setChecked(false);
-                activateStatus.setText("Not Activated");
-                not_activate.setText("Activate");
-                tvSettingsName.setText("Local");
+                activateStatus.setText(getString(R.string.not_activated_msg));
+                not_activate.setText(getString(R.string.activate_msg));
+                tvSettingsName.setText(getString(R.string.local));
             }
             syncMemberSettings();
             deviceAccessPassword();
@@ -469,8 +469,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void activateStatus() {
-        activateStatus.setText("Not Activated");
-        not_activate.setText("Activate");
+        activateStatus.setText(getString(R.string.not_activated_msg));
+        not_activate.setText(getString(R.string.activate_msg));
         not_activate.setVisibility(View.VISIBLE);
 
         not_activate.setOnClickListener(new View.OnClickListener() {
@@ -529,11 +529,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseCode").equals("1")) {
                 switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
+                activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
             } else if (json1.getString("responseSubCode").equals("103")) {
                 switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
+                activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
             }
         } catch (Exception e) {
@@ -625,7 +625,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
     private boolean isValidUrl() {
         if (etEndUrl.getText().toString().isEmpty()) {
-            etEndUrl.setError("Please input valid url");
+            etEndUrl.setError(getString(R.string.input_valid_url));
             return false;
         }
         return true;
@@ -644,7 +644,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     public void clearDatabase(View view) {
         //LitePal.deleteDatabase("telpo_face");
         DatabaseController.getInstance().deleteAllMember();
-        Toast.makeText(this, "All Members Cleared", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.all_members_cleared), Toast.LENGTH_LONG).show();
     }
 
     private void seekBarSettings() {
@@ -739,7 +739,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private void captureLogSetting() {
         saveLogButton.setOnClickListener(view -> {
             Util.sendDeviceLogs(DeviceSettingsActivity.this);
-            Toast.makeText(DeviceSettingsActivity.this, "Logs sent", Toast.LENGTH_LONG).show();
+            Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
         });
     }
 
@@ -760,7 +760,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void initiateCloseApp() {
-        ProgressDialog.show(this, "", "Closing and Restarting App, Please wait...");
+        ProgressDialog.show(this, "", getString(R.string.closing_app_msg));
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
                     ApplicationController.getInstance().releaseThermalUtil();

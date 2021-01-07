@@ -1388,12 +1388,12 @@ public class Util {
                 if (!temperatureNormal.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
                 } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,StringConstants.TEMPERATURE_NORMAL);
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, context.getString(R.string.temperature_normal_msg));
                 }
                 if (!temperatureHigh.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
                 } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, context.getString(R.string.temperature_high_msg));
                 }
 
                 //ConfirmationView
@@ -1552,11 +1552,11 @@ public class Util {
                     String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
                     String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
                     String showWaveProgress = touchlessInteractionSettings.isNull("showWaveProgress") ? "0" : touchlessInteractionSettings.getString("showWaveProgress");
-                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? StringConstants.GESTURE_MESSAGE : touchlessInteractionSettings.getString("waveIndicatorInstructions");
+                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? context.getString(R.string.gesture_msg) : touchlessInteractionSettings.getString("waveIndicatorInstructions");
                     String showWaveImage = touchlessInteractionSettings.isNull("showWaveImage") ? "0" : touchlessInteractionSettings.getString("showWaveImage");
-                    String maskEnforceText = touchlessInteractionSettings.isNull("maskEnforceText") ? StringConstants.MASK_ENFORCE_MESSAGE : touchlessInteractionSettings.getString("maskEnforceText");
+                    String maskEnforceText = touchlessInteractionSettings.isNull("maskEnforceText") ? context.getString(R.string.mask_enforce_msg) : touchlessInteractionSettings.getString("maskEnforceText");
                     String exitOnNegativeOutcome = touchlessInteractionSettings.isNull("exitOnNegativeOutcome") ? "0" : touchlessInteractionSettings.getString("exitOnNegativeOutcome");
-                    String messageForNegativeOutcome = touchlessInteractionSettings.isNull("messageForNegativeOutcome") ? StringConstants.GESTURE_EXIT_MESSAGE : touchlessInteractionSettings.getString("messageForNegativeOutcome");
+                    String messageForNegativeOutcome = touchlessInteractionSettings.isNull("messageForNegativeOutcome") ? context.getString(R.string.gesture_exit_msg) : touchlessInteractionSettings.getString("messageForNegativeOutcome");
                     Log.d("CertifyXT flow", settingsID);
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));

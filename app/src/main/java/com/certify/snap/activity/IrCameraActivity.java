@@ -366,7 +366,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (progressDialog != null && progressDialog.isShowing()) return false;
                 CameraController.getInstance().setAppExitTriggered(true);
                 Logger.debug(TAG, "onLongClick", "Launch Login activity");
-                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", "Launching Settings, Please wait...");
+                progressDialog = ProgressDialog.show(IrCameraActivity.this, "", getString(R.string.launch_settings_msg));
                 if (CameraController.getInstance().getScanState() == CameraController.ScanState.FACIAL_SCAN) {
                     return false;
                 }
@@ -533,9 +533,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         //Application.getInstance().exit();
         try {
             AlertDialog.Builder builder = new AlertDialog.Builder(IrCameraActivity.this);
-            builder.setMessage("Are you sure you want to exit?")
+            builder.setMessage(getString(R.string.app_exit_msg))
                     .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getString(R.string.button_ok), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             finishAffinity();
                             stopHealthCheckService();
@@ -544,7 +544,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                             stopHidService();
                         }
                     })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getString(R.string.living_type_0), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
                         }
@@ -658,7 +658,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     ID = mTag.getId();
                     String UID = Util.bytesToHexString(ID);
                     if (UID == null) {
-                        Toast.makeText(getApplicationContext(), "Error! Card cannot be recognized", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.rfid_card_error), Toast.LENGTH_LONG).show();
                         return;
                     }
                     mNfcIdString = Util.bytearray2Str(Util.hexStringToBytes(UID.substring(2)), 0, 4, 10);
@@ -708,7 +708,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             } catch (RuntimeException e) {
                 Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
-                Toast.makeText(this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
             }
         }
         if (ApplicationController.getInstance().isDeviceBoot()) {
@@ -1012,7 +1011,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         try {
             cameraHelper.start();
         } catch (RuntimeException e) {
-            Toast.makeText(IrCameraActivity.this, e.getMessage() + getString(R.string.camera_error_notice), Toast.LENGTH_SHORT).show();
+            Logger.error(TAG, "Error in opening Rgb camera");
         }
     }
 
@@ -1310,7 +1309,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (snackMessage.equals("start")) {
             tv_sync.setText(totalCount++ + " out of " + memberCount);
         } else if (snackMessage.contains("completed")) {
-            tv_sync.setText("Sync completed");
+            tv_sync.setText(getString(R.string.sync_completed));
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -2169,21 +2168,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 switch (maskStatus) {
                     case 0: {
                         mask_message.setTextColor(getResources().getColor(R.color.colorRed));
-                        mask_message.setText("Without Mask");
+                        mask_message.setText(getString(R.string.no_mask));
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     }
                     break;
                     case 1: {
                         mask_message.setTextColor(getResources().getColor(R.color.green));
-                        mask_message.setText("Mask Detected");
+                        mask_message.setText(getString(R.string.mask_detected));
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     }
                     break;
                     case -1: {
                         mask_message.setTextColor(getResources().getColor(R.color.colorDarkOrange));
-                        mask_message.setText("Unable to detect Mask");
+                        mask_message.setText(getString(R.string.mask_not_detected));
                         mask_message.setVisibility(View.VISIBLE);
                         mask_message.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                     }
@@ -2786,7 +2785,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         temperatureBitmap = null;
 
         if (isDisconnected) {
-            runOnUiThread(() -> Toast.makeText(getBaseContext(), "Connecting to Light Device", Toast.LENGTH_SHORT).show());
+            runOnUiThread(() -> Toast.makeText(getBaseContext(), getString(R.string.connect_light_device), Toast.LENGTH_SHORT).show());
             BLEController.getInstance().connectToDevice();
         }
         GestureController.getInstance().clearData();
@@ -3160,7 +3159,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onFaceNotInRangeOfThermal() {
         runOnUiThread(() -> {
             if (faceThermalToast != null) return;
-            faceThermalToast = Toast.makeText(IrCameraActivity.this, "Please move towards center", Toast.LENGTH_SHORT);
+            faceThermalToast = Toast.makeText(IrCameraActivity.this, getString(R.string.move_center_msg), Toast.LENGTH_SHORT);
             faceThermalToast.show();
         });
     }
@@ -3497,7 +3496,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (sharedPreferences != null) {
             String printDevice = sharedPreferences.getString("printer", "NONE");
             if (printDevice != null && !printDevice.equalsIgnoreCase("NONE")) {
-                showAlertDialog("", getString(R.string.pair_printer_message), "OK", "");
+                showAlertDialog("", getString(R.string.pair_printer_message), getString(R.string.button_ok), "");
             }
         }
     }
@@ -3558,7 +3557,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(IrCameraActivity.this, "QR Validation not completed!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(IrCameraActivity.this, getString(R.string.qr_validation_msg), Toast.LENGTH_SHORT).show();
                         CameraController.getInstance().setQrCodeId(guid);
                         Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                         clearQrCodePreview();
@@ -3628,7 +3627,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
                 return;
             }
-            runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, "Please connect the Gesture device", Toast.LENGTH_LONG).show());
+            runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, getString(R.string.connect_gesture_device), Toast.LENGTH_LONG).show());
             return;
         }
         GestureController.getInstance().checkGestureStatus();
@@ -3669,7 +3668,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
-            Toast.makeText(this, "Launching Gesture screen, Please wait...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.gesture_launch_msg), Toast.LENGTH_SHORT).show();
             if (AppSettings.isMaskEnforced()) {
                 isReadyToScan = false;
                 clearLeftFace(null);
