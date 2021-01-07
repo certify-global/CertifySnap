@@ -511,7 +511,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, editTextQRAnswers.getText().toString());
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, editTextPassName.getText().toString());
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, editTextWaveYes.getText().toString());
-        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextWaveNo.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, editTextWaveNo.getText().toString());
 
         Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();

@@ -1512,7 +1512,7 @@ public class Util {
                     String printFace = printerSettings.isNull("printFace") ? "0" : printerSettings.getString("printFace");
                     String printName = printerSettings.isNull("printName") ? "0" : printerSettings.getString("printName");
                     String printUnidentifiedText = printerSettings.isNull("unidentifiedPrintText") ? "0" : printerSettings.getString("unidentifiedPrintText");
-                    String printUnidentifiedTextVal = printerSettings.isNull("unidentifiedPrintTextValue") ? "0" : printerSettings.getString("unidentifiedPrintTextValue");
+                    String printUnidentifiedTextVal = printerSettings.isNull("unidentifiedPrintTextValue") ? context.getString(R.string.anonymous_text) : printerSettings.getString("unidentifiedPrintTextValue");
                     String printNormalTemperature = printerSettings.isNull("printNormalTemperature") ? "0" : printerSettings.getString("printNormalTemperature");
                     String printHighTemperature = printerSettings.isNull("printHighTemperature") ? "0" : printerSettings.getString("printHighTemperature");
                     String printWaveAnswers = printerSettings.isNull("printWaveAnswers") ? "0" : printerSettings.getString("printWaveAnswers");
