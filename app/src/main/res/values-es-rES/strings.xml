@@ -495,7 +495,7 @@
     <string name="dataName">Datos de nombre	</string>
     <string name="bottom_text">Bloquea una luz con tu mano \n para hacer una selección \n \n ¿Cometiste un error? \n Bloquea ambas luces para volver</string>
     <string name="touchless_interaction_setting">Interacción sin contacto</string>
-    <string name="touchless_setting">Configuración de interacción sin contacto</string>
+    <string name="touchless_setting">Configuración de interacción \n sin contacto</string>
     <string name="enable_acknowledge">Habilitar pantalla de reconocimiento</string>
     <string name="enter_full_screen">Ingresar texto de pantalla completa</string>
     <string name="tv_result_bar">Mostrar barra de resultados</string>
@@ -562,11 +562,11 @@
     <string name="printing_option">Opciones de impresión</string>
     <string name="label_option">Opciones de etiqueta</string>
     <string name="print_face">Cara de impresión	</string>
-    <string name="print_name">Nombre en letra de imprenta (si está identificado, si no, en blanco)</string>
+    <string name="print_name">Nombre en letra de imprenta \n (si está identificado, si no, en blanco)</string>
     <string name="print_text">Si el texto impreso no está identificado</string>
     <string name="print_normal_temp">Imprimir valor de temperatura normal</string>
     <string name="print_high_temp">Imprimir valor de temperatura alta</string>
-    <string name="print_indicator_qr">Indicador de impresión para usuarios de códigos QR</string>
+    <string name="print_indicator_qr">Indicador de impresión para \n usuarios de códigos QR</string>
     <string name="print_wave_ans">Respuestas de Print Wave</string>
     <string name="mac_address_hint">dirección MAC</string>
 
