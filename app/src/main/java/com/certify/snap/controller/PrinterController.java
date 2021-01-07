@@ -234,12 +234,7 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         copyIniFile();
         final String myMemotyPath = Environment.getDataDirectory().getPath() + "/data/" + context.getPackageName();
         try {
-            if(!AppSettings.isPrintLabelFace()){
-                util.asset2file(context, "SmpFV4D1.lfm", myMemotyPath, "tempLabel.lfm");
-            }
-            else {
-                util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
-            }
+            util.asset2file(context, "SmpFV4D.lfm", myMemotyPath, "tempLabel.lfm");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -311,7 +306,8 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
             String passText = AppSettings.getEditTextPrintPassName();
             HashMap<String , String> labelItemList = new HashMap<>();
             labelItemList.put("Name Data", name);
-            labelItemList.put("TimeScan Data", scanTime);
+            labelItemList.put("Scan Date", dateTime);
+            labelItemList.put("Scan Time", scanTime);
             if (highTemperature || (triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
                     GestureController.getInstance().isQuestionnaireFailed())) {
                 labelItemList.put("Status Data", "");
