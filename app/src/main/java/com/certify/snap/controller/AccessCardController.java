@@ -181,6 +181,7 @@ public class AccessCardController implements AccessCallback {
         }
         if (mReverseRelayMode) {
             unLockStandAloneDoor();
+            unLockWeiganDoorController();
         }
     }
 

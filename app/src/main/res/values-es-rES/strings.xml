@@ -170,12 +170,12 @@
     <string name="allow_anonymous">Permitir anónimos</string>
     <string name="relay_timeout">Tiempo de espera del relé:</string>
     <string name="normal_mode">
-        <font size="16">Modo normal</font><font size="14"> (Opere Relay/Wiegand para cada escaneo)</font>
+        <font size="16">Modo normal</font><font size="14"> (Acceso operativo para cada escaneo)</font>
     </string>
     <string name="reverse_mode">
-        <font size="16">Modo inverso</font><font size="14"> (Opere el relé en escaneo de alta temperatura solamente)</font>
+        <font size="16">Modo inverso</font><font size="14"> (Acceso operativo solo en escaneo de alta temperatura)</font>
     </string>
-    <string name="stop_relay">Detener relé/Wiegand en escaneo de alta temperatura</string>
+    <string name="stop_relay">Detener el acceso en escaneo de alta temperatura</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">Okay</string>
@@ -680,5 +680,8 @@
     <string name="update_setting_app_restart">Actualizando la configuración, la aplicación se reiniciará</string>
     <string name="app_restart_msg">La aplicación encontró un problema, se reiniciará</string>
     <string name="succeeded">Sucedido</string>
+    <string name="contact_supervisor_msg">Comuníquese con su supervisor antes de comenzar cualquier trabajo.</string>
+    <string name="nice_day_msg">¡Que tengas un buen día!</string>
+    <string name="pass">PASAR</string>
 
 </resources>

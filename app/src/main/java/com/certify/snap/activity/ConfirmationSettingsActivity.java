@@ -70,8 +70,8 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
 
             et_screen_delay_above.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1"));
             et_screen_below.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1"));
-            edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above, "Please contact your supervisor before starting any work."));
-            edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below, "Have a nice day!"));
+            edittext_title_above.setText(sp.getString(GlobalParameters.Confirm_title_above, getString(R.string.contact_supervisor_msg)));
+            edittext_title_below.setText(sp.getString(GlobalParameters.Confirm_title_below, getString(R.string.nice_day_msg)));
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {

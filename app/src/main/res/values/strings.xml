@@ -170,12 +170,12 @@
     <string name="allow_anonymous">Allow Anonymous</string>
     <string name="relay_timeout">Relay Timeout:</string>
     <string name="normal_mode">
-        <font size="16">Normal Mode</font><font size="14"> (Operate Relay/Wiegand for every scan)</font>
+        <font size="16">Normal Mode</font><font size="14"> (Operate Access for every scan)</font>
     </string>
     <string name="reverse_mode">
-        <font size="16">Reverse Mode</font><font size="14"> (Operate Relay on High Temperature Scan Only)</font>
+        <font size="16">Reverse Mode</font><font size="14"> (Operate Access on High Temperature Scan Only)</font>
     </string>
-    <string name="stop_relay">Stop Relay/Wiegand on High Temperature Scan</string>
+    <string name="stop_relay">Stop Access on High Temperature Scan</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
@@ -681,5 +681,8 @@
     <string name="update_setting_app_restart">Updating settings, App will restart</string>
     <string name="app_restart_msg">App encountered a problem, will restart</string>
     <string name="succeeded">Succeeded</string>
+    <string name="contact_supervisor_msg">Please contact your supervisor before starting any work.</string>
+    <string name="nice_day_msg">Have a nice day!</string>
+    <string name="pass">PASS</string>
 
 </resources>

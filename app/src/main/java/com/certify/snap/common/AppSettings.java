@@ -90,7 +90,7 @@ public class AppSettings {
 
     public void getSettingsFromSharedPref(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN");
+        thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, context.getString(R.string.thermal_scan));
         thermalScanSubTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, "");
         livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
         imageIcon = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
@@ -154,7 +154,7 @@ public class AppSettings {
         maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, context.getString(R.string.mask_enforce_msg));
         printLabelQRAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false);
         editTextPrintQRAnswers = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS,"XXXX");
-        editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,"PASS");
+        editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,context.getString(R.string.pass));
         editTextPrintWaveYes = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER,"1");
         editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER,"0");
         gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
