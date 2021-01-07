@@ -3268,6 +3268,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String name = "";
         String thermalText = "";
 
+        PrinterController.getInstance().checkPrintFileExists();
         if(AppSettings.isPrintLabelFace()) {
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
             PrinterController.getInstance().updateImageForPrint(bitmap);
@@ -3298,9 +3299,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             thermalText = thermalText + " " + getTemperatureValue(highTemperature);
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
-                if (bitmap == null) {
-                    bitmap = rgbBitmap;
+                if(AppSettings.isPrintLabelFace()) {
+                    bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
+                    if (bitmap == null) {
+                        bitmap = rgbBitmap;
+                    }
                 }
                 if (AppSettings.isPrintLabelName()) {
                     name = AccessControlModel.getInstance().getRfidScanMatchedMember().firstname;
@@ -3326,7 +3329,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             if (AppSettings.isPrintAllScan()) {
                 if (AppSettings.isFacialDetect() && member != null) {
-                    bitmap = BitmapFactory.decodeFile(member.image);
+                    if(AppSettings.isPrintLabelFace()) {
+                        bitmap = BitmapFactory.decodeFile(member.image);
+                    }
                     if (member.firstname != null) {
                         if (AppSettings.isPrintLabelName()) {
                             name = member.firstname;

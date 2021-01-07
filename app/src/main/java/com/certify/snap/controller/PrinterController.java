@@ -485,6 +485,14 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
         }
     }
 
+    public void checkPrintFileExists() {
+        String path = Environment.getExternalStorageDirectory() + "/CertifySnap/Pic/image.jpg";
+        File file = new File(path);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
     public void clearData() {
         mPrintData = null;
         mUsbPrintControl = null;
