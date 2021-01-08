@@ -8,10 +8,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorBgGreen"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/size_05"
+        android:paddingBottom="@dimen/size_05">
 
         <ImageView
             android:layout_width="30dp"
@@ -55,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_20"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Enable Wave"
+            android:text="@string/enable_wave"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 
@@ -95,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/size_20"
         android:layout_marginTop="@dimen/size_15"
-        android:text="Wave Options"
+        android:text="@string/wave_options"
         android:textColor="@color/black"
         android:textSize="@dimen/text_size_18" />
 
@@ -110,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_20"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Enable Questions and Answers"
+            android:text="@string/enable_ques_ans"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 
@@ -227,7 +229,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_20"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Enable Mask Enforcement(Prompt for mask Undetected Response)"
+            android:text="@string/enable_mask_enforce"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 
@@ -291,7 +293,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_20"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Enable voice recognition"
+            android:text="@string/enable_voice_recognition"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 
@@ -336,7 +338,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_20"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Show wave image"
+            android:text="@string/show_wave_image"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 
@@ -381,7 +383,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/size_20"
             android:layout_marginTop="@dimen/size_15"
-            android:text="Show wave question progress view bar"
+            android:text="@string/show_wave_ques"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_18" />
 

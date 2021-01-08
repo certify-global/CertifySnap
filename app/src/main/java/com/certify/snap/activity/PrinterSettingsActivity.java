@@ -216,7 +216,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         editTextWaveYes.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, "1"));
         editTextWaveNo.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, "0"));
 
-        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>Settings</a>";
+        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>"+getString(R.string.settings)+"</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
         } else {
@@ -511,7 +511,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, editTextQRAnswers.getText().toString());
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, editTextPassName.getText().toString());
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, editTextWaveYes.getText().toString());
-        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextWaveNo.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, editTextWaveNo.getText().toString());
 
         Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();
@@ -564,7 +564,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
                 String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
                 String dateTime = date + " " + currentTime;
-                PrinterController.getInstance().setPrintData("Test", dateTime, "Thermal Scan", false);
+                PrinterController.getInstance().setPrintData("Test", dateTime, "Thermal Scan", currentTime,false);
                 PrinterController.getInstance().printUsb();
             }
         }).start();

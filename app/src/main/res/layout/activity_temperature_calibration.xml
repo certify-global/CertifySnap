@@ -57,7 +57,7 @@
                 android:textSize="24.0sp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Distance:"
+                android:text="@string/distance"
                 android:layout_weight="2" />
             <EditText
                 android:id="@+id/distance"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
                 android:layout_weight="3"
-                android:text="50" />
+                android:text="@string/num_50" />
         </LinearLayout>
 
         <Button
@@ -75,7 +75,7 @@
             android:onClick="onClick"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:text="calibration" />
+            android:text="@string/calibration" />
 
         <Button
             android:id="@+id/get_temperature"
@@ -85,7 +85,7 @@
             android:layout_gravity="center"
             android:onClick="onClick"
             android:layout_marginBottom="10dp"
-            android:text="Get temperature" />
+            android:text="@string/get_temp" />
 
         <ImageView
             android:id="@+id/image"
@@ -107,7 +107,7 @@
             android:id="@+id/title_tip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tips:\n\nFirst, keep the distance between the face and the device 50 cm / approximately 2ft, click the calibration button to calibrate. \nPlease don't move the face during the calibration process until the calibration is completed."
+            android:text="@string/calibration_text"
             android:textSize="16sp"
             android:textColor="@color/black"/>
 

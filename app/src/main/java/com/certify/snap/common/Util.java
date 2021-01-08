@@ -86,6 +86,7 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
+import com.common.pos.api.util.Utils;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
@@ -811,6 +812,8 @@ public class Util {
                 obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
                 obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
                 obj.put("trqStatus", ""); // Send this empty if not Qr
+                obj.put("networkId", rfidScanMatchedMember.getNetworkId());
+
             } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()) {
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
                 updateFaceMemberValues(obj, data);
@@ -918,6 +921,7 @@ public class Util {
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
+            obj.put("networkId",data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1293,6 +1297,13 @@ public class Util {
                     } else {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
                     }
+                    String memberGroupSync = jsonDeviceSettings.isNull("syncMemberGroup") ? "0" : jsonDeviceSettings.getString("syncMemberGroup");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_GROUP_SYNC, memberGroupSync.equals("1"));
+                    String groupId = jsonDeviceSettings.isNull("groupId") ? "0" : jsonDeviceSettings.getString("groupId");
+                    if (groupId.isEmpty()) {
+                        groupId = "0";
+                    }
+                    Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, groupId);
                     String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
                     Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
                     String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "1" : jsonDeviceSettings.getString("navigationBar");
@@ -1387,12 +1398,12 @@ public class Util {
                 if (!temperatureNormal.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
                 } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL,StringConstants.TEMPERATURE_NORMAL);
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, context.getString(R.string.temperature_normal_msg));
                 }
                 if (!temperatureHigh.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
                 } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
+                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, context.getString(R.string.temperature_high_msg));
                 }
 
                 //ConfirmationView
@@ -1511,7 +1522,7 @@ public class Util {
                     String printFace = printerSettings.isNull("printFace") ? "0" : printerSettings.getString("printFace");
                     String printName = printerSettings.isNull("printName") ? "0" : printerSettings.getString("printName");
                     String printUnidentifiedText = printerSettings.isNull("unidentifiedPrintText") ? "0" : printerSettings.getString("unidentifiedPrintText");
-                    String printUnidentifiedTextVal = printerSettings.isNull("unidentifiedPrintTextValue") ? "0" : printerSettings.getString("unidentifiedPrintTextValue");
+                    String printUnidentifiedTextVal = printerSettings.isNull("unidentifiedPrintTextValue") ? context.getString(R.string.anonymous_text) : printerSettings.getString("unidentifiedPrintTextValue");
                     String printNormalTemperature = printerSettings.isNull("printNormalTemperature") ? "0" : printerSettings.getString("printNormalTemperature");
                     String printHighTemperature = printerSettings.isNull("printHighTemperature") ? "0" : printerSettings.getString("printHighTemperature");
                     String printWaveAnswers = printerSettings.isNull("printWaveAnswers") ? "0" : printerSettings.getString("printWaveAnswers");
@@ -1551,11 +1562,11 @@ public class Util {
                     String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
                     String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
                     String showWaveProgress = touchlessInteractionSettings.isNull("showWaveProgress") ? "0" : touchlessInteractionSettings.getString("showWaveProgress");
-                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? StringConstants.GESTURE_MESSAGE : touchlessInteractionSettings.getString("waveIndicatorInstructions");
+                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? context.getString(R.string.gesture_msg) : touchlessInteractionSettings.getString("waveIndicatorInstructions");
                     String showWaveImage = touchlessInteractionSettings.isNull("showWaveImage") ? "0" : touchlessInteractionSettings.getString("showWaveImage");
-                    String maskEnforceText = touchlessInteractionSettings.isNull("maskEnforceText") ? StringConstants.MASK_ENFORCE_MESSAGE : touchlessInteractionSettings.getString("maskEnforceText");
+                    String maskEnforceText = touchlessInteractionSettings.isNull("maskEnforceText") ? context.getString(R.string.mask_enforce_msg) : touchlessInteractionSettings.getString("maskEnforceText");
                     String exitOnNegativeOutcome = touchlessInteractionSettings.isNull("exitOnNegativeOutcome") ? "0" : touchlessInteractionSettings.getString("exitOnNegativeOutcome");
-                    String messageForNegativeOutcome = touchlessInteractionSettings.isNull("messageForNegativeOutcome") ? StringConstants.GESTURE_EXIT_MESSAGE : touchlessInteractionSettings.getString("messageForNegativeOutcome");
+                    String messageForNegativeOutcome = touchlessInteractionSettings.isNull("messageForNegativeOutcome") ? context.getString(R.string.gesture_exit_msg) : touchlessInteractionSettings.getString("messageForNegativeOutcome");
                     Log.d("CertifyXT flow", settingsID);
 
                     Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
@@ -1839,6 +1850,11 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
+            if (AppSettings.isMemberGroupSyncEnabled()) {
+                obj.put("groupId", AppSettings.getMemberSyncGroupId());
+            } else {
+                obj.put("groupId", "0");
+            }
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 
@@ -1972,6 +1988,7 @@ public class Util {
 
     public static void getMemberID(Context context, String certifyId) {
         try {
+            MemberSyncDataModel.getInstance().clear();
             MemberSyncDataModel.getInstance().setNumOfRecords(1);
             doSendBroadcast(context, "start", 1, 1);
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);

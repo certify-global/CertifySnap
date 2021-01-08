@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="45dp"
-                android:text="Listening..."
+                android:text="@string/listening"
                 android:textColor="@color/black"
                 android:textSize="25dp" />
 
@@ -79,7 +79,7 @@
                 android:layout_width="150dp"
                 android:layout_height="70dp"
                 android:background="@color/colorGray"
-                android:text="YES"
+                android:text="@string/wave_yes"
                 android:visibility="gone" />
 
             <Button
@@ -88,7 +88,7 @@
                 android:layout_height="70dp"
                 android:layout_marginLeft="80dp"
                 android:background="@color/colorGray"
-                android:text="NO"
+                android:text="@string/wave_no"
                 android:visibility="gone" />
         </LinearLayout>
 

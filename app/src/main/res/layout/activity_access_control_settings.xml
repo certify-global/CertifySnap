@@ -55,21 +55,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal">
 
             <CheckBox
                 android:id="@+id/enable_relay_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"></CheckBox>
+                android:checked="false">
+            </CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/automatic_door_access"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
         </LinearLayout>
 
         <LinearLayout
@@ -121,15 +123,16 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray"></View>
+            android:background="@color/colorLightGray">
+        </View>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
             android:orientation="horizontal">
 
@@ -137,21 +140,23 @@
                 android:id="@+id/enable_weigand_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"></CheckBox>
+                android:checked="false">
+            </CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/enable_access_control"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
             android:orientation="horizontal">
 
@@ -162,14 +167,15 @@
                 android:checked="false"
                 android:text="@string/enable_wiegand_passthrough"
                 android:textColor="@color/black"
-                android:textSize="18sp"></CheckBox>
+                android:textSize="18sp">
+            </CheckBox>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="14dp"
             android:layout_marginEnd="10dp"
             android:orientation="vertical">
 
@@ -178,7 +184,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/access_control_card_format"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -199,7 +206,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="26 Bit"
+                        android:text="@string/bit_26"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
@@ -209,7 +216,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="34 Bit"
+                        android:text="@string/bit_34"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
@@ -219,7 +226,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:text="48 Bit"
+                        android:text="@string/bit_48"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
@@ -234,15 +241,16 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray"></View>
+            android:background="@color/colorLightGray">
+        </View>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
             android:orientation="horizontal">
 
@@ -250,21 +258,23 @@
                 android:id="@+id/allow_anonymous_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"></CheckBox>
+                android:checked="false">
+            </CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/allow_anonymous"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
             android:orientation="vertical">
 
@@ -290,7 +300,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="60dp"
                     android:checked="false"
-                    android:text="@string/stop_relay"></CheckBox>
+                    android:text="@string/stop_relay">
+                </CheckBox>
 
                 <RadioButton
                     android:id="@+id/reverse_mode_rb"
@@ -308,9 +319,10 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray"></View>
+            android:background="@color/colorLightGray">
+        </View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -325,7 +337,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/enable_logging"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -345,7 +358,7 @@
                         android:id="@+id/rb_logging_access_control"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Access Control"
+                        android:text="@string/access_control"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -354,7 +367,7 @@
                         android:id="@+id/rb_logging_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Time and Attendance"
+                        android:text="@string/time_and_attendance"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -363,7 +376,7 @@
                         android:id="@+id/rb_logging_access_both"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Both"
+                        android:text="@string/both"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -372,7 +385,7 @@
                         android:id="@+id/rb_logging_none"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="None"
+                        android:text="@string/none"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -387,9 +400,10 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray"></View>
+            android:background="@color/colorLightGray">
+        </View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -404,7 +418,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/valid_access"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -425,7 +440,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="ID Only"
+                        android:text="@string/id_only"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -435,7 +450,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="Face Only"
+                        android:text="@string/face_only"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -445,7 +460,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="ID + Face"
+                        android:text="@string/id_face"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />
@@ -454,7 +469,7 @@
                         android:id="@+id/rb_id_or_face"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ID or Face"
+                        android:text="@string/id_or_face"
                         android:textColor="@color/black"
                         android:textSize="@dimen/size_18"
                         android:theme="@style/MyCheckBox" />

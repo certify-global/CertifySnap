@@ -29,7 +29,7 @@
             android:layout_margin="10dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Record"
+            android:text="@string/tv_record"
             android:textColor="#ffffff"
             android:textSize="22sp" />
 

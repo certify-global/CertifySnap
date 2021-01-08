@@ -51,14 +51,14 @@ public class LoginActivity extends BaseActivity {
             textview_name.setTypeface(rubiklight);
             tv_pwd_error.setTypeface(rubiklight);
             tv_version.setText(Util.getVersionBuild());
-            tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
+            tv_serial_no.setText(getString(R.string.serial_num) + Util.getSNCode(this));
             btn_confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     cancelLoginScreenTimer();
                     if (count <= 10 && count > 1 && (!sp.getString(GlobalParameters.deviceMasterCode, "").equals("") || !sp.getString(GlobalParameters.deviceSettingMasterCode, "").equals(""))) {
                         if (etPassword.getText().toString().isEmpty()) {
-                            text_input_login.setText("Password should not be empty");
+                            text_input_login.setText(getString(R.string.password_empty_msg));
                             updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
                             return;
                         }
@@ -84,7 +84,7 @@ public class LoginActivity extends BaseActivity {
                             lastsixDigits = input;
                         }
                         if (etPassword.getText().toString().isEmpty()) {
-                            text_input_login.setText("Password should not be empty");
+                            text_input_login.setText(getString(R.string.password_empty_msg));
                             updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
                         } else if (etPassword.getText().toString().equals(sp.getString(GlobalParameters.DEVICE_PASSWORD, lastsixDigits))) {
                             text_input_login.setError(null);
@@ -100,7 +100,7 @@ public class LoginActivity extends BaseActivity {
                         } else {
                             text_input_login.setError(null);
                             tv_pwd_error.setVisibility(View.VISIBLE);
-                            tv_pwd_error.setText("Invalid Password, Try Again");
+                            tv_pwd_error.setText(getString(R.string.password_invalid_msg));
                             updateAppStatusInfo("LOGIN FAILED", AppStatusInfo.LOGIN_FAILED);
 //
                         }
@@ -124,7 +124,7 @@ public class LoginActivity extends BaseActivity {
         count--;
         text_input_login.setError(null);
         tv_pwd_error.setVisibility(View.VISIBLE);
-        tv_pwd_error.setText("Invalid Password, Try Again");
+        tv_pwd_error.setText(getString(R.string.password_invalid_msg));
     }
 
     public void onParamterback(View view) {

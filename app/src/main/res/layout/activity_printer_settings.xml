@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
-                android:text="Wifi/Bluetooth Printer"
+                android:text="@string/wifi_bluetooth_printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
@@ -126,7 +126,7 @@
                     android:drawablePadding="5dp"
                     android:text="@string/bluetooth_printer_connect_status"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tv_bluetooth_bother_printer_status"
@@ -138,9 +138,9 @@
                     android:ellipsize="end"
                     android:maxLength="25"
                     android:maxLines="1"
-                    android:text="NONE"
+                    android:text="@string/audio_none"
                     android:textColor="@color/colorRed"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tv_bluetooth_bother_printer_connection"
@@ -151,7 +151,7 @@
                     android:layout_marginBottom="@dimen/size_10"
                     android:onClick="selectBluetoothPrinter"
                     android:text="@string/printer_settings"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -178,7 +178,7 @@
                     android:background="@color/colorGray"
                     android:onClick="printImage"
                     android:padding="10dp"
-                    android:text="Print"
+                    android:text="@string/print_button"
                     android:textColor="@color/colorWhite"
                     android:textSize="15sp" />
 
@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
-                android:text="USB Printer"
+                android:text="@string/usb_printer"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
@@ -291,7 +291,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
-                android:text="Printing Options"
+                android:text="@string/printing_option"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
@@ -543,7 +543,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_05"
                 android:layout_marginTop="@dimen/size_15"
-                android:text="Label Options"
+                android:text="@string/label_option"
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
@@ -559,7 +559,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="Print Face"
+                    android:text="@string/print_face"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
@@ -606,7 +606,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="Print Name(if Identified else blank)"
+                    android:text="@string/print_name"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
@@ -657,7 +657,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:text="If unidentified print text"
+                        android:text="@string/print_text"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_18" />
 
@@ -702,7 +702,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:background="@drawable/edittextbackground"
-                        android:hint="Enter Default Name Text"
+                        android:hint="@string/enter_default_text"
                         android:maxLength="12"
                         android:paddingLeft="05dp" />
 
@@ -721,7 +721,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="Print Normal Temperature Value"
+                    android:text="@string/print_normal_temp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
@@ -767,7 +767,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:text="Print High Temperature Value"
+                    android:text="@string/print_high_temp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
@@ -819,7 +819,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="1dp"
-                        android:text="Print Indicator for QR code users"
+                        android:text="@string/print_indicator_qr"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_18" />
 
@@ -864,7 +864,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:background="@drawable/edittextbackground"
-                        android:hint="Enter Default Bottom Bar Text"
+                        android:hint="@string/bar_bottom_text"
                         android:maxLength="12"
                         android:paddingLeft="05dp" />
 
@@ -888,7 +888,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:text="Print Wave Answers"
+                        android:text="@string/print_wave_ans"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_18" />
 
@@ -934,7 +934,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/size_10"
                         android:layout_marginEnd="@dimen/size_30"
-                        android:text="YES"
+                        android:text="@string/msg_Ok"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_18" />
 
@@ -953,7 +953,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/size_50"
                         android:layout_marginEnd="@dimen/size_30"
-                        android:text="NO"
+                        android:text="@string/msg_No"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size_18" />
 
@@ -980,7 +980,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="@drawable/edittextbackground"
-                    android:hint="Default Result Print Text(Normal Pass Scan)"
+                    android:hint="@string/normal_pass_scan"
                     android:maxLength="12"
                     android:paddingStart="05dp" />
 

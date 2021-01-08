@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="UPDATE"
+            android:text="@string/update_dialog"
             android:textColor="@color/black"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -73,7 +73,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/btn_shape"
-                android:text="CAPTURE"
+                android:text="@string/capture"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -84,7 +84,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="25dp"
                 android:background="@drawable/btn_shape"
-                android:text="USE PHOTO"
+                android:text="@string/use_photo"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -122,7 +122,7 @@
                 android:background="@drawable/edit_shape"
                 android:gravity="center_vertical"
                 android:padding="5dp"
-                android:text="userid"
+                android:text="@string/user_id"
                 android:textColor="@color/colorSkyBlue"
                 android:textSize="17sp" />
         </LinearLayout>
@@ -261,7 +261,7 @@
             android:layout_height="match_parent"
             android:layout_margin="3dp"
             android:background="@drawable/edit_shape"
-            android:hint="unique Id"
+            android:hint="@string/unique_id"
             android:inputType="number"
             android:padding="5dp"
             android:textColor="@color/colorSkyBlue"
@@ -279,7 +279,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="@dimen/size_20"
         android:background="@drawable/btn_shape"
-        android:text="Update"
+        android:text="@string/update"
         android:textColor="@color/black"
         android:textSize="18sp" />
 

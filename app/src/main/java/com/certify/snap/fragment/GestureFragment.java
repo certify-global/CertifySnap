@@ -286,7 +286,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 if (progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-                Toast.makeText(this.getContext(), "Failed to get the Questions, Closing Gesture screen", Toast.LENGTH_LONG).show();
+                Toast.makeText(this.getContext(), getString(R.string.gesture_questions_failed), Toast.LENGTH_LONG).show();
                 mActivity.getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
                 IrCameraActivity activity = (IrCameraActivity) mActivity;
                 if (activity != null) {
@@ -317,7 +317,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
 
     private void showProgressBar() {
-        progressDialog = ProgressDialog.show(this.getContext(), "", "Fetching Questions, Please wait...");
+        progressDialog = ProgressDialog.show(this.getContext(), "", getString(R.string.gesture_fetch_questions));
     }
 
     private void twoQuestions(int index) {

@@ -6,6 +6,7 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="registering_please_wait">registering,please wait</string>
+    <string name="login_password">Password:</string>
 
     <!--global permission denied notification-->
     <string name="permission_denied">permission denied!</string>
@@ -74,7 +75,7 @@
     <string name="thermal_scan">THERMAL SCAN</string>
     <string name="SetTemp">Temperature Settings</string>
     <string name="upload_logo">Upload Logo</string>
-    <string name="acces_password">Access Password</string>
+    <string name="access_password">Access Password</string>
     <string name="device_activation_status">Online Activation Status</string>
     <string name="not_activated"><u>Not Activated</u></string>
     <string name="activate"><u>Activate</u></string>
@@ -123,7 +124,7 @@
     <string name="temperature_threshold">Set Temperature Threshold</string>
     <string name="temperature">Temperature</string>
     <string name="temperature_calibration">Temperature Calibration</string>
-    <string name="app_serial">Serial No:</string>
+    <string name="app_serial">Serial No:&#160;</string>
     <string name="tv_guide_setting">Guide Settings</string>
     <string name="text_value1">Please center your face to the screen.</string>
     <string name="text_value2">Move closer and center your face.</string>
@@ -169,17 +170,27 @@
     <string name="allow_anonymous">Allow Anonymous</string>
     <string name="relay_timeout">Relay Timeout:</string>
     <string name="normal_mode">
-        <font size="16">Normal Mode</font><font size="14"> (Operate Relay/Wiegand for every scan)</font>
+        <font size="16">Normal Mode</font><font size="14"> (Operate Access for every scan)</font>
     </string>
     <string name="reverse_mode">
-        <font size="16">Reverse Mode</font><font size="14"> (Operate Relay on High Temperature Scan Only)</font>
+        <font size="16">Reverse Mode</font><font size="14"> (Operate Access on High Temperature Scan Only)</font>
     </string>
-    <string name="stop_relay">Stop Relay/Wiegand on High Temperature Scan</string>
+    <string name="stop_relay">Stop Access on High Temperature Scan</string>
     <!-- Access control related strings end -->
 
     <string name="tv_ok">OK</string>
     <string name="setting_message">This device is Activated with your Cloud account. Any changes to the settings locally will be overwritten upon next restart or sync. Please modify the appropriate settings online and sync the settings on the device.</string>
     <string name="setting_note">Note: You can modify locally to finalize what settings to apply for the device via online settings.</string>
+    <string name="time_and_attendance">Time and Attendance</string>
+    <string name="both">Both</string>
+    <string name="none">None</string>
+    <string name="id_only">ID Only</string>
+    <string name="face_only">Face Only</string>
+    <string name="id_face">ID + Face</string>
+    <string name="id_or_face">ID or Face</string>
+    <string name="bit_26">26 Bit</string>
+    <string name="bit_34">34 Bit</string>
+    <string name="bit_48">48 Bit</string>
 
     <!--Scan not Recognized page-->
 
@@ -260,6 +271,7 @@
     <string name="status">Status</string>
     <string name="screen_timeout_msg">Please input Screen timeout for scan to 5 or above</string>
     <string name="record">Record Management</string>
+    <string name="register_device">Register Device</string>
 
     <!--audio and visual page-->
     <string name="ble_startfind">Searching devices...</string>
@@ -276,7 +288,7 @@
     <string name="ble_light_test">Test : </string>
     <string name="ble_connect"><u>Connect</u></string>
 
-    <string name="bluetooth_printer_connect_status">Connected Printer : </string>
+    <string name="bluetooth_printer_connect_status">Connected Printer: </string>
 
 
     <string name="centigrade" translatable="false">&#160;℃</string>
@@ -286,6 +298,11 @@
     <string name="hostname">.certify.me</string>
     <string name="scanner_time_msg">Scanner is initializing. You can wait or click OK to continue to use the scanner while it initializes… \nTime Remaining: %d mins</string>
     <string name="scanner_remaining_time_msg">Scanner calibration is progress… Time Remaining: %d mins</string>
+    <string name="audio_alerts">Audio Alerts</string>
+    <string name="visual_alerts">Visual Alerts</string>
+    <string name="audio_none">NONE</string>
+    <string name="light_on">Light On</string>
+    <string name="light_off">Light OFF</string>
 
     <!--Bluetooth Printer printer_settings-->
 
@@ -515,6 +532,166 @@
     <string name="gesture_exit_default">Please contact Admin</string>
     <string name="gesture_exit_hint">Message to display on exit of negative outcome</string>
     <string name="gesture_timeout_msg">Please move Your Hand down to proceed to the next question</string>
-    <string name="valid_access">Valid Access Options</string>
+    <string name="listening">Listening...</string>
+
+    <!--member management page-->
+    <string name="failed_member">Failed Member:</string>
+    <string name="member">Member:</string>
+    <string name="certify_snapXt">CERTIFY SnapXT</string>
+    <string name="tv_record">Record</string>
+    <string name="member_delete_msg">Do you want to delete member?</string>
+    <string name="pls_input_name">Please Input Name or User ID</string>
+    <string name="unique_id">unique Id</string>
+    <string name="update">Update</string>
+    <string name="device_id">deviced id</string>
+    <string name="uuid">uuid</string>
+    <string name="popup_register">REGISTER</string>
+    <string name="capture">CAPTURE</string>
+    <string name="use_photo">USE PHOTO</string>
+    <string name="update_dialog">UPDATE</string>
+    <string name="user_id">userid</string>
+    <string name="member_text">Member</string>
+
+    <!--printer wifi page-->
+    <string name="select_printer">Select Printer</string>
+    <string name="title_printer">Please enter the IP and Mac addresses of the Printer</string>
+    <string name="add_button">Add</string>
+    <string name="search_button">Search</string>
+    <string name="wifi_bluetooth_printer">Wifi/Bluetooth Printer</string>
+    <string name="print_button">Print</string>
+    <string name="usb_printer">USB Printer</string>
+    <string name="printing_option">Printing Options</string>
+    <string name="label_option">Label Options</string>
+    <string name="print_face">Print Face</string>
+    <string name="print_name">Print Name(if Identified else blank)</string>
+    <string name="print_text">If unidentified print text</string>
+    <string name="print_normal_temp">Print Normal Temperature Value</string>
+    <string name="print_high_temp">Print High Temperature Value</string>
+    <string name="print_indicator_qr">Print Indicator for QR code users</string>
+    <string name="print_wave_ans">Print Wave Answers</string>
+    <string name="mac_address_hint">Mac address</string>
+
+    <!--device setting page-->
+    <string name="local">Local</string>
+    <string name="enable_pro_setting">Enable Pro Settings</string>
+    <string name="led_brightness">LED Brightness:</string>
+    <string name="enable_local_server">Enable Local Server:</string>
+    
+    <string name="serial_number">SERIAL NUMBER:</string>
+    <string name="imei_number">IMEI NUMBER:</string>
+    <string name="close_button">Close</string>
+    <string name="save_button">Save</string>
+    <string name="locale_setting">Language</string>
+    <string name="english">English</string>
+    <string name="spanish">Spanish (Español)</string>
+
+    <!--setting page-->
+    <string name="settings">Settings</string>
+    <string name="update_database">Update Database</string>
+    <string name="member_register">Member Register</string>
+    <string name="parameter_settings">Parameter Settings</string>
+    <string name="led_settings">LED Setting</string>
+    <string name="activate_card">Activate card</string>
+
+    <string name="default_rect">Default rect : Rect(23,32-26,38)</string>
+    <string name="current_rect">Current rect : Rect(23,32-26,38)</string>
+    <string name="format_rect">Format : rect(left,top-right,bottom)
+        \nThe actual coordinates of the thermal image:
+        \nThe x axis is opposite to the y axis(top,left-bottom,right)"</string>
+    <string name="rect_left">Rect left (top) :</string>
+    <string name="rect_top">Rect top (left) :</string>
+    <string name="rect_right">Rect right (bottom) :</string>
+    <string name="rect_bottom">Rect bottom (right) :</string>
+    <string name="cancel_dialog">cancel</string>
+    <string name="confirm_dialog">confirm</string>
+
+    <!--temperature calibration page-->
+    <string name="distance">Distance:</string>
+    <string name="num_50">50</string>
+    <string name="calibration">calibration</string>
+    <string name="get_temp">Get temperature</string>
+    <string name="calibration_text">Tips:\n\nFirst, keep the distance between the face and the device 50 cm / approximately 2ft, click the calibration button to calibrate.
+        \nPlease don\'t move the face during the calibration process until the calibration is completed.</string>
+    <string name="enter_default_text">Enter Default Name Text</string>
+    <string name="bar_bottom_text">Enter Default Bottom Bar Text</string>
+    <string name="normal_pass_scan">Default Result Print Text(Normal Pass Scan)</string>
+    <string name="temp_above_threshold">Display temperature above threshold</string>
+    <string name="ir_text">Press here if you do not have QR Code</string>
+    <string name="ir_ques_text">if your answer to all 3 covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to</string>
+    <string name="start">start</string>
+    <string name="rect1">rect1</string>
+    <string name="rect2">rect2</string>
+    <string name="rect3">rect3</string>
+    <string name="all_rect">allRect</string>
+    <string name="select_date">Please select Date</string>
+    <string name="select_date_range">Please select the date range of the exported data. The location of the exported file is /sdcard/offline/record/</string>
+    <string name="start_time" >Start Time(year/month): </string>
+    <string name="end_time" >End Time(year/month): </string>
+    <string name="set_temp_text">Set temperature threshold for display</string>
+    <string name="enter_password_text">Enter Password</string>
+    <string name="enable_voice_recognition">Enable voice recognition</string>
+    <string name="enable_hand_gesture">Enable Hand Gesture</string>
+    <string name="enable_wave">Enable Wave</string>
+    <string name="wave_options">Wave Options</string>
+    <string name="enable_ques_ans">Enable Questions and Answers</string>
+    <string name="enable_mask_enforce">Enable Mask Enforcement(Prompt for mask Undetected Response)</string>
+    <string name="show_wave_image">Show wave image</string>
+    <string name="show_wave_ques">Show wave question progress view bar</string>
+    <string name="screened">Screened</string>
+    <string name="thermal_scan_text">Thermal Scan</string>
+    <string name="anonymous_text">Anonymous</string>
+    <string name="unrecognized">Unrecognized</string>
+    <string name="valid_access">Valid Access Options (Not applicable for Anonymous and Wiegand Pass-through)</string>
+    <string name="password_empty_msg">Password should not be empty</string>
+    <string name="password_invalid_msg">Invalid Password, Try Again</string>
+    <string name="serial_num">Serial No:&#160;</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="password_length_msg">Password should be minimum six digits</string>
+    <string name="launch_home_screen">Launching Home Screen, Please wait....</string>
+    <string name="connect_gesture_device">Please connect the Gesture device</string>
+    <string name="activate_msg">Activate</string>
+    <string name="activated">Activated</string>
+    <string name="not_activated_msg">Not Activated</string>
+    <string name="input_valid_url">Please input valid url</string>
+    <string name="all_members_cleared">All members cleared</string>
+    <string name="logs_sent">Logs sent</string>
+    <string name="closing_app_msg">Closing and Restarting App, Please wait....</string>
+    <string name="activate_application_error">Activate Application Request Error!</string>
+    <string name="launch_settings_msg">Launching Settings, Please wait....</string>
+    <string name="app_exit_msg">Are you sure you want to exit?</string>
+    <string name="sync_completed">Sync completed</string>
+    <string name="no_mask">Without Mask</string>
+    <string name="mask_detected">Mask Detected</string>
+    <string name="mask_not_detected">Unable to detect Mask</string>
+    <string name="connect_light_device">Connecting to Light Device</string>
+    <string name="move_center_msg">Please move towards center</string>
+    <string name="qr_validation_msg">QR Validation not completed!</string>
+    <string name="gesture_launch_msg">Launching Gesture screen, Please wait....</string>
+    <string name="gesture_questions_failed">Failed to get the Questions, Closing Gesture screen</string>
+    <string name="gesture_fetch_questions">Fetching Questions, Please wait....</string>
+    <string name="temperature_normal_msg">Temperature Normal</string>
+    <string name="temperature_high_msg">Temperature Normal</string>
+    <string name="gesture_msg">Hold your palm on side of the screen where indicate to answer. If you have to start over, hold both hands.</string>
+    <string name="mask_enforce_msg">Please wear a mask and Wave Left Hand to start over or else Wave Right Hand to continue.</string>
+    <string name="gesture_exit_msg">Please contact Admin</string>
+    <string name="input_ip_address">Please input a valid Ip address</string>
+    <string name="input_mac_address">Please input a valid Mac address</string>
+    <string name="app_restart">App will restart</string>
+    <string name="update_setting_app_restart">Updating settings, App will restart</string>
+    <string name="app_restart_msg">App encountered a problem, will restart</string>
+    <string name="succeeded">Succeeded</string>
+    <string name="contact_supervisor_msg">Please contact your supervisor before starting any work.</string>
+    <string name="nice_day_msg">Have a nice day!</string>
+    <string name="pass">PASS</string>
+    <string name="out_of">out of</string>
+    <string name="syncing">Syncing</string>
+    <string name="loading">Loading</string>
+    <string name="loading_wait">Loading please wait....</string>
+    <string name="updating">Updating</string>
+    <string name="updating_wait">Updating please wait....</string>
+    <string name="member_empty_msg">Member Id should not be empty</string>
+    <string name="accessid_empty_msg">Access Id should not be empty</string>
+    <string name="scan_card_msg">Please scan the card to enroll</string>
 
 </resources>

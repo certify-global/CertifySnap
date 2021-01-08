@@ -29,7 +29,7 @@
             android:onClick="onParamterback"
             android:textColor="#ffffff"
             android:textSize="28sp"
-            android:text="Register Device"/>
+            android:text="@string/register_device"/>
 
 
     </LinearLayout>

@@ -263,10 +263,10 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         touchless_interaction_setting.setTypeface(rubiklight);
         printer_setting_text.setTypeface(rubiklight);
         tv_version.setText(Util.getVersionBuild());
-        tv_serial_no.setText("Serial No: " + Util.getSNCode(this));
+        tv_serial_no.setText(getString(R.string.serial_num) + Util.getSNCode(this));
         accessControlTv.setTypeface(rubiklight);
 
-        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>View Connectivity Status</a>";
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>"+getString(R.string.connectivity_status)+"</a>";
         mConnectivityStatus.setTypeface(rubiklight);
         if (Build.VERSION.SDK_INT >= 24) {
             mConnectivityStatus.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
@@ -298,10 +298,10 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     public void setData() {
         try {
             if (tvDeviceOnline == null) return;
-            tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? "Activated" : "Not Activated"));
+            tvDeviceOnline.setText(String.format("%s: %s", getResources().getString(R.string.online_device_activation_status), sharedPreferences.getBoolean(ONLINE_MODE, true) ? getString(R.string.activated) : getString(R.string.not_activated_msg)));
             tvDeviceName.setText(String.format("%s: %s", getResources().getString(R.string.device_name), sharedPreferences.getString(DEVICE_NAME, "New Name")));
             tvDeviceSettings.setText(String.format("%s: %s", getResources().getString(R.string.device_settings), sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local")));
-            tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true) ? "Online" : "Offline"));
+            tvDeviceMode.setText(String.format("%s: %s", getResources().getString(R.string.device_mode), sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true) ? getString(R.string.online) : getString(R.string.offline)));
 
         } catch (Exception e) {
 
@@ -416,7 +416,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("OK",
+                .setPositiveButton(getString(R.string.button_ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
@@ -434,7 +434,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
 
                             }
                         })
-                .setNegativeButton("Cancel",
+                .setNegativeButton(getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -456,8 +456,8 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         final AlertDialog alertDialog = new AlertDialog.Builder(SettingsActivity.this)
                 .setView(view)
                 .setCancelable(false)
-                .setPositiveButton("Ok", null)
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(getString(R.string.button_ok), null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .create();
 
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -471,10 +471,10 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
                     public void onClick(View view) {
                         String strUserInput = acceptUserInput.getText().toString().trim();
                         if (TextUtils.isEmpty(strUserInput)) {
-                            acceptUserInput.setError("Password should not be empty");
+                            acceptUserInput.setError(getString(R.string.password_empty_msg));
                             return;
                         } else if (acceptUserInput.getText().toString().length() < 6) {
-                            acceptUserInput.setError("Password should be minimum six digits");
+                            acceptUserInput.setError(getString(R.string.password_length_msg));
                         } else {
                             acceptUserInput.setText(acceptUserInput.getText());
                             Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, acceptUserInput.getText().toString().trim());
@@ -678,7 +678,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     }
 
     private void initiateLaunchHomeScreen() {
-        ProgressDialog.show(this, "", "Launching Home Screen, Please wait...");
+        ProgressDialog.show(this, "", getString(R.string.launch_home_screen));
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
                     AppSettings.getInstance().getSettingsFromSharedPref(SettingsActivity.this);

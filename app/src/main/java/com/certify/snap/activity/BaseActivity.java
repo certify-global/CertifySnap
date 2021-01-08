@@ -5,8 +5,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,9 +19,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.certify.fcm.FireBaseMessagingService;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.common.ContextUtils;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.service.NetworkReceiver;
+
+import java.util.Locale;
 
 public abstract class BaseActivity extends Activity {
 
@@ -28,6 +35,18 @@ public abstract class BaseActivity extends Activity {
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale localeToSwitchTo;
+        if (HomeActivity.mSelectLanguage) {
+            localeToSwitchTo = new Locale("es");
+        } else {
+            localeToSwitchTo = new Locale("en");
+        }
+        ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
+        super.attachBaseContext(localeUpdatedContext);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +79,7 @@ public abstract class BaseActivity extends Activity {
         if (activityReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(activityReceiver);
         }
-        if (networkReceiver != null){
+        if (networkReceiver != null) {
             this.unregisterReceiver(networkReceiver);
         }
         this.unregisterReceiver(mGattUpdateReceiver);
@@ -81,7 +100,7 @@ public abstract class BaseActivity extends Activity {
                     finishAffinity();
                 }
                 if (intent != null && intent.getAction().equals(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION)) {
-                    Toast.makeText(BaseActivity.this, "Updating settings, App will restart", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BaseActivity.this, getString(R.string.update_setting_app_restart), Toast.LENGTH_SHORT).show();
                     finishAffinity();
                 }
             }
@@ -90,6 +109,7 @@ public abstract class BaseActivity extends Activity {
 
     /**
      * get broadcast intent-filter
+     *
      * @return
      */
     private static IntentFilter makeGattUpdateIntentFilter() {
@@ -112,13 +132,13 @@ public abstract class BaseActivity extends Activity {
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 isDisconnected = false;
                 //Toast.makeText(getBaseContext(), R.string.ble_connect_success, Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onReceive: "+ R.string.ble_connect_success);
+                Log.d(TAG, "onReceive: " + R.string.ble_connect_success);
             }
             // disconnected
             else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 isDisconnected = true;
                 //Toast.makeText(getBaseContext(), R.string.ble_disconnected, Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "onReceive: "+ R.string.ble_disconnected);
+                Log.d(TAG, "onReceive: " + R.string.ble_disconnected);
             }
         }
     };
@@ -137,7 +157,7 @@ public abstract class BaseActivity extends Activity {
             int mode = CameraController.getInstance().getDeviceMode();
             Log.d(TAG, "Device mode " + mode);
             if (mode == 0 || ApplicationController.getInstance().getTemperatureUtil() == null) {
-                Toast.makeText(this, "App encountered a problem, will restart", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.app_restart_msg), Toast.LENGTH_SHORT).show();
                 finishAffinity();
                 restartApplication();
             }

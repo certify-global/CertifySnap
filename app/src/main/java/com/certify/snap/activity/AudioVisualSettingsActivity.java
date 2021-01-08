@@ -142,7 +142,7 @@ public class AudioVisualSettingsActivity extends SettingsBaseActivity {
         tv_qr_sound_valid.setTypeface(rubiklight);
         tv_qr_sound_invalid.setTypeface(rubiklight);
 
-        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>"+getString(R.string.button_settings)+"</a>";
         if (Build.VERSION.SDK_INT >= 24) {
             tv_ble_connection.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
         } else {
