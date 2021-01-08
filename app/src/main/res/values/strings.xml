@@ -671,7 +671,7 @@
     <string name="gesture_questions_failed">Failed to get the Questions, Closing Gesture screen</string>
     <string name="gesture_fetch_questions">Fetching Questions, Please wait....</string>
     <string name="temperature_normal_msg">Temperature Normal</string>
-    <string name="temperature_high_msg">Temperature Normal</string>
+    <string name="temperature_high_msg">Temperature High</string>
     <string name="gesture_msg">Hold your palm on side of the screen where indicate to answer. If you have to start over, hold both hands.</string>
     <string name="mask_enforce_msg">Please wear a mask and Wave Left Hand to start over or else Wave Right Hand to continue.</string>
     <string name="gesture_exit_msg">Please contact Admin</string>
