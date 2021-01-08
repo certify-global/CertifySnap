@@ -1289,7 +1289,7 @@ public class Util {
                     } else {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
                     }
-                    String memberGroupSync = jsonDeviceSettings.isNull("syncMemberGroup") ? "1" : jsonDeviceSettings.getString("syncMemberGroup");
+                    String memberGroupSync = jsonDeviceSettings.isNull("syncMemberGroup") ? "0" : jsonDeviceSettings.getString("syncMemberGroup");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_GROUP_SYNC, memberGroupSync.equals("1"));
                     String groupId = jsonDeviceSettings.isNull("groupId") ? "0" : jsonDeviceSettings.getString("groupId");
                     if (groupId.isEmpty()) {

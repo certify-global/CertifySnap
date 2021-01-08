@@ -124,7 +124,7 @@
     <string name="temperature_threshold">Set Temperature Threshold</string>
     <string name="temperature">Temperature</string>
     <string name="temperature_calibration">Temperature Calibration</string>
-    <string name="app_serial">Serial No:</string>
+    <string name="app_serial">Serial No:&#160;</string>
     <string name="tv_guide_setting">Guide Settings</string>
     <string name="text_value1">Please center your face to the screen.</string>
     <string name="text_value2">Move closer and center your face.</string>
@@ -644,7 +644,7 @@
     <string name="valid_access">Valid Access Options (Not applicable for Anonymous and Wiegand Pass-through)</string>
     <string name="password_empty_msg">Password should not be empty</string>
     <string name="password_invalid_msg">Invalid Password, Try Again</string>
-    <string name="serial_num">Serial No: </string>
+    <string name="serial_num">Serial No:&#160;</string>
     <string name="online">Online</string>
     <string name="offline">Offline</string>
     <string name="password_length_msg">Password should be minimum six digits</string>

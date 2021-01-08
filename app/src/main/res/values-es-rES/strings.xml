@@ -124,7 +124,7 @@
     <string name="temperature_threshold">Establecer umbral de temperatura</string>
     <string name="temperature">Temperatura</string>
     <string name="temperature_calibration">Calibración de temperatura</string>
-    <string name="app_serial">Número de serie:</string>
+    <string name="app_serial">Número de serie:&#160;</string>
     <string name="tv_guide_setting">Configuración de la guía</string>
     <string name="text_value1">Centre su rostro en la pantalla.</string>
     <string name="text_value2">Acércate y centra tu rostro.</string>
@@ -643,7 +643,7 @@
     <string name="valid_access">Opciones de acceso válidas (no aplicable para transferencia anónima y Wiegand)</string>
     <string name="password_empty_msg">La contraseña no debe estar vacía</string>
     <string name="password_invalid_msg">Contraseña no válida, inténtelo de nuevo</string>
-    <string name="serial_num">Número de serie: </string>
+    <string name="serial_num">Número de serie:&#160;</string>
     <string name="online">En línea</string>
     <string name="offline">Desconectado</string>
     <string name="password_length_msg">La contraseña debe tener un mínimo de seis dígitos</string>
