@@ -239,7 +239,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         testCount = 1;
                         activeMemberCount = totalMemberCount = 0;
                         datalist.clear();
-                        mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, "Loading", "Loading please wait...");
+                        mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
                         Util.getmemberList(this, this);
                     }
                 }
@@ -473,7 +473,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                             return;
                         }
 
-                        mprogressDialog = ProgressDialog.show(MemberManagementActivity.this, "Update", "Update! Please wait...");
+                        mprogressDialog = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.updating), getString(R.string.updating_wait));
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, "Update", "Update! Please wait...");
 //                            localUpdate(member.getMobile(),namestr,mobilestr,timestr,updateimagePath);
@@ -505,9 +505,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                             localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "","");
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
-                        text_input_member_id.setError("Member Id should not be empty");
+                        text_input_member_id.setError(getString(R.string.member_empty_msg));
                     } else if (TextUtils.isEmpty(accessstr)) {
-                        text_input_access_id.setError("Access Id should not be empty");
+                        text_input_access_id.setError(getString(R.string.accessid_empty_msg));
                     }
                 }
             });
@@ -516,7 +516,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             enrollBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getApplicationContext(), "Please scan the card to enroll", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.scan_card_msg), Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -757,7 +757,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         popupEnrollBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Please scan the card to enroll", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.scan_card_msg), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -816,9 +816,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
-                    text_input_member_id.setError("Member Id should not be empty");
+                    text_input_member_id.setError(getString(R.string.member_empty_msg));
                 } else if (TextUtils.isEmpty(accessstr)) {
-                    text_input_access_id.setError("Access Id should not be empty");
+                    text_input_access_id.setError(getString(R.string.accessid_empty_msg));
                 }
             }
         });

@@ -683,5 +683,14 @@
     <string name="contact_supervisor_msg">Comuníquese con su supervisor antes de comenzar cualquier trabajo.</string>
     <string name="nice_day_msg">¡Que tengas un buen día!</string>
     <string name="pass">PASAR</string>
+    <string name="out_of">fuera de</string>
+    <string name="syncing">Sincronizando</string>
+    <string name="loading">Cargando</string>
+    <string name="loading_wait">Cargando por favor espere....</string>
+    <string name="updating">Actualizando</string>
+    <string name="updating_wait">Actualizando, espere....</string>
+    <string name="member_empty_msg">El ID de miembro no debe estar vacío</string>
+    <string name="accessid_empty_msg">El ID de acceso no debe estar vacío</string>
+    <string name="scan_card_msg">Escanee la tarjeta para inscribirse</string>
 
 </resources>

@@ -1284,16 +1284,18 @@ public class Util {
                 if (jsonValue.has("DeviceSettings")) {
                     JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
                     String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
-                    String groupId = jsonDeviceSettings.isNull("groupId") ? "0" : jsonDeviceSettings.getString("groupId");
-                    if (groupId.isEmpty()) {
-                        groupId = "0";
-                    }
-                    Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, groupId);
                     if (syncOnlineMembers.equals("1")) {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
                     } else {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
                     }
+                    String memberGroupSync = jsonDeviceSettings.isNull("syncMemberGroup") ? "1" : jsonDeviceSettings.getString("syncMemberGroup");
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_GROUP_SYNC, memberGroupSync.equals("1"));
+                    String groupId = jsonDeviceSettings.isNull("groupId") ? "0" : jsonDeviceSettings.getString("groupId");
+                    if (groupId.isEmpty()) {
+                        groupId = "0";
+                    }
+                    Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, groupId);
                     String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
                     Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
                     String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "1" : jsonDeviceSettings.getString("navigationBar");
@@ -1840,7 +1842,11 @@ public class Util {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
             JSONObject obj = new JSONObject();
-            obj.put("groupId", AppSettings.getMemberSyncGroupId());
+            if (AppSettings.isMemberGroupSyncEnabled()) {
+                obj.put("groupId", AppSettings.getMemberSyncGroupId());
+            } else {
+                obj.put("groupId", "0");
+            }
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 

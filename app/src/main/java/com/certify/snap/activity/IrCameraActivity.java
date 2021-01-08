@@ -1304,11 +1304,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
-    private void showSnackbar(final String snackMessage) {
+    private void showSnackbar(String snackMessage) {
         tv_sync.setTypeface(rubiklight);
         if (snackMessage.equals("start")) {
-            tv_sync.setText(totalCount++ + " out of " + memberCount);
-        } else if (snackMessage.contains("completed")) {
+            tv_sync.setText(totalCount++ + " " + getString(R.string.out_of) + " " + memberCount);
+        } else if (snackMessage.contains("complet")) {
             tv_sync.setText(getString(R.string.sync_completed));
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -3285,7 +3285,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         //String dateTime = date;
         String triggerType = CameraController.getInstance().getTriggerType();
         if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-            date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
+            if (AppSettings.isEnablePrinter()) {
+                date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
+            }
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && qrCodeData != null) {
                 if (AppSettings.isPrintLabelName()) {
@@ -3310,7 +3312,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
-                date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
+                if (AppSettings.isEnablePrinter()) {
+                    date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
+                }
                 String answers = GestureController.getInstance().getAnswers();
                 answers = answers.replace(",", "");
                 answers = answers.replace("[", "");

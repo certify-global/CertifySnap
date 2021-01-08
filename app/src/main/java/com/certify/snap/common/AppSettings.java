@@ -80,6 +80,7 @@ public class AppSettings {
     private static int accessControlLogMode = Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE;
     private static int accessControlScanMode = Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE;
     private static String memberSyncGroupId = "0";
+    private static boolean memberGroupSyncEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -162,6 +163,7 @@ public class AppSettings {
         accessControlLogMode = sharedPreferences.getInt(GlobalParameters.AccessControlLogMode,Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE);
         accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode,Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
         memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,"0");
+        memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC,false);
     }
 
     public static String getThermalScanTitle() {
@@ -455,5 +457,9 @@ public class AppSettings {
 
     public static String getMemberSyncGroupId() {
         return memberSyncGroupId;
+    }
+
+    public static boolean isMemberGroupSyncEnabled() {
+        return memberGroupSyncEnabled;
     }
 }
