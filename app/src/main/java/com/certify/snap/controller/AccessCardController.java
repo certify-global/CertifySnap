@@ -96,7 +96,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void setReverseRelayMode(boolean mReverseRelayMode) {
-        this.mReverseRelayMode = mReverseRelayMode;
+        this.mReverseRelayMode = !mReverseRelayMode;
     }
 
     public void setStopRelayOnHighTemp(boolean mStopRelayOnHighTemp) {
@@ -291,7 +291,11 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoor(List<RegisteredMembers> membersList) {
         if (isAccessSignalEnabled()) {
-            if (AppSettings.isRfidEnabled() && (isEnableWiegandPt() || isAllowAnonymous())) {
+            if (mReverseRelayMode) {
+                denyAccess();
+                return;
+            }
+            if (((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect()) && isEnableWiegandPt()) || isAllowAnonymous()) {
                 allowAccess();
                 return;
             }
@@ -350,8 +354,12 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
         if (isAccessSignalEnabled()) {
-            if (AppSettings.isRfidEnabled() && (isEnableWiegandPt() || isAllowAnonymous())) {
-                allowAccessOnHighTemp();
+            if (((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect()) && isEnableWiegandPt()) || isAllowAnonymous()) {
+                if (isBlockAccessOnHighTempEnabled()) {
+                    denyAccess();
+                } else {
+                    allowAccessOnHighTemp();
+                }
                 return;
             }
             if (AppSettings.isFacialDetect()) {
@@ -361,7 +369,11 @@ public class AccessCardController implements AccessCallback {
                         if (isAccessFaceNotMatch) {
                             denyAccess();
                         } else {
-                            allowAccessOnHighTemp();
+                            if (isBlockAccessOnHighTempEnabled()) {
+                                denyAccess();
+                            } else {
+                                allowAccessOnHighTemp();
+                            }
                         }
                     } else {
                         denyAccess();
@@ -371,7 +383,11 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
                     if ((membersList != null && membersList.size() > 0) &&
                             (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
-                        allowAccessOnHighTemp();
+                        if (isBlockAccessOnHighTempEnabled()) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
                     } else {
                         denyAccess();
                     }
@@ -379,7 +395,11 @@ public class AccessCardController implements AccessCallback {
                 }
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        allowAccessOnHighTemp();
+                        if (isBlockAccessOnHighTempEnabled()) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
                     } else {
                         denyAccess();
                     }
@@ -388,7 +408,11 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
                             (membersList != null && membersList.size() > 0)) {
-                        allowAccessOnHighTemp();
+                        if (isBlockAccessOnHighTempEnabled()) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
                     } else {
                         denyAccess();
                     }
@@ -399,7 +423,11 @@ public class AccessCardController implements AccessCallback {
                 if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
                         AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
                         AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                    allowAccessOnHighTemp();
+                    if (isBlockAccessOnHighTempEnabled()) {
+                        denyAccess();
+                    } else {
+                        allowAccessOnHighTemp();
+                    }
                 } else {
                     denyAccess();
                 }
@@ -632,6 +660,10 @@ public class AccessCardController implements AccessCallback {
         if (listener != null) {
             listener.onAccessDenied();
         }
+    }
+
+    private boolean isBlockAccessOnHighTempEnabled() {
+        return (mNormalRelayMode && mStopRelayOnHighTemp);
     }
 
     public void clearData() {
