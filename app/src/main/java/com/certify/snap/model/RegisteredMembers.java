@@ -29,7 +29,8 @@ public class RegisteredMembers {
     public String dateTime;
     public String memberTypeName;
     public String networkId;
-
+    public String accessFromTime;
+    public String accessToTime;
 
     public String getNetworkId() {
         return networkId;
@@ -156,6 +157,22 @@ public class RegisteredMembers {
 
     public void setMemberTypeName(String memberTypeName) {
         this.memberTypeName = memberTypeName;
+    }
+
+    public String getAccessFromTime() {
+        return accessFromTime;
+    }
+
+    public void setAccessFromTime(String accessFromTime) {
+        this.accessFromTime = accessFromTime;
+    }
+
+    public String getAccessToTime() {
+        return accessToTime;
+    }
+
+    public void setAccessToTime(String accessToTime) {
+        this.accessToTime = accessToTime;
     }
 
     @Override

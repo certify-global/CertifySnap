@@ -117,6 +117,12 @@ public class MemberSyncDataModel {
                             if (c.has("networkId")) {
                                 member.setNetworkId(c.getString("networkId"));
                             }
+                            if (c.has("fromDate")) {
+                                member.setAccessFromTime(c.getString("fromDate"));
+                            }
+                            if (c.has("toDate")) {
+                                member.setAccessToTime(c.getString("toDate"));
+                            }
                             index = index +1;
                             member.setPrimaryId(index);
                             emitter.onNext(member);
@@ -191,6 +197,12 @@ public class MemberSyncDataModel {
                             }
                             if (c.has("groupId")) {
                                 groupId = c.getString("groupId");
+                            }
+                            if (c.has("fromDate")) {
+                                member.setAccessFromTime(c.getString("fromDate"));
+                            }
+                            if (c.has("toDate")) {
+                                member.setAccessToTime(c.getString("toDate"));
                             }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
@@ -364,7 +376,7 @@ public class MemberSyncDataModel {
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
-                                 member.memberType, member.memberTypeName, member.networkId)) {
+                                 member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -425,7 +437,7 @@ public class MemberSyncDataModel {
      * @return true or false accordingly
      */
     public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
-                                    String dateTime, long primaryId, String memberType, String memberTypeName,String networkId) {
+                                    String dateTime, long primaryId, String memberType, String memberTypeName,String networkId, String accessFromTime, String accessToTime) {
         try {
             String username = firstname + "-" + primaryId;
             String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
@@ -450,6 +462,8 @@ public class MemberSyncDataModel {
             registeredMembers.setMemberType(memberType);
             registeredMembers.setMemberTypeName(memberTypeName);
             registeredMembers.setNetworkId(networkId);
+            registeredMembers.setAccessFromTime(accessFromTime);
+            registeredMembers.setAccessToTime(accessToTime);
             DatabaseController.getInstance().insertMemberToDB(registeredMembers);
             return true;
         } catch (Exception e) {

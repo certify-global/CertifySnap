@@ -515,6 +515,9 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
+                if (isAccessSignalEnabled() && data != null) {
+                    obj.put("allowAccess", getAllowAccessValue(data));
+                }
 
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
@@ -664,6 +667,54 @@ public class AccessCardController implements AccessCallback {
 
     private boolean isBlockAccessOnHighTempEnabled() {
         return (mNormalRelayMode && mStopRelayOnHighTemp);
+    }
+
+    public boolean isAccessTimeExpired(RegisteredMembers member) {
+        boolean result = true;
+        if (member != null) {
+            if (member.getAccessFromTime() != null && member.getAccessToTime() != null) {
+                if (Util.isDateBigger(member.getAccessToTime(), member.getAccessFromTime(), "yyyy-MM-dd'T'HH:mm:ss")) {
+                    result = false;
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean getAllowAccessValue (UserExportedData data) {
+        boolean allowAccessValue = true;
+        if (data.exceedsThreshold) {
+            if (mNormalRelayMode && mStopRelayOnHighTemp) {
+                allowAccessValue = false;
+            }
+        } else {
+            if (mReverseRelayMode) {
+                allowAccessValue = false;
+            }
+        }
+        return allowAccessValue;
+    }
+
+    public boolean isAccessDenied(RegisteredMembers registeredMembers) {
+        boolean result = false;
+        if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) ||
+                (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue())) {
+            if (isAccessTimeExpired(registeredMembers)) {
+               result = true;
+            }
+        } else if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
+            RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+            if (rfidScanMatchMember != null) {
+                if ((rfidScanMatchMember.primaryid != registeredMembers.primaryid) || isAccessTimeExpired(rfidScanMatchMember)) {
+                    setAccessFaceNotMatch(true);
+                    result = true;
+                }
+            } else if (isAccessTimeExpired(registeredMembers)) {
+                setAccessFaceNotMatch(true);
+                result = true;
+            }
+        }
+        return result;
     }
 
     public void clearData() {

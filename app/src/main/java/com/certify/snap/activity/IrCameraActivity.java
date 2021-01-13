@@ -2292,23 +2292,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
-                                    if (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) {
-                                        RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-                                        if (rfidScanMatchMember != null) {
-                                            if (rfidScanMatchMember.primaryid != registeredMembers.primaryid) {
-                                                AccessCardController.getInstance().setAccessFaceNotMatch(true);
-                                                runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
-                                                return;
-                                            }
-                                        }
-                                    }
-                                    UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
-                                    data.compareResult = compareResult;
-                                    CameraController.getInstance().setCompareResult(compareResult);
                                     CameraController.getInstance().setFaceVisible(true);
                                     if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
                                         CameraController.getInstance().setTriggerType(CameraController.triggerValue.FACE.toString());
                                     }
+                                    if (AccessCardController.getInstance().isAccessDenied(registeredMembers)) {
+                                        runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
+                                        requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
+                                        return;
+                                    }
+                                    UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
+                                    data.compareResult = compareResult;
+                                    CameraController.getInstance().setCompareResult(compareResult);
                                     runTemperature(requestId, data);   //TODO1: Optimize
 
                                     String status = registeredMembers.getStatus();
@@ -2400,6 +2395,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (accessCardController.isDoMemberMatch()) {
             accessCardController.setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
+                RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+                if (AccessCardController.getInstance().isAccessTimeExpired(matchedMember)) {
+                    onRfidNoMemberMatch(cardId);
+                    return;
+                }
                 //launch the fragment
                 if (AppSettings.isAcknowledgementScreen()) {
                     if (accessCardController.getTapCount() == 0) {
