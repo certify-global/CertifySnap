@@ -28,6 +28,7 @@ public class RegisteredMembers {
     public String memberType;
     public String dateTime;
     public String memberTypeName;
+    public String groupId;
     public String networkId;
     public String accessFromTime;
     public String accessToTime;
@@ -157,6 +158,14 @@ public class RegisteredMembers {
 
     public void setMemberTypeName(String memberTypeName) {
         this.memberTypeName = memberTypeName;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public String getAccessFromTime() {
