@@ -485,7 +485,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 Bitmap bitmap1 = BitmapFactory.decodeFile(updateimagePath);
                                 isUpdate = true;
                                 JSONObject obj = new JSONObject();
-                                obj.put("id", uniquestr);
+                                obj.put("uniqueId", uniquestr);
                                 obj.put("firstName", firstnamestr);
                                 obj.put("lastname", lastnamestr);
                                 obj.put("email", emailstr);
@@ -495,10 +495,11 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 obj.put("faceTemplate", bitmap1 == null ? "" : Util.encodeToBase64(bitmap1));
                                 obj.put("status", true);
                                 obj.put("memberType", member.getMemberType());
-                                obj.put("memberTypeName", member.getMemberTypeName());
+                                /*obj.put("memberTypeName", member.getMemberTypeName());
                                 obj.put("networkId", member.getNetworkId());
                                 obj.put("fromDate", member.getAccessFromTime());
                                 obj.put("toDate", member.getAccessToTime());
+                                obj.put("groupId", member.getGroupId());*/
                                 new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                             } catch (Exception e) {
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
@@ -1236,6 +1237,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     String memberidstr = responseData.getString("memberId");
                     String memberType = "";
                     String groupId = "";
+                    String networkId = "";
+                    String accessFromTime = "";
+                    String accessToTime = "";
                     if (responseData.has("memberType")) {
                         memberType = responseData.getString("memberType");
                     }
@@ -1247,12 +1251,18 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         groupId = responseData.getString("groupId");
                     }
                     String accessstr = responseData.getString("accessId");
-                    String uniquestr = json.getString("id");
+                    String uniquestr = responseData.getString("uniqueId");
                     String image = responseData.getString("faceTemplate");
                     String statusStr = responseData.getString("status");
-                    String networkId = responseData.getString("networkId");
-                    String accessFromTime = responseData.getString("fromDate");
-                    String accessToTime = responseData.getString("toDate");
+                    if (responseData.has("networkId")) {
+                        networkId = responseData.getString("networkId");
+                    }
+                    if (responseData.has("fromDate")) {
+                        accessFromTime = responseData.getString("fromDate");
+                    }
+                    if (responseData.has("toDate")) {
+                        accessToTime = responseData.getString("toDate");
+                    }
 
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {

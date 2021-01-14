@@ -1,7 +1,6 @@
 package com.certify.snap.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -107,8 +106,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.certify.snap.common.GlobalParameters.livenessDetect;
 
 public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -252,7 +249,6 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
-        livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
         mask = sharedPreferences.getBoolean(GlobalParameters.MaskMode, false);
         tempRect = new Rect(sharedPreferences.getInt("rect_left", 24), sharedPreferences.getInt("rect_top", 30),
                 sharedPreferences.getInt("rect_right", 28), sharedPreferences.getInt("rect_bottom", 40));
@@ -544,7 +540,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
 
                 if (faceFeature != null) {
                     Integer liveness = livenessMap.get(requestId);
-                    if (!livenessDetect || liveness != null) {
+                    if (!AppSettings.isLivenessDetect() || liveness != null) {
                         if (AppSettings.isFacialDetect())
                             searchFace(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                     } else {
@@ -830,7 +826,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
                             }*/
                     }
 
-                    if (livenessDetect) {
+                    if (AppSettings.isLivenessDetect()) {
                         Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
                         if (liveness == null
                                 || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
@@ -1617,7 +1613,7 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
 
                     @Override
                     public void onComplete() {
-                        if (livenessDetect) {
+                        if (AppSettings.isLivenessDetect()) {
 //                            faceHelperProIr.setName(requestId, Integer.toString(requestId));
                         }
                         livenessMap.put(requestId, LivenessInfo.UNKNOWN);

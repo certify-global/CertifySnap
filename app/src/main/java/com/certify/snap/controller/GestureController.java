@@ -857,6 +857,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         startWaveHandTimer();
     }
 
+    public boolean isGestureWithMaskEnforceEnabled() {
+        return (AppSettings.isEnableHandGesture() && AppSettings.isMaskEnforced() &&
+                GestureController.getInstance().isGestureEnabledAndDeviceConnected());
+    }
+
     public void clearData() {
         if (speechRecognizer != null) {
             speechRecognizer.stopListening();

@@ -394,7 +394,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tvOnlyText.setTextSize(CameraController.getInstance().getOnlyTextSize(onlyTextMes.length()));
 
         relaytimenumber = sharedPreferences.getInt(GlobalParameters.RelayTime, 5);
-        GlobalParameters.livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, false);
 
         //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
@@ -887,7 +886,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 }
                             });
                         }
-                        checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        if (!faceDetectEnabled) {
+                            checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        }
                     } else if (!isFaceIdentified) {
                         if (!Util.isOfflineMode(IrCameraActivity.this)) {
                             showCameraPreview(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
@@ -899,7 +900,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                     Integer liveness = livenessMap.get(requestId);
                     initiateFaceSearch(faceFeature, requestId, liveness, rgbBitmapClone, irBitmapClone);
-                    if (!GlobalParameters.livenessDetect) {
+                    if (!AppSettings.isLivenessDetect()) {
                         /*if(sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,false)){
                             Logger.debug(TAG, " Facial Score ---  not liveness Defect ");
                             searchFace(faceFeature, requestId);
@@ -969,6 +970,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         //faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
                         //  FAIL_RETRY_INTERVAL UNKNOWN
                         retryLivenessDetectDelayed(requestId);
+                    } else if (liveness == LivenessInfo.ALIVE) {
+                        requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                     }
                 } else {
                     if (increaseAndGetValue(livenessErrorRetryMap, requestId) > MAX_RETRY_TIME) {
@@ -1073,7 +1076,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
                 for (int i = 0; i < facePreviewInfoList.size(); i++) {
                     Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
-                    if (GlobalParameters.livenessDetect && (status == null || status != RequestFeatureStatus.SUCCEED)) {
+                    if (AppSettings.isLivenessDetect() && (status == null || status != RequestFeatureStatus.SUCCEED)) {
                         Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
                         if (liveness == null
                                 || (liveness != LivenessInfo.ALIVE && liveness != LivenessInfo.NOT_ALIVE && liveness != RequestLivenessStatus.ANALYZING)) {
@@ -1248,7 +1251,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     @Override
                     public void onComplete() {
                         // UNKNOWN
-                        if (GlobalParameters.livenessDetect) {
+                        if (AppSettings.isLivenessDetect()) {
                             //faceHelperIr.setName(requestId, Integer.toString(requestId));
                         }
                         livenessMap.put(requestId, LivenessInfo.UNKNOWN);
@@ -1567,7 +1570,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT | processMask);
 
             flEngine = new FaceEngine();
-            if (GlobalParameters.livenessDetect) {
+            if (AppSettings.isLivenessDetect()) {
                 LivenessParam livenessParam = new LivenessParam(0.5f, 0.7f);
                 flEngine.setLivenessParam(livenessParam);
             }
@@ -2451,8 +2454,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initiateFaceSearch(FaceFeature faceFeature, int requestId, Integer liveness, Bitmap rgb, Bitmap ir) {
         Log.v(TAG, String.format("initiateFaceSearch faceDetectEnabled: %s", faceDetectEnabled));
         if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
-            if (GlobalParameters.livenessDetect) {
+            if (AppSettings.isLivenessDetect()) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
+                    Log.d(TAG, "Deep Face is Alive initiate Search");
                     startFaceSearch(faceFeature, requestId, rgb, ir);
                 }
                 return;
@@ -2729,7 +2733,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void showCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         if ((!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) ||
-                (AppSettings.isMaskEnforced() && GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
+                (GestureController.getInstance().isGestureWithMaskEnforceEnabled())) {
             return;
         }
         checkDeviceMode();
@@ -2757,10 +2761,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void startFaceSearch(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
-        if (CameraController.getInstance().isScanCloseProximityEnabled()) {
+        /*if (CameraController.getInstance().isScanCloseProximityEnabled()) {
             //searchFace(faceFeature, requestId, rgbBitmap, irBitmap);
             return;
-        }
+        }*/
         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmap, irBitmap);
     }
 

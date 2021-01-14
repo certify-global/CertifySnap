@@ -692,5 +692,6 @@
     <string name="member_empty_msg">El ID de miembro no debe estar vacío</string>
     <string name="accessid_empty_msg">El ID de acceso no debe estar vacío</string>
     <string name="scan_card_msg">Escanee la tarjeta para inscribirse</string>
+    <string name="enable_liveness">Habilitar vivacidad</string>
 
 </resources>

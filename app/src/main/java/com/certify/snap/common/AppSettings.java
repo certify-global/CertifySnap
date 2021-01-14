@@ -93,7 +93,7 @@ public class AppSettings {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, context.getString(R.string.thermal_scan));
         thermalScanSubTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, "");
-        livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
+        livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, false);
         imageIcon = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         captureTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
         allowLow = sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false);

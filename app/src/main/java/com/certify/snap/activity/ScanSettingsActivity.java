@@ -22,7 +22,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     EditText et_screen_delay,editTextDialogUserInput_low,et_normal,et_high;
     Typeface rubiklight;
     TextView tv_delay,tv_temp_all,tv_capture_image,tv_temp_details,tv_scan,btn_save,tv_reg,tv_mask,
-            voiceRecognitionTextView ,  handGestureTextView,tv_temp_result_bar,tv_temp_text,tv_temp_text_normal,tv_temp_text_high;
+            tv_temp_result_bar,tv_temp_text,tv_temp_text_normal,tv_temp_text_high;
     TextInputLayout text_input_low_temp;
     RadioGroup radio_group_mask,radio_group_bar;
     RadioButton radio_yes_mask,radio_yes_bar,radio_no_bar;
@@ -40,6 +40,9 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private RadioButton tempScanYes;
     private RadioButton tempScanNo;
     private LinearLayout tempScanSettingsLayout;
+    private TextView enableLivenessTv;
+    private RadioGroup livenessRg;
+    private RadioButton livenessYes, livenessNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +52,6 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             sp = Util.getSharedPreferences(this);
 
             initView();
-            //voiceRecognitionCheck();
-            //handGestureCheck();
 
             final RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
             final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
@@ -112,6 +113,8 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             setScanTypeClickListener();
             setDefaultAllowTempScan();
             setTempScanClickListener();
+            setDefaultLiveness();
+            setLivenessClickListener();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -194,6 +197,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
                     saveScanProximity();
                     saveScanType();
                     saveTempScan();
+                    saveLiveness();
                     finish();
                 }
             });
@@ -231,8 +235,6 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         scanProximityRg = findViewById(R.id.scan_proximity_rg);
         scanProximityYes = findViewById(R.id.radio_yes_scan_proximity);
         scanProximityNo = findViewById(R.id.radio_no_scan_proximity);
-        voiceRecognitionTextView = findViewById(R.id.voice_recognition_textView);
-        handGestureTextView = findViewById(R.id.hand_gesture_text_view);
         tv_temp_result_bar = findViewById(R.id.tv_temp_result_bar);
         tv_temp_text = findViewById(R.id.tv_temp_text);
         tv_temp_text_normal = findViewById(R.id.tv_temp_text_normal);
@@ -251,6 +253,10 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         tempScanYes = findViewById(R.id.temp_scan_yes);
         tempScanNo = findViewById(R.id.temp_scan_no);
         tempScanSettingsLayout = findViewById(R.id.temp_scan_settings_layout);
+        enableLivenessTv = findViewById(R.id.liveness_tv);
+        livenessRg = findViewById(R.id.liveness_rg);
+        livenessYes = findViewById(R.id.liveness_yes_rb);
+        livenessNo = findViewById(R.id.liveness_no_rb);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -263,52 +269,13 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         tv_reg.setTypeface(rubiklight);
         tv_mask.setTypeface(rubiklight);
         scanProximityView.setTypeface(rubiklight);
-        voiceRecognitionTextView.setTypeface(rubiklight);
-        handGestureTextView.setTypeface(rubiklight);
         tv_temp_result_bar.setTypeface(rubiklight);
         tv_temp_text.setTypeface(rubiklight);
         tv_temp_text_normal.setTypeface(rubiklight);
         tv_temp_text_high.setTypeface(rubiklight);
         scanType.setTypeface(rubiklight);
         enableTempScan.setTypeface(rubiklight);
-    }
-
-    private void voiceRecognitionCheck(){
-        RadioGroup radio_group_light = findViewById(R.id.radio_group_voice_recognition);
-        RadioButton radio_yes_light = findViewById(R.id.radio_yes_voice_recognition);
-        RadioButton radio_no_light = findViewById(R.id.radio_no_voice_recognition);
-
-        if(sp.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false))
-            radio_yes_light.setChecked(true);
-        else radio_no_light.setChecked(true);
-
-        radio_group_light.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_voice_recognition)
-                    Util.writeBoolean(sp, GlobalParameters.VISUAL_RECOGNITION, true);
-                else Util.writeBoolean(sp, GlobalParameters.VISUAL_RECOGNITION, false);
-            }
-        });
-    }
-
-    private void handGestureCheck(){
-        RadioGroup radio_group_light = findViewById(R.id.radio_group_hand_gesture);
-        RadioButton radio_yes_light = findViewById(R.id.radio_yes_hand_gesture);
-        RadioButton radio_no_light = findViewById(R.id.radio_no_hand_gesture);
-
-        if(sp.getBoolean(GlobalParameters.HAND_GESTURE,false))
-            radio_yes_light.setChecked(true);
-        else radio_no_light.setChecked(true);
-
-        radio_group_light.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.radio_yes_hand_gesture)
-                    Util.writeBoolean(sp, GlobalParameters.HAND_GESTURE, true);
-                else Util.writeBoolean(sp, GlobalParameters.HAND_GESTURE, false);
-            }
-        });
+        enableLivenessTv.setTypeface(rubiklight);
     }
 
     private void setDefaultScanProximity() {
@@ -405,6 +372,36 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             Util.writeBoolean(sp, GlobalParameters.EnableTempScan, true);
         } else if(tempScanNo.isChecked()) {
             Util.writeBoolean(sp, GlobalParameters.EnableTempScan, false);
+        }
+    }
+
+    private void setDefaultLiveness() {
+        if (sp.getBoolean(GlobalParameters.LivingType, false)) {
+            livenessYes.setChecked(true);
+            livenessNo.setChecked(false);
+        } else {
+            livenessNo.setChecked(true);
+            livenessYes.setChecked(false);
+        }
+    }
+
+    private void setLivenessClickListener() {
+        livenessRg.setOnCheckedChangeListener((radioGroup, checkedId) -> {
+            if (checkedId == R.id.liveness_yes_rb) {
+                livenessYes.setChecked(true);
+                livenessNo.setChecked(false);
+            } else if (checkedId == R.id.liveness_no_rb) {
+                livenessNo.setChecked(true);
+                livenessYes.setChecked(false);
+            }
+        });
+    }
+
+    private void saveLiveness() {
+        if (livenessYes.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.LivingType, true);
+        } else if(livenessNo.isChecked()) {
+            Util.writeBoolean(sp, GlobalParameters.LivingType, false);
         }
     }
 }
