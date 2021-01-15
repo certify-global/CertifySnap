@@ -315,7 +315,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(HomeActivity.this, "Activate Application Request Error!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, getString(R.string.activate_application_error), Toast.LENGTH_SHORT).show();
                         Util.switchRgbOrIrActivity(HomeActivity.this, true);
                     }
                 });
