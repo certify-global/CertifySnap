@@ -110,6 +110,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public interface GestureMECallbackListener {
         void onGestureMEDetected();
         void onLeftHandWave();
+        void onWaveHandTimeout();
+        void onWaveHandReset();
     }
 
     public static GestureController getInstance() {
@@ -373,6 +375,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                             if (listener != null) {
                                 listener.onWaveHandReset();
                             }
+                            if (gestureMEListener != null) {
+                                gestureMEListener.onWaveHandReset();
+                            }
                             resetWaveHandProcessed();
                         }
                     } catch (Exception e) {
@@ -501,9 +506,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
-        if (gestureMEListener != null && !isMECallback) {
+        if (gestureMEListener != null && !isMECallback && !waveHandProcessed.get(LEFT_HAND)) {
             Log.d(TAG, "Right Hand wave");
             isMECallback = true;
+            startWaveHandTimer();
             gestureMEListener.onLeftHandWave();
             return;
         }
@@ -515,15 +521,18 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     private void rightHandWave() {
-        if (gestureListener != null && !isCallback) {
+        if (gestureListener != null && !isCallback && !waveHandProcessed.get(RIGHT_HAND)) {
             Log.d(TAG, "Right Hand wave");
             isCallback = true;
+            startWaveHandTimer();
             gestureListener.onGestureDetected();
             return;
         }
-        if (gestureMEListener != null && !isMECallback) {
+        if (gestureMEListener != null && !isMECallback && !waveHandProcessed.get(RIGHT_HAND)) {
             Log.d(TAG, "Right Hand wave");
             isMECallback = true;
+            waveHandProcessed.put(RIGHT_HAND, true);
+            startWaveHandTimer();
             gestureMEListener.onGestureMEDetected();
             return;
         }
@@ -840,6 +849,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 waveHandTimer.cancel();
                 if (listener != null) {
                     listener.onWaveHandTimeout();
+                }
+                if (gestureMEListener != null) {
+                    gestureMEListener.onWaveHandTimeout();
                 }
                 startWaveTimer();
             }

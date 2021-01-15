@@ -17,6 +17,7 @@ import com.certify.snap.R;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.controller.GestureController;
+import com.google.android.material.snackbar.Snackbar;
 
 
 public class MaskEnforceFragment extends Fragment implements GestureController.GestureMECallbackListener {
@@ -25,6 +26,7 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
     private TextView maskEnforceDescription;
     private View view;
     private Typeface rubiklight;
+    private Snackbar snackbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +75,25 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
                     activity.resetMaskEnforcementGesture();
                 }
             });
+        }
+    }
+
+    @Override
+    public void onWaveHandTimeout() {
+        mActivity.runOnUiThread(() -> {
+            snackbar = Snackbar.make(view, getString(R.string.gesture_timeout_msg), Snackbar.LENGTH_INDEFINITE);
+            snackbar.show();
+        });
+    }
+
+    @Override
+    public void onWaveHandReset() {
+        mActivity.runOnUiThread(this::dismissSnackbar);
+    }
+
+    private void dismissSnackbar() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
         }
     }
 }
