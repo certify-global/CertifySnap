@@ -495,11 +495,11 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 obj.put("faceTemplate", bitmap1 == null ? "" : Util.encodeToBase64(bitmap1));
                                 obj.put("status", true);
                                 obj.put("memberType", member.getMemberType());
-                                /*obj.put("memberTypeName", member.getMemberTypeName());
+                                obj.put("memberTypeName", member.getMemberTypeName());
                                 obj.put("networkId", member.getNetworkId());
                                 obj.put("fromDate", member.getAccessFromTime());
                                 obj.put("toDate", member.getAccessToTime());
-                                obj.put("groupId", member.getGroupId());*/
+                                obj.put("groupId", member.getGroupId());
                                 new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                             } catch (Exception e) {
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());

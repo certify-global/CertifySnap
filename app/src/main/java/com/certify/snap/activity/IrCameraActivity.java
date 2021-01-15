@@ -1822,6 +1822,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (isTopFragmentGesture() ||
                 CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString())) return;
             if (!qrCodeReceived) {
+                qrCodeReceived = true;
                 CameraController.getInstance().setTriggerType(CameraController.triggerValue.CODEID.toString());
                 preview.stop();
                 frameLayout.setBackgroundColor(getResources().getColor(R.color.colorWhite));
@@ -1857,6 +1858,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 img_qr.setBackgroundResource(R.drawable.qrimage);
 
                 if (isInstitutionIdEmpty()) {
+                    qrCodeReceived = false;
                     return;
                 }
 
@@ -1864,17 +1866,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
                 CameraController.getInstance().setQrCodeId(guid);
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                    qrCodeReceived = true;
                     startQRTimer(guid);
                     JSONObject obj = new JSONObject();
                     obj.put("qrCodeID", guid);
                     obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
                     new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
                 }
-            } else {
-                qrCodeReceived = false;
             }
         } catch (Exception e) {
+            qrCodeReceived = false;
             cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
@@ -1882,6 +1882,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onJSONObjectListenerQRCode(JSONObject reportInfo, String status, JSONObject req) {
+        qrCodeReceived = false;
         cancelQRTimer();
         try {
             if (reportInfo == null) {
@@ -1893,7 +1894,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 runOnUiThread(() -> {
                     if (isReadyToScan) return;
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                    qrCodeReceived = false;
                     preview.stop();
                     clearQrCodePreview();
                     setCameraPreview();
@@ -2795,6 +2795,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         faceThermalToast = null;
         isRecordNotSent = false;
         temperatureBitmap = null;
+        qrCodeReceived = false;
 
         if (isDisconnected) {
             runOnUiThread(() -> Toast.makeText(getBaseContext(), getString(R.string.connect_light_device), Toast.LENGTH_SHORT).show());
@@ -3578,6 +3579,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        qrCodeReceived = false;
                         Toast.makeText(IrCameraActivity.this, getString(R.string.qr_validation_msg), Toast.LENGTH_SHORT).show();
                         CameraController.getInstance().setQrCodeId(guid);
                         Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
