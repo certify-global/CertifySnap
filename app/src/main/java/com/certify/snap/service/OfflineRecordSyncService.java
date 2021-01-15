@@ -180,6 +180,9 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (json.has("accessId")) {
                 jsonObject.put("accessId", json.getString("accessId"));
             }
+            if (json.has("allowAccess")) {
+                jsonObject.put("allowAccess", json.getString("allowAccess"));
+            }
             jsonObject.put("firstName", list.get(i).getFirstName());
             jsonObject.put("lastName", list.get(i).getLastName());
             jsonObject.put("memberId", list.get(i).getMemberId());

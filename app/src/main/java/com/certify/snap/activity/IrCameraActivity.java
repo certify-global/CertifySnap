@@ -886,7 +886,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 }
                             });
                         }
-                        if (!faceDetectEnabled) {
+                        if (!AppSettings.isLivenessDetect()) {
+                            checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
+                        } else if (!faceDetectEnabled) {
                             checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmapClone, irBitmapClone);
                         }
                     } else if (!isFaceIdentified) {
@@ -2294,15 +2296,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length - 1]));
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
-                                    RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     CameraController.getInstance().setFaceVisible(true);
                                     if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
                                         CameraController.getInstance().setTriggerType(CameraController.triggerValue.FACE.toString());
                                     }
-                                    if (AccessCardController.getInstance().isAccessDenied(registeredMembers)) {
-                                        runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
-                                        requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
-                                        return;
+                                    RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                                    if (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) {
+                                        RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+                                        if (rfidScanMatchMember != null) {
+                                            if (rfidScanMatchMember.primaryid != registeredMembers.primaryid) {
+                                                AccessCardController.getInstance().setAccessFaceNotMatch(true);
+                                                runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
+                                                return;
+                                            }
+                                        }
                                     }
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
@@ -2399,7 +2406,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             accessCardController.setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-                if (AccessCardController.getInstance().isAccessTimeExpired(matchedMember)) {
+                if (accessCardController.isAccessTimeExpired(matchedMember)) {
                     onRfidNoMemberMatch(cardId);
                     return;
                 }
@@ -2761,10 +2768,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void startFaceSearch(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
-        /*if (CameraController.getInstance().isScanCloseProximityEnabled()) {
+        if (CameraController.getInstance().isScanCloseProximityEnabled()
+            && !AppSettings.isLivenessDetect()) {
             //searchFace(faceFeature, requestId, rgbBitmap, irBitmap);
             return;
-        }*/
+        }
         checkFaceClosenessAndSearch(faceFeature, requestId, rgbBitmap, irBitmap);
     }
 

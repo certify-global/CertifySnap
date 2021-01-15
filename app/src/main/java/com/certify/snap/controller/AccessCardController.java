@@ -303,7 +303,7 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
                     if ((membersList != null && membersList.size() > 0)
                             && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isAccessFaceNotMatch) {
+                        if (isAccessFaceNotMatch || isAccessTimeExpired(membersList.get(0))) {
                             denyAccess();
                         } else {
                             allowAccess();
@@ -316,7 +316,11 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
                     if ((membersList != null && membersList.size() > 0) &&
                             (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
-                        allowAccess();
+                        if (isAccessTimeExpired(membersList.get(0))) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
                     } else {
                         denyAccess();
                     }
@@ -324,7 +328,11 @@ public class AccessCardController implements AccessCallback {
                 }
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        allowAccess();
+                        if (isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
                     } else {
                         denyAccess();
                     }
@@ -333,7 +341,12 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
                             (membersList != null && membersList.size() > 0)) {
-                        allowAccess();
+                        if (membersList != null && (membersList.size() > 0) &&
+                            isAccessTimeExpired(membersList.get(0))) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
                     } else {
                         denyAccess();
                     }
@@ -344,7 +357,11 @@ public class AccessCardController implements AccessCallback {
                 if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
                         AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
                         AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                    allowAccess();
+                    if (isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+                        denyAccess();
+                    } else {
+                        allowAccess();
+                    }
                 } else {
                     denyAccess();
                 }
@@ -366,14 +383,11 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
                     if ((membersList != null && membersList.size() > 0)
                             && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isAccessFaceNotMatch) {
+                        if (isAccessFaceNotMatch || isAccessTimeExpired(membersList.get(0)) ||
+                                isBlockAccessOnHighTempEnabled()) {
                             denyAccess();
                         } else {
-                            if (isBlockAccessOnHighTempEnabled()) {
-                                denyAccess();
-                            } else {
-                                allowAccessOnHighTemp();
-                            }
+                            allowAccessOnHighTemp();
                         }
                     } else {
                         denyAccess();
@@ -383,7 +397,7 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
                     if ((membersList != null && membersList.size() > 0) &&
                             (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
-                        if (isBlockAccessOnHighTempEnabled()) {
+                        if (isBlockAccessOnHighTempEnabled() || isAccessTimeExpired(membersList.get(0))) {
                             denyAccess();
                         } else {
                             allowAccessOnHighTemp();
@@ -395,7 +409,8 @@ public class AccessCardController implements AccessCallback {
                 }
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isBlockAccessOnHighTempEnabled()) {
+                        if (isBlockAccessOnHighTempEnabled() ||
+                                isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
                             denyAccess();
                         } else {
                             allowAccessOnHighTemp();
@@ -408,7 +423,8 @@ public class AccessCardController implements AccessCallback {
                 if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
                             (membersList != null && membersList.size() > 0)) {
-                        if (isBlockAccessOnHighTempEnabled()) {
+                        if ((isBlockAccessOnHighTempEnabled()) ||
+                                (membersList != null && (membersList.size() > 0) && isAccessTimeExpired(membersList.get(0)))) {
                             denyAccess();
                         } else {
                             allowAccessOnHighTemp();
@@ -423,7 +439,8 @@ public class AccessCardController implements AccessCallback {
                 if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
                         AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
                         AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                    if (isBlockAccessOnHighTempEnabled()) {
+                    if (isBlockAccessOnHighTempEnabled() ||
+                            isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
                         denyAccess();
                     } else {
                         allowAccessOnHighTemp();
@@ -515,7 +532,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
-                if (isAccessSignalEnabled() && data != null) {
+                if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
                     obj.put("allowAccess", getAllowAccessValue(data));
                 }
 
@@ -670,11 +687,12 @@ public class AccessCardController implements AccessCallback {
     }
 
     public boolean isAccessTimeExpired(RegisteredMembers member) {
-        boolean result = true;
+        boolean result = false;
         if (member != null) {
-            if (member.getAccessFromTime() != null && member.getAccessToTime() != null) {
-                if (Util.isDateBigger(member.getAccessToTime(), member.getAccessFromTime(), "yyyy-MM-dd'T'HH:mm:ss")) {
-                    result = false;
+            if ((member.getAccessFromTime() != null && !member.getAccessFromTime().isEmpty())
+                    && (member.getAccessToTime() != null && !member.getAccessToTime().isEmpty())) {
+                if (!Util.isDateBigger(member.getAccessToTime(), member.getAccessFromTime(), "yyyy-MM-dd'T'HH:mm:ss")) {
+                    result = true;
                 }
             }
         }
@@ -710,7 +728,6 @@ public class AccessCardController implements AccessCallback {
                     result = true;
                 }
             } else if (isAccessTimeExpired(registeredMembers)) {
-                setAccessFaceNotMatch(true);
                 result = true;
             }
         }
