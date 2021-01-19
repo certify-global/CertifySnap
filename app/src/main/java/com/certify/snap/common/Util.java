@@ -1365,6 +1365,7 @@ public class Util {
                 String temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
                 String scanType = jsonValueScan.isNull("scanType") ? "1" : jsonValueScan.getString("scanType");
                 String enableTemperatureScan = jsonValueScan.isNull("enableTemperatureScan") ? "1" : jsonValueScan.getString("enableTemperatureScan");
+                String enableLiveness = jsonValueScan.isNull("enableLiveness") ? "0" : jsonValueScan.getString("enableLiveness");
 
                 if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
                     SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
@@ -1394,6 +1395,7 @@ public class Util {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, displayResultBar.equals("1"));
                 Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanType));
                 Util.writeBoolean(sharedPreferences, GlobalParameters.EnableTempScan, enableTemperatureScan.equals("1"));
+                Util.writeBoolean(sharedPreferences, GlobalParameters.LivingType, enableLiveness.equals("1"));
 
                 if (!temperatureNormal.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
