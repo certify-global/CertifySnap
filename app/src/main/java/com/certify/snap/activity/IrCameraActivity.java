@@ -2207,7 +2207,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
             return;
         }
-        registeredMemberslist = null;
+
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {
                     @Override
@@ -2796,6 +2796,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         isRecordNotSent = false;
         temperatureBitmap = null;
         qrCodeReceived = false;
+        registeredMemberslist = null;
 
         if (isDisconnected) {
             runOnUiThread(() -> Toast.makeText(getBaseContext(), getString(R.string.connect_light_device), Toast.LENGTH_SHORT).show());
