@@ -497,8 +497,12 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 obj.put("memberType", member.getMemberType());
                                 obj.put("memberTypeName", member.getMemberTypeName());
                                 obj.put("networkId", member.getNetworkId());
-                                obj.put("fromDate", member.getAccessFromTime());
-                                obj.put("toDate", member.getAccessToTime());
+                                if ((member.getAccessFromTime() != null && member.getAccessToTime() != null)
+                                    && !member.getAccessFromTime().isEmpty() && !member.getAccessToTime().isEmpty()) {
+                                    obj.put("activeCheckbox", true);
+                                    obj.put("fromDate", member.getAccessFromTime());
+                                    obj.put("toDate", member.getAccessToTime());
+                                }
                                 obj.put("groupId", member.getGroupId());
                                 new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                             } catch (Exception e) {
