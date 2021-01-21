@@ -879,6 +879,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             speechRecognizer.stopListening();
             speechRecognizer.destroy();
         }
+        cancelWaveHandTimer();
         listener = null;
         index = 0;
         currentQuestionData = null;
