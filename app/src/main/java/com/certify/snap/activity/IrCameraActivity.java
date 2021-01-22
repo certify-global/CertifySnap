@@ -303,7 +303,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private FaceRectView faceRectView;
     private Face3DAngle face3DAngle;
     private int orientationValue = 0;
-    private Timer mQRTimer;
+    private Timer mQRTimer = null;
     private boolean isLowTempRead;
     private int MIN_TEMP_DISPLAY_THRESHOLD = 50;
     private Fragment acknowledgementFragment;
