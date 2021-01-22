@@ -858,7 +858,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }, 7 * 1000);
     }
 
-    private void cancelWaveHandTimer() {
+    public void cancelWaveHandTimer() {
         if (waveHandTimer != null) {
             waveHandTimer.cancel();
             waveHandTimer = null;

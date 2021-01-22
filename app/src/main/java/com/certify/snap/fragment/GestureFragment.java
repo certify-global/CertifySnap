@@ -179,6 +179,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+        GestureController.getInstance().cancelWaveHandTimer();
     }
 
     private void setQuestion() {
