@@ -508,6 +508,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     @Override
     public void onWaveHandTimeout() {
+        if (mActivity.isDestroyed()) return;
         mActivity.runOnUiThread(() -> {
             snackbar = Snackbar.make(view, getString(R.string.gesture_timeout_msg), Snackbar.LENGTH_INDEFINITE);
             snackbar.show();
