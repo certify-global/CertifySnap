@@ -86,7 +86,6 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
-import com.common.pos.api.util.Utils;
 import com.example.a950jnisdk.SDKUtil;
 import com.microsoft.appcenter.analytics.Analytics;
 
@@ -1311,7 +1310,7 @@ public class Util {
                     String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
                     String languageType = jsonDeviceSettings.isNull("languageId") ? "en" : jsonDeviceSettings.getString("languageId");
-                    Util.writeString(sharedPreferences, GlobalParameters.languageType, languageType);
+                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
                 }
 
 
@@ -2380,5 +2379,20 @@ public class Util {
             result = true;
         }
         return result;
+    }
+
+    public static JSONObject getJSONObjectLanguages(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
     }
 }

@@ -19,8 +19,8 @@ import com.brother.ptouch.sdk.NetPrinter;
 import com.brother.ptouch.sdk.Printer;
 import com.brother.ptouch.sdk.PrinterInfo;
 import com.certify.snap.R;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ContextUtils;
-import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.IpAddressValidator;
 import com.certify.snap.common.Util;
 import com.certify.snap.printer.Common;
@@ -40,14 +40,10 @@ public class PrinterWifiSettingsActivity extends ListActivity {
     private EditText printerIp, printerMac;
     private TextView printerIpError, printerMacError;
     SharedPreferences sharedPreferences;
-    private String mSelectLanguage;
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        sharedPreferences = Util.getSharedPreferences(newBase);
-        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
-        localeToSwitchTo = new Locale(mSelectLanguage);
+        Locale localeToSwitchTo = new Locale(AppSettings.getLanguageType());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

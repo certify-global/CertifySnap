@@ -33,6 +33,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
@@ -292,6 +293,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         }
         initNavigationBar();
         startMemberSyncService();
+        initLanguage();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
     }
 
@@ -460,6 +462,13 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             GestureController.getInstance().initContext(this);
             GestureController.getInstance().initGestureRangeValues();
             GestureController.getInstance().initHandGesture();
+        }
+    }
+
+    private void initLanguage() {
+        if (DatabaseController.getInstance().getLanguagesFromDb().isEmpty()) {
+            DeviceSettingsController.getInstance().init(this);
+            DeviceSettingsController.getInstance().getLanguages();
         }
     }
 }

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
+import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -32,7 +33,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 7;
+    public static final int DB_VERSION = 8;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -457,6 +458,37 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.deleteAllQuestions();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void insertLanguagesToDB(LanguageData languageData) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertLanguages(languageData);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public List<LanguageData> getLanguagesFromDb() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllLanguages();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public void deleteLanguagesFromDb() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAllLanguages();
             }
         } catch (SQLiteException e){
             handleDBException(e);

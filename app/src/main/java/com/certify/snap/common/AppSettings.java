@@ -81,6 +81,7 @@ public class AppSettings {
     private static int accessControlScanMode = Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE;
     private static String memberSyncGroupId = "0";
     private static boolean memberGroupSyncEnabled = false;
+    private static String languageType = "en";
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -164,6 +165,7 @@ public class AppSettings {
         accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode,Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
         memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,"0");
         memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC,false);
+        languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
     }
 
     public static String getThermalScanTitle() {
@@ -461,5 +463,13 @@ public class AppSettings {
 
     public static boolean isMemberGroupSyncEnabled() {
         return memberGroupSyncEnabled;
+    }
+
+    public static String getLanguageType() {
+        return languageType;
+    }
+
+    public static void setLanguageType(String languageType) {
+        AppSettings.languageType = languageType;
     }
 }

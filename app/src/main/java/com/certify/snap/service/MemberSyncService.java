@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.RequiresApi;
@@ -17,11 +16,11 @@ import android.util.Log;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
-import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ContextUtils;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -51,7 +50,6 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     int count = 1;
     private ExecutorService taskExecutorService;
     private int activeMemberCount = 0;
-    private String mSelectLanguage;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -60,10 +58,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        sharedPreferences = Util.getSharedPreferences(newBase);
-        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
-        localeToSwitchTo = new Locale(mSelectLanguage);
+        Locale localeToSwitchTo = new Locale(AppSettings.getLanguageType());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

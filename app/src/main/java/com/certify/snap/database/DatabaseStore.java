@@ -7,6 +7,7 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceSettings;
 import com.certify.snap.model.GuestMembers;
@@ -45,6 +46,9 @@ public interface DatabaseStore {
 
     @Insert
     void insertGestureQuestions(QuestionDataDb questionData);
+
+    @Insert
+    void insertLanguages(LanguageData questionData);
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
@@ -140,4 +144,10 @@ public interface DatabaseStore {
 
     @Query("DELETE FROM QuestionDataDb")
     void deleteAllQuestions();
+
+    @Query("SELECT * FROM LanguageData")
+    List<LanguageData> findAllLanguages();
+
+    @Query("DELETE FROM LanguageData")
+    void deleteAllLanguages();
 }

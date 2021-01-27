@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,9 +18,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.certify.fcm.FireBaseMessagingService;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ContextUtils;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.service.NetworkReceiver;
@@ -35,15 +33,10 @@ public abstract class BaseActivity extends Activity {
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
-    private SharedPreferences sharedPreferences;
-    private String mSelectLanguage;
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        sharedPreferences = Util.getSharedPreferences(newBase);
-        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
-        localeToSwitchTo = new Locale(mSelectLanguage);
+        Locale localeToSwitchTo = new Locale(AppSettings.getLanguageType());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -18,9 +17,8 @@ import android.widget.ListView;
 
 import com.brother.ptouch.sdk.NetPrinter;
 import com.certify.snap.R;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ContextUtils;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Util;
 import com.certify.snap.printer.Common;
 
 import java.util.ArrayList;
@@ -32,15 +30,10 @@ public class PrinterBTSettingsActivity extends ListActivity {
 
     private NetPrinter[] mBluetoothPrinter; // array of storing Printer information
     private ArrayList<String> mItems = null; // List of storing the printer's information
-    private SharedPreferences sharedPreferences;
-    private String mSelectLanguage;
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        sharedPreferences = Util.getSharedPreferences(newBase);
-        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
-        localeToSwitchTo = new Locale(mSelectLanguage);
+        Locale localeToSwitchTo = new Locale(AppSettings.getLanguageType());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }
