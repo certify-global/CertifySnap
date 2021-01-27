@@ -35,15 +35,15 @@ public abstract class BaseActivity extends Activity {
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
+    private SharedPreferences sharedPreferences;
+    private String mSelectLanguage;
 
     @Override
     protected void attachBaseContext(Context newBase) {
         Locale localeToSwitchTo;
-        if (HomeActivity.mSelectLanguage) {
-            localeToSwitchTo = new Locale("es");
-        } else {
-            localeToSwitchTo = new Locale("en");
-        }
+        sharedPreferences = Util.getSharedPreferences(newBase);
+        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
+        localeToSwitchTo = new Locale(mSelectLanguage);
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

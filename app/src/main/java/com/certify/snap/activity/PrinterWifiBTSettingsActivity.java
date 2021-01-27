@@ -16,6 +16,8 @@ import android.view.WindowManager;
 
 import com.certify.snap.R;
 import com.certify.snap.common.ContextUtils;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
 import com.certify.snap.printer.Common;
 import com.certify.snap.printer.PrinterModelInfo;
 
@@ -29,15 +31,14 @@ public class PrinterWifiBTSettingsActivity extends PreferenceActivity implements
         Preference.OnPreferenceChangeListener {
 
     private SharedPreferences sharedPreferences;
+    private String mSelectLanguage;
 
     @Override
     protected void attachBaseContext(Context newBase) {
         Locale localeToSwitchTo;
-        if (HomeActivity.mSelectLanguage) {
-            localeToSwitchTo = new Locale("es");
-        } else {
-            localeToSwitchTo = new Locale("en");
-        }
+        sharedPreferences = Util.getSharedPreferences(newBase);
+        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
+        localeToSwitchTo = new Locale(mSelectLanguage);
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

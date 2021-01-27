@@ -73,7 +73,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     ResetOfflineDataReceiver resetOfflineDataReceiver;
     public ExecutorService taskExecutorService;
     private String gestureWorkFlow = "";
-    public static boolean mSelectLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +85,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
-        mSelectLanguage = sharedPreferences.getBoolean(GlobalParameters.languageType, false);
         AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
         taskExecutorService = executorService.getExecutorService();
         TextView tvVersion = findViewById(R.id.tv_version_guide);

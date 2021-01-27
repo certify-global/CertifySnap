@@ -51,6 +51,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     int count = 1;
     private ExecutorService taskExecutorService;
     private int activeMemberCount = 0;
+    private String mSelectLanguage;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -60,11 +61,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     @Override
     protected void attachBaseContext(Context newBase) {
         Locale localeToSwitchTo;
-        if (HomeActivity.mSelectLanguage) {
-            localeToSwitchTo = new Locale("es");
-        } else {
-            localeToSwitchTo = new Locale("en");
-        }
+        sharedPreferences = Util.getSharedPreferences(newBase);
+        mSelectLanguage = sharedPreferences.getString(GlobalParameters.languageType, "");
+        localeToSwitchTo = new Locale(mSelectLanguage);
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

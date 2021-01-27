@@ -803,9 +803,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
     private void languageSetting() {
         RadioGroup  locale_radio_group = findViewById(R.id.radio_group_locale_settings);
-        boolean languageSwitch = sharedPreferences.getBoolean(GlobalParameters.languageType, false);
+        String languageSwitch = sharedPreferences.getString(GlobalParameters.languageType, "");
 
-        if (languageSwitch) {
+        if (languageSwitch.equalsIgnoreCase("es")) {
             radio_spanish_locale.setChecked(true);
         } else {
             radio_english_locale.setChecked(true);
@@ -816,11 +816,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.radio_english_locale_settings:
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.languageType, false);
+                        Util.writeString(sharedPreferences, GlobalParameters.languageType, "en");
                         restartApp();
                         break;
                     case R.id.radio_spanish_locale_settings:
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.languageType, true);
+                        Util.writeString(sharedPreferences, GlobalParameters.languageType, "es");
                         restartApp();
                         break;
                 }

@@ -1310,6 +1310,8 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("1"));
                     String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
+                    String languageType = jsonDeviceSettings.isNull("languageId") ? "en" : jsonDeviceSettings.getString("languageId");
+                    Util.writeString(sharedPreferences, GlobalParameters.languageType, languageType);
                 }
 
 
