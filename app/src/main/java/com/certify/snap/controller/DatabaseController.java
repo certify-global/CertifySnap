@@ -485,6 +485,17 @@ public class DatabaseController {
         return new ArrayList<>();
     }
 
+    public LanguageData getLanguageOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getLanguageOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
     public void deleteLanguagesFromDb() {
         try {
             if (databaseStore != null) {

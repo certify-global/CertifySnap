@@ -210,9 +210,9 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         waveYesText.setTypeface(rubiklight);
         waveNoText.setTypeface(rubiklight);
 
-        editTextNameLabel.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, "Screened"));
+        editTextNameLabel.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, getString(R.string.screened)));
         editTextQRAnswers.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, "XXXX"));
-        editTextPassName.setText(sp.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, "PASS"));
+        editTextPassName.setText(sp.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, getString(R.string.pass)));
         editTextWaveYes.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, "1"));
         editTextWaveNo.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, "0"));
 

@@ -74,6 +74,7 @@ import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
@@ -1309,7 +1310,8 @@ public class Util {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("1"));
                     String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
-                    String languageType = jsonDeviceSettings.isNull("languageId") ? "en" : jsonDeviceSettings.getString("languageId");
+                    String languageCode = jsonDeviceSettings.isNull("languageId") ? "1" : jsonDeviceSettings.getString("languageId");
+                    String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(languageCode));
                     Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
                 }
 
@@ -1652,8 +1654,11 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
-                Util.getSettings((SettingCallback) context, context);
-
+                if (DeviceSettingsController.getInstance().isLanguagesInDBEmpty()) {
+                    DeviceSettingsController.getInstance().getLanguages();
+                } else {
+                    Util.getSettings((SettingCallback) context, context);
+                }
 //                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
             }
         } catch (Exception e) {

@@ -148,6 +148,9 @@ public interface DatabaseStore {
     @Query("SELECT * FROM LanguageData")
     List<LanguageData> findAllLanguages();
 
+    @Query("SELECT * FROM LanguageData WHERE languageId =:languageID")
+    LanguageData getLanguageOnId(long languageID);
+
     @Query("DELETE FROM LanguageData")
     void deleteAllLanguages();
 }

@@ -100,6 +100,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private Button saveLogButton;
     private LinearLayout logOfflineDataLayout, captureLogsLayout;
     private Spinner spinnerLanguageSelector;
+    private String currentlanguageCode = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -223,8 +224,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
+                        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
-                                && deviceOnlineSwitch)) {
+                                && deviceOnlineSwitch) || (!currentlanguageCode.equals(languageCode))) {
                             restartApp();
                             return;
                         }
@@ -829,6 +831,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             }
         });
         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+        currentlanguageCode = languageCode;
         String languageName = Util.getKeyFromValue(languageMap, languageCode);
         spinnerLanguageSelector.setSelection(((ArrayAdapter<String>)spinnerLanguageSelector.getAdapter()).getPosition(languageName));
     }

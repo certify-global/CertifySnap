@@ -56,7 +56,7 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
             cbHomeText.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
 
-            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN"));
+            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan)));
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
             etDisplayTime.setText("" + sp.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2));
             etOnlyText.setText(sp.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, ""));

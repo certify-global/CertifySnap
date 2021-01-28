@@ -51,5 +51,7 @@ public class Constants {
     public static final int DEFAULT_ACCESS_CONTROL_LOG_MODE = 0;
 
     public static final int DEFAULT_ACCESS_CONTROL_SCAN_MODE = 1;
+
+    public static final int LANGUAGES_MAX_COUNT = 8;
 }
 
