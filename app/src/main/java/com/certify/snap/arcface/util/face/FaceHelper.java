@@ -157,10 +157,8 @@ public class FaceHelper {
     public void requestFaceLiveness(byte[] nv21, FaceInfo faceInfo, int width, int height, int format, Integer trackId, LivenessType livenessType) {
         if (faceListener != null) {
             if (flEngine != null && flThreadQueue.remainingCapacity() > 0) {
-                Log.d(TAG, "Liveness requestFaceLiveness flExecutor " +livenessType);
                 flExecutor.execute(new FaceLivenessDetectRunnable(nv21, faceInfo, width, height, format, trackId, livenessType));
             } else {
-                Log.d(TAG, "Liveness requestFaceLiveness ");
                 faceListener.onFaceLivenessInfoGet(null, trackId, ERROR_BUSY);
             }
         }
