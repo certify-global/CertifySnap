@@ -149,7 +149,7 @@
     <string name="device_not_register">  is not registered on your certify.me account. Please make sure the device is connected to Internet and device is added to your cloud account under Devices.\n
    \n If you prefer to keep this device offline, login to the settings of this app by tapping on the left top corner and set it to offline in the settings.</string>
     <string name="invalid_qr">Invalid QRCode</string>
-    <string name="timeout">Sceen timeout(seconds) for RFID and CODE Scan</string>
+    <string name="timeout">Screen timeout(seconds) for RFID and CODE Scan</string>
     <string name="qr_button_heading">Text to display on Button</string>
     <string name="qr_button_text">Press here if you don\'t have a QR code</string>
     <string name="device_inactive">is not active on the your certify.me account. Please make sure the device is connected to Internet and device is active to your cloud account under Devices.\n

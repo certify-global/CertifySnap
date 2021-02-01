@@ -10,7 +10,7 @@
 
     <string name="permission_denied">அனுமதி மறுக்கப்பட்டது!</string>
 
-    <string name="recognize_failed_notice">DENIED: %s</string>
+    <string name="recognize_failed_notice">மறுக்கப்பட்டது: %s</string>
     <string name="recognize_success_notice">பாஸ்: %s</string>
     <string name="low_confidence_level">குறைந்த நம்பிக்கை மட்டத்தை எதிர்கொள்ளுங்கள்</string>
     <string name="specific_engine_init_failed">%s + init + தோல்வியுற்றது, + குறியீடு +: %d</string>
@@ -82,14 +82,14 @@
     <string name="Capture_all">அனைத்து பயனர்களின் படங்களையும் பிடிக்கவும்</string>
     <string name="enable_sound">சாதாரண வெப்பநிலையில் ஒலியை இயக்கவும்</string>
     <string name="enable_sound_high">வாசலுக்கு மேலே வெப்பநிலையில் ஒலியை இயக்கவும்</string>
-    <string name="enable_qr_sound_valid">செல்லுபடியாகும் qr குறியீட்டிற்கான ஒலியை இயக்கவும்</string>
-    <string name="enable_qr_sound_invalid">தவறான qr குறியீட்டிற்கான ஒலியை இயக்கவும்</string>
+    <string name="enable_qr_sound_valid">செல்லுபடியாகும் கேஆர் குறியீட்டிற்கான ஒலியை இயக்கவும்</string>
+    <string name="enable_qr_sound_invalid">தவறான கேஆர் குறியீட்டிற்கான ஒலியை இயக்கவும்</string>
     <string name="enable_light">சாதாரண வெப்பநிலையில் ஒளியை இயக்கவும்</string>
     <string name="enable_light_high">வாசலுக்கு மேலே வெப்பநிலையில் ஒளியை இயக்கவும்</string>
     <string name="enable_printer">அச்சு இயக்கவும்</string>
     <string name="print_all_scan">அனைத்து ஸ்கேன் அச்சிட</string>
     <string name="print_access_card">அணுகல் அட்டை பயனர்களுக்கு அச்சிடுக</string>
-    <string name="print_qr_code_users">QR குறியீடு பயனர்களுக்கு அச்சிடுக</string>
+    <string name="print_qr_code_users">கேஆர் குறியீடு பயனர்களுக்கு அச்சிடுக</string>
     <string name="print_wave_users">அலை பயனர்களுக்கு அச்சிடுக</string>
     <string name="print_high_temperature">அதிக வெப்பநிலைக்கு அச்சிடுங்கள்</string>
     <string name="enable_mask">மாஸ்க் கண்டறிதலை இயக்கு</string>
@@ -128,21 +128,21 @@
     <string name="offline_msg">ஆஃப்லைன் பயன்முறை</string>
     <string name="online_msg">ஆன்லைன் பயன்முறை</string>
     <string name="identification_setting">அடையாள அமைப்புகள்</string>
-    <string name="enable_qr">QRCode ஸ்கேனரை இயக்கு</string>
-    <string name="tv_qr_scan">உங்கள் QR குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
-    <string name="tv_qr_bar_scan">உங்கள் QR /பார் குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
-    <string name="tv_qr_validating">QR குறியீட்டை சரிபார்க்கிறது</string>
+    <string name="enable_qr">கேஆர்குறியீடு ஸ்கேனரை இயக்கு</string>
+    <string name="tv_qr_scan">உங்கள் கேஆர் குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
+    <string name="tv_qr_bar_scan">உங்கள் கேஆர் /பார் குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
+    <string name="tv_qr_validating">கேஆர் குறியீட்டை சரிபார்க்கிறது</string>
     <string name="tv_bar_validating">பார் குறியீட்டை சரிபார்க்கிறது</string>
-    <string name="enable_rfid">RFID ஸ்கேனரை இயக்கு</string>
-    <string name="enable_anonymous">அநாமதேய QR குறியீடு /பார் குறியீட்டை இயக்கு</string>
+    <string name="enable_rfid">ஆர்எப்ஐடி ஸ்கேனரை இயக்கு</string>
+    <string name="enable_anonymous">அநாமதேய கேஆர் குறியீடு /பார் குறியீட்டை இயக்கு</string>
     <string name="enable_skip_button">குறியீட்டைத் தவிர் என்பதை இயக்கு (திரையின் தொடுதல் தேவை)</string>
     <string name="rfid_card_error">பிழை! அட்டையை அங்கீகரிக்க முடியாது</string>
     <string name="device_not_register">உங்கள் சான்றிதழ் கணக்கில் பதிவு செய்யப்படவில்லை. சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதா என்பதை உறுதிப்படுத்தவும், சாதனங்களின் கீழ் சாதனம் உங்கள் மேகக்கணி கணக்கில் சேர்க்கப்படும். \N.
    Device n இந்த சாதனத்தை ஆஃப்லைனில் வைத்திருக்க விரும்பினால், இடது மேல் மூலையில் தட்டுவதன் மூலம் இந்த பயன்பாட்டின் அமைப்புகளில் உள்நுழைந்து அமைப்புகளில் ஆஃப்லைனில் அமைக்கவும்.</string>
-    <string name="invalid_qr">தவறான QRCode</string>
-    <string name="timeout">RFID மற்றும் CODE ஸ்கேனுக்கான ஸ்கீன் நேரம் முடிந்தது (விநாடிகள்)</string>
+    <string name="invalid_qr">தவறான கேஆர்குறியீடு</string>
+    <string name="timeout">ஆர்எப்ஐடி மற்றும் குறியீடு ஸ்கேனுக்கான ஸ்கீன் நேரம் முடிந்தது (விநாடிகள்)</string>
     <string name="qr_button_heading">பொத்தானில் காண்பிக்க உரை</string>
-    <string name="qr_button_text">உங்களிடம் QR குறியீடு இல்லையென்றால் இங்கே அழுத்தவும்</string>
+    <string name="qr_button_text">உங்களிடம் கேஆர் குறியீடு இல்லையென்றால் இங்கே அழுத்தவும்</string>
     <string name="device_inactive">உங்கள் certify.me கணக்கில் செயலில் இல்லை. சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதா என்பதையும், சாதனங்களின் கீழ் உங்கள் கிளவுட் கணக்கில் சாதனம் செயலில் உள்ளதா என்பதையும் உறுதிப்படுத்தவும். \N.
     Device n இந்த சாதனத்தை ஆஃப்லைனில் வைத்திருக்க விரும்பினால், இடது மேல் மூலையில் தட்டுவதன் மூலம் இந்த பயன்பாட்டின் அமைப்புகளில் உள்நுழைந்து அமைப்புகளில் ஆஃப்லைனில் அமைக்கவும்.</string>
     <string name="scan_mode">ஸ்கேன் பயன்முறை</string>
@@ -214,14 +214,14 @@
     <string name="connectivity_status">இணைப்பு நிலையைக் காண்க</string>
     <string name="connectivity_status_title">இணைப்பு நிலை மற்றும் தகவல்</string>
     <string name="connectivity_status_text">இணைக்கப்பட்டுவிட்டது:</string>
-    <string name="mac">MAC</string>
+    <string name="mac">மேக்</string>
     <string name="ip_address">ஐபி முகவரி</string>
     <string name="netmask">நெட்மாஸ்க்</string>
     <string name="gateway">நுழைவாயில்</string>
     <string name="dns1">டி.என்.எஸ் 1</string>
     <string name="dns2">டி.என்.எஸ் 2</string>
     <string name="ethernet_ip_mode">ஈதர்நெட் ஐபி பயன்முறை</string>
-    <string name="ssid">SSID:</string>
+    <string name="ssid">எஸ்எஸ்ஐடி:</string>
     <string name="device_reader">சாதன வாசகர்:</string>
     <string name="internet_connectivity">இணைய இணைப்பு:</string>
     <string name="cloud_connectivity">கிளவுட் இணைப்பு உறுதிப்படுத்தவும்:</string>
@@ -252,7 +252,7 @@
     <string name="login_note">குறிப்பு: பயனருக்கு கணக்கில் நிர்வாக உரிமைகள் இருக்க வேண்டும்.</string>
     <string name="add_device_info">சாதனத்தைச் சேர்க்கவும்</string>
     <string name="sno">"வரிசை எண் "</string>
-    <string name="imei">IMEI எண்</string>
+    <string name="imei">ஐயம்ஈஐ எண்</string>
     <string name="active">செயலில்</string>
     <string name="in_active">செயலற்றது</string>
     <string name="status">நிலை</string>
@@ -280,7 +280,7 @@
 
     <string name="centigrade" translatable="false"> ℃</string>
     <string name="Fahrenheit_temp" translatable="false"> ℉</string>
-    <string name="endpoint_api">தீ</string>
+    <string name="endpoint_api">ஏபிஐ</string>
     <string name="protocol_text">https: //</string>
     <string name="hostname">.certify.me</string>
     <string name="scanner_time_msg">ஸ்கேனர் + என்பது + துவக்குகிறது. + நீங்கள் + காத்திருக்கலாம் + அல்லது + கிளிக் செய்ய + சரி + செய்ய + தொடர + தொடர + பயன்படுத்த + பயன்படுத்த + + ஸ்கேனர் + அதே நேரத்தில் + இது + துவக்குகிறது% E2% 80% A6 +% 5CnTime + மீதமுள்ள: + %d + நிமிடங்கள்</string>
@@ -306,7 +306,7 @@
     <string name="port_value">துறைமுகத்தைத் தேர்ந்தெடுக்கவும்</string>
     <string name="address_title">ஐபி முகவரி</string>
     <string name="address_value">ஐபி முகவரியின் எண்ணிக்கையை அமைக்கவும்</string>
-    <string name="mac_address_title">Mac முகவரி</string>
+    <string name="mac_address_title">மேக் முகவரி</string>
     <string name="mac_address_value">மேக் முகவரியின் எண்ணிக்கையை அமைக்கவும்</string>
     <string name="paper_size_title">காகித அளவு</string>
     <string name="paper_size_value">காகித அளவைத் தேர்ந்தெடுக்கவும்</string>
@@ -364,8 +364,8 @@
     <string name="is_end_cut_value">முடிவு வெட்டு அல்லது செய்ய</string>
     <string name="is_auto_cut_title">ஆட்டோ கட்</string>
     <string name="is_auto_cut_value">ஆட்டோ கட் செய்யுங்கள் இல்லையா</string>
-    <string name="ip_mac_title">IP /MAC முகவரி</string>
-    <string name="ip_mac_value">IP /MAC முகவரியை அமைக்கவும்</string>
+    <string name="ip_mac_title">ஐபி /மேக் முகவரி</string>
+    <string name="ip_mac_value">ஐபி /மேக் முகவரியை அமைக்கவும்</string>
     <string name="cut_settings_value">வெட்டு அமைப்புகளை அமைக்கவும்</string>
     <string name="cut_settings_title">அமைப்புகளை வெட்டு</string>
 
@@ -503,10 +503,10 @@
     <string name="scan_type_quick">விரைவு</string>
     <string name="scan_type_standard">தரநிலை</string>
 
-    <string name="enter_text1">உரை 1</string>
-    <string name="enter_text2">உரை 2</string>
-    <string name="enter_text3">உரை 3</string>
-    <string name="enter_text4">உரை 4</string>
+    <string name="enter_text1">உரை ௧</string>
+    <string name="enter_text2">உரை ௨</string>
+    <string name="enter_text3">உரை ௩</string>
+    <string name="enter_text4">உரை ௪</string>
     <string name="enable_guide">வழிகாட்டியை இயக்கு</string>
     <string name="enable_temp_scan">வெப்பநிலை ஸ்கேன் இயக்கவும்</string>
     <string name="enable_wiegand_passthrough">வைகண்ட் பாஸ்-த்ரூவை இயக்கவும்</string>
@@ -531,7 +531,7 @@
     <string name="unique_id">தனிப்பட்ட ஐடி</string>
     <string name="update">புதுப்பிப்பு</string>
     <string name="device_id">வடிவமைக்கப்பட்ட ஐடி</string>
-    <string name="uuid">uuid</string>
+    <string name="uuid">యుయుఐడీ</string>
     <string name="popup_register">பதிவு</string>
     <string name="capture">CAPTURE</string>
     <string name="use_photo">புகைப்படத்தைப் பயன்படுத்தவும்</string>
@@ -554,9 +554,9 @@
     <string name="print_text">அடையாளம் தெரியாத அச்சு உரை என்றால்</string>
     <string name="print_normal_temp">சாதாரண வெப்பநிலை மதிப்பை அச்சிடுக</string>
     <string name="print_high_temp">அதிக வெப்பநிலை மதிப்பை அச்சிடுக</string>
-    <string name="print_indicator_qr">QR குறியீடு பயனர்களுக்கான அச்சு காட்டி</string>
+    <string name="print_indicator_qr">கேஆர் குறியீடு பயனர்களுக்கான அச்சு காட்டி</string>
     <string name="print_wave_ans">அலை பதில்களை அச்சிடுக</string>
-    <string name="mac_address_hint">Mac முகவரி</string>
+    <string name="mac_address_hint">மேக் முகவரி</string>
 
 
     <string name="local">உள்ளூர்</string>
@@ -565,7 +565,7 @@
     <string name="enable_local_server">உள்ளூர் சேவையகத்தை இயக்கு:</string>
 
     <string name="serial_number">வரிசை எண்:</string>
-    <string name="imei_number">IMEI எண்:</string>
+    <string name="imei_number">ஐயம்ஈஐ எண்:</string>
     <string name="close_button">நெருக்கமான</string>
     <string name="save_button">சேமி</string>
     <string name="locale_setting">மொழி</string>
@@ -603,7 +603,7 @@
     <string name="bar_bottom_text">இயல்புநிலை கீழே பட்டி உரையை உள்ளிடவும்</string>
     <string name="normal_pass_scan">இயல்புநிலை முடிவு அச்சு உரை (இயல்பான பாஸ் ஸ்கேன்)</string>
     <string name="temp_above_threshold">வாசலுக்கு மேலே வெப்பநிலையைக் காண்பி</string>
-    <string name="ir_text">உங்களிடம் QR குறியீடு இல்லையென்றால் இங்கே அழுத்தவும்</string>
+    <string name="ir_text">உங்களிடம் கேஆர் குறியீடு இல்லையென்றால் இங்கே அழுத்தவும்</string>
     <string name="ir_ques_text">அனைத்து 3 கோவிட் கேள்விகளுக்கும் உங்கள் பதில் இல்லை என்றால், வெப்ப ஸ்கேன் செய்ய சாதனத்தின் அடிப்பகுதியில் உங்கள் பேட்ஜைத் தட்டவும்.</string>
     <string name="start">தொடங்கு</string>
     <string name="rect1">rect1</string>
@@ -653,7 +653,7 @@
     <string name="mask_not_detected">மாஸ்கைக் கண்டறிய முடியவில்லை</string>
     <string name="connect_light_device">ஒளி சாதனத்துடன் இணைக்கிறது</string>
     <string name="move_center_msg">மையத்தை நோக்கி செல்லுங்கள்</string>
-    <string name="qr_validation_msg">QR சரிபார்ப்பு முடிக்கப்படவில்லை!</string>
+    <string name="qr_validation_msg">கேஆர் சரிபார்ப்பு முடிக்கப்படவில்லை!</string>
     <string name="gesture_launch_msg">சைகைத் திரையைத் தொடங்குகிறது, தயவுசெய்து காத்திருங்கள் ....</string>
     <string name="gesture_questions_failed">கேள்விகளைப் பெறுவதில் தோல்வி, சைகை திரையை மூடுவது</string>
     <string name="gesture_fetch_questions">கேள்விகளைப் பெறுகிறது, தயவுசெய்து காத்திருங்கள் ....</string>

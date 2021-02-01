@@ -1364,8 +1364,12 @@ public class Util {
                 String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
                 String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
                 String displayResultBar = jsonValueScan.isNull("displayResultBar") ? "1" : jsonValueScan.getString("displayResultBar");
-                String temperatureNormal = jsonValueScan.isNull("temperatureNormal") ? "" : jsonValueScan.getString("temperatureNormal");
-                String temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
+                String temperatureNormal = "";
+                String temperatureHigh = "";
+                if (displayTemperatureDetail.equals("0")) {
+                    temperatureNormal = jsonValueScan.isNull("temperatureNormal") ? "" : jsonValueScan.getString("temperatureNormal");
+                    temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
+                }
                 String scanType = jsonValueScan.isNull("scanType") ? "1" : jsonValueScan.getString("scanType");
                 String enableTemperatureScan = jsonValueScan.isNull("enableTemperatureScan") ? "1" : jsonValueScan.getString("enableTemperatureScan");
                 String enableLiveness = jsonValueScan.isNull("enableLiveness") ? "0" : jsonValueScan.getString("enableLiveness");
@@ -1402,13 +1406,9 @@ public class Util {
 
                 if (!temperatureNormal.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
-                } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, context.getString(R.string.temperature_normal_msg));
                 }
                 if (!temperatureHigh.isEmpty()) {
                     Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
-                } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, context.getString(R.string.temperature_high_msg));
                 }
 
                 //ConfirmationView
@@ -1433,9 +1433,9 @@ public class Util {
 
                 //GuideMessages
                 String enableGuidMessages = jsonValueGuide.isNull("enableGuideMessages") ? "1" : jsonValueGuide.getString("enableGuideMessages");
-                String message1 = jsonValueGuide.isNull("message1") ? "Please center your face to the screen." : jsonValueGuide.getString("message1");
-                String message2 = jsonValueGuide.isNull("message2") ? "Move closer and center your face." : jsonValueGuide.getString("message2");
-                String message3 = jsonValueGuide.isNull("message3") ? "Please wait, preparing to scan." : jsonValueGuide.getString("message3");
+                String message1 = jsonValueGuide.isNull("message1") ? "" : jsonValueGuide.getString("message1");
+                String message2 = jsonValueGuide.isNull("message2") ? "" : jsonValueGuide.getString("message2");
+                String message3 = jsonValueGuide.isNull("message3") ? "" : jsonValueGuide.getString("message3");
 
                 Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, enableGuidMessages.equals("1"));
                 Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);

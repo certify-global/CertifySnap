@@ -174,6 +174,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
+            if (!AppSettings.getLanguageType().equals("en")) {
+                obj.put("languageConversion", true);
+                obj.put("fromLanguage", "en");
+                obj.put("toLanguage", AppSettings.getLanguageType());
+            }
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, context).execute();
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());

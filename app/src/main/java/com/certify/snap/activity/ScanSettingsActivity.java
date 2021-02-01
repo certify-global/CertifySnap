@@ -102,8 +102,8 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             }
             et_screen_delay.setText(sp.getString(GlobalParameters.DELAY_VALUE,"3"));
             editTextDialogUserInput_low.setText(sp.getString(GlobalParameters.TEMP_TEST_LOW, "93.2"));
-            et_normal.setText(sp.getString(GlobalParameters.RESULT_BAR_NORMAL, "Temperature Normal"));
-            et_high.setText(sp.getString(GlobalParameters.RESULT_BAR_HIGH, "Temperature High"));
+            et_normal.setText(sp.getString(GlobalParameters.RESULT_BAR_NORMAL, getString(R.string.temperature_normal_msg)));
+            et_high.setText(sp.getString(GlobalParameters.RESULT_BAR_HIGH, getString(R.string.temperature_high_msg)));
 
 
 

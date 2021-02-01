@@ -295,8 +295,8 @@
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_20"
                 android:layout_marginTop="@dimen/size_15"
@@ -304,18 +304,22 @@
 
                 <TextView
                     android:id="@+id/print_all_scan_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:text="@string/print_all_scan"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_all_scan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/size_20"
                     android:orientation="horizontal">
 
@@ -339,9 +343,9 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_20"
@@ -350,18 +354,22 @@
 
                 <TextView
                     android:id="@+id/print_access_card_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:text="@string/print_access_card"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_access_card"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/size_20"
                     android:orientation="horizontal">
 
@@ -385,9 +393,9 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_20"
@@ -396,18 +404,22 @@
 
                 <TextView
                     android:id="@+id/print_qr_code_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:text="@string/print_qr_code_users"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_qr_code"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/size_20"
                     android:orientation="horizontal">
 
@@ -431,9 +443,9 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_20"
@@ -442,17 +454,22 @@
 
                 <TextView
                     android:id="@+id/print_wave_users_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:text="@string/print_wave_users"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
 
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
+
                 <RadioGroup
                     android:id="@+id/radio_group_print_wave_users"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/size_20"
                     android:orientation="horizontal">
 
@@ -476,9 +493,9 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </RelativeLayout>
+            </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_20"
@@ -487,18 +504,21 @@
 
                 <TextView
                     android:id="@+id/print_high_temperature_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
                     android:text="@string/print_high_temperature"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_18" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_print_high_temperature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/size_20"
                     android:orientation="horizontal">
 
@@ -522,7 +542,7 @@
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -556,7 +576,7 @@
 
                 <TextView
                     android:id="@+id/print_label_face_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:text="@string/print_face"
@@ -603,7 +623,7 @@
 
                 <TextView
                     android:id="@+id/print_label_name_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:text="@string/print_name"
@@ -654,7 +674,7 @@
 
                     <TextView
                         android:id="@+id/print_label_unidentified_name"
-                        android:layout_width="wrap_content"
+                        android:layout_width="220dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:text="@string/print_text"
@@ -718,7 +738,7 @@
 
                 <TextView
                     android:id="@+id/print_label_normal_temp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:text="@string/print_normal_temp"
@@ -764,7 +784,7 @@
 
                 <TextView
                     android:id="@+id/print_label_high_temp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="220dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:text="@string/print_high_temp"
@@ -815,7 +835,7 @@
 
                     <TextView
                         android:id="@+id/print_label_print_indicator_qr_code"
-                        android:layout_width="wrap_content"
+                        android:layout_width="220dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="1dp"
@@ -885,7 +905,7 @@
 
                     <TextView
                         android:id="@+id/print_label_wave_answers"
-                        android:layout_width="wrap_content"
+                        android:layout_width="220dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:text="@string/print_wave_ans"

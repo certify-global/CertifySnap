@@ -125,7 +125,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     }
                 }
                 MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-                doSendBroadcast("start", activeMemberCount, count);
+                doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count);
                 return;
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
@@ -166,7 +166,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
                     MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                    doSendBroadcast("start", activeMemberCount, count++);
+                    doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count++);
                 }
             } else {
                 onMemberIdErrorResponse(req);
@@ -176,13 +176,12 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
     }
 
-    private void doSendBroadcast(String message,int memberCount,int count) {
+    private void doSendBroadcast(int actionCode,int memberCount,int count) {
         Intent event_snackbar = new Intent("EVENT_SNACKBAR");
 
-        if (!TextUtils.isEmpty(message))
-            event_snackbar.putExtra("message",message);
-        event_snackbar.putExtra("memberCount",memberCount);
-        event_snackbar.putExtra("count",count);
+        event_snackbar.putExtra("actionCode", actionCode);
+        event_snackbar.putExtra("memberCount", memberCount);
+        event_snackbar.putExtra("count", count);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(event_snackbar);
     }

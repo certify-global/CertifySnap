@@ -9,8 +9,8 @@
     <string name="login_password">పాస్వర్డ్:</string>
     <string name="permission_denied">అనుమతి నిరాకరించబడింది!</string>
 
-    <string name="recognize_failed_notice">DENIED: %s</string>
-    <string name="recognize_success_notice">PASS: %s</string>
+    <string name="recognize_failed_notice">ఖండించింది: %s</string>
+    <string name="recognize_success_notice">పాస్: %s</string>
     <string name="low_confidence_level">తక్కువ విశ్వాస స్థాయిని ఎదుర్కోండి</string>
     <string name="specific_engine_init_failed">%s + init + విఫలమైంది, + కోడ్ +: %d</string>
     <string name="camera_error_notice">p n అసాధ్యమైన కారణం: ఈ పరికరంలో ఒకేసారి రెండు కెమెరాలను తెరవడం అనుమతించబడదు</string>
@@ -18,7 +18,7 @@
     <string name="living_type_0">లేదు</string>
     <string name="living_type_1">అవును</string>
     <string name="txt_data_management_title">సమాచార నిర్వహణ</string>
-    <string name="led_switch">LED స్విచ్:</string>
+    <string name="led_switch">యల్ఇడి స్విచ్:</string>
     <string name="NavigationBar">నావిగేషన్ బార్ చూపించు:</string>
     <string name="relayinfo">దయచేసి సమయాన్ని ఇన్పుట్ చేయండి!</string>
     <string name="toast_guide_permission">దయచేసి మానవీయంగా అనుమతి ఇవ్వండి!</string>
@@ -79,14 +79,14 @@
     <string name="Capture_all">అన్ని వినియోగదారుల చిత్రాలను సంగ్రహించండి</string>
     <string name="enable_sound">సాధారణ ఉష్ణోగ్రతపై ధ్వనిని ప్రారంభించండి</string>
     <string name="enable_sound_high">ప్రవేశ స్థాయి కంటే ఎక్కువ ఉష్ణోగ్రతపై ధ్వనిని ప్రారంభించండి</string>
-    <string name="enable_qr_sound_valid">చెల్లుబాటు అయ్యే qr కోడ్ కోసం ధ్వనిని ప్రారంభించండి</string>
-    <string name="enable_qr_sound_invalid">చెల్లని qr కోడ్ కోసం ధ్వనిని ప్రారంభించండి</string>
+    <string name="enable_qr_sound_valid">చెల్లుబాటు అయ్యే క్యూఆర్ కోడ్ కోసం ధ్వనిని ప్రారంభించండి</string>
+    <string name="enable_qr_sound_invalid">చెల్లని క్యూఆర్ కోడ్ కోసం ధ్వనిని ప్రారంభించండి</string>
     <string name="enable_light">సాధారణ ఉష్ణోగ్రతపై కాంతిని ప్రారంభించండి</string>
     <string name="enable_light_high">ప్రవేశానికి పైన ఉన్న ఉష్ణోగ్రతపై కాంతిని ప్రారంభించండి</string>
     <string name="enable_printer">ముద్రణను ప్రారంభించండి</string>
     <string name="print_all_scan">అన్ని స్కాన్ కోసం ప్రింట్ చేయండి</string>
     <string name="print_access_card">యాక్సెస్ కార్డ్ వినియోగదారుల కోసం ముద్రించండి</string>
-    <string name="print_qr_code_users">QR కోడ్ వినియోగదారుల కోసం ముద్రించండి</string>
+    <string name="print_qr_code_users">క్యూఆర్ కోడ్ వినియోగదారుల కోసం ముద్రించండి</string>
     <string name="print_wave_users">వేవ్ వినియోగదారుల కోసం ముద్రించండి</string>
     <string name="print_high_temperature">అధిక ఉష్ణోగ్రత కోసం ప్రింట్</string>
     <string name="enable_mask">మాస్క్ డిటెక్షన్ ప్రారంభించండి</string>
@@ -102,7 +102,7 @@
     <string name="confirmation_text_above">ప్రవేశానికి పైన ఉన్న ఉష్ణోగ్రత కోసం నిర్ధారణ</string>
     <string name="scan_view">స్కాన్ వీక్షణ</string>
     <string name="audio_visual_view">ఆడియో మరియు విజువల్</string>
-    <string name="ble_devices_view">BLE పరికరాలు</string>
+    <string name="ble_devices_view">బీయల్ఈ పరికరాలు</string>
     <string name="thermal_view">ఇంటి వీక్షణ</string>
     <string name="enter_title_main">ప్రధాన వచనాన్ని నమోదు చేయండి</string>
     <string name="enter_subtitle_sub">ఉప వచనాన్ని నమోదు చేయండి</string>
@@ -125,21 +125,21 @@
     <string name="offline_msg">ఆఫ్‌లైన్ మోడ్</string>
     <string name="online_msg">ఆన్‌లైన్ మోడ్</string>
     <string name="identification_setting">గుర్తింపు సెట్టింగులు</string>
-    <string name="enable_qr">QRCode స్కానర్‌ను ప్రారంభించండి</string>
-    <string name="tv_qr_scan">మీ QR కోడ్‌ను స్కాన్ చేయండి</string>
-    <string name="tv_qr_bar_scan">మీ QR /బార్ కోడ్‌ను స్కాన్ చేయండి</string>
-    <string name="tv_qr_validating">QR కోడ్‌ను ధృవీకరిస్తోంది</string>
+    <string name="enable_qr">క్యూఆర్ కోడ్ స్కానర్‌ను ప్రారంభించండి</string>
+    <string name="tv_qr_scan">మీ క్యూఆర్ కోడ్‌ను స్కాన్ చేయండి</string>
+    <string name="tv_qr_bar_scan">మీ క్యూఆర్ /బార్ కోడ్‌ను స్కాన్ చేయండి</string>
+    <string name="tv_qr_validating">క్యూఆర్ కోడ్‌ను ధృవీకరిస్తోంది</string>
     <string name="tv_bar_validating">బార్ కోడ్‌ను ధృవీకరిస్తోంది</string>
-    <string name="enable_rfid">RFID స్కానర్‌ను ప్రారంభించండి</string>
-    <string name="enable_anonymous">అనామక QR కోడ్ /బార్ కోడ్‌ను ప్రారంభించండి</string>
+    <string name="enable_rfid">ఆర్ఎఫ్హాయ్డి స్కానర్‌ను ప్రారంభించండి</string>
+    <string name="enable_anonymous">అనామక క్యూఆర్ కోడ్ /బార్ కోడ్‌ను ప్రారంభించండి</string>
     <string name="enable_skip_button">దాటవేయి కోడ్‌ను ప్రారంభించండి (స్క్రీన్ యొక్క స్పర్శ అవసరం)</string>
     <string name="rfid_card_error">లోపం! కార్డు గుర్తించబడదు</string>
     <string name="device_not_register">మీ certify.me ఖాతాలో నమోదు చేయబడలేదు. దయచేసి పరికరం ఇంటర్నెట్‌కు కనెక్ట్ చేయబడిందని మరియు పరికరాల క్రింద పరికరం మీ క్లౌడ్ ఖాతాకు జోడించబడిందని నిర్ధారించుకోండి. \N.
    device n మీరు ఈ పరికరాన్ని ఆఫ్‌లైన్‌లో ఉంచాలనుకుంటే, ఎడమ ఎగువ మూలలో నొక్కడం ద్వారా ఈ అనువర్తనం యొక్క సెట్టింగ్‌లకు లాగిన్ అవ్వండి మరియు సెట్టింగ్‌లలో ఆఫ్‌లైన్‌కు సెట్ చేయండి.</string>
-    <string name="invalid_qr">చెల్లని QRCode</string>
-    <string name="timeout">RFID మరియు CODE స్కాన్ కోసం సీన్ సమయం ముగిసింది (సెకన్లు)</string>
+    <string name="invalid_qr">చెల్లని క్యూఆర్కోడ్</string>
+    <string name="timeout">ఆర్ఎఫ్హాయ్డి మరియు కోడ్ స్కాన్ కోసం సీన్ సమయం ముగిసింది (సెకన్లు)</string>
     <string name="qr_button_heading">బటన్‌లో ప్రదర్శించడానికి వచనం</string>
-    <string name="qr_button_text">మీకు QR కోడ్ లేకపోతే ఇక్కడ నొక్కండి</string>
+    <string name="qr_button_text">మీకు క్యూఆర్ కోడ్ లేకపోతే ఇక్కడ నొక్కండి</string>
     <string name="device_inactive">మీ certify.me ఖాతాలో సక్రియంగా లేదు. దయచేసి పరికరం ఇంటర్నెట్‌కు కనెక్ట్ చేయబడిందని మరియు పరికరాల క్రింద మీ క్లౌడ్ ఖాతాకు పరికరం చురుకుగా ఉందని నిర్ధారించుకోండి. \N.
     device n మీరు ఈ పరికరాన్ని ఆఫ్‌లైన్‌లో ఉంచాలనుకుంటే, ఎడమ ఎగువ మూలలో నొక్కడం ద్వారా ఈ అనువర్తనం యొక్క సెట్టింగ్‌లకు లాగిన్ అవ్వండి మరియు సెట్టింగ్‌లలో ఆఫ్‌లైన్‌కు సెట్ చేయండి.</string>
     <string name="scan_mode">స్కాన్ మోడ్</string>
@@ -149,7 +149,7 @@
 
     <string name="access_control">ప్రాప్యత నియంత్రణ</string>
     <string name="access_control_parameter">సెక</string>
-    <string name="enable_access_control">వైగాండ్ అవుట్‌పుట్‌ను ప్రారంభించండి (ID అవసరం)</string>
+    <string name="enable_access_control">వైగాండ్ అవుట్‌పుట్‌ను ప్రారంభించండి (ఐడీ అవసరం)</string>
     <string name="access_control_card_format">సందేశ ఆకృతి</string>
     <string name="access_control_enroll">నమోదు చేయండి</string>
     <string name="access_granted">థర్మల్ స్కాన్ కోసం వేచి ఉండండి</string>
@@ -168,10 +168,10 @@
     <string name="time_and_attendance">సమయం మరియు హాజరు</string>
     <string name="both">రెండు</string>
     <string name="none">ఏదీ లేదు</string>
-    <string name="id_only">ID మాత్రమే</string>
+    <string name="id_only">ఐడీ మాత్రమే</string>
     <string name="face_only">ముఖం మాత్రమే</string>
-    <string name="id_face">ID ఫేస్</string>
-    <string name="id_or_face">ID లేదా ముఖం</string>
+    <string name="id_face">ఐడీ ఫేస్</string>
+    <string name="id_or_face">ఐడీ లేదా ముఖం</string>
     <string name="bit_26">26 బిట్</string>
     <string name="bit_34">34 బిట్</string>
     <string name="bit_48">48 బిట్</string>
@@ -211,14 +211,14 @@
     <string name="connectivity_status">కనెక్టివిటీ స్థితిని చూడండి</string>
     <string name="connectivity_status_title">కనెక్టివిటీ స్థితి మరియు సమాచారం</string>
     <string name="connectivity_status_text">సంబంధం కలిగిఉన్నది:</string>
-    <string name="mac">MAC</string>
-    <string name="ip_address">IP చిరునామా</string>
+    <string name="mac">మాక్</string>
+    <string name="ip_address">ఆయ్పీ చిరునామా</string>
     <string name="netmask">నెట్‌మాస్క్</string>
     <string name="gateway">గేట్వే</string>
-    <string name="dns1">DNS1</string>
-    <string name="dns2">DNS2</string>
+    <string name="dns1">డియన్యస్1</string>
+    <string name="dns2">డియన్యస్2</string>
     <string name="ethernet_ip_mode">ఈథర్నెట్ ఐపి మోడ్</string>
-    <string name="ssid">SSID:</string>
+    <string name="ssid">యస్యస్ఐడి:</string>
     <string name="device_reader">పరికర రీడర్:</string>
     <string name="internet_connectivity">ఇంటర్నెట్ కనెక్టివిటీ:</string>
     <string name="cloud_connectivity">క్లౌడ్ కనెక్టివిటీని ధృవీకరించండి:</string>
@@ -249,7 +249,7 @@
     <string name="login_note">గమనిక: వినియోగదారుకు ఖాతాలో పరిపాలనా హక్కులు ఉండాలి.</string>
     <string name="add_device_info">పరికరాన్ని జోడించండి</string>
     <string name="sno">"క్రమ సంఖ్య "</string>
-    <string name="imei">IMEI సంఖ్య</string>
+    <string name="imei">ఐయమ్ఈఐ సంఖ్య</string>
     <string name="active">యాక్టివ్</string>
     <string name="in_active">క్రియారహితం</string>
     <string name="status">స్థితి</string>
@@ -268,7 +268,7 @@
     <string name="unknown_service">తెలియని సేవ</string>
     <string name="unknown_characteristic">తెలియని_ లక్షణం</string>
     <string name="permission_request">ఈ అనువర్తనాన్ని అమలు చేయడానికి అనుమతి అవసరం</string>
-    <string name="ble_connect_status">కనెక్ట్ చేయబడిన BLE లైట్:</string>
+    <string name="ble_connect_status">కనెక్ట్ చేయబడిన బీయల్ఈ లైట్:</string>
     <string name="ble_light_test">పరీక్ష:</string>
     <string name="ble_connect"><u> కనెక్ట్ చేయండి</u>  </string>
 
@@ -277,7 +277,7 @@
 
     <string name="centigrade" translatable="false"> ℃</string>
     <string name="Fahrenheit_temp" translatable="false"> ℉</string>
-    <string name="endpoint_api">అగ్ని</string>
+    <string name="endpoint_api">ఏపీఐ</string>
     <string name="protocol_text">https: //</string>
     <string name="hostname">.certify.me</string>
     <string name="scanner_time_msg">స్కానర్ + ప్రారంభించబడుతోంది. + మీరు + వేచి ఉండండి + లేదా + క్లిక్ + సరే + కొనసాగించడానికి + కొనసాగించడానికి + + + స్కానర్ + అయితే + ఇది + ప్రారంభిస్తుంది% E2% 80% A6 +% 5CnTime + మిగిలి ఉంది: + %d + నిమిషాలు</string>
@@ -301,10 +301,10 @@
     <string name="printer_model_value">ప్రింటర్ మోడల్‌ను ఎంచుకోండి</string>
     <string name="port_title">పోర్ట్</string>
     <string name="port_value">పోర్ట్ ఎంచుకోండి</string>
-    <string name="address_title">IP చిరునామా</string>
-    <string name="address_value">Ip చిరునామా సంఖ్యను సెట్ చేయండి</string>
-    <string name="mac_address_title">Mac చిరునామా</string>
-    <string name="mac_address_value">Mac చిరునామా సంఖ్యను సెట్ చేయండి</string>
+    <string name="address_title">ఆయ్పీ చిరునామా</string>
+    <string name="address_value">ఆయ్పీ చిరునామా సంఖ్యను సెట్ చేయండి</string>
+    <string name="mac_address_title">మాక్ చిరునామా</string>
+    <string name="mac_address_value">మాక్ చిరునామా సంఖ్యను సెట్ చేయండి</string>
     <string name="paper_size_title">కాగితం పరిమాణం</string>
     <string name="paper_size_value">కాగితం పరిమాణాన్ని ఎంచుకోండి</string>
     <string name="orientation_title">ప్రింటింగ్ ధోరణి</string>
@@ -361,8 +361,8 @@
     <string name="is_end_cut_value">ఎండ్ కట్ లేదా</string>
     <string name="is_auto_cut_title">ఆటో కట్</string>
     <string name="is_auto_cut_value">ఆటో కట్ లేదా</string>
-    <string name="ip_mac_title">IP /MAC చిరునామా</string>
-    <string name="ip_mac_value">IP /MAC చిరునామాను సెట్ చేయండి</string>
+    <string name="ip_mac_title">ఆయ్పీ /మాక్ చిరునామా</string>
+    <string name="ip_mac_value">ఆయ్పీ /మాక్ చిరునామాను సెట్ చేయండి</string>
     <string name="cut_settings_value">కట్ సెట్టింగులను సెట్ చేయండి</string>
     <string name="cut_settings_title">సెట్టింగులను కత్తిరించండి</string>
 
@@ -433,8 +433,8 @@
     <string name="progress_dialog_message_removing_template">టెంప్లేట్‌లను తొలగిస్తోంది</string>
     <string name="progress_dialog_message_getting_template">టెంప్లేట్ జాబితాను పొందడం</string>
     <string name="cancel_printer_msg">రద్దు చేయబడుతోంది, దయచేసి వేచి ఉండండి</string>
-    <string name="error_message_weong_os">Android OS కి మద్దతు లేదు</string>
-    <string name="error_message_no_usb">USB పరికరం కనుగొనబడలేదు</string>
+    <string name="error_message_weong_os">యన్డరయడ్ ఓయస్ కి మద్దతు లేదు</string>
+    <string name="error_message_no_usb">యుయస్బి పరికరం కనుగొనబడలేదు</string>
     <string name="progress_dialog_message_communication_start">కమ్యూనికేషన్ ప్రారంభించండి…</string>
     <string name="progress_dialog_message_transfer_start">బదిలీ ప్రారంభం…</string>
     <string name="text_ip_address">చిరునామా: + %1$s</string>
@@ -450,7 +450,7 @@
     <string name="msg_Ok">అవును</string>
     <string name="msg_No">లేదు</string>
     <string name="bdAddrNotSet">BD చిరునామా ఎంచుకోబడలేదు.</string>
-    <string name="ipOrPortNoNotSet">IP చిరునామా లేదా పోర్ట్ నంబర్ ఎంపిక చేయబడలేదు.</string>
+    <string name="ipOrPortNoNotSet">ఆయ్పీ చిరునామా లేదా పోర్ట్ నంబర్ ఎంపిక చేయబడలేదు.</string>
     <string name="fileNameNotSet">ఫైల్ పేరు ఎంచుకోబడలేదు.</string>
     <string name="outputMethodNotSelected">అవుట్పుట్ పద్ధతి ఎంచుకోబడలేదు</string>
     <string name="msg_CopyPrinterConfigFile">ఇది ప్రింటర్ కాన్ఫిగరేషన్ ఫైల్‌ను కాపీ చేయడంలో విఫలమైంది.</string>
@@ -500,10 +500,10 @@
     <string name="scan_type_quick">శీఘ్ర</string>
     <string name="scan_type_standard">ప్రామాణికం</string>
 
-    <string name="enter_text1">టెక్స్ట్ 1</string>
-    <string name="enter_text2">టెక్స్ట్ 2</string>
-    <string name="enter_text3">టెక్స్ట్ 3</string>
-    <string name="enter_text4">టెక్స్ట్ 4</string>
+    <string name="enter_text1">టెక్స్ట్ ౧</string>
+    <string name="enter_text2">టెక్స్ట్ ౨</string>
+    <string name="enter_text3">టెక్స్ట్ ౩</string>
+    <string name="enter_text4">టెక్స్ట్ ౪</string>
     <string name="enable_guide">గైడ్‌ను ప్రారంభించండి</string>
     <string name="enable_temp_scan">ఉష్ణోగ్రత స్కాన్‌ను ప్రారంభించండి</string>
     <string name="enable_wiegand_passthrough">వైగాండ్ పాస్-త్రూని ప్రారంభించండి</string>
@@ -524,11 +524,11 @@
     <string name="certify_snapXt">ధృవీకరించు SnapXT</string>
     <string name="tv_record">రికార్డ్</string>
     <string name="member_delete_msg">మీరు సభ్యుడిని తొలగించాలనుకుంటున్నారా?</string>
-    <string name="pls_input_name">దయచేసి ఇన్పుట్ పేరు లేదా వినియోగదారు ID</string>
+    <string name="pls_input_name">దయచేసి ఇన్పుట్ పేరు లేదా వినియోగదారు ఐడీ</string>
     <string name="unique_id">ప్రత్యేక ఐడి</string>
     <string name="update">నవీకరణ</string>
     <string name="device_id">పరికర ఐడి</string>
-    <string name="uuid">uuid</string>
+    <string name="uuid">యుయుఐడి</string>
     <string name="popup_register">రిజిస్టర్</string>
     <string name="capture">క్యాప్చర్</string>
     <string name="use_photo">ఫోటో ఉపయోగించండి</string>
@@ -538,12 +538,12 @@
 
 
     <string name="select_printer">ప్రింటర్ ఎంచుకోండి</string>
-    <string name="title_printer">దయచేసి ప్రింటర్ యొక్క IP మరియు Mac చిరునామాలను నమోదు చేయండి</string>
+    <string name="title_printer">దయచేసి ప్రింటర్ యొక్క ఆయ్పీ మరియు మాక్ చిరునామాలను నమోదు చేయండి</string>
     <string name="add_button">జోడించు</string>
     <string name="search_button">వెతకండి</string>
     <string name="wifi_bluetooth_printer">వైఫై /బ్లూటూత్ ప్రింటర్</string>
     <string name="print_button">ముద్రణ</string>
-    <string name="usb_printer">USB ప్రింటర్</string>
+    <string name="usb_printer">యుయస్బి ప్రింటర్</string>
     <string name="printing_option">ప్రింటింగ్ ఎంపికలు</string>
     <string name="label_option">లేబుల్ ఎంపికలు</string>
     <string name="print_face">ముఖాన్ని ముద్రించండి</string>
@@ -551,18 +551,18 @@
     <string name="print_text">గుర్తించబడని ముద్రణ వచనం ఉంటే</string>
     <string name="print_normal_temp">సాధారణ ఉష్ణోగ్రత విలువను ముద్రించండి</string>
     <string name="print_high_temp">అధిక ఉష్ణోగ్రత విలువను ముద్రించండి</string>
-    <string name="print_indicator_qr">QR కోడ్ వినియోగదారుల కోసం ప్రింట్ ఇండికేటర్</string>
+    <string name="print_indicator_qr">క్యూఆర్ కోడ్ వినియోగదారుల కోసం ప్రింట్ ఇండికేటర్</string>
     <string name="print_wave_ans">వేవ్ సమాధానాలను ముద్రించండి</string>
-    <string name="mac_address_hint">Mac చిరునామా</string>
+    <string name="mac_address_hint">మాక్ చిరునామా</string>
 
 
     <string name="local">స్థానిక</string>
     <string name="enable_pro_setting">ప్రో సెట్టింగులను ప్రారంభించండి</string>
-    <string name="led_brightness">LED ప్రకాశం:</string>
+    <string name="led_brightness">యల్ఇడి ప్రకాశం:</string>
     <string name="enable_local_server">స్థానిక సర్వర్‌ను ప్రారంభించండి:</string>
 
     <string name="serial_number">క్రమ సంఖ్య:</string>
-    <string name="imei_number">IMEI సంఖ్య:</string>
+    <string name="imei_number">ఐయమ్ఈఐ సంఖ్య:</string>
     <string name="close_button">దగ్గరగా</string>
     <string name="save_button">సేవ్ చేయండి</string>
     <string name="locale_setting">భాష</string>
@@ -600,7 +600,7 @@
     <string name="bar_bottom_text">డిఫాల్ట్ దిగువ బార్ వచనాన్ని నమోదు చేయండి</string>
     <string name="normal_pass_scan">డిఫాల్ట్ ఫలితం ప్రింట్ టెక్స్ట్ (సాధారణ పాస్ స్కాన్)</string>
     <string name="temp_above_threshold">థ్రెషోల్డ్ పైన ఉష్ణోగ్రతని ప్రదర్శించండి</string>
-    <string name="ir_text">మీకు QR కోడ్ లేకపోతే ఇక్కడ నొక్కండి</string>
+    <string name="ir_text">మీకు క్యూఆర్ కోడ్ లేకపోతే ఇక్కడ నొక్కండి</string>
     <string name="ir_ques_text">మొత్తం 3 కోవిడ్ ప్రశ్నలకు మీ సమాధానం లేకపోతే దయచేసి థర్మల్ స్కాన్ కోసం పరికరం దిగువన ఉన్న మీ బ్యాడ్జ్‌ను నొక్కండి.</string>
     <string name="start">ప్రారంభం</string>
     <string name="rect1">rect1</string>
@@ -637,7 +637,7 @@
     <string name="activate_msg">సక్రియం చేయండి</string>
     <string name="activated">సక్రియం చేయబడింది</string>
     <string name="not_activated_msg">సక్రియం చేయబడలేదు</string>
-    <string name="input_valid_url">దయచేసి చెల్లుబాటు అయ్యే url ను ఇన్పుట్ చేయండి</string>
+    <string name="input_valid_url">దయచేసి చెల్లుబాటు అయ్యే యుఆర్యల్ ను ఇన్పుట్ చేయండి</string>
     <string name="all_members_cleared">సభ్యులందరూ క్లియర్ చేశారు</string>
     <string name="logs_sent">లాగ్‌లు పంపబడ్డాయి</string>
     <string name="closing_app_msg">అనువర్తనాన్ని మూసివేయడం మరియు పున art ప్రారంభించడం, దయచేసి వేచి ఉండండి ....</string>
@@ -650,7 +650,7 @@
     <string name="mask_not_detected">మాస్క్‌ను గుర్తించడం సాధ్యం కాలేదు</string>
     <string name="connect_light_device">తేలికపాటి పరికరానికి కనెక్ట్ అవుతోంది</string>
     <string name="move_center_msg">దయచేసి కేంద్రం వైపు వెళ్ళండి</string>
-    <string name="qr_validation_msg">QR ధ్రువీకరణ పూర్తి కాలేదు!</string>
+    <string name="qr_validation_msg">క్యూఆర్ ధ్రువీకరణ పూర్తి కాలేదు!</string>
     <string name="gesture_launch_msg">సంజ్ఞ తెరను ప్రారంభిస్తోంది, దయచేసి వేచి ఉండండి ....</string>
     <string name="gesture_questions_failed">ప్రశ్నలు, మూసివేత సంజ్ఞ స్క్రీన్‌ను పొందడంలో విఫలమైంది</string>
     <string name="gesture_fetch_questions">ప్రశ్నలను పొందడం, దయచేసి వేచి ఉండండి ....</string>
@@ -659,8 +659,8 @@
     <string name="gesture_msg">సమాధానం ఇవ్వడానికి సూచించే స్క్రీన్ వైపు మీ అరచేతిని పట్టుకోండి. మీరు ప్రారంభించవలసి వస్తే, రెండు చేతులను పట్టుకోండి.</string>
     <string name="mask_enforce_msg">ప్రారంభించడానికి దయచేసి ముసుగు మరియు వేవ్ లెఫ్ట్ హ్యాండ్ ధరించండి, లేకపోతే కొనసాగించడానికి వేవ్ రైట్ హ్యాండ్.</string>
     <string name="gesture_exit_msg">దయచేసి నిర్వాహకుడిని సంప్రదించండి</string>
-    <string name="input_ip_address">దయచేసి చెల్లుబాటు అయ్యే Ip చిరునామాను ఇన్పుట్ చేయండి</string>
-    <string name="input_mac_address">దయచేసి చెల్లుబాటు అయ్యే Mac చిరునామాను ఇన్పుట్ చేయండి</string>
+    <string name="input_ip_address">దయచేసి చెల్లుబాటు అయ్యే ఆయ్పీ చిరునామాను ఇన్పుట్ చేయండి</string>
+    <string name="input_mac_address">దయచేసి చెల్లుబాటు అయ్యే మాక్ చిరునామాను ఇన్పుట్ చేయండి</string>
     <string name="app_restart">అనువర్తనం పున art ప్రారంభించబడుతుంది</string>
     <string name="update_setting_app_restart">సెట్టింగులను నవీకరిస్తోంది, అనువర్తనం పున art ప్రారంభించబడుతుంది</string>
     <string name="app_restart_msg">అనువర్తనం సమస్యను ఎదుర్కొంది, పున art ప్రారంభించబడుతుంది</string>
