@@ -119,6 +119,7 @@ import com.certify.snap.fragment.MaskEnforceFragment;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
@@ -331,8 +332,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (isDestroyed()) return;
                 memberCount = intent.getIntExtra("memberCount", 0);
                 totalCount = intent.getIntExtra("count", 0);
-                snackMessage = intent.getStringExtra("message");
-                showSnackbar(snackMessage);
+                int actionCode = intent.getIntExtra("actionCode", 0);
+                showSnackbar(actionCode);
             }
         };
         rubiklight = Typeface.createFromAsset(getAssets(),
@@ -1310,11 +1311,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
-    private void showSnackbar(String snackMessage) {
+    private void showSnackbar(int actionCode) {
         tv_sync.setTypeface(rubiklight);
-        if (snackMessage.equals("start")) {
+        if (actionCode == MemberSyncDataModel.SYNC_START) {
             tv_sync.setText(totalCount++ + " " + getString(R.string.out_of) + " " + memberCount);
-        } else if (snackMessage.contains("complet")) {
+        } else if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
             tv_sync.setText(getString(R.string.sync_completed));
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -1323,7 +1324,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }, 2 * 1000);
         } else {
-            tv_sync.setText(snackMessage);
+            tv_sync.setText(getString(R.string.syncing));
         }
     }
 
@@ -1912,6 +1913,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void getAppSettings() {
         isProDevice = Util.isDeviceProModel();
+        AppSettings.getTextSettings(this);
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
@@ -2464,7 +2466,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
             if (AppSettings.isLivenessDetect()) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                    Log.d(TAG, "Deep Face is Alive initiate Search");
+                    Log.d(TAG, "Liveness Face is Alive initiate Search");
                     startFaceSearch(faceFeature, requestId, rgb, ir);
                 }
                 return;
