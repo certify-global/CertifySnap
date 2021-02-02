@@ -6,7 +6,17 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
 
+import com.certify.snap.api.response.AccessControlSettings;
+import com.certify.snap.api.response.AudioVisualSettings;
+import com.certify.snap.api.response.ConfirmationViewSettings;
+import com.certify.snap.api.response.DeviceSettingsData;
+import com.certify.snap.api.response.GuideSettings;
+import com.certify.snap.api.response.HomePageSettings;
+import com.certify.snap.api.response.IdentificationSettings;
 import com.certify.snap.api.response.LanguageData;
+import com.certify.snap.api.response.PrinterSettings;
+import com.certify.snap.api.response.ScanViewSettings;
+import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -512,6 +522,98 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
+         //insert settings method Added
+    public void insertDeviceSettingsData(DeviceSettingsData deviceSettingsData) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertDeviceSettingsData(deviceSettingsData);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertAccessControlSettings(AccessControlSettings accessControlSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertAccessControlSettings(accessControlSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertAudioVisualSettings(AudioVisualSettings audioVisualSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertAudioVisualSettings(audioVisualSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertConfirmationViewSettings(confirmationViewSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertGuideSettings(GuideSettings guideSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertGuideSettings(guideSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertHomePageSettings(HomePageSettings homePageSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertHomePageSettings(homePageSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertIdentificationSettings(IdentificationSettings identificationSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertIdentificationSettings(identificationSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertPrinterSettings(PrinterSettings printerSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertPrinterSettings(printerSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertScanViewSettings(ScanViewSettings scanViewSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertScanViewSettings(scanViewSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void insertTouchlessSettings(TouchlessSettings touchlessSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertTouchlessSettings(touchlessSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
 
     private boolean handleDBException(SQLiteException e) {
         if (e.getMessage().contains("file is not a database")) {

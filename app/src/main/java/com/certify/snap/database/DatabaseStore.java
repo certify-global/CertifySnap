@@ -7,7 +7,17 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
 
+import com.certify.snap.api.response.AccessControlSettings;
+import com.certify.snap.api.response.AudioVisualSettings;
+import com.certify.snap.api.response.ConfirmationViewSettings;
+import com.certify.snap.api.response.DeviceSettingsData;
+import com.certify.snap.api.response.GuideSettings;
+import com.certify.snap.api.response.HomePageSettings;
+import com.certify.snap.api.response.IdentificationSettings;
 import com.certify.snap.api.response.LanguageData;
+import com.certify.snap.api.response.PrinterSettings;
+import com.certify.snap.api.response.ScanViewSettings;
+import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceSettings;
 import com.certify.snap.model.GuestMembers;
@@ -49,6 +59,38 @@ public interface DatabaseStore {
 
     @Insert
     void insertLanguages(LanguageData questionData);
+
+    @Insert
+    void  insertDeviceSettingsData(DeviceSettingsData deviceSettingsData);
+
+    @Insert
+    void  insertAccessControlSettings(AccessControlSettings accessControlSettings);
+
+    @Insert
+    void  insertAudioVisualSettings(AudioVisualSettings audioVisualSettings);
+
+    @Insert
+    void  insertConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings);
+
+    @Insert
+    void  insertGuideSettings(GuideSettings guideSettings);
+
+    @Insert
+    void  insertHomePageSettings(HomePageSettings homePageSettings);
+
+    @Insert
+    void  insertIdentificationSettings(IdentificationSettings identificationSettings);
+
+    @Insert
+    void  insertPrinterSettings(PrinterSettings printerSettings);
+
+    @Insert
+    void  insertScanViewSettings(ScanViewSettings scanViewSettings);
+
+    @Insert
+    void  insertTouchlessSettings(TouchlessSettings touchlessSettings);
+
+
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
