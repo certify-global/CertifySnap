@@ -1,8 +1,18 @@
 package com.certify.snap.api.response;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
+@Entity(indices={@Index(value="primaryId", unique=true)})
 public class AccessControlSettings {
+
+    @PrimaryKey
+    @NonNull
+    public int primaryId;
 
     @SerializedName("enableAutomaticDoors")
     public String enableAutomaticDoors = "0";
@@ -33,4 +43,5 @@ public class AccessControlSettings {
 
     @SerializedName("enableWeigandPassThrough")
     public String enableWeigandPassThrough = "0";
+
 }
