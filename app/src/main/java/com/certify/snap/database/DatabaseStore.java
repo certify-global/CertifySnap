@@ -2,7 +2,6 @@ package com.certify.snap.database;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
@@ -19,7 +18,7 @@ import com.certify.snap.api.response.PrinterSettings;
 import com.certify.snap.api.response.ScanViewSettings;
 import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.model.AccessLogOfflineRecord;
-import com.certify.snap.model.DeviceSettings;
+import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -52,7 +51,7 @@ public interface DatabaseStore {
     void insertGuestMembers(GuestMembers guestMembers);
 
     @Insert
-    void insertDeviceSetting(DeviceSettings deviceSettings);
+    void insertDeviceSetting(DeviceKeySettings deviceSettings);
 
     @Insert
     void insertGestureQuestions(QuestionDataDb questionData);
@@ -89,8 +88,6 @@ public interface DatabaseStore {
 
     @Insert
     void  insertTouchlessSettings(TouchlessSettings touchlessSettings);
-
-
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
@@ -171,15 +168,15 @@ public interface DatabaseStore {
     @Query("DELETE FROM AccessLogOfflineRecord")
     void deleteAllOfflineAccessLogRecords();
 
-    @Query("SELECT * FROM DeviceSettings")
-    List<DeviceSettings> findAllDeviceSettings();
+    @Query("SELECT * FROM DeviceKeySettings")
+    List<DeviceKeySettings> findAllDeviceSettings();
 
     @Transaction
-    @Query("SELECT * FROM DeviceSettings WHERE settingName=:settingName")
-    DeviceSettings findDeviceSettingByName(String settingName);
+    @Query("SELECT * FROM DeviceKeySettings WHERE settingName=:settingName")
+    DeviceKeySettings findDeviceSettingByName(String settingName);
 
     @Update
-    void updateSetting(DeviceSettings deviceSettings);
+    void updateSetting(DeviceKeySettings deviceKeySettings);
 
     @Query("SELECT * FROM QuestionDataDb")
     List<QuestionDataDb> findAllQuestionsData();
@@ -193,6 +190,70 @@ public interface DatabaseStore {
     @Query("SELECT * FROM LanguageData WHERE languageId =:languageID")
     LanguageData getLanguageOnId(long languageID);
 
+    @Update
+    void updateLanguageData(LanguageData languageData);
+
     @Query("DELETE FROM LanguageData")
     void deleteAllLanguages();
+
+    @Query("SELECT * FROM DeviceSettingsData WHERE primaryId =:languageID")
+    DeviceSettingsData getDeviceSettingsDataOnId(long languageID);
+
+    @Query("SELECT * FROM AccessControlSettings WHERE primaryId =:languageID")
+    AccessControlSettings getAccessControlSettingOnId(long languageID);
+
+    @Query("SELECT * FROM AudioVisualSettings WHERE primaryId =:languageID")
+    AudioVisualSettings getAudioVisualSettingOnId(long languageID);
+
+    @Query("SELECT * FROM ConfirmationViewSettings WHERE primaryId =:languageID")
+    ConfirmationViewSettings getConfirmationSettingsOnId(long languageID);
+
+    @Query("SELECT * FROM GuideSettings WHERE primaryId =:languageID")
+    GuideSettings getGuideSettingOnId(long languageID);
+
+    @Query("SELECT * FROM IdentificationSettings WHERE primaryId =:languageID")
+    IdentificationSettings getIdentificationSettingOnId(long languageID);
+
+    @Query("SELECT * FROM PrinterSettings WHERE primaryId =:languageID")
+    PrinterSettings getPrinterSettingOnId(long languageID);
+
+    @Query("SELECT * FROM HomePageSettings WHERE primaryId =:languageID")
+    HomePageSettings getHomePageSettingOnId(long languageID);
+
+    @Query("SELECT * FROM ScanViewSettings WHERE primaryId =:languageID")
+    ScanViewSettings getScanViewSettingOnId(long languageID);
+
+    @Query("SELECT * FROM TouchlessSettings WHERE primaryId =:languageID")
+    TouchlessSettings getTouchlessSettingOnId(long languageID);
+
+    @Update
+    void updateDeviceSettingsData(DeviceSettingsData deviceSettingsData);
+
+    @Update
+    void updateAccessControlSettings(AccessControlSettings accessControlSettings);
+
+    @Update
+    void updateAudioVisualSettings(AudioVisualSettings audioVisualSettings);
+
+    @Update
+    void updateConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings);
+
+    @Update
+    void updateGuideSettings(GuideSettings guideSettings);
+
+    @Update
+    void updateHomePageSettings(HomePageSettings homePageSettings);
+
+    @Update
+    void updateIdentificationSettings(IdentificationSettings identificationSettings);
+
+    @Update
+    void updatePrinterSettings(PrinterSettings printerSettings);
+
+    @Update
+    void updateScanViewSettings(ScanViewSettings scanViewSettings);
+
+    @Update
+    void updateTouchlessSettings(TouchlessSettings touchlessSettings);
+
 }

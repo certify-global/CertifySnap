@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class DeviceSettings {
 
     @SerializedName("DeviceSettings")
-    public DeviceSettingsData deviceSettings;
+    public DeviceSettingsData deviceSettingsData;
 
     @SerializedName("HomePageView")
     public HomePageSettings homePageView;

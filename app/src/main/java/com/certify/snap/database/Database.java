@@ -21,7 +21,7 @@ import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.database.secureDB.SafeHelperFactory;
 import com.certify.snap.model.AccessLogOfflineRecord;
-import com.certify.snap.model.DeviceSettings;
+import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -32,7 +32,7 @@ import com.certify.snap.model.RegisteredMembers;
 
 @androidx.room.Database(entities = {RegisteredMembers.class, RegisteredFailedMembers.class, OfflineVerifyMembers.class,
         OfflineRecordTemperatureMembers.class, OfflineGuestMembers.class, GuestMembers.class, AccessLogOfflineRecord.class,
-        DeviceSettings.class, QuestionDataDb.class, LanguageData.class, DeviceSettingsData.class,
+        DeviceKeySettings.class, QuestionDataDb.class, LanguageData.class, DeviceSettingsData.class,
         AccessControlSettings.class, AudioVisualSettings.class, ConfirmationViewSettings.class,
         GuideSettings.class, HomePageSettings.class, IdentificationSettings.class,
         PrinterSettings.class, ScanViewSettings.class, TouchlessSettings.class}, version = DatabaseController.DB_VERSION, exportSchema = false)

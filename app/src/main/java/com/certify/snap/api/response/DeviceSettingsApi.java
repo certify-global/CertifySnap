@@ -9,7 +9,7 @@ import java.util.List;
 public class DeviceSettingsApi {
 
     @SerializedName("DeviceSettings")
-    public DeviceSettingsData deviceSettings;
+    public DeviceSettingsData deviceSettingsData;
 
     @SerializedName("HomePageView")
     public HomePageSettings homePageView;

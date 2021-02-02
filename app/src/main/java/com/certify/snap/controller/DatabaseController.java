@@ -25,7 +25,7 @@ import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
-import com.certify.snap.model.DeviceSettings;
+import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.QuestionDataDb;
@@ -400,7 +400,7 @@ public class DatabaseController {
         return new ArrayList<>();
     }
 
-    public void insertDeviceSettingsToDB(DeviceSettings deviceSettings) {
+    public void insertDeviceKeySettingsToDB(DeviceKeySettings deviceSettings) {
         try {
             if (databaseStore != null) {
                 databaseStore.insertDeviceSetting(deviceSettings);
@@ -410,7 +410,7 @@ public class DatabaseController {
         }
     }
 
-    public List<DeviceSettings> getDeviceSettings() {
+    public List<DeviceKeySettings> getDeviceSettings() {
         try {
             if (databaseStore != null) {
                 return databaseStore.findAllDeviceSettings();
@@ -424,7 +424,7 @@ public class DatabaseController {
     public String getSetting(String settingName) {
         try {
             if (databaseStore != null) {
-                DeviceSettings deviceSetting = databaseStore.findDeviceSettingByName(settingName);
+                DeviceKeySettings deviceSetting = databaseStore.findDeviceSettingByName(settingName);
                 return deviceSetting.settingValue;
             }
         } catch (SQLiteException e){
@@ -433,7 +433,7 @@ public class DatabaseController {
         return "";
     }
 
-    public void updateSetting(DeviceSettings setting) {
+    public void updateSetting(DeviceKeySettings setting) {
         try {
             if (databaseStore != null) {
                 databaseStore.updateSetting(setting);
@@ -484,6 +484,16 @@ public class DatabaseController {
         }
     }
 
+    public void updateLanguageDataToDB(LanguageData languageData) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateLanguageData(languageData);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public List<LanguageData> getLanguagesFromDb() {
         try {
             if (databaseStore != null) {
@@ -522,7 +532,8 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
-         //insert settings method Added
+
+    //insert settings method Added
     public void insertDeviceSettingsData(DeviceSettingsData deviceSettingsData) {
         try {
             if (databaseStore != null) {
@@ -532,6 +543,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public DeviceSettingsData getDeviceSettingsDataOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getDeviceSettingsDataOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateDeviceSettingsData(DeviceSettingsData setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateDeviceSettingsData(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertAccessControlSettings(AccessControlSettings accessControlSettings) {
         try {
             if (databaseStore != null) {
@@ -541,6 +574,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public AccessControlSettings getAccessControlSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getAccessControlSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateAccessControlSettings(AccessControlSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateAccessControlSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertAudioVisualSettings(AudioVisualSettings audioVisualSettings) {
         try {
             if (databaseStore != null) {
@@ -550,6 +605,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public AudioVisualSettings getAudioVisualSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getAudioVisualSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateAudioVisualSettings(AudioVisualSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateAudioVisualSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings) {
         try {
             if (databaseStore != null) {
@@ -559,6 +636,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public ConfirmationViewSettings getConfirmationSettingOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getConfirmationSettingsOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateConfirmationSettings(ConfirmationViewSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateConfirmationViewSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertGuideSettings(GuideSettings guideSettings) {
         try {
             if (databaseStore != null) {
@@ -568,6 +667,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public GuideSettings getGuideSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getGuideSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateGuideSettings(GuideSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateGuideSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertHomePageSettings(HomePageSettings homePageSettings) {
         try {
             if (databaseStore != null) {
@@ -577,6 +698,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public HomePageSettings getHomePageSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getHomePageSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateHomePageSettings(HomePageSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateHomePageSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertIdentificationSettings(IdentificationSettings identificationSettings) {
         try {
             if (databaseStore != null) {
@@ -586,6 +729,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public IdentificationSettings getIdentificationSettingsId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getIdentificationSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateIdentificationSettings(IdentificationSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateIdentificationSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertPrinterSettings(PrinterSettings printerSettings) {
         try {
             if (databaseStore != null) {
@@ -595,6 +760,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public PrinterSettings getPrinterSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getPrinterSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updatePrinterSettings(PrinterSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updatePrinterSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertScanViewSettings(ScanViewSettings scanViewSettings) {
         try {
             if (databaseStore != null) {
@@ -604,6 +791,28 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+
+    public ScanViewSettings getScanViewSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getScanViewSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateScanViewSettings(ScanViewSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateScanViewSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertTouchlessSettings(TouchlessSettings touchlessSettings) {
         try {
             if (databaseStore != null) {
@@ -614,6 +823,26 @@ public class DatabaseController {
         }
     }
 
+    public TouchlessSettings getTouchlessSettingsOnId(int languageId) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getTouchlessSettingOnId(languageId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
+    }
+
+    public void updateTouchlessSettings(TouchlessSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateTouchlessSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
 
     private boolean handleDBException(SQLiteException e) {
         if (e.getMessage().contains("file is not a database")) {

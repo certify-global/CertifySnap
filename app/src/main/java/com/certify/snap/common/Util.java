@@ -66,7 +66,6 @@ import com.certify.snap.activity.SettingsActivity;
 import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
-import com.certify.snap.api.response.DeviceSettings;
 import com.certify.snap.api.response.DeviceSettingsApi;
 import com.certify.snap.api.response.DeviceSettingsData;
 import com.certify.snap.api.response.GuideSettings;
@@ -133,7 +132,6 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -1312,9 +1310,8 @@ public class Util {
                     DeviceSettingsApi deviceSettingsApi = settingsData.deviceSettingsApi;
 
                     //Device Settings
-                    DeviceSettingsData deviceSettings = deviceSettingsApi.deviceSettings;
+                    DeviceSettingsData deviceSettings = deviceSettingsApi.deviceSettingsData;
                     if (deviceSettings != null) {
-                        deviceSettings.primaryId=1;
                         if (deviceSettings.doNotSyncMembers.equals("1")) {
                             Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
                         } else {
@@ -1328,15 +1325,14 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettings.deviceMasterCode);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, deviceSettings.multipleScanMode.equals("1"));
-                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.languageCode));
+                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.languageId));
                         Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
-                        DatabaseController.getInstance().insertDeviceSettingsData(deviceSettings);
+                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.languageId));
                     }
 
                     //HomeView settings
                     HomePageSettings homePageSettings = deviceSettingsApi.homePageView;
                     if (homePageSettings != null) {
-                        homePageSettings.primaryId=1;
                         Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homePageSettings.logo);
                         Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homePageSettings.line1);
                         Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homePageSettings.line2);
@@ -1344,14 +1340,11 @@ public class Util {
                         Util.writeInt(sharedPreferences, GlobalParameters.HOME_DISPLAY_TIME, Integer.parseInt(homePageSettings.viewIntervalDelay));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, homePageSettings.enableTextOnly.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, homePageSettings.homeText);
-                        DatabaseController.getInstance().insertHomePageSettings(homePageSettings);
-
                     }
 
                     //ScanView settings
                     ScanViewSettings scanViewSettings = deviceSettingsApi.scanView;
                     if (scanViewSettings != null) {
-                        scanViewSettings.primaryId=1;
                         Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, scanViewSettings.viewDelay);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, scanViewSettings.captureUserImageAboveThreshold.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, scanViewSettings.captureAllUsersImage.equals("1"));
@@ -1382,14 +1375,11 @@ public class Util {
                         } else {
                             SoundController.getInstance().deleteAudioFile("High.mp3");
                         }
-                        DatabaseController.getInstance().insertScanViewSettings(scanViewSettings);
-
                     }
 
                     //ConfirmationView settings
                     ConfirmationViewSettings confirmationSettings = deviceSettingsApi.confirmationView;
                     if (confirmationSettings != null) {
-                        confirmationSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, confirmationSettings.enableConfirmationScreen.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, confirmationSettings.enableConfirmationScreenAboveThreshold.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationSettings.viewDelay);
@@ -1398,25 +1388,20 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, confirmationSettings.normalViewLine2);
                         Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, confirmationSettings.aboveThresholdViewLine1);
                         Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, confirmationSettings.temperatureAboveThreshold2);
-                        DatabaseController.getInstance().insertConfirmationViewSettings(confirmationSettings);
-
                     }
 
                     //GuideView Settings
                     GuideSettings guideSettings = deviceSettingsApi.guideMessages;
                     if (guideSettings != null) {
-                        guideSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, guideSettings.enableGuideMessages.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, guideSettings.message1);
                         Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, guideSettings.message2);
                         Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, guideSettings.message3);
-                        DatabaseController.getInstance().insertGuideSettings(guideSettings);
                     }
 
                     //Identification Settings
                     IdentificationSettings identificationSettings = deviceSettingsApi.identificationSettings;
                     if (identificationSettings != null) {
-                        identificationSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, identificationSettings.enableQRCodeScanner.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, identificationSettings.enableRFIDScanner.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationSettings.identificationTimeout);
@@ -1427,14 +1412,11 @@ public class Util {
                         Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(identificationSettings.cameraScanMode));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, identificationSettings.enableAcknowledgementScreen.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, identificationSettings.acknowledgementText);
-                        DatabaseController.getInstance().insertIdentificationSettings(identificationSettings);
-
                     }
 
                     //AccessControl Settings
                     AccessControlSettings accessControlSettings = deviceSettingsApi.accessControl;
                     if (accessControlSettings != null) {
-                        accessControlSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, accessControlSettings.enableAutomaticDoors.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, accessControlSettings.allowAnonymous.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, accessControlSettings.relayMode.equals("1"));
@@ -1445,15 +1427,11 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigandPassThrough, accessControlSettings.enableWeigandPassThrough.equals("1"));
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlSettings.loggingMode);
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlSettings.validAccessOption);
-                        DatabaseController.getInstance().insertAccessControlSettings(accessControlSettings);
-
-
                     }
 
                     //Audio-Visual settings
                     AudioVisualSettings audioVisualSettings = deviceSettingsApi.audioVisualAlerts;
                     if (audioVisualSettings != null) {
-                        audioVisualSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_VALID, audioVisualSettings.enableSoundForValidQRCode.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_INVALID, audioVisualSettings.enableSoundForInvalidQRCode.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_NORMAL, audioVisualSettings.enableLightOnNormalTemperature.equals("1"));
@@ -1469,14 +1447,11 @@ public class Util {
                         } else {
                             SoundController.getInstance().deleteAudioFile("Invalid.mp3");
                         }
-                        DatabaseController.getInstance().insertAudioVisualSettings(audioVisualSettings);
-
                     }
 
                     //Printer settings
                     PrinterSettings printerSettings = deviceSettingsApi.printerSettings;
                     if (printerSettings != null) {
-                        printerSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, printerSettings.enableWBPrint.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, printerSettings.enableUSBPrint.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printerSettings.printAllScan.equals("1"));
@@ -1496,14 +1471,11 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, printerSettings.printIndicatorForQR.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, printerSettings.defaultBottomBarText);
                         Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, printerSettings.defaultResultPrint);
-                        DatabaseController.getInstance().insertPrinterSettings(printerSettings);
-
                     }
 
                     //Touchless Interaction settings
                     TouchlessSettings touchlessSettings = deviceSettingsApi.touchlessInteraction;
                     if (touchlessSettings != null) {
-                        touchlessSettings.primaryId=1;
                         Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, touchlessSettings.enableWave.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, touchlessSettings.enableQuestionAndAnswer.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, touchlessSettings.settingId);
@@ -1515,35 +1487,13 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, touchlessSettings.maskEnforceText);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, touchlessSettings.exitOnNegativeOutcome.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, touchlessSettings.messageForNegativeOutcome);
-                        DatabaseController.getInstance().insertTouchlessSettings(touchlessSettings);
                     }
 
-                     List<DeviceSettings> deviceSettings1=deviceSettingsApi.settings;
-                    if(deviceSettings1!=null){
-                        for(int i=0; i<deviceSettings1.size();i++) {
-                            DeviceSettings deviceSettings2 = deviceSettingsApi.settings.get(i);
-                            deviceSettings2.accessControl.primaryId = 2;
-                            deviceSettings2.deviceSettings.primaryId = 2;
-                            deviceSettings2.audioVisualAlerts.primaryId = 2;
-                            deviceSettings2.confirmationView.primaryId = 2;
-                            deviceSettings2.guideMessages.primaryId = 2;
-                            deviceSettings2.identificationSettings.primaryId = 2;
-                            deviceSettings2.printerSettings.primaryId = 2;
-                            deviceSettings2.homePageView.primaryId = 2;
-                            deviceSettings2.scanView.primaryId = 2;
-                            deviceSettings2.touchlessInteraction.primaryId = 2;
-                            DatabaseController.getInstance().insertDeviceSettingsData(deviceSettings2.deviceSettings);
-                            DatabaseController.getInstance().insertAccessControlSettings(deviceSettings2.accessControl);
-                            DatabaseController.getInstance().insertAudioVisualSettings(deviceSettings2.audioVisualAlerts);
-                            DatabaseController.getInstance().insertConfirmationViewSettings(deviceSettings2.confirmationView);
-                            DatabaseController.getInstance().insertGuideSettings(deviceSettings2.guideMessages);
-                            DatabaseController.getInstance().insertIdentificationSettings(deviceSettings2.identificationSettings);
-                            DatabaseController.getInstance().insertPrinterSettings(deviceSettings2.printerSettings);
-                            DatabaseController.getInstance().insertHomePageSettings(deviceSettings2.homePageView);
-                            DatabaseController.getInstance().insertScanViewSettings(deviceSettings2.scanView);
-                            DatabaseController.getInstance().insertTouchlessSettings(deviceSettings2.touchlessInteraction);
-                        }
+                    //Add settings to DB
+                    if (deviceSettings != null) {
+                        DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.languageId), deviceSettingsApi);
                     }
+                    DeviceSettingsController.getInstance().handleAdditionalLanguagesApi(deviceSettingsApi.settings);
                 }
             } else {
                 Log.e(LOG, "Setting retrieval Something went wrong please try again");

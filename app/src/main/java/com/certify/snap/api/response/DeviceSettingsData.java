@@ -37,7 +37,7 @@ public class DeviceSettingsData {
     @SerializedName("deviceMasterCode")
     public String deviceMasterCode = "";
 
-    @SerializedName("languageCode")
-    public String languageCode = "1";
+    @SerializedName("languageId")
+    public String languageId = "1";
 
 }
