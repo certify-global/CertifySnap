@@ -109,7 +109,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         if (languageDataDb != null && languageDataDb.offline) {
             DatabaseController.getInstance().deleteLanguagesFromDb();
         }
-        LanguageData languageData = getLanguageData(languageId);
+        LanguageData languageData = getLanguageData(languageId, false);
         DatabaseController.getInstance().insertLanguagesToDB(languageData);
     }
 
@@ -118,7 +118,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         if (languageDataDb != null && languageDataDb.offline) {
             DatabaseController.getInstance().deleteLanguagesFromDb();
         }
-        LanguageData languageData = getLanguageData(languageId);
+        LanguageData languageData = getLanguageData(languageId, false);
         DatabaseController.getInstance().updateLanguageDataToDB(languageData);
     }
 
@@ -439,12 +439,12 @@ public class DeviceSettingsController implements GetLanguagesCallback {
 
     public void addOfflineLanguages() {
         for (int i = 1; i <= Constants.LANGUAGES_MAX_COUNT; i++) {
-            LanguageData languageData = getLanguageData(i);
+            LanguageData languageData = getLanguageData(i, true);
             DatabaseController.getInstance().insertLanguagesToDB(languageData);
         }
     }
 
-    private LanguageData getLanguageData(int value) {
+    private LanguageData getLanguageData(int value, boolean offlineVal) {
         LanguageData languageData = new LanguageData();
         switch (value) {
             case 1: {
@@ -452,7 +452,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "English";
                 languageData.languageCode = "en";
                 languageData.fileCode = "";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -461,7 +461,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "Spanish";
                 languageData.languageCode = "es";
                 languageData.fileCode = "es-rES";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -470,7 +470,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "German";
                 languageData.languageCode = "de";
                 languageData.fileCode = "de-rDE";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -479,7 +479,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "French";
                 languageData.languageCode = "fr";
                 languageData.fileCode = "fr-rFR";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -488,7 +488,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "Italian";
                 languageData.languageCode = "it";
                 languageData.fileCode = "it-rIT";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -497,7 +497,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "Hindi";
                 languageData.languageCode = "hi";
                 languageData.fileCode = "hi-rIN";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -506,7 +506,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "Tamil";
                 languageData.languageCode = "ta";
                 languageData.fileCode = "ta-rIN";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
 
@@ -515,7 +515,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "Telugu";
                 languageData.languageCode = "te";
                 languageData.fileCode = "te-rIN";
-                languageData.offline = true;
+                languageData.offline = offlineVal;
             }
             break;
         }
