@@ -680,5 +680,6 @@
     <string name="accessid_empty_msg">एक्सेस आईडी खाली नहीं होनी चाहिए</string>
     <string name="scan_card_msg">कृपया नामांकन के लिए कार्ड को स्कैन करें</string>
     <string name="enable_liveness">सक्षम करें</string>
+    <string name="additional_locale_setting"> माध्यमिक भाषा</string>
 
 </resources>

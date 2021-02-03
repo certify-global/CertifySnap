@@ -686,5 +686,7 @@
     <string name="accessid_empty_msg">L\'ID d\'accès ne doit pas être vide</string>
     <string name="scan_card_msg">Veuillez scanner la carte pour vous inscrire</string>
     <string name="enable_liveness">Activer la vie</string>
+    <string name="additional_locale_setting">Langue secondaire</string>
+
 
 </resources>

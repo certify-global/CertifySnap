@@ -681,5 +681,7 @@
     <string name="accessid_empty_msg">Die Zugangs-ID sollte nicht leer sein</string>
     <string name="scan_card_msg">Bitte scannen Sie die Karte, um sich anzumelden</string>
     <string name="enable_liveness">Lebendigkeit aktivieren</string>
+    <string name="additional_locale_setting">Sekundärsprache</string>
+
 
 </resources>
