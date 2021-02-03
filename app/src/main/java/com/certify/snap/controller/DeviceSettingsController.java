@@ -136,9 +136,6 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             for (int i = 0; i < languageSettingList.size(); i++) {
                 DeviceSettings deviceSettings = languageSettingList.get(i);
                 int languageCode = Integer.parseInt(deviceSettings.deviceSettingsData.languageId);
-                if (i == 1) {
-                    languageCode = 2;
-                }
                 LanguageData languageData = DatabaseController.getInstance().getLanguageOnId(languageCode);
                 if (languageData != null) {
                     updateLanguageDataToDb(languageCode);

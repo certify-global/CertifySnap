@@ -1327,7 +1327,7 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, deviceSettings.multipleScanMode.equals("1"));
                         String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.languageId));
                         Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
-                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.languageId));
+                        //DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.languageId));
                     }
 
                     //HomeView settings
@@ -1491,7 +1491,7 @@ public class Util {
 
                     //Add settings to DB
                     if (deviceSettings != null) {
-                        DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.languageId), deviceSettingsApi);
+                        //DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.languageId), deviceSettingsApi);
                     }
                     DeviceSettingsController.getInstance().handleAdditionalLanguagesApi(deviceSettingsApi.settings);
                 }
