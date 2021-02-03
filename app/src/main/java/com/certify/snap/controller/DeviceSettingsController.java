@@ -20,6 +20,7 @@ import com.certify.snap.api.response.PrinterSettings;
 import com.certify.snap.api.response.ScanViewSettings;
 import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.async.AsyncGetLanguages;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -38,6 +39,8 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     private static DeviceSettingsController instance = null;
     private Context context;
     private GetLanguagesListener listener;
+    private boolean isMultiLanguageEnabled = true;
+    private String languageToUpdate = "";
 
     public interface GetLanguagesListener {
         void onGetLanguages();
@@ -53,6 +56,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     public void init(Context context, GetLanguagesListener callbackListener) {
         this.context = context;
         this.listener = callbackListener;
+        languageToUpdate = AppSettings.getLanguageType();
     }
 
     public void getLanguages() {
@@ -104,13 +108,79 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         }
     }
 
+    public boolean isMultiLanguageEnabled() {
+        return isMultiLanguageEnabled;
+    }
+
+    public void setLanguageToUpdate(String value) {
+        languageToUpdate = value;
+    }
+
+    public String getLanguageToUpdate() {
+        return languageToUpdate;
+    }
+
+    public HashMap<Integer, String> getLanguageMapFromDb() {
+        LinkedHashMap<Integer, String> languageMap = new LinkedHashMap<>();
+        List<LanguageData> list = DatabaseController.getInstance().getLanguagesFromDb();
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                LanguageData languageData = list.get(i);
+                languageMap.put(languageData.languageId, languageData.name);
+            }
+        }
+        return languageMap;
+    }
+
+    public String getLanguageOnId(int languageId) {
+        String language = "en";
+        LanguageData languageData = DatabaseController.getInstance().getLanguageOnId(languageId);
+        if (languageData != null) {
+            language = languageData.languageCode;
+        }
+        return language;
+    }
+
+    public String getLanguageNameOnCode(String languageCode) {
+        String languageName = "English";
+        LanguageData languageData = DatabaseController.getInstance().getLanguageOnCode(languageCode);
+        if (languageData != null) {
+            languageName = languageData.name;
+        }
+        return languageName;
+    }
+
+    public int getLanguageIdOnCode(String languageCode) {
+        int languageId = 1;
+        LanguageData languageData = DatabaseController.getInstance().getLanguageOnCode(languageCode);
+        if (languageData != null) {
+            languageId = languageData.languageId;
+        }
+        return languageId;
+    }
+
+    public boolean isLanguagesInDBEmpty() {
+        return DatabaseController.getInstance().getLanguagesFromDb().isEmpty();
+    }
+
+    public void addOfflineLanguages() {
+        for (int i = 1; i <= Constants.LANGUAGES_MAX_COUNT; i++) {
+            LanguageData languageData = getLanguageData(i, true);
+            DatabaseController.getInstance().insertLanguagesToDB(languageData);
+        }
+    }
+
     public void addLanguageDataToDb(int languageId) {
         LanguageData languageDataDb = DatabaseController.getInstance().getLanguageOnId(languageId);
         if (languageDataDb != null && languageDataDb.offline) {
             DatabaseController.getInstance().deleteLanguagesFromDb();
         }
-        LanguageData languageData = getLanguageData(languageId, false);
-        DatabaseController.getInstance().insertLanguagesToDB(languageData);
+        if (languageDataDb != null) {
+            DatabaseController.getInstance().updateLanguageDataToDB(languageDataDb);
+        } else {
+            LanguageData languageData = getLanguageData(languageId, false);
+            DatabaseController.getInstance().insertLanguagesToDB(languageData);
+        }
     }
 
     public void updateLanguageDataToDb(int languageId) {
@@ -124,7 +194,8 @@ public class DeviceSettingsController implements GetLanguagesCallback {
 
     public void handleAddUpdateLanguageApi(int primaryId, DeviceSettingsApi deviceSettingsApi) {
         LanguageData languageData = DatabaseController.getInstance().getLanguageOnId(primaryId);
-        if (languageData != null) {
+        DeviceSettingsData deviceSettingsData = DatabaseController.getInstance().getDeviceSettingsDataOnId(primaryId);
+        if (languageData != null && deviceSettingsData != null) {
             updateLanguageSettingsInDb(primaryId, deviceSettingsApi);
         } else {
             addLanguageSettingsToDb(primaryId, deviceSettingsApi);
@@ -403,47 +474,6 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         }
     }
 
-    public HashMap<Integer, String> getLanguageMapFromDb() {
-        LinkedHashMap<Integer, String> languageMap = new LinkedHashMap<>();
-        List<LanguageData> list = DatabaseController.getInstance().getLanguagesFromDb();
-        if (list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                 LanguageData languageData = list.get(i);
-                 languageMap.put(languageData.languageId, languageData.name);
-            }
-        }
-        return languageMap;
-    }
-
-    public String getLanguageOnId(int languageId) {
-        String language = "en";
-        LanguageData languageData = DatabaseController.getInstance().getLanguageOnId(languageId);
-        if (languageData != null) {
-            language = languageData.languageCode;
-        }
-        return language;
-    }
-
-    public String getLanguageNameOnCode(String languageCode) {
-        String languageName = "English";
-        LanguageData languageData = DatabaseController.getInstance().getLanguageOnCode(languageCode);
-        if (languageData != null) {
-            languageName = languageData.name;
-        }
-        return languageName;
-    }
-
-    public boolean isLanguagesInDBEmpty() {
-        return DatabaseController.getInstance().getLanguagesFromDb().isEmpty();
-    }
-
-    public void addOfflineLanguages() {
-        for (int i = 1; i <= Constants.LANGUAGES_MAX_COUNT; i++) {
-            LanguageData languageData = getLanguageData(i, true);
-            DatabaseController.getInstance().insertLanguagesToDB(languageData);
-        }
-    }
-
     private LanguageData getLanguageData(int value, boolean offlineVal) {
         LanguageData languageData = new LanguageData();
         switch (value) {
@@ -521,5 +551,4 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         }
         return languageData;
     }
-
 }

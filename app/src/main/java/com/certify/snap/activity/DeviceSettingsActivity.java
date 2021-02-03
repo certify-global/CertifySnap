@@ -120,7 +120,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             captureLogSetting();
             logOfflineDataSetting();
             languageSetting();
-            AdditionallanguageSetting();
+            additionalLanguageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -227,9 +227,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         restartApp();
                     } else {
                         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
-                        if (!currentlanguageCode.equals(languageCode)) {
+                        //if (!currentlanguageCode.equals(languageCode)) {
                             DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
-                        }
+                        //}
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
                                 && deviceOnlineSwitch) || (!currentlanguageCode.equals(languageCode))) {
                             restartApp();
@@ -846,7 +846,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
         spinnerLanguageSelector.setSelection(((ArrayAdapter<String>)spinnerLanguageSelector.getAdapter()).getPosition(languageName));
     }
-    private void AdditionallanguageSetting() {
+
+    private void additionalLanguageSetting() {
         HashMap<Integer, String> languageMap = DeviceSettingsController.getInstance().getLanguageMapFromDb();
         ArrayList<String> values = new ArrayList<>(languageMap.values());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, values);
@@ -859,7 +860,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                 String name = additional_spinner_language_selector.getSelectedItem().toString();
                 selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, name);
                 if (selectedLanguageId != null) {
-                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE,
+                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE_SECONDARY,
                             DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
                 }
             }
@@ -869,7 +870,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
             }
         });
-        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "en");
         currentlanguageCode = languageCode;
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
         additional_spinner_language_selector.setSelection(((ArrayAdapter<String>)additional_spinner_language_selector.getAdapter()).getPosition(languageName));

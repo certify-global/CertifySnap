@@ -468,15 +468,14 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void initLanguage() {
+        DeviceSettingsController.getInstance().init(this, this);
         if (Util.isNetworkOff(this)) {
             String institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
             if (DeviceSettingsController.getInstance().isLanguagesInDBEmpty() &&
                     (institutionId != null && institutionId.isEmpty())) {
                 DeviceSettingsController.getInstance().addOfflineLanguages();
             }
-            return;
         }
-        DeviceSettingsController.getInstance().init(this, this);
     }
 
     @Override

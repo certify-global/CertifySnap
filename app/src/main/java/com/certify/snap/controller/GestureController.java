@@ -70,6 +70,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private GestureMECallbackListener gestureMEListener = null;
     private boolean isMECallback = false;
     private boolean isGestureDeviceConnected = false;
+    private boolean isLanguageUpdated = false;
 
     //Hand Gesture
     private UsbDevice usbReader = null;
@@ -105,6 +106,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public interface GestureHomeCallBackListener {
         void onGestureDetected();
+        void onLeftHandGesture();
     }
 
     public interface GestureMECallbackListener {
@@ -177,7 +179,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             if (!AppSettings.getLanguageType().equals("en")) {
                 obj.put("languageConversion", true);
                 obj.put("fromLanguage", "en");
-                obj.put("toLanguage", AppSettings.getLanguageType());
+                obj.put("toLanguage", DeviceSettingsController.getInstance().getLanguageToUpdate());
             }
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, context).execute();
         } catch (Exception e) {
@@ -236,6 +238,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         wait = false;
         isMECallback = false;
         this.gestureMEListener = callbackListener;
+    }
+
+    public boolean isLanguageUpdated() {
+        return isLanguageUpdated;
+    }
+
+    public void setLanguageUpdated(boolean languageUpdated) {
+        isLanguageUpdated = languageUpdated;
     }
 
     /**
@@ -511,6 +521,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private void leftHandWave() {
         Log.d(TAG, "Left Hand wave");
+        if (gestureListener != null && !isCallback && !waveHandProcessed.get(LEFT_HAND)) {
+            isCallback = true;
+            startWaveHandTimer();
+            gestureListener.onLeftHandGesture();
+            return;
+        }
         if (gestureMEListener != null && !isMECallback && !waveHandProcessed.get(LEFT_HAND)) {
             Log.d(TAG, "Right Hand wave");
             isMECallback = true;
@@ -877,6 +893,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public boolean isGestureWithMaskEnforceEnabled() {
         return (AppSettings.isEnableHandGesture() && AppSettings.isMaskEnforced() &&
                 GestureController.getInstance().isGestureEnabledAndDeviceConnected());
+    }
+
+    public void onGestureLanguageChange() {
+        String languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
+        DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
+        setLanguageUpdated(true);
+        DeviceSettingsController.getInstance().getSettingsFromDb(DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+        clearQuestionAnswerMap();
     }
 
     public void clearData() {

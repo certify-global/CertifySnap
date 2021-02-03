@@ -20,12 +20,12 @@ import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncTaskExecutorService;
-import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ContextUtils;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.google.gson.Gson;
 
@@ -58,7 +58,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo = new Locale(AppSettings.getLanguageType());
+        Locale localeToSwitchTo = new Locale(DeviceSettingsController.getInstance().getLanguageToUpdate());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }
