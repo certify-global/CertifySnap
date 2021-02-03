@@ -2232,6 +2232,15 @@ public class Util {
         return null;
     }
 
+    public static Object getKeyOnValue(Map hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
     public static boolean isGestureDeviceConnected(Context context) {
         boolean result = false;
         UsbManager mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);

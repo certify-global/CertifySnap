@@ -101,6 +101,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout logOfflineDataLayout, captureLogsLayout;
     private Spinner spinnerLanguageSelector;
     private String currentlanguageCode = "";
+    private Integer selectedLanguageId = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -225,6 +226,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         restartApp();
                     } else {
                         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+                        if (!currentlanguageCode.equals(languageCode)) {
+                            DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
+                        }
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
                                 && deviceOnlineSwitch) || (!currentlanguageCode.equals(languageCode))) {
                             restartApp();
@@ -811,8 +815,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void languageSetting() {
-        HashMap<String, String> languageMap = DeviceSettingsController.getInstance().getLanguageMapFromDb();
-        ArrayList<String> values = new ArrayList<>(languageMap.keySet());
+        HashMap<Integer, String> languageMap = DeviceSettingsController.getInstance().getLanguageMapFromDb();
+        ArrayList<String> values = new ArrayList<>(languageMap.values());
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, values);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLanguageSelector.setAdapter(adapter);
@@ -821,8 +825,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String name = spinnerLanguageSelector.getSelectedItem().toString();
-                String languageCode = languageMap.get(name);
-                Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageCode);
+                selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, name);
+                if (selectedLanguageId != null) {
+                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE,
+                            DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
+                }
             }
 
             @Override
@@ -832,7 +839,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         });
         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
         currentlanguageCode = languageCode;
-        String languageName = Util.getKeyFromValue(languageMap, languageCode);
+        String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
         spinnerLanguageSelector.setSelection(((ArrayAdapter<String>)spinnerLanguageSelector.getAdapter()).getPosition(languageName));
     }
 }

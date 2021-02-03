@@ -406,13 +406,13 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         }
     }
 
-    public HashMap<String, String> getLanguageMapFromDb() {
-        LinkedHashMap<String, String> languageMap = new LinkedHashMap<>();
+    public HashMap<Integer, String> getLanguageMapFromDb() {
+        LinkedHashMap<Integer, String> languageMap = new LinkedHashMap<>();
         List<LanguageData> list = DatabaseController.getInstance().getLanguagesFromDb();
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                  LanguageData languageData = list.get(i);
-                 languageMap.put(languageData.name, languageData.languageCode);
+                 languageMap.put(languageData.languageId, languageData.name);
             }
         }
         return languageMap;
@@ -425,6 +425,15 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             language = languageData.languageCode;
         }
         return language;
+    }
+
+    public String getLanguageNameOnCode(String languageCode) {
+        String languageName = "English";
+        LanguageData languageData = DatabaseController.getInstance().getLanguageOnCode(languageCode);
+        if (languageData != null) {
+            languageName = languageData.name;
+        }
+        return languageName;
     }
 
     public boolean isLanguagesInDBEmpty() {

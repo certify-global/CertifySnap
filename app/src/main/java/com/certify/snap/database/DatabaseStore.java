@@ -190,6 +190,9 @@ public interface DatabaseStore {
     @Query("SELECT * FROM LanguageData WHERE languageId =:languageID")
     LanguageData getLanguageOnId(long languageID);
 
+    @Query("SELECT * FROM LanguageData WHERE languageCode =:languagecode")
+    LanguageData getLanguageOnCode(String languagecode);
+
     @Update
     void updateLanguageData(LanguageData languageData);
 
