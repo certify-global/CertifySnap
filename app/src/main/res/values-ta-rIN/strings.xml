@@ -681,5 +681,6 @@
     <string name="accessid_empty_msg">அணுகல் ஐடி காலியாக இருக்கக்கூடாது</string>
     <string name="scan_card_msg">பதிவு செய்ய கார்டை ஸ்கேன் செய்யுங்கள்</string>
     <string name="enable_liveness">உயிரோட்டத்தை இயக்கு</string>
+    <string name="additional_locale_setting">இரண்டாம் மொழி</string>
 
 </resources>

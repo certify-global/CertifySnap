@@ -86,7 +86,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo;
     RadioGroup radio_group_local_server;
     RadioButton radio_yes_server, radio_no_server;
-    TextView tvLocalServer, tvServerIp, tvLocaleSettings;
+    TextView tvLocalServer, tvServerIp, tvLocaleSettings,additional_locale_settings;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
@@ -99,7 +99,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private boolean deviceOnlineSwitch = false;
     private Button saveLogButton;
     private LinearLayout logOfflineDataLayout, captureLogsLayout;
-    private Spinner spinnerLanguageSelector;
+    private Spinner spinnerLanguageSelector,additional_spinner_language_selector;
     private String currentlanguageCode = "";
     private Integer selectedLanguageId = 0;
 
@@ -120,6 +120,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             captureLogSetting();
             logOfflineDataSetting();
             languageSetting();
+            AdditionallanguageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -298,7 +299,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         logOfflineDataNo = findViewById(R.id.log_od_rb_no);
         captureLogsLayout = findViewById(R.id.capture_logs_layout);
         spinnerLanguageSelector = findViewById(R.id.spinner_language_selector);
+        additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
         tvLocaleSettings = findViewById(R.id.locale_settings);
+        additional_locale_settings = findViewById(R.id.additional_locale_settings);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -326,6 +329,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         saveLogButton.setTypeface(rubiklight);
         logOfflineData.setTypeface(rubiklight);
         tvLocaleSettings.setTypeface(rubiklight);
+        additional_locale_settings.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
@@ -841,5 +845,33 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         currentlanguageCode = languageCode;
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
         spinnerLanguageSelector.setSelection(((ArrayAdapter<String>)spinnerLanguageSelector.getAdapter()).getPosition(languageName));
+    }
+    private void AdditionallanguageSetting() {
+        HashMap<Integer, String> languageMap = DeviceSettingsController.getInstance().getLanguageMapFromDb();
+        ArrayList<String> values = new ArrayList<>(languageMap.values());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, values);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        additional_spinner_language_selector.setAdapter(adapter);
+
+        additional_spinner_language_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String name = additional_spinner_language_selector.getSelectedItem().toString();
+                selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, name);
+                if (selectedLanguageId != null) {
+                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE,
+                            DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+        currentlanguageCode = languageCode;
+        String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
+        additional_spinner_language_selector.setSelection(((ArrayAdapter<String>)additional_spinner_language_selector.getAdapter()).getPosition(languageName));
     }
 }

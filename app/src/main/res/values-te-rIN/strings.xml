@@ -678,5 +678,6 @@
     <string name="accessid_empty_msg">యాక్సెస్ ఐడి ఖాళీగా ఉండకూడదు</string>
     <string name="scan_card_msg">నమోదు చేయడానికి కార్డును స్కాన్ చేయండి</string>
     <string name="enable_liveness">లైవ్‌నెస్‌ను ప్రారంభించండి</string>
+    <string name="additional_locale_setting"> ద్వితీయ భాష</string>
 
 </resources>
