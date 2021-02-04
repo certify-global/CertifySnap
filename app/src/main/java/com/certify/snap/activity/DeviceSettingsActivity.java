@@ -102,6 +102,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private Spinner spinnerLanguageSelector,additional_spinner_language_selector;
     private String currentlanguageCode = "";
     private Integer selectedLanguageId = 0;
+    private String primaryLanguage = "";
+    private String secondaryLanguage = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -213,6 +215,10 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (primaryLanguage.equals(secondaryLanguage)) {
+                        Toast.makeText(DeviceSettingsActivity.this, getString(R.string.language_message), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     saveLedBrightnessSetting();
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
@@ -828,8 +834,12 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         spinnerLanguageSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String name = spinnerLanguageSelector.getSelectedItem().toString();
-                selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, name);
+                primaryLanguage = spinnerLanguageSelector.getSelectedItem().toString();
+                if (primaryLanguage.equals(secondaryLanguage)) {
+                    Toast.makeText(DeviceSettingsActivity.this, getString(R.string.language_message), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, primaryLanguage);
                 if (selectedLanguageId != null) {
                     Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE,
                             DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
@@ -857,8 +867,12 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         additional_spinner_language_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String name = additional_spinner_language_selector.getSelectedItem().toString();
-                selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, name);
+                secondaryLanguage = additional_spinner_language_selector.getSelectedItem().toString();
+                if (secondaryLanguage.equals(primaryLanguage)) {
+                    Toast.makeText(DeviceSettingsActivity.this, getString(R.string.language_message), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Integer selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, secondaryLanguage);
                 if (selectedLanguageId != null) {
                     Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE_SECONDARY,
                             DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
@@ -870,7 +884,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
             }
         });
-        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "en");
+        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
         currentlanguageCode = languageCode;
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
         additional_spinner_language_selector.setSelection(((ArrayAdapter<String>)additional_spinner_language_selector.getAdapter()).getPosition(languageName));

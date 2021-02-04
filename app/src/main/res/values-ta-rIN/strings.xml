@@ -682,5 +682,7 @@
     <string name="scan_card_msg">பதிவு செய்ய கார்டை ஸ்கேன் செய்யுங்கள்</string>
     <string name="enable_liveness">உயிரோட்டத்தை இயக்கு</string>
     <string name="additional_locale_setting">இரண்டாம் மொழி</string>
+    <string name="add_device_message">SL NO: போர்ட்டலில் சாதனத்தை ஏற்கனவே சேர்த்திருந்தால்:</string>
+    <string name="language_message">முதன்மை மற்றும் இரண்டாம் நிலை மொழிகள் ஒரே மாதிரியாக இருக்க முடியாது. வேறு மொழியைத் தேர்ந்தெடுக்கவும்.</string>
 
 </resources>

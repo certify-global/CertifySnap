@@ -716,6 +716,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             ApplicationController.getInstance().setDeviceBoot(false);
         }
         if (GestureController.getInstance().isLanguageUpdated()) {
+            GestureController.getInstance().setCallback(true);
             onGestureDetected();
         }
     }
@@ -2811,7 +2812,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         GestureController.getInstance().clearData();
         PrinterController.getInstance().setPrinting(false);
-        GestureController.getInstance().setLanguageUpdated(false);
+        //GestureController.getInstance().setLanguageUpdated(false);
     }
 
     private void setPreviewIdleTimer() {
@@ -2866,6 +2867,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeScan() {
+        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            GestureController.getInstance().setLanguageUpdated(false);
+            if (DeviceSettingsController.getInstance().isMultiLanguageEnabled()) {
+                DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
+                DeviceSettingsController.getInstance().getSettingsFromDb(
+                        DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType()));
+                runOnUiThread(this::recreate);
+            }
+            return;
+        }
         runOnUiThread(() -> {
             if (temperature_image != null) {
                 temperature_image.setVisibility(View.GONE);
@@ -2883,6 +2894,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 } else {
                     isReadyToScan = false;
                 }
+                GestureController.getInstance().setLanguageUpdated(false);
             }
             resetGesture();
         }
@@ -2893,12 +2905,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
-        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
-            if (DeviceSettingsController.getInstance().isMultiLanguageEnabled()) {
-                DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
-                recreate();
-            }
-        }
     }
 
     private void resetRfid() {
@@ -3699,16 +3705,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
+        if (DeviceSettingsController.getInstance().isMultiLanguageEnabled() &&
+                !GestureController.getInstance().isLanguageUpdated()) {
+            String languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
+            onGestureLanguageUpdate(languageType);
+            return;
+        }
         runOnUiThread(() -> {
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
                     (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) return;
 
-            if (DeviceSettingsController.getInstance().isMultiLanguageEnabled() &&
-                !GestureController.getInstance().isLanguageUpdated()) {
-                onGestureLanguageUpdate();
-                return;
-            }
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
@@ -3729,12 +3736,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onLeftHandGesture() {
-        runOnUiThread(() -> {
-            if (DeviceSettingsController.getInstance().isMultiLanguageEnabled() &&
-                    !GestureController.getInstance().isLanguageUpdated()) {
-                onGestureLanguageUpdate();
-            }
-        });
+        if (DeviceSettingsController.getInstance().isMultiLanguageEnabled() &&
+                !GestureController.getInstance().isLanguageUpdated()) {
+            onGestureLanguageUpdate(AppSettings.getLanguageType());
+        }
     }
 
     private void launchAcknowledgementFragment() {
@@ -3907,9 +3912,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return tempValueStr;
     }
 
-    private void onGestureLanguageUpdate() {
-        Toast.makeText(this, getString(R.string.gesture_launch_msg), Toast.LENGTH_SHORT).show();
-        GestureController.getInstance().onGestureLanguageChange();
-        recreate();
+    private void onGestureLanguageUpdate(String languageType) {
+        runOnUiThread(() -> {
+            Toast.makeText(IrCameraActivity.this, getString(R.string.gesture_launch_msg), Toast.LENGTH_SHORT).show();
+            GestureController.getInstance().onGestureLanguageChange(languageType);
+            recreate();
+        });
     }
 }

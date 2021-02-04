@@ -687,6 +687,7 @@
     <string name="scan_card_msg">Veuillez scanner la carte pour vous inscrire</string>
     <string name="enable_liveness">Activer la vie</string>
     <string name="additional_locale_setting">Langue secondaire</string>
-
+    <string name="add_device_message">Si vous avez déjà ajouté l\'appareil sur le portail SL NO:</string>
+    <string name="language_message">Les langues primaires et secondaires ne peuvent pas être identiques. Veuillez sélectionner une autre langue.</string>
 
 </resources>

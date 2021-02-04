@@ -694,6 +694,7 @@
     <string name="scan_card_msg">Escanee la tarjeta para inscribirse</string>
     <string name="enable_liveness">Habilitar vivacidad</string>
     <string name="additional_locale_setting">Lengua secundaria</string>
-
+    <string name="add_device_message">Si ya ha añadido el dispositivo en el portal SL NO:</string>
+    <string name="language_message">Los idiomas primario y secundario no pueden ser iguales. Seleccione un idioma diferente.</string>
 
 </resources>

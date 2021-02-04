@@ -681,5 +681,7 @@
     <string name="scan_card_msg">कृपया नामांकन के लिए कार्ड को स्कैन करें</string>
     <string name="enable_liveness">सक्षम करें</string>
     <string name="additional_locale_setting"> माध्यमिक भाषा</string>
+    <string name="add_device_message">यदि आपने पहले ही डिवाइस को SL NO पर जोड़ लिया है: </string>
+    <string name="language_message">प्राथमिक और द्वितीयक दोनों भाषाएँ समान नहीं हो सकतीं। कृपया कोई अन्य भाषा चुनें।</string>
 
 </resources>

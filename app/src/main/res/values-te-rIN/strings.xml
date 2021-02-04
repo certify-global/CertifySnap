@@ -679,5 +679,7 @@
     <string name="scan_card_msg">నమోదు చేయడానికి కార్డును స్కాన్ చేయండి</string>
     <string name="enable_liveness">లైవ్‌నెస్‌ను ప్రారంభించండి</string>
     <string name="additional_locale_setting"> ద్వితీయ భాష</string>
+    <string name="add_device_message">మీరు ఇప్పటికే పరికరాన్ని పోర్టల్‌లో చేర్చినట్లయితే SL NO:</string>
+    <string name="language_message">ప్రాథమిక మరియు ద్వితీయ భాషలు రెండూ ఒకేలా ఉండవు. దయచేసి వేరే భాషను ఎంచుకోండి.</string>
 
 </resources>

@@ -167,6 +167,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
+    public void setCallback(boolean callback) {
+        isCallback = callback;
+    }
+
     public void getGestureQuestions(){
         getQuestionsAPI(mContext);
         startGetQuestionsTimer();
@@ -176,7 +180,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
-            if (!AppSettings.getLanguageType().equals("en")) {
+            if (!DeviceSettingsController.getInstance().getLanguageToUpdate().equals("en")) {
                 obj.put("languageConversion", true);
                 obj.put("fromLanguage", "en");
                 obj.put("toLanguage", DeviceSettingsController.getInstance().getLanguageToUpdate());
@@ -895,8 +899,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 GestureController.getInstance().isGestureEnabledAndDeviceConnected());
     }
 
-    public void onGestureLanguageChange() {
-        String languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
+    public void onGestureLanguageChange(String languageType) {
         DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
         setLanguageUpdated(true);
         DeviceSettingsController.getInstance().getSettingsFromDb(DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));

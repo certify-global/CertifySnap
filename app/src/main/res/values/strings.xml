@@ -695,5 +695,7 @@
     <string name="scan_card_msg">Please scan the card to enroll</string>
     <string name="enable_liveness">Enable Liveness</string>
     <string name="additional_locale_setting">Secondary Language</string>
+    <string name="add_device_message">If you have already added the device on the portal SL NO:</string>
+    <string name="language_message">Both Primary and Secondary languages can\'t be same. Please select a different language.</string>
 
 </resources>
