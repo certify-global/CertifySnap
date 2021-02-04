@@ -3101,7 +3101,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 text = AppSettings.getTempResultBarNormal();
             } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
                 float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
-                String tempRead = String.valueOf(tempValue);
+                String tempRead = String.format("%.1f",  tempValue);
                 if (TemperatureController.getInstance().isTemperatureAboveThreshold(tempValue)) {
                     text = AppSettings.getTempResultBarHigh() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
                     TemperatureCallBackUISetup(true, text, tempRead, false, TemperatureController.getInstance().getTemperatureRecordData());
@@ -3436,7 +3436,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 text = AppSettings.getTempResultBarNormal();
             } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
                 float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
-                String tempRead = String.valueOf(tempValue);
+                String tempRead = String.format("%.1f",  tempValue);
                 if (TemperatureController.getInstance().isTemperatureAboveThreshold(tempValue)) {
                     text = AppSettings.getTempResultBarHigh() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
                     TemperatureCallBackUISetup(true, text, tempRead, false, TemperatureController.getInstance().getTemperatureRecordData());
