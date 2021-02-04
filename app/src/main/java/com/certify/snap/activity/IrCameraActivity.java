@@ -1961,7 +1961,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().init(this);
         AccessCardController.getInstance().setCallbackListener(this);
         if (!rfIdEnable) return;
-        if (!faceDetectEnabled) {
+        if (!faceDetectEnabled ||
+                (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue())) {
             isReadyToScan = false;
         }
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
@@ -2891,7 +2892,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void resetRfid() {
         if (rfIdEnable) {
             enableNfc();
-            if (!faceDetectEnabled) {
+            if (!faceDetectEnabled ||
+                    (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue())) {
                 isReadyToScan = false;
             }
             CameraController.getInstance().setCameraOnRfid(false);

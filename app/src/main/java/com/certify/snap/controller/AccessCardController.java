@@ -44,6 +44,7 @@ public class AccessCardController implements AccessCallback {
     int tapCount = 0;
     private AccessCallbackListener listener;
     private boolean isAccessFaceNotMatch = false;
+    private boolean allowAccessValue = true;
 
     public enum AccessControlScanMode {
         ID_ONLY(1),
@@ -675,6 +676,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     private void denyAccess() {
+        allowAccessValue = false;
         if (listener != null) {
             listener.onAccessDenied();
         }
@@ -698,14 +700,15 @@ public class AccessCardController implements AccessCallback {
     }
 
     private boolean getAllowAccessValue (UserExportedData data) {
-        boolean allowAccessValue = true;
-        if (data.exceedsThreshold) {
-            if (mNormalRelayMode && mStopRelayOnHighTemp) {
-                allowAccessValue = false;
-            }
-        } else {
-            if (mReverseRelayMode) {
-                allowAccessValue = false;
+        if (allowAccessValue) {
+            if (data.exceedsThreshold) {
+                if (mNormalRelayMode && mStopRelayOnHighTemp) {
+                    allowAccessValue = false;
+                }
+            } else {
+                if (mReverseRelayMode) {
+                    allowAccessValue = false;
+                }
             }
         }
         return allowAccessValue;
@@ -738,5 +741,6 @@ public class AccessCardController implements AccessCallback {
         mAccessIdDb = "";
         tapCount = 0;
         isAccessFaceNotMatch = false;
+        allowAccessValue = true;
     }
 }
