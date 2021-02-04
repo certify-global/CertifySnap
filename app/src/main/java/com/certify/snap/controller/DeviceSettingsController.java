@@ -474,6 +474,46 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         }
     }
 
+    public void updateDeviceSettingsInDb(DeviceSettingsData deviceSettingsData) {
+        DatabaseController.getInstance().updateDeviceSettingsData(deviceSettingsData);
+    }
+
+    public void updateScanViewSettingsInDb(ScanViewSettings scanViewSettings) {
+        DatabaseController.getInstance().updateScanViewSettings(scanViewSettings);
+    }
+
+    public void updateHomeViewSettingsInDb(HomePageSettings homePageSettings) {
+        DatabaseController.getInstance().updateHomePageSettings(homePageSettings);
+    }
+
+    public void updateConfirmationSettingsInDb(ConfirmationViewSettings confirmationSettings) {
+        DatabaseController.getInstance().updateConfirmationSettings(confirmationSettings);
+    }
+
+    public void updateIdentificationSettingsInDb(IdentificationSettings identificationSettings) {
+        DatabaseController.getInstance().updateIdentificationSettings(identificationSettings);
+    }
+
+    public void updateAudioVisualSettingsInDb(AudioVisualSettings audioVisualSettings) {
+        DatabaseController.getInstance().updateAudioVisualSettings(audioVisualSettings);
+    }
+
+    public void updatePrinterSettingsInDb(PrinterSettings printerSettings) {
+        DatabaseController.getInstance().updatePrinterSettings(printerSettings);
+    }
+
+    public void updateAccessControlSettingsInDb(AccessControlSettings accessControlSettings) {
+        DatabaseController.getInstance().updateAccessControlSettings(accessControlSettings);
+    }
+
+    public void updateGuideSettingsInDb(GuideSettings guideSettings) {
+        DatabaseController.getInstance().updateGuideSettings(guideSettings);
+    }
+
+    public void updateTouchlessSettingsInDb(TouchlessSettings touchlessSettings) {
+        DatabaseController.getInstance().updateTouchlessSettings(touchlessSettings);
+    }
+
     private LanguageData getLanguageData(int value, boolean offlineVal) {
         LanguageData languageData = new LanguageData();
         switch (value) {

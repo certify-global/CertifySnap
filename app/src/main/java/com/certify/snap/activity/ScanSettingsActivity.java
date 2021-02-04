@@ -11,9 +11,13 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.api.response.ScanViewSettings;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class ScanSettingsActivity extends SettingsBaseActivity {
@@ -43,6 +47,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private TextView enableLivenessTv;
     private RadioGroup livenessRg;
     private RadioButton livenessYes, livenessNo;
+    private ScanViewSettings scanViewSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             sp = Util.getSharedPreferences(this);
 
             initView();
+            getScanSettingsFromDb();
 
             final RadioGroup rgCapture = findViewById(R.id.radio_group_capture);
             final RadioButton rbCaptureYes = findViewById(R.id.radio_yes_capture);
@@ -193,6 +199,10 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_NORMAL, et_normal.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_HIGH, et_high.getText().toString().trim());
+                    scanViewSettings.temperatureNormal = et_normal.getText().toString().trim();
+                    scanViewSettings.temperatureHigh = et_high.getText().toString().trim();
+                    DeviceSettingsController.getInstance().updateScanViewSettingsInDb(scanViewSettings);
+
                     Util.showToast(ScanSettingsActivity.this, getString(R.string.save_success));
                     saveScanProximity();
                     saveScanType();
@@ -403,5 +413,12 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         } else if(livenessNo.isChecked()) {
             Util.writeBoolean(sp, GlobalParameters.LivingType, false);
         }
+    }
+
+    private void getScanSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        scanViewSettings = DatabaseController.getInstance().getScanViewSettingsOnId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+
     }
 }
