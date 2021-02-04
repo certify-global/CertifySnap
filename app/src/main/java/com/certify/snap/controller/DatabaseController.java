@@ -10,6 +10,7 @@ import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
 import com.certify.snap.api.response.DeviceSettingsData;
+import com.certify.snap.api.response.GestureQuestionsDb;
 import com.certify.snap.api.response.GuideSettings;
 import com.certify.snap.api.response.HomePageSettings;
 import com.certify.snap.api.response.IdentificationSettings;
@@ -468,6 +469,16 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.deleteAllQuestions();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void insertGestureQuestionList(GestureQuestionsDb gestureQuestionsDb) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertGestureQuestionList(gestureQuestionsDb);
             }
         } catch (SQLiteException e){
             handleDBException(e);

@@ -10,6 +10,7 @@ import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
 import com.certify.snap.api.response.DeviceSettingsData;
+import com.certify.snap.api.response.GestureQuestionsDb;
 import com.certify.snap.api.response.GuideSettings;
 import com.certify.snap.api.response.HomePageSettings;
 import com.certify.snap.api.response.IdentificationSettings;
@@ -55,6 +56,9 @@ public interface DatabaseStore {
 
     @Insert
     void insertGestureQuestions(QuestionDataDb questionData);
+
+    @Insert
+    void insertGestureQuestionList(GestureQuestionsDb gestureQuestionsDb);
 
     @Insert
     void insertLanguages(LanguageData questionData);

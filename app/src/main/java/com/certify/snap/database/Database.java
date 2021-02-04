@@ -11,6 +11,7 @@ import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
 import com.certify.snap.api.response.DeviceSettingsData;
+import com.certify.snap.api.response.GestureQuestionsDb;
 import com.certify.snap.api.response.GuideSettings;
 import com.certify.snap.api.response.HomePageSettings;
 import com.certify.snap.api.response.IdentificationSettings;
@@ -35,7 +36,7 @@ import com.certify.snap.model.RegisteredMembers;
         DeviceKeySettings.class, QuestionDataDb.class, LanguageData.class, DeviceSettingsData.class,
         AccessControlSettings.class, AudioVisualSettings.class, ConfirmationViewSettings.class,
         GuideSettings.class, HomePageSettings.class, IdentificationSettings.class,
-        PrinterSettings.class, ScanViewSettings.class, TouchlessSettings.class}, version = DatabaseController.DB_VERSION, exportSchema = false)
+        PrinterSettings.class, ScanViewSettings.class, TouchlessSettings.class, GestureQuestionsDb.class}, version = DatabaseController.DB_VERSION, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class Database extends RoomDatabase {
     public abstract DatabaseStore databaseStore();
