@@ -18,11 +18,14 @@ import androidx.annotation.Nullable;
 
 import com.certify.callback.FlowListCallback;
 import com.certify.snap.R;
+import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.async.AsyncJSONObjectFlowList;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -45,6 +48,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
     private EditText editTextWaveFooter, editTextMaskEnforce, editGestureExitMsg;
     private String gestureWorkFlow = "";
     private TextInputLayout maskEditLayout, gestureExitLayout;
+    private TouchlessSettings touchlessSettingsDb;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +62,8 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         progressbarCheck();
         waveImageCheck();
         gestureExitCheck();
+
+        getTouchlessSettingsFromDb();
     }
 
     private void initView() {
@@ -129,6 +135,11 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, editTextWaveFooter.getText().toString());
             Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, editTextMaskEnforce.getText().toString());
             Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, editGestureExitMsg.getText().toString());
+
+            touchlessSettingsDb.waveIndicatorInstructions = editTextWaveFooter.getText().toString();
+            touchlessSettingsDb.maskEnforceText = editTextMaskEnforce.getText().toString();
+            touchlessSettingsDb.messageForNegativeOutcome = editGestureExitMsg.getText().toString();
+
             finish();
         });
     }
@@ -309,6 +320,13 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         } catch (Exception e) {
             Log.d(TAG, "onJSONObjectListenerFlowList" + e.getMessage());
         }
+
+    }
+
+    private void getTouchlessSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        touchlessSettingsDb = DatabaseController.getInstance().getTouchlessSettingsOnId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
 
     }
 }

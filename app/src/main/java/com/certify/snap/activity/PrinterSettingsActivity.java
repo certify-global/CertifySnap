@@ -26,6 +26,9 @@ import android.widget.TextView;
 
 import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
+import com.certify.snap.api.response.PrinterSettings;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.printer.usb.PrintExecuteTask;
 import com.certify.snap.printer.usb.util;
 import com.certify.snap.common.AppSettings;
@@ -69,6 +72,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
 
     Typeface rubiklight;
     private SharedPreferences sp;
+    private PrinterSettings printerSettingsDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         initToshibaPrinter();
         printerLabelOptionsCheck();
 
+        getPrinterSettingsFromDb();
         initBluetoothPrinter();
         PrinterController.getInstance().setPrinterListener(this);
     }
@@ -513,6 +518,10 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, editTextWaveYes.getText().toString());
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, editTextWaveNo.getText().toString());
 
+        printerSettingsDb.unidentifiedPrintText = editTextNameLabel.getText().toString();
+        printerSettingsDb.defaultResultPrint = editTextPassName.getText().toString();
+        DeviceSettingsController.getInstance().updatePrinterSettingsInDb(printerSettingsDb);
+
         Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();
     }
@@ -574,5 +583,12 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
     public void onPrintStatus(String status, int code) {
         Log.d(TAG, "Print Status " + status);
         PrinterController.getInstance().setPrinting(false);
+    }
+
+    private void getPrinterSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        printerSettingsDb = DatabaseController.getInstance().getPrinterSettingsOnId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+
     }
 }

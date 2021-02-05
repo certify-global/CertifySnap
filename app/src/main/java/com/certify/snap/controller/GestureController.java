@@ -209,6 +209,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
             if (response.responseCode != null && response.responseCode.equals("1")) {
                 List<QuestionData> questionList = response.questionList;
+                List<QuestionDataDb> questionDataDbList = new ArrayList<>();
                 if (questionList.size() > 0) {
                     clearQuestionAnswerMap();
                     DatabaseController.getInstance().deleteQuestionsFromDb();
@@ -216,13 +217,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         QuestionData questionData = questionList.get(i);
                         questionAnswerMap.put(questionData, "NA");
                         DatabaseController.getInstance().insertQuestionsToDB(getDbQuestionData(questionData, i));
-                        GestureQuestionsDb gestureQuestionsDb=new GestureQuestionsDb();
-                        gestureQuestionsDb.primaryId=DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType());
-                        List<QuestionDataDb> questionDataDbs=new ArrayList<>();
-                        questionDataDbs.add(getDbQuestionData(questionData, i));
-                        gestureQuestionsDb.questionsDbList=questionDataDbs;
-                        DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);
+                        questionDataDbList.add(getDbQuestionData(questionData, i));
                     }
+                    GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
+                    gestureQuestionsDb.primaryId = DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType());
+                    gestureQuestionsDb.questionsDbList = questionDataDbList;
+                    DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);
                 }
                 Log.d(TAG, "Gesture Questions list updated");
             } else {

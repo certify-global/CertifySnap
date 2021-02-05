@@ -14,8 +14,12 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.certify.snap.R;
+import com.certify.snap.api.response.GuideSettings;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 
 public class GuideSettingsActivity extends SettingsBaseActivity {
     private static String  TAG = GuideSettingsActivity.class.getSimpleName();
@@ -23,12 +27,15 @@ public class GuideSettingsActivity extends SettingsBaseActivity {
     SharedPreferences sp;
     EditText edittext_text1,edittext_text3,edittext_text2,edittext_text4;
     TextView btn_save,titles,guide_screen;
+    private GuideSettings guideSettingsDb;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide_settings);
+
+        getGuideSettingsFromDb();
         try {
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
@@ -76,6 +83,13 @@ public class GuideSettingsActivity extends SettingsBaseActivity {
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT3, edittext_text3.getText().toString());
                     if (!edittext_text4.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT4, edittext_text4.getText().toString());
+
+                    guideSettingsDb.message1 = edittext_text1.getText().toString();
+                    guideSettingsDb.message2 = edittext_text2.getText().toString();
+                    guideSettingsDb.message3 = edittext_text3.getText().toString();
+                    guideSettingsDb.message4 = edittext_text4.getText().toString();
+                    DeviceSettingsController.getInstance().updateGuideSettingsInDb(guideSettingsDb);
+
                     startActivity(new Intent(GuideSettingsActivity.this, SettingsActivity.class));
                     Util.showToast(GuideSettingsActivity.this, getString(R.string.save_success));
                     finish();
@@ -84,5 +98,12 @@ public class GuideSettingsActivity extends SettingsBaseActivity {
         }catch (Exception e){
             Log.e(TAG,e.toString());
         }
+    }
+
+    private void getGuideSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        guideSettingsDb = DatabaseController.getInstance().getGuideSettingsOnId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+
     }
 }
