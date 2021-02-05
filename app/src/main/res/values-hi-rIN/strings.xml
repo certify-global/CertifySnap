@@ -223,7 +223,7 @@
     <string name="ssid">एसएसआईडी:</string>
     <string name="device_reader">डिवाइस रीडर:</string>
     <string name="internet_connectivity">इंटरनेट कनेक्टिविटी:</string>
-    <string name="cloud_connectivity">CERTIFY क्लाउड कनेक्टिविटी:</string>
+    <string name="cloud_connectivity">सर्टिफाई क्लाउड कनेक्टिविटी:</string>
     <string name="wifi">वाई - फाई</string>
     <string name="ethernet">ईथरनेट</string>
     <string name="mobile">सेलुलर</string>
@@ -523,7 +523,7 @@
 
     <string name="failed_member">विफल सदस्य:</string>
     <string name="member">सदस्य:</string>
-    <string name="certify_snapXt">CERTIFY SnapXT</string>
+    <string name="certify_snapXt">सर्टिफाई स्न्यापएक्सटी</string>
     <string name="tv_record">अभिलेख</string>
     <string name="member_delete_msg">क्या आप सदस्य को हटाना चाहते हैं?</string>
     <string name="pls_input_name">कृपया इनपुट नाम या उपयोगकर्ता आईडी</string>
@@ -661,7 +661,7 @@
     <string name="gesture_msg">अपनी हथेली को स्क्रीन के उस तरफ रखें जहां उत्तर देने के लिए संकेत मिलता है। यदि आपको शुरू करना है, तो दोनों हाथों को पकड़ें।</string>
     <string name="mask_enforce_msg">जारी रखने के लिए कृपया मास्क और वेव लेफ्ट हैंड पहनें या जारी रखने के लिए वेव राइट हैंड।</string>
     <string name="gesture_exit_msg">कृपया व्यवस्थापक से संपर्क करें</string>
-    <string name="input_ip_address">कृपया एक मान्य Ip पता दर्ज करें</string>
+    <string name="input_ip_address">कृपया एक मान्य आईपी पता दर्ज करें</string>
     <string name="input_mac_address">कृपया एक मान्य मैक पता दर्ज करें</string>
     <string name="app_restart">ऐप फिर से शुरू होगा</string>
     <string name="update_setting_app_restart">समायोजन को अपडेट करते हुए, ऐप पुनः आरंभ होगा</string>
@@ -681,7 +681,7 @@
     <string name="scan_card_msg">कृपया नामांकन के लिए कार्ड को स्कैन करें</string>
     <string name="enable_liveness">सक्षम करें</string>
     <string name="additional_locale_setting"> माध्यमिक भाषा</string>
-    <string name="add_device_message">यदि आपने पहले ही डिवाइस को SL NO पर जोड़ लिया है: </string>
+    <string name="add_device_message">यदि आपने पहले ही डिवाइस को एसएल संख्या पर जोड़ लिया है: </string>
     <string name="language_message">प्राथमिक और द्वितीयक दोनों भाषाएँ समान नहीं हो सकतीं। कृपया कोई अन्य भाषा चुनें।</string>
 
 </resources>

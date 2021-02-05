@@ -68,7 +68,7 @@
     <string name="not_activated"><u> సక్రియం చేయబడలేదు</u>  </string>
     <string name="activate"><u> సక్రియం చేయండి</u>  </string>
     <string name="endpoint">ఎండ్ పాయింట్ పేరు</string>
-    <string name="app_version">సంస్కరణ: Telugu</string>
+    <string name="app_version">సంస్కరణ:</string>
     <string name="tv_thermal_setting">హోమ్ వ్యూ సెట్టింగ్‌లు</string>
     <string name="welcome_thermal">హోమ్ స్క్రీన్ టెక్స్ట్</string>
     <string name="enter_title">పెద్ద వచనాన్ని నమోదు చేయండి</string>
@@ -172,9 +172,9 @@
     <string name="face_only">ముఖం మాత్రమే</string>
     <string name="id_face">ఐడీ ఫేస్</string>
     <string name="id_or_face">ఐడీ లేదా ముఖం</string>
-    <string name="bit_26">26 బిట్</string>
-    <string name="bit_34">34 బిట్</string>
-    <string name="bit_48">48 బిట్</string>
+    <string name="bit_26">౨౬ బిట్</string>
+    <string name="bit_34">౩౪ బిట్</string>
+    <string name="bit_48">౪౮ బిట్</string>
 
 
 
@@ -183,7 +183,7 @@
     <string name="first_name">మొదటి పేరు</string>
     <string name="last_name">చివరి పేరు</string>
     <string name="email_address">ఇమెయిల్ చిరునామా</string>
-    <string name="phone_number">ఫోను నంబరు</string>
+    <string name="phone_number">ఫోను సంఖ్య</string>
     <string name="member_id">సభ్యుడు ఐడి</string>
     <string name="access_id">ఐడిని యాక్సెస్ చేయండి</string>
     <string name="display">"నిర్ధారణ తెరపై చిత్రం మరియు పేరును ప్రదర్శించు"</string>
@@ -460,7 +460,7 @@
     <string name="msg_OpenPorterror">పోర్ట్ లోపం తెరవండి</string>
     <string name="msg_WritePortError">పోర్ట్ లోపం రాయండి</string>
     <string name="msg_RetryError">మళ్లీ ప్రయత్నించండి</string>
-    <string name="msg_GetStatuscallError">GetStatus కాల్ లోపం</string>
+    <string name="msg_GetStatuscallError">్థితి పొందండి కాల్ లోపం</string>
     <string name="msg_GetStatus">స్థితి పొందండి</string>
     <string name="msg_result">ఫలితం</string>
     <string name="error">లోపం</string>
@@ -532,7 +532,7 @@
     <string name="popup_register">రిజిస్టర్</string>
     <string name="capture">క్యాప్చర్</string>
     <string name="use_photo">ఫోటో ఉపయోగించండి</string>
-    <string name="update_dialog">UPDATE</string>
+    <string name="update_dialog">అప్డేట్</string>
     <string name="user_id">వినియోగదారుని గుర్తింపు</string>
     <string name="member_text">సభ్యుడు</string>
 
@@ -574,7 +574,7 @@
     <string name="update_database">డేటాబేస్ను నవీకరించండి</string>
     <string name="member_register">సభ్యుల నమోదు</string>
     <string name="parameter_settings">పరామితి సెట్టింగులు</string>
-    <string name="led_settings">LED సెట్టింగ్</string>
+    <string name="led_settings">యల్ఇడి సెట్టింగులు</string>
     <string name="activate_card">కార్డును సక్రియం చేయండి</string>
 
     <string name="default_rect">డిఫాల్ట్ రెక్ట్: దీర్ఘచతురస్రం (23,32-26,38)</string>
@@ -679,7 +679,7 @@
     <string name="scan_card_msg">నమోదు చేయడానికి కార్డును స్కాన్ చేయండి</string>
     <string name="enable_liveness">లైవ్‌నెస్‌ను ప్రారంభించండి</string>
     <string name="additional_locale_setting"> ద్వితీయ భాష</string>
-    <string name="add_device_message">మీరు ఇప్పటికే పరికరాన్ని పోర్టల్‌లో చేర్చినట్లయితే SL NO:</string>
+    <string name="add_device_message">మీరు ఇప్పటికే పరికరాన్ని పోర్టల్‌లో చేర్చినట్లయితే యెస్యేల్ సంఖ్య:</string>
     <string name="language_message">ప్రాథమిక మరియు ద్వితీయ భాషలు రెండూ ఒకేలా ఉండవు. దయచేసి వేరే భాషను ఎంచుకోండి.</string>
 
 </resources>

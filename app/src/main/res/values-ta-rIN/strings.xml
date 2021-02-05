@@ -175,9 +175,9 @@
     <string name="face_only">முகம் மட்டும்</string>
     <string name="id_face">ஐடி முகம்</string>
     <string name="id_or_face">ஐடி அல்லது முகம்</string>
-    <string name="bit_26">26 பிட்</string>
-    <string name="bit_34">34 பிட்</string>
-    <string name="bit_48">48 பிட்</string>
+    <string name="bit_26">௨௬ பிட்</string>
+    <string name="bit_34">௩௪ பிட்</string>
+    <string name="bit_48">௪௮ பிட்</string>
 
 
 
@@ -318,7 +318,7 @@
         <item>இயற்கை</item>
     </string-array>
     <string-array name="orientation_values">
-        <item>PORTRAIT</item>
+        <item>போர்ட்ரைட்</item>
         <item>லேண்ட்ஸ்கேப்</item>
     </string-array>
 
@@ -482,7 +482,7 @@
     <string name="msg_PortCloseSuccess">போர்ட் மூடு வெற்றி</string>
     <string name="statusReception">OnStatus வரவேற்பு</string>
     <string name="dataName">பெயர் தரவு</string>
-    <string name="bottom_text">தேர்வு செய்ய உங்கள் கையால் ஒரு ஒளியைத் தடுக்கவும் \n\nதவறு செய்திருக்கிறீர்களா? lights n திரும்பிச் செல்ல இரண்டு விளக்குகளையும் தடு</string>
+    <string name="bottom_text">தேர்வு செய்ய உங்கள் கையால் ஒரு ஒளியைத் தடுக்கவும் \n\nதவறு செய்திருக்கிறீர்களா? திரும்பிச் செல்ல இரண்டு விளக்குகளையும் தடு</string>
     <string name="touchless_interaction_setting">தொடு இல்லாத தொடர்பு</string>
     <string name="touchless_setting">டச்லெஸ் இன்டராக்ஷன் அமைப்புகள்</string>
     <string name="enable_acknowledge">ஒப்புதல் திரையை இயக்கு</string>
@@ -531,9 +531,9 @@
     <string name="unique_id">தனிப்பட்ட ஐடி</string>
     <string name="update">புதுப்பிப்பு</string>
     <string name="device_id">வடிவமைக்கப்பட்ட ஐடி</string>
-    <string name="uuid">యుయుఐడీ</string>
+    <string name="uuid">யுயுஐடி</string>
     <string name="popup_register">பதிவு</string>
-    <string name="capture">CAPTURE</string>
+    <string name="capture">பிடிக்கவும்</string>
     <string name="use_photo">புகைப்படத்தைப் பயன்படுத்தவும்</string>
     <string name="update_dialog">புதுப்பிப்பு</string>
     <string name="user_id">பயனர்</string>
@@ -682,7 +682,7 @@
     <string name="scan_card_msg">பதிவு செய்ய கார்டை ஸ்கேன் செய்யுங்கள்</string>
     <string name="enable_liveness">உயிரோட்டத்தை இயக்கு</string>
     <string name="additional_locale_setting">இரண்டாம் மொழி</string>
-    <string name="add_device_message">SL NO: போர்ட்டலில் சாதனத்தை ஏற்கனவே சேர்த்திருந்தால்:</string>
+    <string name="add_device_message">எஸ்எல் எண்: போர்ட்டலில் சாதனத்தை ஏற்கனவே சேர்த்திருந்தால்:</string>
     <string name="language_message">முதன்மை மற்றும் இரண்டாம் நிலை மொழிகள் ஒரே மாதிரியாக இருக்க முடியாது. வேறு மொழியைத் தேர்ந்தெடுக்கவும்.</string>
 
 </resources>
