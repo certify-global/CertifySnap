@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import com.certify.callback.AddDeviceCallback;
 import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectAddDevice;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -28,7 +27,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONObject;
 
 
-public class RegisterDeviceActivity extends SettingBaseActivity implements AddDeviceCallback {
+public class RegisterDeviceActivity extends SettingsBaseActivity implements AddDeviceCallback {
     private static String TAG = "RegisterDeviceActivity -> ";
 
     EditText edittext_device_name,edittext_sno,edittext_imei;
@@ -46,7 +45,7 @@ public class RegisterDeviceActivity extends SettingBaseActivity implements AddDe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
-            setContentView(R.layout.activity_register_admin);
+            setContentView(R.layout.activity_register_device);
             tv_version = findViewById(R.id.tv_version);
             tv_serial_no = findViewById(R.id.tv_serial_no);
             textview_name = findViewById(R.id.textview_name);
@@ -162,7 +161,7 @@ public class RegisterDeviceActivity extends SettingBaseActivity implements AddDe
                         public void run() {
                             finish();
                           //  Util.switchRgbOrIrActivity(RegisterDeviceActivity.this,true);
-                            startActivity(new Intent(RegisterDeviceActivity.this,GuideActivity.class));
+                            startActivity(new Intent(RegisterDeviceActivity.this, HomeActivity.class));
 
                         }
                     }, 3 * 1000);

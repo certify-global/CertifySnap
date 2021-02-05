@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
-import com.certify.snap.model.OfflineVerifyMembers;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,7 +68,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
             if(!TextUtils.isEmpty(mlist.get(position).getTemperature())){
                 float temperature = Float.valueOf(mlist.get(position).getTemperature());
                 if(temperature > 100.4) {
-                    holder.temperature.setTextColor( mcontext.getResources().getColor(R.color.red));
+                    holder.temperature.setTextColor( mcontext.getResources().getColor(R.color.colorRed));
                 }else {
                     holder.temperature.setTextColor(mcontext.getResources().getColor(R.color.green));
                 }

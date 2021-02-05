@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@color/colorWhite"
+    android:orientation="horizontal"
+    tools:context=".activity.TouchlessSettingsActivity">
+
+
+    <TextView
+        android:id="@+id/covid_questions_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_40"
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginRight="@dimen/size_10"
+        android:textColor="@color/black"
+        android:textSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/voice_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/mic_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/mic_nobackground_1" />
+
+            <TextView
+                android:id="@+id/listening_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="45dp"
+                android:text="@string/listening"
+                android:textColor="@color/black"
+                android:textSize="25dp" />
+
+            <com.certify.snap.view.TimerAnimationView
+                android:id="@+id/timer_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                app:circleColor="@color/colorGray" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/voice_yes_button"
+                android:layout_width="150dp"
+                android:layout_height="70dp"
+                android:background="@color/colorGray"
+                android:text="@string/wave_yes"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/voice_no_button"
+                android:layout_width="150dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="80dp"
+                android:background="@color/colorGray"
+                android:text="@string/wave_no"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/two_questions_layout"
+        layout="@layout/q_two_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_05"
+        android:layout_marginRight="@dimen/size_05"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/three_questions_layout"
+        layout="@layout/q_three_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_05"
+        android:layout_marginRight="@dimen/size_05"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/four_questions_layout"
+        layout="@layout/q_four_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_05"
+        android:layout_marginRight="@dimen/size_05"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/five_questions_layout"
+        layout="@layout/q_five_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_05"
+        android:layout_marginRight="@dimen/size_05"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/six_questions_layout"
+        layout="@layout/q_six_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_05"
+        android:layout_marginRight="@dimen/size_05"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <include
+        android:id="@+id/seven_questions_layout"
+        layout="@layout/q_seven_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_05"
+        android:layout_marginRight="@dimen/size_05"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/hand_yes_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/wave_no"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/size_30"
+        android:layout_marginRight="@dimen/size_30"
+        android:layout_marginBottom="@dimen/size_30"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/hand_no_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_30"
+        android:layout_marginBottom="28dp"
+        android:src="@drawable/icon_no"
+        android:text="@string/wave_yes"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/size_30"
+        app:layout_constraintBottom_toTopOf="@+id/title_text_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/hand_no_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/wave_no_icon"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/hand_yes_text"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/hand_yes_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/wave_yes_icon"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/hand_no_text"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/size_30"
+        android:layout_marginLeft="@dimen/size_10"
+        android:layout_marginRight="@dimen/size_10"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -70,11 +70,7 @@ import com.certify.snap.common.M1CardUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
-import com.certify.snap.database.Database;
-import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.faceserver.FaceServer;
-import com.certify.snap.model.GuestMembers;
-import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.HotImageCallback;
@@ -346,7 +342,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 if (etPassword.getText().toString().equals(sp.getString("device_password", "123456"))) {
-                                    Intent loginIt = new Intent(RgbCameraActivity.this, SettingActivity.class);
+                                    Intent loginIt = new Intent(RgbCameraActivity.this, SettingsActivity.class);
                                     startActivity(loginIt);
                                     finish();
                                 } else {
@@ -627,7 +623,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    changeVerifyBackground(R.color.transparency, true);
+                                    changeVerifyBackground(R.color.colorTransparency, true);
                                     img_telpo.setVisibility(View.GONE);
                                     logo.setVisibility(View.GONE);
                                     showAnimation();
@@ -643,7 +639,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
                                                     if(result) malertBeep.playBeepSoundAndVibrate();
                                                     img_temperature.setVisibility(View.VISIBLE);
                                                     img_temperature.setBackgroundResource(result?R.mipmap.temp_red:R.mipmap.temp_green);
-                                                    tv_message.setTextColor(getResources().getColor(R.color.dark_text_color));
+                                                    tv_message.setTextColor(getResources().getColor(R.color.colorDark));
                                                    // tv_message.setTextColor(result? getResources().getColor(R.color.red) : getResources().getColor(R.color.green));
                                                     tv_message.setText(temperature);
                                                 }
@@ -1282,7 +1278,7 @@ public class RgbCameraActivity extends Activity implements ViewTreeObserver.OnGl
             switch (msg.what){
                 case HIDE_VERIFY_UI:
                     rgbCameraActivity.stopAnimation();
-                    rgbCameraActivity.changeVerifyBackground(R.color.transparency,false);
+                    rgbCameraActivity.changeVerifyBackground(R.color.colorTransparency,false);
                     break;
                 case CARD_ID_ERROR:
 //                    rgbCameraActivity.mBeepManager2.playBeepSoundAndVibrate();

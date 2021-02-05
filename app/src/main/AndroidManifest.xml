@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -44,20 +44,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:appComponentFactory">
-        <activity android:name=".activity.UsbPrinterSettingsActivity" />
+        <activity android:name=".activity.GuideSettingsActivity"></activity>
+        <activity android:name=".activity.PrinterUsbSettingsActivity" />
         <activity android:name=".activity.TemperatureCalibrationGuideActivity" />
-        <activity android:name=".activity.PrinterViewSettingsActivity" />
-        <activity android:name=".activity.NetPrinterActivity" />
-        <activity android:name=".activity.BluetoothPrinterActivity" />
         <activity android:name=".activity.PrinterSettingsActivity" />
+        <activity android:name=".activity.PrinterWifiSettingsActivity" />
+        <activity android:name=".activity.PrinterBTSettingsActivity" />
+        <activity android:name=".activity.PrinterWifiBTSettingsActivity" />
         <activity android:name=".activity.SelectDeviceActivity" />
-        <activity android:name=".activity.AudioVisualActivity" />
+        <activity android:name=".activity.AudioVisualSettingsActivity" />
         <activity
-            android:name=".activity.NFCCardActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.RecordActivity"
+            android:name=".activity.OfflineRecordsActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
@@ -70,25 +67,19 @@
             android:name=".activity.ProIrCameraActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activity.ParameterActivity"
+            android:name=".activity.SettingsActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activity.SettingActivity"
+            android:name=".activity.HomeSettingsActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activity.ThermalSetting"
+            android:name=".activity.ConfirmationSettingsActivity"
             android:launchMode="singleTask" />
         <activity
-            android:name=".activity.ConfirmationScreenActivity"
-            android:launchMode="singleTask" />
-        <activity
-            android:name=".activity.ConfirmationViewSetting"
-            android:launchMode="singleTask" />
-        <activity
-            android:name=".activity.ScanViewActivity"
+            android:name=".activity.ScanSettingsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.TemperatureActivity"
+            android:name=".activity.TemperatureSettingsActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.TemperatureCalibrationActivity"
@@ -97,24 +88,18 @@
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.GuideViewSetting"
+            android:name=".activity.IdentificationSettingsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.IdentificationSettingActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.AccessControlActivity"
+            android:name=".activity.AccessControlSettingsActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.DeviceSettingsActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.InitializationActivity"
-            android:launchMode="singleTask" />
-        <activity
-            android:name=".activity.ManagementActivity"
+            android:name=".activity.MemberManagementActivity"
             android:launchMode="singleTop" />
-        <activity android:name=".activity.GuideActivity">
+        <activity android:name=".activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -137,12 +122,10 @@
             android:name=".activity.RegisterSuccessActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.GestureActivity"
+            android:name=".activity.TouchlessSettingsActivity"
             android:screenOrientation="portrait" />
 
-
         <service android:name=".service.GuideService" />
-        <service android:name=".service.UpdateService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

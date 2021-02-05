@@ -2,7 +2,7 @@
 <resources>
 
     <declare-styleable name="TimerView">
-        <attr name="circleColor" format="color"/>
+        <attr name="circleColor" format="color" />
     </declare-styleable>
 
 </resources>

@@ -55,11 +55,32 @@ public class AppSettings {
     private static String tempResultBarHigh = "";
     private static boolean qrCodeEnabled = false;
     private static boolean rfidEnabled = false;
-    private static boolean accessLogEnabled = false;
     private static boolean gestureProgressEnabled = false;
     private static String gestureMessage = "";
     private static String gestureWorkFlow = "";
     private static int scanType = 1;
+    private static boolean enableTempScan = true;
+    private static boolean logOfflineData = false;
+    private static boolean printLabelFace = false;
+    private static boolean printLabelName = false;
+    private static boolean printLabelUnidentifiedName = false;
+    private static boolean printLabelNormalTemperature = false;
+    private static boolean printLabelHighTemperature = false;
+    private static boolean printLabelWaveAnswers = false;
+    private static String editTextNameLabel = "";
+    private static boolean maskEnforced = false;
+    private static String maskEnforceMessage = "";
+    private static boolean printLabelQRAnswers = false;
+    private static String editTextPrintQRAnswers = "";
+    private static String editTextPrintPassName = "";
+    private static String editTextPrintWaveYes = "";
+    private static String editTextPrintWaveNo = "";
+    private static boolean gestureExitOnNegativeOp = false;
+    private static String gestureExitConfirmText = "";
+    private static int accessControlLogMode = Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE;
+    private static int accessControlScanMode = Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE;
+    private static String memberSyncGroupId = "0";
+    private static boolean memberGroupSyncEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -70,15 +91,15 @@ public class AppSettings {
 
     public void getSettingsFromSharedPref(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN");
+        thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, context.getString(R.string.thermal_scan));
         thermalScanSubTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, "");
-        livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, true);
+        livenessDetect = sharedPreferences.getBoolean(GlobalParameters.LivingType, false);
         imageIcon = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         captureTemperature = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_TEMPERATURE, true);
         allowLow = sharedPreferences.getBoolean(GlobalParameters.ALLOW_ALL, false);
         tempTestLow = sharedPreferences.getString(GlobalParameters.TEMP_TEST_LOW, "93.2");
         fToC = sharedPreferences.getString(GlobalParameters.F_TO_C, "F");
-        temperatureThreshold = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "99");
+        temperatureThreshold = sharedPreferences.getString(GlobalParameters.TEMP_TEST, "100.4");
         guideScreen = sharedPreferences.getBoolean(GlobalParameters.GUIDE_SCREEN, true);
         guideText1 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, context.getString(R.string.text_value1));
         guideText2 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, context.getString(R.string.text_value2));
@@ -112,16 +133,37 @@ public class AppSettings {
         printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
         acknowledgementScreen = sharedPreferences.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
         temperatureResultBar = sharedPreferences.getBoolean(GlobalParameters.RESULT_BAR, true);
-        tempResultBarNormal = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL, StringConstants.TEMPERATURE_NORMAL);
-        tempResultBarHigh = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH, StringConstants.TEMPERATURE_HIGH);
+        tempResultBarNormal = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL, context.getString(R.string.temperature_normal_msg));
+        tempResultBarHigh = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH, context.getString(R.string.temperature_high_msg));
         qrCodeEnabled = (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false));
         rfidEnabled = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
-        accessLogEnabled = sharedPreferences.getBoolean(GlobalParameters.ACCESS_LOGGING, false);
         gestureProgressEnabled = sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR, false);
-        gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, StringConstants.GESTURE_MESSAGE);
+        gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, context.getString(R.string.gesture_msg));
         gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
         scanType = sharedPreferences.getInt(GlobalParameters.ScanType,1);
+        enableTempScan = sharedPreferences.getBoolean(GlobalParameters.EnableTempScan, true);
+        logOfflineData = sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false);
+        printLabelFace = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_FACE, false);
+        printLabelName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NAME, false);
+        printLabelNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);
+        printLabelHighTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
+        printLabelWaveAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
+        printLabelUnidentifiedName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false);
+        editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
+        maskEnforced = sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT, false);
+        maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, context.getString(R.string.mask_enforce_msg));
+        printLabelQRAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false);
+        editTextPrintQRAnswers = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS,"XXXX");
+        editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,context.getString(R.string.pass));
+        editTextPrintWaveYes = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER,"1");
+        editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER,"0");
+        gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
+        gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, context.getString(R.string.gesture_exit_msg));
+        accessControlLogMode = sharedPreferences.getInt(GlobalParameters.AccessControlLogMode,Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE);
+        accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode,Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
+        memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,"0");
+        memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC,false);
     }
 
     public static String getThermalScanTitle() {
@@ -313,7 +355,7 @@ public class AppSettings {
     }
 
     public static boolean isAccessLogEnabled() {
-        return accessLogEnabled;
+        return (accessControlLogMode != 0);
     }
 
     public static boolean isGestureProgressEnabled() {
@@ -330,5 +372,94 @@ public class AppSettings {
 
     public static int getScanType() {
         return scanType;
+    }
+
+    public static boolean isTemperatureScanEnabled() {
+        return enableTempScan;
+    }
+
+    public static boolean isLogOfflineDataEnabled() {
+        return logOfflineData;
+    }
+
+    public static boolean isPrintLabelFace() {
+        return printLabelFace;
+    }
+
+    public static boolean isPrintLabelName() {
+        return printLabelName;
+    }
+
+    public static boolean isPrintLabelNormalTemperature() {
+        return printLabelNormalTemperature;
+    }
+
+    public static boolean isPrintLabelHighTemperature() {
+        return printLabelHighTemperature;
+    }
+
+    public static boolean isPrintLabelWaveAnswers() {
+        return printLabelWaveAnswers;
+    }
+
+    public static String getEditTextNameLabel() {
+        return editTextNameLabel;
+    }
+
+    public static boolean isPrintLabelUnidentifiedName() {
+        return printLabelUnidentifiedName;
+    }
+
+    public static boolean isMaskEnforced() {
+        return maskEnforced;
+    }
+
+    public static String getMaskEnforceMessage() {
+        return maskEnforceMessage;
+    }
+
+
+    public static boolean isPrintLabelQRAnswers() {
+        return printLabelQRAnswers;
+    }
+
+    public static String getEditTextPrintQRAnswers() {
+        return editTextPrintQRAnswers;
+    }
+
+    public static String getEditTextPrintPassName() {
+        return editTextPrintPassName;
+    }
+
+    public static String getEditTextPrintWaveYes() {
+        return editTextPrintWaveYes;
+    }
+
+    public static String getEditTextPrintWaveNo() {
+        return editTextPrintWaveNo;
+    }
+
+    public static boolean isGestureExitOnNegativeOp() {
+        return gestureExitOnNegativeOp;
+    }
+
+    public static String getGestureExitConfirmText() {
+        return gestureExitConfirmText;
+    }
+
+    public static int getAccessControlLogMode() {
+        return accessControlLogMode;
+    }
+
+    public static int getAccessControlScanMode() {
+        return accessControlScanMode;
+    }
+
+    public static String getMemberSyncGroupId() {
+        return memberSyncGroupId;
+    }
+
+    public static boolean isMemberGroupSyncEnabled() {
+        return memberGroupSyncEnabled;
     }
 }

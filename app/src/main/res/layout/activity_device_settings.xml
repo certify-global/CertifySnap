@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/bg_green"
+            android:background="@color/colorBgGreen"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -54,7 +54,7 @@
             android:id="@+id/setting_activate"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="@dimen/margin_5">
+            android:layout_marginTop="@dimen/size_05">
 
             <TextView
                 android:id="@+id/activate_tv_device"
@@ -86,12 +86,12 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/not_activated"
-                android:textColor="@color/gray"
+                android:textColor="@color/colorGray"
                 android:textSize="20sp" />
 
             <Button
@@ -118,22 +118,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@color/bg_blue"
+                android:background="@color/colorBgBlue"
                 android:padding="10dp"
                 android:text="@string/activate"
-                android:textColor="@color/white"
+                android:textColor="@color/colorWhite"
                 android:textSize="20sp" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/protocol_text"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18"
+                    android:textSize="@dimen/text_size_18"
                     android:visibility="gone" />
 
                 <EditText
@@ -176,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/hostname"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18"
+                    android:textSize="@dimen/text_size_18"
                     android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
@@ -184,12 +184,12 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -210,18 +210,18 @@
                 android:layout_weight="1"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/device_name"
-                android:padding="@dimen/margin_5" />
+                android:padding="@dimen/size_05" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -241,21 +241,21 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@drawable/edittextbackground"
-                android:hint="@string/acces_password"
+                android:hint="@string/access_password"
                 android:inputType="numberPassword"
                 android:maxLength="20"
-                android:padding="@dimen/margin_5" />
+                android:padding="@dimen/size_05" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -273,48 +273,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Local"
+                android:text="@string/local"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:id="@+id/pro_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/pro_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Enable Pro Settings"
+                android:text="@string/enable_pro_setting"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
             <RadioGroup
                 android:id="@+id/radio_group_pro_settings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
                 android:orientation="horizontal">
 
                 <RadioButton
                     android:id="@+id/radio_yes_pro_settings"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_30"
+                    android:layout_marginEnd="@dimen/size_30"
                     android:text="@string/living_type_1"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_14"
+                    android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
                 <RadioButton
@@ -323,7 +323,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/living_type_0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_14"
+                    android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
             </RadioGroup>
@@ -334,7 +334,7 @@
             android:id="@+id/pro_settings_border"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -346,7 +346,7 @@
                 android:id="@+id/navigation_bar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_10"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -356,24 +356,24 @@
                     android:layout_height="wrap_content"
                     android:text="@string/NavigationBar"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/navigation_bar_radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/navigation_bar_radio_enable"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -382,7 +382,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -393,7 +393,7 @@
                 android:id="@+id/led_switch_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_10"
+                android:layout_margin="@dimen/size_10"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -403,24 +403,24 @@
                     android:layout_height="wrap_content"
                     android:text="@string/led_switch"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/radio_group_led"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_led_on"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -429,7 +429,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -441,30 +441,30 @@
             android:id="@+id/navigation_bar_border"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/led_brightness_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="LED Brightness:"
+                android:text="@string/led_brightness"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
             <SeekBar
                 android:id="@+id/seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_10"
-                android:layout_marginTop="@dimen/margin_10"
-                android:layout_marginRight="@dimen/margin_10"
-                android:layout_marginBottom="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/size_10"
+                android:layout_marginTop="@dimen/size_10"
+                android:layout_marginRight="@dimen/size_10"
+                android:layout_marginBottom="@dimen/size_05"
                 android:max="255"
                 android:progress="30" />
         </LinearLayout>
@@ -472,7 +472,58 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
+
+        <LinearLayout
+            android:id="@+id/locale_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_10"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/locale_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/locale_setting"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_18" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_locale_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_english_locale_settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_30"
+                    android:text="@string/english"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/radio_spanish_locale_settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/spanish"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:id="@+id/local_server_parent_layout"
@@ -485,33 +536,33 @@
                 android:id="@+id/local_server_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_10"
+                android:layout_margin="@dimen/size_10"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/local_server_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Enable Local Server:"
+                    android:text="@string/enable_local_server"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_18" />
+                    android:textSize="@dimen/text_size_18" />
 
                 <RadioGroup
                     android:id="@+id/local_server_radio_group"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/radio_yes_server_setting"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_30"
+                        android:layout_marginEnd="@dimen/size_30"
                         android:text="@string/living_type_1"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                     <RadioButton
@@ -520,7 +571,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/living_type_0"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_14"
+                        android:textSize="@dimen/text_size_14"
                         android:theme="@style/MyCheckBox" />
 
                 </RadioGroup>
@@ -535,17 +586,17 @@
                         android:id="@+id/tv_server_ip"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_5"
+                        android:layout_marginTop="@dimen/size_05"
                         android:text="@string/text_ip_address"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/font_18" />
+                        android:textSize="@dimen/text_size_18" />
 
                     <ImageView
                         android:id="@+id/iv_clipBoard"
                         android:layout_width="wrap_content"
-                        android:layout_height="@dimen/margin_20"
+                        android:layout_height="@dimen/size_20"
                         android:layout_alignParentRight="true"
-                        android:layout_marginRight="@dimen/margin_5"
+                        android:layout_marginRight="@dimen/size_05"
                         android:src="@mipmap/record" />
                 </RelativeLayout>
             </LinearLayout>
@@ -553,7 +604,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/blue" />
+                android:background="@color/colorBlue" />
 
         </LinearLayout>
 
@@ -561,7 +612,7 @@
             android:id="@+id/data_management_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="vertical">
 
             <TextView
@@ -576,27 +627,27 @@
                 android:id="@+id/sync_online_members_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginTop="@dimen/size_05"
                 android:text="@string/do_not_sync"
                 android:textColor="@color/black"
-                android:textSize="@dimen/font_18" />
+                android:textSize="@dimen/text_size_18" />
 
             <RadioGroup
                 android:id="@+id/sync_online_members_radio_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_20"
-                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
                 android:orientation="horizontal">
 
                 <RadioButton
                     android:id="@+id/sync_online_members_radio_enable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_30"
+                    android:layout_marginEnd="@dimen/size_30"
                     android:text="@string/living_type_1"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_14"
+                    android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
                 <RadioButton
@@ -605,7 +656,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/living_type_0"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/font_14"
+                    android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
             </RadioGroup>
@@ -624,12 +675,71 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
+
+        <LinearLayout
+            android:id="@+id/log_offline_data_parent_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/log_offline_data_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/size_10"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/log_offline_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/log_offline_data"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18" />
+
+                <RadioGroup
+                    android:id="@+id/log_offline_data_rg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/log_od_rb_yes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/log_od_rb_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -650,21 +760,21 @@
                 android:layout_weight="1"
                 android:background="#D6D6D6"
                 android:onClick="clearDatabase"
-                android:padding="@dimen/margin_10"
+                android:padding="@dimen/size_10"
                 android:text="@string/clear_members_button"
-                android:textColor="@color/white"
+                android:textColor="@color/colorWhite"
                 android:textSize="20sp" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/blue" />
+            android:background="@color/colorBlue" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
+            android:layout_margin="@dimen/size_10"
             android:orientation="horizontal">
 
             <TextView
@@ -685,45 +795,52 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="#D6D6D6"
-                android:padding="@dimen/margin_10"
+                android:padding="@dimen/size_10"
                 android:text="@string/clear_cache_app"
-                android:textColor="@color/white"
+                android:textColor="@color/colorWhite"
                 android:textSize="20sp" />
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/blue" />
-
         <LinearLayout
+            android:id="@+id/capture_logs_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_10"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/capture_logs"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:drawablePadding="5dp"
-                android:text="@string/capture_logs"
-                android:textColor="@color/black"
-                android:textSize="20sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue" />
 
-            <Button
-                android:id="@+id/send_log_button"
-                android:layout_width="275dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="#D6D6D6"
-                android:padding="@dimen/margin_10"
-                android:text="@string/send_logs"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:layout_margin="@dimen/size_10"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/capture_logs"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawablePadding="5dp"
+                    android:text="@string/capture_logs"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:id="@+id/send_log_button"
+                    android:layout_width="275dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="#D6D6D6"
+                    android:padding="@dimen/size_10"
+                    android:text="@string/send_logs"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20sp" />
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>

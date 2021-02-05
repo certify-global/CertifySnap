@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/colorWhite"
     android:orientation="vertical">
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="UPDATE"
+            android:text="@string/update_dialog"
             android:textColor="@color/black"
             android:textSize="26sp"
             android:textStyle="bold" />
@@ -73,7 +73,7 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/btn_shape"
-                android:text="CAPTURE"
+                android:text="@string/capture"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -84,7 +84,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="25dp"
                 android:background="@drawable/btn_shape"
-                android:text="USE PHOTO"
+                android:text="@string/use_photo"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -122,8 +122,8 @@
                 android:background="@drawable/edit_shape"
                 android:gravity="center_vertical"
                 android:padding="5dp"
-                android:text="userid"
-                android:textColor="@color/skyblue"
+                android:text="@string/user_id"
+                android:textColor="@color/colorSkyBlue"
                 android:textSize="17sp" />
         </LinearLayout>
         <!--  edittext-->
@@ -245,8 +245,8 @@
                     android:layout_width="0dp"
                     android:layout_height="50dp"
                     android:layout_alignParentRight="true"
-                    android:layout_marginLeft="@dimen/margin_20"
-                    android:layout_marginTop="@dimen/margin_5"
+                    android:layout_marginLeft="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
                     android:layout_weight=".25"
                     android:background="@drawable/btn_shape"
                     android:text="@string/access_control_enroll"
@@ -261,11 +261,11 @@
             android:layout_height="match_parent"
             android:layout_margin="3dp"
             android:background="@drawable/edit_shape"
-            android:hint="unique Id"
+            android:hint="@string/unique_id"
             android:inputType="number"
             android:padding="5dp"
-            android:textColor="@color/skyblue"
-            android:textColorHint="@color/skyblue"
+            android:textColor="@color/colorSkyBlue"
+            android:textColorHint="@color/colorSkyBlue"
             android:visibility="gone" />
 
     </LinearLayout>
@@ -275,11 +275,11 @@
         android:id="@+id/btn_update"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginLeft="@dimen/margin_20"
+        android:layout_marginLeft="@dimen/size_20"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="@dimen/margin_20"
+        android:layout_marginRight="@dimen/size_20"
         android:background="@drawable/btn_shape"
-        android:text="Update"
+        android:text="@string/update"
         android:textColor="@color/black"
         android:textSize="18sp" />
 

@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class ConnectivityStatusActivity extends SettingBaseActivity implements JSONObjectCallback{
+public class ConnectivityStatusActivity extends SettingsBaseActivity implements JSONObjectCallback{
 
     private static final String TAG = ConnectivityStatusActivity.class.getSimpleName();
     LinearLayout mRelativeConnectivity;
@@ -63,7 +63,7 @@ public class ConnectivityStatusActivity extends SettingBaseActivity implements J
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_connectivity);
+        setContentView(R.layout.activity_connectivity_status);
 
         Util.getDeviceHealthCheck((JSONObjectCallback) this,this);
         rubiklight = Typeface.createFromAsset(getAssets(),

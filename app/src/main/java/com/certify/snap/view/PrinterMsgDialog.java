@@ -33,7 +33,7 @@ public class PrinterMsgDialog {
      */
     public void showStartMsgDialog(final String message) {
 
-        if (message.contains("Succeeded")) {
+        if (message.contains(mContext.getString(R.string.succeeded))) {
             close();
             return;
         }
@@ -66,7 +66,7 @@ public class PrinterMsgDialog {
      */
     public void showPrintCompleteMsgDialog(final String message) {
 
-        if (message.contains("Succeeded")) {
+        if (message.contains(mContext.getString(R.string.succeeded))) {
             close();
             return;
         }
@@ -105,7 +105,7 @@ public class PrinterMsgDialog {
      * show message
      */
     public void showMsgNoButton(final String title, final String message) {
-        if (message.contains("Succeeded")) {
+        if (message.contains(mContext.getString(R.string.succeeded))) {
             close();
             return;
         }
@@ -137,7 +137,7 @@ public class PrinterMsgDialog {
      * show alert dialog
      */
     public void showAlertDialog(String title, final String msg) {
-        if (msg.contains("Succeeded")) {
+        if (msg.contains(mContext.getString(R.string.succeeded))) {
             close();
             return;
         }

@@ -40,12 +40,15 @@ public class GlobalParameters {
     public static final String RelayReverseMode = "relayReverseMode";
     public static final String StopRelayOnHighTemp = "stopRelayOnHighTemp";
     public static final String EnableWeigand = "enableWeigand";
+    public static final String EnableWeigandPassThrough = "enableWeigandPassThrough";
     public static final String WeiganFormatMessage = "weiganFormatMessage";
     public static final String LedBrightnessLevel = "ledBrightnessLevel";
     public static final String ScanMode = "ScanMode";
     public static final String ScanProximity = "ScanProximity";
     public static final String PRAGMA_KEY = "pragmakey";
     public static final String ScanType = "ScanType";
+    public static final String EnableTempScan = "EnableTempScan";
+    public static final String LogOfflineData = "logOfflineData";
 
     public static String Access_token = "";
     public static String channelID = "";
@@ -150,6 +153,8 @@ public class GlobalParameters {
     public static final String WAVE_QUESTIONS = "WaveQuestions";
     public static final String MASK_ENFORCEMENT = "maskEnforcement";
     public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
+    public static final String GESTURE_EXIT_NEGATIVE_OP = "gestureExitNegativeOp";
+    public static final String GESTURE_EXIT_CONFIRM_TEXT = "gestureExitConfirmText";
 
     public static final String Temperature = "temperature";
     public static final String Temphint = "temphint";
@@ -173,15 +178,35 @@ public class GlobalParameters {
     public static final String PRINT_QR_CODE_USERS = "printQRCode";
     public static final String PRINT_WAVE_USERS = "printWaveUsers";
     public static final String PRINT_HIGH_TEMPERATURE = "printHighTemperature";
+    public static final String PRINT_QR_CODE_FOR_WAVE_INDICATOR = "printQrCodeForWaveIndicator";
+
+    //print Label Options
+    public static final String PRINT_LABEL_FACE = "printLabelFace";
+    public static final String PRINT_LABEL_NAME = "printLabelName";
+    public static final String PRINT_LABEL_UNIDENTIFIED_NAME = "printLabelUnidentifiedName";
+    public static final String PRINT_LABEL_NORMAL_TEMPERATURE = "printLabelNormalTemperature";
+    public static final String PRINT_LABEL_HIGH_TEMPERATURE = "printLabelHighTemperature";
+    public static final String PRINT_LABEL_WAVE_ANSWERS = "printLabelWaveAnswers";
+    public static final String PRINT_LABEL_WAVE_EDIT_NAME = "printLabelWaveEditName";
+    public static final String PRINT_LABEL_WAVE_EDIT_QR_ANSWERS = "printLabelQRAnswers";
+    public static final String PRINT_LABEL_EDIT_PASS_NAME = "printLabelPassName";
+    public static final String PRINT_LABEL_WAVE_YES_ANSWER = "printLabelWaveYesAnswer";
+    public static final String PRINT_LABEL_WAVE_NO_ANSWER = "printLabelWaveNoAnswer";
+
     public static final String ACKNOWLEDGEMENT_TEXT = "acknowledge_text";
     public static final String ACKNOWLEDGEMENT_SCREEN = "acknowledge_radio";
     public static final String RESULT_BAR = "result_bar";
     public static final String RESULT_BAR_NORMAL = "result_bar_normal";
     public static final String RESULT_BAR_HIGH = "result_bar_high";
-    public static final String ACCESS_LOGGING = "access_logging";
     public static final String VALIDATE_DB = "validateDB";
     public static final String PROGRESS_BAR = "progress_bar";
     public static final String WAVE_INDICATOR = "wave_indicator";
     public static final String CLEAR_SHARED_PREF = "clearSharedPref";
-
+    public static final String WAVE_IMAGE = "WaveImage";
+    public static final String MASK_ENFORCE_INDICATOR = "mask_enforce_indicator";
+    public static final String MEMBER_GROUP_SYNC = "member_group_sync";
+    public static final String MEMBER_GROUP_ID = "member_group_id";
+    public static final String AccessControlLogMode = "accessControlLogging";
+    public static final String AccessControlScanMode = "accessControlScan";
+    public static final String languageType = "englishLanguage";
 }

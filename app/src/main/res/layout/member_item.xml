@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:gravity="center_vertical">
 
         <ImageView
@@ -32,7 +32,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/member_image"
                 android:gravity="center_vertical"
-                android:text="Member"
+                android:text="@string/member_text"
                 android:textColor="@color/black"
                 android:textSize="28sp" />
 
@@ -44,7 +44,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/member_image"
                 android:gravity="center_vertical"
-                android:text="Member"
+                android:text="@string/member_text"
                 android:textColor="@color/black"
                 android:textSize="28sp"
                 android:visibility="gone"/>
@@ -62,7 +62,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_toRightOf="@+id/member_image"
                 android:gravity="center_vertical"
-                android:text="Member"
+                android:text="@string/member_text"
                 android:textColor="@color/black"
                 android:textSize="18sp"/>
 
@@ -74,7 +74,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_toRightOf="@+id/member_image"
                 android:gravity="center_vertical"
-                android:text="Member"
+                android:text="@string/member_text"
                 android:visibility="gone"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
@@ -89,7 +89,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_toRightOf="@+id/member_image"
                 android:gravity="center_vertical"
-                android:text="Member"
+                android:text="@string/member_text"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
@@ -112,7 +112,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/lightwhite" />
+        android:background="@color/colorLightWhite" />
 
 
 </LinearLayout>

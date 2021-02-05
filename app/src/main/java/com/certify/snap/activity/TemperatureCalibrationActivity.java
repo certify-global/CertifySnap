@@ -18,7 +18,7 @@ import com.common.thermalimage.ThermalImageUtil;
 
 import java.text.DecimalFormat;
 
-public class TemperatureCalibrationActivity extends SettingBaseActivity {
+public class TemperatureCalibrationActivity extends SettingsBaseActivity {
     ThermalImageUtil temperatureUtil;
     TextView showMessage;
     ImageView image;
@@ -39,7 +39,7 @@ public class TemperatureCalibrationActivity extends SettingBaseActivity {
     }
 
     public void onParamterback(View view) {
-        startActivity(new Intent(this, TemperatureActivity.class));
+        startActivity(new Intent(this, TemperatureSettingsActivity.class));
         finish();
     }
 

@@ -9,14 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Default rect : Rect(23,32-26,38)"/>
+        android:text="@string/default_rect"/>
 
     <TextView
         android:id="@+id/tv_current_rect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Current rect : Rect(23,32-26,38)"/>
+        android:text="@string/current_rect"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,9 +25,7 @@
         android:gravity="center"
         android:textColor="#dd0022"
         android:layout_marginTop="10dp"
-        android:text="Format : rect(left,top-right,bottom)
-        \nThe actual coordinates of the thermal image:
-        \nThe x axis is opposite to the y axis(top,left-bottom,right)"/>
+        android:text="@string/format_rect"/>
 
     <LinearLayout
         android:id="@+id/ll_rect_left"
@@ -39,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="Rect left (top) :"/>
+            android:text="@string/rect_left"/>
         <EditText
             android:id="@+id/edit_rect_left"
             android:layout_weight="1"
@@ -60,7 +58,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="Rect top (left) :"/>
+            android:text="@string/rect_top"/>
         <EditText
             android:id="@+id/edit_rect_top"
             android:layout_weight="1"
@@ -81,7 +79,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="Rect right (bottom) :"/>
+            android:text="@string/rect_right"/>
         <EditText
             android:id="@+id/edit_rect_right"
             android:layout_weight="1"
@@ -102,7 +100,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text="Rect bottom (right) :"/>
+            android:text="@string/rect_bottom"/>
         <EditText
             android:id="@+id/edit_rect_bottom"
             android:layout_weight="1"
@@ -123,14 +121,14 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="cancel"
+            android:text="@string/cancel_dialog"
             android:onClick="cancelAdjustRect"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
-            android:text="confirm"
+            android:text="@string/confirm_dialog"
             android:onClick="confirmAdjustRect"/>
 
     </LinearLayout>

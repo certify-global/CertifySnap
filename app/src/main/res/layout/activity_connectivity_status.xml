@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:skin="http://schemas.android.com/tools"
+    android:id="@+id/linear_connectivity"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/connectivityTitleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorBgGreen"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/connectivity_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/back"
+            android:onClick="onConnectivityClick" />
+
+        <TextView
+            android:id="@+id/connectivityTitles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="left|center"
+            android:text="@string/connectivity_status_title"
+            android:textColor="#ffffff"
+            android:textSize="22sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/connected_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/connectivity_status_text"
+            android:layout_marginTop="@dimen/size_20"
+            android:layout_marginLeft="@dimen/size_10"
+            android:layout_marginBottom="@dimen/size_10"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_22"/>
+        <TextView
+            android:id="@+id/tv_network_available"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" "
+            android:layout_marginTop="@dimen/size_20"
+            android:layout_marginLeft="@dimen/size_10"
+            android:layout_marginBottom="@dimen/size_10"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_22"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginBottom="@dimen/size_10">
+        <TextView
+            android:id="@+id/tv_internetConnectivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/internet_connectivity"
+            android:layout_marginLeft="@dimen/size_15"
+            android:layout_marginRight="@dimen/size_10"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_18"/>
+
+        <RadioButton
+            android:id="@+id/radio_connectivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_30"
+            android:textColor="@color/black"
+            android:layout_marginLeft="@dimen/text_size_10"
+            android:theme="@style/CustomRadioButton" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginBottom="@dimen/size_10">
+        <TextView
+            android:id="@+id/tv_cloudConnectivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cloud_connectivity"
+            android:layout_marginLeft="@dimen/size_15"
+            android:layout_marginRight="@dimen/size_10"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_18"/>
+
+        <RadioButton
+            android:id="@+id/radio_cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_30"
+            android:textColor="@color/black"
+            android:layout_marginLeft="@dimen/text_size_10"
+            android:theme="@style/CustomRadioButton" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBlue"
+        android:layout_marginTop="@dimen/size_08"
+        android:layout_marginBottom="@dimen/size_08" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fadeScrollbars="false">
+        <LinearLayout
+            android:id="@+id/ll_connectivity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/mac_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mac"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_mac"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_ipAddressTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ip_address"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_ipAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_netmaskTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/netmask"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_netmask"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_gatewayTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gateway"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_gateway"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_dns1Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dns1"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_dns1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_dns2Title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dns2"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_dns2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/tv_ethernetIpTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ethernet_ip_mode"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_ethernetIp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=" "
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"
+                    android:layout_marginTop="@dimen/size_05"/>
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tv_ssidTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ssid"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/tv_ssid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/deviceReaderSupport"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/device_reader"
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18"/>
+                <TextView
+                    android:id="@+id/nfc_hid_reader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_marginLeft="@dimen/size_15"
+                    android:textSize="@dimen/text_size_18"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlue"
+                android:layout_marginTop="@dimen/size_08"
+                android:layout_marginBottom="@dimen/size_08" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

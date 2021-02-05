@@ -21,8 +21,8 @@
         android:layout_below="@id/img_guest"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Unrecognized"
-        android:textColor="@color/skyblue"
+        android:text="@string/unrecognized"
+        android:textColor="@color/colorSkyBlue"
         android:textSize="30sp"/>
 
 </RelativeLayout>

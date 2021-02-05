@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.PrinterWifiSettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorBgGreen"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/back"
+            android:onClick="onParamterback"
+            tools:ignore="OnClick" />
+
+        <TextView
+            android:id="@+id/titles"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="left|center"
+            android:onClick="onParamterback"
+            android:text="@string/select_printer"
+            android:textColor="#ffffff"
+            android:textSize="22sp"
+            tools:ignore="OnClick" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_enter_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textview_name"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:text="@string/title_printer"
+            android:textColor="@color/black"
+            android:textSize="18sp">
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/edittext_printer_ip"
+                android:layout_width="240dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="20dp"
+                android:hint="@string/ip_address"
+                android:background="@drawable/edittextbackground"
+                android:inputType="phone"
+                android:paddingLeft="@dimen/size_05"/>
+
+            <TextView
+                android:id="@+id/ip_input_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:layout_marginEnd="20dp"
+                android:textColor="@color/colorRed"
+                android:textSize="13sp">
+            </TextView>
+
+            <EditText
+                android:id="@+id/edittext_printer_mac"
+                android:layout_width="240dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="5dp"
+                android:hint="@string/mac_address_hint"
+                android:background="@drawable/edittextbackground"
+                android:paddingLeft="@dimen/size_05"/>
+
+            <TextView
+                android:id="@+id/mac_input_error"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:layout_marginEnd="20dp"
+                android:textColor="@color/colorRed"
+                android:textSize="13sp">
+            </TextView>
+
+            <Button
+                android:id="@+id/printer_add"
+                android:layout_width="140dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:enabled="true"
+                android:text="@string/add_button" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="15dp"
+        android:layout_weight="8"
+        android:paddingTop="10dp">
+
+        <ListView
+            android:id="@id/android:list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </TableRow>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp">
+
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:text="@string/search_button" />
+
+        <Button
+            android:id="@+id/btPrinterSettings"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:enabled="true"
+            android:text="@string/button_settings" />
+    </LinearLayout>
+</LinearLayout>

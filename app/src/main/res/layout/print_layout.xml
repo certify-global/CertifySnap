@@ -4,7 +4,7 @@
     android:layout_width="300dp"
     android:layout_height="171dp"
     android:layout_gravity="center"
-    android:background="@color/white"
+    android:background="@color/colorWhite"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,52 +13,47 @@
         android:layout_margin="5dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/user_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:gravity="center"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/user_name_title"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Name:"
-                android:textColor="@color/colorBlack"
-                android:textSize="10dp" />
 
             <TextView
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:textColor="@color/colorBlack"
-                android:textSize="15dp"
+                android:textSize="@dimen/text_size_14"
                 android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/vaid_thru_text"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="7dp"
-                android:text="Scan Time:"
-                android:textColor="@color/colorBlack"
-                android:textSize="10dp" />
 
             <TextView
                 android:id="@+id/expire_date"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:text="08/17/2020"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:textColor="@color/colorBlack"
-                android:textSize="20dp"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/scan_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/text_size_14"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/user_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
     </LinearLayout>
 
     <TextView
@@ -67,7 +62,7 @@
         android:layout_height="30dp"
         android:background="@color/colorGreen"
         android:gravity="center"
-        android:text="Pass"
+        android:text="@string/screened"
         android:textColor="@color/colorWhite"
         android:textSize="20dp"
         android:textStyle="bold" />
@@ -81,10 +76,9 @@
         android:id="@+id/thermal_scan_text"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:background="@color/colorGreen"
         android:gravity="center"
-        android:text="Thermal Scan"
-        android:textColor="@color/colorWhite"
+        android:text="@string/thermal_scan_text"
+        android:textColor="@color/colorBlack"
         android:textSize="20dp"
         android:textStyle="bold" />
 

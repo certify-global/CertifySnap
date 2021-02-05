@@ -1,423 +1,578 @@
 package com.certify.snap.activity;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.PaintDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
+import android.text.Html;
+import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
+import com.certify.callback.PrintStatusCallback;
 import com.certify.snap.R;
-import com.certify.snap.printer.Common;
-import com.certify.snap.printer.PrinterModelInfo;
+import com.certify.snap.printer.usb.PrintExecuteTask;
+import com.certify.snap.printer.usb.util;
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Util;
+import com.certify.snap.controller.PrinterController;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-public class PrinterSettingsActivity extends PreferenceActivity implements
-        Preference.OnPreferenceChangeListener {
+import static com.certify.snap.printer.usb.Defines.PORTSETTING_PORT_MODE_KEYNAME;
+import static com.certify.snap.printer.usb.Defines.PRINTER_LIST;
+import static com.certify.snap.printer.usb.Defines.PRINTER_TYPE_KEYNAME;
 
-    private SharedPreferences sharedPreferences;
+public class PrinterSettingsActivity extends SettingsBaseActivity implements PrinterController.PrinterCallbackListener, PrintStatusCallback {
 
-    @SuppressWarnings("deprecation")
+    private static final String TAG = PrinterSettingsActivity.class.getSimpleName();
+
+    TextView titleBrotherBluetoothPrinter, enableBrotherPrinterTextView, brotherBluetoothPrinterConnect, brotherBluetoothPrinterConnection,
+            brotherBluetoothPrinterStatus, brotherTestPrint,
+            titleToshibaBluetoothPrinter, enableToshibaPrinterTextView,
+            printerOptionsTitle, printAllScanTitle, printAccessCardTitle, printQRCodeTitle, printWaveUsersTitle, printHighTemperatureTitle,
+            titleLabelOptions,
+            printLabelFaceTitle, printLabelNameTitle, printLabelNormalTemp, printLabelHighTemp, printLabelWaveAnswers,
+            printLabelUnidentifiedName, printLabelPrintIndicatorForQRCode, waveYesText, waveNoText;
+    RadioGroup radioGroupPrinter, radioGroupToshibaPrinter, radioGroupPrintAllScan, radioGroupPrintAccessCard, radioGroupPrintQRCode,
+            radioGroupPrintWave, radioGroupPrintHighTemperature,
+            radioGroupPrintLabelFace, radioGroupPrintLabelName, radioGroupPrintLabelNormalTemp, radioGroupPrintLabelHighTemp,
+            radioGroupPrintLabelWaveAnswers, radioGroupPrintLabelUnidentifiedName,radioGroupPrintLabelIndicatorQrCode;
+    RadioButton radioEnableBrotherPrinter, radioDisableBrotherPrinter, radioEnableToshibaPrinter, radioDisableToshibaPrinter,
+            radioButtonYesPrintAllScans, radioButtonNoPrintAllScans, radioButtonYesPrintAccessCard, radioButtonNoPrintAccessCard,
+            radioButtonYesPrintQRCode, radioButtonNoPrintQRCode, radioButtonYesPrintWave, radioButtonNoPrintWave,
+            radioButtonYesPrintHighTemperature, radioButtonNoPrintHighTemperature, radioYesPrintLabelFace, radioNoPrintLabelFace,
+            radioYesPrintLabelName, radioNoPrintLabelName, radioYesPrintLabelNormalTemp, radioNoPrintLabelNormalTemp,
+            radioYesPrintLabelHighTemp, radioNoPrintLabelHighTemp, radioYesPrintLabelWaveAnswers, radioNoPrintLabelWaveAnswers,
+            radioYesPrintLabelUnidentifiedName, radioNoPrintLabelUnidentifiedName, radioYesPrintLabelIndicatorQrCode, radioNoPrintLabelIndicatorQrCode;
+    Button brotherPrintButton;
+    ImageView brotherImageView;
+    EditText editTextNameLabel, editTextQRAnswers, editTextPassName, editTextWaveYes, editTextWaveNo;
+
+    Typeface rubiklight;
+    private SharedPreferences sp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        addPreferencesFromResource(R.xml.printer_settings);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setContentView(R.layout.activity_printer_settings);
+        sp = Util.getSharedPreferences(this);
 
-        // initialize the printerModel ListPreference
-        ListPreference printerModelPreference = (ListPreference) getPreferenceScreen()
-                .findPreference("printerModel");
-        printerModelPreference.setEntryValues(PrinterModelInfo.getModelNames());
-        printerModelPreference.setEntries(PrinterModelInfo.getModelNames());
+        initView();
+        printerOptionCheck();
+        initBrotherPrinter();
+        initToshibaPrinter();
+        printerLabelOptionsCheck();
 
-
-        // initialize the printer_settings
-        setPreferenceValue("printerModel");
-        String printerModel = sharedPreferences.getString("printerModel", "QL_820NWB");
-
-        // set paper size & port information
-        printerModelChange(printerModel);
-
-        setPreferenceValue("port");
-        setEditValue("address");
-        setEditValue("macAddress");
-        setPreferenceValue("paperSize");
-        setPreferenceValue("orientation");
-        setEditValue("numberOfCopies");
-        setPreferenceValue("printMode");
-
-        setPreferenceValue("printQuality");
-
-        setEditValue("scaleValue");
-
-        // initialize the custom paper size's printer_settings
-        File newdir = new File(Common.CUSTOM_PAPER_FOLDER);
-        if (!newdir.exists()) {
-            newdir.mkdir();
-        }
-        File[] files = new File(Common.CUSTOM_PAPER_FOLDER).listFiles();
-        List<String> entriesList = new ArrayList<String>(files.length);
-        List<String> entryValuesList = new ArrayList<String>(files.length);
-
-        for (File file : files) {
-            String filename = file.getName();
-            String extention = filename.substring(
-                    filename.lastIndexOf(".", filename.length()) + 1,
-                    filename.length());
-            if (extention.equalsIgnoreCase("bin")) {
-                entriesList.add(filename);
-                entryValuesList.add(filename);
-            }
-        }
-        String[] entries = entriesList.toArray(new String[entriesList.size()]);
-        String[] entryValues = entryValuesList.toArray(new String[entriesList.size()]);
-        Arrays.sort(entries);
-        Arrays.sort(entryValues);
-
-        ListPreference customSettingPreference = (ListPreference) getPreferenceScreen()
-                .findPreference("customSetting");
-        //customSettingPreference.setEntries(entries);
-        //customSettingPreference.setEntryValues(entryValues);
-
-
-        //setPreferenceValue("dashLine");
-        setPreferenceValue("autoCut");
-        setPreferenceValue("specialType");
-        setPreferenceValue("halfCut");
-        //setPreferenceValue("trimTapeAfterData");
-
-        // initialization for printer
-        PreferenceScreen printerPreference = (PreferenceScreen) getPreferenceScreen()
-                .findPreference("printer");
-
-        String printer = sharedPreferences.getString("printer", "");
-        if (!printer.equals("")) {
-            printerPreference.setSummary(printer);
-        }
-
-        printerPreference
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        String printerModel = sharedPreferences.getString(
-                                "printerModel", "");
-                        setPrinterList(printerModel);
-                        return true;
-                    }
-                });
-
-
-        // set the BackgroundForPreferenceScreens to light
-        setBackgroundForPreferenceScreens("prefIpMacAddress");
-        setBackgroundForPreferenceScreens("prefCutSettings");
-
-        //setBackgroundForPreferenceScreens("halfToningSetting");
-        setBackgroundForPreferenceScreens("scaleModelSetting");
-
-        //setSavePathPreference();
-
-        setEditValue("processTimeout");
-        setEditValue("sendTimeout");
-        setEditValue("receiveTimeout");
-        setEditValue("connectionTimeout");
-        setEditValue("closeWaitTime");
-
-        //setPreferenceValue("softFocusing");
-        //setPreferenceValue("enabledTethering");
-        //setPreferenceValue("rawMode");
-        //setPreferenceValue("useLegacyHalftoneEngine");
-        setWorkPathPreference();
-
+        initBluetoothPrinter();
+        PrinterController.getInstance().setPrinterListener(this);
     }
 
-    private void setSavePathPreference() {
-        PreferenceScreen savePrnPathPreference = (PreferenceScreen) getPreferenceScreen()
-                .findPreference("savePrnPath");
-        String savePrnPath = sharedPreferences.getString("savePrnPath", "");
-        if (!savePrnPath.equals("")) {
-            savePrnPathPreference.setSummary(savePrnPath);
+    private void initView() {
+        titleBrotherBluetoothPrinter = findViewById(R.id.title_bother_bluetooth_printer);
+        enableBrotherPrinterTextView = findViewById(R.id.enable_bother_printer_textview);
+        brotherBluetoothPrinterStatus = findViewById(R.id.tv_bluetooth_bother_printer_status);
+        brotherBluetoothPrinterConnect = findViewById(R.id.bluetooth_bother_printer_connect);
+        brotherBluetoothPrinterConnection = findViewById(R.id.tv_bluetooth_bother_printer_connection);
+        brotherTestPrint = findViewById(R.id.bother_test_print);
+        brotherImageView = findViewById(R.id.bother_imageView);
+        brotherPrintButton = findViewById(R.id.bother_print_button);
+        radioGroupPrinter = findViewById(R.id.radio_group_brother_printer);
+        radioEnableBrotherPrinter = findViewById(R.id.radio_yes_bother_printer);
+        radioDisableBrotherPrinter = findViewById(R.id.radio_no_bother_printer);
+        radioGroupToshibaPrinter = findViewById(R.id.radio_group_toshiba_printer);
+        radioEnableToshibaPrinter = findViewById(R.id.radio_yes_toshiba_printer);
+        radioDisableToshibaPrinter = findViewById(R.id.radio_no_toshiba_printer);
+
+        // printer Options
+        printerOptionsTitle = findViewById(R.id.title_printer_options);
+        printAllScanTitle = findViewById(R.id.print_all_scan_title);
+        radioGroupPrintAllScan = findViewById(R.id.radio_group_print_all_scan);
+        radioButtonYesPrintAllScans = findViewById(R.id.radio_yes_print_all_scan);
+        radioButtonNoPrintAllScans = findViewById(R.id.radio_no_print_all_scan);
+        //Access Card
+        printAccessCardTitle = findViewById(R.id.print_access_card_title);
+        radioGroupPrintAccessCard = findViewById(R.id.radio_group_print_access_card);
+        radioButtonYesPrintAccessCard = findViewById(R.id.radio_yes_print_access_card);
+        radioButtonNoPrintAccessCard = findViewById(R.id.radio_no_print_access_card);
+        //QR Code
+        printQRCodeTitle = findViewById(R.id.print_qr_code_title);
+        radioGroupPrintQRCode = findViewById(R.id.radio_group_print_qr_code);
+        radioButtonYesPrintQRCode = findViewById(R.id.radio_yes_print_qr_code);
+        radioButtonNoPrintQRCode = findViewById(R.id.radio_no_print_qr_code);
+        //Wave Users
+        printWaveUsersTitle = findViewById(R.id.print_wave_users_title);
+        radioGroupPrintWave = findViewById(R.id.radio_group_print_wave_users);
+        radioButtonYesPrintWave = findViewById(R.id.radio_yes_print_wave_users);
+        radioButtonNoPrintWave = findViewById(R.id.radio_no_print_wave_users);
+        //High Temperature
+        printHighTemperatureTitle = findViewById(R.id.print_high_temperature_title);
+        radioGroupPrintHighTemperature = findViewById(R.id.radio_group_print_high_temperature);
+        radioButtonYesPrintHighTemperature = findViewById(R.id.radio_yes_print_high_temperature);
+        radioButtonNoPrintHighTemperature = findViewById(R.id.radio_no_print_high_temperature);
+        // Label options
+        titleLabelOptions = findViewById(R.id.title_label_options);
+        //print label face
+        printLabelFaceTitle = findViewById(R.id.print_label_face_title);
+        radioGroupPrintLabelFace = findViewById(R.id.radio_group_print_label_face);
+        radioYesPrintLabelFace = findViewById(R.id.radio_yes_print_label_face);
+        radioNoPrintLabelFace = findViewById(R.id.radio_no_print_label_face);
+        //Print label name
+        printLabelNameTitle = findViewById(R.id.print_label_name_title);
+        radioGroupPrintLabelName = findViewById(R.id.radio_group_print_label_name);
+        radioYesPrintLabelName = findViewById(R.id.radio_yes_print_label_name);
+        radioNoPrintLabelName = findViewById(R.id.radio_no_print_label_name);
+        //print label unidentified name
+        printLabelUnidentifiedName = findViewById(R.id.print_label_unidentified_name);
+        radioGroupPrintLabelUnidentifiedName = findViewById(R.id.radio_group_print_label_unidentified_name);
+        radioYesPrintLabelUnidentifiedName= findViewById(R.id.radio_yes_print_label_unidentified_name);
+        radioNoPrintLabelUnidentifiedName = findViewById(R.id.radio_no_print_label_unidentified_name);
+        //Print label normal temp Value
+        printLabelNormalTemp = findViewById(R.id.print_label_normal_temp);
+        radioGroupPrintLabelNormalTemp = findViewById(R.id.radio_group_print_label_normal_temp);
+        radioYesPrintLabelNormalTemp = findViewById(R.id.radio_yes_print_label_normal_temp);
+        radioNoPrintLabelNormalTemp = findViewById(R.id.radio_no_print_label_normal_temp);
+        //Print label high temp value
+        printLabelHighTemp = findViewById(R.id.print_label_high_temp);
+        radioGroupPrintLabelHighTemp = findViewById(R.id.radio_group_print_label_high_temp);
+        radioYesPrintLabelHighTemp = findViewById(R.id.radio_yes_print_label_high_temp);
+        radioNoPrintLabelHighTemp = findViewById(R.id.radio_no_print_label_high_temp);
+        //Print label wave answers
+        printLabelWaveAnswers = findViewById(R.id.print_label_wave_answers);
+        radioGroupPrintLabelWaveAnswers = findViewById(R.id.radio_group_print_label_wave_answers);
+        radioYesPrintLabelWaveAnswers = findViewById(R.id.radio_yes_print_label_wave_answers);
+        radioNoPrintLabelWaveAnswers = findViewById(R.id.radio_no_print_label_wave_answers);
+        waveYesText = findViewById(R.id.wave_yes_text);
+        waveNoText = findViewById(R.id.wave_no_text);
+        //Print Indicator for QR code users
+        printLabelPrintIndicatorForQRCode = findViewById(R.id.print_label_print_indicator_qr_code);
+        radioGroupPrintLabelIndicatorQrCode = findViewById(R.id.radio_group_print_label_indicator_qr_code);
+        radioYesPrintLabelIndicatorQrCode = findViewById(R.id.radio_yes_print_label_indicator_qr_code);
+        radioNoPrintLabelIndicatorQrCode = findViewById(R.id.radio_no_print_label_indicator_qr_code);
+
+        editTextNameLabel = findViewById(R.id.edit_text_name_label);
+        editTextQRAnswers = findViewById(R.id.edit_text_indicator_qr_code);
+        editTextPassName = findViewById(R.id.edit_text_result_print_pass_text);
+        editTextWaveYes = findViewById(R.id.gesture_yes_button);
+        editTextWaveNo = findViewById(R.id.gesture_no_button);
+
+
+        brotherTestPrint.setText("Brother Printer");
+
+        titleToshibaBluetoothPrinter = findViewById(R.id.title_toshiba_bluetooth_printer);
+        enableToshibaPrinterTextView = findViewById(R.id.enable_toshiba_printer_textview);
+
+        rubiklight = Typeface.createFromAsset(getAssets(),
+                "rubiklight.ttf");
+        titleBrotherBluetoothPrinter.setTypeface(rubiklight);
+        enableBrotherPrinterTextView.setTypeface(rubiklight);
+        brotherBluetoothPrinterConnect.setTypeface(rubiklight);
+        brotherBluetoothPrinterConnection.setTypeface(rubiklight);
+        brotherBluetoothPrinterStatus.setTypeface(rubiklight);
+        brotherTestPrint.setTypeface(rubiklight);
+
+        titleToshibaBluetoothPrinter.setTypeface(rubiklight);
+        enableToshibaPrinterTextView.setTypeface(rubiklight);
+
+        printerOptionsTitle.setTypeface(rubiklight);
+        printAllScanTitle.setTypeface(rubiklight);
+        printAccessCardTitle.setTypeface(rubiklight);
+        printQRCodeTitle.setTypeface(rubiklight);
+        printWaveUsersTitle.setTypeface(rubiklight);
+        printHighTemperatureTitle.setTypeface(rubiklight);
+
+        titleLabelOptions.setTypeface(rubiklight);
+        printLabelFaceTitle.setTypeface(rubiklight);
+        printLabelNameTitle.setTypeface(rubiklight);
+        printLabelNormalTemp.setTypeface(rubiklight);
+        printLabelHighTemp.setTypeface(rubiklight);
+        printLabelWaveAnswers.setTypeface(rubiklight);
+        printLabelUnidentifiedName.setTypeface(rubiklight);
+        printLabelPrintIndicatorForQRCode.setTypeface(rubiklight);
+        waveYesText.setTypeface(rubiklight);
+        waveNoText.setTypeface(rubiklight);
+
+        editTextNameLabel.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, "Screened"));
+        editTextQRAnswers.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, "XXXX"));
+        editTextPassName.setText(sp.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, "PASS"));
+        editTextWaveYes.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, "1"));
+        editTextWaveNo.setText(sp.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, "0"));
+
+        String printerSettings = "<a style='text-decoration:underline' href='http://www.sample.com'>"+getString(R.string.settings)+"</a>";
+        if (Build.VERSION.SDK_INT >= 24) {
+            brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings, Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            brotherBluetoothPrinterConnection.setText(Html.fromHtml(printerSettings));
         }
-
-        savePrnPathPreference
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-
-                        setSavePath();
-                        return true;
-                    }
-                });
     }
 
-    /**
-     * Called when [printer] is tapped
-     */
-    private void setSavePath() {
-
-     /*   Intent savePath = new Intent(this, SaveFileActivity.class);
-        startActivityForResult(savePath, Common.SAVE_PATH);*/
-    }
-
-    private void setWorkPathPreference() {
-
-        ListPreference printerValuePreference = (ListPreference) getPreferenceScreen()
-                .findPreference("workPath");
-
-        String internalFolder = getFilesDir().getAbsolutePath();
-        String externalFolder = getExternalFilesDir(null).getAbsolutePath();
-
-        String[] dirValues = {
-                internalFolder,
-                externalFolder
-        };
-        printerValuePreference.setEntryValues(dirValues);
-
-        String savedWorkPath = sharedPreferences.getString("workPath", "");
-        if (savedWorkPath.isEmpty()) {
-            savedWorkPath = internalFolder;
-        }
-
-        int selectedIndex = Arrays.asList(dirValues).indexOf(savedWorkPath);
-        if (selectedIndex < 0) {
-            selectedIndex = 0;
-        }
-        printerValuePreference.setValueIndex(selectedIndex);
-    }
-
-    /**
-     * Called when a Preference has been changed by the user. This is called
-     * before the state of the Preference is about to be updated and before the
-     * state is persisted.
-     */
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    protected void onResume() {
+        super.onResume();
 
-        if (newValue != null) {
-            if (preference.getKey().equals("printerModel")) {
-                String printerModel = sharedPreferences.getString(
-                        "printerModel", "");
-                if (printerModel.equalsIgnoreCase(newValue.toString())) {
-                    return true;
-                }
-
-                // initialize if printer model is changed
-                printerModelChange(newValue.toString());
-                ListPreference paperSizePreference = (ListPreference) getPreferenceScreen()
-                        .findPreference("paperSize");
-                paperSizePreference.setValue(paperSizePreference
-                        .getEntryValues()[0].toString());
-                paperSizePreference.setSummary(paperSizePreference
-                        .getEntryValues()[0].toString());
-
-                ListPreference portPreference = (ListPreference) getPreferenceScreen()
-                        .findPreference("port");
-                portPreference.setValue(portPreference.getEntryValues()[0]
-                        .toString());
-                portPreference.setSummary(portPreference.getEntryValues()[0]
-                        .toString());
-
-                setChangedData();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences != null) {
+            if (!sharedPreferences.getString("printer", "NONE").equals("NONE")) {
+                brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.green));
+                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.colorBgBlue));
+            } else {
+                brotherBluetoothPrinterStatus.setTextColor(getResources().getColor(R.color.colorRed));
+                brotherPrintButton.setBackgroundColor(getResources().getColor(R.color.colorGray));
             }
-
-            if (preference.getKey().equals("port")) {
-                setChangedData();
-            }
-
-            preference.setSummary((CharSequence) newValue);
-
-            return true;
+            brotherBluetoothPrinterStatus.setText(sharedPreferences.getString("printer", "NONE"));
         }
-
-        return false;
-
     }
 
-    /**
-     * Called when the searching printers activity you launched exits.
-     */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (Common.PRINTER_SEARCH == requestCode) {
-            EditTextPreference addressPreference = (EditTextPreference) getPreferenceScreen()
-                    .findPreference("address");
-            EditTextPreference macAddressPreference = (EditTextPreference) getPreferenceScreen()
-                    .findPreference("macAddress");
-            PreferenceScreen printerPreference = (PreferenceScreen) getPreferenceScreen()
-                    .findPreference("printer");
+    protected void onDestroy() {
+        super.onDestroy();
+        PrinterController.getInstance().clearData();
+    }
 
-            if (resultCode == RESULT_OK) {
-                // IP address
-                String ipAddress = data.getStringExtra("ipAddress");
-                addressPreference.setText(ipAddress);
-                if (ipAddress.equalsIgnoreCase("")) {
-                    ipAddress = getString(R.string.address_value);
-                }
-                addressPreference.setSummary(ipAddress);
+    private void initBrotherPrinter() {
+        brotherPrinterCheck();
+    }
 
-                // MAC address
-                String macAddress = data.getStringExtra("macAddress");
-                macAddressPreference.setText(macAddress);
-                macAddressPreference.setSummary(macAddress);
+    private void brotherPrinterCheck() {
+        if (sp.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false))
+            radioEnableBrotherPrinter.setChecked(true);
+        else radioDisableBrotherPrinter.setChecked(true);
 
-                // Printer name
-                printerPreference.setSummary(data.getStringExtra("printer"));
-
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("printer", data.getStringExtra("printer"));
-                editor.putString("localName", data.getStringExtra("localName"));
-                editor.apply();
+        radioGroupPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_bother_printer) {
+                    Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, true);
+                    radioDisableToshibaPrinter.setChecked(true);
+                } else Util.writeBoolean(sp, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
             }
-        } else if (Common.SAVE_PATH == requestCode) {
-            if (resultCode == RESULT_OK) {
-                PreferenceScreen saveFilePreference = (PreferenceScreen) getPreferenceScreen()
-                        .findPreference("savePrnPath");
+        });
+    }
 
-                saveFilePreference.setSummary(data
-                        .getStringExtra("savePrnPath"));
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("savePrnPath",
-                        data.getStringExtra("savePrnPath"));
-                editor.apply();
+    private void initToshibaPrinter() {
+        toshibaPrinterCheck();
+        try {
+            printerList(this.getApplicationContext());
+            portList(this.getApplicationContext());
+        } catch (Exception e) {
+            Log.e(TAG, "Exception in initializing Toshiba Printer " + e.getMessage());
+        }
+    }
+
+    private void toshibaPrinterCheck() {
+        if (sp.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER, false))
+            radioEnableToshibaPrinter.setChecked(true);
+        else radioDisableToshibaPrinter.setChecked(true);
+
+        radioGroupToshibaPrinter.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_toshiba_printer) {
+                    Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, true);
+                    radioDisableBrotherPrinter.setChecked(true);
+                } else Util.writeBoolean(sp, GlobalParameters.TOSHIBA_USB_PRINTER, false);
             }
-        }
+        });
     }
 
-    /**
-     * set data of a particular ListPreference
-     */
-    private void setPreferenceValue(String value) {
-        String data = sharedPreferences.getString(value, "");
+    private void printerOptionCheck() {
+        //All Scan
+        if (sp.getBoolean(GlobalParameters.PRINT_ALL_SCAN, false))
+            radioButtonYesPrintAllScans.setChecked(true);
+        else radioButtonNoPrintAllScans.setChecked(true);
 
-        ListPreference printerValuePreference = (ListPreference) getPreferenceScreen()
-                .findPreference(value);
-        printerValuePreference.setOnPreferenceChangeListener(this);
-        if (!data.equals("")) {
-            printerValuePreference.setSummary(data);
-        }
+        radioGroupPrintAllScan.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_all_scan) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_ALL_SCAN, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_ALL_SCAN, false);
+            }
+        });
+
+        // Access card users
+        if (sp.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS, false))
+            radioButtonYesPrintAccessCard.setChecked(true);
+        else radioButtonNoPrintAccessCard.setChecked(true);
+
+        radioGroupPrintAccessCard.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_access_card) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_ACCESS_CARD_USERS, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_ACCESS_CARD_USERS, false);
+            }
+        });
+
+        //QrCode
+
+        if (sp.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS, false))
+            radioButtonYesPrintQRCode.setChecked(true);
+        else radioButtonNoPrintQRCode.setChecked(true);
+
+        radioGroupPrintQRCode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_qr_code) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_USERS, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_USERS, false);
+            }
+        });
+
+        //Wave users
+        if (sp.getBoolean(GlobalParameters.PRINT_WAVE_USERS, false))
+            radioButtonYesPrintWave.setChecked(true);
+        else radioButtonNoPrintWave.setChecked(true);
+
+        radioGroupPrintWave.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_wave_users) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_WAVE_USERS, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_WAVE_USERS, false);
+            }
+        });
+
+        //High Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE, false))
+            radioButtonYesPrintHighTemperature.setChecked(true);
+        else radioButtonNoPrintHighTemperature.setChecked(true);
+
+        radioGroupPrintHighTemperature.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_high_temperature) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_HIGH_TEMPERATURE, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_HIGH_TEMPERATURE, false);
+            }
+        });
+
+        //QR Code indicator for gesture Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false))
+            radioYesPrintLabelIndicatorQrCode.setChecked(true);
+        else radioNoPrintLabelIndicatorQrCode.setChecked(true);
+
+        radioGroupPrintLabelIndicatorQrCode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio_yes_print_label_indicator_qr_code) {
+                    Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, true);
+                } else Util.writeBoolean(sp, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false);
+            }
+        });
+
     }
 
-    /**
-     * set data of a particular EditTextPreference
-     */
-    private void setEditValue(String value) {
-        String name = sharedPreferences.getString(value, "");
-        EditTextPreference printerValuePreference = (EditTextPreference) getPreferenceScreen()
-                .findPreference(value);
-        printerValuePreference.setOnPreferenceChangeListener(this);
+    private void printerLabelOptionsCheck() {
+        //Print Label Face
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_FACE, false))
+            radioYesPrintLabelFace.setChecked(true);
+        else radioNoPrintLabelFace.setChecked(true);
 
-        if (!name.equals("")) {
-            printerValuePreference.setSummary(name);
-        }
+        radioGroupPrintLabelFace.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_face) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_FACE, true);
+            } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_FACE, false);
+        });
+
+        // Print Label Name
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_NAME, false))
+            radioYesPrintLabelName.setChecked(true);
+        else radioNoPrintLabelName.setChecked(true);
+
+        radioGroupPrintLabelName.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_name) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NAME, true);
+            } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NAME, false);
+        });
+
+        // Print Label Unidentified Name
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false))
+            radioYesPrintLabelUnidentifiedName.setChecked(true);
+        else radioNoPrintLabelUnidentifiedName.setChecked(true);
+
+        radioGroupPrintLabelUnidentifiedName.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_unidentified_name) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, true);
+            } else Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false);
+        });
+
+        // Print Normal Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false))
+            radioYesPrintLabelNormalTemp.setChecked(true);
+        else radioNoPrintLabelNormalTemp.setChecked(true);
+
+        radioGroupPrintLabelNormalTemp.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_normal_temp) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, true);
+            } else
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);
+        });
+
+        // Print High Temperature
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false))
+            radioYesPrintLabelHighTemp.setChecked(true);
+        else radioNoPrintLabelHighTemp.setChecked(true);
+
+        radioGroupPrintLabelHighTemp.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_high_temp) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, true);
+            } else
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
+        });
+
+        //Print Wave Answers
+        if (sp.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false))
+            radioYesPrintLabelWaveAnswers.setChecked(true);
+        else radioNoPrintLabelWaveAnswers.setChecked(true);
+
+        radioGroupPrintLabelWaveAnswers.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_print_label_wave_answers) {
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, true);
+            } else
+                Util.writeBoolean(sp, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
+        });
     }
 
-    /**
-     * Called when [printer] is tapped
-     */
-    private void setPrinterList(String printModel) {
-        String port = sharedPreferences.getString("port", "");
-
-        // call the Activity_NetPrinterList when port is NET
-        if (port.equalsIgnoreCase("NET")) {
-            Intent printerList = new Intent(this, NetPrinterActivity.class);
-            String printTempModel = printModel.replaceAll("_", "-");
-            printerList.putExtra("modelName", printTempModel);
-            startActivityForResult(printerList, Common.PRINTER_SEARCH);
-        } else // call the Activity_BluetoothPrinterList when port is Bluetooth
-        {
-            Intent printerList = new Intent(this,
-                    BluetoothPrinterActivity.class);
-            startActivityForResult(printerList, Common.PRINTER_SEARCH);
-        }
+    public void selectBluetoothPrinter(View view) {
+        startActivity(new Intent(this, PrinterWifiBTSettingsActivity.class));
     }
 
-
-    /**
-     * set paper size & port information with changing printer model
-     */
-    private void printerModelChange(String printerModel) {
-
-        // paper size
-        ListPreference paperSizePreference = (ListPreference) getPreferenceScreen()
-                .findPreference("paperSize");
-        // port
-        ListPreference portPreference = (ListPreference) getPreferenceScreen()
-                .findPreference("port");
-        if (!printerModel.equals("")) {
-
-            String[] entryPort;
-            String[] entryPaperSize;
-            entryPort = PrinterModelInfo.getPortOrPaperSizeInfo(printerModel, Common.SETTINGS_PORT);
-            entryPaperSize = PrinterModelInfo.getPortOrPaperSizeInfo(printerModel, Common.SETTINGS_PAPERSIZE);
-
-            portPreference.setEntryValues(entryPort);
-            portPreference.setEntries(entryPort);
-
-            paperSizePreference.setEntryValues(entryPaperSize);
-            paperSizePreference.setEntries(entryPaperSize);
-
-        }
+    private void initBluetoothPrinter() {
+        // initialization for printing
+        PrinterController.getInstance().init(this, this);
+        PrinterController.getInstance().setPrinterListener(this);
+        PrinterController.getInstance().setBluetoothAdapter();
     }
 
-    /**
-     * initialize the address & macAddress information with changing printer
-     * model or port
-     */
-    private void setChangedData() {
-        EditTextPreference addressPreference = (EditTextPreference) getPreferenceScreen()
-                .findPreference("address");
-        EditTextPreference macAddressPreference = (EditTextPreference) getPreferenceScreen()
-                .findPreference("macAddress");
-        PreferenceScreen printerPreference = (PreferenceScreen) getPreferenceScreen()
-                .findPreference("printer");
-
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("address", "");
-        editor.putString("macAddress", "");
-        editor.putString("printer", getString(R.string.printer_text));
-        editor.apply();
-
-        addressPreference.setText("");
-        macAddressPreference.setText("");
-        printerPreference.setSummary(getString(R.string.printer_text));
-        macAddressPreference.setSummary(getString(R.string.mac_address_value));
-        addressPreference.setSummary(getString(R.string.address_value));
+    public static Bitmap getBitmapFromView(View visitorLayout, ImageView imageView) {
+        Bitmap bitmap = Bitmap.createBitmap(visitorLayout.getWidth(), visitorLayout.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        visitorLayout.draw(canvas);
+        //imageView.setImageBitmap(bitmap);
+        return bitmap;
     }
 
-    /**
-     * set the BackgroundForPreferenceScreens to light it is black when at OS
-     * 2.1/2.2
-     */
-    private void setBackgroundForPreferenceScreens(String key) {
-        PreferenceScreen preferenceScreen = (PreferenceScreen) getPreferenceScreen()
-                .findPreference(key);
-
-        preferenceScreen
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        PreferenceScreen pref = (PreferenceScreen) preference;
-                        pref.getDialog()
-                                .getWindow()
-                                .setBackgroundDrawableResource(
-                                        android.R.drawable.screen_background_light);
-                        return false;
-                    }
-                });
+    public void printImage(View view) {
+        PrinterController.getInstance().setPrintImage(getBitmapFromView(brotherTestPrint, brotherImageView));
+        PrinterController.getInstance().print();
     }
 
-    public void onParamterback(View view) {
-        startActivity(new Intent(this, SettingActivity.class));
+    @Override
+    public void onBluetoothDisabled() {
+        final Intent enableBtIntent = new Intent(
+                BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        enableBtIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(enableBtIntent);
+    }
+
+    @Override
+    public void onPrintComplete() {
+        PrinterController.getInstance().setPrinting(false);
+    }
+
+    @Override
+    public void onPrintError() {
+        PrinterController.getInstance().setPrinting(false);
+    }
+
+    @Override
+    public void onPrintUsbCommand() {
+        runOnUiThread(() -> new PrintExecuteTask(this,
+                PrinterController.getInstance().getUsbPrintControl(), this)
+                .execute(PrinterController.getInstance().getPrintData()));
+    }
+
+    @Override
+    public void onPrintUsbSuccess(String status, long resultCode) {
+        PrinterController.getInstance().setPrinting(false);
+    }
+
+    public void saveAudioSettings(View view) {
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, editTextNameLabel.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, editTextQRAnswers.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, editTextPassName.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, editTextWaveYes.getText().toString());
+        Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, editTextWaveNo.getText().toString());
+
+        Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();
+    }
+
+    // TOSHIBA PRINTER
+    public void selectToshibaBluetoothPrinter(View view) {
+        startActivity(new Intent(this, PrinterUsbSettingsActivity.class));
+    }
+
+    private void printerList(Context context) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
+        String orginalPrinterType = util.getPreferences(this, PRINTER_TYPE_KEYNAME);
+        int position = 0;
+        int selectPosition = 13;
+        for (int i = 0; i < PRINTER_LIST.length; i++) {
+            adapter.add(PRINTER_LIST[i]);
+
+            if (orginalPrinterType != null && orginalPrinterType.length() != 0
+                    && PRINTER_LIST[i].compareTo(orginalPrinterType) == 0) {
+                selectPosition = position;
+            }
+            position += 1;
+        }
+        ListView listView = (ListView) findViewById(R.id.StartMenuButtonlist1);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(adapter);
+        listView.setSelector(new PaintDrawable(Color.BLUE));
+        listView.setItemChecked(selectPosition, true);
+
+        String item = "B-FV4D";
+        util.setPreferences(context, PRINTER_TYPE_KEYNAME, item);
+    }
+
+    private void portList(Context context) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice);
+        adapter.add("FILE");
+        ListView listView = (ListView) findViewById(R.id.port_menu_list);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        listView.setAdapter(adapter);
+
+        listView.setSelector(new PaintDrawable(Color.BLUE));
+
+        util.setPreferences(context, PORTSETTING_PORT_MODE_KEYNAME, "FILE");
+    }
+
+    public void onClickButtonPrint(View view) {
+        new Thread(() -> {
+            if (AppSettings.isPrintUsbEnabled()) {
+                String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                String date = new SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(new Date());
+                String dateTime = date + " " + currentTime;
+                PrinterController.getInstance().setPrintData("Test", dateTime, "Thermal Scan", currentTime,false);
+                PrinterController.getInstance().printUsb();
+            }
+        }).start();
+    }
+
+    @Override
+    public void onPrintStatus(String status, int code) {
+        Log.d(TAG, "Print Status " + status);
+        PrinterController.getInstance().setPrinting(false);
     }
 }

@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -16,10 +17,12 @@ import android.util.Log;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
+import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.ContextUtils;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -33,6 +36,7 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 
 import static android.os.SystemClock.elapsedRealtime;
@@ -51,6 +55,18 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale localeToSwitchTo;
+        if (HomeActivity.mSelectLanguage) {
+            localeToSwitchTo = new Locale("es");
+        } else {
+            localeToSwitchTo = new Locale("en");
+        }
+        ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
+        super.attachBaseContext(localeUpdatedContext);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

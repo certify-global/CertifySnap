@@ -8,8 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_15"
-        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginStart="@dimen/size_15"
+        android:layout_marginTop="@dimen/size_10"
         android:orientation="horizontal">
 
         <ImageView
@@ -22,10 +22,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/margin_15"
+            android:layout_marginStart="@dimen/size_15"
             android:text="@string/login"
             android:textColor="@color/black"
-            android:textSize="@dimen/font_18"
+            android:textSize="@dimen/text_size_18"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -37,7 +37,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Password:   " />
+            android:text="@string/login_password" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="   " />
 
         <EditText
             android:id="@+id/et_password"
@@ -51,8 +55,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_30"
-        android:layout_marginBottom="@dimen/margin_15"
+        android:layout_marginTop="@dimen/size_30"
+        android:layout_marginBottom="@dimen/size_15"
         android:orientation="horizontal">
 
         <TextView
@@ -67,19 +71,19 @@
             android:text="@string/cancel"
             android:textAllCaps="true"
             android:textColor="@color/colorAccent"
-            android:padding="@dimen/margin_10"
-            android:textSize="@dimen/font_14" />
+            android:padding="@dimen/size_10"
+            android:textSize="@dimen/text_size_14" />
 
         <TextView
             android:id="@+id/tv_confirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_30"
-            android:layout_marginEnd="@dimen/margin_30"
+            android:layout_marginStart="@dimen/size_30"
+            android:layout_marginEnd="@dimen/size_30"
             android:text="@string/confirm"
             android:textAllCaps="true"
-            android:padding="@dimen/margin_10"
+            android:padding="@dimen/size_10"
             android:textColor="@color/colorAccent"
-            android:textSize="@dimen/font_14" />
+            android:textSize="@dimen/text_size_14" />
     </LinearLayout>
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.certify.snap.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 
 import com.certify.snap.common.Application;
@@ -11,9 +12,12 @@ import com.certify.snap.common.Util;
 import com.certify.snap.database.Database;
 import com.certify.snap.database.DatabaseStore;
 import com.certify.snap.database.secureDB.SQLCipherUtils;
+import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
+import com.certify.snap.model.DeviceSettings;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.MemberSyncService;
@@ -28,9 +32,9 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 3;
+    public static final int DB_VERSION = 7;
     public static Context mContext;
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
 
     public static DatabaseController getInstance() {
         if (mInstance == null) {
@@ -89,21 +93,21 @@ public class DatabaseController {
     }
 
     public List<RegisteredMembers> findMember(long primaryId) {
-        try {
-            if (databaseStore != null) {
+        if (databaseStore != null) {
+            try {
                 return databaseStore.findMemberByPrimaryId(primaryId);
-            }
-        } catch (SQLiteException e){
-            if (handleDBException(e)) {
-                if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
-                    Util.stopMemberSyncService(mContext);
-                    MemberSyncDataModel.getInstance().clear();
-                }
-                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        mContext.startService(new Intent(mContext, MemberSyncService.class));
-                        Application.StartService(mContext);
+            } catch (SQLiteException e) {
+                if (handleDBException(e)) {
+                    if (Util.isServiceRunning(MemberSyncService.class, mContext)) {
+                        Util.stopMemberSyncService(mContext);
+                        MemberSyncDataModel.getInstance().clear();
+                    }
+                    if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                        if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                            mContext.startService(new Intent(mContext, MemberSyncService.class));
+                            Application.StartService(mContext);
+                        }
                     }
                 }
             }
@@ -385,19 +389,85 @@ public class DatabaseController {
         return new ArrayList<>();
     }
 
+    public void insertDeviceSettingsToDB(DeviceSettings deviceSettings) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertDeviceSetting(deviceSettings);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public List<DeviceSettings> getDeviceSettings() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllDeviceSettings();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public String getSetting(String settingName) {
+        try {
+            if (databaseStore != null) {
+                DeviceSettings deviceSetting = databaseStore.findDeviceSettingByName(settingName);
+                return deviceSetting.settingValue;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return "";
+    }
+
+    public void updateSetting(DeviceSettings setting) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.updateSetting(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void insertQuestionsToDB(QuestionDataDb questionData) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertGestureQuestions(questionData);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public List<QuestionDataDb> getQuestionsFromDb() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllQuestionsData();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public void deleteQuestionsFromDb() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAllQuestions();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public List<RegisteredMembers> lastTenMembers() {
         if (databaseStore != null) {
             return databaseStore.lastTenMembers();
         }
         return new ArrayList<>();
-    }
-
-    public void clearAll() {
-        if (databaseStore != null) {
-            databaseStore.deleteAll();
-            databaseStore.deleteAllOfflineRecord();
-            databaseStore.deleteAllOfflineAccessLogRecords();
-        }
     }
 
     private boolean handleDBException(SQLiteException e) {
@@ -427,6 +497,28 @@ public class DatabaseController {
             if (fileDbWal.exists()) {
                 fileDbWal.delete();
             }
+        }
+    }
+
+    private void deleteMemberData() {
+        String path = Environment.getExternalStorageDirectory() + "/pic";
+        File file = new File(path);
+        if (file.isDirectory() && file.exists()) {
+            String[] children = file.list();
+            for (String child : children) {
+                new File(file, child).delete();
+            }
+            file.delete();
+        }
+    }
+
+    public void clearAll() {
+        if (databaseStore != null) {
+            databaseStore.deleteAll();
+            databaseStore.deleteAllOfflineRecord();
+            databaseStore.deleteAllOfflineAccessLogRecords();
+            deleteMemberData();
+            FaceServer.getInstance().clearAllFaces(mContext);
         }
     }
 }

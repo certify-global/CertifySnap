@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/colorWhite"
     tools:context=".activity.SelectDeviceActivity">
 
     <LinearLayout
@@ -15,7 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/bg_green"
+            android:background="@color/colorBgGreen"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -69,9 +69,9 @@
             android:id="@+id/bluetoothlist_listview_devices"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/lightgray"
+            android:divider="@color/colorLightGray"
             android:dividerHeight="1dp"
             android:scrollbarSize="2dp"
-            android:scrollbarThumbVertical="@color/white" />
+            android:scrollbarThumbVertical="@color/colorWhite" />
     </LinearLayout>
 </LinearLayout>

@@ -60,7 +60,7 @@
             android:id="@+id/relative_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/colorWhite"
             android:visibility="visible">
 
             <LinearLayout
@@ -68,15 +68,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
-                android:layout_marginTop="@dimen/margin_10"
+                android:layout_marginTop="@dimen/size_10"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/tv_close_message"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:background="@color/translucent_black"
+                    android:background="@color/colorTranslucentBlack"
                     android:gravity="center"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorWhite"
                     android:textSize="28sp"
                     android:visibility="gone"/>
             </LinearLayout>
@@ -87,7 +87,7 @@
                 android:layout_below="@+id/tv_close_message_layout"
                 android:layout_height="150dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/white"
+                android:background="@color/colorWhite"
                 android:scaleType="fitCenter" />
 
             <FrameLayout
@@ -130,27 +130,27 @@
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="@dimen/margin_20"
-                        android:layout_marginTop="@dimen/margin_10"
-                        android:layout_marginRight="@dimen/margin_20"
-                        android:layout_marginBottom="@dimen/margin_10"
+                        android:layout_marginLeft="@dimen/size_20"
+                        android:layout_marginTop="@dimen/size_10"
+                        android:layout_marginRight="@dimen/size_20"
+                        android:layout_marginBottom="@dimen/size_10"
                         android:background="@drawable/textview_rectangle"
                         android:gravity="center"
                         android:text="@string/tv_qr_scan"
-                        android:textSize="@dimen/margin_20" />
+                        android:textSize="@dimen/size_20" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
-                        android:layout_margin="@dimen/margin_50"
-                        android:layout_marginTop="@dimen/font_10"
+                        android:layout_margin="@dimen/size_50"
+                        android:layout_marginTop="@dimen/text_size_10"
                         android:background="@drawable/qr_code_border">
                         <ImageView
                             android:id="@+id/img_qr"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_margin="@dimen/margin_20"
+                            android:layout_margin="@dimen/size_20"
                             android:visibility="gone">
 
                         </ImageView>
@@ -158,8 +158,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="5dp"
                             android:id="@+id/imageView"
-                            android:background="@color/white"
-                            android:layout_margin="@dimen/margin_20"/>
+                            android:background="@color/colorWhite"
+                            android:layout_margin="@dimen/size_20"/>
                     </FrameLayout>
 
                 </RelativeLayout>
@@ -179,7 +179,7 @@
                 android:paddingRight="15dip"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="Press here if you do not have QR Code"
+                android:text="@string/ir_text"
                 android:layout_marginTop="-55dp"
                 android:background="@drawable/btn_shape"
                 android:layout_below="@+id/barcode_scanner"
@@ -195,23 +195,23 @@
                 android:gravity="center"
                 android:text="@string/thermal_scan"
                 android:textColor="@color/black"
-                android:textSize="@dimen/margin_40"
+                android:textSize="@dimen/size_40"
                 android:visibility="visible"
-                android:layout_marginRight="@dimen/font_10"
-                android:layout_marginLeft="@dimen/font_10"
+                android:layout_marginRight="@dimen/text_size_10"
+                android:layout_marginLeft="@dimen/text_size_10"
                 android:textAlignment="center"/>
             <me.grantland.widget.AutofitTextView
                 android:id="@+id/tv_only_text"
-                android:padding="@dimen/margin_15"
+                android:padding="@dimen/size_15"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="if your answer to all 3covid questions is no please tap your badge  at the bottom of the device for a thermal Scan.and report to"
+                android:text="@string/ir_ques_text"
                 android:layout_centerVertical="true"
                 android:textColor="@color/black"
                 android:textSize="32sp"
                 autofit:minTextSize="8sp"
-                android:layout_marginTop="@dimen/margin_38"
-                android:layout_marginBottom="@dimen/margin_50"
+                android:layout_marginTop="@dimen/size_38"
+                android:layout_marginBottom="@dimen/size_50"
                 android:visibility="gone" />
             <TextView
                 android:id="@+id/tv_thermal_subtitle"
@@ -256,7 +256,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginStart="@dimen/margin_15"
+                android:layout_marginStart="@dimen/size_15"
                 android:textColor="#85898D"
                 android:textSize="24sp"
                 android:layout_marginBottom="10dp"
@@ -273,7 +273,7 @@
                 android:gravity="center"
                 android:paddingRight="2dp"
                 android:paddingBottom="2dp"
-                android:layout_marginEnd="@dimen/margin_15"
+                android:layout_marginEnd="@dimen/size_15"
                 android:text="@string/app_version"
                 android:textSize="16sp" />
             <TextView
@@ -287,18 +287,18 @@
                 android:textSize="16sp"
                 android:visibility="visible"
                 android:gravity="right"
-                android:layout_marginRight="@dimen/margin_10" />
+                android:layout_marginRight="@dimen/size_10" />
         </RelativeLayout>
 
     </RelativeLayout>
 
     <ImageView
         android:id="@+id/img_internet_indicator"
-        android:layout_width="@dimen/margin_40"
-        android:layout_height="@dimen/margin_40"
+        android:layout_width="@dimen/size_40"
+        android:layout_height="@dimen/size_40"
         android:src="@drawable/red_circle"
         android:layout_alignParentRight="true"
-        android:padding="@dimen/margin_15"
+        android:padding="@dimen/size_15"
         android:visibility="gone"/>
 
     <ImageView
@@ -317,7 +317,7 @@
         android:layout_marginBottom="80dp"
         android:gravity="center"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/white"
+        android:textColor="@color/colorWhite"
         android:textStyle="bold"
         android:textSize="34sp"
         android:visibility="gone"/>
@@ -329,7 +329,7 @@
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:padding="2dp"
-        android:textColor="@color/white"
+        android:textColor="@color/colorWhite"
         android:textSize="34sp"
         android:visibility="visible" />
 
@@ -338,11 +338,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/half_transparent"
+        android:background="@color/colorHalfTransparent"
         android:gravity="center"
         android:padding="5dp"
         android:text="dvgvfvcvcb"
-        android:textColor="@color/white"
+        android:textColor="@color/colorWhite"
         android:textSize="28sp"
         android:visibility="gone" />
 

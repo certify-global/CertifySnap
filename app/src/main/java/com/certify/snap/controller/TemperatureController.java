@@ -62,7 +62,7 @@ public class TemperatureController {
     private boolean isTempAboveThreshold = false;
     private boolean isGuideInited = false;
     private Timer guideTempTimer = null;
-    private float MIN_TEMPERATURE_THRESHOLD = 96.2f;
+    public static float MIN_TEMPERATURE_THRESHOLD = 96.2f;
     private int mTemperatureRetry = 0;
     private String machineTemperature;
     private String ambientTemperature;
@@ -654,6 +654,18 @@ public class TemperatureController {
         BLEController.getInstance().setLightOnHighTemperature();
         PrinterController.getInstance().printOnHighTemperature();
         MemberSyncDataModel.getInstance().syncDbErrorList(context);
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature,
+                TemperatureController.getInstance().getTemperatureRecordData());
+    }
+
+    /**
+     * Method that updates the corresponding Controllers for further processing when
+     * Temperature Scan is disabled
+     * @param membersList Members list
+     */
+    public void updateControllersOnTempScanDisabled(List<RegisteredMembers> membersList) {
+        CameraController.getInstance().setFaceVisible(false);
+        AccessCardController.getInstance().processUnlockDoor(membersList);
         AccessCardController.getInstance().sendAccessLogValid(context, temperature,
                 TemperatureController.getInstance().getTemperatureRecordData());
     }

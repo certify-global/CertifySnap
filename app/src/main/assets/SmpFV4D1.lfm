@@ -1,0 +1,60 @@
+[System]
+Language=ENG
+DefaultLangID=411
+LFMVersion=B002.001
+FormName=
+DateID=0
+[Paper]
+PaperKind=Default
+PaperSize=720,600
+LabelFormSize=720,600
+IssueCondition=0
+Rows=1
+Columns=1
+LeftMergine=0
+TopMergine=0
+RowGap=0
+ColumnGap=0
+NoOfObjects=4
+PrinterName=B-FV4D
+Printer=BFV4D
+LabelGap=20
+PrintMode=C,0
+Rotation=0
+Ribon=0
+VoltAdj_Heat=0
+VoltAdj_Ribn=0
+VoltAdj_Mult=0
+FeedAdj=0
+CutAdj=0
+BFeedAdj=0
+Sensore=0
+PrintSpeed=4
+[Object]
+1=2,"RECTANGLE",6,16,716,496,0,0
+2=0,"name field",181,79,657,169,0,3
+3=0,"scan result field",201,376,785,466,0,3
+4=0,"date time field",92,220,848,310,0,3
+[Extention]
+1=2,7,0
+2=10,1,"Courier New",10,0,21,-100,1,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+3=17,1,"Courier New",10,0,15,-100,1,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+4=22,1,"Courier New",10,0,15,-100,1,0,0,0,0,0,0,"0",0,0,0,0,0,0,0,"/"
+[PREXTENTION]
+1=3,0,0
+2=0,B,20,25,0,B,18,0,0,0,0,1,1
+3=0,B,15,25,0,B,13,0,0,0,0,1,1
+4=0,B,15,25,0,B,13,0,0,0,0,1,1
+[CustomData]
+1=0
+2=1
+3=1
+4=1
+[Sample]
+2="Screened  ";
+3="Thermal Scan12345";
+4="September 09, 2020    ";
+[Attribute]
+2=
+3=
+4=

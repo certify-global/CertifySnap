@@ -58,7 +58,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class DeviceSettingsActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
+public class DeviceSettingsActivity extends SettingsBaseActivity implements JSONObjectCallback, SettingCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
@@ -66,7 +66,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members,
-                navigation_bar_textview, sync_online_members_textview, led_switch_textview;
+            navigation_bar_textview, sync_online_members_textview, led_switch_textview, saveLogsTv, logOfflineData;
     private Button tvClearData, not_activate;
     private Typeface rubiklight;
     private String url_end;
@@ -75,11 +75,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
     private View pro_settings_border;
-    RadioGroup sync_member_radio_group;
-    RadioButton sync_member_radio_yes, sync_member_radio_no;
+    RadioGroup sync_member_radio_group, logOfflineDataRg;
+    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo;
     RadioGroup radio_group_local_server;
-    RadioButton radio_yes_server, radio_no_server;
-    TextView tvLocalServer, tvServerIp;
+    RadioButton radio_yes_server, radio_no_server, radio_english_locale, radio_spanish_locale;
+    TextView tvLocalServer, tvServerIp, tvLocaleSettings;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
@@ -91,6 +91,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private LinearLayout localServerLayout;
     private boolean deviceOnlineSwitch = false;
     private Button saveLogButton;
+    private LinearLayout logOfflineDataLayout, captureLogsLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,6 +108,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             setDefaultLedBrightnessLevel();
             localServerSetting();
             captureLogSetting();
+            logOfflineDataSetting();
+            languageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -121,6 +124,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     if (isChecked) {
                         isOnline = true;
                         localServerLayout.setVisibility(View.GONE);
+                        logOfflineDataLayout.setVisibility(View.GONE);
+                        captureLogsLayout.setVisibility(View.VISIBLE);
                         LocalServer localServer = new LocalServer(DeviceSettingsActivity.this);
                         localServer.stopServer();
                         Util.activateApplication(DeviceSettingsActivity.this, DeviceSettingsActivity.this);
@@ -129,6 +134,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     } else {
                         isOnline = false;
                         localServerLayout.setVisibility(View.VISIBLE);
+                        logOfflineDataLayout.setVisibility(View.VISIBLE);
+                        captureLogsLayout.setVisibility(View.GONE);
                         activateStatus();
                         // Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_SWITCH, false);
                         Toast.makeText(getApplicationContext(), getString(R.string.offline_msg), Toast.LENGTH_LONG).show();
@@ -178,10 +185,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     try {
                         String strUserInput = etPassword.getText().toString().trim();
                         if (TextUtils.isEmpty(strUserInput)) {
-                            etPassword.setError("Password should not be empty");
+                            etPassword.setError(getString(R.string.password_empty_msg));
                             return;
                         } else if (etPassword.getText().toString().length() < 6) {
-                            etPassword.setError("Password should be minimum six digits");
+                            etPassword.setError(getString(R.string.password_length_msg));
                         } else {
                             etPassword.setError(null);
                             Util.writeString(sharedPreferences, GlobalParameters.DEVICE_PASSWORD, etPassword.getText().toString().trim());
@@ -198,6 +205,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     saveLedBrightnessSetting();
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.LogOfflineData, logOfflineDataYes.isChecked());
                     AppSettings.setProSettings(proSettingValue);
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         deleteAppData();
@@ -208,7 +216,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         restartApp();
                     } else {
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
-                            && deviceOnlineSwitch)) {
+                                && deviceOnlineSwitch)) {
                             restartApp();
                             return;
                         }
@@ -231,7 +239,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     }
 
-    private void initView(){
+    private void initView() {
         etEndUrl = findViewById(R.id.et_end_url);
         etDeviceName = findViewById(R.id.et_device_name);
         etPassword = findViewById(R.id.et_device_password);
@@ -252,13 +260,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         tvResetSnap = findViewById(R.id.tv_reset_snap);
         pro_settings = findViewById(R.id.pro_settings);
         pro_layout = findViewById(R.id.pro_layout);
-        pro_settings_border= findViewById(R.id.pro_settings_border);
+        pro_settings_border = findViewById(R.id.pro_settings_border);
         tv_reset_members = findViewById(R.id.tv_reset_members);
         tv_clear_members = findViewById(R.id.tv_clear_members);
         navigation_bar_textview = findViewById(R.id.navigation_bar_textview);
         sync_online_members_textview = findViewById(R.id.sync_online_members_textview);
         led_switch_textview = findViewById(R.id.led_switch_textview);
-        seekBar=findViewById(R.id.seekbar);
+        seekBar = findViewById(R.id.seekbar);
         tvLocalServer = findViewById(R.id.local_server_tv);
         tvServerIp = findViewById(R.id.tv_server_ip);
         radio_group_local_server = findViewById(R.id.local_server_radio_group);
@@ -267,7 +275,17 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         ivClipBoard = findViewById(R.id.iv_clipBoard);
         addrRelativeLayout = findViewById(R.id.addr_relative_layout);
         localServerLayout = findViewById(R.id.local_server_parent_layout);
+        saveLogsTv = findViewById(R.id.capture_logs);
         saveLogButton = findViewById(R.id.send_log_button);
+        logOfflineDataLayout = findViewById(R.id.log_offline_data_parent_layout);
+        logOfflineData = findViewById(R.id.log_offline_data);
+        logOfflineDataRg = findViewById(R.id.log_offline_data_rg);
+        logOfflineDataYes = findViewById(R.id.log_od_rb_yes);
+        logOfflineDataNo = findViewById(R.id.log_od_rb_no);
+        captureLogsLayout = findViewById(R.id.capture_logs_layout);
+        radio_english_locale = findViewById(R.id.radio_english_locale_settings);
+        radio_spanish_locale = findViewById(R.id.radio_spanish_locale_settings);
+        tvLocaleSettings = findViewById(R.id.locale_settings);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -291,9 +309,15 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         led_switch_textview.setTypeface(rubiklight);
         tvLocalServer.setTypeface(rubiklight);
         tvServerIp.setTypeface(rubiklight);
+        saveLogsTv.setTypeface(rubiklight);
+        saveLogButton.setTypeface(rubiklight);
+        logOfflineData.setTypeface(rubiklight);
+        tvLocaleSettings.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
+            logOfflineDataLayout.setVisibility(View.VISIBLE);
+            captureLogsLayout.setVisibility(View.GONE);
         }
     }
 
@@ -325,16 +349,16 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void navigationBarSettings() {
-        RadioGroup  radio_group_navigationbar = findViewById(R.id.navigation_bar_radio_group);
+        RadioGroup radio_group_navigationbar = findViewById(R.id.navigation_bar_radio_group);
         RadioButton radio_navigationbar_enable = findViewById(R.id.navigation_bar_radio_enable);
         RadioButton radio_navigationbar_disable = findViewById(R.id.navigation_bar_radio_disable);
-        boolean navigationBar = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,true);
+        boolean navigationBar = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, true);
 
-        if (navigationBar){
+        if (navigationBar) {
             radio_navigationbar_enable.setChecked(true);
             sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
             sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
-        }else {
+        } else {
             radio_navigationbar_disable.setChecked(true);
             sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
@@ -345,12 +369,12 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.navigation_bar_radio_enable:
-                        Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,true);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, true);
                         sendBroadcast(new Intent(GlobalParameters.ACTION_SHOW_NAVIGATIONBAR));
                         sendBroadcast(new Intent(GlobalParameters.ACTION_OPEN_STATUSBAR));
                         break;
                     case R.id.navigation_bar_radio_disable:
-                        Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, false);
                         sendBroadcast(new Intent(GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
                         sendBroadcast(new Intent(GlobalParameters.ACTION_CLOSE_STATUSBAR));
                         break;
@@ -361,14 +385,14 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void ledSwitchSettings() {
-        RadioGroup  led_radio_group = findViewById(R.id.radio_group_led);
+        RadioGroup led_radio_group = findViewById(R.id.radio_group_led);
         RadioButton radio_led_on = findViewById(R.id.radio_led_on);
         RadioButton radio_led_off = findViewById(R.id.radio_led_off);
-        boolean ledSwitch = sharedPreferences.getBoolean(GlobalParameters.LedType,true);
+        boolean ledSwitch = sharedPreferences.getBoolean(GlobalParameters.LedType, true);
 
-        if (ledSwitch){
+        if (ledSwitch) {
             radio_led_on.setChecked(true);
-        }else {
+        } else {
             radio_led_off.setChecked(true);
             Util.setLedPower(0);
         }
@@ -378,10 +402,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.radio_led_on:
-                        Util.writeBoolean(sharedPreferences,GlobalParameters.LedType,true);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.LedType, true);
                         break;
                     case R.id.radio_led_off:
-                        Util.writeBoolean(sharedPreferences,GlobalParameters.LedType,false);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.LedType, false);
                         Util.setLedPower(0);
                         break;
                 }
@@ -429,13 +453,13 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
             tvSettingsName.setText(sharedPreferences.getString(GlobalParameters.DEVICE_SETTINGS_NAME, "Local"));
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                 switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
+                activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
             } else {
                 switch_activate.setChecked(false);
-                activateStatus.setText("Not Activated");
-                not_activate.setText("Activate");
-                tvSettingsName.setText("Local");
+                activateStatus.setText(getString(R.string.not_activated_msg));
+                not_activate.setText(getString(R.string.activate_msg));
+                tvSettingsName.setText(getString(R.string.local));
             }
             syncMemberSettings();
             deviceAccessPassword();
@@ -445,8 +469,8 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void activateStatus() {
-        activateStatus.setText("Not Activated");
-        not_activate.setText("Activate");
+        activateStatus.setText(getString(R.string.not_activated_msg));
+        not_activate.setText(getString(R.string.activate_msg));
         not_activate.setVisibility(View.VISIBLE);
 
         not_activate.setOnClickListener(new View.OnClickListener() {
@@ -505,11 +529,11 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseCode").equals("1")) {
                 switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
+                activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
             } else if (json1.getString("responseSubCode").equals("103")) {
                 switch_activate.setChecked(true);
-                activateStatus.setText("Activated");
+                activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
             }
         } catch (Exception e) {
@@ -534,7 +558,9 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         if (sharedPreferences != null) {
             sharedPreferences.edit().clear().apply();
         }
-        //LitePal.deleteDatabase("telpo_face");
+        if (sharedPreferences != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, ApplicationController.getInstance().getFcmPushToken());
+        }
     }
 
     private void stopMemberSyncService() {
@@ -547,10 +573,10 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     }
 
     private void closeApp() {
-        Toast.makeText(DeviceSettingsActivity.this, "App will restart", Toast.LENGTH_SHORT).show();
+        Toast.makeText(DeviceSettingsActivity.this, getString(R.string.app_restart), Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
-        Intent intent = new Intent(this, GuideActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         int mPendingIntentId = 111111;
         PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
@@ -599,7 +625,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
 
     private boolean isValidUrl() {
         if (etEndUrl.getText().toString().isEmpty()) {
-            etEndUrl.setError("Please input valid url");
+            etEndUrl.setError(getString(R.string.input_valid_url));
             return false;
         }
         return true;
@@ -618,18 +644,18 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     public void clearDatabase(View view) {
         //LitePal.deleteDatabase("telpo_face");
         DatabaseController.getInstance().deleteAllMember();
-        Toast.makeText(this, "All Members Cleared", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.all_members_cleared), Toast.LENGTH_LONG).show();
     }
 
-    private void seekBarSettings(){
+    private void seekBarSettings() {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(Build.MODEL.contains("950")||"TPS980Q".equals(Build.MODEL)){
+                if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
                     progress /= 8;
-                    Log.e("progress---",progress+"");
+                    Log.e("progress---", progress + "");
                     Util.setLedPower(progress);
-                }else {
+                } else {
                     Process p = null;
                     ledLevel = progress;
                     //String cmd = "echo " + progress + " > /sys/class/backlight/rk28_bl_sub/brightness";
@@ -664,7 +690,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)) {
             radio_yes_server.setChecked(true);
             addrRelativeLayout.setVisibility(View.VISIBLE);
-            serverAddress = localServer.getIpAddress(this) +":"+Constants.port;
+            serverAddress = localServer.getIpAddress(this) + ":" + Constants.port;
             String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
             tvServerIp.setText(text);
             serverSettingValue = true;
@@ -680,7 +706,7 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LOCAL_SERVER_SETTINGS, true);
                     radio_yes_server.setChecked(true);
                     addrRelativeLayout.setVisibility(View.VISIBLE);
-                    serverAddress = localServer.getIpAddress(DeviceSettingsActivity.this) +":"+Constants.port;
+                    serverAddress = localServer.getIpAddress(DeviceSettingsActivity.this) + ":" + Constants.port;
                     String text = String.format(getResources().getString(R.string.text_ip_address), serverAddress);
                     tvServerIp.setText(text);
                     serverSettingValue = true;
@@ -713,12 +739,28 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
     private void captureLogSetting() {
         saveLogButton.setOnClickListener(view -> {
             Util.sendDeviceLogs(DeviceSettingsActivity.this);
-            Toast.makeText(DeviceSettingsActivity.this, "Logs sent", Toast.LENGTH_LONG).show();
+            Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
+        });
+    }
+
+    private void logOfflineDataSetting() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false)) {
+            logOfflineDataYes.setChecked(true);
+        } else {
+            logOfflineDataNo.setChecked(true);
+        }
+
+        logOfflineDataRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.log_od_rb_yes) {
+                logOfflineDataYes.setChecked(true);
+            } else if (checkedId == R.id.log_od_rb_no) {
+                logOfflineDataNo.setChecked(true);
+            }
         });
     }
 
     private void initiateCloseApp() {
-        ProgressDialog.show(this, "", "Closing and Restarting App, Please wait...");
+        ProgressDialog.show(this, "", getString(R.string.closing_app_msg));
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
                     ApplicationController.getInstance().releaseThermalUtil();
@@ -757,5 +799,32 @@ public class DeviceSettingsActivity extends SettingBaseActivity implements JSONO
                         //do noop
                     }
                 });
+    }
+
+    private void languageSetting() {
+        RadioGroup  locale_radio_group = findViewById(R.id.radio_group_locale_settings);
+        boolean languageSwitch = sharedPreferences.getBoolean(GlobalParameters.languageType, false);
+
+        if (languageSwitch) {
+            radio_spanish_locale.setChecked(true);
+        } else {
+            radio_english_locale.setChecked(true);
+        }
+
+        locale_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.radio_english_locale_settings:
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.languageType, false);
+                        restartApp();
+                        break;
+                    case R.id.radio_spanish_locale_settings:
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.languageType, true);
+                        restartApp();
+                        break;
+                }
+            }
+        });
     }
 }

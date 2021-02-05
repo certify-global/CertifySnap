@@ -19,7 +19,7 @@ import com.tamic.novate.Throwable;
 import com.tamic.novate.callback.ResponseCallback;
 import com.tamic.novate.callback.RxFileCallBack;
 import com.tamic.novate.callback.RxStringCallback;
-import com.certify.snap.activity.GuideActivity;
+import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.bean.AccessToken;
 import com.certify.snap.bean.Guest;
 import com.certify.snap.bean.GuestList;
@@ -669,8 +669,8 @@ public class GuideService extends Service {
                         startOfflineverifyTimer();
                         startUpdateGuestRecordTimer();
                         startDeleteExpiredGuestDataTimer();
-                        if (Util.isActivityTop(GuideActivity.class, GuideService.this)) {
-                            Log.e("isactivitytop---", "guide是否是栈顶=" + Util.isActivityTop(GuideActivity.class, GuideService.this));
+                        if (Util.isActivityTop(HomeActivity.class, GuideService.this)) {
+                            Log.e("isactivitytop---", "guide是否是栈顶=" + Util.isActivityTop(HomeActivity.class, GuideService.this));
                             Util.switchRgbOrIrActivity(GuideService.this, false);
                         }
                     }

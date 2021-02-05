@@ -8,14 +8,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -24,7 +22,7 @@ import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
 
-public class AddDeviceActivity extends SettingBaseActivity implements JSONObjectCallback, SettingCallback {
+public class AddDeviceActivity extends SettingsBaseActivity implements JSONObjectCallback, SettingCallback {
     private static String LOG = "AddDeviceActivity -> ";
     SharedPreferences sharedPreferences;
     TextView tv_header, tv_header1, tv_header2, tv_skip,textview_name;

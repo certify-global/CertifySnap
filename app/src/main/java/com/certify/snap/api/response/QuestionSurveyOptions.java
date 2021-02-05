@@ -13,4 +13,6 @@ public class QuestionSurveyOptions {
     @SerializedName("name")
     public String name;
 
+    @SerializedName("expectedOutcome")
+    public String expectedOutcome;
 }

@@ -67,25 +67,8 @@ public class Application extends android.app.Application {
         novate = new Novate.Builder(this).baseUrl(GlobalParameters.BASEURL).addLog(true)
                 .connectTimeout(20).writeTimeout(15).build();
 
-        //持久化存储cookie
-//        ClearableCookieJar cookieJar =
-//                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(getApplicationContext()));
-
-        //log拦截器
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        //自定义OkHttp
-//        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-//                .connectTimeout(20000L, TimeUnit.MILLISECONDS)
-//                .readTimeout(20000L, TimeUnit.MILLISECONDS)
-//                //.writeTimeout(20000L, TimeUnit.MILLISECONDS)
-//                .cookieJar(cookieJar)       //设置开启cookie
-//                .addInterceptor(logging)            //设置开启log
-//                .build();
-//        mMyOkHttp = new MyOkHttp(okHttpClient);
-
-        BlockDetectByPrinter.start(false);//检测卡顿
 
         if (BuildConfig.BUILD_TYPE != "debug") {
             initAppCenter();
@@ -111,13 +94,10 @@ public class Application extends android.app.Application {
         return novate;
     }
 
-//    public MyOkHttp getMyOkHttp() {
-//        return mMyOkHttp;
-//    }
 
     // Activity
     public void addActivity(Activity activity) {
-//        activityList.add(activity);
+        // activityList.add(activity);
     }
 
     public static void StartService(Context context) {
@@ -181,7 +161,7 @@ public class Application extends android.app.Application {
     }
 
     public String getPragmaKey(Context context) {
-        wifi= (WifiManager) context.getSystemService(WIFI_SERVICE);
+        wifi = (WifiManager) context.getSystemService(WIFI_SERVICE);
         String macAddress = ConnectivityStatusActivity.getMacAddress("p2p0");
         String deviceSerialNo = Util.getSNCode(this);
         return getSha256Hash(deviceSerialNo + macAddress);

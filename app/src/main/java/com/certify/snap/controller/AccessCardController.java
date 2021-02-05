@@ -33,6 +33,7 @@ public class AccessCardController implements AccessCallback {
     private boolean mReverseRelayMode = false;
     private boolean mStopRelayOnHighTemp = false;
     private boolean mEnableWeigan = false;
+    private boolean mEnableWiegandPt = false;
     private int mRelayTime = 0;
     private Timer mRelayTimer;
     private int mWeiganControllerFormat = 26;
@@ -41,6 +42,25 @@ public class AccessCardController implements AccessCallback {
     private String mAccessIdDb = "";
     private Context context;
     int tapCount = 0;
+    private AccessCallbackListener listener;
+    private boolean isAccessFaceNotMatch = false;
+    private boolean allowAccessValue = true;
+
+    public enum AccessControlScanMode {
+        ID_ONLY(1),
+        FACE_ONLY(2),
+        ID_AND_FACE(3),
+        ID_OR_FACE(4);
+
+        private final int id;
+        AccessControlScanMode(int id) { this.id = id; }
+        public int getValue() { return id; }
+    }
+
+    public interface AccessCallbackListener {
+        void onAccessGranted();
+        void onAccessDenied();
+    }
 
     public static AccessCardController getInstance() {
         if (mInstance == null) {
@@ -77,7 +97,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void setReverseRelayMode(boolean mReverseRelayMode) {
-        this.mReverseRelayMode = mReverseRelayMode;
+        this.mReverseRelayMode = !mReverseRelayMode;
     }
 
     public void setStopRelayOnHighTemp(boolean mStopRelayOnHighTemp) {
@@ -98,6 +118,40 @@ public class AccessCardController implements AccessCallback {
 
     public void setWeiganControllerFormat(int value) {
         mWeiganControllerFormat = value;
+    }
+
+    public boolean isEnableWiegandPt() {
+        return mEnableWiegandPt;
+    }
+
+    public void setEnableWiegandPt(boolean mEnableWiegandPt) {
+        this.mEnableWiegandPt = mEnableWiegandPt;
+    }
+
+    public void setAccessFaceNotMatch(boolean accessFaceNotMatch) {
+        isAccessFaceNotMatch = accessFaceNotMatch;
+    }
+
+    public boolean isACFaceSearchDisabled() {
+        boolean result = false;
+        if (AppSettings.isRfidEnabled() && isAccessSignalEnabled() &&
+                (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue())) {
+            result = true;
+        }
+        return result;
+    }
+
+    public void setCallbackListener(AccessCallbackListener listener) {
+        this.listener = listener;
+    }
+
+    public boolean isDoMemberMatch() {
+        boolean result = false;
+        if ((!mAllowAnonymous && (mEnableRelay || mEnableWeigan))
+                || mEnableWiegandPt) {
+            result = true;
+        }
+        return result;
     }
 
     public void setAccessCardId(String cardId) {
@@ -128,7 +182,12 @@ public class AccessCardController implements AccessCallback {
         }
         if (mReverseRelayMode) {
             unLockStandAloneDoor();
+            unLockWeiganDoorController();
         }
+    }
+
+    private boolean isAccessSignalEnabled() {
+        return (mEnableRelay || mEnableWeigan || mEnableWiegandPt);
     }
 
     private void startRelayTimer() {
@@ -152,7 +211,7 @@ public class AccessCardController implements AccessCallback {
     }
 
     private void unLockWeiganDoorController() {
-        if (!mEnableWeigan) return;
+        if (!mEnableWeigan && !mEnableWiegandPt) return;
         //Check if its 34 Bit, 48 Bit or 26 Bit Weigan controller and send signal accordingly
         if (mWeiganControllerFormat == 26) {
             unlock26BitDoorController();
@@ -232,30 +291,173 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void processUnlockDoor(List<RegisteredMembers> membersList) {
-        if (AppSettings.isFacialDetect()) {
-            if (membersList != null && membersList.size() > 0 ) {
-                unlockDoor();
+        if (isAccessSignalEnabled()) {
+            if (mReverseRelayMode) {
+                denyAccess();
+                return;
             }
-            return;
+            if (((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect()) && isEnableWiegandPt()) || isAllowAnonymous()) {
+                allowAccess();
+                return;
+            }
+            if (AppSettings.isFacialDetect()) {
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
+                    if ((membersList != null && membersList.size() > 0)
+                            && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                        if (isAccessFaceNotMatch || isAccessTimeExpired(membersList.get(0))) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
+                    if ((membersList != null && membersList.size() > 0) &&
+                            (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
+                        if (isAccessTimeExpired(membersList.get(0))) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
+                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                        if (isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
+                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
+                            (membersList != null && membersList.size() > 0)) {
+                        if (membersList != null && (membersList.size() > 0) &&
+                            isAccessTimeExpired(membersList.get(0))) {
+                            denyAccess();
+                        } else {
+                            allowAccess();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+            }
+            if (AppSettings.isRfidEnabled()) {
+                if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
+                        AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
+                        AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                    if (isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+                        denyAccess();
+                    } else {
+                        allowAccess();
+                    }
+                } else {
+                    denyAccess();
+                }
+            }
         }
-        unlockDoor();
     }
 
     public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
-        if (AppSettings.isFacialDetect()) {
-            if (membersList != null && membersList.size() > 0 ) {
-                unlockDoorOnHighTemp();
+        if (isAccessSignalEnabled()) {
+            if (((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect()) && isEnableWiegandPt()) || isAllowAnonymous()) {
+                if (isBlockAccessOnHighTempEnabled()) {
+                    denyAccess();
+                } else {
+                    allowAccessOnHighTemp();
+                }
+                return;
             }
-            return;
+            if (AppSettings.isFacialDetect()) {
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
+                    if ((membersList != null && membersList.size() > 0)
+                            && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                        if (isAccessFaceNotMatch || isAccessTimeExpired(membersList.get(0)) ||
+                                isBlockAccessOnHighTempEnabled()) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
+                    if ((membersList != null && membersList.size() > 0) &&
+                            (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
+                        if (isBlockAccessOnHighTempEnabled() || isAccessTimeExpired(membersList.get(0))) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
+                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                        if (isBlockAccessOnHighTempEnabled() ||
+                                isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
+                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
+                            (membersList != null && membersList.size() > 0)) {
+                        if ((isBlockAccessOnHighTempEnabled()) ||
+                                (membersList != null && (membersList.size() > 0) && isAccessTimeExpired(membersList.get(0)))) {
+                            denyAccess();
+                        } else {
+                            allowAccessOnHighTemp();
+                        }
+                    } else {
+                        denyAccess();
+                    }
+                    return;
+                }
+            }
+            if (AppSettings.isRfidEnabled()) {
+                if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
+                        AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
+                        AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                    if (isBlockAccessOnHighTempEnabled() ||
+                            isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+                        denyAccess();
+                    } else {
+                        allowAccessOnHighTemp();
+                    }
+                } else {
+                    denyAccess();
+                }
+            }
         }
-        unlockDoorOnHighTemp();
     }
 
     public void sendAccessLogValid(Context context, float temperature, UserExportedData data) {
+        if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         RegisteredMembers registeredMember = new RegisteredMembers();
-        if (AppSettings.isAccessLogEnabled() &&
-                (AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {
+        if ((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {
             try {
                 String qrCodeId = "";
                 String accessId = "";
@@ -299,6 +501,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMember.getMemberid());
                     obj.put("memberTypeId", registeredMember.getMemberType());
                     obj.put("memberTypeName", registeredMember.getMemberTypeName());
+                    obj.put("networkId", registeredMember.getNetworkId());
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
                     obj.put("id", 0);
@@ -308,6 +511,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMember.getMemberid());
                     obj.put("memberTypeId", registeredMember.getMemberType());
                     obj.put("memberTypeName", registeredMember.getMemberTypeName());
+                    obj.put("networkId", registeredMember.getNetworkId());
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);
@@ -326,6 +530,11 @@ public class AccessCardController implements AccessCallback {
                 obj.put("eventType", "");
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
+                obj.put("loggingMode", AppSettings.getAccessControlLogMode());
+                obj.put("accessOption", AppSettings.getAccessControlScanMode());
+                if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
+                    obj.put("allowAccess", getAllowAccessValue(data));
+                }
 
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
@@ -341,9 +550,9 @@ public class AccessCardController implements AccessCallback {
     }
 
     public void sendAccessLogInvalid(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
+        if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        if (AppSettings.isAccessLogEnabled() &&
-                (AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {
+        if ((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {
             try {
                 String qrCodeId = "";
                 String accessId = "";
@@ -368,6 +577,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMembers.getMemberid());
                     obj.put("memberTypeId", registeredMembers.getMemberType());
                     obj.put("memberTypeName", registeredMembers.getMemberTypeName());
+                    obj.put("networkId", registeredMembers.getNetworkId());
                 } else {
                     obj.put("id", 0);
                     obj.put("firstName", registeredMembers.getFirstname());
@@ -376,6 +586,7 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberId", registeredMembers.getMemberid());
                     obj.put("memberTypeId", registeredMembers.getMemberType());
                     obj.put("memberTypeName", registeredMembers.getMemberTypeName());
+                    obj.put("networkId", registeredMembers.getNetworkId());
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);
@@ -394,6 +605,8 @@ public class AccessCardController implements AccessCallback {
                 obj.put("eventType", "");
                 obj.put("evenStatus", "");
                 obj.put("utcRecordDate", Util.getUTCDate(""));
+                obj.put("loggingMode", AppSettings.getAccessControlLogMode());
+                obj.put("accessOption", AppSettings.getAccessControlScanMode());
 
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
@@ -424,7 +637,11 @@ public class AccessCardController implements AccessCallback {
         }
     }
 
-    private void saveOfflineAccessLogRecord(JSONObject obj,int syncStatus) {
+    private void saveOfflineAccessLogRecord(JSONObject obj, int syncStatus) {
+        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)
+                && !AppSettings.isLogOfflineDataEnabled()) {
+            return;
+        }
         AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
         try {
             accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
@@ -444,10 +661,86 @@ public class AccessCardController implements AccessCallback {
         this.tapCount = tapCount;
     }
 
+    private void allowAccess() {
+        if (listener != null) {
+            listener.onAccessGranted();
+        }
+        unlockDoor();
+    }
+
+    private void allowAccessOnHighTemp() {
+        if (listener != null) {
+            listener.onAccessGranted();
+        }
+        unlockDoorOnHighTemp();
+    }
+
+    private void denyAccess() {
+        allowAccessValue = false;
+        if (listener != null) {
+            listener.onAccessDenied();
+        }
+    }
+
+    private boolean isBlockAccessOnHighTempEnabled() {
+        return (mNormalRelayMode && mStopRelayOnHighTemp);
+    }
+
+    public boolean isAccessTimeExpired(RegisteredMembers member) {
+        boolean result = false;
+        if (member != null) {
+            if ((member.getAccessFromTime() != null && !member.getAccessFromTime().isEmpty())
+                    && (member.getAccessToTime() != null && !member.getAccessToTime().isEmpty())) {
+                if (!Util.isDateBigger(member.getAccessToTime(), member.getAccessFromTime(), "yyyy-MM-dd'T'HH:mm:ss")) {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean getAllowAccessValue (UserExportedData data) {
+        if (allowAccessValue) {
+            if (data.exceedsThreshold) {
+                if (mNormalRelayMode && mStopRelayOnHighTemp) {
+                    allowAccessValue = false;
+                }
+            } else {
+                if (mReverseRelayMode) {
+                    allowAccessValue = false;
+                }
+            }
+        }
+        return allowAccessValue;
+    }
+
+    public boolean isAccessDenied(RegisteredMembers registeredMembers) {
+        boolean result = false;
+        if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) ||
+                (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue())) {
+            if (isAccessTimeExpired(registeredMembers)) {
+               result = true;
+            }
+        } else if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
+            RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+            if (rfidScanMatchMember != null) {
+                if ((rfidScanMatchMember.primaryid != registeredMembers.primaryid) || isAccessTimeExpired(rfidScanMatchMember)) {
+                    setAccessFaceNotMatch(true);
+                    result = true;
+                }
+            } else if (isAccessTimeExpired(registeredMembers)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
     public void clearData() {
         AccessControlModel.getInstance().clearData();
         mAccessCardID = "";
         mAccessIdDb = "";
         tapCount = 0;
+        isAccessFaceNotMatch = false;
+        allowAccessValue = true;
     }
 }
