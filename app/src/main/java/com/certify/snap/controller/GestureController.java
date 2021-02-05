@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.certify.callback.GestureAnswerCallback;
 import com.certify.callback.GestureCallback;
+import com.certify.snap.api.response.GestureQuestionsDb;
 import com.certify.snap.api.response.QuestionData;
 import com.certify.snap.api.response.QuestionListResponse;
 import com.certify.snap.api.response.QuestionSurveyOptions;
@@ -215,6 +216,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         QuestionData questionData = questionList.get(i);
                         questionAnswerMap.put(questionData, "NA");
                         DatabaseController.getInstance().insertQuestionsToDB(getDbQuestionData(questionData, i));
+                        GestureQuestionsDb gestureQuestionsDb=new GestureQuestionsDb();
+                        gestureQuestionsDb.primaryId=DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType());
+                        List<QuestionDataDb> questionDataDbs=new ArrayList<>();
+                        questionDataDbs.add(getDbQuestionData(questionData, i));
+                        gestureQuestionsDb.questionsDbList=questionDataDbs;
+                        DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);
                     }
                 }
                 Log.d(TAG, "Gesture Questions list updated");
