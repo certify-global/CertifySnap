@@ -82,6 +82,7 @@ public class AppSettings {
     private static String memberSyncGroupId = "0";
     private static boolean memberGroupSyncEnabled = false;
     private static String languageType = "en";
+    private static boolean multiLingualEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -156,6 +157,7 @@ public class AppSettings {
         memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,"0");
         memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC,false);
         languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+        multiLingualEnabled = sharedPreferences.getBoolean(GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL,false);
     }
 
     public static String getThermalScanTitle() {
@@ -463,11 +465,21 @@ public class AppSettings {
         AppSettings.languageType = languageType;
     }
 
+    public static boolean isMultiLingualEnabled() {
+        return multiLingualEnabled;
+    }
+
     public static void getTextSettings(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, context.getString(R.string.thermal_scan));
         tempResultBarNormal = sharedPreferences.getString(GlobalParameters.RESULT_BAR_NORMAL, context.getString(R.string.temperature_normal_msg));
+        if (tempResultBarNormal != null && tempResultBarNormal.isEmpty()) {
+            tempResultBarNormal = context.getString(R.string.temperature_normal_msg);
+        }
         tempResultBarHigh = sharedPreferences.getString(GlobalParameters.RESULT_BAR_HIGH, context.getString(R.string.temperature_high_msg));
+        if (tempResultBarHigh != null && tempResultBarHigh.isEmpty()) {
+            tempResultBarHigh = context.getString(R.string.temperature_high_msg);
+        }
         guideText1 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT1, context.getString(R.string.text_value1));
         guideText2 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, context.getString(R.string.text_value2));
         guideText3 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT3, context.getString(R.string.text_value3));

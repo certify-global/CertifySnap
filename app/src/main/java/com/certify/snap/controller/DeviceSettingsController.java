@@ -39,7 +39,6 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     private static DeviceSettingsController instance = null;
     private Context context;
     private GetLanguagesListener listener;
-    private boolean isMultiLanguageEnabled = true;
     private String languageToUpdate = "";
 
     public interface GetLanguagesListener {
@@ -106,10 +105,6 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         } catch (Exception e) {
             Log.d(TAG, "onJSONObjectListenerGetLanguages" + e.getMessage());
         }
-    }
-
-    public boolean isMultiLanguageEnabled() {
-        return isMultiLanguageEnabled;
     }
 
     public void setLanguageToUpdate(String value) {
@@ -206,7 +201,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         if (languageSettingList != null) {
             for (int i = 0; i < languageSettingList.size(); i++) {
                 DeviceSettings deviceSettings = languageSettingList.get(i);
-                int languageCode = Integer.parseInt(deviceSettings.deviceSettingsData.languageId);
+                int languageCode = deviceSettings.languageId;
                 LanguageData languageData = DatabaseController.getInstance().getLanguageOnId(languageCode);
                 if (languageData != null) {
                     updateLanguageDataToDb(languageCode);
@@ -291,6 +286,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         DatabaseController.getInstance().updateTouchlessSettings(deviceSettings.touchlessInteraction);
     }
 
+    //TODO: Optimize below code
     public void getSettingsFromDb(int languageId) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
@@ -310,8 +306,9 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettings.deviceMasterCode);
             Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
             Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, deviceSettings.multipleScanMode.equals("1"));
-            String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.languageId));
+            String languageType = DeviceSettingsController.getInstance().getLanguageOnId(languageId);
             Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
+            Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
         }
 
         //HomeView settings
@@ -512,6 +509,20 @@ public class DeviceSettingsController implements GetLanguagesCallback {
 
     public void updateTouchlessSettingsInDb(TouchlessSettings touchlessSettings) {
         DatabaseController.getInstance().updateTouchlessSettings(touchlessSettings);
+    }
+
+    public void clearLanguageSettings() {
+        DatabaseController.getInstance().deleteLanguagesFromDb();
+        DatabaseController.getInstance().deleteDeviceSettingsData();
+        DatabaseController.getInstance().deleteAccessControlSettings();
+        DatabaseController.getInstance().deleteAudioVisualSettings();
+        DatabaseController.getInstance().deleteConfirmationSettings();
+        DatabaseController.getInstance().deleteGuideSettings();
+        DatabaseController.getInstance().deleteHomePageSettings();
+        DatabaseController.getInstance().deletePrinterSettings();
+        DatabaseController.getInstance().deleteIdentificationSettingsData();
+        DatabaseController.getInstance().deleteScanViewSettings();
+        DatabaseController.getInstance().deleteTouchlessSettings();
     }
 
     private LanguageData getLanguageData(int value, boolean offlineVal) {

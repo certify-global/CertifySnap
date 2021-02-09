@@ -1302,6 +1302,7 @@ public class Util {
 
                 SettingsData settingsData = settingsResponse.settingsData;
                 if (settingsData != null) {
+                    DeviceSettingsController.getInstance().clearLanguageSettings();
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, settingsData.deviceName);
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, settingsData.settingName);
                     Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingsData.settingVersion);
@@ -1325,9 +1326,10 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettings.deviceMasterCode);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, deviceSettings.multipleScanMode.equals("1"));
-                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.languageId));
-                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.languageId));
+                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.primaryLanguageId));
+                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.primaryLanguageId));
                         Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
                     }
 
                     //HomeView settings
@@ -1491,9 +1493,10 @@ public class Util {
 
                     //Add settings to DB
                     if (deviceSettings != null) {
-                        DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.languageId), deviceSettingsApi);
+                        DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.primaryLanguageId), deviceSettingsApi);
                     }
                     DeviceSettingsController.getInstance().handleAdditionalLanguagesApi(deviceSettingsApi.settings);
+                    DeviceSettingsController.getInstance().getSettingsFromDb(Integer.parseInt(deviceSettings.primaryLanguageId));
                 }
             } else {
                 Log.e(LOG, "Setting retrieval Something went wrong please try again");

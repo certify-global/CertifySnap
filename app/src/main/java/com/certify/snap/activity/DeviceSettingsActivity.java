@@ -122,7 +122,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             captureLogSetting();
             logOfflineDataSetting();
             languageSetting();
-            additionalLanguageSetting();
+            //additionalLanguageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -215,10 +215,6 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             btn_save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (primaryLanguage.equals(secondaryLanguage)) {
-                        Toast.makeText(DeviceSettingsActivity.this, getString(R.string.language_message), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
                     saveLedBrightnessSetting();
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
@@ -305,9 +301,9 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         logOfflineDataNo = findViewById(R.id.log_od_rb_no);
         captureLogsLayout = findViewById(R.id.capture_logs_layout);
         spinnerLanguageSelector = findViewById(R.id.spinner_language_selector);
-        additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
+        //additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
         tvLocaleSettings = findViewById(R.id.locale_settings);
-        additional_locale_settings = findViewById(R.id.additional_locale_settings);
+        //additional_locale_settings = findViewById(R.id.additional_locale_settings);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -335,7 +331,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         saveLogButton.setTypeface(rubiklight);
         logOfflineData.setTypeface(rubiklight);
         tvLocaleSettings.setTypeface(rubiklight);
-        additional_locale_settings.setTypeface(rubiklight);
+        //additional_locale_settings.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
@@ -835,10 +831,6 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 primaryLanguage = spinnerLanguageSelector.getSelectedItem().toString();
-                if (primaryLanguage.equals(secondaryLanguage)) {
-                    Toast.makeText(DeviceSettingsActivity.this, getString(R.string.language_message), Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, primaryLanguage);
                 if (selectedLanguageId != null) {
                     Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE,

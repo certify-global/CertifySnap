@@ -210,4 +210,6 @@ public class GlobalParameters {
     public static final String AccessControlScanMode = "accessControlScan";
     public static final String LANGUAGE_TYPE = "LanguageType";
     public static final String LANGUAGE_TYPE_SECONDARY = "LanguageTypeSecondary";
+    public static final String LANGUAGE_ALLOW_MULTILINGUAL = "LanguageAllowMultilingual";
+
 }

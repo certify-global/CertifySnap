@@ -38,6 +38,12 @@ public class DeviceSettingsApi {
     @SerializedName("PrinterSettings")
     public PrinterSettings printerSettings;
 
+    @SerializedName("configuredLanguageCode")
+    public String languageCode = "en";
+
+    @SerializedName("configuredLanguageId")
+    public int languageId = 0;
+
     @Nullable
     @SerializedName("settings")
     public List<DeviceSettings> settings;

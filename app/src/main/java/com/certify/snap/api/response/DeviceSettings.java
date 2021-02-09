@@ -34,4 +34,9 @@ public class DeviceSettings {
     @SerializedName("PrinterSettings")
     public PrinterSettings printerSettings;
 
+    @SerializedName("configuredLanguageCode")
+    public String languageCode = "en";
+
+    @SerializedName("configuredLanguageId")
+    public int languageId = 0;
 }

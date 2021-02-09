@@ -263,4 +263,34 @@ public interface DatabaseStore {
     @Update
     void updateTouchlessSettings(TouchlessSettings touchlessSettings);
 
+    @Query("DELETE FROM DeviceSettingsData")
+    void deleteDeviceSettingsData();
+
+    @Query("DELETE FROM AccessControlSettings")
+    void deleteAccessControlSettings();
+
+    @Query("DELETE FROM AudioVisualSettings")
+    void deleteAudioVisualSettings();
+
+    @Query("DELETE FROM ConfirmationViewSettings")
+    void deleteConfirmationSettings();
+
+    @Query("DELETE FROM GuideSettings")
+    void deleteGuideSettings();
+
+    @Query("DELETE FROM HomePageSettings")
+    void deleteHomePageSettings();
+
+    @Query("DELETE FROM IdentificationSettings")
+    void deleteIdentificationSettings();
+
+    @Query("DELETE FROM PrinterSettings")
+    void deletePrinterSettings();
+
+    @Query("DELETE FROM ScanViewSettings")
+    void deleteScanSettings();
+
+    @Query("DELETE FROM TouchlessSettings")
+    void deleteTouchlessSettings();
+
 }

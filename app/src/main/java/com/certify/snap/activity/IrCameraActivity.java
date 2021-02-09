@@ -2869,7 +2869,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resumeScan() {
         if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
             GestureController.getInstance().setLanguageUpdated(false);
-            if (DeviceSettingsController.getInstance().isMultiLanguageEnabled()) {
+            if (AppSettings.isMultiLingualEnabled()) {
                 DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
                 DeviceSettingsController.getInstance().getSettingsFromDb(
                         DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType()));
@@ -3705,7 +3705,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
-        if (DeviceSettingsController.getInstance().isMultiLanguageEnabled() &&
+        if (AppSettings.isMultiLingualEnabled() &&
                 !GestureController.getInstance().isLanguageUpdated()) {
             String languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
             onGestureLanguageUpdate(languageType);
@@ -3736,7 +3736,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onLeftHandGesture() {
-        if (DeviceSettingsController.getInstance().isMultiLanguageEnabled() &&
+        if (AppSettings.isMultiLingualEnabled() &&
                 !GestureController.getInstance().isLanguageUpdated()) {
             onGestureLanguageUpdate(AppSettings.getLanguageType());
         }

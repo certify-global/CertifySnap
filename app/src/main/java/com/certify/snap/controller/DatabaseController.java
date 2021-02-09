@@ -587,6 +587,16 @@ public class DatabaseController {
         }
     }
 
+    public void deleteDeviceSettingsData() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteDeviceSettingsData();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertAccessControlSettings(AccessControlSettings accessControlSettings) {
         try {
             if (databaseStore != null) {
@@ -612,6 +622,16 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.updateAccessControlSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void deleteAccessControlSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAccessControlSettings();
             }
         } catch (SQLiteException e){
             handleDBException(e);
@@ -649,6 +669,16 @@ public class DatabaseController {
         }
     }
 
+    public void deleteAudioVisualSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAudioVisualSettings();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings) {
         try {
             if (databaseStore != null) {
@@ -674,6 +704,16 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.updateConfirmationViewSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void deleteConfirmationSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteConfirmationSettings();
             }
         } catch (SQLiteException e){
             handleDBException(e);
@@ -711,6 +751,16 @@ public class DatabaseController {
         }
     }
 
+    public void deleteGuideSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteGuideSettings();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertHomePageSettings(HomePageSettings homePageSettings) {
         try {
             if (databaseStore != null) {
@@ -736,6 +786,16 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.updateHomePageSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void deleteHomePageSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteHomePageSettings();
             }
         } catch (SQLiteException e){
             handleDBException(e);
@@ -773,6 +833,16 @@ public class DatabaseController {
         }
     }
 
+    public void deleteIdentificationSettingsData() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteIdentificationSettings();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertPrinterSettings(PrinterSettings printerSettings) {
         try {
             if (databaseStore != null) {
@@ -798,6 +868,16 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.updatePrinterSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void deletePrinterSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deletePrinterSettings();
             }
         } catch (SQLiteException e){
             handleDBException(e);
@@ -835,6 +915,16 @@ public class DatabaseController {
         }
     }
 
+    public void deleteScanViewSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteScanSettings();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public void insertTouchlessSettings(TouchlessSettings touchlessSettings) {
         try {
             if (databaseStore != null) {
@@ -860,6 +950,16 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 databaseStore.updateTouchlessSettings(setting);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public void deleteTouchlessSettings() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteTouchlessSettings();
             }
         } catch (SQLiteException e){
             handleDBException(e);
