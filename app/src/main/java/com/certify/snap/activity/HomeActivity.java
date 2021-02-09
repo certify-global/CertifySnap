@@ -288,13 +288,13 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     private void onSettingsUpdated() {
         AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
         initGesture();
+        initLanguageList();
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
         }
         initNavigationBar();
         startMemberSyncService();
-        initLanguage();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
     }
 
@@ -481,5 +481,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     @Override
     public void onGetLanguages() {
         Util.getSettings(this, this);
+    }
+
+    private void initLanguageList() {
+        DeviceSettingsController.getInstance().getLanguagesListFromDb();
     }
 }

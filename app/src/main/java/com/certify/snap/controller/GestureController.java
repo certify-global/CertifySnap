@@ -19,6 +19,7 @@ import android.util.Log;
 import com.certify.callback.GestureAnswerCallback;
 import com.certify.callback.GestureCallback;
 import com.certify.snap.api.response.GestureQuestionsDb;
+import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.api.response.QuestionData;
 import com.certify.snap.api.response.QuestionListResponse;
 import com.certify.snap.api.response.QuestionSurveyOptions;
@@ -86,6 +87,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private static final String LEFT_HAND = "LeftHand";
     private static final String RIGHT_HAND = "RightHand";
     private static final String BOTH_HANDS = "BothHands";
+    private int languageSelectionIndex = 0;
 
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
@@ -909,8 +911,19 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public void onGestureLanguageChange(String languageType) {
         DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
         setLanguageUpdated(true);
+        languageSelectionIndex = 0;
         DeviceSettingsController.getInstance().getSettingsFromDb(DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
         clearQuestionAnswerMap();
+    }
+
+    public boolean updateNextLanguage() {
+        List<LanguageData> languageDataList = DeviceSettingsController.getInstance().getLanguageDataList();
+        if (languageDataList != null) {
+            DeviceSettingsController.getInstance().setLanguageToUpdate(languageDataList.get(languageSelectionIndex).languageCode);
+            languageSelectionIndex++;
+            return true;
+        }
+        return false;
     }
 
     public void clearData() {

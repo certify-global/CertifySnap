@@ -40,6 +40,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     private Context context;
     private GetLanguagesListener listener;
     private String languageToUpdate = "";
+    private List<LanguageData> languageDataList = null;
 
     public interface GetLanguagesListener {
         void onGetLanguages();
@@ -509,6 +510,14 @@ public class DeviceSettingsController implements GetLanguagesCallback {
 
     public void updateTouchlessSettingsInDb(TouchlessSettings touchlessSettings) {
         DatabaseController.getInstance().updateTouchlessSettings(touchlessSettings);
+    }
+
+    public void getLanguagesListFromDb() {
+        languageDataList = DatabaseController.getInstance().getLanguagesFromDb();
+    }
+
+    public List<LanguageData> getLanguageDataList() {
+        return languageDataList;
     }
 
     public void clearLanguageSettings() {
