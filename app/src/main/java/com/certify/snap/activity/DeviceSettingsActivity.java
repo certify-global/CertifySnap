@@ -73,7 +73,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members,
-            navigation_bar_textview, sync_online_members_textview, led_switch_textview, saveLogsTv, logOfflineData;
+            navigation_bar_textview, sync_online_members_textview, led_switch_textview, saveLogsTv, logOfflineData, multilingualSetting;
     private Button tvClearData, not_activate;
     private Typeface rubiklight;
     private String url_end;
@@ -82,8 +82,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
     private View pro_settings_border;
-    RadioGroup sync_member_radio_group, logOfflineDataRg;
-    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo;
+    RadioGroup sync_member_radio_group, logOfflineDataRg, multiLingualRg;
+    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo, multiLingualRbYes, multiLingualRbNo;
     RadioGroup radio_group_local_server;
     RadioButton radio_yes_server, radio_no_server;
     TextView tvLocalServer, tvServerIp, tvLocaleSettings,additional_locale_settings;
@@ -122,6 +122,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             captureLogSetting();
             logOfflineDataSetting();
             languageSetting();
+            multiLingualSetting();
             //additionalLanguageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
@@ -301,8 +302,12 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         logOfflineDataNo = findViewById(R.id.log_od_rb_no);
         captureLogsLayout = findViewById(R.id.capture_logs_layout);
         spinnerLanguageSelector = findViewById(R.id.spinner_language_selector);
-        //additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
         tvLocaleSettings = findViewById(R.id.locale_settings);
+        multilingualSetting = findViewById(R.id.multilingual_tv);
+        multiLingualRg = findViewById(R.id.multilingual_rg);
+        multiLingualRbYes = findViewById(R.id.multilingual_rb_yes);
+        multiLingualRbNo = findViewById(R.id.multilingual_rb_no);
+        //additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
         //additional_locale_settings = findViewById(R.id.additional_locale_settings);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
@@ -331,6 +336,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         saveLogButton.setTypeface(rubiklight);
         logOfflineData.setTypeface(rubiklight);
         tvLocaleSettings.setTypeface(rubiklight);
+        multilingualSetting.setTypeface(rubiklight);
         //additional_locale_settings.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
@@ -880,5 +886,21 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         currentlanguageCode = languageCode;
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
         additional_spinner_language_selector.setSelection(((ArrayAdapter<String>)additional_spinner_language_selector.getAdapter()).getPosition(languageName));
+    }
+
+    private void multiLingualSetting() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, false)) {
+            multiLingualRbYes.setChecked(true);
+        } else {
+            multiLingualRbNo.setChecked(true);
+        }
+
+        multiLingualRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.multilingual_rb_yes) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, true);
+            } else {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, false);
+            }
+        });
     }
 }

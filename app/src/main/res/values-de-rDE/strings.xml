@@ -684,5 +684,6 @@
     <string name="additional_locale_setting">Sekundärsprache</string>
     <string name="add_device_message">Wenn Sie das Gerät bereits im Portal SL NO hinzugefügt haben::</string>
     <string name="language_message">Sowohl die Primär- als auch die Sekundärsprache können nicht identisch sein. Bitte wählen Sie eine andere Sprache.</string>
+    <string name="allow_multilingual">Mehrsprachig zulassen</string>
 
 </resources>

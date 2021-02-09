@@ -689,5 +689,6 @@
     <string name="additional_locale_setting">Langue secondaire</string>
     <string name="add_device_message">Si vous avez déjà ajouté l\'appareil sur le portail SL NO:</string>
     <string name="language_message">Les langues primaires et secondaires ne peuvent pas être identiques. Veuillez sélectionner une autre langue.</string>
+    <string name="allow_multilingual">Autoriser le multilingue</string>
 
 </resources>

@@ -681,5 +681,6 @@
     <string name="additional_locale_setting"> ద్వితీయ భాష</string>
     <string name="add_device_message">మీరు ఇప్పటికే పరికరాన్ని పోర్టల్‌లో చేర్చినట్లయితే యెస్యేల్ సంఖ్య:</string>
     <string name="language_message">ప్రాథమిక మరియు ద్వితీయ భాషలు రెండూ ఒకేలా ఉండవు. దయచేసి వేరే భాషను ఎంచుకోండి.</string>
+    <string name="allow_multilingual">బహుభాషా అనుమతించు</string>
 
 </resources>
