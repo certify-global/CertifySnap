@@ -32,8 +32,8 @@
     <string name="text_nopermission">అనుమతి లేదు, దయచేసి నిర్వాహకుడిని సంప్రదించండి!</string>
     <string name="text_expiredtime">ఇది గడువు తేదీకి మించినది, దయచేసి నిర్వాహకుడిని సంప్రదించండి!</string>
     <string name="text_passcodeexpired">పాస్‌కోడ్ గడువు ముగిసింది</string>
-    <string name="fahrenheit_symbol">° F.</string>
-    <string name="centi">. C.</string>
+    <string name="fahrenheit_symbol">&#160;°ఎఫ్</string>
+    <string name="centi">&#160;°సి</string>
     <string name="temperature_normal">ఉష్ణోగ్రత సాధారణం:</string>
     <string name="temperature_anormaly">అధిక ఉష్ణోగ్రత:</string>
     <string name="temperature_failresult">ఉష్ణోగ్రత పొందడంలో విఫలమైంది!</string>
@@ -280,8 +280,8 @@
     <string name="endpoint_api">ఏపీఐ</string>
     <string name="protocol_text">https: //</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">స్కానర్ + ప్రారంభించబడుతోంది. + మీరు + వేచి ఉండండి + లేదా + క్లిక్ + సరే + కొనసాగించడానికి + కొనసాగించడానికి + + + స్కానర్ + అయితే + ఇది + ప్రారంభిస్తుంది% E2% 80% A6 +% 5CnTime + మిగిలి ఉంది: + %d + నిమిషాలు</string>
-    <string name="scanner_remaining_time_msg">స్కానర్ + అమరిక + అనేది + పురోగతి% E2% 80% A6 + సమయం + మిగిలి ఉంది: + %d + నిమిషాలు</string>
+    <string name="scanner_time_msg">స్కానర్ ప్రారంభిస్తోంది. స్కానర్ ప్రారంభించేటప్పుడు దాన్ని ఉపయోగించడం కొనసాగించడానికి మీరు వేచి ఉండండి లేదా సరే క్లిక్ చేయవచ్చు.... \nమిగిలిన సమయం: %d నిమిషం</string>
+    <string name="scanner_remaining_time_msg">స్కానర్ క్రమాంకనం పురోగతి… మిగిలిన సమయం: %d నిమిషం</string>
     <string name="audio_alerts">ఆడియో హెచ్చరికలు</string>
     <string name="visual_alerts">విజువల్ హెచ్చరికలు</string>
     <string name="audio_none">లేదు</string>

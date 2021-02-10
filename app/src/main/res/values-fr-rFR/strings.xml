@@ -40,8 +40,8 @@
     <string name="text_nopermission">Aucune autorisation, veuillez contacter l\'administrateur!</string>
     <string name="text_expiredtime">C\'est au-delà de la date d\'expiration, veuillez contacter l\'administrateur!</string>
     <string name="text_passcodeexpired">Le code d\'accès a expiré</string>
-    <string name="fahrenheit_symbol">°F</string>
-    <string name="centi">°C</string>
+    <string name="fahrenheit_symbol">&#160;°F</string>
+    <string name="centi">&#160;°C</string>
     <string name="temperature_normal">Température normale:</string>
     <string name="temperature_anormaly">Température élevée:</string>
     <string name="temperature_failresult">Impossible d\'obtenir la température!</string>
@@ -288,8 +288,8 @@
     <string name="endpoint_api">Feu</string>
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">Scanner + est + en cours d\'initialisation. + Vous + pouvez + attendre + ou + cliquer + OK + pour + continuer + à + utiliser + le + scanner + pendant + qu\'il + initialise% E2% 80% A6 +% 5CnTime + Restant: + %d + min</string>
-    <string name="scanner_remaining_time_msg">Scanner + étalonnage + est + progression% E2% 80% A6 + Temps + Restant: + %d + min</string>
+    <string name="scanner_time_msg">Le scanner est en cours d\'initialisation. Vous pouvez patienter ou cliquer sur OK pour continuer à utiliser le scanner pendant l’initialisation… \nTemps restant: %d min</string>
+    <string name="scanner_remaining_time_msg">L\'étalonnage du scanner est en cours… Temps restant: %d min</string>
     <string name="audio_alerts">Audio Alerts</string>
     <string name="visual_alerts">Alertes visuelles</string>
     <string name="audio_none">AUCUN</string>

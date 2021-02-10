@@ -35,8 +35,8 @@
     <string name="text_nopermission">அனுமதி இல்லை, தயவுசெய்து நிர்வாகியைத் தொடர்பு கொள்ளுங்கள்!</string>
     <string name="text_expiredtime">இது காலாவதி தேதிக்கு அப்பாற்பட்டது, தயவுசெய்து நிர்வாகியைத் தொடர்பு கொள்ளுங்கள்!</string>
     <string name="text_passcodeexpired">கடவுக்குறியீடு காலாவதியானது</string>
-    <string name="fahrenheit_symbol">° F.</string>
-    <string name="centi">. சி</string>
+    <string name="fahrenheit_symbol">&#160;°எப்</string>
+    <string name="centi">&#160;°சி</string>
     <string name="temperature_normal">வெப்பநிலை இயல்பானது:</string>
     <string name="temperature_anormaly">அதிக வெப்பநிலை:</string>
     <string name="temperature_failresult">வெப்பநிலை பெறுவதில் தோல்வி!</string>
@@ -283,8 +283,8 @@
     <string name="endpoint_api">ஏபிஐ</string>
     <string name="protocol_text">https: //</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">ஸ்கேனர் + என்பது + துவக்குகிறது. + நீங்கள் + காத்திருக்கலாம் + அல்லது + கிளிக் செய்ய + சரி + செய்ய + தொடர + தொடர + பயன்படுத்த + பயன்படுத்த + + ஸ்கேனர் + அதே நேரத்தில் + இது + துவக்குகிறது% E2% 80% A6 +% 5CnTime + மீதமுள்ள: + %d + நிமிடங்கள்</string>
-    <string name="scanner_remaining_time_msg">ஸ்கேனர் + அளவுத்திருத்தம் + என்பது + முன்னேற்றம்% E2% 80% A6 + நேரம் + மீதமுள்ளவை: + %d + நிமிடங்கள்</string>
+    <string name="scanner_time_msg">ஸ்கேனர் துவக்குகிறது. ஸ்கேனரை துவக்கும்போது தொடர்ந்து பயன்படுத்த நீங்கள் காத்திருக்கலாம் அல்லது சரி என்பதைக் கிளிக் செய்யலாம்… \nமீதியுள்ள நேரம்: %d நிமிடம்</string>
+    <string name="scanner_remaining_time_msg">ஸ்கேனர் அளவுத்திருத்தம் முன்னேற்றம்… மீதியுள்ள நேரம்: %d நிமிடம்</string>
     <string name="audio_alerts">ஆடியோ விழிப்பூட்டல்கள்</string>
     <string name="visual_alerts">காட்சி விழிப்பூட்டல்கள்</string>
     <string name="audio_none">இல்லை</string>

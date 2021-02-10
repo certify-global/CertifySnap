@@ -1329,6 +1329,7 @@ public class Util {
                         DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.primaryLanguageId));
                         String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.primaryLanguageId));
                         Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
+                        DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
                     }
 

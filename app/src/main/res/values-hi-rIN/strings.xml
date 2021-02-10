@@ -34,8 +34,8 @@
     <string name="text_nopermission">कोई अनुमति नहीं, कृपया व्यवस्थापक से संपर्क करें!</string>
     <string name="text_expiredtime">यह समाप्ति की तारीख से परे है, कृपया व्यवस्थापक से संपर्क करें!</string>
     <string name="text_passcodeexpired">पासकोड समाप्त हो गया है</string>
-    <string name="fahrenheit_symbol">° एफ</string>
-    <string name="centi">° सि</string>
+    <string name="fahrenheit_symbol">&#160;°एफ</string>
+    <string name="centi">&#160;°सि</string>
     <string name="temperature_normal">तापमान सामान्य:</string>
     <string name="temperature_anormaly">तापमान उच्च:</string>
     <string name="temperature_failresult">तापमान पाने में असफल!</string>
@@ -282,8 +282,8 @@
     <string name="endpoint_api">एपीआई</string>
     <string name="protocol_text">https: //</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">स्कैनर + + + शुरू + कर रहा है। + आप + प्रतीक्षा कर सकते हैं + या + + + पर + क्लिक + करने + के + लिए + स्कैनर + का + उपयोग + करते + रहते + हैं + यह% E2% 80% A6 +% 5CnTime + शेष + + %d को आरंभ करता है। + मिनट</string>
-    <string name="scanner_remaining_time_msg">स्कैनर + अंशांकन + है + प्रगति% E2% 80% A6 + समय + शेष: + %d + मिनट</string>
+    <string name="scanner_time_msg">स्कैनर शुरू कर रहा है। जब तक यह प्रारंभ हो जाता है आप स्कैनर का उपयोग जारी रखने के लिए प्रतीक्षा कर सकते हैं या ठीक क्लिक कर सकते हैं.... \nशेष समय: %d मिनट</string>
+    <string name="scanner_remaining_time_msg">स्कैनर अंशांकन है प्रगति.... शेष समय: %d मिनट</string>
     <string name="audio_alerts">ऑडियो अलर्ट</string>
     <string name="visual_alerts">दृश्य अलर्ट</string>
     <string name="audio_none">कोई नहीं</string>

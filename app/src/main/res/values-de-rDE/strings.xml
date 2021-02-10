@@ -35,8 +35,8 @@
     <string name="text_nopermission">Keine Erlaubnis, bitte wenden Sie sich an den Administrator!</string>
     <string name="text_expiredtime">Es ist über das Ablaufdatum hinaus. Bitte wenden Sie sich an den Administrator!</string>
     <string name="text_passcodeexpired">Passcode ist abgelaufen</string>
-    <string name="fahrenheit_symbol">°F</string>
-    <string name="centi">°C</string>
+    <string name="fahrenheit_symbol">&#160;°F</string>
+    <string name="centi">&#160;°C</string>
     <string name="temperature_normal">Temperatur normal:</string>
     <string name="temperature_anormaly">Temperatur hoch:</string>
     <string name="temperature_failresult">Temperatur konnte nicht gemessen werden!</string>
@@ -283,8 +283,8 @@
     <string name="endpoint_api">Feuer</string>
     <string name="protocol_text">https://</string>
     <string name="hostname">.certify.me</string>
-    <string name="scanner_time_msg">Der Scanner + wird + initialisiert. + Sie + können + warten + oder + auf + OK + klicken, + um + den + Scanner + weiter zu verwenden, + während +% E2% 80% A6 +% 5CnTime + initialisiert werden + Verbleibende: + %d + min</string>
-    <string name="scanner_remaining_time_msg">Scanner + Kalibrierung + ist + Fortschritt% E2% 80% A6 + Zeit + Verbleibende: + %d + min</string>
+    <string name="scanner_time_msg">Der Scanner wird initialisiert. Sie können warten oder auf OK klicken, um den Scanner während der Initialisierung weiter zu verwenden. \nVerbleibende Zeit: %d min</string>
+    <string name="scanner_remaining_time_msg">Scannerkalibrierung ist im Gange… Verbleibende Zeit: %d min</string>
     <string name="audio_alerts">Audio-Warnungen</string>
     <string name="visual_alerts">Visuelle Warnungen</string>
     <string name="audio_none">KEINER</string>
