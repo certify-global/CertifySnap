@@ -925,11 +925,12 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (languageDataList != null) {
             if (languageSelectionIndex >= languageDataList.size()) {
                 languageSelectionIndex = 0;
-            } else {
-                String currentLanguage = AppSettings.getLanguageType();
-                if (currentLanguage.equals(languageDataList.get(languageSelectionIndex).languageCode)) {
-                    languageSelectionIndex++;
-                }
+                DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
+                return true;
+            }
+            String currentLanguage = AppSettings.getLanguageType();
+            if (currentLanguage.equals(languageDataList.get(languageSelectionIndex).languageCode)) {
+                languageSelectionIndex++;
             }
             DeviceSettingsController.getInstance().setLanguageToUpdate(languageDataList.get(languageSelectionIndex).languageCode);
             languageSelectionIndex++;
@@ -939,9 +940,13 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public String getUpdatingLanguageName() {
-        if (languageSelectionIndex == 0) return "";
+        if (languageSelectionIndex == 0) return DeviceSettingsController.getInstance().getLanguageNameFromCode(AppSettings.getLanguageType());
         List<LanguageData> languageDataList = DeviceSettingsController.getInstance().getLanguageDataList();
         return languageDataList.get(languageSelectionIndex - 1).name;
+    }
+
+    public int getLanguageSelectionIndex() {
+        return languageSelectionIndex;
     }
 
     public void clearData() {

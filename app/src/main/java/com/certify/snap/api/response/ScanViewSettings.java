@@ -2,6 +2,7 @@ package com.certify.snap.api.response;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -14,18 +15,23 @@ public class ScanViewSettings {
     @NonNull
     public int primaryId;
 
+    @Ignore
     @SerializedName("displayTemperatureDetail")
     public String displayTemperatureDetail = "1";
 
+    @Ignore
     @SerializedName("captureUserImageAboveThreshold")
     public String captureUserImageAboveThreshold = "1";
 
+    @Ignore
     @SerializedName("captureAllUsersImage")
     public String captureAllUsersImage = "0";
 
+    @Ignore
     @SerializedName("enableSoundOnNormalTemperature")
     public String enableSoundOnNormalTemperature = "0";
 
+    @Ignore
     @SerializedName("enableSoundOnHighTemperature")
     public String enableSoundOnHighTemperature = "0";
 
@@ -38,18 +44,22 @@ public class ScanViewSettings {
     @SerializedName("temperatureFormat")
     public String temperatureFormat = "F";
 
+    @Ignore
     @SerializedName("allowLowTemperatureScanning")
     public String allowLowTemperatureScanning = "0";
 
+    @Ignore
     @SerializedName("closeProximityScan")
     public String closeProximityScan = "0";
 
+    @Ignore
     @SerializedName("enableLiveness")
     public String enableLiveness = "0";
 
     @SerializedName("lowTemperatureThreshold")
     public String lowTemperatureThreshold = "93.2";
 
+    @Ignore
     @SerializedName("enableMaskDetection")
     public String enableMaskDetection = "0";
 
@@ -62,12 +72,15 @@ public class ScanViewSettings {
     @SerializedName("temperatureHigh")
     public String temperatureHigh = "";
 
+    @Ignore
     @SerializedName("displayResultBar")
     public String displayResultBar = "1";
 
+    @Ignore
     @SerializedName("scanType")
     public String scanType = "1";
 
+    @Ignore
     @SerializedName("enableTemperatureScan")
     public String enableTemperatureScan = "1";
 

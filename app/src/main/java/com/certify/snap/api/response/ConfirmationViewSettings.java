@@ -2,6 +2,7 @@ package com.certify.snap.api.response;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -14,6 +15,7 @@ public class ConfirmationViewSettings {
     @NonNull
     public int primaryId;
 
+    @Ignore
     @SerializedName("enableConfirmationScreen")
     public String enableConfirmationScreen = "1";
 
@@ -32,6 +34,7 @@ public class ConfirmationViewSettings {
     @SerializedName("viewDelay")
     public String viewDelay = "1";
 
+    @Ignore
     @SerializedName("enableConfirmationScreenAboveThreshold")
     public String enableConfirmationScreenAboveThreshold = "1";
 

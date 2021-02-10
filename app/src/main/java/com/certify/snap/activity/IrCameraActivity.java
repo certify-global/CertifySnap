@@ -715,19 +715,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             showPrintMsgDialog();
             ApplicationController.getInstance().setDeviceBoot(false);
         }
-        if (GestureController.getInstance().isLanguageUpdated()) {
-            GestureController.getInstance().setCallback(true);
-            onGestureDetected();
-        } else {
-            if (GestureController.getInstance().getGestureCallback()) {
-                String msg = String.format(getString(R.string.updated_language_msg),
-                        GestureController.getInstance().getUpdatingLanguageName());
-                if (!GestureController.getInstance().getUpdatingLanguageName().isEmpty()) {
-                    Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
-                    GestureController.getInstance().setCallback(false);
-                }
-            }
-        }
+        updateGestureOnLanguageChange();
     }
 
     @Override
@@ -3936,5 +3924,23 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             GestureController.getInstance().onGestureLanguageChange(languageType);
             recreate();
         });
+    }
+
+    private void updateGestureOnLanguageChange() {
+        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            if (GestureController.getInstance().isLanguageUpdated()) {
+                GestureController.getInstance().setCallback(true);
+                onGestureDetected();
+            } else {
+                if (GestureController.getInstance().getLanguageSelectionIndex() != 0) {
+                    String msg = String.format(getString(R.string.updated_language_msg),
+                            GestureController.getInstance().getUpdatingLanguageName());
+                    if (!GestureController.getInstance().getUpdatingLanguageName().isEmpty()) {
+                        Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                        GestureController.getInstance().setCallback(false);
+                    }
+                }
+            }
+        }
     }
 }

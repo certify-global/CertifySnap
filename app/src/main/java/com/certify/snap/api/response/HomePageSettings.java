@@ -2,6 +2,7 @@ package com.certify.snap.api.response;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
@@ -26,12 +27,14 @@ public class HomePageSettings {
     @SerializedName("line2")
     public String line2 = "";
 
+    @Ignore
     @SerializedName("enableHomeScreen")
     public String enableHomeScreen = "1";
 
     @SerializedName("viewIntervalDelay")
     public String viewIntervalDelay = "2";
 
+    @Ignore
     @SerializedName("enableTextOnly")
     public String enableTextOnly = "";
 
