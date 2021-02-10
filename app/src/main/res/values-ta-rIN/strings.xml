@@ -685,5 +685,7 @@
     <string name="add_device_message">எஸ்எல் எண்: போர்ட்டலில் சாதனத்தை ஏற்கனவே சேர்த்திருந்தால்:</string>
     <string name="language_message">முதன்மை மற்றும் இரண்டாம் நிலை மொழிகள் ஒரே மாதிரியாக இருக்க முடியாது. வேறு மொழியைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="allow_multilingual">பன்மொழி அனுமதிக்கவும்</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
 
 </resources>

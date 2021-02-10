@@ -174,6 +174,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         isCallback = callback;
     }
 
+    public boolean getGestureCallback() {
+        return isCallback;
+    }
+
     public void getGestureQuestions(){
         getQuestionsAPI(mContext);
         startGetQuestionsTimer();
@@ -221,10 +225,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         DatabaseController.getInstance().insertQuestionsToDB(getDbQuestionData(questionData, i));
                         questionDataDbList.add(getDbQuestionData(questionData, i));
                     }
-                    GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
+                    /*GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
                     gestureQuestionsDb.primaryId = DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType());
                     gestureQuestionsDb.questionsDbList = questionDataDbList;
-                    DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);
+                    DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);*/
                 }
                 Log.d(TAG, "Gesture Questions list updated");
             } else {
@@ -919,11 +923,25 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public boolean updateNextLanguage() {
         List<LanguageData> languageDataList = DeviceSettingsController.getInstance().getLanguageDataList();
         if (languageDataList != null) {
+            if (languageSelectionIndex >= languageDataList.size()) {
+                languageSelectionIndex = 0;
+            } else {
+                String currentLanguage = AppSettings.getLanguageType();
+                if (currentLanguage.equals(languageDataList.get(languageSelectionIndex).languageCode)) {
+                    languageSelectionIndex++;
+                }
+            }
             DeviceSettingsController.getInstance().setLanguageToUpdate(languageDataList.get(languageSelectionIndex).languageCode);
             languageSelectionIndex++;
             return true;
         }
         return false;
+    }
+
+    public String getUpdatingLanguageName() {
+        if (languageSelectionIndex == 0) return "";
+        List<LanguageData> languageDataList = DeviceSettingsController.getInstance().getLanguageDataList();
+        return languageDataList.get(languageSelectionIndex - 1).name;
     }
 
     public void clearData() {

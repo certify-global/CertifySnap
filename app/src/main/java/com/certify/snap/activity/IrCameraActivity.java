@@ -719,7 +719,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             GestureController.getInstance().setCallback(true);
             onGestureDetected();
         } else {
-            GestureController.getInstance().setCallback(false);
+            if (GestureController.getInstance().getGestureCallback()) {
+                String msg = String.format(getString(R.string.updated_language_msg),
+                        GestureController.getInstance().getUpdatingLanguageName());
+                if (!GestureController.getInstance().getUpdatingLanguageName().isEmpty()) {
+                    Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                    GestureController.getInstance().setCallback(false);
+                }
+            }
         }
     }
 
@@ -3742,7 +3749,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (AppSettings.isMultiLingualEnabled() &&
                     !GestureController.getInstance().isLanguageUpdated()) {
                 if (GestureController.getInstance().updateNextLanguage()) {
-                    recreate();
+                    String msg = String.format(getString(R.string.update_language_msg),
+                            GestureController.getInstance().getUpdatingLanguageName());
+                    Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                    new Handler().postDelayed(this::recreate, 500);
                     return;
                 }
                 Toast.makeText(IrCameraActivity.this, "", Toast.LENGTH_SHORT).show();

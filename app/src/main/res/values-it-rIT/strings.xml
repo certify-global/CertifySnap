@@ -695,5 +695,7 @@
     <string name="add_device_message">Se hai già aggiunto il dispositivo sul portale SL NO:</string>
     <string name="language_message">Entrambe le lingue primaria e secondaria non possono essere le stesse. Seleziona una lingua diversa.</string>
     <string name="allow_multilingual">Allow Multilingual</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
 
 </resources>

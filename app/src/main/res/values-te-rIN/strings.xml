@@ -682,5 +682,7 @@
     <string name="add_device_message">మీరు ఇప్పటికే పరికరాన్ని పోర్టల్‌లో చేర్చినట్లయితే యెస్యేల్ సంఖ్య:</string>
     <string name="language_message">ప్రాథమిక మరియు ద్వితీయ భాషలు రెండూ ఒకేలా ఉండవు. దయచేసి వేరే భాషను ఎంచుకోండి.</string>
     <string name="allow_multilingual">బహుభాషా అనుమతించు</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
 
 </resources>

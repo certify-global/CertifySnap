@@ -684,5 +684,7 @@
     <string name="add_device_message">यदि आपने पहले ही डिवाइस को एसएल संख्या पर जोड़ लिया है: </string>
     <string name="language_message">प्राथमिक और द्वितीयक दोनों भाषाएँ समान नहीं हो सकतीं। कृपया कोई अन्य भाषा चुनें।</string>
     <string name="allow_multilingual">बहुभाषी अनुमति दें</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
 
 </resources>

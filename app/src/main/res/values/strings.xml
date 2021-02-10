@@ -698,5 +698,7 @@
     <string name="add_device_message">If you have already added the device on the portal SL NO:</string>
     <string name="language_message">Both Primary and Secondary languages can\'t be same. Please select a different language.</string>
     <string name="allow_multilingual">Allow Multilingual</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
 
 </resources>
