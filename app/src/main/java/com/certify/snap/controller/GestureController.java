@@ -661,7 +661,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             obj.put("VisitId", 0);
             obj.put("anonymousGuid", uniqueID);
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id,""));
-
+            if (!isQuestionnaireFailed) {
+                obj.put("trqStatus", "0");
+            } else {
+                obj.put("trqStatus", "1");
+            }
             for(int i=0;i<qSurveyOptionList.size();i++) {
                 JSONObject jsonCustomFields = new JSONObject();
                 jsonCustomFields.put("questionId", qSurveyOptionList.get(i).questionId);

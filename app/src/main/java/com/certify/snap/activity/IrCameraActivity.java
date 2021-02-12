@@ -1962,7 +1962,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().setCallbackListener(this);
         if (!rfIdEnable) return;
         if (!faceDetectEnabled ||
-                (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue())) {
+                ((AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) ||
+                        (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_ONLY.getValue()))) {
             isReadyToScan = false;
         }
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
@@ -2465,7 +2466,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (faceDetectEnabled || Util.isOfflineMode(IrCameraActivity.this)) {
             if (AppSettings.isLivenessDetect()) {
                 if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                    Log.d(TAG, "Deep Face is Alive initiate Search");
+                    Log.d(TAG, "Liveness Face is Alive initiate Search");
                     startFaceSearch(faceFeature, requestId, rgb, ir);
                 }
                 return;
@@ -2893,7 +2894,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (rfIdEnable) {
             enableNfc();
             if (!faceDetectEnabled ||
-                    (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue())) {
+                    ((AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) ||
+                            (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_ONLY.getValue()))) {
                 isReadyToScan = false;
             }
             CameraController.getInstance().setCameraOnRfid(false);
