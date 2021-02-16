@@ -51,6 +51,7 @@ public class PrinterSettings {
     @SerializedName("printName")
     public String printName = "0";
 
+    @Ignore
     @SerializedName("unidentifiedPrintText")
     public String unidentifiedPrintText = "0";
 
@@ -69,7 +70,6 @@ public class PrinterSettings {
     @SerializedName("printIndicatorForQR")
     public String printIndicatorForQR = "0";
 
-    @Ignore
     @SerializedName("defaultBottomBarText")
     public String defaultBottomBarText = "";
 
@@ -77,9 +77,11 @@ public class PrinterSettings {
     @SerializedName("printWaveAnswers")
     public String printWaveAnswers = "0";
 
+    @Ignore
     @SerializedName("printWaveAnswerYes")
     public String printWaveAnswerYes = "1";
 
+    @Ignore
     @SerializedName("printWaveAnswerNo")
     public String printWaveAnswerNo = "0";
 

@@ -18,10 +18,13 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.certify.snap.R;
+import com.certify.snap.api.response.IdentificationSettings;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -54,6 +57,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private LinearLayout parentLayout;
     private boolean isHomeScreenTextOnlyEnabled;
     private LinearLayout acknowledgmentLayout;
+    private IdentificationSettings identificationSettings;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -432,5 +436,12 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             rfid_layout.setVisibility(View.VISIBLE);
             text_input_timeout.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void getIdentificationSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        identificationSettings = DatabaseController.getInstance().getIdentificationSettingsId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+
     }
 }

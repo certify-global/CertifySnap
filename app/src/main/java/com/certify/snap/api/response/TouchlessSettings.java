@@ -23,6 +23,7 @@ public class TouchlessSettings {
     @SerializedName("enableQuestionAndAnswer")
     public String enableQuestionAndAnswer = "0";
 
+    @Ignore
     @SerializedName("settingId")
     public String settingId = "0";
 

@@ -15,9 +15,11 @@ public class HomePageSettings {
     @NonNull
     public int primaryId;
 
+    @Ignore
     @SerializedName("logo")
     public String logo = "";
 
+    @Ignore
     @SerializedName("enableThermalCheck")
     public String enableThermalCheck = "";
 
@@ -31,6 +33,7 @@ public class HomePageSettings {
     @SerializedName("enableHomeScreen")
     public String enableHomeScreen = "1";
 
+    @Ignore
     @SerializedName("viewIntervalDelay")
     public String viewIntervalDelay = "2";
 

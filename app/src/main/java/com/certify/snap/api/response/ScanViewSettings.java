@@ -35,12 +35,15 @@ public class ScanViewSettings {
     @SerializedName("enableSoundOnHighTemperature")
     public String enableSoundOnHighTemperature = "0";
 
+    @Ignore
     @SerializedName("viewDelay")
     public String viewDelay = "3";
 
+    @Ignore
     @SerializedName("temperatureThreshold")
     public String temperatureThreshold = "100.4";
 
+    @Ignore
     @SerializedName("temperatureFormat")
     public String temperatureFormat = "F";
 
@@ -56,6 +59,7 @@ public class ScanViewSettings {
     @SerializedName("enableLiveness")
     public String enableLiveness = "0";
 
+    @Ignore
     @SerializedName("lowTemperatureThreshold")
     public String lowTemperatureThreshold = "93.2";
 
@@ -63,6 +67,7 @@ public class ScanViewSettings {
     @SerializedName("enableMaskDetection")
     public String enableMaskDetection = "0";
 
+    @Ignore
     @SerializedName("temperatureCompensation")
     public String temperatureCompensation = "0.0";
 
@@ -84,9 +89,11 @@ public class ScanViewSettings {
     @SerializedName("enableTemperatureScan")
     public String enableTemperatureScan = "1";
 
+    @Ignore
     @SerializedName("audioForNormalTemperature")
     public String audioForNormalTemperature = "";
 
+    @Ignore
     @SerializedName("audioForHighTemperature")
     public String audioForHighTemperature = "";
 

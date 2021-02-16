@@ -231,7 +231,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     } else {
                         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
                         //if (!currentlanguageCode.equals(languageCode)) {
-                            DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
+                        DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
+                        DeviceSettingsController.getInstance().setLanguageToUpdate(languageCode);
                         //}
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
                                 && deviceOnlineSwitch) || (!currentlanguageCode.equals(languageCode))) {

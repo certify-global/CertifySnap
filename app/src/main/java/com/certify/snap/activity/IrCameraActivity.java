@@ -3702,12 +3702,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
-        if (AppSettings.isMultiLingualEnabled() &&
-                !GestureController.getInstance().isLanguageUpdated()) {
-            String languageType = DeviceSettingsController.getInstance().getLanguageToUpdate();
-            onGestureLanguageUpdate(languageType);
-            return;
-        }
         runOnUiThread(() -> {
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
@@ -3740,10 +3734,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     String msg = String.format(getString(R.string.update_language_msg),
                             GestureController.getInstance().getUpdatingLanguageName());
                     Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                    DeviceSettingsController.getInstance().getSettingsFromDb(DeviceSettingsController.getInstance().
+                            getLanguageIdOnCode(DeviceSettingsController.getInstance().getLanguageToUpdate()));
                     new Handler().postDelayed(this::recreate, 500);
-                    return;
                 }
-                Toast.makeText(IrCameraActivity.this, "", Toast.LENGTH_SHORT).show();
             }
         });
     }

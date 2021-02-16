@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
@@ -54,6 +55,7 @@ import com.microsoft.appcenter.AppCenter;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -416,7 +418,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void startProDeviceInitTimer() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setButton("OK", (dialog, which) -> {
+        progressDialog.setButton(getString(R.string.button_ok), (dialog, which) -> {
             startUpCountDownTimer.cancel();
             progressDialog.dismiss();
             CameraController.getInstance().setScannerRemainingTime(remainingTime);
@@ -473,7 +475,12 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             String institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
             if (DeviceSettingsController.getInstance().isLanguagesInDBEmpty() &&
                     (institutionId != null && institutionId.isEmpty())) {
-                DeviceSettingsController.getInstance().addOfflineLanguages();
+                List<LanguageData> languageDataList = DatabaseController.getInstance().getLanguagesFromDb();
+                if (languageDataList != null && languageDataList.isEmpty()) {
+                    DeviceSettingsController.getInstance().clearLanguageSettings();
+                    DeviceSettingsController.getInstance().addOfflineLanguages();
+                }
+                initLanguageList();
             }
         }
     }

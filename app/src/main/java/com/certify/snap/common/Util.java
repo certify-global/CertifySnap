@@ -1326,10 +1326,6 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettings.deviceMasterCode);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, deviceSettings.multipleScanMode.equals("1"));
-                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.primaryLanguageId));
-                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.primaryLanguageId));
-                        Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
-                        DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
                     }
 
@@ -1492,12 +1488,18 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, touchlessSettings.messageForNegativeOutcome);
                     }
 
-                    //Add settings to DB
+                    /*//Add settings to DB
                     if (deviceSettings != null) {
                         DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.primaryLanguageId), deviceSettingsApi);
-                    }
+                    }*/
                     DeviceSettingsController.getInstance().handleAdditionalLanguagesApi(deviceSettingsApi.settings);
-                    DeviceSettingsController.getInstance().getSettingsFromDb(Integer.parseInt(deviceSettings.primaryLanguageId));
+                    if (deviceSettings != null) {
+                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.primaryLanguageId));
+                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.primaryLanguageId));
+                        Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
+                        DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
+                        DeviceSettingsController.getInstance().getSettingsFromDb(Integer.parseInt(deviceSettings.primaryLanguageId));
+                    }
                 }
             } else {
                 Log.e(LOG, "Setting retrieval Something went wrong please try again");

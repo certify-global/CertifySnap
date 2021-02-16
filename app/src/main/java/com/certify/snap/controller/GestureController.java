@@ -922,7 +922,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public boolean updateNextLanguage() {
         List<LanguageData> languageDataList = DeviceSettingsController.getInstance().getLanguageDataList();
-        if (languageDataList != null) {
+        if (languageDataList != null && !languageDataList.isEmpty()) {
+            if (languageDataList.size() == 1) {
+                isLanguageUpdated = true;
+                return false;
+            }
             if (languageSelectionIndex >= languageDataList.size()) {
                 languageSelectionIndex = 0;
                 DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());

@@ -221,7 +221,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         deviceSettingsApi.homePageView.primaryId = primaryId;
         deviceSettingsApi.scanView.primaryId = primaryId;
         deviceSettingsApi.touchlessInteraction.primaryId = primaryId;
-        DatabaseController.getInstance().insertDeviceSettingsData(deviceSettingsApi.deviceSettingsData);
+        //DatabaseController.getInstance().insertDeviceSettingsData(deviceSettingsApi.deviceSettingsData);
         DatabaseController.getInstance().insertScanViewSettings(deviceSettingsApi.scanView);
         DatabaseController.getInstance().insertHomePageSettings(deviceSettingsApi.homePageView);
         DatabaseController.getInstance().insertConfirmationViewSettings(deviceSettingsApi.confirmationView);
@@ -231,37 +231,37 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     }
 
     public void addLanguageSettingsToDb(int primaryId, DeviceSettings deviceSettings) {
-        deviceSettings.deviceSettingsData.primaryId = primaryId;
         deviceSettings.confirmationView.primaryId = primaryId;
+        deviceSettings.identificationSettings.primaryId = primaryId;
         deviceSettings.guideMessages.primaryId = primaryId;
         deviceSettings.printerSettings.primaryId = primaryId;
         deviceSettings.homePageView.primaryId = primaryId;
         deviceSettings.scanView.primaryId = primaryId;
         deviceSettings.touchlessInteraction.primaryId = primaryId;
-        DatabaseController.getInstance().insertDeviceSettingsData(deviceSettings.deviceSettingsData);
         DatabaseController.getInstance().insertScanViewSettings(deviceSettings.scanView);
         DatabaseController.getInstance().insertHomePageSettings(deviceSettings.homePageView);
         DatabaseController.getInstance().insertConfirmationViewSettings(deviceSettings.confirmationView);
+        DatabaseController.getInstance().insertIdentificationSettings(deviceSettings.identificationSettings);
         DatabaseController.getInstance().insertPrinterSettings(deviceSettings.printerSettings);
         DatabaseController.getInstance().insertGuideSettings(deviceSettings.guideMessages);
         DatabaseController.getInstance().insertTouchlessSettings(deviceSettings.touchlessInteraction);
     }
 
     public void updateLanguageSettingsInDb(int primaryId, DeviceSettingsApi deviceSettingsApi) {
-        DatabaseController.getInstance().updateDeviceSettingsData(deviceSettingsApi.deviceSettingsData);
         DatabaseController.getInstance().updateScanViewSettings(deviceSettingsApi.scanView);
         DatabaseController.getInstance().updateHomePageSettings(deviceSettingsApi.homePageView);
         DatabaseController.getInstance().updateConfirmationSettings(deviceSettingsApi.confirmationView);
+        DatabaseController.getInstance().updateIdentificationSettings(deviceSettingsApi.identificationSettings);
         DatabaseController.getInstance().updatePrinterSettings(deviceSettingsApi.printerSettings);
         DatabaseController.getInstance().updateGuideSettings(deviceSettingsApi.guideMessages);
         DatabaseController.getInstance().updateTouchlessSettings(deviceSettingsApi.touchlessInteraction);
     }
 
     public void updateLanguageSettingsInDb(int primaryId, DeviceSettings deviceSettings) {
-        DatabaseController.getInstance().updateDeviceSettingsData(deviceSettings.deviceSettingsData);
         DatabaseController.getInstance().updateScanViewSettings(deviceSettings.scanView);
         DatabaseController.getInstance().updateHomePageSettings(deviceSettings.homePageView);
         DatabaseController.getInstance().updateConfirmationSettings(deviceSettings.confirmationView);
+        DatabaseController.getInstance().updateIdentificationSettings(deviceSettings.identificationSettings);
         DatabaseController.getInstance().updatePrinterSettings(deviceSettings.printerSettings);
         DatabaseController.getInstance().updateGuideSettings(deviceSettings.guideMessages);
         DatabaseController.getInstance().updateTouchlessSettings(deviceSettings.touchlessInteraction);
@@ -271,7 +271,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
         //Device Settings
-        DeviceSettingsData deviceSettings = DatabaseController.getInstance().getDeviceSettingsDataOnId(languageId);
+        /*DeviceSettingsData deviceSettings = DatabaseController.getInstance().getDeviceSettingsDataOnId(languageId);
         if (deviceSettings != null) {
             if (deviceSettings.doNotSyncMembers.equals("1")) {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
@@ -289,31 +289,31 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             String languageType = DeviceSettingsController.getInstance().getLanguageOnId(languageId);
             Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
             Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
-        }
+        }*/
 
         //HomeView settings
         HomePageSettings homePageSettings = DatabaseController.getInstance().getHomePageSettingsOnId(languageId);
         if (homePageSettings != null) {
-            Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homePageSettings.logo);
+            //Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homePageSettings.logo);
             Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homePageSettings.line1);
             Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homePageSettings.line2);
-            Util.writeInt(sharedPreferences, GlobalParameters.HOME_DISPLAY_TIME, Integer.parseInt(homePageSettings.viewIntervalDelay));
+            //Util.writeInt(sharedPreferences, GlobalParameters.HOME_DISPLAY_TIME, Integer.parseInt(homePageSettings.viewIntervalDelay));
             Util.writeString(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, homePageSettings.homeText);
         }
 
         //ScanView settings
         ScanViewSettings scanViewSettings = DatabaseController.getInstance().getScanViewSettingsOnId(languageId);
         if (scanViewSettings != null) {
-            Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, scanViewSettings.viewDelay);
+            /*Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, scanViewSettings.viewDelay);
             Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, scanViewSettings.temperatureThreshold);
             Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, scanViewSettings.temperatureFormat);
             Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST_LOW, scanViewSettings.lowTemperatureThreshold);
             Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(scanViewSettings.temperatureCompensation));
-            Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanViewSettings.scanType));
+            Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanViewSettings.scanType));*/
             Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, scanViewSettings.temperatureNormal);
             Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, scanViewSettings.temperatureHigh);
 
-            if (scanViewSettings.audioForNormalTemperature != null && !scanViewSettings.audioForNormalTemperature.isEmpty()) {
+            /*if (scanViewSettings.audioForNormalTemperature != null && !scanViewSettings.audioForNormalTemperature.isEmpty()) {
                 SoundController.getInstance().saveAudioFile(scanViewSettings.audioForNormalTemperature, "Normal.mp3");
             } else {
                 SoundController.getInstance().deleteAudioFile("Normal.mp3");
@@ -322,14 +322,14 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 SoundController.getInstance().saveAudioFile(scanViewSettings.audioForHighTemperature, "High.mp3");
             } else {
                 SoundController.getInstance().deleteAudioFile("High.mp3");
-            }
+            }*/
         }
 
         //ConfirmationView settings
         ConfirmationViewSettings confirmationSettings = DatabaseController.getInstance().getConfirmationSettingOnId(languageId);
         if (confirmationSettings != null) {
-            Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationSettings.viewDelay);
-            Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, confirmationSettings.viewDelayAboveThreshold);
+            /*Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationSettings.viewDelay);
+            Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, confirmationSettings.viewDelayAboveThreshold);*/
             Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, confirmationSettings.normalViewLine1);
             Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, confirmationSettings.normalViewLine2);
             Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, confirmationSettings.aboveThresholdViewLine1);
@@ -344,12 +344,17 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, guideSettings.message3);
         }
 
+        IdentificationSettings identificationSettings = DatabaseController.getInstance().getIdentificationSettingsId(languageId);
+        if (identificationSettings != null) {
+            Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, identificationSettings.acknowledgementText);
+        }
+
         //Printer settings
         PrinterSettings printerSettings = DatabaseController.getInstance().getPrinterSettingsOnId(languageId);
         if (printerSettings != null) {
             Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, printerSettings.unidentifiedPrintTextValue);
-            Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, printerSettings.printWaveAnswerYes);
-            Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, printerSettings.printWaveAnswerNo);
+            /*Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, printerSettings.printWaveAnswerYes);
+            Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, printerSettings.printWaveAnswerNo);*/
             Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, printerSettings.defaultBottomBarText);
             Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, printerSettings.defaultResultPrint);
         }
@@ -357,7 +362,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         //Touchless Interaction settings
         TouchlessSettings touchlessSettings = DatabaseController.getInstance().getTouchlessSettingsOnId(languageId);
         if (touchlessSettings != null) {
-            Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, touchlessSettings.settingId);
+            //Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, touchlessSettings.settingId);
             Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, touchlessSettings.waveIndicatorInstructions);
             Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, touchlessSettings.maskEnforceText);
             Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, touchlessSettings.messageForNegativeOutcome);

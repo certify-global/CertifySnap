@@ -31,6 +31,7 @@ public class ConfirmationViewSettings {
     @SerializedName("temperatureAboveThreshold2")
     public String temperatureAboveThreshold2 = "";
 
+    @Ignore
     @SerializedName("viewDelay")
     public String viewDelay = "1";
 
@@ -38,6 +39,7 @@ public class ConfirmationViewSettings {
     @SerializedName("enableConfirmationScreenAboveThreshold")
     public String enableConfirmationScreenAboveThreshold = "1";
 
+    @Ignore
     @SerializedName("viewDelayAboveThreshold")
     public String viewDelayAboveThreshold = "1";
 
