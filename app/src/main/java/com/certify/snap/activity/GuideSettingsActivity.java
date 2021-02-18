@@ -84,11 +84,13 @@ public class GuideSettingsActivity extends SettingsBaseActivity {
                     if (!edittext_text4.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.GUIDE_TEXT4, edittext_text4.getText().toString());
 
-                    guideSettingsDb.message1 = edittext_text1.getText().toString();
-                    guideSettingsDb.message2 = edittext_text2.getText().toString();
-                    guideSettingsDb.message3 = edittext_text3.getText().toString();
-                    guideSettingsDb.message4 = edittext_text4.getText().toString();
-                    DeviceSettingsController.getInstance().updateGuideSettingsInDb(guideSettingsDb);
+                    if (guideSettingsDb != null) {
+                        guideSettingsDb.message1 = edittext_text1.getText().toString();
+                        guideSettingsDb.message2 = edittext_text2.getText().toString();
+                        guideSettingsDb.message3 = edittext_text3.getText().toString();
+                        guideSettingsDb.message4 = edittext_text4.getText().toString();
+                        DeviceSettingsController.getInstance().updateGuideSettingsInDb(guideSettingsDb);
+                    }
 
                     startActivity(new Intent(GuideSettingsActivity.this, SettingsActivity.class));
                     Util.showToast(GuideSettingsActivity.this, getString(R.string.save_success));

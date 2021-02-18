@@ -31,7 +31,7 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
     private SharedPreferences sp;
     EditText edittext_title_below, edittext_subtitle_below, edittext_title_above, edittext_subtitle_above, et_screen_delay_above, et_screen_below;
     TextView btn_exit;
-    private ConfirmationViewSettings confirmationSettingsDb;
+    private ConfirmationViewSettings confirmationSettingsDb = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,11 +114,13 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
                     if (!edittext_subtitle_above.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.Confirm_subtitle_above, edittext_subtitle_above.getText().toString());
 
-                    confirmationSettingsDb.normalViewLine1 = edittext_title_below.getText().toString();
-                    confirmationSettingsDb.normalViewLine2 = edittext_subtitle_below.getText().toString();
-                    confirmationSettingsDb.aboveThresholdViewLine1 = edittext_title_above.getText().toString();
-                    confirmationSettingsDb.temperatureAboveThreshold2 = edittext_subtitle_above.getText().toString();
-                    DeviceSettingsController.getInstance().updateConfirmationSettingsInDb(confirmationSettingsDb);
+                    if (confirmationSettingsDb != null) {
+                        confirmationSettingsDb.normalViewLine1 = edittext_title_below.getText().toString();
+                        confirmationSettingsDb.normalViewLine2 = edittext_subtitle_below.getText().toString();
+                        confirmationSettingsDb.aboveThresholdViewLine1 = edittext_title_above.getText().toString();
+                        confirmationSettingsDb.temperatureAboveThreshold2 = edittext_subtitle_above.getText().toString();
+                        DeviceSettingsController.getInstance().updateConfirmationSettingsInDb(confirmationSettingsDb);
+                    }
 
                     Util.showToast(ConfirmationSettingsActivity.this, getString(R.string.save_success));
                     finish();

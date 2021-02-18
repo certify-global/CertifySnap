@@ -47,7 +47,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private TextView enableLivenessTv;
     private RadioGroup livenessRg;
     private RadioButton livenessYes, livenessNo;
-    private ScanViewSettings scanViewSettings;
+    private ScanViewSettings scanViewSettings = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,9 +199,12 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
                     Util.writeString(sp, GlobalParameters.TEMP_TEST_LOW, editTextDialogUserInput_low.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_NORMAL, et_normal.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.RESULT_BAR_HIGH, et_high.getText().toString().trim());
-                    scanViewSettings.temperatureNormal = et_normal.getText().toString().trim();
-                    scanViewSettings.temperatureHigh = et_high.getText().toString().trim();
-                    DeviceSettingsController.getInstance().updateScanViewSettingsInDb(scanViewSettings);
+
+                    if (scanViewSettings != null) {
+                        scanViewSettings.temperatureNormal = et_normal.getText().toString().trim();
+                        scanViewSettings.temperatureHigh = et_high.getText().toString().trim();
+                        DeviceSettingsController.getInstance().updateScanViewSettingsInDb(scanViewSettings);
+                    }
 
                     Util.showToast(ScanSettingsActivity.this, getString(R.string.save_success));
                     saveScanProximity();

@@ -72,7 +72,7 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
 
     Typeface rubiklight;
     private SharedPreferences sp;
-    private PrinterSettings printerSettingsDb;
+    private PrinterSettings printerSettingsDb = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -518,9 +518,11 @@ public class PrinterSettingsActivity extends SettingsBaseActivity implements Pri
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, editTextWaveYes.getText().toString());
         Util.writeString(sp, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, editTextWaveNo.getText().toString());
 
-        printerSettingsDb.unidentifiedPrintText = editTextNameLabel.getText().toString();
-        printerSettingsDb.defaultResultPrint = editTextPassName.getText().toString();
-        DeviceSettingsController.getInstance().updatePrinterSettingsInDb(printerSettingsDb);
+        if (printerSettingsDb != null) {
+            printerSettingsDb.unidentifiedPrintText = editTextNameLabel.getText().toString();
+            printerSettingsDb.defaultResultPrint = editTextPassName.getText().toString();
+            DeviceSettingsController.getInstance().updatePrinterSettingsInDb(printerSettingsDb);
+        }
 
         Util.showToast(PrinterSettingsActivity.this, getString(R.string.save_success));
         finish();

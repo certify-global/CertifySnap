@@ -57,7 +57,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private LinearLayout parentLayout;
     private boolean isHomeScreenTextOnlyEnabled;
     private LinearLayout acknowledgmentLayout;
-    private IdentificationSettings identificationSettings;
+    private IdentificationSettings identificationSettings = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -130,6 +130,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbguideyes.setChecked(true);
             else rbguideno.setChecked(true);
 
+            getIdentificationSettingsFromDb();
             setRfidDefault();
             setRfidClickListener();
             setAnonymousDefault();
@@ -238,6 +239,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                     Util.writeString(sp, GlobalParameters.QR_BUTTON_TEXT, editTextQRButton.getText().toString().trim());
                     Util.writeString(sp, GlobalParameters.ACKNOWLEDGEMENT_TEXT, editTextAcknowledge.getText().toString().trim());
                     saveScanModeSetting();
+
+                    if (identificationSettings != null) {
+                        identificationSettings.acknowledgementText = editTextAcknowledge.getText().toString().trim();
+                        DatabaseController.getInstance().updateIdentificationSettings(identificationSettings);
+                    }
                     finish();
                 }
             });

@@ -31,7 +31,7 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
     Typeface rubiklight;
     TextView tv_welcome, titles;
     CheckBox cbHomeText, cbTextOnly;
-    private HomePageSettings homePageSettingsDb;
+    private HomePageSettings homePageSettingsDb = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,6 +60,7 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
             cbTextOnly.setTypeface(rubiklight);
             cbHomeText.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
+            getHomePageSettingsFromDb();
 
             edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan)));
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
@@ -81,10 +82,12 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
                         Util.writeString(sp, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, etOnlyText.getText().toString());
                     Util.showToast(HomeSettingsActivity.this, getString(R.string.save_success));
 
-                    homePageSettingsDb.line1 = edittext_title.getText().toString();
-                    homePageSettingsDb.line2 = edittext_subtitle.getText().toString();
-                    homePageSettingsDb.homeText = etOnlyText.getText().toString();
-                    DeviceSettingsController.getInstance().updateHomeViewSettingsInDb(homePageSettingsDb);
+                    if (homePageSettingsDb != null) {
+                        homePageSettingsDb.line1 = edittext_title.getText().toString();
+                        homePageSettingsDb.line2 = edittext_subtitle.getText().toString();
+                        homePageSettingsDb.homeText = etOnlyText.getText().toString();
+                        DeviceSettingsController.getInstance().updateHomeViewSettingsInDb(homePageSettingsDb);
+                    }
                     finish();
                 }
             });

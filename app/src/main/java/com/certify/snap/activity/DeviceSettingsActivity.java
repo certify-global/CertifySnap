@@ -221,6 +221,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LogOfflineData, logOfflineDataYes.isChecked());
                     AppSettings.setProSettings(proSettingValue);
+
+                    String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+                    DeviceSettingsController.getInstance().setLanguageToUpdate(languageCode);
+                    DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
+
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         deleteAppData();
                         if (serverSettingValue)
@@ -229,11 +234,6 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         ApplicationController.getInstance().setEndPointUrl(url);
                         restartApp();
                     } else {
-                        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
-                        //if (!currentlanguageCode.equals(languageCode)) {
-                        DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
-                        DeviceSettingsController.getInstance().setLanguageToUpdate(languageCode);
-                        //}
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
                                 && deviceOnlineSwitch) || (!currentlanguageCode.equals(languageCode))) {
                             restartApp();

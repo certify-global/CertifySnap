@@ -136,9 +136,11 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, editTextMaskEnforce.getText().toString());
             Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, editGestureExitMsg.getText().toString());
 
-            touchlessSettingsDb.waveIndicatorInstructions = editTextWaveFooter.getText().toString();
-            touchlessSettingsDb.maskEnforceText = editTextMaskEnforce.getText().toString();
-            touchlessSettingsDb.messageForNegativeOutcome = editGestureExitMsg.getText().toString();
+            if (touchlessSettingsDb != null) {
+                touchlessSettingsDb.waveIndicatorInstructions = editTextWaveFooter.getText().toString();
+                touchlessSettingsDb.maskEnforceText = editTextMaskEnforce.getText().toString();
+                touchlessSettingsDb.messageForNegativeOutcome = editGestureExitMsg.getText().toString();
+            }
 
             finish();
         });
