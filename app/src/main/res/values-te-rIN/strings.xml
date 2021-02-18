@@ -172,9 +172,9 @@
     <string name="face_only">ముఖం మాత్రమే</string>
     <string name="id_face">ఐడీ ఫేస్</string>
     <string name="id_or_face">ఐడీ లేదా ముఖం</string>
-    <string name="bit_26">౨౬ బిట్</string>
-    <string name="bit_34">౩౪ బిట్</string>
-    <string name="bit_48">౪౮ బిట్</string>
+    <string name="bit_26">26 బిట్</string>
+    <string name="bit_34">34 బిట్</string>
+    <string name="bit_48">48 బిట్</string>
 
 
 
@@ -479,7 +479,7 @@
     <string name="msg_PortCloseSuccess">పోర్ట్ క్లోజ్ సక్సెస్</string>
     <string name="statusReception">ఆన్‌స్టాటస్ రిసెప్షన్</string>
     <string name="dataName">పేరు డేటా</string>
-    <string name="bottom_text">ఎంపిక చేయడానికి దయచేసి మీ చేతితో కాంతిని నిరోధించండి \n\nపొరపాటు జరిగిందా? go n తిరిగి వెళ్ళడానికి రెండు లైట్లను బ్లాక్ చేయండి</string>
+    <string name="bottom_text">ఎంపిక చేయడానికి దయచేసి మీ చేతితో కాంతిని నిరోధించండి \n\nపొరపాటు జరిగిందా? తిరిగి వెళ్ళడానికి రెండు లైట్లను బ్లాక్ చేయండి</string>
     <string name="touchless_interaction_setting">టచ్‌లెస్ ఇంటరాక్షన్</string>
     <string name="touchless_setting">టచ్‌లెస్ ఇంటరాక్షన్ సెట్టింగ్‌లు</string>
     <string name="enable_acknowledge">రసీదు స్క్రీన్‌ను ప్రారంభించండి</string>
