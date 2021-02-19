@@ -54,8 +54,8 @@ public interface DatabaseStore {
     @Insert
     void insertDeviceSetting(DeviceKeySettings deviceSettings);
 
-    @Insert
-    void insertGestureQuestions(QuestionDataDb questionData);
+   /* @Insert
+    void insertGestureQuestions(QuestionDataDb questionData);*/
 
     @Insert
     void insertGestureQuestionList(GestureQuestionsDb gestureQuestionsDb);
@@ -182,11 +182,11 @@ public interface DatabaseStore {
     @Update
     void updateSetting(DeviceKeySettings deviceKeySettings);
 
-    @Query("SELECT * FROM QuestionDataDb")
+    /*@Query("SELECT * FROM QuestionDataDb")
     List<QuestionDataDb> findAllQuestionsData();
 
     @Query("DELETE FROM QuestionDataDb")
-    void deleteAllQuestions();
+    void deleteAllQuestions();*/
 
     @Query("SELECT * FROM LanguageData")
     List<LanguageData> findAllLanguages();
@@ -232,6 +232,9 @@ public interface DatabaseStore {
 
     @Query("SELECT * FROM TouchlessSettings WHERE primaryId =:languageID")
     TouchlessSettings getTouchlessSettingOnId(long languageID);
+
+    @Query("SELECT * FROM GestureQuestionsDb")
+    List<GestureQuestionsDb> getGestureQuestionListDb();
 
     @Update
     void updateDeviceSettingsData(DeviceSettingsData deviceSettingsData);
@@ -293,4 +296,6 @@ public interface DatabaseStore {
     @Query("DELETE FROM TouchlessSettings")
     void deleteTouchlessSettings();
 
+    @Query("DELETE FROM GestureQuestionsDb")
+    void deleteAllGestureQuestionList();
 }

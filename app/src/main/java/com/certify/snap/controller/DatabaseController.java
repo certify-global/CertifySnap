@@ -444,7 +444,7 @@ public class DatabaseController {
         }
     }
 
-    public void insertQuestionsToDB(QuestionDataDb questionData) {
+   /* public void insertQuestionsToDB(QuestionDataDb questionData) {
         try {
             if (databaseStore != null) {
                 databaseStore.insertGestureQuestions(questionData);
@@ -473,12 +473,33 @@ public class DatabaseController {
         } catch (SQLiteException e){
             handleDBException(e);
         }
-    }
+    } */
 
     public void insertGestureQuestionList(GestureQuestionsDb gestureQuestionsDb) {
         try {
             if (databaseStore != null) {
                 databaseStore.insertGestureQuestionList(gestureQuestionsDb);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public List<GestureQuestionsDb> getGestureQuestionsListFromDb() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getGestureQuestionListDb();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public void deleteGestureQuestionsListFromDb() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAllGestureQuestionList();
             }
         } catch (SQLiteException e){
             handleDBException(e);

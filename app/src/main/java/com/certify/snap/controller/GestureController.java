@@ -88,6 +88,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private static final String RIGHT_HAND = "RightHand";
     private static final String BOTH_HANDS = "BothHands";
     private int languageSelectionIndex = 0;
+    private List<GestureQuestionsDb> gestureQuestionsDbList = null;
 
     //Voice Gesture
     private SpeechRecognizer speechRecognizer;
@@ -187,11 +188,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
-            if (!DeviceSettingsController.getInstance().getLanguageToUpdate().equals("en")) {
+            /*if (!DeviceSettingsController.getInstance().getLanguageToUpdate().equals("en")) {
                 obj.put("languageConversion", true);
                 obj.put("fromLanguage", "en");
                 obj.put("toLanguage", DeviceSettingsController.getInstance().getLanguageToUpdate());
-            }
+            }*/
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, context).execute();
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
@@ -203,7 +204,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerGesture", "GetQuestions Log api failed");
-                getQuestionsFromDb();
+                getQuestionsFromDb(DeviceSettingsController.getInstance().getLanguageToUpdate());
                 if (listener != null) {
                     listener.onQuestionsReceived();
                 }
@@ -215,24 +216,52 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
             if (response.responseCode != null && response.responseCode.equals("1")) {
                 List<QuestionData> questionList = response.questionList;
-                List<QuestionDataDb> questionDataDbList = new ArrayList<>();
                 if (questionList.size() > 0) {
+                    List<QuestionDataDb> questionDataDbList = new ArrayList<>();
+                    GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
+                    QuestionData qData = null;
+                    String languageCode = "";
+
+                    DatabaseController.getInstance().deleteGestureQuestionsListFromDb();
                     clearQuestionAnswerMap();
-                    DatabaseController.getInstance().deleteQuestionsFromDb();
                     for (int i = 0; i < questionList.size(); i++) {
                         QuestionData questionData = questionList.get(i);
-                        questionAnswerMap.put(questionData, "NA");
-                        DatabaseController.getInstance().insertQuestionsToDB(getDbQuestionData(questionData, i));
-                        questionDataDbList.add(getDbQuestionData(questionData, i));
+                        if (questionData.languageCode != null) {
+                            if (questionData.languageCode.equals(AppSettings.getLanguageType())) {
+                                questionAnswerMap.put(questionData, "NA");
+                            }
+                            if (qData == null) {
+                                qData = questionData;
+                                languageCode = questionData.languageCode;
+                            }
+                            if (languageCode.equals(questionData.languageCode)) {
+                                questionDataDbList.add(getDbQuestionData(questionData, i));
+                                continue;
+                            }
+                            gestureQuestionsDb.primaryId = DeviceSettingsController.getInstance().getLanguageIdOnCode(languageCode);
+                            gestureQuestionsDb.questionsDbList = questionDataDbList;
+                            DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);
+                            questionDataDbList.clear();
+                            questionDataDbList.add(getDbQuestionData(questionData, i));
+                            qData = questionData;
+                            languageCode = questionData.languageCode;
+                        } else {
+                            languageCode = "en";
+                            questionDataDbList.add(getDbQuestionData(questionData, i));
+                        }
                     }
-                    /*GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
-                    gestureQuestionsDb.primaryId = DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType());
-                    gestureQuestionsDb.questionsDbList = questionDataDbList;
-                    DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);*/
+                    if (!questionDataDbList.isEmpty()) {
+                        gestureQuestionsDb.primaryId = DeviceSettingsController.getInstance().getLanguageIdOnCode(languageCode);
+                        gestureQuestionsDb.questionsDbList = questionDataDbList;
+                        DatabaseController.getInstance().insertGestureQuestionList(gestureQuestionsDb);
+                        questionDataDbList.clear();
+                    }
+                    gestureQuestionsDbList = DatabaseController.getInstance().getGestureQuestionsListFromDb();
+                    getQuestionsFromDb(DeviceSettingsController.getInstance().getLanguageToUpdate());
                 }
                 Log.d(TAG, "Gesture Questions list updated");
             } else {
-                getQuestionsFromDb();
+                getQuestionsFromDb(DeviceSettingsController.getInstance().getLanguageToUpdate());
             }
             if (listener != null) {
                 listener.onQuestionsReceived();
@@ -684,6 +713,28 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 qSurveyOptionList.add(qSurveyOption);
             }
         }
+        /*List<QuestionSurveyOptions> qSurveyList = new ArrayList<>();
+        try {
+            for (int i = 0; i < gestureQuestionsDbList.size(); i++) {
+                List<QuestionDataDb> questionDataDbList = gestureQuestionsDbList.get(i).questionsDbList;
+                for (int k = 0; k < questionDataDbList.size(); k++) {
+                    QuestionDataDb questionDataDb = questionDataDbList.get(k);
+                    Gson gson = new Gson();
+                    Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
+                    }.getType();
+                    List<QuestionSurveyOptions> surveyOptionList = gson.fromJson(questionDataDb.surveyOptions, listType);
+                    for (int j = 0; j < surveyOptionList.size(); j++) {
+                        QuestionSurveyOptions surveyOption = surveyOptionList.get(j);
+                        QuestionSurveyOptions qAnswerSurveyOption = qSurveyOptionList.get(j);
+                        if (surveyOption.name.equals(qAnswerSurveyOption.name)) {
+                            qSurveyList.add(surveyOption);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Gesture Exception " + e.getMessage());
+        }*/
         //Call API
         sendAnswersAPI(qSurveyOptionList, negativeAnswer);
 
@@ -842,31 +893,47 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         questionDataDb.userId = questionData.userId;
         questionDataDb.expectedOutcome = questionData.expectedOutcome;
         questionDataDb.surveyQuestionaryDetails = questionData.surveyQuestionaryDetails;
+        questionDataDb.languageCode = questionData.languageCode;
         Gson gson = new Gson();
         questionDataDb.surveyOptions = gson.toJson(questionData.surveyOptions);
         return questionDataDb;
     }
 
-    public void getQuestionsFromDb () {
-        List<QuestionDataDb> questionDataDbList = DatabaseController.getInstance().getQuestionsFromDb();
-        if (questionDataDbList.size() > 0) {
-            questionAnswerMap.clear();
-            for (int i = 0; i < questionDataDbList.size(); i++) {
-                QuestionDataDb questionDataDb = questionDataDbList.get(i);
-                QuestionData questionData = new QuestionData();
-                questionData.id = questionDataDb.id;
-                questionData.institutionId = questionDataDb.institutionId;
-                questionData.questionName = questionDataDb.questionName;
-                questionData.title = questionDataDb.title;
-                questionData.settingId = questionDataDb.settingId;
-                questionData.userId = questionDataDb.userId;
-                questionData.expectedOutcome = questionDataDb.expectedOutcome;
-                questionData.surveyQuestionaryDetails = questionDataDb.surveyQuestionaryDetails;
-                Gson gson = new Gson();
-                Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
-                }.getType();
-                questionData.surveyOptions = gson.fromJson(questionDataDb.surveyOptions, listType);
-                questionAnswerMap.put(questionData, "NA");
+    public void initLanguageDb() {
+        gestureQuestionsDbList = DatabaseController.getInstance().getGestureQuestionsListFromDb();
+    }
+
+    public void getQuestionsFromDb (String languageCode) {
+        int languageId = DeviceSettingsController.getInstance().getLanguageIdOnCode(languageCode);
+        List<QuestionDataDb> questionDataDbList = null;
+        if (gestureQuestionsDbList != null) {
+            if (gestureQuestionsDbList.size() > 0) {
+                for (int j = 0; j < gestureQuestionsDbList.size(); j++) {
+                    if (languageId == gestureQuestionsDbList.get(j).primaryId) {
+                        questionDataDbList = gestureQuestionsDbList.get(j).questionsDbList;
+                        break;
+                    }
+                }
+                questionAnswerMap.clear();
+                if (questionDataDbList != null) {
+                    for (int i = 0; i < questionDataDbList.size(); i++) {
+                        QuestionDataDb questionDataDb = questionDataDbList.get(i);
+                        QuestionData questionData = new QuestionData();
+                        questionData.id = questionDataDb.id;
+                        questionData.institutionId = questionDataDb.institutionId;
+                        questionData.questionName = questionDataDb.questionName;
+                        questionData.title = questionDataDb.title;
+                        questionData.settingId = questionDataDb.settingId;
+                        questionData.userId = questionDataDb.userId;
+                        questionData.expectedOutcome = questionDataDb.expectedOutcome;
+                        questionData.surveyQuestionaryDetails = questionDataDb.surveyQuestionaryDetails;
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
+                        }.getType();
+                        questionData.surveyOptions = gson.fromJson(questionDataDb.surveyOptions, listType);
+                        questionAnswerMap.put(questionData, "NA");
+                    }
+                }
             }
         }
     }
@@ -916,6 +983,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
         setLanguageUpdated(true);
         languageSelectionIndex = 0;
+        getQuestionsFromDb(languageType);
         DeviceSettingsController.getInstance().getSettingsFromDb(DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
         clearQuestionAnswerMap();
     }
@@ -951,6 +1019,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public int getLanguageSelectionIndex() {
         return languageSelectionIndex;
+    }
+
+    public void setLanguageSelectionIndex(int value) {
+        languageSelectionIndex = value;
     }
 
     public void clearData() {

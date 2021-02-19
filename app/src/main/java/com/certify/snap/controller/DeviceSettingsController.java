@@ -344,6 +344,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, guideSettings.message3);
         }
 
+        //Identification Settings
         IdentificationSettings identificationSettings = DatabaseController.getInstance().getIdentificationSettingsId(languageId);
         if (identificationSettings != null) {
             Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, identificationSettings.acknowledgementText);

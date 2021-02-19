@@ -457,7 +457,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     private void initGesture() {
         if (AppSettings.isEnableHandGesture()) {
             if (Util.isNetworkOff(this) && GestureController.getInstance().getQuestionAnswerMap().isEmpty()) {
-                GestureController.getInstance().getQuestionsFromDb();
+                GestureController.getInstance().initLanguageDb();
+                GestureController.getInstance().getQuestionsFromDb(AppSettings.getLanguageType());
             } else {
                 if (GestureController.getInstance().getQuestionsSize() > 0) {
                     GestureController.getInstance().getGestureQuestions();

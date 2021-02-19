@@ -11,14 +11,15 @@ public class QuestionDataDb {
     @PrimaryKey
     @NonNull
     public int primaryId;
-    public int institutionId;
-    public int userId;
-    public int id;
+    public Integer institutionId = 0;
+    public Integer userId = 0;
+    public Integer id = 0;
     public String questionName;
     public String title;
     public String surveyQuestionaryDetails;
     public String surveyOptions;
-    public int settingId;
+    public Integer settingId = 0;
     public String expectedOutcome;
+    public String languageCode;
 
 }
