@@ -489,29 +489,58 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_18" />
 
-            <RadioGroup
-                android:id="@+id/radio_group_locale_settings"
+            <Spinner
+                android:id="@+id/spinner_language_selector"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_10" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBlue" />
+
+        <LinearLayout
+            android:id="@+id/multilingual_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_10"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/multilingual_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/size_20"
+                android:text="@string/allow_multilingual"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_18" />
+
+            <RadioGroup
+                android:id="@+id/multilingual_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_20"
                 android:layout_marginTop="@dimen/size_05"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/radio_english_locale_settings"
+                    android:id="@+id/multilingual_rb_yes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/size_30"
-                    android:text="@string/english"
+                    android:text="@string/living_type_1"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
                 <RadioButton
-                    android:id="@+id/radio_spanish_locale_settings"
+                    android:id="@+id/multilingual_rb_no"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/spanish"
+                    android:text="@string/living_type_0"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />

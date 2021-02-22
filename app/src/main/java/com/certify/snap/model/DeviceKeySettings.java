@@ -7,7 +7,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(indices={@Index(value="id", unique=true)})
-public class DeviceSettings {
+public class DeviceKeySettings {
 
     @PrimaryKey
     @NonNull

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.RequiresApi;
@@ -17,7 +16,6 @@ import android.util.Log;
 
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
-import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncGetMemberData;
@@ -27,6 +25,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.google.gson.Gson;
 
@@ -59,12 +58,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        if (HomeActivity.mSelectLanguage) {
-            localeToSwitchTo = new Locale("es");
-        } else {
-            localeToSwitchTo = new Locale("en");
-        }
+        Locale localeToSwitchTo = new Locale(DeviceSettingsController.getInstance().getLanguageToUpdate());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }
@@ -131,7 +125,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     }
                 }
                 MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-                doSendBroadcast("start", activeMemberCount, count);
+                doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count);
                 return;
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
@@ -172,7 +166,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
                     MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                    doSendBroadcast("start", activeMemberCount, count++);
+                    doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count++);
                 }
             } else {
                 onMemberIdErrorResponse(req);
@@ -182,13 +176,12 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
     }
 
-    private void doSendBroadcast(String message,int memberCount,int count) {
+    private void doSendBroadcast(int actionCode,int memberCount,int count) {
         Intent event_snackbar = new Intent("EVENT_SNACKBAR");
 
-        if (!TextUtils.isEmpty(message))
-            event_snackbar.putExtra("message",message);
-        event_snackbar.putExtra("memberCount",memberCount);
-        event_snackbar.putExtra("count",count);
+        event_snackbar.putExtra("actionCode", actionCode);
+        event_snackbar.putExtra("memberCount", memberCount);
+        event_snackbar.putExtra("count", count);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(event_snackbar);
     }

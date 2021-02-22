@@ -17,6 +17,8 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -26,6 +28,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,11 +48,15 @@ import com.certify.snap.common.ShellUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -66,7 +73,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private RelativeLayout ll;
     private Switch switch_activate;
     private TextView tvDeviceManager, tvEnd, tvDeviceName, tvPass, tvSettingStr, tv_activate_tv_device, tvResetSnap, tv_reset_members, tv_clear_members,
-            navigation_bar_textview, sync_online_members_textview, led_switch_textview, saveLogsTv, logOfflineData;
+            navigation_bar_textview, sync_online_members_textview, led_switch_textview, saveLogsTv, logOfflineData, multilingualSetting;
     private Button tvClearData, not_activate;
     private Typeface rubiklight;
     private String url_end;
@@ -75,11 +82,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
     private View pro_settings_border;
-    RadioGroup sync_member_radio_group, logOfflineDataRg;
-    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo;
+    RadioGroup sync_member_radio_group, logOfflineDataRg, multiLingualRg;
+    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo, multiLingualRbYes, multiLingualRbNo;
     RadioGroup radio_group_local_server;
-    RadioButton radio_yes_server, radio_no_server, radio_english_locale, radio_spanish_locale;
-    TextView tvLocalServer, tvServerIp, tvLocaleSettings;
+    RadioButton radio_yes_server, radio_no_server;
+    TextView tvLocalServer, tvServerIp, tvLocaleSettings,additional_locale_settings;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
@@ -92,6 +99,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private boolean deviceOnlineSwitch = false;
     private Button saveLogButton;
     private LinearLayout logOfflineDataLayout, captureLogsLayout;
+    private Spinner spinnerLanguageSelector,additional_spinner_language_selector;
+    private String currentlanguageCode = "";
+    private Integer selectedLanguageId = 0;
+    private String primaryLanguage = "";
+    private String secondaryLanguage = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,6 +122,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             captureLogSetting();
             logOfflineDataSetting();
             languageSetting();
+            multiLingualSetting();
+            //additionalLanguageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
             tvHostName = findViewById(R.id.tv_hostName);
@@ -207,6 +221,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LogOfflineData, logOfflineDataYes.isChecked());
                     AppSettings.setProSettings(proSettingValue);
+
+                    String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+                    DeviceSettingsController.getInstance().setLanguageToUpdate(languageCode);
+                    DeviceSettingsController.getInstance().getSettingsFromDb(selectedLanguageId);
+
                     if (!TextUtils.isEmpty(url_end) && !url_end.equals(getString(R.string.protocol_text) + etEndUrl.getText().toString().trim() + getString(R.string.hostname))) {
                         deleteAppData();
                         if (serverSettingValue)
@@ -216,7 +235,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                         restartApp();
                     } else {
                         if ((proSettingValueSp != proSettingValue) || (serverSettingValue
-                                && deviceOnlineSwitch)) {
+                                && deviceOnlineSwitch) || (!currentlanguageCode.equals(languageCode))) {
                             restartApp();
                             return;
                         }
@@ -283,9 +302,14 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         logOfflineDataYes = findViewById(R.id.log_od_rb_yes);
         logOfflineDataNo = findViewById(R.id.log_od_rb_no);
         captureLogsLayout = findViewById(R.id.capture_logs_layout);
-        radio_english_locale = findViewById(R.id.radio_english_locale_settings);
-        radio_spanish_locale = findViewById(R.id.radio_spanish_locale_settings);
+        spinnerLanguageSelector = findViewById(R.id.spinner_language_selector);
         tvLocaleSettings = findViewById(R.id.locale_settings);
+        multilingualSetting = findViewById(R.id.multilingual_tv);
+        multiLingualRg = findViewById(R.id.multilingual_rg);
+        multiLingualRbYes = findViewById(R.id.multilingual_rb_yes);
+        multiLingualRbNo = findViewById(R.id.multilingual_rb_no);
+        //additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
+        //additional_locale_settings = findViewById(R.id.additional_locale_settings);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -313,6 +337,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         saveLogButton.setTypeface(rubiklight);
         logOfflineData.setTypeface(rubiklight);
         tvLocaleSettings.setTypeface(rubiklight);
+        multilingualSetting.setTypeface(rubiklight);
+        //additional_locale_settings.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
@@ -802,28 +828,79 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void languageSetting() {
-        RadioGroup  locale_radio_group = findViewById(R.id.radio_group_locale_settings);
-        boolean languageSwitch = sharedPreferences.getBoolean(GlobalParameters.languageType, false);
+        HashMap<Integer, String> languageMap = DeviceSettingsController.getInstance().getLanguageMapFromDb();
+        ArrayList<String> values = new ArrayList<>(languageMap.values());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, values);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLanguageSelector.setAdapter(adapter);
 
-        if (languageSwitch) {
-            radio_spanish_locale.setChecked(true);
+        spinnerLanguageSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                primaryLanguage = spinnerLanguageSelector.getSelectedItem().toString();
+                selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, primaryLanguage);
+                if (selectedLanguageId != null) {
+                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE,
+                            DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
+        currentlanguageCode = languageCode;
+        String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
+        spinnerLanguageSelector.setSelection(((ArrayAdapter<String>)spinnerLanguageSelector.getAdapter()).getPosition(languageName));
+    }
+
+    private void additionalLanguageSetting() {
+        HashMap<Integer, String> languageMap = DeviceSettingsController.getInstance().getLanguageMapFromDb();
+        ArrayList<String> values = new ArrayList<>(languageMap.values());
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, values);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        additional_spinner_language_selector.setAdapter(adapter);
+
+        additional_spinner_language_selector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                secondaryLanguage = additional_spinner_language_selector.getSelectedItem().toString();
+                if (secondaryLanguage.equals(primaryLanguage)) {
+                    Toast.makeText(DeviceSettingsActivity.this, getString(R.string.language_message), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Integer selectedLanguageId = (Integer) Util.getKeyOnValue(languageMap, secondaryLanguage);
+                if (selectedLanguageId != null) {
+                    Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE_SECONDARY,
+                            DeviceSettingsController.getInstance().getLanguageOnId(selectedLanguageId));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
+        currentlanguageCode = languageCode;
+        String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
+        additional_spinner_language_selector.setSelection(((ArrayAdapter<String>)additional_spinner_language_selector.getAdapter()).getPosition(languageName));
+    }
+
+    private void multiLingualSetting() {
+        if (sharedPreferences.getBoolean(GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, false)) {
+            multiLingualRbYes.setChecked(true);
         } else {
-            radio_english_locale.setChecked(true);
+            multiLingualRbNo.setChecked(true);
         }
 
-        locale_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.radio_english_locale_settings:
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.languageType, false);
-                        restartApp();
-                        break;
-                    case R.id.radio_spanish_locale_settings:
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.languageType, true);
-                        restartApp();
-                        break;
-                }
+        multiLingualRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.multilingual_rb_yes) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, true);
+            } else {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, false);
             }
         });
     }

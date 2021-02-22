@@ -258,7 +258,17 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 if (progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-                covidQuestionsText.setText(GestureController.getInstance().getQuestion());
+                String question = GestureController.getInstance().getQuestion();
+                if (question.isEmpty()) {
+                    Toast.makeText(this.getContext(), getString(R.string.gesture_questions_not_available), Toast.LENGTH_LONG).show();
+                    mActivity.getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
+                    IrCameraActivity activity = (IrCameraActivity) mActivity;
+                    if (activity != null) {
+                        activity.resetGesture();
+                    }
+                    return;
+                }
+                covidQuestionsText.setText(question);
                 int questionsCount = GestureController.getInstance().getQuestionsSize();
                 if (AppSettings.isGestureProgressEnabled()) {
                     if (questionsCount == 2) {

@@ -105,6 +105,7 @@ import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.PrinterController;
 import com.certify.snap.controller.QrCodeController;
@@ -119,6 +120,7 @@ import com.certify.snap.fragment.MaskEnforceFragment;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
+import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
@@ -331,8 +333,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (isDestroyed()) return;
                 memberCount = intent.getIntExtra("memberCount", 0);
                 totalCount = intent.getIntExtra("count", 0);
-                snackMessage = intent.getStringExtra("message");
-                showSnackbar(snackMessage);
+                int actionCode = intent.getIntExtra("actionCode", 0);
+                showSnackbar(actionCode);
             }
         };
         rubiklight = Typeface.createFromAsset(getAssets(),
@@ -713,6 +715,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             showPrintMsgDialog();
             ApplicationController.getInstance().setDeviceBoot(false);
         }
+        updateGestureOnLanguageChange();
     }
 
     @Override
@@ -1310,11 +1313,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
-    private void showSnackbar(String snackMessage) {
+    private void showSnackbar(int actionCode) {
         tv_sync.setTypeface(rubiklight);
-        if (snackMessage.equals("start")) {
+        if (actionCode == MemberSyncDataModel.SYNC_START) {
             tv_sync.setText(totalCount++ + " " + getString(R.string.out_of) + " " + memberCount);
-        } else if (snackMessage.contains("complet")) {
+        } else if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
             tv_sync.setText(getString(R.string.sync_completed));
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -1323,7 +1326,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }, 2 * 1000);
         } else {
-            tv_sync.setText(snackMessage);
+            tv_sync.setText(getString(R.string.syncing));
         }
     }
 
@@ -1912,6 +1915,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void getAppSettings() {
         isProDevice = Util.isDeviceProModel();
+        AppSettings.getTextSettings(this);
         rfIdEnable = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         qrCodeEnable = sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
                 sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
@@ -2807,6 +2811,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         GestureController.getInstance().clearData();
         PrinterController.getInstance().setPrinting(false);
+        //GestureController.getInstance().setLanguageUpdated(false);
     }
 
     private void setPreviewIdleTimer() {
@@ -2861,6 +2866,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeScan() {
+        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            GestureController.getInstance().setLanguageUpdated(false);
+            if (AppSettings.isMultiLingualEnabled()) {
+                resetGesture();
+                return;
+            }
+        }
         runOnUiThread(() -> {
             if (temperature_image != null) {
                 temperature_image.setVisibility(View.GONE);
@@ -2878,6 +2890,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 } else {
                     isReadyToScan = false;
                 }
+                GestureController.getInstance().setLanguageUpdated(false);
             }
             resetGesture();
         }
@@ -3665,6 +3678,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resetGesture() {
         GestureController.getInstance().setGestureHomeCallbackListener(this);
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            GestureController.getInstance().setLanguageUpdated(false);
+            if (AppSettings.isMultiLingualEnabled()) {
+                DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
+                DeviceSettingsController.getInstance().getSettingsFromDb(
+                        DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType()));
+                GestureController.getInstance().getQuestionsFromDb(AppSettings.getLanguageType());
+                runOnUiThread(this::recreate);
+            }
+        }
     }
 
     public void onGestureNegativeAnswer() {
@@ -3690,10 +3713,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
+        GestureController.getInstance().setLanguageSelectionIndex(0);
         runOnUiThread(() -> {
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
                     (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) return;
+
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
@@ -3709,6 +3734,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             new Handler().postDelayed(this::launchGestureFragment, 1000);
+        });
+    }
+
+    @Override
+    public void onLeftHandGesture() {
+        runOnUiThread(() -> {
+            if (AppSettings.isMultiLingualEnabled() &&
+                    !GestureController.getInstance().isLanguageUpdated()) {
+                if (GestureController.getInstance().updateNextLanguage()) {
+                    String msg = String.format(getString(R.string.update_language_msg),
+                            GestureController.getInstance().getUpdatingLanguageName());
+                    Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                    DeviceSettingsController.getInstance().getSettingsFromDb(DeviceSettingsController.getInstance().
+                            getLanguageIdOnCode(DeviceSettingsController.getInstance().getLanguageToUpdate()));
+                    GestureController.getInstance().getQuestionsFromDb(DeviceSettingsController.getInstance().getLanguageToUpdate());
+                    new Handler().postDelayed(this::recreate, 500);
+                }
+                return;
+            }
+            GestureController.getInstance().setCallback(false);
         });
     }
 
@@ -3880,5 +3925,31 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         return tempValueStr;
+    }
+
+    private void onGestureLanguageUpdate(String languageType) {
+        runOnUiThread(() -> {
+            Toast.makeText(IrCameraActivity.this, getString(R.string.gesture_launch_msg), Toast.LENGTH_SHORT).show();
+            GestureController.getInstance().onGestureLanguageChange(languageType);
+            recreate();
+        });
+    }
+
+    private void updateGestureOnLanguageChange() {
+        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            if (GestureController.getInstance().isLanguageUpdated()) {
+                GestureController.getInstance().setCallback(true);
+                onGestureDetected();
+            } else {
+                if (GestureController.getInstance().getLanguageSelectionIndex() != 0) {
+                    String msg = String.format(getString(R.string.updated_language_msg),
+                            GestureController.getInstance().getUpdatingLanguageName());
+                    if (!GestureController.getInstance().getUpdatingLanguageName().isEmpty()) {
+                        Toast.makeText(IrCameraActivity.this, msg, Toast.LENGTH_LONG).show();
+                        GestureController.getInstance().setCallback(false);
+                    }
+                }
+            }
+        }
     }
 }

@@ -63,6 +63,19 @@ import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
 import com.certify.snap.activity.SettingsActivity;
+import com.certify.snap.api.response.AccessControlSettings;
+import com.certify.snap.api.response.AudioVisualSettings;
+import com.certify.snap.api.response.ConfirmationViewSettings;
+import com.certify.snap.api.response.DeviceSettingsApi;
+import com.certify.snap.api.response.DeviceSettingsData;
+import com.certify.snap.api.response.GuideSettings;
+import com.certify.snap.api.response.HomePageSettings;
+import com.certify.snap.api.response.IdentificationSettings;
+import com.certify.snap.api.response.PrinterSettings;
+import com.certify.snap.api.response.ScanViewSettings;
+import com.certify.snap.api.response.SettingsData;
+import com.certify.snap.api.response.SettingsResponse;
+import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.async.AsyncDeviceLog;
 import com.certify.snap.async.AsyncGetMemberData;
 import com.certify.snap.async.AsyncJSONObjectGetMemberList;
@@ -74,6 +87,7 @@ import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AccessControlModel;
@@ -86,8 +100,8 @@ import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
-import com.common.pos.api.util.Utils;
 import com.example.a950jnisdk.SDKUtil;
+import com.google.gson.Gson;
 import com.microsoft.appcenter.analytics.Analytics;
 
 import org.json.JSONException;
@@ -1282,308 +1296,211 @@ public class Util {
     public static void retrieveSetting(JSONObject reportInfo, Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         try {
-//            if(reportInfo.getString("Message").equals("token expired"))
-//                Util.getToken((JSONObjectCallback) context,context);
             if (reportInfo.getString("responseCode") != null && reportInfo.getString("responseCode").equals("1")) {
-                JSONObject responseData = reportInfo.getJSONObject("responseData");
-                JSONObject jsonValue = responseData.getJSONObject("jsonValue");
-                JSONObject jsonValueHome = jsonValue.getJSONObject("HomePageView");
+                Gson gson = new Gson();
+                SettingsResponse settingsResponse = gson.fromJson(String.valueOf(reportInfo), SettingsResponse.class);
 
-                if (jsonValue.has("DeviceSettings")) {
-                    JSONObject jsonDeviceSettings = jsonValue.getJSONObject("DeviceSettings");
-                    String syncOnlineMembers = jsonDeviceSettings.isNull("doNotSyncMembers") ? "" : jsonDeviceSettings.getString("doNotSyncMembers");
-                    if (syncOnlineMembers.equals("1")) {
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
-                    } else {
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
+                SettingsData settingsData = settingsResponse.settingsData;
+                if (settingsData != null) {
+                    DeviceSettingsController.getInstance().clearLanguageSettings();
+                    Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, settingsData.deviceName);
+                    Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, settingsData.settingName);
+                    Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingsData.settingVersion);
+                    Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, settingsData.deviceMasterCode);
+
+                    DeviceSettingsApi deviceSettingsApi = settingsData.deviceSettingsApi;
+
+                    //Device Settings
+                    DeviceSettingsData deviceSettings = deviceSettingsApi.deviceSettingsData;
+                    if (deviceSettings != null) {
+                        if (deviceSettings.doNotSyncMembers.equals("1")) {
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, true);
+                        } else {
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.SYNC_ONLINE_MEMBERS, false);
+                        }
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_GROUP_SYNC, deviceSettings.syncMemberGroup.equals("1"));
+                        if (deviceSettings.groupId.isEmpty()) {
+                            deviceSettings.groupId = "0";
+                        }
+                        Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, deviceSettings.groupId);
+                        Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettings.deviceMasterCode);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, deviceSettings.multipleScanMode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
                     }
-                    String memberGroupSync = jsonDeviceSettings.isNull("syncMemberGroup") ? "0" : jsonDeviceSettings.getString("syncMemberGroup");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_GROUP_SYNC, memberGroupSync.equals("1"));
-                    String groupId = jsonDeviceSettings.isNull("groupId") ? "0" : jsonDeviceSettings.getString("groupId");
-                    if (groupId.isEmpty()) {
-                        groupId = "0";
+
+                    //HomeView settings
+                    HomePageSettings homePageSettings = deviceSettingsApi.homePageView;
+                    if (homePageSettings != null) {
+                        Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homePageSettings.logo);
+                        Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homePageSettings.line1);
+                        Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homePageSettings.line2);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.HOME_TEXT_IS_ENABLE, homePageSettings.enableHomeScreen.equals("1"));
+                        Util.writeInt(sharedPreferences, GlobalParameters.HOME_DISPLAY_TIME, Integer.parseInt(homePageSettings.viewIntervalDelay));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, homePageSettings.enableTextOnly.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, homePageSettings.homeText);
                     }
-                    Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, groupId);
-                    String deviceSettingsMasterCode = jsonDeviceSettings.isNull("deviceMasterCode") ? "" : jsonDeviceSettings.getString("deviceMasterCode");
-                    Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettingsMasterCode);
-                    String navigationBar = jsonDeviceSettings.isNull("navigationBar") ? "1" : jsonDeviceSettings.getString("navigationBar");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, navigationBar.equals("1"));
-                    String multiScanMode = jsonDeviceSettings.isNull("multipleScanMode") ? "1" : jsonDeviceSettings.getString("multipleScanMode");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, multiScanMode.equals("1"));
-                }
 
+                    //ScanView settings
+                    ScanViewSettings scanViewSettings = deviceSettingsApi.scanView;
+                    if (scanViewSettings != null) {
+                        Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, scanViewSettings.viewDelay);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, scanViewSettings.captureUserImageAboveThreshold.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, scanViewSettings.captureAllUsersImage.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_NORMAL, scanViewSettings.enableSoundOnNormalTemperature.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_HIGH, scanViewSettings.enableSoundOnHighTemperature.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, scanViewSettings.displayTemperatureDetail.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, scanViewSettings.temperatureThreshold);
+                        Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, scanViewSettings.temperatureFormat);
+                        Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST_LOW, scanViewSettings.lowTemperatureThreshold);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, scanViewSettings.allowLowTemperatureScanning.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, scanViewSettings.enableMaskDetection.equals("1"));
+                        Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(scanViewSettings.temperatureCompensation));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, scanViewSettings.closeProximityScan.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, scanViewSettings.displayResultBar.equals("1"));
+                        Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanViewSettings.scanType));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.EnableTempScan, scanViewSettings.enableTemperatureScan.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.LivingType, scanViewSettings.enableLiveness.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, scanViewSettings.temperatureNormal);
+                        Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, scanViewSettings.temperatureHigh);
 
-                JSONObject jsonValueScan = jsonValue.getJSONObject("ScanView");
-                JSONObject jsonValueConfirm = jsonValue.getJSONObject("ConfirmationView");
-                JSONObject jsonValueGuide = jsonValue.getJSONObject("GuideMessages");
-                JSONObject jsonValueIdentification = jsonValue.getJSONObject("IdentificationSettings");
-                JSONObject jsonValueAccessControl = jsonValue.getJSONObject("AccessControl");
-                //Homeview
-                Util.writeString(sharedPreferences, GlobalParameters.DEVICE_SETTINGS_NAME, responseData.isNull("settingName") ? "Local" : responseData.getString("settingName"));
-                String deviceName = responseData.isNull("deviceName") ? "" : responseData.getString("deviceName");
-                Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, deviceName);
-                String settingVersion = responseData.isNull("settingVersion") ? "" : responseData.getString("settingVersion");
-                String deviceMasterCode = responseData.isNull("deviceMasterCode") ? "" : responseData.getString("deviceMasterCode");
-                String homeLogo = jsonValueHome.isNull("logo") ? "" : jsonValueHome.getString("logo");
-                String enableThermal = jsonValueHome.getString("enableThermalCheck");
-                String homeLine1 = jsonValueHome.isNull("line1") ? "THERMAL SCAN" : jsonValueHome.getString("line1");
-                String homeLine2 = jsonValueHome.isNull("line2") ? "" : jsonValueHome.getString("line2");
-                String enableHomeScreen = jsonValueHome.isNull("enableHomeScreen") ? "1" : jsonValueHome.getString("enableHomeScreen");
-                String viewIntervalDelay = jsonValueHome.isNull("viewIntervalDelay") ? "2" : jsonValueHome.getString("viewIntervalDelay");
-                String enableTextOnly = jsonValueHome.isNull("enableTextOnly") ? "" : jsonValueHome.getString("enableTextOnly");
-                String homeText = jsonValueHome.isNull("homeText") ? "" : jsonValueHome.getString("homeText");
-
-                Util.writeString(sharedPreferences, GlobalParameters.settingVersion, settingVersion);
-                Util.writeString(sharedPreferences, GlobalParameters.deviceMasterCode, deviceMasterCode);
-                Util.writeString(sharedPreferences, GlobalParameters.IMAGE_ICON, homeLogo);
-                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_title, homeLine1);
-                Util.writeString(sharedPreferences, GlobalParameters.Thermalscan_subtitle, homeLine2);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.HOME_TEXT_IS_ENABLE, enableHomeScreen.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.HOME_DISPLAY_TIME, Integer.parseInt(viewIntervalDelay));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, enableTextOnly.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, homeText);
-
-
-                //Scan View
-
-                String displayTemperatureDetail = jsonValueScan.isNull("displayTemperatureDetail") ? "1" : jsonValueScan.getString("displayTemperatureDetail");
-                String captureUserImageAboveThreshold = jsonValueScan.isNull("captureUserImageAboveThreshold") ? "1" : jsonValueScan.getString("captureUserImageAboveThreshold");
-                String captureAllUsersImage = jsonValueScan.isNull("captureAllUsersImage") ? "0" : jsonValueScan.getString("captureAllUsersImage");
-                String enableSoundOnHighTemperature = jsonValueScan.isNull("enableSoundOnHighTemperature") ? "0" : jsonValueScan.getString("enableSoundOnHighTemperature");
-                String enableSoundOnNormalTemperature = jsonValueScan.isNull("enableSoundOnNormalTemperature") ? "0" : jsonValueScan.getString("enableSoundOnNormalTemperature");
-                String viewDelay = jsonValueScan.isNull("viewDelay") ? "3" : jsonValueScan.getString("viewDelay");
-                String tempval = jsonValueScan.isNull("temperatureThreshold") ? "100.4" : jsonValueScan.getString("temperatureThreshold");
-                String temperatureFormat = jsonValueScan.isNull("temperatureFormat") ? "F" : jsonValueScan.getString("temperatureFormat");
-                String allowlowtemperaturescanning = jsonValueScan.isNull("allowLowTemperatureScanning") ? "0" : jsonValueScan.getString("allowLowTemperatureScanning");
-                String lowtemperatureThreshold = jsonValueScan.isNull("lowTemperatureThreshold") ? "93.2" : jsonValueScan.getString("lowTemperatureThreshold");
-                String enableMaskDetection = jsonValueScan.isNull("enableMaskDetection") ? "0" : jsonValueScan.getString("enableMaskDetection");
-                String temperatureCompensation = jsonValueScan.isNull("temperatureCompensation") ? "0.0" : jsonValueScan.getString("temperatureCompensation");
-                String audioForNormalTemperature = jsonValueScan.isNull("audioForNormalTemperature") ? "" : jsonValueScan.getString("audioForNormalTemperature");
-                String closeProximityScan = jsonValueScan.isNull("closeProximityScan") ? "0" : jsonValueScan.getString("closeProximityScan");
-                String displayResultBar = jsonValueScan.isNull("displayResultBar") ? "1" : jsonValueScan.getString("displayResultBar");
-                String temperatureNormal = jsonValueScan.isNull("temperatureNormal") ? "" : jsonValueScan.getString("temperatureNormal");
-                String temperatureHigh = jsonValueScan.isNull("temperatureHigh") ? "" : jsonValueScan.getString("temperatureHigh");
-                String scanType = jsonValueScan.isNull("scanType") ? "1" : jsonValueScan.getString("scanType");
-                String enableTemperatureScan = jsonValueScan.isNull("enableTemperatureScan") ? "1" : jsonValueScan.getString("enableTemperatureScan");
-                String enableLiveness = jsonValueScan.isNull("enableLiveness") ? "0" : jsonValueScan.getString("enableLiveness");
-
-                if (audioForNormalTemperature != null && !audioForNormalTemperature.isEmpty()) {
-                    SoundController.getInstance().saveAudioFile(audioForNormalTemperature, "Normal.mp3");
-                } else {
-                    SoundController.getInstance().deleteAudioFile("Normal.mp3");
-                }
-                String audioForHighTemperature = jsonValueScan.isNull("audioForHighTemperature") ? "" : jsonValueScan.getString("audioForHighTemperature");
-                if (audioForHighTemperature != null && !audioForHighTemperature.isEmpty()) {
-                    SoundController.getInstance().saveAudioFile(audioForHighTemperature, "High.mp3");
-                } else {
-                    SoundController.getInstance().deleteAudioFile("High.mp3");
-                }
-
-                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE, viewDelay);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ABOVE, captureUserImageAboveThreshold.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_IMAGES_ALL, captureAllUsersImage.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_NORMAL, enableSoundOnNormalTemperature.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.TEMPERATURE_SOUND_HIGH, enableSoundOnHighTemperature.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_TEMPERATURE, displayTemperatureDetail.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST, tempval);
-                Util.writeString(sharedPreferences, GlobalParameters.F_TO_C, temperatureFormat);
-                Util.writeString(sharedPreferences, GlobalParameters.TEMP_TEST_LOW, lowtemperatureThreshold);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.ALLOW_ALL, allowlowtemperaturescanning.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_DETECT, enableMaskDetection.equals("1"));
-                Util.writeFloat(sharedPreferences, GlobalParameters.COMPENSATION, Float.parseFloat(temperatureCompensation));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.ScanProximity, closeProximityScan.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.RESULT_BAR, displayResultBar.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.ScanType, Integer.parseInt(scanType));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableTempScan, enableTemperatureScan.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.LivingType, enableLiveness.equals("1"));
-
-                if (!temperatureNormal.isEmpty()) {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, temperatureNormal);
-                } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, context.getString(R.string.temperature_normal_msg));
-                }
-                if (!temperatureHigh.isEmpty()) {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, temperatureHigh);
-                } else {
-                    Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, context.getString(R.string.temperature_high_msg));
-                }
-
-                //ConfirmationView
-                String enableConfirmationScreen = jsonValueConfirm.isNull("enableConfirmationScreen") ? "1" : jsonValueConfirm.getString("enableConfirmationScreen");
-                String normalViewLine1 = jsonValueConfirm.isNull("normalViewLine1") ? "Have a nice day" : jsonValueConfirm.getString("normalViewLine1");
-                String normalViewLine2 = jsonValueConfirm.isNull("normalViewLine2") ? " " : jsonValueConfirm.getString("normalViewLine2");
-                String aboveThresholdViewLine1 = jsonValueConfirm.isNull("aboveThresholdViewLine1") ? "Please contact your supervisor before starting any work." : jsonValueConfirm.getString("aboveThresholdViewLine1");
-                String temperatureAboveThreshold2 = jsonValueConfirm.isNull("temperatureAboveThreshold2") ? "" : jsonValueConfirm.getString("temperatureAboveThreshold2");
-                String confirmationviewDelay = jsonValueConfirm.isNull("viewDelay") ? "1" : jsonValueConfirm.getString("viewDelay");
-                String enableConfirmationScreenAboveThreshold = jsonValueConfirm.isNull("enableConfirmationScreenAboveThreshold") ? "1" : jsonValueConfirm.getString("enableConfirmationScreenAboveThreshold");
-                String viewDelayAboveThreshold = jsonValueConfirm.isNull("viewDelayAboveThreshold") ? "1" : jsonValueConfirm.getString("viewDelayAboveThreshold");
-//todo in api
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, enableConfirmationScreen.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, enableConfirmationScreenAboveThreshold.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
-                Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, viewDelayAboveThreshold);
-                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, normalViewLine1);
-                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, normalViewLine2);
-                Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, aboveThresholdViewLine1);
-                Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, temperatureAboveThreshold2);
-                // Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationviewDelay);
-
-                //GuideMessages
-                String enableGuidMessages = jsonValueGuide.isNull("enableGuideMessages") ? "1" : jsonValueGuide.getString("enableGuideMessages");
-                String message1 = jsonValueGuide.isNull("message1") ? "Please center your face to the screen." : jsonValueGuide.getString("message1");
-                String message2 = jsonValueGuide.isNull("message2") ? "Move closer and center your face." : jsonValueGuide.getString("message2");
-                String message3 = jsonValueGuide.isNull("message3") ? "Please wait, preparing to scan." : jsonValueGuide.getString("message3");
-
-                Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, enableGuidMessages.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, message1);
-                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, message2);
-                Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, message3);
-
-                //Identification setting
-                String enableQRCodeScanner = jsonValueIdentification.isNull("enableQRCodeScanner") ? "0" : jsonValueIdentification.getString("enableQRCodeScanner");
-                String enableRFIDScanner = jsonValueIdentification.isNull("enableRFIDScanner") ? "0" : jsonValueIdentification.getString("enableRFIDScanner");
-                String identificationTimeout = jsonValueIdentification.isNull("identificationTimeout") ? "5" : jsonValueIdentification.getString("identificationTimeout");
-                String enableFacialRecognition = jsonValueIdentification.isNull("enableFacialRecognition") ? "0" : jsonValueIdentification.getString("enableFacialRecognition");
-                String facialThreshold = jsonValueIdentification.isNull("facialThreshold") ? String.valueOf(Constants.FACIAL_DETECT_THRESHOLD) : jsonValueIdentification.getString("facialThreshold");
-                String enableConfirmationNameAndImage = jsonValueIdentification.isNull("enableConfirmationNameAndImage") ? "0" : jsonValueIdentification.getString("enableConfirmationNameAndImage");
-                String enableAnonymousQRCode = jsonValueIdentification.isNull("enableAnonymousQRCode") ? "0" : jsonValueIdentification.getString("enableAnonymousQRCode");
-                String cameraScanMode = jsonValueIdentification.isNull("cameraScanMode") ? "1" : jsonValueIdentification.getString("cameraScanMode");
-                String enableAckScreen = jsonValueIdentification.isNull("enableAcknowledgementScreen") ? "0" : jsonValueIdentification.getString("enableAcknowledgementScreen");
-                String ackText = jsonValueIdentification.isNull("acknowledgementText") ? "" : jsonValueIdentification.getString("acknowledgementText");
-
-                Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, enableQRCodeScanner.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, enableRFIDScanner.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationTimeout);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, enableFacialRecognition.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD, facialThreshold);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, enableConfirmationNameAndImage.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, enableAnonymousQRCode.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(cameraScanMode));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, enableAckScreen.equals("1"));
-                Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, ackText);
-
-
-                //access control setting
-                String enableAutomaticDoors = jsonValueAccessControl.isNull("enableAutomaticDoors") ? "0" : jsonValueAccessControl.getString("enableAutomaticDoors");
-                String allowAnonymous = jsonValueAccessControl.isNull("allowAnonymous") ? "0" : jsonValueAccessControl.getString("allowAnonymous");
-                String relayMode = jsonValueAccessControl.isNull("relayMode") ? "1" : jsonValueAccessControl.getString("relayMode");
-                String blockAccessHighTemperature = jsonValueAccessControl.isNull("blockAccessHighTemperature") ? "0" : jsonValueAccessControl.getString("blockAccessHighTemperature");
-                int doorControlTimeWired = jsonValueAccessControl.isNull("doorControlTimeWired") ? 5 : jsonValueAccessControl.getInt("doorControlTimeWired");
-                String enableAccessControl = jsonValueAccessControl.isNull("enableAccessControl") ? "0" : jsonValueAccessControl.getString("enableAccessControl");
-                int accessControllerCardFormat = jsonValueAccessControl.isNull("accessControllerCardFormat") ? 26 : jsonValueAccessControl.getInt("accessControllerCardFormat");
-                String enableWiegandPt = jsonValueAccessControl.isNull("enableWeigandPassThrough") ? "0" : jsonValueAccessControl.getString("enableWeigandPassThrough");
-                int accessControlLogMode = jsonValueAccessControl.isNull("loggingMode") ? 0 : jsonValueAccessControl.getInt("loggingMode");
-                int accessControlScanMode = jsonValueAccessControl.isNull("validAccessOption") ? 4 : jsonValueAccessControl.getInt("validAccessOption");
-
-                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, enableAutomaticDoors.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, allowAnonymous.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, relayMode.equals("1"));
-                Util.writeBoolean(sharedPreferences, GlobalParameters.StopRelayOnHighTemp, blockAccessHighTemperature.equals("true"));
-                Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, doorControlTimeWired);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, enableAccessControl.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControllerCardFormat);
-                Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigandPassThrough, enableWiegandPt.equals("1"));
-                Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlLogMode);
-                Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlScanMode);
-
-                //Audio Visual alerts
-                if (jsonValue.has("AudioVisualAlerts")) {
-                    JSONObject audioVisualSettings = jsonValue.getJSONObject("AudioVisualAlerts");
-                    String soundQrCodeValid = audioVisualSettings.isNull("enableSoundForValidQRCode") ? "0" : audioVisualSettings.getString("enableSoundForValidQRCode");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_VALID, soundQrCodeValid.equals("1"));
-                    String soundQrCodeInvalid = audioVisualSettings.isNull("enableSoundForInvalidQRCode") ? "0" : audioVisualSettings.getString("enableSoundForInvalidQRCode");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_INVALID, soundQrCodeInvalid.equals("1"));
-                    String lightNormalTemperature = audioVisualSettings.isNull("enableLightOnNormalTemperature") ? "0" : audioVisualSettings.getString("enableLightOnNormalTemperature");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_NORMAL, lightNormalTemperature.equals("1"));
-                    String lightHighTemperature = audioVisualSettings.isNull("enableLightOnHighTemperature") ? "0" : audioVisualSettings.getString("enableLightOnHighTemperature");
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_HIGH, lightHighTemperature.equals("1"));
-                    String audioForValidQRCode = audioVisualSettings.isNull("audioForValidQRCode") ? "" : audioVisualSettings.getString("audioForValidQRCode");
-                    if (audioForValidQRCode != null && !audioForValidQRCode.isEmpty()) {
-                        SoundController.getInstance().saveAudioFile(audioForValidQRCode, "Valid.mp3");
-                    } else {
-                        SoundController.getInstance().deleteAudioFile("Valid.mp3");
+                        if (scanViewSettings.audioForNormalTemperature != null && !scanViewSettings.audioForNormalTemperature.isEmpty()) {
+                            SoundController.getInstance().saveAudioFile(scanViewSettings.audioForNormalTemperature, "Normal.mp3");
+                        } else {
+                            SoundController.getInstance().deleteAudioFile("Normal.mp3");
+                        }
+                        if (scanViewSettings.audioForHighTemperature != null && !scanViewSettings.audioForHighTemperature.isEmpty()) {
+                            SoundController.getInstance().saveAudioFile(scanViewSettings.audioForHighTemperature, "High.mp3");
+                        } else {
+                            SoundController.getInstance().deleteAudioFile("High.mp3");
+                        }
                     }
-                    String audioForInvalidQRCode = audioVisualSettings.isNull("audioForInvalidQRCode") ? "" : audioVisualSettings.getString("audioForInvalidQRCode");
-                    if (audioForInvalidQRCode != null && !audioForInvalidQRCode.isEmpty()) {
-                        SoundController.getInstance().saveAudioFile(audioForInvalidQRCode, "Invalid.mp3");
-                    } else {
-                        SoundController.getInstance().deleteAudioFile("Invalid.mp3");
+
+                    //ConfirmationView settings
+                    ConfirmationViewSettings confirmationSettings = deviceSettingsApi.confirmationView;
+                    if (confirmationSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_BELOW, confirmationSettings.enableConfirmationScreen.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.CONFIRM_SCREEN_ABOVE, confirmationSettings.enableConfirmationScreenAboveThreshold.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, confirmationSettings.viewDelay);
+                        Util.writeString(sharedPreferences, GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, confirmationSettings.viewDelayAboveThreshold);
+                        Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_below, confirmationSettings.normalViewLine1);
+                        Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, confirmationSettings.normalViewLine2);
+                        Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, confirmationSettings.aboveThresholdViewLine1);
+                        Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, confirmationSettings.temperatureAboveThreshold2);
+                    }
+
+                    //GuideView Settings
+                    GuideSettings guideSettings = deviceSettingsApi.guideMessages;
+                    if (guideSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.GUIDE_SCREEN, guideSettings.enableGuideMessages.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT1, guideSettings.message1);
+                        Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT2, guideSettings.message2);
+                        Util.writeString(sharedPreferences, GlobalParameters.GUIDE_TEXT3, guideSettings.message3);
+                    }
+
+                    //Identification Settings
+                    IdentificationSettings identificationSettings = deviceSettingsApi.identificationSettings;
+                    if (identificationSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, identificationSettings.enableQRCodeScanner.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, identificationSettings.enableRFIDScanner.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationSettings.identificationTimeout);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, identificationSettings.enableFacialRecognition.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD, identificationSettings.facialThreshold);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, identificationSettings.enableConfirmationNameAndImage.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, identificationSettings.enableAnonymousQRCode.equals("1"));
+                        Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(identificationSettings.cameraScanMode));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, identificationSettings.enableAcknowledgementScreen.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, identificationSettings.acknowledgementText);
+                    }
+
+                    //AccessControl Settings
+                    AccessControlSettings accessControlSettings = deviceSettingsApi.accessControl;
+                    if (accessControlSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, accessControlSettings.enableAutomaticDoors.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, accessControlSettings.allowAnonymous.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, accessControlSettings.relayMode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.StopRelayOnHighTemp, accessControlSettings.blockAccessHighTemperature.equals("true"));
+                        Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, accessControlSettings.doorControlTimeWired);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, accessControlSettings.enableAccessControl.equals("1"));
+                        Util.writeInt(sharedPreferences, GlobalParameters.WeiganFormatMessage, accessControlSettings.accessControllerCardFormat);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigandPassThrough, accessControlSettings.enableWeigandPassThrough.equals("1"));
+                        Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlSettings.loggingMode);
+                        Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlSettings.validAccessOption);
+                    }
+
+                    //Audio-Visual settings
+                    AudioVisualSettings audioVisualSettings = deviceSettingsApi.audioVisualAlerts;
+                    if (audioVisualSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_VALID, audioVisualSettings.enableSoundForValidQRCode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SOUND_INVALID, audioVisualSettings.enableSoundForInvalidQRCode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_NORMAL, audioVisualSettings.enableLightOnNormalTemperature.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.BLE_LIGHT_HIGH, audioVisualSettings.enableLightOnHighTemperature.equals("1"));
+
+                        if (audioVisualSettings.audioForValidQRCode != null && !audioVisualSettings.audioForValidQRCode.isEmpty()) {
+                            SoundController.getInstance().saveAudioFile(audioVisualSettings.audioForValidQRCode, "Valid.mp3");
+                        } else {
+                            SoundController.getInstance().deleteAudioFile("Valid.mp3");
+                        }
+                        if (audioVisualSettings.audioForInvalidQRCode != null && !audioVisualSettings.audioForInvalidQRCode.isEmpty()) {
+                            SoundController.getInstance().saveAudioFile(audioVisualSettings.audioForInvalidQRCode, "Invalid.mp3");
+                        } else {
+                            SoundController.getInstance().deleteAudioFile("Invalid.mp3");
+                        }
+                    }
+
+                    //Printer settings
+                    PrinterSettings printerSettings = deviceSettingsApi.printerSettings;
+                    if (printerSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, printerSettings.enableWBPrint.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, printerSettings.enableUSBPrint.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printerSettings.printAllScan.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printerSettings.printAccessCard.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printerSettings.printQRCode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printerSettings.printWaveUsers.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printerSettings.printHighTempScans.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_FACE, printerSettings.printFace.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NAME, printerSettings.printName.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, printerSettings.unidentifiedPrintText.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, printerSettings.unidentifiedPrintTextValue);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, printerSettings.printNormalTemperature.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, printerSettings.printHighTemperature.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printerSettings.printWaveAnswers.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, printerSettings.printWaveAnswerYes);
+                        Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, printerSettings.printWaveAnswerNo);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, printerSettings.printIndicatorForQR.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, printerSettings.defaultBottomBarText);
+                        Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, printerSettings.defaultResultPrint);
+                    }
+
+                    //Touchless Interaction settings
+                    TouchlessSettings touchlessSettings = deviceSettingsApi.touchlessInteraction;
+                    if (touchlessSettings != null) {
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, touchlessSettings.enableWave.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, touchlessSettings.enableQuestionAndAnswer.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, touchlessSettings.settingId);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, touchlessSettings.enableMaskEnforcement.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, touchlessSettings.enableVoice.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, touchlessSettings.showWaveProgress.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, touchlessSettings.waveIndicatorInstructions);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, touchlessSettings.showWaveImage.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, touchlessSettings.maskEnforceText);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, touchlessSettings.exitOnNegativeOutcome.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, touchlessSettings.messageForNegativeOutcome);
+                    }
+
+                    /*//Add settings to DB
+                    if (deviceSettings != null) {
+                        DeviceSettingsController.getInstance().handleAddUpdateLanguageApi(Integer.parseInt(deviceSettings.primaryLanguageId), deviceSettingsApi);
+                    }*/
+                    DeviceSettingsController.getInstance().handleAdditionalLanguagesApi(deviceSettingsApi.settings);
+                    if (deviceSettings != null) {
+                        DeviceSettingsController.getInstance().addLanguageDataToDb(Integer.parseInt(deviceSettings.primaryLanguageId));
+                        String languageType = DeviceSettingsController.getInstance().getLanguageOnId(Integer.parseInt(deviceSettings.primaryLanguageId));
+                        Util.writeString(sharedPreferences, GlobalParameters.LANGUAGE_TYPE, languageType);
+                        DeviceSettingsController.getInstance().setLanguageToUpdate(languageType);
+                        DeviceSettingsController.getInstance().getSettingsFromDb(Integer.parseInt(deviceSettings.primaryLanguageId));
                     }
                 }
-
-                //Printer Settings
-                if (jsonValue.has("PrinterSettings")) {
-                    JSONObject printerSettings = jsonValue.getJSONObject("PrinterSettings");
-                    String enableWifiBluetoothPrint = printerSettings.isNull("enableWBPrint") ? "0" : printerSettings.getString("enableWBPrint");
-                    String enableUSBPrint = printerSettings.isNull("enableUSBPrint") ? "0" : printerSettings.getString("enableUSBPrint");
-                    String printAllScan = printerSettings.isNull("printAllScan") ? "0" : printerSettings.getString("printAllScan");
-                    String printAccessCard = printerSettings.isNull("printAccessCard") ? "0" : printerSettings.getString("printAccessCard");
-                    String printQRCode = printerSettings.isNull("printQRCode") ? "0" : printerSettings.getString("printQRCode");
-                    String printWaveUsers = printerSettings.isNull("printWaveUsers") ? "0" : printerSettings.getString("printWaveUsers");
-                    String printHighTempScans = printerSettings.isNull("printHighTempScans") ? "0" : printerSettings.getString("printHighTempScans");
-                    String printFace = printerSettings.isNull("printFace") ? "0" : printerSettings.getString("printFace");
-                    String printName = printerSettings.isNull("printName") ? "0" : printerSettings.getString("printName");
-                    String printUnidentifiedText = printerSettings.isNull("unidentifiedPrintText") ? "0" : printerSettings.getString("unidentifiedPrintText");
-                    String printUnidentifiedTextVal = printerSettings.isNull("unidentifiedPrintTextValue") ? context.getString(R.string.anonymous_text) : printerSettings.getString("unidentifiedPrintTextValue");
-                    String printNormalTemperature = printerSettings.isNull("printNormalTemperature") ? "0" : printerSettings.getString("printNormalTemperature");
-                    String printHighTemperature = printerSettings.isNull("printHighTemperature") ? "0" : printerSettings.getString("printHighTemperature");
-                    String printWaveAnswers = printerSettings.isNull("printWaveAnswers") ? "0" : printerSettings.getString("printWaveAnswers");
-                    String printWAYesText = printerSettings.isNull("printWaveAnswerYes") ? "1" : printerSettings.getString("printWaveAnswerYes");
-                    String printWANoText = printerSettings.isNull("printWaveAnswerNo") ? "0" : printerSettings.getString("printWaveAnswerNo");
-                    String printIndicatorForQR = printerSettings.isNull("printIndicatorForQR") ? "0" : printerSettings.getString("printIndicatorForQR");
-                    String defaultBottomBarText = printerSettings.isNull("defaultBottomBarText") ? "" : printerSettings.getString("defaultBottomBarText");
-                    String defaultResultPrint = printerSettings.isNull("defaultResultPrint") ? "" : printerSettings.getString("defaultResultPrint");
-
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.BROTHER_BLUETOOTH_PRINTER, enableWifiBluetoothPrint.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.TOSHIBA_USB_PRINTER, enableUSBPrint.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ALL_SCAN, printAllScan.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_ACCESS_CARD_USERS, printAccessCard.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_USERS, printQRCode.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_WAVE_USERS, printWaveUsers.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_HIGH_TEMPERATURE, printHighTempScans.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_FACE, printFace.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NAME, printName.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, printUnidentifiedText.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, printUnidentifiedTextVal);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, printNormalTemperature.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, printHighTemperature.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, printWaveAnswers.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, printWAYesText);
-                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, printWANoText);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, printIndicatorForQR.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, defaultBottomBarText);
-                    Util.writeString(sharedPreferences, GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, defaultResultPrint);
-
-                }
-                //Touch less Interaction
-                if (jsonValue.has("TouchlessInteraction")) {
-                    JSONObject touchlessInteractionSettings = jsonValue.getJSONObject("TouchlessInteraction");
-                    String enableWave = touchlessInteractionSettings.isNull("enableWave") ? "0" : touchlessInteractionSettings.getString("enableWave");
-                    String enableQuestionAndAnswer = touchlessInteractionSettings.isNull("enableQuestionAndAnswer") ? "0" : touchlessInteractionSettings.getString("enableQuestionAndAnswer");
-                    String settingsID = touchlessInteractionSettings.isNull("settingId") ? "0" : touchlessInteractionSettings.getString("settingId");
-                    String enableMaskEnforcement = touchlessInteractionSettings.isNull("enableMaskEnforcement") ? "0" : touchlessInteractionSettings.getString("enableMaskEnforcement");
-                    String enableVoice = touchlessInteractionSettings.isNull("enableVoice") ? "0" : touchlessInteractionSettings.getString("enableVoice");
-                    String showWaveProgress = touchlessInteractionSettings.isNull("showWaveProgress") ? "0" : touchlessInteractionSettings.getString("showWaveProgress");
-                    String waveInstructions = touchlessInteractionSettings.isNull("waveIndicatorInstructions") ? context.getString(R.string.gesture_msg) : touchlessInteractionSettings.getString("waveIndicatorInstructions");
-                    String showWaveImage = touchlessInteractionSettings.isNull("showWaveImage") ? "0" : touchlessInteractionSettings.getString("showWaveImage");
-                    String maskEnforceText = touchlessInteractionSettings.isNull("maskEnforceText") ? context.getString(R.string.mask_enforce_msg) : touchlessInteractionSettings.getString("maskEnforceText");
-                    String exitOnNegativeOutcome = touchlessInteractionSettings.isNull("exitOnNegativeOutcome") ? "0" : touchlessInteractionSettings.getString("exitOnNegativeOutcome");
-                    String messageForNegativeOutcome = touchlessInteractionSettings.isNull("messageForNegativeOutcome") ? context.getString(R.string.gesture_exit_msg) : touchlessInteractionSettings.getString("messageForNegativeOutcome");
-                    Log.d("CertifyXT flow", settingsID);
-
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.HAND_GESTURE, enableWave.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, enableQuestionAndAnswer.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, settingsID);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, enableMaskEnforcement.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.VISUAL_RECOGNITION, enableVoice.equals("1"));
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.PROGRESS_BAR, showWaveProgress.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, waveInstructions);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_IMAGE, showWaveImage.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, maskEnforceText);
-                    Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, exitOnNegativeOutcome.equals("1"));
-                    Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, messageForNegativeOutcome);
-                }
-
             } else {
                 Log.e(LOG, "Setting retrieval Something went wrong please try again");
             }
@@ -1651,9 +1568,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
-                Util.getSettings((SettingCallback) context, context);
 
-//                ManageMemberHelper.loadMembers(access_token, Util.getSerialNumber(), context.getFilesDir().getAbsolutePath());
+                Util.getSettings((SettingCallback) context, context);
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);
@@ -2322,6 +2238,15 @@ public class Util {
         return null;
     }
 
+    public static Object getKeyOnValue(Map hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
     public static boolean isGestureDeviceConnected(Context context) {
         boolean result = false;
         UsbManager mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
@@ -2378,5 +2303,20 @@ public class Util {
             result = true;
         }
         return result;
+    }
+
+    public static JSONObject getJSONObjectLanguages(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
+
+        }
+        return null;
     }
 }
