@@ -2868,11 +2868,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             GestureController.getInstance().setLanguageUpdated(false);
             if (AppSettings.isMultiLingualEnabled()) {
                 resetGesture();
-                DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
-                DeviceSettingsController.getInstance().getSettingsFromDb(
-                        DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType()));
-                GestureController.getInstance().getQuestionsFromDb(AppSettings.getLanguageType());
-                runOnUiThread(this::recreate);
                 return;
             }
         }
@@ -3679,6 +3674,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resetGesture() {
         GestureController.getInstance().setGestureHomeCallbackListener(this);
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
+        if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            GestureController.getInstance().setLanguageUpdated(false);
+            if (AppSettings.isMultiLingualEnabled()) {
+                DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
+                DeviceSettingsController.getInstance().getSettingsFromDb(
+                        DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType()));
+                GestureController.getInstance().getQuestionsFromDb(AppSettings.getLanguageType());
+                runOnUiThread(this::recreate);
+            }
+        }
     }
 
     public void onGestureNegativeAnswer() {

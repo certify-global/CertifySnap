@@ -647,7 +647,7 @@
     <string name="activate_application_error">Anwendungsanforderungsfehler aktivieren!</string>
     <string name="launch_settings_msg">Einstellungen starten, bitte warten ....</string>
     <string name="app_exit_msg">Sie sind sicher, dass Sie beenden wollen?</string>
-    <string name="sync_completed">Synchronisierung abgeschlossen</string>
+    <string name="sync_completed">Sync abgeschlossen</string>
     <string name="no_mask">Ohne Maske</string>
     <string name="mask_detected">Maske erkannt</string>
     <string name="mask_not_detected">Maske kann nicht erkannt werden</string>
@@ -687,5 +687,6 @@
     <string name="allow_multilingual">Mehrsprachig zulassen</string>
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">Fragebogen nicht verfügbar, Bildschirm "Geste schließen"</string>
 
 </resources>

@@ -686,5 +686,6 @@
     <string name="allow_multilingual">बहुभाषी अनुमति दें</string>
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">प्रश्नावली उपलब्ध नहीं है, जेस्चर स्क्रीन समापन</string>
 
 </resources>

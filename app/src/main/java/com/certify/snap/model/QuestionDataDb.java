@@ -21,5 +21,6 @@ public class QuestionDataDb {
     public Integer settingId = 0;
     public String expectedOutcome;
     public String languageCode;
+    public String questionParentId;
 
 }

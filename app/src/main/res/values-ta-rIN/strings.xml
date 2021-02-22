@@ -687,5 +687,6 @@
     <string name="allow_multilingual">பன்மொழி அனுமதிக்கவும்</string>
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">கேள்வித்தாள் கிடைக்கவில்லை, சைகை திரையை மூடுவது</string>
 
 </resources>

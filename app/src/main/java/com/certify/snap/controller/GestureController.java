@@ -188,11 +188,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         try {
             JSONObject obj = new JSONObject();
             obj.put("settingId", sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""));
-            /*if (!DeviceSettingsController.getInstance().getLanguageToUpdate().equals("en")) {
-                obj.put("languageConversion", true);
-                obj.put("fromLanguage", "en");
-                obj.put("toLanguage", DeviceSettingsController.getInstance().getLanguageToUpdate());
-            }*/
+            obj.put("languageConversion", true);
             new AsyncJSONObjectGesture(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetQuestions, context).execute();
         } catch (Exception e) {
             Log.d(TAG, "getQuestionSAPI" + e.getMessage());
@@ -618,9 +614,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     public String getQuestion() {
         String question = "";
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
-        currentQuestionData = questionDataList.get(index);
-        if (currentQuestionData != null) {
-            question = currentQuestionData.questionName;
+        if (questionDataList.size() > 0) {
+            currentQuestionData = questionDataList.get(index);
+            if (currentQuestionData != null) {
+                question = currentQuestionData.questionName;
+            }
         }
         return question;
     }
@@ -706,11 +704,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     public void sendAnswers(boolean negativeAnswer) {
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
+        List<QuestionData> questionDataList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
             String answer = (String) entry.getValue();
-            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer, (QuestionData) entry.getKey());
+            QuestionData questionData = (QuestionData) entry.getKey();
+            QuestionSurveyOptions qSurveyOption = getQuestionOptionOnAnswer(answer, questionData);
             if (qSurveyOption != null) {
                 qSurveyOptionList.add(qSurveyOption);
+                questionDataList.add(questionData);
             }
         }
         /*List<QuestionSurveyOptions> qSurveyList = new ArrayList<>();
@@ -736,11 +737,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             Log.d(TAG, "Gesture Exception " + e.getMessage());
         }*/
         //Call API
-        sendAnswersAPI(qSurveyOptionList, negativeAnswer);
+        sendAnswersAPI(qSurveyOptionList, negativeAnswer, questionDataList);
 
     }
 
-    private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList, boolean answerNegative) {
+    private void sendAnswersAPI(List<QuestionSurveyOptions> qSurveyOptionList, boolean answerNegative, List<QuestionData> questionDataList) {
         try {
             String uniqueID = UUID.randomUUID().toString();
             JSONObject obj = new JSONObject();
@@ -755,6 +756,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 JSONObject jsonCustomFields = new JSONObject();
                 jsonCustomFields.put("questionId", qSurveyOptionList.get(i).questionId);
                 jsonCustomFields.put("optionId", qSurveyOptionList.get(i).optionId);
+                jsonCustomFields.put("languageCode", DeviceSettingsController.getInstance().getLanguageToUpdate());
+                if (questionDataList.get(i).questionParentId != null) {
+                    jsonCustomFields.put("questionParentId", questionDataList.get(i).questionParentId);
+                }
                 jsonArrayCustoms.put(i, jsonCustomFields);
             }
             obj.put("QuestionOptions",jsonArrayCustoms);
@@ -896,6 +901,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         questionDataDb.languageCode = questionData.languageCode;
         Gson gson = new Gson();
         questionDataDb.surveyOptions = gson.toJson(questionData.surveyOptions);
+        questionDataDb.questionParentId = questionData.questionParentId;
         return questionDataDb;
     }
 
@@ -931,6 +937,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
                         }.getType();
                         questionData.surveyOptions = gson.fromJson(questionDataDb.surveyOptions, listType);
+                        questionData.questionParentId = questionDataDb.questionParentId;
                         questionAnswerMap.put(questionData, "NA");
                     }
                 }

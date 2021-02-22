@@ -652,7 +652,7 @@
     <string name="activate_application_error">Erreur de demande d\'activation de l\'application!</string>
     <string name="launch_settings_msg">Lancement des paramètres, veuillez patienter ...</string>
     <string name="app_exit_msg">Êtes-vous sûr de vouloir quitter?</string>
-    <string name="sync_completed">Synchronisation terminée</string>
+    <string name="sync_completed">Sync terminée</string>
     <string name="no_mask">Sans masque</string>
     <string name="mask_detected">Masque détecté</string>
     <string name="mask_not_detected">Impossible de détecter le masque</string>
@@ -692,5 +692,6 @@
     <string name="allow_multilingual">Autoriser le multilingue</string>
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">Questionnaire non disponible, écran Geste de fermeture</string>
 
 </resources>
