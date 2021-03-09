@@ -633,7 +633,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
     private void enableProDevice() {
         if (Util.isDeviceProModel()) {
-            pro_layout.setVisibility(View.VISIBLE);
+            pro_layout.setVisibility(View.GONE);
             pro_settings_border.setVisibility(View.VISIBLE);
         } else {
             pro_layout.setVisibility(View.GONE);

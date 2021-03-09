@@ -282,13 +282,15 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorBlue" />
+            android:background="@color/colorBlue"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/pro_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/size_10"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <TextView
