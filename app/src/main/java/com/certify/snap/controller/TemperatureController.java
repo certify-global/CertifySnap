@@ -397,6 +397,7 @@ public class TemperatureController {
                         } else {
                             temperature = temperatureData.getTemperature();
                         }
+                        temperature += AppSettings.getTemperatureCompensation();
                     }
                     emitter.onNext(temperature);
                 })
