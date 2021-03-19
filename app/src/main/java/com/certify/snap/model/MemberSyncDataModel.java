@@ -47,6 +47,7 @@ public class MemberSyncDataModel {
     private SyncDataCallBackListener listener = null;
     private DatabaseAddType dbAddType = DatabaseAddType.SCALE;
     private long index = 0;
+    private int failedImageSyncCount = 0;
 
     public interface SyncDataCallBackListener {
         void onMemberAddedToDb(RegisteredMembers member);
@@ -219,7 +220,7 @@ public class MemberSyncDataModel {
                                 if (isMemberSyncGroupIdEnabled() &&
                                     !AppSettings.getMemberSyncGroupId().contains(groupId)) {
                                     deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId());
-                                    doSendBroadcast(context.getString(R.string.sync_completed), 0, 0);
+                                    updateSyncCompletion();
                                     emitter.onNext(null);
                                 } else {
                                     member.setPrimaryId(membersList.get(0).getPrimaryId());
@@ -302,7 +303,7 @@ public class MemberSyncDataModel {
                     }
                 }
                 if (dbSyncErrorMemberList.isEmpty()) {
-                    doSendBroadcast(context.getString(R.string.sync_completed), 0, 0);
+                    updateSyncCompletion();
                 }
                 isSyncing = false;
         }).start();
@@ -393,9 +394,16 @@ public class MemberSyncDataModel {
             }
         } else {
             Log.d(TAG, "SnapXT Fail to process the image");
-            if (!dbSyncErrorMemberList.contains(member)) {
+            /*if (!dbSyncErrorMemberList.contains(member)) {
                 dbSyncErrorMemberList.add(member);
                 Log.d(TAG, "SnapXT Error dbSyncErrorMemberList size " + dbSyncErrorMemberList.size());
+            }*/
+            failedImageSyncCount++;
+            if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
+                    member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId)) {
+                Log.d(TAG, "SnapXT Record successfully updated in db");
+                result = true;
+                updateDbSyncErrorMap(member);
             }
         }
         return result;
@@ -411,20 +419,25 @@ public class MemberSyncDataModel {
      */
     public boolean processImg(String name, String imgpath, String id,Context context) {
         if (imgpath.isEmpty()) return false;
-        Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
-        bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
-        if (bitmap == null) {
-            Log.e("tag", "fail to translate bitmap");
-            // showResult(getString(R.string.toast_translateBitmapfail));
-            return false;
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
+            bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
+            if (bitmap == null) {
+                Log.e("tag", "fail to translate bitmap");
+                // showResult(getString(R.string.toast_translateBitmapfail));
+                return false;
+            }
+            byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
+            int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
+            if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
+            }
+            boolean success = FaceServer.getInstance().registerBgr24(context, bgr24, bitmap.getWidth(),
+                    bitmap.getHeight(), name, id);
+            return success;
+        } catch (Exception e) {
+            Log.e(TAG, "Error in processing the image");
         }
-        byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
-        int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
-        if (transformCode != ArcSoftImageUtilError.CODE_SUCCESS) {
-        }
-        boolean success = FaceServer.getInstance().registerBgr24( context, bgr24, bitmap.getWidth(),
-                bitmap.getHeight(), name, id);
-        return success;
+        return false;
     }
 
     /**
@@ -528,7 +541,7 @@ public class MemberSyncDataModel {
     private void updateDbSyncErrorList() {
         if (dbSyncErrorMemberList.isEmpty()) {
             Log.d(TAG , "SnapXT Error Sync completed successfully");
-            doSendBroadcast(context.getString(R.string.sync_completed), 0, 0);
+            updateSyncCompletion();
             clear();
             return;
         }
@@ -618,6 +631,13 @@ public class MemberSyncDataModel {
         return (!AppSettings.getMemberSyncGroupId().equals("0"));
     }
 
+    private void updateSyncCompletion() {
+        doSendBroadcast(context.getString(R.string.sync_completed), 0, 0);
+        if (failedImageSyncCount > 0) {
+            doSendBroadcast(context.getString(R.string.image_sync_failed_msg), failedImageSyncCount, 0);
+        }
+    }
+
     /**
      * Method that clears the data model
      */
@@ -628,5 +648,6 @@ public class MemberSyncDataModel {
         dbSyncErrorMap.clear();
         dbAddType = DatabaseAddType.SCALE;
         index = 0;
+        failedImageSyncCount = 0;
     }
 }

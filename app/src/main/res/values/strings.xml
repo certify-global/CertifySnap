@@ -694,5 +694,6 @@
     <string name="accessid_empty_msg">Access Id should not be empty</string>
     <string name="scan_card_msg">Please scan the card to enroll</string>
     <string name="enable_liveness">Enable Liveness</string>
+    <string name="image_sync_failed_msg">Photo sync failed for %d members</string>
 
 </resources>

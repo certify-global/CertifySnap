@@ -1322,6 +1322,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tv_sync.setText("");
                 }
             }, 2 * 1000);
+        } else if (snackMessage.contains("failed")) {
+            String message = String.format(getString(R.string.image_sync_failed_msg), memberCount);
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         } else {
             tv_sync.setText(snackMessage);
         }

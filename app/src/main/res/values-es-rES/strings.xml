@@ -693,5 +693,6 @@
     <string name="accessid_empty_msg">El ID de acceso no debe estar vacío</string>
     <string name="scan_card_msg">Escanee la tarjeta para inscribirse</string>
     <string name="enable_liveness">Habilitar vivacidad</string>
+    <string name="image_sync_failed_msg">Error de sincronización de fotos para %d miembros</string>
 
 </resources>
