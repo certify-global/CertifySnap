@@ -22,6 +22,7 @@ import com.certify.snap.R;
 import com.certify.snap.common.ContextUtils;
 import com.certify.snap.common.IpAddressValidator;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.printer.Common;
 import com.certify.snap.view.PrinterMsgDialog;
 
@@ -42,12 +43,7 @@ public class PrinterWifiSettingsActivity extends ListActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        if (HomeActivity.mSelectLanguage) {
-            localeToSwitchTo = new Locale("es");
-        } else {
-            localeToSwitchTo = new Locale("en");
-        }
+        Locale localeToSwitchTo = new Locale(DeviceSettingsController.getInstance().getLanguageToUpdate());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

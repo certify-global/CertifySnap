@@ -326,7 +326,7 @@ public class AudioVisualSettingsActivity extends SettingsBaseActivity {
 
     private void uiDisConnect(){
         //tv_ble_connect_btn.setText("CONNECT");
-        tv_ble_status.setText("NONE");
+        tv_ble_status.setText(getString(R.string.audio_none));
         tv_ble_status.setTextColor(getResources().getColor(R.color.colorRed));
         String text = "<a style='text-decoration:underline' href='http://www.sample.com'>Connect</a>";
         if (Build.VERSION.SDK_INT >= 24) {

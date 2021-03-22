@@ -4,6 +4,11 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+
+import com.certify.snap.api.response.ConfirmationViewSettings;
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.google.android.material.textfield.TextInputLayout;
 
 import android.util.Log;
@@ -26,12 +31,14 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
     private SharedPreferences sp;
     EditText edittext_title_below, edittext_subtitle_below, edittext_title_above, edittext_subtitle_above, et_screen_delay_above, et_screen_below;
     TextView btn_exit;
+    private ConfirmationViewSettings confirmationSettingsDb = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         try {
             setContentView(R.layout.activity_confirmation_settings);
+            getConfirmationSettingsFromDb();
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);
@@ -106,6 +113,15 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
                         Util.writeString(sp, GlobalParameters.Confirm_title_above, edittext_title_above.getText().toString());
                     if (!edittext_subtitle_above.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.Confirm_subtitle_above, edittext_subtitle_above.getText().toString());
+
+                    if (confirmationSettingsDb != null) {
+                        confirmationSettingsDb.normalViewLine1 = edittext_title_below.getText().toString();
+                        confirmationSettingsDb.normalViewLine2 = edittext_subtitle_below.getText().toString();
+                        confirmationSettingsDb.aboveThresholdViewLine1 = edittext_title_above.getText().toString();
+                        confirmationSettingsDb.temperatureAboveThreshold2 = edittext_subtitle_above.getText().toString();
+                        DeviceSettingsController.getInstance().updateConfirmationSettingsInDb(confirmationSettingsDb);
+                    }
+
                     Util.showToast(ConfirmationSettingsActivity.this, getString(R.string.save_success));
                     finish();
                 }
@@ -114,5 +130,12 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
+    }
+
+    private void getConfirmationSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        confirmationSettingsDb = DatabaseController.getInstance().getConfirmationSettingOnId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+
     }
 }

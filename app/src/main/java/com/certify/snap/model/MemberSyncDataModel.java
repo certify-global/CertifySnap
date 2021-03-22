@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -12,7 +11,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
-import com.certify.snap.R;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
@@ -48,6 +46,11 @@ public class MemberSyncDataModel {
     private DatabaseAddType dbAddType = DatabaseAddType.SCALE;
     private long index = 0;
     private int failedImageSyncCount = 0;
+
+    public static final int SYNC_START = 1;
+    public static final int SYNC_IN_PROGRESS = 2;
+    public static final int SYNC_COMPLETED = 3;
+    public static final int SYNC_PHOTO_FAILED = 4;
 
     public interface SyncDataCallBackListener {
         void onMemberAddedToDb(RegisteredMembers member);
@@ -281,10 +284,10 @@ public class MemberSyncDataModel {
      */
     private void addToDatabase(Context context) {
         Log.d(TAG, "SnapXT Add to database, number of records: " + membersList.size());
-        doSendBroadcast(context.getString(R.string.syncing), 0, 0);
+        doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
         new Thread(() -> {
                 for (int i = 0; i < membersList.size(); i++) {
-                    doSendBroadcast(context.getString(R.string.syncing), 0, 0);
+                    doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
                     RegisteredMembers member = membersList.get(i);
                     if (member.getStatus().equalsIgnoreCase("true") ||
                         member.getStatus().equalsIgnoreCase("1")) {
@@ -502,11 +505,11 @@ public class MemberSyncDataModel {
             return;
         }
         dbSyncErrorMap.clear();
-        doSendBroadcast(context.getString(R.string.syncing), 0, 0);
+        doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
         new Thread(() -> {
                 Log.d(TAG, "SnapXT Error Sync members to db, Records: " + dbSyncErrorMemberList.size());
                 for (int i = 0; i < dbSyncErrorMemberList.size(); i++) {
-                    doSendBroadcast(context.getString(R.string.syncing), 0, 0);
+                    doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
                     isSyncing = true;
                     RegisteredMembers member = dbSyncErrorMemberList.get(i);
                     if (isMemberExistsInDb(member.getPrimaryId())) {
@@ -553,12 +556,11 @@ public class MemberSyncDataModel {
         }
     }
 
-    private void doSendBroadcast(String message, int memberCount, int count) {
+    private void doSendBroadcast(int actionCode, int memberCount, int count) {
         Intent event_snackbar = new Intent("EVENT_SNACKBAR");
-        if (!TextUtils.isEmpty(message))
-            event_snackbar.putExtra("message",message);
-        event_snackbar.putExtra("memberCount",memberCount);
-        event_snackbar.putExtra("count",count);
+        event_snackbar.putExtra("actionCode", actionCode);
+        event_snackbar.putExtra("memberCount", memberCount);
+        event_snackbar.putExtra("count", count);
 
         LocalBroadcastManager.getInstance(context).sendBroadcast(event_snackbar);
     }
@@ -632,9 +634,9 @@ public class MemberSyncDataModel {
     }
 
     private void updateSyncCompletion() {
-        doSendBroadcast(context.getString(R.string.sync_completed), 0, 0);
+        doSendBroadcast(SYNC_COMPLETED, 0, 0);
         if (failedImageSyncCount > 0) {
-            doSendBroadcast(context.getString(R.string.image_sync_failed_msg), failedImageSyncCount, 0);
+            doSendBroadcast(SYNC_PHOTO_FAILED, failedImageSyncCount, 0);
         }
     }
 

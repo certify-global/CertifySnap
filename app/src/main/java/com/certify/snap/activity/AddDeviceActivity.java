@@ -51,8 +51,8 @@ public class AddDeviceActivity extends SettingsBaseActivity implements JSONObjec
             tv_skip.setTypeface(rubiklight);
             textview_name.setTypeface(rubiklight);
 
-            tv_header2.setText("If you have already added the device on the portal SL NO: " + Util.getSNCode(this));
-
+            String message = getString(R.string.add_device_message) + " " + Util.getSNCode(this);
+            tv_header2.setText(message);
 
             btn_activation_again.setOnClickListener(new View.OnClickListener() {
                 @Override

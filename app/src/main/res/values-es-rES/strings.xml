@@ -694,5 +694,12 @@
     <string name="scan_card_msg">Escanee la tarjeta para inscribirse</string>
     <string name="enable_liveness">Habilitar vivacidad</string>
     <string name="image_sync_failed_msg">Error de sincronización de fotos para %d miembros</string>
+    <string name="additional_locale_setting">Lengua secundaria</string>
+    <string name="add_device_message">Si ya ha añadido el dispositivo en el portal SL NO:</string>
+    <string name="language_message">Los idiomas primario y secundario no pueden ser iguales. Seleccione un idioma diferente.</string>
+    <string name="allow_multilingual">Permitir multilingüe</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">Cuestionario no disponible, pantalla de gesto de cierre</string>
 
 </resources>

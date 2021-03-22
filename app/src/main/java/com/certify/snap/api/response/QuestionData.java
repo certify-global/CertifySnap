@@ -1,5 +1,7 @@
 package com.certify.snap.api.response;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -32,4 +34,12 @@ public class QuestionData {
 
     @SerializedName("expectedOutcome")
     public String expectedOutcome;
+
+    @Nullable
+    @SerializedName("languageCode")
+    public String languageCode;
+
+    @Nullable
+    @SerializedName("questionParentId")
+    public String questionParentId;
 }

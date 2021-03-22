@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
@@ -33,6 +34,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
 import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.common.Logger;
@@ -53,11 +55,12 @@ import com.microsoft.appcenter.AppCenter;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 
-public class HomeActivity extends Activity implements SettingCallback, JSONObjectCallback {
+public class HomeActivity extends Activity implements SettingCallback, JSONObjectCallback, DeviceSettingsController.GetLanguagesListener {
 
     public static final String TAG = HomeActivity.class.getSimpleName();
     public static Activity mActivity;
@@ -73,7 +76,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     ResetOfflineDataReceiver resetOfflineDataReceiver;
     public ExecutorService taskExecutorService;
     private String gestureWorkFlow = "";
-    public static boolean mSelectLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +88,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         Application.getInstance().addActivity(this);
         Util.setTokenRequestName("");
         sharedPreferences = Util.getSharedPreferences(this);
-        mSelectLanguage = sharedPreferences.getBoolean(GlobalParameters.languageType, false);
         AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
         taskExecutorService = executorService.getExecutorService();
         TextView tvVersion = findViewById(R.id.tv_version_guide);
@@ -197,6 +198,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             //If the network is off still launch the IRActivity and allow temperature scan in offline mode
             if (Util.isNetworkOff(HomeActivity.this)) {
                 initGesture();
+                initLanguage();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(HomeActivity.this, true), 2 * 1000);
                 return;
             }
@@ -288,6 +290,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     private void onSettingsUpdated() {
         AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
         initGesture();
+        initLanguageList();
         if (Util.getTokenRequestName().equalsIgnoreCase("guide")) {
             Util.switchRgbOrIrActivity(this, true);
             Util.setTokenRequestName("");
@@ -356,6 +359,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             }
             AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
             ApplicationController.getInstance().initDeviceSettings(sharedPreferences);
+            initLanguage();
             gestureWorkFlow = AppSettings.getGestureWorkFlow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 WindowManager.LayoutParams attributes = getWindow().getAttributes();
@@ -414,7 +418,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void startProDeviceInitTimer() {
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setButton("OK", (dialog, which) -> {
+        progressDialog.setButton(getString(R.string.button_ok), (dialog, which) -> {
             startUpCountDownTimer.cancel();
             progressDialog.dismiss();
             CameraController.getInstance().setScannerRemainingTime(remainingTime);
@@ -453,7 +457,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     private void initGesture() {
         if (AppSettings.isEnableHandGesture()) {
             if (Util.isNetworkOff(this) && GestureController.getInstance().getQuestionAnswerMap().isEmpty()) {
-                GestureController.getInstance().getQuestionsFromDb();
+                GestureController.getInstance().initLanguageDb();
+                GestureController.getInstance().getQuestionsFromDb(AppSettings.getLanguageType());
             } else {
                 if (GestureController.getInstance().getQuestionsSize() > 0) {
                     GestureController.getInstance().getGestureQuestions();
@@ -463,5 +468,30 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             GestureController.getInstance().initGestureRangeValues();
             GestureController.getInstance().initHandGesture();
         }
+    }
+
+    private void initLanguage() {
+        DeviceSettingsController.getInstance().init(this, this);
+        if (Util.isNetworkOff(this)) {
+            String institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+            if (DeviceSettingsController.getInstance().isLanguagesInDBEmpty() &&
+                    (institutionId != null && institutionId.isEmpty())) {
+                List<LanguageData> languageDataList = DatabaseController.getInstance().getLanguagesFromDb();
+                if (languageDataList != null && languageDataList.isEmpty()) {
+                    DeviceSettingsController.getInstance().clearLanguageSettings();
+                    DeviceSettingsController.getInstance().addOfflineLanguages();
+                }
+                initLanguageList();
+            }
+        }
+    }
+
+    @Override
+    public void onGetLanguages() {
+        Util.getSettings(this, this);
+    }
+
+    private void initLanguageList() {
+        DeviceSettingsController.getInstance().getLanguagesListFromDb();
     }
 }

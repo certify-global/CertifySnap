@@ -6,6 +6,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import com.certify.snap.api.response.HomePageSettings;
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.controller.DatabaseController;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.google.android.material.textfield.TextInputLayout;
 
 import android.view.View;
@@ -27,6 +31,7 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
     Typeface rubiklight;
     TextView tv_welcome, titles;
     CheckBox cbHomeText, cbTextOnly;
+    private HomePageSettings homePageSettingsDb = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,8 +60,9 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
             cbTextOnly.setTypeface(rubiklight);
             cbHomeText.setTypeface(rubiklight);
             sp = Util.getSharedPreferences(this);
+            getHomePageSettingsFromDb();
 
-            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title, "THERMAL SCAN"));
+            edittext_title.setText(sp.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan)));
             edittext_subtitle.setText(sp.getString(GlobalParameters.Thermalscan_subtitle, ""));
             etDisplayTime.setText("" + sp.getInt(GlobalParameters.HOME_DISPLAY_TIME, 2));
             etOnlyText.setText(sp.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, ""));
@@ -75,6 +81,13 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
                     if (!etOnlyText.getText().toString().isEmpty())
                         Util.writeString(sp, GlobalParameters.HOME_TEXT_ONLY_MESSAGE, etOnlyText.getText().toString());
                     Util.showToast(HomeSettingsActivity.this, getString(R.string.save_success));
+
+                    if (homePageSettingsDb != null) {
+                        homePageSettingsDb.line1 = edittext_title.getText().toString();
+                        homePageSettingsDb.line2 = edittext_subtitle.getText().toString();
+                        homePageSettingsDb.homeText = etOnlyText.getText().toString();
+                        DeviceSettingsController.getInstance().updateHomeViewSettingsInDb(homePageSettingsDb);
+                    }
                     finish();
                 }
             });
@@ -108,5 +121,12 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
         Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
         Util.writeBoolean(sp, GlobalParameters.ANONYMOUS_ENABLE, false);
         Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, false);
+    }
+
+    private void getHomePageSettingsFromDb() {
+        String languageType = AppSettings.getLanguageType();
+        homePageSettingsDb = DatabaseController.getInstance().getHomePageSettingsOnId(
+                DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+
     }
 }

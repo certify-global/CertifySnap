@@ -8,7 +8,7 @@ import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.StringConstants;
 import com.certify.snap.common.Util;
-import com.certify.snap.model.DeviceSettings;
+import com.certify.snap.model.DeviceKeySettings;
 import com.common.thermalimage.ThermalImageUtil;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class ApplicationController {
 
     public void setEndPointUrl(String endPointUrl) {
         this.endPointUrl = endPointUrl;
-        DeviceSettings deviceSetting = new DeviceSettings();
+        DeviceKeySettings deviceSetting = new DeviceKeySettings();
         deviceSetting.id = 1;
         deviceSetting.settingName = StringConstants.API_URL;
         deviceSetting.settingValue = endPointUrl;
@@ -97,9 +97,9 @@ public class ApplicationController {
     }
 
     public void initDeviceSettings(SharedPreferences sharedPreferences) {
-        List<DeviceSettings> deviceSettingList = DatabaseController.getInstance().getDeviceSettings();
+        List<DeviceKeySettings> deviceSettingList = DatabaseController.getInstance().getDeviceSettings();
         if (deviceSettingList == null || deviceSettingList.isEmpty()) {
-            DeviceSettings settings = new DeviceSettings();
+            DeviceKeySettings settings = new DeviceKeySettings();
             settings.id = 1;
             settings.settingName = StringConstants.API_URL;
             String value = "";
@@ -109,7 +109,7 @@ public class ApplicationController {
                 value = EndPoints.prod_url;
             }
             settings.settingValue = value;
-            DatabaseController.getInstance().insertDeviceSettingsToDB(settings);
+            DatabaseController.getInstance().insertDeviceKeySettingsToDB(settings);
             return;
         }
         String apiUrl = DatabaseController.getInstance().getSetting(StringConstants.API_URL);

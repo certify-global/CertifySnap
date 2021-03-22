@@ -18,6 +18,7 @@ import android.widget.ListView;
 import com.brother.ptouch.sdk.NetPrinter;
 import com.certify.snap.R;
 import com.certify.snap.common.ContextUtils;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.printer.Common;
 
 import java.util.ArrayList;
@@ -32,12 +33,7 @@ public class PrinterBTSettingsActivity extends ListActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Locale localeToSwitchTo;
-        if (HomeActivity.mSelectLanguage) {
-            localeToSwitchTo = new Locale("es");
-        } else {
-            localeToSwitchTo = new Locale("en");
-        }
+        Locale localeToSwitchTo = new Locale(DeviceSettingsController.getInstance().getLanguageToUpdate());
         ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
         super.attachBaseContext(localeUpdatedContext);
     }

@@ -51,7 +51,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class OfflineRecordsActivity extends AppCompatActivity {
+public class OfflineRecordsActivity extends SettingsBaseActivity {
 
     protected static final String TAG = OfflineRecordsActivity.class.getSimpleName();
     private RecyclerView recyclerView;
@@ -66,7 +66,7 @@ public class OfflineRecordsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_offline_record);
 

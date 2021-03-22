@@ -208,5 +208,8 @@ public class GlobalParameters {
     public static final String MEMBER_GROUP_ID = "member_group_id";
     public static final String AccessControlLogMode = "accessControlLogging";
     public static final String AccessControlScanMode = "accessControlScan";
-    public static final String languageType = "englishLanguage";
+    public static final String LANGUAGE_TYPE = "LanguageType";
+    public static final String LANGUAGE_TYPE_SECONDARY = "LanguageTypeSecondary";
+    public static final String LANGUAGE_ALLOW_MULTILINGUAL = "LanguageAllowMultilingual";
+
 }

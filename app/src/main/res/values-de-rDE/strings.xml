@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CERTIFY Snap</string>
+
+    <string name="active_failed">Lizenzaktivierung fehlgeschlagen. Bitte wenden Sie sich an Certify.</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="cancel">Stornieren</string>
+    <string name="registering_please_wait">Anmeldung, bitte warten</string>
+    <string name="login_password">Passwort:</string>
+
+    <string name="permission_denied">Erlaubnis verweigert!</string>
+
+    <string name="recognize_failed_notice">VERWEIGERT: %s</string>
+    <string name="recognize_success_notice">PASS: %s</string>
+    <string name="low_confidence_level">mit niedrigem Konfidenzniveau konfrontiert</string>
+    <string name="specific_engine_init_failed">%s + init + fehlgeschlagen, + Code + ist: %d</string>
+    <string name="camera_error_notice">\nMöglicher Grund: Das gleichzeitige Öffnen von zwei Kameras ist auf diesem Gerät nicht zulässig</string>
+
+    <string name="living_type_0">Nein</string>
+    <string name="living_type_1">Ja</string>
+
+    <string name="txt_data_management_title">Datenmanagement</string>
+    <string name="led_switch">LED-Schalter:</string>
+    <string name="NavigationBar">Show Navigation Bar:</string>
+    <string name="relayinfo">Bitte geben Sie eine Zeit ein!</string>
+    <string name="toast_guide_permission">Bitte geben Sie die Erlaubnis manuell!</string>
+
+    <string name="login">Anmeldung</string>
+    <string name="logout">Ausloggen</string>
+    <string name="welcome">Herzlich willkommen</string>
+    <string name="Unrecognized">Unerkannt</string>
+
+    <string name="toast_rgbir_pwderror">Passwort nicht korrekt!</string>
+    <string name="text_notpasstime">Nicht-Durchgangszeit, bitte wenden Sie sich an den Administrator!</string>
+    <string name="text_nopermission">Keine Erlaubnis, bitte wenden Sie sich an den Administrator!</string>
+    <string name="text_expiredtime">Es ist über das Ablaufdatum hinaus. Bitte wenden Sie sich an den Administrator!</string>
+    <string name="text_passcodeexpired">Passcode ist abgelaufen</string>
+    <string name="fahrenheit_symbol">&#160;°F</string>
+    <string name="centi">&#160;°C</string>
+    <string name="temperature_normal">Temperatur normal:</string>
+    <string name="temperature_anormaly">Temperatur hoch:</string>
+    <string name="temperature_failresult">Temperatur konnte nicht gemessen werden!</string>
+
+    <string name="ExtractCode">ExtractCode:</string>
+    <string name="ProcessCode">ProcessCode:</string>
+    <string name="VISITOR">BESUCHER</string>
+
+
+    <string name="toast_manage_member_exist">Mitglieds-ID existiert bereits!</string>
+    <string name="toast_manage_access_exist">Zugangs-ID existiert bereits!</string>
+    <string name="SetDate">Datum einstellen</string>
+    <string name="SetTime">Zeit einstellen</string>
+    <string name="delete">Löschen</string>
+    <string name="delete_wait">Löschen! Warten Sie mal...</string>
+    <string name="Register">Registrieren</string>
+    <string name="register_wait">Registrieren! Warten Sie mal...</string>
+    <string name="Register_success">Erfolg registrieren!</string>
+    <string name="register_failed">Registrierung fehlgeschlagen! Bitte versuche es erneut!</string>
+    <string name="update_failed">Update fehlgeschlagen! Bitte versuche es erneut!</string>
+    <string name="deletion_failed">Aufgrund eines Netzwerkproblems. Daten können nicht online gelöscht werden.</string>
+    <string name="Update_success">Update Erfolg!</string>
+    <string name="Delete_success">Erfolg löschen!</string>
+    <string name="Delete_failed">Registrierung fehlgeschlagen! Bitte versuche es erneut!</string>
+    <string name="camera_temp">Temperatur</string>
+    <string name="camera_face">Temperatur und Gesicht</string>
+    <string name="thermal_scan">THERMISCHER SCAN</string>
+    <string name="SetTemp">Temperatureinstellungen</string>
+    <string name="upload_logo">Logo hochladen</string>
+    <string name="access_password">Zugangspasswort</string>
+    <string name="device_activation_status">Online-Aktivierungsstatus</string>
+    <string name="not_activated"><u> Nicht aktiviert</u>  </string>
+    <string name="activate"><u> aktivieren Sie</u>  </string>
+    <string name="endpoint">Endpunktname</string>
+    <string name="app_version">Version</string>
+    <string name="tv_thermal_setting">Home View-Einstellungen</string>
+    <string name="welcome_thermal">Startbildschirmtext</string>
+    <string name="enter_title">Geben Sie großen Text ein</string>
+    <string name="enter_subtitle">Geben Sie kleinen Text ein</string>
+    <string name="display_temperature">Zeigen Sie dem Benutzer Temperaturdetails auf dem Bildschirm an</string>
+    <string name="tv_scan_setting">Scan-Ansichtseinstellungen</string>
+    <string name="capture_images">Erfassen Sie Bilder von Benutzern mit einer Temperatur über dem Schwellenwert</string>
+    <string name="Capture_all">Erfassen Sie Bilder aller Benutzer</string>
+    <string name="enable_sound">Aktivieren Sie den Ton bei normaler Temperatur</string>
+    <string name="enable_sound_high">Aktivieren Sie den Ton bei einer Temperatur über dem Schwellenwert</string>
+    <string name="enable_qr_sound_valid">Aktivieren Sie den Sound für einen gültigen QR-Code</string>
+    <string name="enable_qr_sound_invalid">Aktivieren Sie den Sound für ungültigen QR-Code</string>
+    <string name="enable_light">Aktivieren Sie das Licht bei normaler Temperatur</string>
+    <string name="enable_light_high">Aktivieren Sie das Licht bei einer Temperatur über dem Schwellenwert</string>
+    <string name="enable_printer">Druck aktivieren</string>
+    <string name="print_all_scan">Drucken für alle Scans</string>
+    <string name="print_access_card">Drucken für Benutzer der Zugangskarte</string>
+    <string name="print_qr_code_users">Drucken für QR-Code-Benutzer</string>
+    <string name="print_wave_users">Drucken für Wave-Benutzer</string>
+    <string name="print_high_temperature">Drucken für hohe Temperaturen</string>
+    <string name="enable_mask">Maskenerkennung aktivieren</string>
+    <string name="enable_facial">Gesichtserkennung aktivieren</string>
+    <string name="screen_delay">Bildschirmanzeigezeit (Sekunden)</string>s
+    <string name="tv_confirmation_setting">Einstellungen für die Bestätigungsansicht</string>
+    <string name="member_management_setting">Mitgliederverwaltung</string>
+    <string name="audio_visual_setting">Audio- und Videoeinstellungen</string>
+    <string name="printer_setting">Druckereinstellungen</string>
+    <string name="confirmation_view">Bestätigungsansicht</string>
+    <string name="enable_temperature">Aktivieren</string>
+    <string name="confirmation_text_below">Bestätigung für Temperatur unter dem Schwellenwert</string>
+    <string name="confirmation_text_above">Bestätigung für Temperatur über dem Schwellenwert</string>
+    <string name="scan_view">Scan-Ansicht</string>
+    <string name="audio_visual_view">Audio und Video</string>
+    <string name="ble_devices_view">BLE-Geräte</string>
+    <string name="thermal_view">Home View</string>
+    <string name="enter_title_main">Haupttext eingeben</string>
+    <string name="enter_subtitle_sub">Subtext eingeben</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="celcius">Celsius</string>
+    <string name="save">SPAREN</string>
+    <string name="temperature_threshold">Temperaturschwelle einstellen</string>
+    <string name="temperature">Temperatur</string>
+    <string name="temperature_calibration">Temperaturkalibrierung</string>
+    <string name="app_serial">Seriennummer:</string>
+    <string name="tv_guide_setting">Leitfaden Einstellungen</string>
+    <string name="text_value1">Bitte zentrieren Sie Ihr Gesicht auf dem Bildschirm.</string>
+    <string name="text_value2">Gehen Sie näher heran und zentrieren Sie Ihr Gesicht.</string>
+    <string name="text_value3">Bitte warten Sie und bereiten Sie den Scan vor.</string>
+    <string name="text_value4">Bitte treten Sie näher</string>
+    <string name="snack_msg">Aktualisierte Einstellungen abrufen</string>
+    <string name="invalid_pwd">Ungültiges Passwort</string>
+    <string name="allow_low">Scannen bei niedriger Temperatur zulassen</string>
+    <string name="save_success">Einstellungen gespeichert</string>
+    <string name="offline_msg">Offline mode</string>
+    <string name="online_msg">Online mode</string>
+    <string name="identification_setting">Identifikationseinstellungen</string>
+    <string name="enable_qr">Aktivieren Sie den QRCode-Scanner</string>
+    <string name="tv_qr_scan">Scannen Sie Ihren QR-Code</string>
+    <string name="tv_qr_bar_scan">Scannen Sie Ihren QR /Barcode</string>
+    <string name="tv_qr_validating">QR-Code validieren</string>
+    <string name="tv_bar_validating">Barcode validieren</string>
+    <string name="enable_rfid">Aktivieren Sie den RFID-Scanner</string>
+    <string name="enable_anonymous">Aktivieren Sie den anonymen QR-Code /Barcode</string>
+    <string name="enable_skip_button">Skip-Code aktivieren (erfordert Berührung des Bildschirms)</string>
+    <string name="rfid_card_error">Error! Karte kann nicht erkannt werden</string>
+    <string name="device_not_register">ist nicht in Ihrem certify.me-Konto registriert. Stellen Sie sicher, dass das Gerät mit dem Internet verbunden ist und das Gerät Ihrem Cloud-Konto unter Geräte hinzugefügt wurde. \N.
+   \nWenn Sie dieses Gerät lieber offline lassen möchten, melden Sie sich bei den Einstellungen dieser App an, indem Sie auf die linke obere Ecke tippen und sie in den Einstellungen auf offline setzen.</string>
+    <string name="invalid_qr">Ungültiger QRCode</string>
+    <string name="timeout">Zeitüberschreitung (Sekunden) für RFID- und CODE-Scan</string>
+    <string name="qr_button_heading">Text, der auf der Schaltfläche angezeigt werden soll</string>
+    <string name="qr_button_text">Klicken Sie hier, wenn Sie keinen QR-Code haben</string>
+    <string name="device_inactive">ist in Ihrem certify.me-Konto nicht aktiv. Stellen Sie sicher, dass das Gerät mit dem Internet verbunden ist und das Gerät in Ihrem Cloud-Konto unter Geräte aktiv ist. \N.
+    \nWenn Sie dieses Gerät lieber offline lassen möchten, melden Sie sich bei den Einstellungen dieser App an, indem Sie auf die linke obere Ecke tippen und sie in den Einstellungen auf offline setzen.</string>
+    <string name="scan_mode">Scan Mode</string>
+    <string name="scan_mode_easy">Einfach</string>
+    <string name="scan_mode_strict">Streng (empfohlen)</string>
+
+
+    <string name="access_control">Zugangskontrolle</string>
+    <string name="access_control_parameter">sek</string>
+    <string name="enable_access_control">Wiegand-Ausgabe aktivieren (ID erforderlich)</string>
+    <string name="access_control_card_format">Message Format</string>
+    <string name="access_control_enroll">Einschreiben</string>
+    <string name="access_granted">Warten Sie auf Thermal Scan</string>
+    <string name="access_denied">Zugriff verweigert!</string>
+    <string name="automatic_door_access">Relais aktivieren</string>
+    <string name="allow_anonymous">Anonym zulassen</string>
+    <string name="relay_timeout">Relais-Timeout:</string>
+    <string name="normal_mode"><font size="16"> Normal Mode</font>  <font size="14"> (Operate Access für jeden Scan)</font> </string>
+    <string name="reverse_mode"><font size="16"> Reverse Mode</font>  <font size="14"> (Zugriff nur bei Hochtemperatur-Scan betreiben)</font> </string>
+    <string name="stop_relay">Beenden Sie den Zugriff beim Hochtemperatur-Scan</string>
+
+
+    <string name="tv_ok">in Ordnung</string>
+    <string name="setting_message">Dieses Gerät wird mit Ihrem Cloud-Konto aktiviert. Alle Änderungen an den Einstellungen vor Ort werden beim nächsten Neustart oder bei der nächsten Synchronisierung überschrieben. Bitte ändern Sie die entsprechenden Einstellungen online und synchronisieren Sie die Einstellungen auf dem Gerät.</string>
+    <string name="setting_note">Hinweis: Sie können lokal ändern, um die Einstellungen für das Gerät über die Online-Einstellungen festzulegen.</string>
+    <string name="time_and_attendance">Zeit und Anwesenheit</string>
+    <string name="both">Beide</string>
+    <string name="none">Keiner</string>
+    <string name="id_only">Nur ID</string>
+    <string name="face_only">Nur Gesicht</string>
+    <string name="id_face">ID Gesicht</string>
+    <string name="id_or_face">ID oder Gesicht</string>
+    <string name="bit_26">26 Bit</string>
+    <string name="bit_34">34 Bit</string>
+    <string name="bit_48">48 Bit</string>
+
+
+
+    <string name="id">Benutzeridentifikation:</string>
+    <string name="facial_threshold">Stellen Sie den Gesichtsschwellenwert ein</string>
+    <string name="first_name">Vorname</string>
+    <string name="last_name">Familienname, Nachname</string>
+    <string name="email_address">E-Mail-Addresse</string>
+    <string name="phone_number">Telefonnummer</string>
+    <string name="member_id">Mitgliedsnummer</string>
+    <string name="access_id">Zugangs-ID</string>
+    <string name="display">"Bild und Name auf dem Bestätigungsbildschirm anzeigen"</string>
+    <string name="update_face_not_recognized">Update fehlgeschlagen! Gesicht kann nicht erkannt werden</string>
+    <string name="register_face_not_recognized">Registrierung fehlgeschlagen! Gesicht kann nicht erkannt werden</string>
+
+
+    <string name="pref_key_camera_live_viewport" translatable="false">clv</string>
+    <string name="pref_key_rear_camera_preview_size" translatable="false">rcpvs</string>
+    <string name="pref_key_front_camera_preview_size" translatable="false">fcpvs</string>
+    <string name="pref_key_rear_camera_picture_size" translatable="false">rcpts</string>
+    <string name="pref_key_front_camera_picture_size" translatable="false">fcpts</string>
+    <string name="temperature_compensation">Temperaturkompensation</string>
+    <string name="tv_compensation">Beispiel: \u0020 1,5 \u0020 oder \u0020 -0,5</string>
+
+    <string name="device_name">Gerätename</string>
+    <string name="keep_device_online">Gerät online halten</string>
+    <string name="device_settings">Geräteeinstellungen</string>
+    <string name="device_password">Gerätezugriffskennwort</string>
+    <string name="online_device_activation_status">Online-Aktivierungsstatus des Geräts</string>
+    <string name="device_mode">Device Mode</string>
+    <string name="enable_home_screen">Startbildschirm aktivieren</string>
+    <string name="enable_text_only_screen">Aktivieren Sie den Nur-Text-Modus</string>
+    <string name="enable_text_only_hint">Geben Sie den Vollbildtext ein</string>
+    <string name="connectivity_status">Verbindungsstatus anzeigen</string>
+    <string name="connectivity_status_title">Verbindungsstatus und Informationen</string>
+    <string name="connectivity_status_text">Verbunden:</string>
+    <string name="mac">MAC</string>
+    <string name="ip_address">IP Adresse</string>
+    <string name="netmask">Netzmaske</string>
+    <string name="gateway">Tor</string>
+    <string name="dns1">DNS1</string>
+    <string name="dns2">DNS2</string>
+    <string name="ethernet_ip_mode">Ethernet Ip mode</string>
+    <string name="ssid">SSID:</string>
+    <string name="device_reader">Geräteleser:</string>
+    <string name="internet_connectivity">Internetverbindung:</string>
+    <string name="cloud_connectivity">CERTIFY Cloud-Konnektivität:</string>
+    <string name="wifi">W-lan</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="mobile">Zellular</string>
+    <string name="data_management">Datenmanagement</string>
+    <string name="do_not_sync">Synchronisieren Sie Online-Mitgliedsdaten mit dem Gerät</string>
+    <string name="enable_home_view_msg">Bitte aktivieren Sie die Einstellung für den Startbildschirm, um diese Option festzulegen.</string>
+    <string name="confirm_title_below">Einen schönen Tag noch!</string>
+    <string name="analyzing_face">Gesicht analysieren</string>
+    <string name="allow_scan_proximity">Scan nur in unmittelbarer Nähe zulassen</string>
+    <string name="step_closer">Bitte treten Sie näher</string>
+    <string name="face_center">Bitte zentrieren Sie Ihr Gesicht</string>
+    <string name="clear_cache_app">DATEN LÖSCHEN und CACHE</string>
+    <string name="local_data">Lokale Daten zurücksetzen</string>
+    <string name="clear_members">Mitglieder zurücksetzen</string>
+    <string name="clear_members_button">LÖSCHEN SIE ALLE MITGLIEDER</string>
+    <string name="add_device">Melden Sie sich an, um das Gerät zu registrieren</string>
+    <string name="not_configure">Dieses Gerät ist nicht für die Online-Arbeit konfiguriert.</string>
+    <string name="cloud">Wenn Sie bereits ein Cloud-Konto haben,</string>
+    <string name="activation_again">Versuchen Sie die Aktivierung erneut</string>
+    <string name="skip">Für jetzt überspringen</string>
+    <string name="offline_mode">Offline Mode</string>
+    <string name="login_account">ins Konto einloggen</string>
+    <string name="enter_email">Email</string>
+    <string name="enter_password">Passwort</string>
+    <string name="login_note">Hinweis: Der Benutzer sollte über Administratorrechte für das Konto verfügen.</string>
+    <string name="add_device_info">Gerät hinzufügen</string>
+    <string name="sno">"Ordnungsnummer "</string>
+    <string name="imei">IMEI-Nummer</string>
+    <string name="active">Aktiv</string>
+    <string name="in_active">Inaktiv</string>
+    <string name="status">Status</string>
+    <string name="screen_timeout_msg">Bitte geben Sie das Bildschirm-Timeout für den Scan auf 5 oder höher ein</string>
+    <string name="record">Aufnahmeverwaltung</string>
+    <string name="register_device">Gerät registrieren</string>
+
+
+    <string name="ble_startfind">Geräte suchen ...</string>
+    <string name="ble_canceldfind">Suche abgebrochen</string>
+    <string name="ble_not_find">Keine Bluetooth-Geräte gefunden</string>
+    <string name="ble_canceled">Sie müssen den Bluetooth-Dienst aktivieren</string>
+    <string name="ble_selected">Sie haben ein Bluetooth-Verbindungsgerät eingerichtet</string>
+    <string name="ble_connect_success">Verbunden erfolgreich</string>
+    <string name="ble_disconnected">Vom Gerät getrennt</string>
+    <string name="unknown_service">unbekannter Dienst</string>
+    <string name="unknown_characteristic">unbekannt_charakteristisch</string>
+    <string name="permission_request">Die Berechtigung ist erforderlich, um diese App auszuführen</string>
+    <string name="ble_connect_status">Verbundenes BLE-Licht:</string>
+    <string name="ble_light_test">Prüfung :</string>
+    <string name="ble_connect"><u> Verbinden</u>  </string>
+
+    <string name="bluetooth_printer_connect_status">Angeschlossener Drucker:</string>
+
+
+    <string name="centigrade" translatable="false"> ℃</string>
+    <string name="Fahrenheit_temp" translatable="false"> ℉</string>
+    <string name="endpoint_api">Feuer</string>
+    <string name="protocol_text">https://</string>
+    <string name="hostname">.certify.me</string>
+    <string name="scanner_time_msg">Der Scanner wird initialisiert. Sie können warten oder auf OK klicken, um den Scanner während der Initialisierung weiter zu verwenden. \nVerbleibende Zeit: %d min</string>
+    <string name="scanner_remaining_time_msg">Scannerkalibrierung ist im Gange… Verbleibende Zeit: %d min</string>
+    <string name="audio_alerts">Audio-Warnungen</string>
+    <string name="visual_alerts">Visuelle Warnungen</string>
+    <string name="audio_none">KEINER</string>
+    <string name="light_on">Licht an</string>
+    <string name="light_off">Licht aus</string>
+
+
+
+    <string name="printer_settings"><u> die Einstellungen</u>  </string>
+    <string name="no_network_device">Kein Netzdrucker gefunden</string>
+    <string name="setting_printer">Druckereinstellungen</string>
+    <string name="printer_title">Stellen Sie eine Verbindung zum Drucker her</string>
+    <string name="printer_text">Wählen Sie einen Zieldrucker</string>
+    <string name="netPrinterListTitle_label">Netzdrucker</string>
+    <string name="error_message_none">Erfolgreich</string>
+    <string name="printer_model_title">Druckermodell</string>
+    <string name="printer_model_value">Wählen Sie das Druckermodell aus</string>
+    <string name="port_title">Hafen</string>
+    <string name="port_value">Wählen Sie den Port</string>
+    <string name="address_title">IP Adresse</string>
+    <string name="address_value">Stellen Sie die Anzahl der IP-Adressen ein</string>
+    <string name="mac_address_title">MAC-Adresse</string>
+    <string name="mac_address_value">Stellen Sie die Nummer der Mac-Adresse ein</string>
+    <string name="paper_size_title">Papier größe</string>
+    <string name="paper_size_value">Wählen Sie das Papierformat</string>
+    <string name="orientation_title">Druckausrichtung</string>
+    <string name="orientation_value">Wählen Sie die Druckausrichtung</string>
+
+    <string-array name="orientation">
+        <item>Portrait</item>
+        <item>Landschaft</item>
+    </string-array>
+    <string-array name="orientation_values">
+        <item>PORTRAIT</item>
+        <item>LANDSCHAFT</item>
+    </string-array>
+
+    <string name="number_of_copies_title">Anzahl der Kopien</string>
+    <string name="number_of_copies_value">Stellen Sie die Anzahl der Kopien ein</string>
+    <string name="scale_value_title">Skalierungswert</string>
+    <string name="scale_value_value">Wählen Sie den Skalenwert</string>
+
+
+    <string name="fit_to_page_title">Auf Seite passen</string>
+    <string name="fit_to_page_value">Wählen Sie, ob es zur Seite passt</string>
+
+
+    <string-array name="fitToPage">
+        <item>ORIGINAL</item>
+        <item>FIT_TO_PAGE</item>
+        <item>BENUTZERDEFINIERT</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+    <string-array name="fit_to_page_values">
+        <item>ORIGINAL</item>
+        <item>FIT_TO_PAGE</item>
+        <item>RAHMEN</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+
+
+    <string name="print_quality_title">Druckqualität</string>
+    <string name="print_quality_value">Wählen Sie die Qualität</string>
+
+
+    <string-array name="yes_no_entries">
+        <item>Ja</item>
+        <item>Nein</item>
+    </string-array>
+    <string-array name="yes_no_value">
+        <item>wahr</item>
+        <item>falsch</item>
+    </string-array>
+
+
+    <string name="is_end_cut_title">End Cut</string>
+    <string name="is_end_cut_value">Ende schneiden oder nicht</string>
+    <string name="is_auto_cut_title">Auto Cut</string>
+    <string name="is_auto_cut_value">automatisch schneiden oder nicht</string>
+    <string name="ip_mac_title">IP /MAC-Adresse</string>
+    <string name="ip_mac_value">Stellen Sie die IP /MAC-Adresse ein</string>
+    <string name="cut_settings_value">Stellen Sie die Schnitteinstellungen ein</string>
+    <string name="cut_settings_title">Einstellungen schneiden</string>
+
+    <string name="no_bluetooth_device">Kein Bluetooth-Drucker gefunden</string>
+    <string name="button_refresh">Aktualisierung</string>
+    <string name="button_settings">Verbinden</string>
+
+
+    <string-array name="print_quality_array">
+        <item>NIEDRIGE AUFLÖSUNG</item>
+        <item>NORMAL</item>
+        <item>DOUBLE_SPEED</item>
+        <item>HOHE AUFLÖSUNG</item>
+    </string-array>
+    <string-array name="print_quality_value">
+        <item>NIEDRIGE AUFLÖSUNG</item>
+        <item>NORMAL</item>
+        <item>DOUBLE_SPEED</item>
+        <item>HOHE AUFLÖSUNG</item>
+    </string-array>
+
+
+    <string name="search_printer">Suchen…</string>
+    <string name="button_cancel">Stornieren</string>
+    <string name="button_ok">in Ordnung</string>
+    <string name="battery_full">Voll</string>
+    <string name="battery_middle">Mitte</string>
+    <string name="battery_weak">Schwach</string>
+    <string name="battery_charge">Muss aufgeladen werden</string>
+    <string name="ac_adapter">Netzteil</string>
+    <string name="close_connect">Schließen…</string>
+    <string name="bluetooth_printer_list_title_label">Bluetooth-Drucker</string>
+
+
+    <string name="half_cut_title">Half Cut (nur PT)</string>
+    <string name="half_cut_value">halb schneiden oder nicht</string>
+    <string name="special_tape_title">Spezialband (nur PT)</string>
+    <string name="special_tape_value">ist spezielles Klebebandpapier</string>
+    <string name="timeout_title">Auszeit</string>
+    <string name="timeout_text">Stellen Sie das Timeout ein</string>
+    <string name="processTimeout_value">Auszeit</string>
+    <string name="processTimeout_title">Stellen Sie die Gesamtzeitüberschreitung ein</string>
+    <string name="sendTimeout_value">Stellen Sie die Wartezeit für die Übertragung ein</string>
+    <string name="sendTimeout_title">Wartezeit für die Übertragung</string>
+    <string name="receiveTimeout_title">Wartezeit an der Rezeption</string>
+    <string name="receiveTimeout_value">Stellen Sie die Wartezeit für den Empfang ein</string>
+    <string name="connectionTimeout_title">Wartezeit verbinden</string>
+    <string name="connectionTimeout_value">Stellen Sie die Verbindungswartezeit ein</string>
+    <string name="close_wait_time_value">Zeitüberschreitung schließen</string>
+    <string name="close_wait_time_title">Stellen Sie die Wartezeit ein</string>
+    <string name="work_path_value">Wählen Sie den Arbeitspfad</string>
+    <string name="work_path_title">Arbeitsordner</string>
+    <string name="progress_dialog_message_preparing_connection">Verbindung vorbereiten…</string>
+    <string name="progress_dialog_message_createData">Daten erstellen</string>
+    <string name="progress_dialog_message_sendingData">Druckabzeichen…</string>
+    <string name="progress_dialog_message_sendingPrintingData">Druckabzeichen…</string>
+    <string name="progress_dialog_message_startPrint">Abzeichen drucken</string>
+    <string name="progress_dialog_message_dataSent">Die Daten wurden gesendet</string>
+    <string name="progress_dialog_message_printed">Der Druckvorgang wurde abgeschlossen</string>
+    <string name="progress_dialog_message_close_connection">Verbindung schließen</string>
+    <string name="progress_dialog_message_set_paper">Bitte Papier einstellen</string>
+    <string name="progress_dialog_message_cooling_start">Start der Druckerkühlung</string>
+    <string name="progress_dialog_message_cooling_end">Druckerkühlungsende</string>
+    <string name="progress_dialog_message_waiting_peel">Warten Sie, bis das Etikett abgezogen ist</string>
+    <string name="progress_dialog_message_sending_template">Dateiübertragung</string>
+    <string name="progress_dialog_message_getting_bluetooth_setting">Bluetooth-Einstellungen abrufen</string>
+    <string name="progress_dialog_message_setting_bluetooth_setting">Übertragen von Bluetooth-Einstellungen</string>
+    <string name="progress_dialog_message_removing_template">Vorlagen entfernen</string>
+    <string name="progress_dialog_message_getting_template">Vorlagenliste abrufen</string>
+    <string name="cancel_printer_msg">Storniert, bitte warten</string>
+    <string name="error_message_weong_os">Android OS wird nicht unterstützt</string>
+    <string name="error_message_no_usb">USB-Gerät wurde nicht gefunden</string>
+    <string name="progress_dialog_message_communication_start">Kommunikation starten…</string>
+    <string name="progress_dialog_message_transfer_start">Transfer Start…</string>
+    <string name="text_ip_address">Adresse: + %1$s</string>
+    <string name="text_copied">Kopiert: + %1$s</string>
+    <string name="pair_printer_message">Bitte entkoppeln Sie den Drucker und koppeln Sie ihn erneut</string>
+
+    <string-array name="work_path_entries">
+        <item>In-App-Ordner</item>
+        <item>Externer Ordner</item>
+    </string-array>
+
+    //Toshiba Printer
+    <string name="msg_Ok">JA</string>
+    <string name="msg_No">NEIN</string>
+    <string name="bdAddrNotSet">BD-Adresse wurde nicht ausgewählt.</string>
+    <string name="ipOrPortNoNotSet">IP-Adresse oder Portnummer wurde nicht ausgewählt.</string>
+    <string name="fileNameNotSet">Dateiname wurde nicht ausgewählt.</string>
+    <string name="outputMethodNotSelected">Die Ausgabemethode wurde nicht ausgewählt</string>
+    <string name="msg_CopyPrinterConfigFile">Die Druckerkonfigurationsdatei konnte nicht kopiert werden.</string>
+    <string name="wait">Warten Sie mal.</string>
+    <string name="msg_success">Erfolg</string>
+    <string name="msg_PortClose">Port schließen</string>
+    <string name="msg_OpenPorterror">Portfehler öffnen</string>
+    <string name="msg_WritePortError">Schreibportfehler</string>
+    <string name="msg_RetryError">RetryError</string>
+    <string name="msg_GetStatuscallError">GetStatus-Aufruffehler</string>
+    <string name="msg_GetStatus">Status bekommen</string>
+    <string name="msg_result">Ergebnis</string>
+    <string name="error">Error</string>
+    <string name="runPrint">Drucken</string>
+    <string name="noResponseFromPrinter">Keine Antwort vom Drucker. Möchten Sie den Vorgang fortsetzen?</string>
+    <string name="writeFailed">Fehler beim Schreiben auf den Drucker. Möchten Sie den Vorgang fortsetzen?</string>
+    <string name="paperEnd">Label end.Wollen Sie den Vorgang fortsetzen?</string>
+    <string name="issueEndAndpaperEnd">Ausgabe beenden und Etikettenende</string>
+    <string name="msg_executePrintError">Druckfehler ausführen</string>
+    <string name="processComplete">Prozessabschluss</string>
+    <string name="productName">Name</string>
+    <string name="code">Code</string>
+    <string name="print">Drucken</string>
+    <string name="noOfPrints">NoOfPrint</string>
+    <string name="msg_PortCloseErrorcode">Port Close Fehlercode</string>
+    <string name="msg_PortCloseSuccess">Port schließen Erfolg</string>
+    <string name="statusReception">OnStatus-Empfang</string>
+    <string name="dataName">Namensdaten</string>
+    <string name="bottom_text">Bitte blockieren Sie ein Licht mit Ihrer \nHand, um eine Auswahl zu treffen \n\nHaben Sie einen Fehler gemacht? \nBlockieren Sie beide Lichter, um zurückzukehren</string>
+    <string name="touchless_interaction_setting">Berührungslose Interaktion</string>
+    <string name="touchless_setting">Berührungslose Interaktionseinstellungen</string>
+    <string name="enable_acknowledge">Bestätigungsbildschirm aktivieren</string>
+    <string name="enter_full_screen">Geben Sie den Vollbildtext ein</string>
+    <string name="tv_result_bar">Ergebnisleiste anzeigen</string>
+    <string name="tv_text_display">Anzuzeigender Text</string>
+    <string name="tv_temp_text_normal">Normal</string>
+    <string name="tv_temp_text_high">Hoch</string>
+    <string name="enable_logging">Aktivieren Sie den Protokollierungsmodus</string>
+    <string name="capture_logs">Protokolle erfassen</string>
+    <string name="send_logs">Protokolle senden</string>
+    <string name="wave_instructions">Geben Sie die Anweisungen für die Wellenanzeige ein</string>
+    <string name="mask_enforce_instructions">Geben Sie den Text zur Durchsetzung der Maske ein</string>
+
+    <string name="wave_yes">&lt;JA</string>
+    <string name="wave_no">NEIN&gt;</string>
+    <string name="scan_type">Scan-Typ</string>
+    <string name="scan_type_quick">Schnell</string>
+    <string name="scan_type_standard">Standard</string>
+
+    <string name="enter_text1">Text 1</string>
+    <string name="enter_text2">Text2</string>
+    <string name="enter_text3">Text3</string>
+    <string name="enter_text4">Text4</string>
+    <string name="enable_guide">Anleitung aktivieren</string>
+    <string name="enable_temp_scan">Aktivieren Sie den Temperaturscan</string>
+    <string name="enable_wiegand_passthrough">Wiegand Pass-Through aktivieren</string>
+    <string name="log_offline_data">Daten im Offline-Modus protokollieren</string>
+
+    <string name="wear_a_mask">"Bitte tragen Sie eine Maske und Wave Left Hand, um von vorne zu beginnen, oder Wave Right Hand, um fortzufahren."</string>
+    <string name="access_control_granted">Zugriff gewährt</string>
+    <string name="access_control_denied">Zugriff verweigert!</string>
+    <string name="gesture_exit_title">Beenden Sie bei negativem Ergebnis</string>
+    <string name="gesture_exit_default">Bitte wenden Sie sich an Admin</string>
+    <string name="gesture_exit_hint">Meldung, die beim Beenden des negativen Ergebnisses angezeigt werden soll</string>
+    <string name="gesture_timeout_msg">Bitte bewegen Sie Ihre Hand nach unten, um mit der nächsten Frage fortzufahren</string>
+    <string name="listening">Hören...</string>
+
+
+    <string name="failed_member">Fehlgeschlagenes Mitglied:</string>
+    <string name="member">Mitglied:</string>
+    <string name="certify_snapXt">CERTIFY SnapXT</string>
+    <string name="tv_record">Aufzeichnung</string>
+    <string name="member_delete_msg">Möchten Sie ein Mitglied löschen?</string>
+    <string name="pls_input_name">Bitte geben Sie den Namen oder die Benutzer-ID ein</string>
+    <string name="unique_id">Eindeutige ID</string>
+    <string name="update">Aktualisieren</string>
+    <string name="device_id">Geräte-ID</string>
+    <string name="uuid">uuid</string>
+    <string name="popup_register">REGISTRIEREN</string>
+    <string name="capture">ERFASSUNG</string>
+    <string name="use_photo">FOTO VERWENDEN</string>
+    <string name="update_dialog">AKTUALISIEREN</string>
+    <string name="user_id">Benutzeridentifikation</string>
+    <string name="member_text">Mitglied</string>
+
+
+    <string name="select_printer">Wählen Sie Drucker</string>
+    <string name="title_printer">Bitte geben Sie die IP- und Mac-Adressen des Druckers ein</string>
+    <string name="add_button">Hinzufügen</string>
+    <string name="search_button">Suche</string>
+    <string name="wifi_bluetooth_printer">Wifi /Bluetooth-Drucker</string>
+    <string name="print_button">Drucken</string>
+    <string name="usb_printer">USB-Drucker</string>
+    <string name="printing_option">Druckoptionen</string>
+    <string name="label_option">Beschriftungsoptionen</string>
+    <string name="print_face">Gesicht drucken</string>
+    <string name="print_name">Druckname (falls identifiziert, sonst leer)</string>
+    <string name="print_text">Wenn nicht identifiziert, Text drucken</string>
+    <string name="print_normal_temp">Normalen Temperaturwert drucken</string>
+    <string name="print_high_temp">Drucken Sie den Hochtemperaturwert</string>
+    <string name="print_indicator_qr">Druckanzeige für QR-Code-Benutzer</string>
+    <string name="print_wave_ans">Wave-Antworten drucken</string>
+    <string name="mac_address_hint">MAC-Adresse</string>
+
+
+    <string name="local">Lokal</string>
+    <string name="enable_pro_setting">Aktivieren Sie die Pro-Einstellungen</string>
+    <string name="led_brightness">LED-Helligkeit:</string>
+    <string name="enable_local_server">Lokalen Server aktivieren:</string>
+
+    <string name="serial_number">ORDNUNGSNUMMER:</string>
+    <string name="imei_number">IMEI-NUMMER:</string>
+    <string name="close_button">Schließen</string>
+    <string name="save_button">sparen</string>
+    <string name="locale_setting">Sprache</string>
+    <string name="english">Englisch</string>
+    <string name="spanish">Spanisch (Spanisch)</string>
+
+
+    <string name="settings">die Einstellungen</string>
+    <string name="update_database">Datenbank auf den neusten Stand bringen</string>
+    <string name="member_register">Mitgliederregister</string>
+    <string name="parameter_settings">Parametereinstellungen</string>
+    <string name="led_settings">LED-Einstellung</string>
+    <string name="activate_card">Karte aktivieren</string>
+
+    <string name="default_rect">Standardrechteck: Rechteck (23,32-26,38)</string>
+    <string name="current_rect">Strom gleich: rechts (23,32-26,38)</string>
+    <string name="format_rect">Format: rect (links, oben rechts, unten)
+        \nDie tatsächlichen Koordinaten des Wärmebildes:
+        \nDie x-Achse liegt der y-Achse gegenüber (oben, links-unten, rechts) "</string>
+    <string name="rect_left">Rechts links (oben):</string>
+    <string name="rect_top">Rechts oben (links):</string>
+    <string name="rect_right">Rechts rechts (unten):</string>
+    <string name="rect_bottom">Rechts unten (rechts):</string>
+    <string name="cancel_dialog">stornieren</string>
+    <string name="confirm_dialog">bestätigen</string>
+
+
+    <string name="distance">Entfernung:</string>
+    <string name="num_50">50</string>
+    <string name="calibration">Kalibrierung</string>
+    <string name="get_temp">Holen Sie sich die Temperatur</string>
+    <string name="calibration_text">Tipps: \n\nHalten Sie zunächst den Abstand zwischen Gesicht und Gerät auf 50 cm und klicken Sie zum Kalibrieren auf die Schaltfläche Kalibrierung.
+        \nBitte bewegen Sie das Gesicht während des Kalibrierungsvorgangs nicht, bis die Kalibrierung abgeschlossen ist.</string>
+    <string name="enter_default_text">Geben Sie den Standardnamen ein</string>
+    <string name="bar_bottom_text">Geben Sie den Standardtext für die untere Leiste ein</string>
+    <string name="normal_pass_scan">Standardergebnis Drucktext (Normal Pass Scan)</string>
+    <string name="temp_above_threshold">Temperatur über dem Schwellenwert anzeigen</string>
+    <string name="ir_text">Drücken Sie hier, wenn Sie keinen QR-Code haben</string>
+    <string name="ir_ques_text">Wenn Ihre Antwort auf alle drei Fragen Nein lautet, tippen Sie bitte auf Ihren Ausweis am unteren Rand des Geräts, um einen thermischen Scan durchzuführen</string>
+    <string name="start">Start</string>
+    <string name="rect1">rect1</string>
+    <string name="rect2">rect2</string>
+    <string name="rect3">rect3</string>
+    <string name="all_rect">allRect</string>
+    <string name="select_date">Bitte wählen Sie Datum</string>
+    <string name="select_date_range">Bitte wählen Sie den Datumsbereich der exportierten Daten. Der Speicherort der exportierten Datei ist /sdcard /offline /record /</string>
+    <string name="start_time">Startzeit (Jahr /Monat):</string>
+    <string name="end_time">Endzeit (Jahr /Monat):</string>
+    <string name="set_temp_text">Stellen Sie den Temperaturschwellenwert für die Anzeige ein</string>
+    <string name="enter_password_text">Passwort eingeben</string>
+    <string name="enable_voice_recognition">Spracherkennung aktivieren</string>
+    <string name="enable_hand_gesture">Handbewegung aktivieren</string>
+    <string name="enable_wave">Wave aktivieren</string>
+    <string name="wave_options">Wellenoptionen</string>
+    <string name="enable_ques_ans">Aktivieren Sie Fragen und Antworten</string>
+    <string name="enable_mask_enforce">Maskenerzwingung aktivieren (Aufforderung zur Erkennung einer nicht erkannten Maske)</string>
+    <string name="show_wave_image">Wellenbild anzeigen</string>
+    <string name="show_wave_ques">Anzeige der Fortschrittsanzeige für Wellenfragen anzeigen</string>
+    <string name="screened">Gescreent</string>
+    <string name="thermal_scan_text">Thermischer Scan</string>
+    <string name="anonymous_text">Anonym</string>
+    <string name="unrecognized">Unerkannt</string>
+    <string name="valid_access">Gültige Zugriffsoptionen (gilt nicht für Anonymous und Wiegand Pass-Through)</string>
+    <string name="password_empty_msg">Das Passwort sollte nicht leer sein</string>
+    <string name="password_invalid_msg">Ungültiges Passwort, versuchen Sie es erneut</string>
+    <string name="serial_num">Seriennummer:</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="password_length_msg">Das Passwort sollte mindestens sechsstellig sein</string>
+    <string name="launch_home_screen">Starten Sie den Startbildschirm. Bitte warten Sie.</string>
+    <string name="connect_gesture_device">Bitte schließen Sie das Gestengerät an</string>
+    <string name="activate_msg">aktivieren Sie</string>
+    <string name="activated">Aktiviert</string>
+    <string name="not_activated_msg">Nicht aktiviert</string>
+    <string name="input_valid_url">Bitte geben Sie eine gültige URL ein</string>
+    <string name="all_members_cleared">Alle Mitglieder gelöscht</string>
+    <string name="logs_sent">Protokolle gesendet</string>
+    <string name="closing_app_msg">App schließen und neu starten, bitte warten ....</string>
+    <string name="activate_application_error">Anwendungsanforderungsfehler aktivieren!</string>
+    <string name="launch_settings_msg">Einstellungen starten, bitte warten ....</string>
+    <string name="app_exit_msg">Sie sind sicher, dass Sie beenden wollen?</string>
+    <string name="sync_completed">Sync abgeschlossen</string>
+    <string name="no_mask">Ohne Maske</string>
+    <string name="mask_detected">Maske erkannt</string>
+    <string name="mask_not_detected">Maske kann nicht erkannt werden</string>
+    <string name="connect_light_device">Anschließen an ein Lichtgerät</string>
+    <string name="move_center_msg">Bitte bewegen Sie sich in Richtung Mitte</string>
+    <string name="qr_validation_msg">QR-Validierung nicht abgeschlossen!</string>
+    <string name="gesture_launch_msg">Starten des Gestenbildschirms. Bitte warten.</string>
+    <string name="gesture_questions_failed">Fehler beim Abrufen des Bildschirms "Fragen, Schließen der Geste"</string>
+    <string name="gesture_fetch_questions">Fragen holen, bitte warten ....</string>
+    <string name="temperature_normal_msg">Temperatur normal</string>
+    <string name="temperature_high_msg">Temperatur hoch</string>
+    <string name="gesture_msg">Halten Sie Ihre Handfläche auf die Seite des Bildschirms, wo Sie antworten möchten. Wenn Sie von vorne beginnen müssen, halten Sie beide Hände.</string>
+    <string name="mask_enforce_msg">Bitte tragen Sie eine Maske und Wave Left Hand, um von vorne zu beginnen, oder Wave Right Hand, um fortzufahren.</string>
+    <string name="gesture_exit_msg">Bitte wenden Sie sich an Admin</string>
+    <string name="input_ip_address">Bitte geben Sie eine gültige IP-Adresse ein</string>
+    <string name="input_mac_address">Bitte geben Sie eine gültige Mac-Adresse ein</string>
+    <string name="app_restart">App will restart</string>
+    <string name="update_setting_app_restart">Beim Aktualisieren der Einstellungen wird die App neu gestartet</string>
+    <string name="app_restart_msg">App hat ein Problem festgestellt, wird neu gestartet</string>
+    <string name="succeeded">Erfolgreich</string>
+    <string name="contact_supervisor_msg">Bitte wenden Sie sich an Ihren Vorgesetzten, bevor Sie mit den Arbeiten beginnen.</string>
+    <string name="nice_day_msg">Einen schönen Tag noch!</string>
+    <string name="pass">BESTEHEN</string>
+    <string name="out_of">aus</string>
+    <string name="syncing">Synchronisieren</string>
+    <string name="loading">Wird geladen</string>
+    <string name="loading_wait">Laden, bitte warten....</string>
+    <string name="updating">Aktualisierung</string>
+    <string name="updating_wait">Aktualisierung bitte warten ....</string>
+    <string name="member_empty_msg">Die Mitglieds-ID sollte nicht leer sein</string>
+    <string name="accessid_empty_msg">Die Zugangs-ID sollte nicht leer sein</string>
+    <string name="scan_card_msg">Bitte scannen Sie die Karte, um sich anzumelden</string>
+    <string name="enable_liveness">Lebendigkeit aktivieren</string>
+    <string name="image_sync_failed_msg">Die Fotosynchronisierung ist für %d Mitglieder fehlgeschlagen</string>
+    <string name="additional_locale_setting">Sekundärsprache</string>
+    <string name="add_device_message">Wenn Sie das Gerät bereits im Portal SL NO hinzugefügt haben::</string>
+    <string name="language_message">Sowohl die Primär- als auch die Sekundärsprache können nicht identisch sein. Bitte wählen Sie eine andere Sprache.</string>
+    <string name="allow_multilingual">Mehrsprachig zulassen</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">Fragebogen nicht verfügbar, Bildschirm "Geste schließen"</string>
+
+</resources>
