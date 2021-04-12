@@ -570,7 +570,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             return;
         }
         if (gestureMEListener != null && !isMECallback && !waveHandProcessed.get(LEFT_HAND)) {
-            Log.d(TAG, "Right Hand wave");
+            Log.d(TAG, "Left Hand wave");
             isMECallback = true;
             startWaveHandTimer();
             gestureMEListener.onLeftHandWave();
@@ -1015,8 +1015,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             if (currentLanguage.equals(languageDataList.get(languageSelectionIndex).languageCode)) {
                 languageSelectionIndex++;
             }
-            DeviceSettingsController.getInstance().setLanguageToUpdate(languageDataList.get(languageSelectionIndex).languageCode);
-            languageSelectionIndex++;
+            if (languageSelectionIndex < languageDataList.size()) {
+                DeviceSettingsController.getInstance().setLanguageToUpdate(languageDataList.get(languageSelectionIndex).languageCode);
+                languageSelectionIndex++;
+            }
             return true;
         }
         return false;

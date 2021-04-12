@@ -3509,15 +3509,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchGestureFragment() {
-        if (isDestroyed()) return;
-        gestureFragment = new GestureFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("maskStatus", String.valueOf(maskStatus));
-        gestureFragment.setArguments(bundle);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
-        transaction.addToBackStack("GestureFragment");
-        transaction.commitAllowingStateLoss();
+        if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+        try {
+            gestureFragment = new GestureFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("maskStatus", String.valueOf(maskStatus));
+            gestureFragment.setArguments(bundle);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
+            transaction.addToBackStack("GestureFragment");
+            transaction.commitAllowingStateLoss();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in launching Gesture fragment");
+        }
     }
 
     public void resumeFromGesture() {
@@ -3684,6 +3688,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
             GestureController.getInstance().setLanguageUpdated(false);
             if (AppSettings.isMultiLingualEnabled()) {
+                GestureController.getInstance().setLanguageSelectionIndex(0);
                 DeviceSettingsController.getInstance().setLanguageToUpdate(AppSettings.getLanguageType());
                 DeviceSettingsController.getInstance().getSettingsFromDb(
                         DeviceSettingsController.getInstance().getLanguageIdOnCode(AppSettings.getLanguageType()));
@@ -3743,6 +3748,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onLeftHandGesture() {
         runOnUiThread(() -> {
+            if ((relative_main.getVisibility() == View.GONE) ||
+                    (AccessCardController.getInstance().getTapCount() != 0) ||
+                    (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) {
+                GestureController.getInstance().setLanguageSelectionIndex(0);
+                GestureController.getInstance().cancelWaveHandTimer();
+                return;
+            }
+
             if (AppSettings.isMultiLingualEnabled() &&
                     !GestureController.getInstance().isLanguageUpdated()) {
                 if (GestureController.getInstance().updateNextLanguage()) {
@@ -3770,13 +3783,23 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void closeFragment() {
         if (acknowledgementFragment != null) {
-            getFragmentManager().beginTransaction().remove(acknowledgementFragment).commitAllowingStateLoss();
+            if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+            try {
+                getFragmentManager().beginTransaction().remove(acknowledgementFragment).commitAllowingStateLoss();
+            } catch (Exception e) {
+                Log.d(TAG, "Error in closing Acknowledgement fragment");
+            }
         }
     }
 
     private void closeGestureFragment() {
         if (gestureFragment != null) {
-            getFragmentManager().beginTransaction().remove(gestureFragment).commitAllowingStateLoss();
+            if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+            try {
+                getFragmentManager().beginTransaction().remove(gestureFragment).commitAllowingStateLoss();
+            } catch (Exception e) {
+                Log.d(TAG, "Error in closing Gesture fragment");
+            }
         }
     }
 
@@ -3842,17 +3865,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void launchMaskEnforceFragment() {
-        if (isDestroyed()) return;
-        maskEnforceFragment = new MaskEnforceFragment();
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.add(R.id.dynamic_fragment_frame_layout, maskEnforceFragment, "MaskEnforceFragment");
-        transaction.addToBackStack("MaskEnforceFragment");
-        transaction.commitAllowingStateLoss();
+        if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+        try {
+            maskEnforceFragment = new MaskEnforceFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.add(R.id.dynamic_fragment_frame_layout, maskEnforceFragment, "MaskEnforceFragment");
+            transaction.addToBackStack("MaskEnforceFragment");
+            transaction.commitAllowingStateLoss();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in launching mask enforcement fragment");
+        }
     }
 
     private void closeMaskEnforceFragment() {
         if (maskEnforceFragment != null) {
-            getFragmentManager().beginTransaction().remove(maskEnforceFragment).commitAllowingStateLoss();
+            if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+            try {
+                getFragmentManager().beginTransaction().remove(maskEnforceFragment).commitAllowingStateLoss();
+            } catch (Exception e) {
+                Log.e(TAG, "Error in closing mask enforcement fragment");
+            }
         }
     }
 
@@ -3940,6 +3972,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void updateGestureOnLanguageChange() {
         if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
+            if ((relative_main.getVisibility() == View.GONE) ||
+                    (AccessCardController.getInstance().getTapCount() != 0) ||
+                    (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) {
+                GestureController.getInstance().cancelWaveHandTimer();
+                return;
+            }
             if (GestureController.getInstance().isLanguageUpdated()) {
                 GestureController.getInstance().setCallback(true);
                 onGestureDetected();

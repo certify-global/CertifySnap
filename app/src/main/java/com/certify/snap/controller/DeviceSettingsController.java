@@ -216,6 +216,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     public void addLanguageSettingsToDb(int primaryId, DeviceSettingsApi deviceSettingsApi) {
         deviceSettingsApi.deviceSettingsData.primaryId = primaryId;
         deviceSettingsApi.confirmationView.primaryId = primaryId;
+        deviceSettingsApi.identificationSettings.primaryId = primaryId;
         deviceSettingsApi.guideMessages.primaryId = primaryId;
         deviceSettingsApi.printerSettings.primaryId = primaryId;
         deviceSettingsApi.homePageView.primaryId = primaryId;
@@ -225,6 +226,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         DatabaseController.getInstance().insertScanViewSettings(deviceSettingsApi.scanView);
         DatabaseController.getInstance().insertHomePageSettings(deviceSettingsApi.homePageView);
         DatabaseController.getInstance().insertConfirmationViewSettings(deviceSettingsApi.confirmationView);
+        DatabaseController.getInstance().insertIdentificationSettings(deviceSettingsApi.identificationSettings);
         DatabaseController.getInstance().insertPrinterSettings(deviceSettingsApi.printerSettings);
         DatabaseController.getInstance().insertGuideSettings(deviceSettingsApi.guideMessages);
         DatabaseController.getInstance().insertTouchlessSettings(deviceSettingsApi.touchlessInteraction);
@@ -424,6 +426,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         DatabaseController.getInstance().deleteConfirmationSettings();
         DatabaseController.getInstance().deleteGuideSettings();
         DatabaseController.getInstance().deleteHomePageSettings();
+        DatabaseController.getInstance().deleteIdentificationSettingsData();
         DatabaseController.getInstance().deletePrinterSettings();
         DatabaseController.getInstance().deleteScanViewSettings();
         DatabaseController.getInstance().deleteTouchlessSettings();
