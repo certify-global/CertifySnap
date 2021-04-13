@@ -878,8 +878,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private boolean isAnExpectedAnswer(String answer) {
         boolean result = true;
-        if (currentQuestionData != null && currentQuestionData.expectedOutcome != null){
-            if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome.substring(0, 1))) {
+        if (currentQuestionData != null && currentQuestionData.expectedOutcome != null) {
+            if (currentQuestionData.expectedOutcome.equalsIgnoreCase("None")) {
+                //do noop
+            } else if (!answer.equalsIgnoreCase(currentQuestionData.expectedOutcome.substring(0, 1))) {
                 result = false;
             }
         }
