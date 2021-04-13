@@ -459,6 +459,9 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             case "te":
                 languageName = "Telugu";
                 break;
+            case "ja":
+                languageName = "Japanese";
+                break;
         }
         return languageName;
     }
@@ -534,6 +537,15 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.name = "Telugu";
                 languageData.languageCode = "te";
                 languageData.fileCode = "te-rIN";
+                languageData.offline = offlineVal;
+            }
+            break;
+
+            case 9: {
+                languageData.languageId = value;
+                languageData.name = "Japanese";
+                languageData.languageCode = "ja";
+                languageData.fileCode = "ja-rJP";
                 languageData.offline = offlineVal;
             }
             break;

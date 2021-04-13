@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CERTIFYスナップ</string>
+
+    <string name="active_failed">ライセンスのアクティベーションに失敗しました。Certifyに連絡してください。</string>
+    <string name="confirm">確認</string>
+    <string name="cancel">キャンセル</string>
+    <string name="registering_please_wait">登録、お待ちください</string>
+    <string name="login_password">パスワード：</string>
+    <string name="permission_denied">アクセス拒否！</string>
+    <string name="recognize_failed_notice">拒否：％s</string>
+    <string name="recognize_success_notice">パス：％s</string>
+    <string name="low_confidence_level">低い信頼水準に直面する</string>
+    <string name="specific_engine_init_failed">％s + init + failed、+ code + is：％d</string>
+    <string name="camera_error_notice">\n考えられる理由：このデバイスで2台のカメラを同時に開くことは許可されていません</string>
+
+    <string name="living_type_0">番号</string>
+    <string name="living_type_1">はい</string>
+
+    <string name="txt_data_management_title">データ管理</string>
+
+
+    <string name="led_switch">LEDスイッチ：</string>
+
+    <string name="NavigationBar">ナビゲーションバーを表示する：</string>
+
+    <string name="relayinfo">時間を入力してください！</string>
+
+    <string name="toast_guide_permission">手動で許可してください！</string>
+
+    <string name="login">ログイン</string>
+    <string name="logout">ログアウト</string>
+    <string name="welcome">ようこそ</string>
+    <string name="Unrecognized">認識されない</string>
+
+    <string name="toast_rgbir_pwderror">パスワードが正しくありません！</string>
+    <string name="text_notpasstime">非通過時間、管理者に連絡してください！</string>
+    <string name="text_nopermission">許可なし、管理者に連絡してください！</string>
+    <string name="text_expiredtime">賞味期限が過ぎていますので、管理者にご連絡ください！</string>
+    <string name="text_passcodeexpired">パスコードの有効期限が切れています</string>
+    <string name="fahrenheit_symbol">°F</string>
+    <string name="centi">°C</string>
+    <string name="temperature_normal">通常の温度：</string>
+    <string name="temperature_anormaly">高温：</string>
+    <string name="temperature_failresult">温度を取得できませんでした！</string>
+
+    <string name="ExtractCode">ExtractCode：</string>
+    <string name="ProcessCode">ProcessCode：</string>
+    <string name="VISITOR">ビジター</string>
+
+
+    <string name="toast_manage_member_exist">メンバーIDはすでに存在します！</string>
+    <string name="toast_manage_access_exist">アクセスIDはすでに存在します！</string>
+    <string name="SetDate">日付を設定</string>
+    <string name="SetTime">時間を設定する</string>
+    <string name="delete">削除</string>
+    <string name="delete_wait">削除！お待ちください...</string>
+    <string name="Register">登録</string>
+    <string name="register_wait">登録！お待ちください...</string>
+    <string name="Register_success">登録成功！</string>
+    <string name="register_failed">登録に失敗しました！もう一度やり直してください！</string>
+    <string name="update_failed">アップデートに失敗しました！もう一度やり直してください！</string>
+    <string name="deletion_failed">ネットワークの問題が原因です。オンラインでデータを削除することはできません。</string>
+    <string name="Update_success">更新の成功！</string>
+    <string name="Delete_success">成功を削除！</string>
+    <string name="Delete_failed">登録に失敗しました！もう一度やり直してください！</string>
+    <string name="camera_temp">温度</string>
+    <string name="camera_face">温度と顔</string>
+    <string name="thermal_scan">サーマルスキャン</string>
+    <string name="SetTemp">温度設定</string>
+    <string name="upload_logo">ロゴをアップロード</string>
+    <string name="access_password">アクセスパスワード</string>
+    <string name="device_activation_status">オンラインアクティベーションステータス</string>
+    <string name="not_activated"><u> アクティベートされていません</u>  </string>
+    <string name="activate"><u> アクティベート</u>  </string>
+    <string name="endpoint">エンドポイント名</string>
+    <string name="app_version">バージョン</string>
+    <string name="tv_thermal_setting">ホームビュー設定</string>
+    <string name="welcome_thermal">ホーム画面のテキスト</string>
+    <string name="enter_title">大きなテキストを入力</string>
+    <string name="enter_subtitle">小さいテキストを入力してください</string>
+    <string name="display_temperature">画面上のユーザーに温度の詳細を表示する</string>
+    <string name="tv_scan_setting">スキャンビュー設定</string>
+    <string name="capture_images">温度がしきい値を超えるユーザーの画像をキャプチャする</string>
+    <string name="Capture_all">すべてのユーザーの画像をキャプチャする</string>
+    <string name="enable_sound">常温で音を出す</string>
+    <string name="enable_sound_high">しきい値を超える温度でサウンドを有効にする</string>
+    <string name="enable_qr_sound_valid">有効なqrコードのサウンドを有効にする</string>
+    <string name="enable_qr_sound_invalid">無効なqrコードのサウンドを有効にする</string>
+    <string name="enable_light">常温でライトを有効にする</string>
+    <string name="enable_light_high">しきい値を超える温度でライトを有効にする</string>
+    <string name="enable_printer">印刷を有効にする</string>
+    <string name="print_all_scan">すべてのスキャンで印刷</string>
+    <string name="print_access_card">アクセスカードユーザー向けの印刷</string>
+    <string name="print_qr_code_users">QRコードユーザー向けに印刷</string>
+    <string name="print_wave_users">Waveユーザー向けの印刷</string>
+    <string name="print_high_temperature">高温用に印刷</string>
+    <string name="enable_mask">マスク検出を有効にする</string>
+    <string name="enable_facial">顔認識を有効にする</string>
+    <string name="screen_delay">画面表示時間（秒）</string>s
+    <string name="tv_confirmation_setting">確認ビュー設定</string>
+    <string name="member_management_setting">メンバー管理</string>
+    <string name="audio_visual_setting">オーディオとビジュアルの設定</string>
+    <string name="printer_setting">プリンター設定</string>
+    <string name="confirmation_view">確認ビュー</string>
+    <string name="enable_temperature">有効にする</string>
+    <string name="confirmation_text_below">温度がしきい値を下回っていることの確認</string>
+    <string name="confirmation_text_above">しきい値を超える温度の確認</string>
+    <string name="scan_view">スキャンビュー</string>
+    <string name="audio_visual_view">オーディオとビジュアル</string>
+    <string name="ble_devices_view">BLEデバイス</string>
+    <string name="thermal_view">ホームビュー</string>
+    <string name="enter_title_main">メインテキストを入力してください</string>
+    <string name="enter_subtitle_sub">サブテキストを入力</string>
+    <string name="fahrenheit">華氏</string>
+    <string name="celcius">摂氏</string>
+    <string name="save">セーブ</string>
+    <string name="temperature_threshold">温度しきい値の設定</string>
+    <string name="temperature">温度</string>
+    <string name="temperature_calibration">温度校正</string>
+    <string name="app_serial">シリアル番号：</string>
+    <string name="tv_guide_setting">ガイド設定</string>
+    <string name="text_value1">画面の中央に顔を合わせてください。</string>
+    <string name="text_value2">近づいて顔の中央に移動します。</string>
+    <string name="text_value3">スキャンの準備をして、お待ちください。</string>
+    <string name="text_value4">近づいてください</string>
+    <string name="snack_msg">更新された設定の取得</string>
+    <string name="invalid_pwd">無効なパスワード</string>
+    <string name="allow_low">低温スキャンを許可する</string>
+    <string name="save_success">保存された設定</string>
+    <string name="offline_msg">オフラインモード</string>
+    <string name="online_msg">オンラインファッション</string>
+    <string name="identification_setting">識別設定</string>
+    <string name="enable_qr">QRCodeスキャナーを有効にする</string>
+    <string name="tv_qr_scan">QRコードをスキャンする</string>
+    <string name="tv_qr_bar_scan">QR /バーコードをスキャンする</string>
+    <string name="tv_qr_validating">QRコードの検証</string>
+    <string name="tv_bar_validating">バーコードの検証</string>
+    <string name="enable_rfid">RFIDスキャナーを有効にする</string>
+    <string name="enable_anonymous">匿名のQRコード/バーコードを有効にする</string>
+    <string name="enable_skip_button">スキップコードを有効にする（画面をタッチする必要があります）</string>
+    <string name="rfid_card_error">エラー！カードが認識できない</string>
+    <string name="device_not_register">certify.meアカウントに登録されていません。デバイスがインターネットに接続されており、デバイスが[デバイス]の下のクラウドアカウントに追加されていることを確認してください。\n
+   \nこのデバイスをオフラインのままにしておきたい場合は、左上隅をタップしてこのアプリの設定にログインし、設定でオフラインに設定します。</string>
+    <string name="invalid_qr">無効なQRコード</string>
+    <string name="timeout">RFIDおよびCODEスキャンの画面タイムアウト（秒）</string>
+    <string name="qr_button_heading">ボタンに表示するテキスト</string>
+    <string name="qr_button_text">QRコードをお持ちでない場合はこちらを押してください</string>
+    <string name="device_inactive">certify.meアカウントでアクティブではありません。デバイスがインターネットに接続されており、デバイスが[デバイス]の下のクラウドアカウントでアクティブであることを確認してください。\n
+    \nこのデバイスをオフラインのままにしておきたい場合は、左上隅をタップしてこのアプリの設定にログインし、設定でオフラインに設定します。</string>
+    <string name="scan_mode">スキャンモード</string>
+    <string name="scan_mode_easy">簡単</string>
+    <string name="scan_mode_strict">厳格（推奨）</string>
+
+    <string name="access_control">アクセス制御</string>
+    <string name="access_control_parameter">秒</string>
+    <string name="enable_access_control">ウィーガンド出力を有効にする（IDが必要）</string>
+    <string name="access_control_card_format">メッセージ形式</string>
+    <string name="access_control_enroll">登録する</string>
+    <string name="access_granted">サーマルスキャンを待つ</string>
+    <string name="access_denied">アクセス拒否！</string>
+    <string name="automatic_door_access">リレーを有効にする</string>
+    <string name="allow_anonymous">匿名を許可する</string>
+    <string name="relay_timeout">リレータイムアウト：</string>
+    <string name="normal_mode"><font size="16"> ノーマルモード</font>  <font size="14"> （スキャンごとにアクセスを操作します）</font> </string>
+    <string name="reverse_mode"><font size="16"> リバースモード</font>  <font size="14"> （高温スキャンでのみアクセスを操作してください）</font> </string>
+    <string name="stop_relay">高温スキャンでアクセスを停止する</string>
+
+
+    <string name="tv_ok">OK</string>
+    <string name="setting_message">このデバイスは、クラウドアカウントでアクティブ化されます。ローカルでの設定への変更は、次回の再起動または同期時に上書きされます。オンラインで適切な設定を変更し、デバイスの設定を同期してください。</string>
+    <string name="setting_note">注：ローカルで変更して、オンライン設定を介してデバイスに適用する設定を確定できます。</string>
+    <string name="time_and_attendance">時間と出勤</string>
+    <string name="both">どちらも</string>
+    <string name="none">無し</string>
+    <string name="id_only">IDのみ</string>
+    <string name="face_only">顔のみ</string>
+    <string name="id_face">IDフェイス</string>
+    <string name="id_or_face">IDまたは顔</string>
+    <string name="bit_26">26ビット</string>
+    <string name="bit_34">34ビット</string>
+    <string name="bit_48">48ビット</string>
+
+
+
+    <string name="id">ユーザーID：</string>
+    <string name="facial_threshold">顔のしきい値を設定する</string>
+    <string name="first_name">ファーストネーム</string>
+    <string name="last_name">苗字</string>
+    <string name="email_address">電子メールアドレス</string>
+    <string name="phone_number">電話番号</string>
+    <string name="member_id">メンバーID</string>
+    <string name="access_id">アクセスID</string>
+    <string name="display">「確認画面に画像と名前を表示する」</string>
+    <string name="update_face_not_recognized">アップデートに失敗しました！顔が認識できない</string>
+    <string name="register_face_not_recognized">登録に失敗しました！顔が認識できない</string>
+
+
+    <string name="pref_key_camera_live_viewport" translatable="false">clv</string>
+    <string name="pref_key_rear_camera_preview_size" translatable="false">rcpvs</string>
+    <string name="pref_key_front_camera_preview_size" translatable="false">fcpvs</string>
+    <string name="pref_key_rear_camera_picture_size" translatable="false">rcpts</string>
+    <string name="pref_key_front_camera_picture_size" translatable="false">fcpts</string>
+    <string name="temperature_compensation">温度補償</string>
+    <string name="tv_compensation">例：\u00201.5 \u0020または\u0020 -0.5</string>
+
+    <string name="device_name">装置名</string>
+    <string name="keep_device_online">デバイスをオンラインに保つ</string>
+    <string name="device_settings">デバイスの設定</string>
+    <string name="device_password">デバイスアクセスパスワード</string>
+    <string name="online_device_activation_status">デバイスのオンラインアクティベーションステータス</string>
+    <string name="device_mode">デバイスモード</string>
+    <string name="enable_home_screen">ホーム画面を有効にする</string>
+    <string name="enable_text_only_screen">テキストのみモードを有効にする</string>
+    <string name="enable_text_only_hint">全画面テキストを入力</string>
+    <string name="connectivity_status">接続ステータスの表示</string>
+    <string name="connectivity_status_title">接続ステータスと情報</string>
+    <string name="connectivity_status_text">に接続されています：</string>
+    <string name="mac">マック</string>
+    <string name="ip_address">IPアドレス</string>
+    <string name="netmask">ネットマスク</string>
+    <string name="gateway">ゲートウェイ</string>
+    <string name="dns1">DNS1</string>
+    <string name="dns2">DNS2</string>
+    <string name="ethernet_ip_mode">イーサネットIPモード</string>
+    <string name="ssid">SSID：</string>
+    <string name="device_reader">デバイスリーダー：</string>
+    <string name="internet_connectivity">インターネット接続：</string>
+    <string name="cloud_connectivity">CERTIFYクラウド接続：</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ethernet">イーサネット</string>
+    <string name="mobile">セルラー</string>
+    <string name="data_management">データ管理</string>
+    <string name="do_not_sync">オンラインメンバーデータをデバイスに同期する</string>
+    <string name="enable_home_view_msg">このオプションを設定するには、ホーム画面設定を有効にしてください。</string>
+    <string name="confirm_title_below">良い一日を！</string>
+    <string name="analyzing_face">顔の分析</string>
+    <string name="allow_scan_proximity">近接した場所でのみスキャンを許可する</string>
+    <string name="step_closer">一歩近づいてください</string>
+    <string name="face_center">あなたの顔を中央に置いてください</string>
+    <string name="clear_cache_app">クリアデータとキャッシュ</string>
+    <string name="local_data">ローカルデータをリセットする</string>
+    <string name="clear_members">メンバーをリセット</string>
+    <string name="clear_members_button">すべてのメンバーをクリアする</string>
+    <string name="add_device">ログインしてデバイスを登録します</string>
+    <string name="not_configure">このデバイスはオンラインで動作するように構成されていません。</string>
+    <string name="cloud">すでにクラウドアカウントをお持ちの場合は、</string>
+    <string name="activation_again">アクティベーションを再試行してください</string>
+    <string name="skip">今はスキップ</string>
+    <string name="offline_mode">オフラインモード</string>
+    <string name="login_account">あなたのアカウントにログイン</string>
+    <string name="enter_email">Eメール</string>
+    <string name="enter_password">パスワード</string>
+    <string name="login_note">注：ユーザーはアカウントの管理者権限を持っている必要があります。</string>
+    <string name="add_device_info">デバイスを追加</string>
+    <string name="sno">"シリアルナンバー "</string>
+    <string name="imei">IMEI番号</string>
+    <string name="active">アクティブ</string>
+    <string name="in_active">非活性</string>
+    <string name="status">状態</string>
+    <string name="screen_timeout_msg">スキャンの画面タイムアウトを5以上に入力してください</string>
+    <string name="record">記録管理</string>
+    <string name="register_device">デバイスの登録</string>
+
+
+    <string name="ble_startfind">デバイスの検索...</string>
+    <string name="ble_canceldfind">検索をキャンセルしました</string>
+    <string name="ble_not_find">Bluetoothデバイスが見つかりません</string>
+    <string name="ble_canceled">Bluetoothサービスをオンにする必要があります</string>
+    <string name="ble_selected">Bluetooth接続デバイスをセットアップしました</string>
+    <string name="ble_connect_success">接続成功</string>
+    <string name="ble_disconnected">デバイスから切断されました</string>
+    <string name="unknown_service">不明なサービス</string>
+    <string name="unknown_characteristic">unknown_characteristic</string>
+    <string name="permission_request">このアプリを実行するには許可が必要です</string>
+    <string name="ble_connect_status">接続されたBLEライト：</string>
+    <string name="ble_light_test">テスト：</string>
+    <string name="ble_connect"><u> 接続する</u>  </string>
+
+    <string name="bluetooth_printer_connect_status">接続されたプリンター：</string>
+
+
+    <string name="centigrade" translatable="false"> ℃</string>
+    <string name="Fahrenheit_temp" translatable="false"> ℉</string>
+    <string name="endpoint_api">Api</string>
+    <string name="protocol_text">https：//</string>
+    <string name="hostname">.certify.me</string>
+    <string name="scanner_time_msg">スキャナーは初期化中です。 待機するか、OK をクリックして、初期化中もスキャナーを引き続き使用できます… \n残り時間：％d分</string>
+    <string name="scanner_remaining_time_msg">スキャナーのキャリブレーションが進行中です… 残り時間：％d分</string>
+    <string name="audio_alerts">オーディオアラート</string>
+    <string name="visual_alerts">ビジュアルアラート</string>
+    <string name="audio_none">無し</string>
+    <string name="light_on">ライトオン</string>
+    <string name="light_off">ライトオフ</string>
+
+
+    <string name="printer_settings"><u> 設定</u>  </string>
+    <string name="no_network_device">ネットプリンターが見つかりません</string>
+    <string name="setting_printer">プリンター設定</string>
+    <string name="printer_title">プリンターに接続する</string>
+    <string name="printer_text">宛先プリンターを選択します</string>
+    <string name="netPrinterListTitle_label">ネットプリンター</string>
+    <string name="error_message_none">成功</string>
+    <string name="printer_model_title">PrinterModel</string>
+    <string name="printer_model_value">プリンタモデルを選択します</string>
+    <string name="port_title">ポート</string>
+    <string name="port_value">ポートを選択します</string>
+    <string name="address_title">IPアドレス</string>
+    <string name="address_value">IPアドレスの数を設定します</string>
+    <string name="mac_address_title">Macアドレス</string>
+    <string name="mac_address_value">MACアドレスの数を設定します</string>
+    <string name="paper_size_title">用紙サイズ</string>
+    <string name="paper_size_value">用紙サイズを選択してください</string>
+    <string name="orientation_title">印刷方向</string>
+    <string name="orientation_value">印刷方向を選択します</string>
+
+    <string-array name="orientation">
+        <item>ポートレート</item>
+        <item>風景</item>
+    </string-array>
+    <string-array name="orientation_values">
+        <item>肖像画</item>
+        <item>景観</item>
+    </string-array>
+
+    <string name="number_of_copies_title">部数</string>
+    <string name="number_of_copies_value">部数を設定する</string>
+    <string name="scale_value_title">スケール値</string>
+    <string name="scale_value_value">スケール値を選択します</string>
+
+
+    <string name="fit_to_page_title">ページに合わせる</string>
+    <string name="fit_to_page_value">ページに合わせるかどうかを選択します</string>
+
+
+    <string-array name="fitToPage">
+        <item>元の</item>
+        <item>ページに合わせる</item>
+        <item>カスタム</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+    <string-array name="fit_to_page_values">
+        <item>元の</item>
+        <item>ページに合わせる</item>
+        <item>規模</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+
+
+    <string name="print_quality_title">印刷品質</string>
+    <string name="print_quality_value">品質を選択してください</string>
+
+
+    <string-array name="yes_no_entries">
+        <item>はい</item>
+        <item>番号</item>
+    </string-array>
+    <string-array name="yes_no_value">
+        <item>true</item>
+        <item>false</item>
+    </string-array>
+
+
+    <string name="is_end_cut_title">エンドカット</string>
+    <string name="is_end_cut_value">エンドカットするかどうか</string>
+    <string name="is_auto_cut_title">自動カット</string>
+    <string name="is_auto_cut_value">自動カットするかどうか</string>
+    <string name="ip_mac_title">IP /MACアドレス</string>
+    <string name="ip_mac_value">IP /MACアドレスを設定する</string>
+    <string name="cut_settings_value">カット設定を設定する</string>
+    <string name="cut_settings_title">カット設定</string>
+
+    <string name="no_bluetooth_device">Bluetoothプリンターが見つかりません</string>
+    <string name="button_refresh">更新</string>
+    <string name="button_settings">接続する</string>
+
+
+    <string-array name="print_quality_array">
+        <item>低解像度</item>
+        <item>正常</item>
+        <item>ダブルスピード</item>
+        <item>高解像度</item>
+    </string-array>
+    <string-array name="print_quality_value">
+        <item>低解像度</item>
+        <item>正常</item>
+        <item>ダブルスピード</item>
+        <item>高解像度</item>
+    </string-array>
+
+
+    <string name="search_printer">検索中…</string>
+    <string name="button_cancel">キャンセル</string>
+    <string name="button_ok">OK</string>
+    <string name="battery_full">フル</string>
+    <string name="battery_middle">中間</string>
+    <string name="battery_weak">弱い</string>
+    <string name="battery_charge">充電が必要</string>
+    <string name="ac_adapter">ACアダプター</string>
+    <string name="close_connect">閉店…</string>
+    <string name="bluetooth_printer_list_title_label">Bluetoothプリンター</string>
+
+
+    <string name="half_cut_title">ハーフカット（PTのみ）</string>
+    <string name="half_cut_value">ハーフカットするかしないか</string>
+    <string name="special_tape_title">特殊テープ紙（PTのみ）</string>
+    <string name="special_tape_value">特殊テープ紙です</string>
+    <string name="timeout_title">タイムアウト</string>
+    <string name="timeout_text">タイムアウトを設定する</string>
+    <string name="processTimeout_value">タイムアウト期間</string>
+    <string name="processTimeout_title">全体的なタイムアウト時間を設定する</string>
+    <string name="sendTimeout_value">送信待ち時間を設定する</string>
+    <string name="sendTimeout_title">送信待ち時間</string>
+    <string name="receiveTimeout_title">受付待ち時間</string>
+    <string name="receiveTimeout_value">受付待ち時間を設定する</string>
+    <string name="connectionTimeout_title">接続待ち時間</string>
+    <string name="connectionTimeout_value">接続待機時間を設定する</string>
+    <string name="close_wait_time_value">タイムアウト期間を閉じる</string>
+    <string name="close_wait_time_title">待ち時間を設定する</string>
+    <string name="work_path_value">作業パスを選択します</string>
+    <string name="work_path_title">Work Folder</string>
+    <string name="progress_dialog_message_preparing_connection">接続の準備…</string>
+    <string name="progress_dialog_message_createData">データの作成</string>
+    <string name="progress_dialog_message_sendingData">印刷バッジ…</string>
+    <string name="progress_dialog_message_sendingPrintingData">印刷バッジ…</string>
+    <string name="progress_dialog_message_startPrint">印刷バッジ</string>
+    <string name="progress_dialog_message_dataSent">データが送信されました</string>
+    <string name="progress_dialog_message_printed">印刷プロセスが完了しました</string>
+    <string name="progress_dialog_message_close_connection">接続を閉じる</string>
+    <string name="progress_dialog_message_set_paper">用紙をセットしてください</string>
+    <string name="progress_dialog_message_cooling_start">プリンターの冷却開始</string>
+    <string name="progress_dialog_message_cooling_end">プリンター冷却終了</string>
+    <string name="progress_dialog_message_waiting_peel">ラベルがはがれるのを待つ</string>
+    <string name="progress_dialog_message_sending_template">ファイル転送</string>
+    <string name="progress_dialog_message_getting_bluetooth_setting">Bluetooth設定の取得</string>
+    <string name="progress_dialog_message_setting_bluetooth_setting">Bluetooth設定の転送</string>
+    <string name="progress_dialog_message_removing_template">テンプレートの削除</string>
+    <string name="progress_dialog_message_getting_template">テンプレートリストの取得</string>
+    <string name="cancel_printer_msg">キャンセル中です、お待ちください</string>
+    <string name="error_message_weong_os">AndroidOSはサポートされていません</string>
+    <string name="error_message_no_usb">USBデバイスが見つかりません</string>
+    <string name="progress_dialog_message_communication_start">コミュニケーションを開始…</string>
+    <string name="progress_dialog_message_transfer_start">転送開始…</string>
+    <string name="text_ip_address">住所：+%1$s</string>
+    <string name="text_copied">コピー：+%1$s</string>
+    <string name="pair_printer_message">プリンタのペアリングを解除して、もう一度ペアリングしてください</string>
+
+    <string-array name="work_path_entries">
+        <item>アプリ内フォルダー</item>
+        <item>外部フォルダ</item>
+    </string-array>
+
+    //Toshiba Printer
+    <string name="msg_Ok">はい</string>
+    <string name="msg_No">番号</string>
+    <string name="bdAddrNotSet">BDアドレスが選択されていません。</string>
+    <string name="ipOrPortNoNotSet">IPアドレスまたはポート番号が選択されていません。</string>
+    <string name="fileNameNotSet">ファイル名が選択されていません。</string>
+    <string name="outputMethodNotSelected">出力方法が選択されていません</string>
+    <string name="msg_CopyPrinterConfigFile">プリンター構成ファイルのコピーに失敗しました。</string>
+    <string name="wait">お待ちください。</string>
+    <string name="msg_success">成功</string>
+    <string name="msg_PortClose">ポートクローズ</string>
+    <string name="msg_OpenPorterror">オープンポートエラー</string>
+    <string name="msg_WritePortError">書き込みポートエラー</string>
+    <string name="msg_RetryError">RetryError</string>
+    <string name="msg_GetStatuscallError">GetStatus呼び出しエラー</string>
+    <string name="msg_GetStatus">ステータスを取得</string>
+    <string name="msg_result">結果</string>
+    <string name="error">エラー</string>
+    <string name="runPrint">印刷</string>
+    <string name="noResponseFromPrinter">プリンターからの応答がありません。処理を続行しますか？</string>
+    <string name="writeFailed">プリンターへの書き込みに失敗しました。処理を続行しますか？</string>
+    <string name="paperEnd">ラベルの終わり。プロセスを続行しますか？</string>
+    <string name="issueEndAndpaperEnd">問題を終了し、ラベルを終了します</string>
+    <string name="msg_executePrintError">印刷エラーの実行</string>
+    <string name="processComplete">プロセスの完了</string>
+    <string name="productName">名前</string>
+    <string name="code">コード</string>
+    <string name="print">印刷</string>
+    <string name="noOfPrints">NoOfPrint</string>
+    <string name="msg_PortCloseErrorcode">ポートクローズエラーコード</string>
+    <string name="msg_PortCloseSuccess">ポートクローズの成功</string>
+    <string name="statusReception">OnStatusレセプション</string>
+    <string name="dataName">名前データ</string>
+    <string name="bottom_text">選択するには、\n手でライトをブロックしてください\n\n間違えましたか？ \n戻るには両方のライトをブロックします</string>
+    <string name="touchless_interaction_setting">タッチレスインタラクション</string>
+    <string name="touchless_setting">タッチレスインタラクション設定</string>
+    <string name="enable_acknowledge">確認画面を有効にする</string>
+    <string name="enter_full_screen">全画面テキストを入力</string>
+    <string name="tv_result_bar">結果バーを表示する</string>
+    <string name="tv_text_display">表示するテキスト</string>
+    <string name="tv_temp_text_normal">正常</string>
+    <string name="tv_temp_text_high">高い</string>
+    <string name="enable_logging">ロギングモードを有効にする</string>
+    <string name="capture_logs">ログをキャプチャする</string>
+    <string name="send_logs">ログを送信する</string>
+    <string name="wave_instructions">ウェーブインジケーターの指示を入力します</string>
+    <string name="mask_enforce_instructions">マスク施行テキストを入力してください</string>
+
+    <string name="wave_yes">&lt;はい</string>
+    <string name="wave_no">いいえ&gt;</string>
+    <string name="scan_type">スキャンの種類</string>
+    <string name="scan_type_quick">クイック</string>
+    <string name="scan_type_standard">標準</string>
+
+    <string name="enter_text1">Text1</string>
+    <string name="enter_text2">Text2</string>
+    <string name="enter_text3">Text3</string>
+    <string name="enter_text4">Text4</string>
+    <string name="enable_guide">ガイドを有効にする</string>
+    <string name="enable_temp_scan">温度スキャンを有効にする</string>
+    <string name="enable_wiegand_passthrough">ウィーガンドパススルーを有効にする</string>
+    <string name="log_offline_data">オフラインモードでデータをログに記録する</string>
+
+    <string name="wear_a_mask">「マスクを着用して左手を振って最初からやり直すか、右手を振って続行してください」</string>
+    <string name="access_control_granted">アクセスが許可されました</string>
+    <string name="access_control_denied">アクセスが拒否されました！</string>
+    <string name="gesture_exit_title">否定的な結果で終了</string>
+    <string name="gesture_exit_default">管理者に連絡してください</string>
+    <string name="gesture_exit_hint">否定的な結果の終了時に表示するメッセージ</string>
+    <string name="gesture_timeout_msg">次の質問に進むには、手を下に動かしてください</string>
+    <string name="listening">聞いている...</string>
+
+
+    <string name="failed_member">失敗したメンバー：</string>
+    <string name="member">メンバー：</string>
+    <string name="certify_snapXt">CERTIFY SnapXT</string>
+    <string name="tv_record">記録</string>
+    <string name="member_delete_msg">メンバーを削除しますか？</string>
+    <string name="pls_input_name">名前またはユーザーIDを入力してください</string>
+    <string name="unique_id">一意のID</string>
+    <string name="update">更新</string>
+    <string name="device_id">デバイスID</string>
+    <string name="uuid">uuid</string>
+    <string name="popup_register">登録</string>
+    <string name="capture">キャプチャー</string>
+    <string name="use_photo">写真を使用する</string>
+    <string name="update_dialog">更新</string>
+    <string name="user_id">ユーザーID</string>
+    <string name="member_text">メンバー</string>
+
+
+    <string name="select_printer">プリンタを選択</string>
+    <string name="title_printer">プリンタのIPアドレスとMacアドレスを入力してください</string>
+    <string name="add_button">追加</string>
+    <string name="search_button">探す</string>
+    <string name="wifi_bluetooth_printer">Wifi /Bluetoothプリンター</string>
+    <string name="print_button">印刷</string>
+    <string name="usb_printer">USBプリンター</string>
+    <string name="printing_option">印刷オプション</string>
+    <string name="label_option">ラベルオプション</string>
+    <string name="print_face">印刷面</string>
+    <string name="print_name">印刷名（識別されている場合は空白）</string>
+    <string name="print_text">不明な印刷テキストの場合</string>
+    <string name="print_normal_temp">常温値を印刷する</string>
+    <string name="print_high_temp">高温値を印刷する</string>
+    <string name="print_indicator_qr">QRコードユーザー向けの印刷インジケーター</string>
+    <string name="print_wave_ans">波の答えを印刷する</string>
+    <string name="mac_address_hint">Macアドレス</string>
+
+
+    <string name="local">地元</string>
+    <string name="enable_pro_setting">プロ設定を有効にする</string>
+    <string name="led_brightness">LEDの明るさ：</string>
+    <string name="enable_local_server">ローカルサーバーを有効にする：</string>
+
+    <string name="serial_number">シリアルナンバー：</string>
+    <string name="imei_number">IMEI番号：</string>
+    <string name="close_button">閉じる</string>
+    <string name="save_button">セーブ</string>
+    <string name="locale_setting">言語</string>
+    <string name="english">英語</string>
+    <string name="spanish">スペイン語（Español）</string>
+
+
+    <string name="settings">設定</string>
+    <string name="update_database">データベースを更新する</string>
+    <string name="member_register">会員登録</string>
+    <string name="parameter_settings">パラメータ設定</string>
+    <string name="led_settings">LED設定</string>
+    <string name="activate_card">カードを有効にする</string>
+
+    <string name="default_rect">デフォルトの 長方形：長方形（23,32-26,38）</string>
+    <string name="current_rect">現在の 長方形：長方形（23,32-26,38）</string>
+    <string name="format_rect">フォーマット：rect（left、top-right、bottom）
+        \n熱画像の実際の座標：
+        \nx軸はy軸の反対です（上、左下、右）」</string>
+    <string name="rect_left">左に曲がる（上）：</string>
+    <string name="rect_top">レクトップ（左）：</string>
+    <string name="rect_right">右向き（下）：</string>
+    <string name="rect_bottom">右下（右）：</string>
+    <string name="cancel_dialog">キャンセル</string>
+    <string name="confirm_dialog">確認</string>
+
+
+    <string name="distance">距離：</string>
+    <string name="num_50">50</string>
+    <string name="calibration">較正</string>
+    <string name="get_temp">温度を取得する</string>
+    <string name="calibration_text">ヒント：\n\nまず、顔とデバイスの間の距離を50 cm /約2フィートに保ち、キャリブレーションボタンをクリックしてキャリブレーションします。
+        \nキャリブレーションが完了するまで、キャリブレーションプロセス中に顔を動かさないでください。</string>
+    <string name="enter_default_text">デフォルト名のテキストを入力</string>
+    <string name="bar_bottom_text">デフォルトの下部バーテキストを入力</string>
+    <string name="normal_pass_scan">デフォルトの結果印刷テキスト（通常のパススキャン）</string>
+    <string name="temp_above_threshold">しきい値を超える表示温度</string>
+    <string name="ir_text">QRコードをお持ちでない場合はこちらを押してください</string>
+    <string name="ir_ques_text">3つの質問すべてに対する答えが「いいえ」の場合は、デバイスの下部にあるバッジをタップしてサーマルスキャンを実行してください。</string>
+    <string name="start">開始</string>
+    <string name="rect1">rect1</string>
+    <string name="rect2">rect2</string>
+    <string name="rect3">rect3</string>
+    <string name="all_rect">allRect</string>
+    <string name="select_date">日付を選択してください</string>
+    <string name="select_date_range">エクスポートされたデータの日付範囲を選択してください。エクスポートされたファイルの場所は/sdcard /offset /record /です。</string>
+    <string name="start_time">開始時間（年/月）：</string>
+    <string name="end_time">終了時間（年/月）：</string>
+    <string name="set_temp_text">表示用の温度しきい値を設定します</string>
+    <string name="enter_password_text">パスワードを入力する</string>
+    <string name="enable_voice_recognition">音声認識を有効にする</string>
+    <string name="enable_hand_gesture">ハンドジェスチャを有効にする</string>
+    <string name="enable_wave">Waveを有効にする</string>
+    <string name="wave_options">ウェーブオプション</string>
+    <string name="enable_ques_ans">質問と回答を有効にする</string>
+    <string name="enable_mask_enforce">マスクエンフォースメントを有効にする（マスクが検出されない応答のプロンプト）</string>
+    <string name="show_wave_image">波の画像を表示</string>
+    <string name="show_wave_ques">ウェーブ質問の進行状況ビューバーを表示する</string>
+    <string name="screened">上映</string>
+    <string name="thermal_scan_text">サーマルスキャン</string>
+    <string name="anonymous_text">匿名</string>
+    <string name="unrecognized">認識されない</string>
+    <string name="valid_access">有効なアクセスオプション（匿名およびウィーガンドパススルーには適用されません）</string>
+    <string name="password_empty_msg">パスワードは空にしないでください</string>
+    <string name="password_invalid_msg">パスワードが無効です。再試行してください</string>
+    <string name="serial_num">シリアル番号：</string>
+    <string name="online">オンライン</string>
+    <string name="offline">オフライン</string>
+    <string name="password_length_msg">パスワードは6桁以上である必要があります</string>
+    <string name="launch_home_screen">ホーム画面を起動します、お待ちください...。</string>
+    <string name="connect_gesture_device">ジェスチャーデバイスを接続してください</string>
+    <string name="activate_msg">アクティベート</string>
+    <string name="activated">有効化</string>
+    <string name="not_activated_msg">アクティベートされていません</string>
+    <string name="input_valid_url">有効なURLを入力してください</string>
+    <string name="all_members_cleared">すべてのメンバーがクリア</string>
+    <string name="logs_sent">送信されたログ</string>
+    <string name="closing_app_msg">アプリを閉じて再起動します。しばらくお待ちください。</string>
+    <string name="activate_application_error">アプリケーションリクエストエラーをアクティブ化してください！</string>
+    <string name="launch_settings_msg">設定を起動します。しばらくお待ちください。</string>
+    <string name="app_exit_msg">終了してよろしいですか？</string>
+    <string name="sync_completed">同期が完了しました</string>
+    <string name="no_mask">マスクなし</string>
+    <string name="mask_detected">マスクが検出されました</string>
+    <string name="mask_not_detected">マスクを検出できません</string>
+    <string name="connect_light_device">ライトデバイスへの接続</string>
+    <string name="move_center_msg">中心に向かって移動してください</string>
+    <string name="qr_validation_msg">QR検証が完了していません！</string>
+    <string name="gesture_launch_msg">ジェスチャー画面を起動します。しばらくお待ちください。</string>
+    <string name="gesture_questions_failed">質問の取得に失敗しました、ジェスチャー画面を閉じます</string>
+    <string name="gesture_fetch_questions">質問を取得しています、お待ちください...。</string>
+    <string name="temperature_normal_msg">気温正常</string>
+    <string name="temperature_high_msg">高温</string>
+    <string name="gesture_msg">答えを示す画面の横に手のひらを置きます。最初からやり直す必要がある場合は、両手を握ってください。</string>
+    <string name="mask_enforce_msg">マスクと左手を振って最初からやり直すか、右手を振って続行してください。</string>
+    <string name="gesture_exit_msg">管理者に連絡してください</string>
+    <string name="input_ip_address">有効なIPアドレスを入力してください</string>
+    <string name="input_mac_address">有効なMacアドレスを入力してください</string>
+    <string name="app_restart">アプリが再起動します</string>
+    <string name="update_setting_app_restart">設定を更新すると、アプリが再起動します</string>
+    <string name="app_restart_msg">アプリで問題が発生しました。再起動します</string>
+    <string name="succeeded">成功</string>
+    <string name="contact_supervisor_msg">作業を開始する前に、上司に連絡してください。</string>
+    <string name="nice_day_msg">良い一日を！</string>
+    <string name="pass">パス</string>
+    <string name="out_of">から</string>
+    <string name="syncing">同期</string>
+    <string name="loading">読み込み中</string>
+    <string name="loading_wait">読み込み中。。。待って下さい....</string>
+    <string name="updating">更新</string>
+    <string name="updating_wait">更新をお待ちください...</string>
+    <string name="member_empty_msg">メンバーIDは空であってはなりません</string>
+    <string name="accessid_empty_msg">アクセスIDは空であってはなりません</string>
+    <string name="scan_card_msg">カードをスキャンして登録してください</string>
+    <string name="enable_liveness">活気を有効にする</string>
+    <string name="image_sync_failed_msg">写真の同期に失敗しました %d メンバー</string>
+    <string name="additional_locale_setting">第二言語</string>
+    <string name="add_device_message">ポータルSLNOにデバイスをすでに追加している場合：</string>
+    <string name="language_message">一次言語と二次言語の両方を同じにすることはできません。別の言語を選択してください。</string>
+    <string name="allow_multilingual">多言語を許可する</string>
+    <string name="update_language_msg">Updating to %s language, Please wait....</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
+    <string name="gesture_questions_not_available">アンケートはご利用いただけません、ジェスチャー画面を閉じる</string>
+</resources>
