@@ -1,13 +1,9 @@
 package com.certify.snap.fragment;
 
 import android.app.Activity;
-import android.gesture.Gesture;
+import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
-import android.app.Fragment;
-
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +38,7 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
         this.view = view;
 
         initView();
+        GestureController.getInstance().startWaveHandTimer();
         return view;
     }
 

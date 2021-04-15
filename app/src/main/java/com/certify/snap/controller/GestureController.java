@@ -961,7 +961,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         waveHandProcessed.put(BOTH_HANDS, false);
     }
 
-    private void startWaveHandTimer() {
+    public void startWaveHandTimer() {
         if (waveHandTimer != null) {
             waveHandTimer.cancel();
             waveHandTimer = null;

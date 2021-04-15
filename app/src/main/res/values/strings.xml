@@ -409,7 +409,7 @@
     <string name="battery_weak">Weak</string>
     <string name="battery_charge">Need charging</string>
     <string name="ac_adapter">AC adapter</string>
-    <string name="close_connect">closeing…</string>
+    <string name="close_connect">closing…</string>
     <string name="bluetooth_printer_list_title_label">Bluetooth Printer</string>
 
 
