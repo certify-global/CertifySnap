@@ -245,9 +245,13 @@ public class AccessCardController implements AccessCallback {
 
     private void sendWg26BitSignal(String cardId) {
         if (!mEnableWeigan) return;
-        int result = PosUtil.getWg26Status(Long.parseLong(cardId));
-        if (result != 0) {
-            Log.d(TAG, "Error in opening the door");
+        try {
+            int result = PosUtil.getWg26Status(Long.parseLong(cardId));
+            if (result != 0) {
+                Log.d(TAG, "Error in opening the door");
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception occurred while opening the door");
         }
     }
 
@@ -273,20 +277,28 @@ public class AccessCardController implements AccessCallback {
 
     private void sendWg34BitSignal(String cardId) {
         if (!mEnableWeigan) return;
-        int result = PosUtil.getWg34Status(Long.parseLong(cardId));
-        if (result != 0) {
-            Log.d(TAG, "Error in opening the door");
+        try {
+            int result = PosUtil.getWg34Status(Long.parseLong(cardId));
+            if (result != 0) {
+                Log.d(TAG, "Error in opening the door");
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception occurred while opening the door");
         }
     }
 
     private void sendWg48BitSignal(String cardId) {
         if (!mEnableWeigan) return;
-        String binaryValue = Long.toBinaryString(Long.parseLong(cardId));
-        String binaryConvertedValue = String.format("%46s", binaryValue).replace(' ', '0');
-        binaryConvertedValue = "1" + binaryConvertedValue + "0";
-        int result = PosUtil.sendSpecialWG(binaryConvertedValue);
-        if (result != 0) {
-            Log.d(TAG, "Error in opening the door");
+        try {
+            String binaryValue = Long.toBinaryString(Long.parseLong(cardId));
+            String binaryConvertedValue = String.format("%46s", binaryValue).replace(' ', '0');
+            binaryConvertedValue = "1" + binaryConvertedValue + "0";
+            int result = PosUtil.sendSpecialWG(binaryConvertedValue);
+            if (result != 0) {
+                Log.d(TAG, "Error in opening the door");
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception occurred while opening the door");
         }
     }
 

@@ -129,7 +129,7 @@
     <string name="identification_setting">पहचान समायोजन</string>
     <string name="enable_qr">क्यूआरकोड स्कैनर सक्षम करें</string>
     <string name="tv_qr_scan">अपने क्यूआर कोड को स्कैन करें</string>
-    <string name="tv_qr_bar_scan">अपने क्यूआर /बार कोड को स्कैन करें</string>
+    <string name="tv_qr_bar_scan">अपने क्यूआर/बार कोड को स्कैन करें</string>
     <string name="tv_qr_validating">मूल्यांकन क्यूआर कोड</string>
     <string name="tv_bar_validating">बार कोड मान्य करना</string>
     <string name="enable_rfid">आरऍफ़आईडी स्कैनर सक्षम करें</string>

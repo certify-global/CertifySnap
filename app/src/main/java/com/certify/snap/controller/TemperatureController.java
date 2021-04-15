@@ -698,7 +698,11 @@ public class TemperatureController {
      * Method that starts the Guide Temperature timer
      */
     private void startGuideTemperatureTimer() {
-        cancelGuideTempTimer();
+        if (guideTempTimer != null) {
+            Log.d(TAG, "Temp Cancel Guide Temperature timer");
+            guideTempTimer.cancel();
+            guideTempTimer = null;
+        }
         guideTempTimer = new Timer();
         guideTempTimer.schedule(new TimerTask() {
             public void run() {

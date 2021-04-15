@@ -795,7 +795,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
 
         FaceServer.getInstance().unInit();
-        cancelImageTimer();
         temperatureBitmap = null;
         clearQrCodePreview();
         resetMaskStatus();
@@ -2044,7 +2043,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreviewTimer() {
-        cancelImageTimer();
+        if (imageTimer != null) {
+            imageTimer.cancel();
+            imageTimer = null;
+        }
         imageTimer = new Timer();
         imageTimer.schedule(new TimerTask() {
             public void run() {
@@ -2067,7 +2069,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreviewTimer(int timeInSeconds) {
-        cancelImageTimer();
+        if (imageTimer != null) {
+            imageTimer.cancel();
+            imageTimer = null;
+        }
         imageTimer = new Timer();
         imageTimer.schedule(new TimerTask() {
             public void run() {
@@ -2771,7 +2776,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             // rl_header.setVisibility(View.GONE);
             //logo.setVisibility(View.GONE);
 
-            cancelImageTimer();
             startCameraPreviewTimer();
         });
 
@@ -3223,7 +3227,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             onTemperatureRead(temperature);
             return;
         }
-        cancelImageTimer();
         runOnUiThread(() -> {
             tvErrorMessage.setVisibility(View.VISIBLE);
             if (isProDevice) {
@@ -3626,7 +3629,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void startCameraPreviewTimer() {
-        cancelImageTimer();
+        if (imageTimer != null) {
+            imageTimer.cancel();
+            imageTimer = null;
+        }
         imageTimer = new Timer();
         imageTimer.schedule(new TimerTask() {
             public void run() {

@@ -80,15 +80,20 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
 
     @Override
     public void onWaveHandTimeout() {
-        mActivity.runOnUiThread(() -> {
-            snackbar = Snackbar.make(view, getString(R.string.gesture_timeout_msg), Snackbar.LENGTH_INDEFINITE);
-            snackbar.show();
-        });
+        if (mActivity != null) {
+            mActivity.runOnUiThread(() -> {
+                if (mActivity.isDestroyed() || mActivity.isFinishing()) return;
+                snackbar = Snackbar.make(view, getString(R.string.gesture_timeout_msg), Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+            });
+        }
     }
 
     @Override
     public void onWaveHandReset() {
-        mActivity.runOnUiThread(this::dismissSnackbar);
+        if (mActivity != null) {
+            mActivity.runOnUiThread(this::dismissSnackbar);
+        }
     }
 
     private void dismissSnackbar() {

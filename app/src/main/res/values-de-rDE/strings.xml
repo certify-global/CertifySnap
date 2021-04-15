@@ -130,7 +130,7 @@
     <string name="identification_setting">Identifikationseinstellungen</string>
     <string name="enable_qr">Aktivieren Sie den QRCode-Scanner</string>
     <string name="tv_qr_scan">Scannen Sie Ihren QR-Code</string>
-    <string name="tv_qr_bar_scan">Scannen Sie Ihren QR /Barcode</string>
+    <string name="tv_qr_bar_scan">Scannen Sie Ihren QR/Barcode</string>
     <string name="tv_qr_validating">QR-Code validieren</string>
     <string name="tv_bar_validating">Barcode validieren</string>
     <string name="enable_rfid">Aktivieren Sie den RFID-Scanner</string>

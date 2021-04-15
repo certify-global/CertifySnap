@@ -127,7 +127,7 @@
     <string name="identification_setting">గుర్తింపు సెట్టింగులు</string>
     <string name="enable_qr">క్యూఆర్ కోడ్ స్కానర్‌ను ప్రారంభించండి</string>
     <string name="tv_qr_scan">మీ క్యూఆర్ కోడ్‌ను స్కాన్ చేయండి</string>
-    <string name="tv_qr_bar_scan">మీ క్యూఆర్ /బార్ కోడ్‌ను స్కాన్ చేయండి</string>
+    <string name="tv_qr_bar_scan">మీ క్యూఆర్/బార్ కోడ్‌ను స్కాన్ చేయండి</string>
     <string name="tv_qr_validating">క్యూఆర్ కోడ్‌ను ధృవీకరిస్తోంది</string>
     <string name="tv_bar_validating">బార్ కోడ్‌ను ధృవీకరిస్తోంది</string>
     <string name="enable_rfid">ఆర్ఎఫ్హాయ్డి స్కానర్‌ను ప్రారంభించండి</string>

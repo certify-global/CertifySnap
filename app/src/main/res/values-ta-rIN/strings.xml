@@ -130,7 +130,7 @@
     <string name="identification_setting">அடையாள அமைப்புகள்</string>
     <string name="enable_qr">கேஆர்குறியீடு ஸ்கேனரை இயக்கு</string>
     <string name="tv_qr_scan">உங்கள் கேஆர் குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
-    <string name="tv_qr_bar_scan">உங்கள் கேஆர் /பார் குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
+    <string name="tv_qr_bar_scan">உங்கள் கேஆர்/பார் குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
     <string name="tv_qr_validating">கேஆர் குறியீட்டை சரிபார்க்கிறது</string>
     <string name="tv_bar_validating">பார் குறியீட்டை சரிபார்க்கிறது</string>
     <string name="enable_rfid">ஆர்எப்ஐடி ஸ்கேனரை இயக்கு</string>

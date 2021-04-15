@@ -565,6 +565,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         Log.d(TAG, "Left Hand wave");
         if (gestureListener != null && !isCallback && !waveHandProcessed.get(LEFT_HAND)) {
             isCallback = true;
+            waveHandProcessed.put(LEFT_HAND, true);
             startWaveHandTimer();
             gestureListener.onLeftHandGesture();
             return;
@@ -572,6 +573,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (gestureMEListener != null && !isMECallback && !waveHandProcessed.get(LEFT_HAND)) {
             Log.d(TAG, "Left Hand wave");
             isMECallback = true;
+            waveHandProcessed.put(LEFT_HAND, true);
             startWaveHandTimer();
             gestureMEListener.onLeftHandWave();
             return;
@@ -587,6 +589,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         if (gestureListener != null && !isCallback && !waveHandProcessed.get(RIGHT_HAND)) {
             Log.d(TAG, "Right Hand wave");
             isCallback = true;
+            waveHandProcessed.put(RIGHT_HAND, true);
             startWaveHandTimer();
             gestureListener.onGestureDetected();
             return;
@@ -959,7 +962,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     private void startWaveHandTimer() {
-        cancelWaveHandTimer();
+        if (waveHandTimer != null) {
+            waveHandTimer.cancel();
+            waveHandTimer = null;
+        }
         waveHandTimer = new Timer();
         waveHandTimer.schedule(new TimerTask() {
             @Override

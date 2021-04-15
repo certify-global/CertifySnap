@@ -164,22 +164,24 @@ public class TemperatureCalibrationGuideActivity extends SettingsBaseActivity {
     }
 
     public void calibrate(View view){
-        util.calibrationTem_DAT(new CalibrationCallBack.Stub() {
-            @Override
-            public void onCalibrating() {
-                showMessage("Calibrating...");
-            }
+        if (util != null) {
+            util.calibrationTem_DAT(new CalibrationCallBack.Stub() {
+                @Override
+                public void onCalibrating() {
+                    showMessage("Calibrating...");
+                }
 
-            @Override
-            public void onSuccess() {
-                showMessage("Calibration success!");
-            }
+                @Override
+                public void onSuccess() {
+                    showMessage("Calibration success!");
+                }
 
-            @Override
-            public void onFail(final String errmsg) {
-                showMessage("Calibration failed! " + errmsg);
-            }
-        });
+                @Override
+                public void onFail(final String errmsg) {
+                    showMessage("Calibration failed! " + errmsg);
+                }
+            });
+        }
     }
 
     private void showMessage(final String msg) {

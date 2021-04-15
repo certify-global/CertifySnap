@@ -133,7 +133,7 @@
     <string name="identification_setting">識別設定</string>
     <string name="enable_qr">QRCodeスキャナーを有効にする</string>
     <string name="tv_qr_scan">QRコードをスキャンする</string>
-    <string name="tv_qr_bar_scan">QR /バーコードをスキャンする</string>
+    <string name="tv_qr_bar_scan">QR/バーコードをスキャンする</string>
     <string name="tv_qr_validating">QRコードの検証</string>
     <string name="tv_bar_validating">バーコードの検証</string>
     <string name="enable_rfid">RFIDスキャナーを有効にする</string>

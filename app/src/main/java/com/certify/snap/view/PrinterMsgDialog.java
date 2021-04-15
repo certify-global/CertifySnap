@@ -70,6 +70,7 @@ public class PrinterMsgDialog {
             close();
             return;
         }
+        if (mActivity != null && mActivity.isDestroyed() && mActivity.isFinishing()) return;
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
@@ -127,7 +128,7 @@ public class PrinterMsgDialog {
      * close dialog
      */
     public void close() {
-        if (mActivity != null && mActivity.isDestroyed()) return;
+        if (mActivity != null && mActivity.isDestroyed() && mActivity.isFinishing()) return;
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
