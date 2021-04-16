@@ -1029,6 +1029,14 @@ public class DatabaseController {
         }
     }
 
+    public void clearMemberData() {
+        if (databaseStore != null) {
+            databaseStore.deleteAll();
+            deleteMemberData();
+            FaceServer.getInstance().clearAllFaces(mContext);
+        }
+    }
+
     public void clearAll() {
         if (databaseStore != null) {
             databaseStore.deleteAll();

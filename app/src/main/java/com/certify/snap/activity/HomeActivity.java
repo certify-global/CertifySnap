@@ -76,6 +76,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     ResetOfflineDataReceiver resetOfflineDataReceiver;
     public ExecutorService taskExecutorService;
     private String gestureWorkFlow = "";
+    private boolean groupSyncEnabled = false;
+    private String groupId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         tvVersion.setText(Util.getVersionBuild());
 
         Util.enableLedPower(0);
+        groupSyncEnabled = AppSettings.isMemberGroupSyncEnabled();
+        groupId = AppSettings.getMemberSyncGroupId();
 
         Intent intent = getIntent();
         String value = intent.getStringExtra("DEVICE_BOOT");
@@ -138,6 +142,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         if (taskExecutorService != null) {
             taskExecutorService = null;
         }
+        groupSyncEnabled = false;
+        groupId = "";
     }
 
     private void checkStatus() {
@@ -275,7 +281,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
                     || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        DatabaseController.getInstance().clearAll();
+                        isClearMemberData();
                         startService(new Intent(HomeActivity.this, MemberSyncService.class));
                         Application.StartService(HomeActivity.this);
                     }
@@ -493,5 +499,18 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void initLanguageList() {
         DeviceSettingsController.getInstance().getLanguagesListFromDb();
+    }
+
+    private void isClearMemberData() {
+        if (!groupSyncEnabled) {
+            if (AppSettings.isMemberGroupSyncEnabled()) {
+                DatabaseController.getInstance().clearMemberData();
+            }
+        } else if (groupSyncEnabled) {
+            if (AppSettings.isMemberGroupSyncEnabled() &&
+                    (!groupId.equalsIgnoreCase(AppSettings.getMemberSyncGroupId()))) {
+                DatabaseController.getInstance().clearMemberData();
+            }
+        }
     }
 }
