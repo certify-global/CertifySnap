@@ -3103,7 +3103,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (!isProDevice && userData != null && isRecordNotSent) {
                     userData.thermal = temperatureBitmap;
                     isRecordNotSent = false;
-                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, -1);
+                    int syncStatus;
+                    if (Util.isOfflineMode(IrCameraActivity.this)) {
+                        syncStatus = 1;
+                    } else {
+                        syncStatus = -1;
+                    }
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, syncStatus);
                 }
             }
         });
