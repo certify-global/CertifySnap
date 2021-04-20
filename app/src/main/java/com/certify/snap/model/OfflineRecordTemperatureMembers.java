@@ -18,6 +18,7 @@ public class OfflineRecordTemperatureMembers {
     public String memberId;
     public String temperature;
     public String deviceTime;
+    public String utcTime;
     public String imagepath;
     public String jsonObj;
     @PrimaryKey
@@ -102,6 +103,14 @@ public class OfflineRecordTemperatureMembers {
 
     public void setDeviceTime(String deviceTime) {
         this.deviceTime = deviceTime;
+    }
+
+    public String getUtcTime() {
+        return utcTime;
+    }
+
+    public void setUtcTime(String utcTime) {
+        this.utcTime = utcTime;
     }
 
     public static Long lastPrimaryId() {

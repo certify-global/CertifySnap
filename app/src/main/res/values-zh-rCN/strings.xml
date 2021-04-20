@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">认证快照</string>
+
+
+    <string name="active_failed">许可证激活失败，请联系Certify。</string>
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="registering_please_wait">正在注册，请稍候</string>
+    <string name="login_password">密码：</string>
+
+    <string name="permission_denied">没有权限！</string>
+
+    <string name="recognize_failed_notice">拒绝：％s</string>
+    <string name="recognize_success_notice">合格：％s</string>
+    <string name="low_confidence_level">面对低置信水平</string>
+    <string name="specific_engine_init_failed">％s + init +失败，+代码+为：％d</string>
+    <string name="camera_error_notice">\n可能的原因：此设备不允许同时打开两个摄像头</string>
+
+    <string name="living_type_0">不</string>
+    <string name="living_type_1">是的</string>
+
+    <string name="txt_data_management_title">数据管理</string>
+
+
+    <string name="led_switch">LED开关</string>
+
+    <string name="NavigationBar">显示导航栏：</string>
+
+    <string name="relayinfo">请输入时间！</string>
+
+    <string name="toast_guide_permission">请手动授予权限！</string>
+
+    <string name="login">登录</string>
+    <string name="logout">登出</string>
+    <string name="welcome">欢迎</string>
+    <string name="Unrecognized">无法识别</string>
+
+    <string name="toast_rgbir_pwderror">密码不正确！</string>
+    <string name="text_notpasstime">非通过时间，请联系管理员！</string>
+    <string name="text_nopermission">没有权限，请联系管理员！</string>
+    <string name="text_expiredtime">已过期，请联系管理员！</string>
+    <string name="text_passcodeexpired">密码已过期</string>
+    <string name="fahrenheit_symbol">°F</string>
+    <string name="centi">摄氏</string>
+    <string name="temperature_normal">温度正常：</string>
+    <string name="temperature_anormaly">温度高：</string>
+    <string name="temperature_failresult">无法获取温度！</string>
+
+    <string name="ExtractCode">ExtractCode：</string>
+    <string name="ProcessCode">流程代码：</string>
+    <string name="VISITOR">游客</string>
+
+
+    <string name="toast_manage_member_exist">会员ID已存在！</string>
+    <string name="toast_manage_access_exist">访问ID已存在！</string>
+    <string name="SetDate">设置日期</string>
+    <string name="SetTime">设置时间</string>
+    <string name="delete">删除</string>
+    <string name="delete_wait">删除！请稍等...</string>
+    <string name="Register">登记</string>
+    <string name="register_wait">登记！请稍等...</string>
+    <string name="Register_success">注册成功！</string>
+    <string name="register_failed">注册失败！请再试一次！</string>
+    <string name="update_failed">更新失败！请再试一次！</string>
+    <string name="deletion_failed">由于某些网络问题。无法在线删除数据。</string>
+    <string name="Update_success">更新成功！</string>
+    <string name="Delete_success">删除成功！</string>
+    <string name="Delete_failed">注册失败！请再试一次！</string>
+    <string name="camera_temp">温度</string>
+    <string name="camera_face">温度和面</string>
+    <string name="thermal_scan">热扫描</string>
+    <string name="SetTemp">温度设定</string>
+    <string name="upload_logo">上载徽标</string>
+    <string name="access_password">访问密码</string>
+    <string name="device_activation_status">在线激活状态</string>
+    <string name="not_activated"><u> 没有激活</u>  </string>
+    <string name="activate"><u> 启用</u>  </string>
+    <string name="endpoint">端点名称</string>
+    <string name="app_version">版本</string>
+    <string name="tv_thermal_setting">主视图设置</string>
+    <string name="welcome_thermal">主屏幕文字</string>
+    <string name="enter_title">输入大文字</string>
+    <string name="enter_subtitle">输入小文字</string>
+    <string name="display_temperature">在屏幕上向用户显示温度详细信息</string>
+    <string name="tv_scan_setting">扫描视图设置</string>
+    <string name="capture_images">捕获温度高于阈值的用户的图像</string>
+    <string name="Capture_all">捕获所有用户的图像</string>
+    <string name="enable_sound">在常温下启用声音</string>
+    <string name="enable_sound_high">在温度高于阈值时启用声音</string>
+    <string name="enable_qr_sound_valid">为有效的二维码启用声音</string>
+    <string name="enable_qr_sound_invalid">为无效的QR码启用声音</string>
+    <string name="enable_light">在常温下启用光</string>
+    <string name="enable_light_high">在温度高于阈值时启用光</string>
+    <string name="enable_printer">启用列印</string>
+    <string name="print_all_scan">打印所有扫描</string>
+    <string name="print_access_card">为访问卡用户打印</string>
+    <string name="print_qr_code_users">为QR码用户打印</string>
+    <string name="print_wave_users">为Wave用户打印</string>
+    <string name="print_high_temperature">高温打印</string>
+    <string name="enable_mask">启用遮罩检测</string>
+    <string name="enable_facial">启用面部识别</string>
+    <string name="screen_delay">屏幕显示时间（秒）</string>s
+    <string name="tv_confirmation_setting">确认视图设置</string>
+    <string name="member_management_setting">会员管理</string>
+    <string name="audio_visual_setting">视听设置</string>
+    <string name="printer_setting">印表机设定</string>
+    <string name="confirmation_view">确认视图</string>
+    <string name="enable_temperature">使能够</string>
+    <string name="confirmation_text_below">确认温度低于阈值</string>
+    <string name="confirmation_text_above">确认温度高于阈值</string>
+    <string name="scan_view">扫描视图</string>
+    <string name="audio_visual_view">视听</string>
+    <string name="ble_devices_view">BLE设备</string>
+    <string name="thermal_view">主视图</string>
+    <string name="enter_title_main">输入主要文字</string>
+    <string name="enter_subtitle_sub">输入子文字</string>
+    <string name="fahrenheit">华氏温度</string>
+    <string name="celcius">摄氏温度</string>
+    <string name="save">保存</string>
+    <string name="temperature_threshold">设定温度阈值</string>
+    <string name="temperature">温度</string>
+    <string name="temperature_calibration">温度校准</string>
+    <string name="app_serial">序列号：</string>
+    <string name="tv_guide_setting">指南设定</string>
+    <string name="text_value1">请将您的脸对准屏幕。</string>
+    <string name="text_value2">靠近并居中放置。</string>
+    <string name="text_value3">请稍候，准备扫描。</string>
+    <string name="text_value4">请走近一点</string>
+    <string name="snack_msg">检索更新的设置</string>
+    <string name="invalid_pwd">无效的密码</string>
+    <string name="allow_low">允许低温扫描</string>
+    <string name="save_success">设置已保存</string>
+    <string name="offline_msg">离线模式</string>
+    <string name="online_msg">网上时尚</string>
+    <string name="identification_setting">识别设定</string>
+    <string name="enable_qr">启用QRCode扫描仪</string>
+    <string name="tv_qr_scan">扫描您的QR码</string>
+    <string name="tv_qr_bar_scan">扫描您的QR /条形码</string>
+    <string name="tv_qr_validating">验证二维码</string>
+    <string name="tv_bar_validating">验证条形码</string>
+    <string name="enable_rfid">启用RFID扫描器</string>
+    <string name="enable_anonymous">启用匿名QR码/条形码</string>
+    <string name="enable_skip_button">启用跳过代码（需要触摸屏幕）</string>
+    <string name="rfid_card_error">错误！卡无法识别</string>
+    <string name="device_not_register">未在您的certify.me帐户上注册。请确保设备已连接到Internet，并且设备已添加到“设备”下的云帐户中。\n
+   \n如果您希望此设备保持离线状态，请点击左上角的，以登录此应用程序的设置，然后在设置中将其设置为离线。</string>
+    <string name="invalid_qr">无效的QRCode</string>
+    <string name="timeout">RFID和CODE扫描的屏幕超时（秒）</string>
+    <string name="qr_button_heading">在按钮上显示的文字</string>
+    <string name="qr_button_text">如果没有QR码，请按此处</string>
+    <string name="device_inactive">您的certify.me帐户上没有激活。请确保设备已连接到Internet，并且设备在“设备”下的云帐户中处于活动状态。\n
+    \n如果您希望此设备保持离线状态，请点击左上角的，以登录此应用程序的设置，然后在设置中将其设置为离线。</string>
+    <string name="scan_mode">扫描模式</string>
+    <string name="scan_mode_easy">简单的</string>
+    <string name="scan_mode_strict">严格（推荐）</string>
+
+
+    <string name="access_control">访问控制</string>
+    <string name="access_control_parameter">秒</string>
+    <string name="enable_access_control">启用韦根输出（需要ID）</string>
+    <string name="access_control_card_format">讯息格式</string>
+    <string name="access_control_enroll">注册</string>
+    <string name="access_granted">等待热扫描</string>
+    <string name="access_denied">拒绝访问！</string>
+    <string name="automatic_door_access">启用中继</string>
+    <string name="allow_anonymous">允许匿名</string>
+    <string name="relay_timeout">中继超时：</string>
+    <string name="normal_mode"><font size="16"> 正常模式</font>  <font size="14"> （每次扫描均可进行操作访问）</font> </string>
+    <string name="reverse_mode"><font size="16"> 倒车模式</font>  <font size="14"> （仅可在高温扫描下进行操作）</font> </string>
+    <string name="stop_relay">在高温扫描时停止访问</string>
+
+
+    <string name="tv_ok">好的</string>
+    <string name="setting_message">您的云帐户已激活该设备。下次重新启动或同步时，对本地设置的任何更改都将被覆盖。请在线修改适当的设置并同步设备上的设置。</string>
+    <string name="setting_note">注意：您可以在本地进行修改，以通过在线设置来最终确定适用于设备的设置。</string>
+    <string name="time_and_attendance">时间和出勤</string>
+    <string name="both">两个都</string>
+    <string name="none">没有任何</string>
+    <string name="id_only">仅ID</string>
+    <string name="face_only">只面对</string>
+    <string name="id_face">身份证面</string>
+    <string name="id_or_face">身份证或面孔</string>
+    <string name="bit_26">26位</string>
+    <string name="bit_34">34位</string>
+    <string name="bit_48">48位</string>
+
+
+
+    <string name="id">用户身份：</string>
+    <string name="facial_threshold">设定面部阈值</string>
+    <string name="first_name">名</string>
+    <string name="last_name">姓</string>
+    <string name="email_address">电子邮件地址</string>
+    <string name="phone_number">电话号码</string>
+    <string name="member_id">会员ID</string>
+    <string name="access_id">存取编号</string>
+    <string name="display">“在确认屏幕上显示图像和名称”</string>
+    <string name="update_face_not_recognized">更新失败！人脸无法识别</string>
+    <string name="register_face_not_recognized">注册失败！人脸无法识别</string>
+
+
+    <string name="pref_key_camera_live_viewport" translatable="false">clv</string>
+    <string name="pref_key_rear_camera_preview_size" translatable="false">rcpvs</string>
+    <string name="pref_key_front_camera_preview_size" translatable="false">fcpvs</string>
+    <string name="pref_key_rear_camera_picture_size" translatable="false">rcpts</string>
+    <string name="pref_key_front_camera_picture_size" translatable="false">fcpts</string>
+    <string name="temperature_compensation">温度补偿</string>
+    <string name="tv_compensation">例如：\u0020 1.5 \u0020或\u0020 -0.5</string>
+
+    <string name="device_name">设备名称</string>
+    <string name="keep_device_online">使设备保持在线</string>
+    <string name="device_settings">设备设置</string>
+    <string name="device_password">设备访问密码</string>
+    <string name="online_device_activation_status">设备在线激活状态</string>
+    <string name="device_mode">设备模式</string>
+    <string name="enable_home_screen">启用主屏幕</string>
+    <string name="enable_text_only_screen">启用纯文字模式</string>
+    <string name="enable_text_only_hint">输入全屏文字</string>
+    <string name="connectivity_status">查看连接状态</string>
+    <string name="connectivity_status_title">连接状态和信息</string>
+    <string name="connectivity_status_text">连接到：</string>
+    <string name="mac">苹果电脑</string>
+    <string name="ip_address">IP地址</string>
+    <string name="netmask">网路遮罩</string>
+    <string name="gateway">闸道</string>
+    <string name="dns1">DNS1</string>
+    <string name="dns2">DNS2</string>
+    <string name="ethernet_ip_mode">以太网IP模式</string>
+    <string name="ssid">SSID：</string>
+    <string name="device_reader">设备阅读器：</string>
+    <string name="internet_connectivity">互联网连接：</string>
+    <string name="cloud_connectivity">CERTIFY云连接：</string>
+    <string name="wifi">无线上网</string>
+    <string name="ethernet">乙太网路</string>
+    <string name="mobile">蜂窝电话</string>
+    <string name="data_management">数据管理</string>
+    <string name="do_not_sync">将在线会员数据同步到设备</string>
+    <string name="enable_home_view_msg">请启用主屏幕设置以设置此选项。</string>
+    <string name="confirm_title_below">祝你今天过得愉快！</string>
+    <string name="analyzing_face">分析脸部</string>
+    <string name="allow_scan_proximity">只允许近距离扫描</string>
+    <string name="step_closer">请一步一步</string>
+    <string name="face_center">请居中</string>
+    <string name="clear_cache_app">清除数据和缓存</string>
+    <string name="local_data">重置本地数据</string>
+    <string name="clear_members">重设会员</string>
+    <string name="clear_members_button">清除所有成员</string>
+    <string name="add_device">登录以注册设备</string>
+    <string name="not_configure">该设备未配置为在线工作。</string>
+    <string name="cloud">如果您已经有一个云帐户，</string>
+    <string name="activation_again">再次尝试激活</string>
+    <string name="skip">立即跳过</string>
+    <string name="offline_mode">离线模式</string>
+    <string name="login_account">登录到您的帐户</string>
+    <string name="enter_email">电子邮件</string>
+    <string name="enter_password">密码</string>
+    <string name="login_note">注意：用户应具有该帐户的管理权限。</string>
+    <string name="add_device_info">添加设备</string>
+    <string name="sno">“序列号 ”</string>
+    <string name="imei">IMEI号码</string>
+    <string name="active">积极的</string>
+    <string name="in_active">不活跃</string>
+    <string name="status">地位</string>
+    <string name="screen_timeout_msg">请输入屏幕超时以扫描到5或以上</string>
+    <string name="record">记录管理</string>
+    <string name="register_device">注册设备</string>
+
+
+    <string name="ble_startfind">搜索设备...</string>
+    <string name="ble_canceldfind">取消搜寻</string>
+    <string name="ble_not_find">找不到蓝牙设备</string>
+    <string name="ble_canceled">您需要打开蓝牙服务</string>
+    <string name="ble_selected">您已经设置了蓝牙连接设备</string>
+    <string name="ble_connect_success">连接成功</string>
+    <string name="ble_disconnected">与设备断开连接</string>
+    <string name="unknown_service">未知服务</string>
+    <string name="unknown_characteristic">unknown_characteristic</string>
+    <string name="permission_request">必须具备权限才能运行此应用</string>
+    <string name="ble_connect_status">连接的BLE灯：</string>
+    <string name="ble_light_test">测试 ：</string>
+    <string name="ble_connect"><u> 连接</u>  </string>
+
+    <string name="bluetooth_printer_connect_status">连接的打印机：</string>
+
+
+    <string name="centigrade" translatable="false"> ℃</string>
+    <string name="Fahrenheit_temp" translatable="false"> ℉</string>
+    <string name="endpoint_api">阿皮</string>
+    <string name="protocol_text">https：//</string>
+    <string name="hostname">.certify.me</string>
+    <string name="scanner_time_msg">扫描仪正在初始化。 您可以等待或单击“确定”以继续使用扫描仪进行初始化…… \n剩余时间：％d分钟</string>
+    <string name="scanner_remaining_time_msg">扫描仪校准正在进行中… 剩余时间：％d分钟</string>
+    <string name="audio_alerts">音频警报</string>
+    <string name="visual_alerts">视觉警报</string>
+    <string name="audio_none">没有任何</string>
+    <string name="light_on">点亮</string>
+    <string name="light_off">灯灭</string>
+
+
+
+    <string name="printer_settings"><u> 设定值</u>  </string>
+    <string name="no_network_device">找不到网络打印机</string>
+    <string name="setting_printer">印表机设定</string>
+    <string name="printer_title">连接到打印机</string>
+    <string name="printer_text">选择目标打印机</string>
+    <string name="netPrinterListTitle_label">网络打印机</string>
+    <string name="error_message_none">成功</string>
+    <string name="printer_model_title">打印机型号</string>
+    <string name="printer_model_value">选择打印机型号</string>
+    <string name="port_title">港口</string>
+    <string name="port_value">选择端口</string>
+    <string name="address_title">IP地址</string>
+    <string name="address_value">设置IP地址数</string>
+    <string name="mac_address_title">MAC地址</string>
+    <string name="mac_address_value">设置mac地址数</string>
+    <string name="paper_size_title">纸张尺寸</string>
+    <string name="paper_size_value">选择纸张尺寸</string>
+    <string name="orientation_title">印刷方向</string>
+    <string name="orientation_value">选择打印方向</string>
+
+    <string-array name="orientation">
+        <item>肖像</item>
+        <item>风景</item>
+    </string-array>
+    <string-array name="orientation_values">
+        <item>肖像</item>
+        <item>风景</item>
+    </string-array>
+
+    <string name="number_of_copies_title">复印数量</string>
+    <string name="number_of_copies_value">设定份数</string>
+    <string name="scale_value_title">规模值</string>
+    <string name="scale_value_value">选择比例值</string>
+
+
+    <string name="fit_to_page_title">适合页面</string>
+    <string name="fit_to_page_value">选择是否适合页面</string>
+
+
+    <string-array name="fitToPage">
+        <item>原来的</item>
+        <item>适合页面</item>
+        <item>风俗</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+    <string-array name="fit_to_page_values">
+        <item>原来的</item>
+        <item>适合页面</item>
+        <item>规模</item>
+        <item>FIT_TO_PAPER</item>
+    </string-array>
+
+
+    <string name="print_quality_title">打印质量</string>
+    <string name="print_quality_value">选择品质</string>
+
+
+    <string-array name="yes_no_entries">
+        <item>是的</item>
+        <item>不</item>
+    </string-array>
+    <string-array name="yes_no_value">
+        <item>真的</item>
+        <item>错误的</item>
+    </string-array>
+
+
+    <string name="is_end_cut_title">端切</string>
+    <string name="is_end_cut_value">是否切尾</string>
+    <string name="is_auto_cut_title">自动裁切</string>
+    <string name="is_auto_cut_value">是否自动剪切</string>
+    <string name="ip_mac_title">IP /MAC地址</string>
+    <string name="ip_mac_value">设置IP /MAC地址</string>
+    <string name="cut_settings_value">设置切割设置</string>
+    <string name="cut_settings_title">裁切设置</string>
+
+    <string name="no_bluetooth_device">找不到蓝牙打印机</string>
+    <string name="button_refresh">刷新</string>
+    <string name="button_settings">连接</string>
+
+
+    <string-array name="print_quality_array">
+        <item>低分辨率</item>
+        <item>普通的</item>
+        <item>DOUBLE_SPEED</item>
+        <item>高分辨率</item>
+    </string-array>
+    <string-array name="print_quality_value">
+        <item>低分辨率</item>
+        <item>普通的</item>
+        <item>DOUBLE_SPEED</item>
+        <item>高分辨率</item>
+    </string-array>
+
+
+    <string name="search_printer">正在搜寻…</string>
+    <string name="button_cancel">取消</string>
+    <string name="button_ok">好的</string>
+    <string name="battery_full">满的</string>
+    <string name="battery_middle">中间</string>
+    <string name="battery_weak">虚弱的</string>
+    <string name="battery_charge">需要充电</string>
+    <string name="ac_adapter">AC适配器</string>
+    <string name="close_connect">正在关闭…</string>
+    <string name="bluetooth_printer_list_title_label">蓝牙打印机</string>
+
+
+    <string name="half_cut_title">半切（仅PT）</string>
+    <string name="half_cut_value">做半切还是不切</string>
+    <string name="special_tape_title">特殊胶带纸（仅PT）</string>
+    <string name="special_tape_value">是特殊的胶带纸</string>
+    <string name="timeout_title">超时</string>
+    <string name="timeout_text">设置超时</string>
+    <string name="processTimeout_value">超时时间</string>
+    <string name="processTimeout_title">设置总超时时间</string>
+    <string name="sendTimeout_value">设置传输等待时间</string>
+    <string name="sendTimeout_title">传输等待时间</string>
+    <string name="receiveTimeout_title">接待等候时间</string>
+    <string name="receiveTimeout_value">设置接收等待时间</string>
+    <string name="connectionTimeout_title">连接等待时间</string>
+    <string name="connectionTimeout_value">设置连接等待时间</string>
+    <string name="close_wait_time_value">关闭超时时间</string>
+    <string name="close_wait_time_title">设置关闭等待时间</string>
+    <string name="work_path_value">选择工作路径</string>
+    <string name="work_path_title">工作资料夹</string>
+    <string name="progress_dialog_message_preparing_connection">正在准备连接…</string>
+    <string name="progress_dialog_message_createData">创建数据</string>
+    <string name="progress_dialog_message_sendingData">印刷徽章</string>
+    <string name="progress_dialog_message_sendingPrintingData">印刷徽章</string>
+    <string name="progress_dialog_message_startPrint">印章</string>
+    <string name="progress_dialog_message_dataSent">数据已发送</string>
+    <string name="progress_dialog_message_printed">印刷过程完成</string>
+    <string name="progress_dialog_message_close_connection">断开连接</string>
+    <string name="progress_dialog_message_set_paper">请放置纸张</string>
+    <string name="progress_dialog_message_cooling_start">打印机冷却开始</string>
+    <string name="progress_dialog_message_cooling_end">打印机冷却端</string>
+    <string name="progress_dialog_message_waiting_peel">等待剥离标签</string>
+    <string name="progress_dialog_message_sending_template">文件传输</string>
+    <string name="progress_dialog_message_getting_bluetooth_setting">获取蓝牙设置</string>
+    <string name="progress_dialog_message_setting_bluetooth_setting">传输蓝牙设置</string>
+    <string name="progress_dialog_message_removing_template">删除模板</string>
+    <string name="progress_dialog_message_getting_template">获取模板列表</string>
+    <string name="cancel_printer_msg">正在取消，请稍候</string>
+    <string name="error_message_weong_os">不支援Android作业系统</string>
+    <string name="error_message_no_usb">找不到USB设备</string>
+    <string name="progress_dialog_message_communication_start">开始交流…</string>
+    <string name="progress_dialog_message_transfer_start">转移开始...</string>
+    <string name="text_ip_address">地址：+％1 $ s</string>
+    <string name="text_copied">已复制：+％1 $ s</string>
+    <string name="pair_printer_message">请取消配对并再次配对打印机</string>
+
+    <string-array name="work_path_entries">
+        <item>应用内文件夹</item>
+        <item>外部资料夹</item>
+    </string-array>
+
+    //Toshiba Printer
+    <string name="msg_Ok">是的</string>
+    <string name="msg_No">不</string>
+    <string name="bdAddrNotSet">BD地址尚未选择。</string>
+    <string name="ipOrPortNoNotSet">IP地址或端口号尚未选择。</string>
+    <string name="fileNameNotSet">尚未选择文件名。</string>
+    <string name="outputMethodNotSelected">尚未选择输出方式</string>
+    <string name="msg_CopyPrinterConfigFile">复制打印机配置文件失败。</string>
+    <string name="wait">请稍等。</string>
+    <string name="msg_success">成功</string>
+    <string name="msg_PortClose">港口关闭</string>
+    <string name="msg_OpenPorterror">打开端口错误</string>
+    <string name="msg_WritePortError">写端口错误</string>
+    <string name="msg_RetryError">重试错误</string>
+    <string name="msg_GetStatuscallError">GetStatus调用错误</string>
+    <string name="msg_GetStatus">获取状态</string>
+    <string name="msg_result">结果</string>
+    <string name="error">错误</string>
+    <string name="runPrint">印刷</string>
+    <string name="noResponseFromPrinter">打印机无响应。是否要继续该过程？</string>
+    <string name="writeFailed">无法写入打印机。是否要继续该过程？</string>
+    <string name="paperEnd">标签结束。是否要继续该过程？</string>
+    <string name="issueEndAndpaperEnd">完成问题和标签结束</string>
+    <string name="msg_executePrintError">执行打印错误</string>
+    <string name="processComplete">流程完成</string>
+    <string name="productName">名称</string>
+    <string name="code">代码</string>
+    <string name="print">打印</string>
+    <string name="noOfPrints">印数</string>
+    <string name="msg_PortCloseErrorcode">端口关闭错误代码</string>
+    <string name="msg_PortCloseSuccess">港口关闭成功</string>
+    <string name="statusReception">OnStatus接待</string>
+    <string name="dataName">名称资料</string>
+    <string name="bottom_text">请用\n手挡住灯光以进行选择\n\n输入错误？ \n挡住两盏灯后退</string>
+    <string name="touchless_interaction_setting">非接触式互动</string>
+    <string name="touchless_setting">非接触式互动设置</string>
+    <string name="enable_acknowledge">启用确认屏幕</string>
+    <string name="enter_full_screen">输入全屏文字</string>
+    <string name="tv_result_bar">显示结果栏</string>
+    <string name="tv_text_display">要显示的文字</string>
+    <string name="tv_temp_text_normal">普通的</string>
+    <string name="tv_temp_text_high">高的</string>
+    <string name="enable_logging">启用记录模式</string>
+    <string name="capture_logs">捕获日志</string>
+    <string name="send_logs">发送日志</string>
+    <string name="wave_instructions">输入波浪指示器说明</string>
+    <string name="mask_enforce_instructions">输入掩码强制文本</string>
+
+    <string name="wave_yes">&lt;是</string>
+    <string name="wave_no">否&gt;</string>
+    <string name="scan_type">扫描类型</string>
+    <string name="scan_type_quick">快的</string>
+    <string name="scan_type_standard">标准</string>
+
+    <string name="enter_text1">文本1</string>
+    <string name="enter_text2">文字2</string>
+    <string name="enter_text3">文字3</string>
+    <string name="enter_text4">文字4</string>
+    <string name="enable_guide">启用指南</string>
+    <string name="enable_temp_scan">启用温度扫描</string>
+    <string name="enable_wiegand_passthrough">启用韦根直通</string>
+    <string name="log_offline_data">离线模式下记录数据</string>
+
+    <string name="wear_a_mask">“请戴上口罩，向左挥手以重新开始，否则向右挥手以继续”</string>
+    <string name="access_control_granted">授予访问权限</string>
+    <string name="access_control_denied">拒绝访问！</string>
+    <string name="gesture_exit_title">否定结果退出</string>
+    <string name="gesture_exit_default">请联系管理员</string>
+    <string name="gesture_exit_hint">在退出负面结果时显示的消息</string>
+    <string name="gesture_timeout_msg">请向下移动您的手以继续下一个问题</string>
+    <string name="listening">听着...</string>
+
+
+    <string name="failed_member">成员失败：</string>
+    <string name="member">成员：</string>
+    <string name="certify_snapXt">认证SnapXT</string>
+    <string name="tv_record">记录</string>
+    <string name="member_delete_msg">您要删除会员吗？</string>
+    <string name="pls_input_name">请输入姓名或用户名</string>
+    <string name="unique_id">唯一身份</string>
+    <string name="update">更新</string>
+    <string name="device_id">设备ID</string>
+    <string name="uuid">乌伊德</string>
+    <string name="popup_register">登记</string>
+    <string name="capture">捕获</string>
+    <string name="use_photo">使用照片</string>
+    <string name="update_dialog">更新</string>
+    <string name="user_id">用户身份</string>
+    <string name="member_text">成员</string>
+
+
+    <string name="select_printer">选择打印机</string>
+    <string name="title_printer">请输入打印机的IP和Mac地址</string>
+    <string name="add_button">添加</string>
+    <string name="search_button">搜索</string>
+    <string name="wifi_bluetooth_printer">Wifi /蓝牙打印机</string>
+    <string name="print_button">打印</string>
+    <string name="usb_printer">USB打印机</string>
+    <string name="printing_option">列印选项</string>
+    <string name="label_option">标签选项</string>
+    <string name="print_face">打印面</string>
+    <string name="print_name">打印名称（如果已识别，则为空白）</string>
+    <string name="print_text">如果打印文字不明</string>
+    <string name="print_normal_temp">打印常温值</string>
+    <string name="print_high_temp">打印高温值</string>
+    <string name="print_indicator_qr">适用于QR码用户的打印指示器</string>
+    <string name="print_wave_ans">打印Wave答案</string>
+    <string name="mac_address_hint">MAC地址</string>
+
+
+    <string name="local">当地的</string>
+    <string name="enable_pro_setting">启用专业设置</string>
+    <string name="led_brightness">LED亮度：</string>
+    <string name="enable_local_server">启用本地服务器：</string>
+
+    <string name="serial_number">序列号：</string>
+    <string name="imei_number">IMEI号码：</string>
+    <string name="close_button">关闭</string>
+    <string name="save_button">保存</string>
+    <string name="locale_setting">语</string>
+    <string name="english">英语</string>
+    <string name="spanish">西班牙语（Español）</string>
+
+
+    <string name="settings">设定值</string>
+    <string name="update_database">更新数据库</string>
+    <string name="member_register">会员注册</string>
+    <string name="parameter_settings">参数设定</string>
+    <string name="led_settings">LED设定</string>
+    <string name="activate_card">激活卡</string>
+
+    <string name="default_rect">默认rect：Rect（23,32-26,38）</string>
+    <string name="current_rect">电流rect：Rect（23,32-26,38）</string>
+    <string name="format_rect">格式：rect（左，右上，右下）
+        \n热图像的实际坐标：
+        \nx轴与y轴相反（上，左下，右）“</string>
+    <string name="rect_left">向左倾斜（上）：</string>
+    <string name="rect_top">矩形顶部（左）：</string>
+    <string name="rect_right">右移（底部）：</string>
+    <string name="rect_bottom">矩形底部（右）：</string>
+    <string name="cancel_dialog">取消</string>
+    <string name="confirm_dialog">确认</string>
+
+
+    <string name="distance">距离：</string>
+    <string name="num_50">50</string>
+    <string name="calibration">校准</string>
+    <string name="get_temp">获取温度</string>
+    <string name="calibration_text">提示：\n\n首先，保持脸部与设备之间的距离为50厘米（约2英尺），单击校准按钮进行校准。
+        \n请在校准过程中不要移动脸部，直到校准完成。</string>
+    <string name="enter_default_text">输入默认名称文本</string>
+    <string name="bar_bottom_text">输入默认的底部栏文本</string>
+    <string name="normal_pass_scan">默认结果打印文本（普通通过扫描）</string>
+    <string name="temp_above_threshold">显示温度高于阈值</string>
+    <string name="ir_text">如果您没有QR码，请按此处</string>
+    <string name="ir_ques_text">如果您对所有3个共同问题的答案均​​为否，请点击设备底部的徽章进行热扫描。并报告给</string>
+    <string name="start">开始</string>
+    <string name="rect1">rect1</string>
+    <string name="rect2">rect2</string>
+    <string name="rect3">rect3</string>
+    <string name="all_rect">allRect</string>
+    <string name="select_date">请选择日期</string>
+    <string name="select_date_range">请选择导出数据的日期范围。导出文件的位置是/sdcard /offline /record /</string>
+    <string name="start_time">开始时间（年/月）：</string>
+    <string name="end_time">结束时间（年/月）：</string>
+    <string name="set_temp_text">设置显示温度阈值</string>
+    <string name="enter_password_text">输入密码</string>
+    <string name="enable_voice_recognition">启用语音识别</string>
+    <string name="enable_hand_gesture">启用手势</string>
+    <string name="enable_wave">启用Wave</string>
+    <string name="wave_options">波浪选项</string>
+    <string name="enable_ques_ans">启用问题和答案</string>
+    <string name="enable_mask_enforce">启用掩码强制（提示掩码未检测到的响应）</string>
+    <string name="show_wave_image">显示波浪图像</string>
+    <string name="show_wave_ques">显示wave问题进度视图栏</string>
+    <string name="screened">放映</string>
+    <string name="thermal_scan_text">热扫描</string>
+    <string name="anonymous_text">匿名的</string>
+    <string name="unrecognized">无法识别</string>
+    <string name="valid_access">有效访问选项（不适用于匿名和韦根传递）</string>
+    <string name="password_empty_msg">密码不能为空</string>
+    <string name="password_invalid_msg">密码无效，请重试</string>
+    <string name="serial_num">序列号：</string>
+    <string name="online">在线的</string>
+    <string name="offline">离线</string>
+    <string name="password_length_msg">密码至少应为六位数</string>
+    <string name="launch_home_screen">正在启动主屏幕，请稍候...。</string>
+    <string name="connect_gesture_device">请连接手势设备</string>
+    <string name="activate_msg">启用</string>
+    <string name="activated">活性</string>
+    <string name="not_activated_msg">没有激活</string>
+    <string name="input_valid_url">请输入有效的网址</string>
+    <string name="all_members_cleared">所有成员均已清除</string>
+    <string name="logs_sent">日志发送</string>
+    <string name="closing_app_msg">正在关闭并重新启动应用程序，请稍候...。</string>
+    <string name="activate_application_error">激活应用程序请求错误！</string>
+    <string name="launch_settings_msg">正在启动设置，请稍候...。</string>
+    <string name="app_exit_msg">你确定要离开？</string>
+    <string name="sync_completed">同步完成</string>
+    <string name="no_mask">没有面具</string>
+    <string name="mask_detected">侦测到遮罩</string>
+    <string name="mask_not_detected">无法检测到遮罩</string>
+    <string name="connect_light_device">连接到灯光设备</string>
+    <string name="move_center_msg">请朝中心移动</string>
+    <string name="qr_validation_msg">QR验证未完成！</string>
+    <string name="gesture_launch_msg">正在启动“手势”屏幕，请稍候...。</string>
+    <string name="gesture_questions_failed">无法获得“问题，关闭手势”屏幕</string>
+    <string name="gesture_fetch_questions">正在提取问题，请稍候...。</string>
+    <string name="temperature_normal_msg">温度正常</string>
+    <string name="temperature_high_msg">温度高</string>
+    <string name="gesture_msg">将您的手掌放在屏幕旁边指示要回答的地方。如果必须重新开始，请双手握住。</string>
+    <string name="mask_enforce_msg">请戴上口罩，然后向左挥手以重新开始，否则向右挥手以继续。</string>
+    <string name="gesture_exit_msg">请联系管理员</string>
+    <string name="input_ip_address">请输入有效的IP地址</string>
+    <string name="input_mac_address">请输入有效的Mac地址</string>
+    <string name="app_restart">应用将重新启动</string>
+    <string name="update_setting_app_restart">更新设置，应用将重新启动</string>
+    <string name="app_restart_msg">应用遇到问题，将重新启动</string>
+    <string name="succeeded">成功</string>
+    <string name="contact_supervisor_msg">开始任何工作之前，请联系您的主管。</string>
+    <string name="nice_day_msg">祝你今天过得愉快！</string>
+    <string name="pass">经过</string>
+    <string name="out_of">在......之外</string>
+    <string name="syncing">正在同步</string>
+    <string name="loading">载入中</string>
+    <string name="loading_wait">加载请稍候....</string>
+    <string name="updating">更新中</string>
+    <string name="updating_wait">正在更新，请稍候...。</string>
+    <string name="member_empty_msg">会员编号不能为空</string>
+    <string name="accessid_empty_msg">存取ID不能为空</string>
+    <string name="scan_card_msg">请扫描卡以注册</string>
+    <string name="enable_liveness">启用活力</string>
+    <string name="image_sync_failed_msg">照片+同步+失败+用于+％d +个成员</string>
+    <string name="additional_locale_setting">次要语言</string>
+    <string name="add_device_message">如果您已经在门户网站SL NO上添加了该设备：</string>
+    <string name="language_message">主要语言和次要语言不能相同。请选择其他语言。</string>
+    <string name="allow_multilingual">允许多语言</string>
+    <string name="update_language_msg">正在更新+至+％s +语言，+请+等待...。</string>
+    <string name="updated_language_msg">已更新+至+％s +语言。</string>
+    <string name="gesture_questions_not_available">调查问卷不可用，“关闭手势”屏幕</string>
+</resources>

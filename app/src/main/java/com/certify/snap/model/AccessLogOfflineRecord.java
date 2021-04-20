@@ -54,12 +54,12 @@ public class AccessLogOfflineRecord {
         return 1L;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "AccessOfflineLog{" +
                 "id='" + primaryId + '\'' +
                 " jsonObj='"+ jsonObj +'\'' +
                 " offlineSync='"+ offlineSync +'\'' +
                 '}';
-    }
+    }*/
 }
