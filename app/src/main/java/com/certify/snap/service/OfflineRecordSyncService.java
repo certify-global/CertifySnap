@@ -205,7 +205,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                 jsonObject.put("thermalTemplate", json.getString("thermalTemplate"));
             }
             if (list.get(i).getOfflineSync() ==1){
-                jsonObject.put("utcOfflineDateTime", list.get(i).getDeviceTime());
+                jsonObject.put("utcOfflineDateTime", list.get(i).getUtcTime());
                 jsonObject.put("offlineSync", list.get(i).getOfflineSync());
             }
 
@@ -271,11 +271,19 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
         JSONObject jsonObject = new JSONObject();
         try {
             JSONObject json = new JSONObject(logList.get(i).getJsonObj());
-            jsonObject.put("id", json.getInt("id"));
-            jsonObject.put("firstName", json.getString("firstName"));
-            jsonObject.put("lastName", json.getString("lastName"));
+            if (json.has("id")) {
+                jsonObject.put("id", json.getInt("id"));
+            }
+            if (json.has("firstName")) {
+                jsonObject.put("firstName", json.getString("firstName"));
+            }
+            if (json.has("lastName")) {
+                jsonObject.put("lastName", json.getString("lastName"));
+            }
             jsonObject.put("temperature", json.getString("temperature"));
-            jsonObject.put("memberId", json.getString("memberId"));
+            if (json.has("memberId")) {
+                jsonObject.put("memberId", json.getString("memberId"));
+            }
             if (json.has("accessId")) {
                 jsonObject.put("accessId", json.getString("accessId"));
             }
@@ -305,7 +313,7 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             }
             
             if (logList.get(i).getOfflineSync()==1){
-                jsonObject.put("utcOfflineDateTime",json.getString("deviceTime"));
+                jsonObject.put("utcOfflineDateTime",json.getString("utcRecordDate"));
                 jsonObject.put("offlineSync", logList.get(i).getOfflineSync());
             }
 

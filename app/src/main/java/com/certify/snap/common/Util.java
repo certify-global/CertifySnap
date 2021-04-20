@@ -864,6 +864,7 @@ public class Util {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
             if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
+                obj.put("utcTime", Util.getUTCDate(""));
                 saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
             } else {
                 new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
@@ -884,6 +885,7 @@ public class Util {
             offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
             offlineRecordTemperatureMembers.setJsonObj(obj.toString());
             offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
+            offlineRecordTemperatureMembers.setUtcTime(obj.getString("utcTime"));
             offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
             offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
             offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
