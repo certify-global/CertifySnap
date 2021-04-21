@@ -38,8 +38,8 @@
     <string name="text_nopermission">許可なし、管理者に連絡してください！</string>
     <string name="text_expiredtime">賞味期限が過ぎていますので、管理者にご連絡ください！</string>
     <string name="text_passcodeexpired">パスコードの有効期限が切れています</string>
-    <string name="fahrenheit_symbol">°F</string>
-    <string name="centi">°C</string>
+    <string name="fahrenheit_symbol">&#160;°F</string>
+    <string name="centi">&#160;°C</string>
     <string name="temperature_normal">通常の温度：</string>
     <string name="temperature_anormaly">高温：</string>
     <string name="temperature_failresult">温度を取得できませんでした！</string>
@@ -280,8 +280,8 @@
     <string name="bluetooth_printer_connect_status">接続されたプリンター：</string>
 
 
-    <string name="centigrade" translatable="false"> ℃</string>
-    <string name="Fahrenheit_temp" translatable="false"> ℉</string>
+    <string name="centigrade" translatable="false">&#160;℃</string>
+    <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
     <string name="endpoint_api">Api</string>
     <string name="protocol_text">https：//</string>
     <string name="hostname">.certify.me</string>

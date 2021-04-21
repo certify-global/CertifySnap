@@ -463,9 +463,12 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 break;
             /*case "ja":
                 languageName = "Japanese";
-                break;*/
-            /*case "zh":
+                break;
+            case "zh":
                 languageName = "Chinese";
+                break;
+            case "kn":
+                languageName = "Kannada";
                 break;*/
         }
         return languageName;
@@ -553,13 +556,22 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.fileCode = "ja-rJP";
                 languageData.offline = offlineVal;
             }
-            break;*/
+            break;
 
-            /*case 10: {
+            case 10: {
                 languageData.languageId = value;
                 languageData.name = "Chinese";
                 languageData.languageCode = "zh";
                 languageData.fileCode = "zh-rCN";
+                languageData.offline = offlineVal;
+            }
+            break;
+
+            case 11: {
+                languageData.languageId = value;
+                languageData.name = "Kannada";
+                languageData.languageCode = "kn";
+                languageData.fileCode = "kn-rIN";
                 languageData.offline = offlineVal;
             }
             break;*/
