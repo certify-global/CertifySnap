@@ -41,8 +41,8 @@
     <string name="text_nopermission">没有权限，请联系管理员！</string>
     <string name="text_expiredtime">已过期，请联系管理员！</string>
     <string name="text_passcodeexpired">密码已过期</string>
-    <string name="fahrenheit_symbol">°F</string>
-    <string name="centi">摄氏</string>
+    <string name="fahrenheit_symbol">&#160;°F</string>
+    <string name="centi">&#160;°C</string>
     <string name="temperature_normal">温度正常：</string>
     <string name="temperature_anormaly">温度高：</string>
     <string name="temperature_failresult">无法获取温度！</string>
@@ -284,8 +284,8 @@
     <string name="bluetooth_printer_connect_status">连接的打印机：</string>
 
 
-    <string name="centigrade" translatable="false"> ℃</string>
-    <string name="Fahrenheit_temp" translatable="false"> ℉</string>
+    <string name="centigrade" translatable="false">&#160;℃</string>
+    <string name="Fahrenheit_temp" translatable="false">&#160;℉</string>
     <string name="endpoint_api">阿皮</string>
     <string name="protocol_text">https：//</string>
     <string name="hostname">.certify.me</string>
@@ -446,8 +446,8 @@
     <string name="error_message_no_usb">找不到USB设备</string>
     <string name="progress_dialog_message_communication_start">开始交流…</string>
     <string name="progress_dialog_message_transfer_start">转移开始...</string>
-    <string name="text_ip_address">地址：+％1 $ s</string>
-    <string name="text_copied">已复制：+％1 $ s</string>
+    <string name="text_ip_address">地址：％1$s</string>
+    <string name="text_copied">已复制：％1$s</string>
     <string name="pair_printer_message">请取消配对并再次配对打印机</string>
 
     <string-array name="work_path_entries">
@@ -692,7 +692,7 @@
     <string name="add_device_message">如果您已经在门户网站SL NO上添加了该设备：</string>
     <string name="language_message">主要语言和次要语言不能相同。请选择其他语言。</string>
     <string name="allow_multilingual">允许多语言</string>
-    <string name="update_language_msg">正在更新+至+％s +语言，+请+等待...。</string>
-    <string name="updated_language_msg">已更新+至+％s +语言。</string>
+    <string name="update_language_msg">Updating to %s language, Please wait...</string>
+    <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">调查问卷不可用，“关闭手势”屏幕</string>
 </resources>
