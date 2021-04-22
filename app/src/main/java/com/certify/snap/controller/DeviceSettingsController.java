@@ -173,6 +173,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             DatabaseController.getInstance().updateLanguageDataToDB(languageDataDb);
         } else {
             LanguageData languageData = getLanguageData(languageId, false);
+            if (languageData.languageId == 0) return;
             DatabaseController.getInstance().insertLanguagesToDB(languageData);
         }
     }
