@@ -444,13 +444,13 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             case "es":
                 languageName = "Spanish";
                 break;
-            case "de":
+            /*case "de":
                 languageName = "German";
-                break;
+                break;*/
             case "fr":
                 languageName = "French";
                 break;
-            case "it":
+            /*case "it":
                 languageName = "Italian";
                 break;
             case "hi":
@@ -461,7 +461,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 break;
             case "te":
                 languageName = "Telugu";
-                break;
+                break;*/
             /*case "ja":
                 languageName = "Japanese";
                 break;
@@ -496,14 +496,14 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             }
             break;
 
-            case 3: {
+            /*case 3: {
                 languageData.languageId = value;
                 languageData.name = "German";
                 languageData.languageCode = "de";
                 languageData.fileCode = "de-rDE";
                 languageData.offline = offlineVal;
             }
-            break;
+            break;*/
 
             case 4: {
                 languageData.languageId = value;
@@ -514,7 +514,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
             }
             break;
 
-            case 5: {
+            /*case 5: {
                 languageData.languageId = value;
                 languageData.name = "Italian";
                 languageData.languageCode = "it";
@@ -548,7 +548,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
                 languageData.fileCode = "te-rIN";
                 languageData.offline = offlineVal;
             }
-            break;
+            break;*/
 
             /*case 9: {
                 languageData.languageId = value;
