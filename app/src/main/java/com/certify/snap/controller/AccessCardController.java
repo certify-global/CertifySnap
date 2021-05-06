@@ -535,6 +535,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("facilityName", "");
                 obj.put("locationName", "");
                 obj.put("deviceTime", Util.getMMDDYYYYDate());
+                obj.put("timezone", Util.getDateTimeZone());
                 obj.put("sourceIP", Util.getLocalIpAddress());
                 obj.put("deviceData", Util.MobileDetails(context));
                 obj.put("guid", "");
@@ -610,6 +611,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("facilityName", "");
                 obj.put("locationName", "");
                 obj.put("deviceTime", Util.getMMDDYYYYDate());
+                obj.put("timezone", Util.getDateTimeZone());
                 obj.put("sourceIP", Util.getLocalIpAddress());
                 obj.put("deviceData", Util.MobileDetails(context));
                 obj.put("guid", "");
