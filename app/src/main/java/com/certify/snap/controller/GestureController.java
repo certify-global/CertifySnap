@@ -58,7 +58,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private static GestureController instance = null;
     private Context mContext;
     private SharedPreferences sharedPreferences;
-
     private Timer mTimer;
     private boolean wait = false;
     private boolean runCheck = false;
@@ -1013,6 +1012,16 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             if (languageDataList.size() == 1) {
                 isLanguageUpdated = true;
                 return false;
+            }
+            if (languageDataList.size() == 2) {
+                if (languageSelectionIndex >= 2) {
+                    languageSelectionIndex = 0;
+                }
+                languageSelectionIndex++;
+                DeviceSettingsController.getInstance().setLanguageToUpdate(languageDataList.get(languageSelectionIndex).languageCode);
+                languageSelectionIndex++;
+                isLanguageUpdated = true;
+                return true;
             }
             if (languageSelectionIndex >= languageDataList.size()) {
                 languageSelectionIndex = 0;

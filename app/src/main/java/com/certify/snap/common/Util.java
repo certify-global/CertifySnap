@@ -39,6 +39,7 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -2329,5 +2330,13 @@ public class Util {
         long timeZoneValue = TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
         timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings()/(3600 * 1000));
         return (timeZoneValue + ":00");
+    }
+
+    public static float convertDpToPixel(float dp, Context context){
+        return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    public static float convertPixelsToDp(float px, Context context){
+        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
