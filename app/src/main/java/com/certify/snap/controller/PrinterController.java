@@ -141,7 +141,9 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
     }
 
     public void printOnHighTemperature() {
-        if (AppSettings.isPrintHighTemperatureUsers()) {
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (AppSettings.isPrintHighTemperatureUsers() || (AppSettings.isPrintWaveUsers() && triggerType.equals(CameraController.triggerValue.WAVE.toString()))
+                || (AppSettings.isPrintQrCodeUsers() && triggerType.equals(CameraController.triggerValue.CODEID.toString()))) {
             new Thread(() -> {
                 if (AppSettings.isEnablePrinter()) {
                     print();
@@ -158,7 +160,13 @@ public class PrinterController implements BCPControl.LIBBcpControlCallBack {
 
     public boolean isPrintScan(boolean aboveThreshold) {
         boolean result = false;
-        if ((isPrintForUser() && !aboveThreshold) || (AppSettings.isPrintHighTemperatureUsers() && aboveThreshold)) {
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (!AppSettings.isPrintHighTemperatureUsers() && aboveThreshold) {
+            if (!triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
+                    !triggerType.equals(CameraController.triggerValue.CODEID.toString()))
+                return false;
+        }
+        if (isPrintForUser() || (AppSettings.isPrintHighTemperatureUsers() && aboveThreshold)) {
             if (AppSettings.isEnablePrinter()) {
                 try {
                     if (mPrint != null && !mPrint.getPrinterInfo().macAddress.isEmpty()) {
