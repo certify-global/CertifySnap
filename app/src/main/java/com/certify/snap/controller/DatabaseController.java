@@ -44,7 +44,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 9;
+    public static final int DB_VERSION = 10;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -1027,6 +1027,25 @@ public class DatabaseController {
             }
             file.delete();
         }
+    }
+
+    public void resetMemberAccessData() {
+        new Thread(() -> {
+            try {
+                if (databaseStore != null) {
+                    List<RegisteredMembers> membersList = databaseStore.findAllRegisterMembersList();
+                    if (membersList != null) {
+                        for (int i = 0; i < membersList.size(); i++) {
+                            RegisteredMembers member = membersList.get(i);
+                            member.isMemberAccessed = false;
+                            databaseStore.updateMember(member);
+                        }
+                    }
+                }
+            } catch (SQLiteException e) {
+                handleDBException(e);
+            }
+        }).start();
     }
 
     public void clearMemberData() {

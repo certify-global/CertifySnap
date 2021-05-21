@@ -211,5 +211,8 @@ public class GlobalParameters {
     public static final String LANGUAGE_TYPE = "LanguageType";
     public static final String LANGUAGE_TYPE_SECONDARY = "LanguageTypeSecondary";
     public static final String LANGUAGE_ALLOW_MULTILINGUAL = "LanguageAllowMultilingual";
+    public static final String ASK_QR_CODE_ALWAYS = "AskQrCode";
+    public static final String QR_CODE_MEMBER_TYPE = "QrCodeAccessMemberType";
+    public static final String FACE_QR_CODE = "FaceQrCode";
 
 }

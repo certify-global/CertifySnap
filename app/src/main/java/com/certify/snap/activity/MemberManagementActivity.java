@@ -848,7 +848,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
             if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId,
-                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId)) {
+                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();

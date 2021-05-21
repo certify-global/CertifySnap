@@ -83,6 +83,9 @@ public class AppSettings {
     private static boolean memberGroupSyncEnabled = false;
     private static String languageType = "en";
     private static boolean multiLingualEnabled = false;
+    private static boolean askQrCodeAlways = true;
+    private static String qrCodeMemberTypes = "";
+    private static boolean faceQrCode = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -158,6 +161,10 @@ public class AppSettings {
         memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC,false);
         languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
         multiLingualEnabled = sharedPreferences.getBoolean(GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL,false);
+        askQrCodeAlways = sharedPreferences.getBoolean(GlobalParameters.ASK_QR_CODE_ALWAYS, false);
+        qrCodeMemberTypes = sharedPreferences.getString(GlobalParameters.QR_CODE_MEMBER_TYPE, "");
+        faceQrCode = sharedPreferences.getBoolean(GlobalParameters.FACE_QR_CODE, false);
+
     }
 
     public static String getThermalScanTitle() {
@@ -467,6 +474,18 @@ public class AppSettings {
 
     public static boolean isMultiLingualEnabled() {
         return multiLingualEnabled;
+    }
+
+    public static boolean isScanOnQrEnabled() {
+        return (askQrCodeAlways);
+    }
+
+    public static String getQrCodeMemberTypes() {
+        return qrCodeMemberTypes;
+    }
+
+    public static boolean isFaceQrCode() {
+        return faceQrCode;
     }
 
     public static void getTextSettings(Context context) {

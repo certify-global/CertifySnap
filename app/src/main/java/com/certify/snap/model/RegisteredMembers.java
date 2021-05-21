@@ -1,7 +1,5 @@
 package com.certify.snap.model;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
@@ -32,6 +30,7 @@ public class RegisteredMembers {
     public String networkId;
     public String accessFromTime;
     public String accessToTime;
+    public boolean isMemberAccessed;
 
     public String getNetworkId() {
         return networkId;
@@ -182,6 +181,14 @@ public class RegisteredMembers {
 
     public void setAccessToTime(String accessToTime) {
         this.accessToTime = accessToTime;
+    }
+
+    public boolean isMemberAccessed() {
+        return isMemberAccessed;
+    }
+
+    public void setMemberAccessed(boolean memberAccessed) {
+        isMemberAccessed = memberAccessed;
     }
 
     @Override

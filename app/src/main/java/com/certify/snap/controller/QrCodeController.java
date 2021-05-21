@@ -1,5 +1,9 @@
 package com.certify.snap.controller;
 
+import android.util.Log;
+
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 
 public class QrCodeController {
@@ -9,6 +13,8 @@ public class QrCodeController {
     private final String QR_FORMAT_BEFORE_DATE = "/OC";
     private final String QR_FORMAT_GENERIC = "/A:";
     private final String QR_DATE_FORMAT = "yyyyMMdd";
+    private boolean isQrCodeMemberMatch = false;
+    private UserExportedData data = null;
 
     public static QrCodeController getInstance() {
         if (mInstance == null) {
@@ -62,5 +68,26 @@ public class QrCodeController {
             result = true;
         }
         return result;
+    }
+
+    public void setQrCodeMemberMatch(boolean value) {
+        isQrCodeMemberMatch = value;
+    }
+
+    public boolean isFaceSearchedOnQrCode() {
+        return (AppSettings.isQrCodeEnabled() && AppSettings.isScanOnQrEnabled() && isQrCodeMemberMatch);
+    }
+
+    public UserExportedData getData() {
+        return data;
+    }
+
+    public void setData(UserExportedData data) {
+        this.data = data;
+    }
+
+    public void clearData () {
+        this.data = null;
+        isQrCodeMemberMatch = false;
     }
 }

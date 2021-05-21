@@ -54,4 +54,13 @@ public class IdentificationSettings {
     @SerializedName("cameraScanMode")
     public String cameraScanMode = "1";
 
+    @SerializedName("enableQRCode")
+    public String enableQRCode;
+
+    @SerializedName("enableFaceIdentification")
+    public String enableFaceIdentification;
+
+    @SerializedName("memberTypeId")
+    public String memberTypeId;
+
 }

@@ -39,6 +39,7 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -1413,6 +1414,9 @@ public class Util {
                         Util.writeInt(sharedPreferences, GlobalParameters.ScanMode, Integer.parseInt(identificationSettings.cameraScanMode));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_SCREEN, identificationSettings.enableAcknowledgementScreen.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.ACKNOWLEDGEMENT_TEXT, identificationSettings.acknowledgementText);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ASK_QR_CODE_ALWAYS, identificationSettings.enableQRCode.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.QR_CODE_MEMBER_TYPE, identificationSettings.memberTypeId);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.FACE_QR_CODE, identificationSettings.enableFaceIdentification.equals("1"));
                     }
 
                     //AccessControl Settings
@@ -2321,4 +2325,13 @@ public class Util {
         }
         return null;
     }
+
+    public static float convertDpToPixel(float dp, Context context){
+        return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    public static float convertPixelsToDp(float px, Context context){
+        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
 }
