@@ -2326,6 +2326,15 @@ public class Util {
         return null;
     }
 
+    public static String getDateTimeZone() {
+        Calendar mCalendar = new GregorianCalendar();
+        TimeZone mTimeZone = mCalendar.getTimeZone();
+        int mGMTOffset = mTimeZone.getRawOffset();
+        long timeZoneValue = TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
+        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings()/(3600 * 1000));
+        return (timeZoneValue + ":00");
+    }
+
     public static float convertDpToPixel(float dp, Context context){
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }

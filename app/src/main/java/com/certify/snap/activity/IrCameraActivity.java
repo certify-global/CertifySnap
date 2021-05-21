@@ -2542,8 +2542,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvVersionIr.setVisibility(View.GONE);
             } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
                 //logo.setVisibility(View.VISIBLE);
+                String text = tv_thermal.getText().toString();
                 if (qrCodeEnable && !AppSettings.isScanOnQrEnabled()) {
                     tv_thermal.setTextSize(22);
+                    if ((text.length() > 100)) {
+                        setLayoutMargins();
+                    }
+                } else {
+                    if ((text.length() > 100)) {
+                        tv_thermal.setTextSize(22);
+                    }
                 }
                 tv_thermal.setVisibility(View.VISIBLE);
                 tv_thermal_subtitle.setVisibility(View.VISIBLE);
@@ -3166,7 +3174,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (!isProDevice && userData != null && isRecordNotSent) {
                     userData.thermal = temperatureBitmap;
                     isRecordNotSent = false;
-                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, -1);
+                    int syncStatus;
+                    if (Util.isOfflineMode(IrCameraActivity.this)) {
+                        syncStatus = 1;
+                    } else {
+                        syncStatus = -1;
+                    }
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, syncStatus);
                 }
             }
         });
@@ -4077,5 +4091,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             params.setMargins(0, 230, 0, 0);
             img_logo.setLayoutParams(params);
         });
+    }
+
+    private void setLayoutMargins() {
+        RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
+        RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
+        tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
+        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
+        tv_thermal_subtitle.setMaxLines(2);
+        tv_thermal_subtitle.setEllipsize(TextUtils.TruncateAt.END);
+        String text = tv_thermal.getText().toString();
+        if (text.length() > 100) {
+            tv_thermal_subtitle.setTextSize(22);
+        }
     }
 }

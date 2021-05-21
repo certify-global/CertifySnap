@@ -299,6 +299,9 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (json.has("timezone")) {
                 jsonObject.put("timezone", json.getString("timezone"));
             }
+            if (json.has("timezone")) {
+                jsonObject.put("timezone", json.getString("timezone"));
+            }
             jsonObject.put("deviceData", json.getString("deviceData"));
             jsonObject.put("guid", json.getString("guid"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
