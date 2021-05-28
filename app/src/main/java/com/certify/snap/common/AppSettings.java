@@ -86,6 +86,8 @@ public class AppSettings {
     private static boolean askQrCodeAlways = true;
     private static String qrCodeMemberTypes = "";
     private static boolean faceQrCode = false;
+    private static int primaryIdentifier = 0;
+    private static int secondaryIdentifier = 0;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -164,6 +166,10 @@ public class AppSettings {
         askQrCodeAlways = sharedPreferences.getBoolean(GlobalParameters.ASK_QR_CODE_ALWAYS, false);
         qrCodeMemberTypes = sharedPreferences.getString(GlobalParameters.QR_CODE_MEMBER_TYPE, "");
         faceQrCode = sharedPreferences.getBoolean(GlobalParameters.FACE_QR_CODE, false);
+        String primaryValue = sharedPreferences.getString(GlobalParameters.PRIMARY_IDENTIFIER, "1");
+        primaryIdentifier = Integer.parseInt(primaryValue);
+        String secondaryValue = sharedPreferences.getString(GlobalParameters.SECONDARY_IDENTIFIER, "1");
+        secondaryIdentifier = Integer.parseInt(secondaryValue);
 
     }
 
@@ -486,6 +492,14 @@ public class AppSettings {
 
     public static boolean isFaceQrCode() {
         return faceQrCode;
+    }
+
+    public static int getPrimaryIdentifier() {
+        return primaryIdentifier;
+    }
+
+    public static int getSecondaryIdentifier() {
+        return secondaryIdentifier;
     }
 
     public static void getTextSettings(Context context) {

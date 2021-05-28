@@ -214,5 +214,7 @@ public class GlobalParameters {
     public static final String ASK_QR_CODE_ALWAYS = "AskQrCode";
     public static final String QR_CODE_MEMBER_TYPE = "QrCodeAccessMemberType";
     public static final String FACE_QR_CODE = "FaceQrCode";
+    public static final String PRIMARY_IDENTIFIER = "PrimaryIdentifier";
+    public static final String SECONDARY_IDENTIFIER = "SecondaryIdentifier";
 
 }

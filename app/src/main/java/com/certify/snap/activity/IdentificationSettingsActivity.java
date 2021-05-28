@@ -32,16 +32,18 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private static String TAG = IdentificationSettingsActivity.class.getSimpleName();
     Typeface rubiklight;
     SharedPreferences sp;
-    TextView btn_save, titles, qr_screen, tv_facial;
+    TextView btn_save, titles, qr_screen, tv_facial, secondaryIdTv;
     private RadioGroup rfidRg;
     private RadioButton rfidYesRb;
     private RadioButton rfidNoRb;
     EditText editTextDialogTimeout;
-    RadioGroup radio_group_facial,radio_group_display, radio_group_anonymous;
-    RadioButton radio_yes_facial, rAnonymousYesRb;
-    RadioButton radio_no_facial, rAnonymousNoRb;
+    RadioGroup radio_group_primary,radio_group_display, radio_group_anonymous, secIdentityRg;
+    RadioButton rAnonymousYesRb;
+    RadioButton rAnonymousNoRb;
     RadioButton rbguideyes,radio_yes_display,radio_no_display;
     RadioButton rbguideno;
+    RadioButton rbFaceRfidPrimary, rbQrCodeRfidPrimary, rbFacePrimary, rbQrCodePrimary, rbRfidPrimary;
+    RadioButton rbQrCodeRfidSecondary, rbFaceSecondary, rbQrCodeSecondary, rbRfidSecondary, rbNoneSecondary;
     EditText editTextDialogUserInput, editTextQRButton,editTextAcknowledge;
     TextView tv_display;
     TextView mAnonymousTv, qr_skip_button_enable_text,tv_acknowledge;
@@ -77,18 +79,33 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             qr_screen = findViewById(R.id.qr_screen);
             titles = findViewById(R.id.titles);
             scanMode = findViewById(R.id.tv_scan_mode);
+            secondaryIdTv = findViewById(R.id.secondary_identification_tv);
+
             btn_save.setTypeface(rubiklight);
             titles.setTypeface(rubiklight);
             qr_screen.setTypeface(rubiklight);
             scanMode.setTypeface(rubiklight);
+            secondaryIdTv.setTypeface(rubiklight);
+
             TextView rfId = findViewById(R.id.rfid_tv);
             rfId.setTypeface(rubiklight);
             rfidRg = findViewById(R.id.radio_group_rfid);
             rfidYesRb = findViewById(R.id.radio_yes_rfid);
             rfidNoRb = findViewById(R.id.radio_no_rfid);
-            radio_group_facial = findViewById(R.id.radio_group_facial);
-            radio_yes_facial = findViewById(R.id.radio_yes_facial);
-            radio_no_facial = findViewById(R.id.radio_no_facial);
+            radio_group_primary = findViewById(R.id.radio_group_primary);
+            rbFaceRfidPrimary = findViewById(R.id.face_id_rb_primary);
+            rbQrCodeRfidPrimary = findViewById(R.id.qr_code_rfid_rb_primary);
+            rbFacePrimary = findViewById(R.id.face_rb_primary);
+            rbQrCodePrimary = findViewById(R.id.qrcode_rb_primary);
+            rbRfidPrimary = findViewById(R.id.rfid_rb_primary);
+
+            secIdentityRg = findViewById(R.id.radio_group_secondary);
+            rbQrCodeRfidSecondary = findViewById(R.id.qrcode_rfid_rb_secondary);
+            rbFaceSecondary = findViewById(R.id.face_rb_secondary);
+            rbQrCodeSecondary = findViewById(R.id.qr_code_rb_secondary);
+            rbRfidSecondary = findViewById(R.id.rfid_rb_secondary);
+            rbNoneSecondary = findViewById(R.id.none_secondary);
+
             tv_facial = findViewById(R.id.tv_facial);
             tv_display = findViewById(R.id.tv_display);
             radio_group_display = findViewById(R.id.radio_group_display);
@@ -157,24 +174,9 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
 
                 }
             });
-            // Facial
-            if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
-                radio_yes_facial.setChecked(true);
-            } else {
-                radio_no_facial.setChecked(true);
-            }
-            radio_group_facial.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    System.out.println("Test CheckId" + checkedId);
-                    if (checkedId == R.id.radio_yes_facial) {
-                        radio_yes_facial.setChecked(true);
-                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
-                    } else {
-                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
-                    }
-                }
-            });
+
+            setPrimaryIdentifierListener();
+            setSecondaryIdentifierListener();
 
             if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 radio_yes_display.setChecked(true);
@@ -192,18 +194,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                     }
                 }
             });
-            radio_group_facial.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    System.out.println("Test CheckId" + checkedId);
-                    if (checkedId == R.id.radio_yes_facial) {
-                        radio_yes_facial.setChecked(true);
-                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, true);
-                    } else {
-                        Util.writeBoolean(sp, GlobalParameters.FACIAL_DETECT, false);
-                    }
-                }
-            });
+
             //Acknowledge
             if (sp.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false)) {
                 radio_yes_acknowledge.setChecked(true);
@@ -448,6 +439,118 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
         String languageType = AppSettings.getLanguageType();
         identificationSettings = DatabaseController.getInstance().getIdentificationSettingsId(
                 DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
+    }
 
+    private void setPrimaryIdentifierListener() {
+        int value = Integer.parseInt(sp.getString(GlobalParameters.PRIMARY_IDENTIFIER, "1"));
+        if (value == 1) {
+            rbFaceRfidPrimary.setChecked(true);
+
+            rbQrCodeRfidSecondary.setEnabled(false);
+            rbFaceSecondary.setEnabled(false);
+            rbRfidSecondary.setEnabled(false);
+            rbQrCodeSecondary.setEnabled(true);
+        } else if (value == 2) {
+            rbQrCodeRfidPrimary.setChecked(true);
+
+            rbQrCodeRfidSecondary.setEnabled(false);
+            rbRfidSecondary.setEnabled(false);
+            rbQrCodeSecondary.setEnabled(false);
+            rbFaceSecondary.setEnabled(true);
+        } else if (value == 3) {
+            rbFacePrimary.setChecked(true);
+
+            rbFaceSecondary.setEnabled(false);
+            rbRfidSecondary.setEnabled(true);
+            rbQrCodeSecondary.setEnabled(true);
+            rbQrCodeRfidSecondary.setEnabled(true);
+        } else if (value == 4) {
+            rbQrCodePrimary.setChecked(true);
+
+            rbRfidSecondary.setEnabled(false);
+            rbQrCodeRfidSecondary.setEnabled(false);
+            rbFaceSecondary.setEnabled(true);
+            rbQrCodeSecondary.setEnabled(true);
+        } else if (value == 5) {
+            rbRfidPrimary.setChecked(true);
+
+            rbQrCodeRfidSecondary.setEnabled(false);
+            rbQrCodeSecondary.setEnabled(false);
+            rbFaceSecondary.setEnabled(true);
+            rbRfidSecondary.setEnabled(true);
+        }
+
+        radio_group_primary.setOnCheckedChangeListener((radioGroup, id) -> {
+            if (id == R.id.face_id_rb_primary) {
+                rbFaceRfidPrimary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "1");
+                rbQrCodeRfidSecondary.setEnabled(false);
+                rbFaceSecondary.setEnabled(false);
+                rbRfidSecondary.setEnabled(false);
+                rbQrCodeSecondary.setEnabled(true);
+            } else if (id == R.id.qr_code_rfid_rb_primary) {
+                rbQrCodeRfidPrimary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "2");
+                rbQrCodeRfidSecondary.setEnabled(false);
+                rbRfidSecondary.setEnabled(false);
+                rbQrCodeSecondary.setEnabled(false);
+                rbFaceSecondary.setEnabled(true);
+            } else if (id == R.id.face_rb_primary) {
+                rbFacePrimary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "3");
+                rbFaceSecondary.setEnabled(false);
+                rbRfidSecondary.setEnabled(true);
+                rbQrCodeSecondary.setEnabled(true);
+                rbQrCodeRfidSecondary.setEnabled(true);
+            } else if (id == R.id.qrcode_rb_primary) {
+                rbQrCodePrimary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "4");
+                rbQrCodeRfidSecondary.setEnabled(false);
+                rbQrCodeSecondary.setEnabled(false);
+                rbFaceSecondary.setEnabled(true);
+                rbRfidSecondary.setEnabled(false);
+            } else if (id == R.id.rfid_rb_primary) {
+                rbRfidPrimary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "5");
+                rbRfidSecondary.setEnabled(false);
+                rbQrCodeRfidSecondary.setEnabled(false);
+                rbFaceSecondary.setEnabled(true);
+                rbQrCodeSecondary.setEnabled(true);
+            }
+        });
+    }
+
+    private void setSecondaryIdentifierListener() {
+        int value = Integer.parseInt(sp.getString(GlobalParameters.SECONDARY_IDENTIFIER, "1"));
+        if (value == 1) {
+            rbQrCodeRfidSecondary.setChecked(true);
+        } else if (value == 2) {
+            rbFaceSecondary.setChecked(true);
+        } else if (value == 3) {
+            rbRfidSecondary.setChecked(true);
+        } else if (value == 4) {
+            rbQrCodeSecondary.setChecked(true);
+        } else if (value == 5) {
+            rbNoneSecondary.setChecked(true);
+        }
+
+        secIdentityRg.setOnCheckedChangeListener((radioGroup, id) -> {
+            if (id == R.id.qrcode_rfid_rb_secondary) {
+                rbQrCodeRfidSecondary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "1");
+            } else if (id == R.id.face_rb_secondary) {
+                rbFaceSecondary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "2");
+            } else if (id == R.id.rfid_rb_secondary) {
+                rbRfidSecondary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "3");
+            } else if (id == R.id.qr_code_rb_secondary) {
+                rbQrCodeSecondary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "4");
+            } else if (id == R.id.none_secondary) {
+                rbNoneSecondary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "5");
+            }
+        });
     }
 }

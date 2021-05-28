@@ -63,4 +63,10 @@ public class IdentificationSettings {
     @SerializedName("memberTypeId")
     public String memberTypeId;
 
+    @SerializedName("enabledPrimary")
+    public String enablePrimary;
+
+    @SerializedName("enabledSecondary")
+    public String enabledSecondary;
+
 }

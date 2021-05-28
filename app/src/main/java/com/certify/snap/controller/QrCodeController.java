@@ -1,7 +1,5 @@
 package com.certify.snap.controller;
 
-import android.util.Log;
-
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;

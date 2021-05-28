@@ -6,10 +6,12 @@ import android.util.Log;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
+import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.ThermalImageUtil;
 
 public class CameraController {
@@ -31,6 +33,10 @@ public class CameraController {
     private  int deviceMode =0;
     private long scannerRemainingTime = 0;
     private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
+    private RegisteredMembers firstScanMember = null;
+    private RegisteredMembers secondScanMember = null;
+    private ScanProcessState scanProcessState = ScanProcessState.IDLE;
+    private UserExportedData data = null;
 
     public enum ScanState {
         IDLE,
@@ -38,6 +44,14 @@ public class CameraController {
         THERMAL_SCAN,
         GESTURE_SCAN,
         COMPLETE
+    }
+
+    public enum ScanProcessState {
+        IDLE,
+        FIRST_SCAN,
+        FIRST_SCAN_COMPLETE,
+        SECOND_SCAN,
+        SECOND_SCAN_COMPLETE
     }
 
     public static CameraController getInstance() {
@@ -185,6 +199,61 @@ public class CameraController {
         else if (length > 350)
             return 24;
         return 34;
+    }
+
+    public ScanProcessState getScanProcessState() {
+        return scanProcessState;
+    }
+
+    public void setScanProcessState(ScanProcessState scanProcessState) {
+        this.scanProcessState = scanProcessState;
+    }
+
+    private RegisteredMembers checkMemberMatch() {
+        RegisteredMembers registeredMember = null;
+        if ((firstScanMember != null && secondScanMember != null) &&
+                firstScanMember.memberid.equalsIgnoreCase(secondScanMember.memberid)) {
+            registeredMember = firstScanMember;
+        }
+        return registeredMember;
+    }
+
+    public RegisteredMembers getFirstScanMember() {
+        return firstScanMember;
+    }
+
+    public void setFirstScanMember(RegisteredMembers firstScanMember) {
+        this.firstScanMember = firstScanMember;
+    }
+
+    public RegisteredMembers getSecondScanMember() {
+        return secondScanMember;
+    }
+
+    public void setSecondScanMember(RegisteredMembers secondScanMember) {
+        this.secondScanMember = secondScanMember;
+    }
+
+    public UserExportedData getData() {
+        return data;
+    }
+
+    public void setData(UserExportedData data) {
+        this.data = data;
+    }
+
+    public void updateScanProcessState(RegisteredMembers registeredMembers) {
+        if (getScanProcessState() == ScanProcessState.FIRST_SCAN) {
+            setFirstScanMember(registeredMembers);
+            setScanProcessState(ScanProcessState.FIRST_SCAN_COMPLETE);
+        } else if (getScanProcessState() == ScanProcessState.SECOND_SCAN) {
+            setSecondScanMember(registeredMembers);
+            setScanProcessState(ScanProcessState.SECOND_SCAN_COMPLETE);
+        }
+    }
+
+    public void updateScanState(ScanProcessState state) {
+        setScanProcessState(state);
     }
 
     public void clearData() {
