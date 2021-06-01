@@ -1,6 +1,7 @@
 package com.certify.snap.api.response;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
@@ -21,7 +22,11 @@ public class AccessControlSettings {
     public String allowAnonymous = "0";
 
     @SerializedName("blockAccessHighTemperature")
-    public String blockAccessHighTemperature = "0";
+    public String blockAccessHighTemperature = "false";
+
+    @Nullable
+    @SerializedName("blockAccessOnHighTemperature")
+    public String blockAccessOnHighTemperature = "0";
 
     @SerializedName("doorControlTimeWired")
     public int doorControlTimeWired = 5;
