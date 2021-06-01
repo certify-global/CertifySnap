@@ -1428,7 +1428,6 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.EnableRelay, accessControlSettings.enableAutomaticDoors.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.AllowAnonymous, accessControlSettings.allowAnonymous.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.RelayNormalMode, accessControlSettings.relayMode.equals("1"));
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.StopRelayOnHighTemp, accessControlSettings.blockAccessHighTemperature.equals("true"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.StopRelayOnHighTemp, accessControlSettings.blockAccessOnHighTemperature.equals("1"));
                         Util.writeInt(sharedPreferences, GlobalParameters.RelayTime, accessControlSettings.doorControlTimeWired);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigand, accessControlSettings.enableAccessControl.equals("1"));

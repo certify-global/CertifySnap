@@ -21,10 +21,6 @@ public class AccessControlSettings {
     @SerializedName("allowAnonymous")
     public String allowAnonymous = "0";
 
-    @SerializedName("blockAccessHighTemperature")
-    public String blockAccessHighTemperature = "false";
-
-    @Nullable
     @SerializedName("blockAccessOnHighTemperature")
     public String blockAccessOnHighTemperature = "0";
 
