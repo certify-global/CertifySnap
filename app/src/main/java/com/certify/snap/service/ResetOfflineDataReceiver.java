@@ -14,8 +14,8 @@ public class ResetOfflineDataReceiver extends BroadcastReceiver {
         if (Util.isOfflineMode(context)) {
             DatabaseController.getInstance().deleteAllOfflineRecord();
         }
-        if (AppSettings.isScanOnQrEnabled()) {
+        /*if (AppSettings.isScanOnQrEnabled()) {
             DatabaseController.getInstance().resetMemberAccessData();
-        }
+        }*/
     }
 }

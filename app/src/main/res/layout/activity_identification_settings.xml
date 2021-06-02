@@ -404,6 +404,15 @@
                     android:textSize="@dimen/text_size_14"
                     android:theme="@style/MyCheckBox" />
 
+            <RadioButton
+                android:id="@+id/none_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/none"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
+
         </RadioGroup>
 
         <TextView

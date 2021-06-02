@@ -46,6 +46,43 @@ public class CameraController {
         COMPLETE
     }
 
+    public enum PrimaryIdentification {
+        FACE_OR_RFID (1),
+        QRCODE_OR_RFID(2),
+        FACE (3),
+        RFID(4),
+        QR_CODE(5),
+        NONE(6);
+
+        PrimaryIdentification(final int value) {
+            this.value = value;
+        }
+
+        private final int value;
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+    public enum SecondaryIdentification {
+        QRCODE_OR_RFID (1),
+        FACE(2),
+        RFID (3),
+        QR_CODE(4),
+        NONE(5);
+
+        SecondaryIdentification(final int value) {
+            this.value = value;
+        }
+
+        private final int value;
+
+        public int getValue() {
+            return value;
+        }
+    }
+
     public enum ScanProcessState {
         IDLE,
         FIRST_SCAN,
@@ -256,6 +293,33 @@ public class CameraController {
         setScanProcessState(state);
     }
 
+    public boolean isPrimarySecondaryMemberMatch() {
+        if ((scanProcessState == ScanProcessState.IDLE) ||
+                (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue())) {
+            return true;
+        }
+        boolean result = false;
+        if (qrCodeData != null) {
+            if (firstScanMember != null) {
+                if (firstScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
+                    result = true;
+                }
+            } else if (secondScanMember != null) {
+                if (secondScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
+                    result = true;
+                }
+            }
+        } else {
+            if (firstScanMember == null || secondScanMember == null) {
+                return false;
+            }
+            if (firstScanMember.primaryid == secondScanMember.primaryid) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
     public void clearData() {
         qrCodeData = null;
         qrCodeId = "";
@@ -268,6 +332,9 @@ public class CameraController {
         isAppExitTriggered = false;
         scanState = ScanState.IDLE;
         mTriggerType = triggerValue.CAMERA.toString();
+        firstScanMember = null;
+        secondScanMember = null;
+
     }
 
 }

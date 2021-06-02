@@ -1588,7 +1588,6 @@ public class Util {
 
     public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
         try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             JSONObject responseData = reportInfo.getJSONObject("responseData");
             String id = responseData.getString("id") == null ? "" : responseData.getString("id");
             String firstName = responseData.getString("firstName") == null ? "" : responseData.getString("firstName");

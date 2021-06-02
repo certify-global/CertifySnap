@@ -83,7 +83,7 @@ public class AppSettings {
     private static boolean memberGroupSyncEnabled = false;
     private static String languageType = "en";
     private static boolean multiLingualEnabled = false;
-    private static boolean askQrCodeAlways = true;
+    private static boolean askQrCodeAlways = false;
     private static String qrCodeMemberTypes = "";
     private static boolean faceQrCode = false;
     private static int primaryIdentifier = 0;
@@ -482,10 +482,6 @@ public class AppSettings {
         return multiLingualEnabled;
     }
 
-    public static boolean isScanOnQrEnabled() {
-        return (askQrCodeAlways);
-    }
-
     public static String getQrCodeMemberTypes() {
         return qrCodeMemberTypes;
     }
@@ -500,6 +496,10 @@ public class AppSettings {
 
     public static int getSecondaryIdentifier() {
         return secondaryIdentifier;
+    }
+
+    public static boolean isAskQrCodeAlwaysEnabled() {
+        return askQrCodeAlways;
     }
 
     public static void getTextSettings(Context context) {

@@ -23,6 +23,7 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,7 +43,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     RadioButton rAnonymousNoRb;
     RadioButton rbguideyes,radio_yes_display,radio_no_display;
     RadioButton rbguideno;
-    RadioButton rbFaceRfidPrimary, rbQrCodeRfidPrimary, rbFacePrimary, rbQrCodePrimary, rbRfidPrimary;
+    RadioButton rbFaceRfidPrimary, rbQrCodeRfidPrimary, rbFacePrimary, rbQrCodePrimary, rbRfidPrimary, rbNonePrimary;
     RadioButton rbQrCodeRfidSecondary, rbFaceSecondary, rbQrCodeSecondary, rbRfidSecondary, rbNoneSecondary;
     EditText editTextDialogUserInput, editTextQRButton,editTextAcknowledge;
     TextView tv_display;
@@ -98,6 +99,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             rbFacePrimary = findViewById(R.id.face_rb_primary);
             rbQrCodePrimary = findViewById(R.id.qrcode_rb_primary);
             rbRfidPrimary = findViewById(R.id.rfid_rb_primary);
+            rbNonePrimary = findViewById(R.id.none_primary);
 
             secIdentityRg = findViewById(R.id.radio_group_secondary);
             rbQrCodeRfidSecondary = findViewById(R.id.qrcode_rfid_rb_secondary);
@@ -446,76 +448,101 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
         if (value == 1) {
             rbFaceRfidPrimary.setChecked(true);
 
-            rbQrCodeRfidSecondary.setEnabled(false);
-            rbFaceSecondary.setEnabled(false);
-            rbRfidSecondary.setEnabled(false);
+            rbQrCodeRfidSecondary.setVisibility(View.GONE);
+            rbFaceSecondary.setVisibility(View.GONE);
+            rbRfidSecondary.setVisibility(View.GONE);
             rbQrCodeSecondary.setEnabled(true);
         } else if (value == 2) {
             rbQrCodeRfidPrimary.setChecked(true);
 
-            rbQrCodeRfidSecondary.setEnabled(false);
-            rbRfidSecondary.setEnabled(false);
-            rbQrCodeSecondary.setEnabled(false);
+            rbQrCodeRfidSecondary.setVisibility(View.GONE);
+            rbRfidSecondary.setVisibility(View.GONE);
+            rbQrCodeSecondary.setVisibility(View.GONE);
             rbFaceSecondary.setEnabled(true);
         } else if (value == 3) {
             rbFacePrimary.setChecked(true);
 
-            rbFaceSecondary.setEnabled(false);
+            rbFaceSecondary.setVisibility(View.GONE);
             rbRfidSecondary.setEnabled(true);
             rbQrCodeSecondary.setEnabled(true);
             rbQrCodeRfidSecondary.setEnabled(true);
         } else if (value == 4) {
             rbQrCodePrimary.setChecked(true);
 
-            rbRfidSecondary.setEnabled(false);
-            rbQrCodeRfidSecondary.setEnabled(false);
+            rbRfidSecondary.setVisibility(View.GONE);
+            rbQrCodeRfidSecondary.setVisibility(View.GONE);
             rbFaceSecondary.setEnabled(true);
             rbQrCodeSecondary.setEnabled(true);
         } else if (value == 5) {
             rbRfidPrimary.setChecked(true);
 
-            rbQrCodeRfidSecondary.setEnabled(false);
-            rbQrCodeSecondary.setEnabled(false);
+            rbQrCodeRfidSecondary.setVisibility(View.GONE);
+            rbQrCodeSecondary.setVisibility(View.GONE);
             rbFaceSecondary.setEnabled(true);
             rbRfidSecondary.setEnabled(true);
+        } else if (value == 6) {
+            rbNonePrimary.setChecked(true);
+
+            secondaryIdTv.setVisibility(View.GONE);
+            secIdentityRg.setVisibility(View.GONE);
         }
 
         radio_group_primary.setOnCheckedChangeListener((radioGroup, id) -> {
+            if (id != R.id.none_primary) {
+                secondaryIdTv.setVisibility(View.VISIBLE);
+                secIdentityRg.setVisibility(View.VISIBLE);
+            }
             if (id == R.id.face_id_rb_primary) {
                 rbFaceRfidPrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "1");
-                rbQrCodeRfidSecondary.setEnabled(false);
-                rbFaceSecondary.setEnabled(false);
-                rbRfidSecondary.setEnabled(false);
+                rbQrCodeRfidSecondary.setVisibility(View.GONE);
+                rbFaceSecondary.setVisibility(View.GONE);
+                rbRfidSecondary.setVisibility(View.GONE);
+                rbQrCodeSecondary.setVisibility(View.VISIBLE);
                 rbQrCodeSecondary.setEnabled(true);
             } else if (id == R.id.qr_code_rfid_rb_primary) {
                 rbQrCodeRfidPrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "2");
-                rbQrCodeRfidSecondary.setEnabled(false);
-                rbRfidSecondary.setEnabled(false);
-                rbQrCodeSecondary.setEnabled(false);
+                rbQrCodeRfidSecondary.setVisibility(View.GONE);
+                rbRfidSecondary.setVisibility(View.GONE);
+                rbQrCodeSecondary.setVisibility(View.GONE);
+                rbFaceSecondary.setVisibility(View.VISIBLE);
                 rbFaceSecondary.setEnabled(true);
             } else if (id == R.id.face_rb_primary) {
                 rbFacePrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "3");
-                rbFaceSecondary.setEnabled(false);
+                rbFaceSecondary.setVisibility(View.GONE);
+                rbRfidSecondary.setVisibility(View.VISIBLE);
                 rbRfidSecondary.setEnabled(true);
+                rbQrCodeSecondary.setVisibility(View.VISIBLE);
                 rbQrCodeSecondary.setEnabled(true);
+                rbQrCodeRfidSecondary.setVisibility(View.VISIBLE);
                 rbQrCodeRfidSecondary.setEnabled(true);
             } else if (id == R.id.qrcode_rb_primary) {
                 rbQrCodePrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "4");
-                rbQrCodeRfidSecondary.setEnabled(false);
-                rbQrCodeSecondary.setEnabled(false);
+                rbQrCodeRfidSecondary.setVisibility(View.GONE);
+                rbQrCodeSecondary.setVisibility(View.GONE);
+                rbFaceSecondary.setVisibility(View.VISIBLE);
                 rbFaceSecondary.setEnabled(true);
-                rbRfidSecondary.setEnabled(false);
+                rbRfidSecondary.setVisibility(View.VISIBLE);
+                rbRfidSecondary.setEnabled(true);
             } else if (id == R.id.rfid_rb_primary) {
                 rbRfidPrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "5");
-                rbRfidSecondary.setEnabled(false);
-                rbQrCodeRfidSecondary.setEnabled(false);
+                rbRfidSecondary.setVisibility(View.GONE);
+                rbQrCodeRfidSecondary.setVisibility(View.GONE);
+                rbFaceSecondary.setVisibility(View.VISIBLE);
                 rbFaceSecondary.setEnabled(true);
+                rbQrCodeSecondary.setVisibility(View.VISIBLE);
                 rbQrCodeSecondary.setEnabled(true);
+            } else if (id == R.id.none_primary) {
+                rbNonePrimary.setChecked(true);
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "6");
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.IDLE);
+
+                secondaryIdTv.setVisibility(View.GONE);
+                secIdentityRg.setVisibility(View.GONE);
             }
         });
     }

@@ -72,9 +72,9 @@ public class QrCodeController {
         isQrCodeMemberMatch = value;
     }
 
-    public boolean isFaceSearchedOnQrCode() {
+    /*public boolean isFaceSearchedOnQrCode() {
         return (AppSettings.isQrCodeEnabled() && AppSettings.isScanOnQrEnabled() && isQrCodeMemberMatch);
-    }
+    }*/
 
     public UserExportedData getData() {
         return data;

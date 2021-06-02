@@ -712,5 +712,6 @@
     <string name="rfid">RFID</string>
     <string name="qr_code">Qr Code</string>
     <string name="rfid_msg">Secondary Identification\nPlease tap the badge to continue</string>
+    <string name="auth_failed">Authentication failed.</string>
 
 </resources>
