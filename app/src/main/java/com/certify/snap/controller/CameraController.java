@@ -297,7 +297,11 @@ public class CameraController {
     public boolean isPrimarySecondaryMemberMatch() {
         if ((scanProcessState == ScanProcessState.IDLE) ||
                 (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue()) ||
-                (QrCodeController.getInstance().isMemberCheckedIn())) {
+                (QrCodeController.getInstance().isMemberCheckedIn()) ||
+                (AppSettings.isAnonymousQREnable()) ||
+                (AccessCardController.getInstance().isEnableWiegandPt()) ||
+                (AccessCardController.getInstance().isAllowAnonymous()) ||
+                (GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
             Log.d(TAG, "Deep scanProcess State idle");
             return true;
         }
@@ -335,6 +339,18 @@ public class CameraController {
         this.requestId = requestId;
     }
 
+    /*public boolean validateAnonymousQrCode() {
+        boolean result = false;
+        if ((AppSettings.getPrimaryIdentifier() == PrimaryIdentification.FACE.getValue()) ||
+                (AppSettings.getPrimaryIdentifier() == PrimaryIdentification.FACE_OR_RFID.getValue()) ||
+                AppSettings.getSecondaryIdentifier() == SecondaryIdentification.FACE.getValue()) {
+            if (data != null && data.member == null) {
+                result = true;
+            }
+        }
+        return result;
+    }*/
+
     public void clearData() {
         qrCodeData = null;
         qrCodeId = "";
@@ -350,6 +366,7 @@ public class CameraController {
         firstScanMember = null;
         secondScanMember = null;
         scanProcessState = ScanProcessState.IDLE;
+        data = null;
     }
 
 }

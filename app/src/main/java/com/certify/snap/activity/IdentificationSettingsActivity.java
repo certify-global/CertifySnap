@@ -466,14 +466,14 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             rbRfidSecondary.setEnabled(true);
             rbQrCodeSecondary.setEnabled(true);
             rbQrCodeRfidSecondary.setEnabled(true);
-        } else if (value == 4) {
+        } else if (value == 5) {
             rbQrCodePrimary.setChecked(true);
 
             rbRfidSecondary.setVisibility(View.GONE);
             rbQrCodeRfidSecondary.setVisibility(View.GONE);
             rbFaceSecondary.setEnabled(true);
             rbQrCodeSecondary.setEnabled(true);
-        } else if (value == 5) {
+        } else if (value == 4) {
             rbRfidPrimary.setChecked(true);
 
             rbQrCodeRfidSecondary.setVisibility(View.GONE);
@@ -520,7 +520,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbQrCodeRfidSecondary.setEnabled(true);
             } else if (id == R.id.qrcode_rb_primary) {
                 rbQrCodePrimary.setChecked(true);
-                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "4");
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "5");
                 rbQrCodeRfidSecondary.setVisibility(View.GONE);
                 rbQrCodeSecondary.setVisibility(View.GONE);
                 rbFaceSecondary.setVisibility(View.VISIBLE);
@@ -529,7 +529,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbRfidSecondary.setEnabled(true);
             } else if (id == R.id.rfid_rb_primary) {
                 rbRfidPrimary.setChecked(true);
-                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "5");
+                Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "4");
                 rbRfidSecondary.setVisibility(View.GONE);
                 rbQrCodeRfidSecondary.setVisibility(View.GONE);
                 rbFaceSecondary.setVisibility(View.VISIBLE);
