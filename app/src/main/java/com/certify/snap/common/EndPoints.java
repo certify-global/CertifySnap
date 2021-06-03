@@ -40,5 +40,6 @@ public class EndPoints {
     public static final String SaveAnswer = domainUrl + "SaveAnswer";
     public static final String DeviceLogs = domainUrl + "SaveDeviceLogs";
     public static final String GetLanguages = domainUrl + "GetLanguages";
+    public static final String GetLastCheckinTime = domainUrl + "GetLastCheckinTime";
 
 }

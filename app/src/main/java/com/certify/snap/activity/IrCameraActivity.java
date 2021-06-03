@@ -165,7 +165,8 @@ import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
-        PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener {
+        PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener,
+        QrCodeController.QrCodeListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -1458,6 +1459,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         });
     }
 
+    @Override
+    public void onGetLastCheckInTime(boolean checkedIn) {
+        runOnUiThread(() -> {
+            if (checkedIn) {
+                QrCodeController.getInstance().setMemberCheckedIn(true);
+                isReadyToScan = true;
+                showCamera();
+                new Handler().postDelayed(() -> runTemperature(CameraController.getInstance().getRequestId(),
+                        CameraController.getInstance().getData()), 500);
+            } else {
+                enableQrCodeScan();
+                isReadyToScan = false;
+            }
+        });
+    }
+
     private class IrCameraListener implements CameraListener {
         private Camera.Parameters cameraParameters;
 
@@ -2083,17 +2100,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         imageTimer.schedule(new TimerTask() {
             public void run() {
                 disableLedPower();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        resetAcknowledgementScreen();
-                        clearData();
-                        resetHomeScreen();
-                        resetRfid();
-                        resetQrCode();
-                        resetGesture();
-                    }
-                });
+                runOnUiThread(() -> resetToHomePage());
                 this.cancel();
             }
         }, Long.parseLong(delayMilliTimeOut) * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
@@ -2353,6 +2360,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         data.compareResult = compareResult;
                                         data.faceScore = (int) similarValue;
                                         CameraController.getInstance().setData(data);
+                                        CameraController.getInstance().setRequestId(requestId);
                                         showResult(compareResult, requestId, registeredMembers.firstname, registeredMembers.memberid, formattedSimilarityScore, false);
                                         CameraController.getInstance().setCompareResult(compareResult);
                                         initSecondaryScan();
@@ -2501,7 +2509,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
                 registeredMemberslist = new ArrayList<>();
                 registeredMemberslist.add(matchedMember);
-                CameraController.getInstance().updateScanProcessState(matchedMember);
                 if (checkSecondaryIdentifier()) {
                     initSecondaryScan();
                     return;
@@ -2515,11 +2522,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 //launch the fragment
                 if (AppSettings.isAcknowledgementScreen()) {
                     if (accessCardController.getTapCount() == 0) {
+                        CameraController.getInstance().updateScanProcessState(matchedMember);
                         accessCardController.setTapCount(1);
                         launchAcknowledgementFragment();
                         setCameraPreviewTimer(15);
                         return;
                     }
+                } else {
+                    CameraController.getInstance().updateScanProcessState(matchedMember);
                 }
                 if (AppSettings.isTemperatureScanEnabled()) {
                     enableLedPower();
@@ -4212,16 +4222,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 isReadyToScan = false;
             } else {
                 RegisteredMembers registeredMember = registeredMemberslist.get(0);
-                if (MemberSyncDataModel.getInstance().isMemberTypeExists(registeredMemberslist)) {
-                    enableQrCodeScan();
+                if (registeredMember != null) {
                     isReadyToScan = false;
-                } else {
-                    if ((!registeredMember.isMemberAccessed)) {
+                    if (MemberSyncDataModel.getInstance().isMemberTypeExists(registeredMemberslist)) {
                         enableQrCodeScan();
-                        isReadyToScan = false;
                     } else {
-                        isReadyToScan = true;
-                        result = true;
+                        QrCodeController.getInstance().setListener(this);
+                        QrCodeController.getInstance().getLastCheckInTime(this, registeredMember.uniqueid);
                     }
                 }
             }
@@ -4295,6 +4302,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
         }
         return result;
+    }
+
+    private void showCamera() {
+        checkDeviceMode();
+        cancelPreviewIdleTimer();
+        enableLedPower();
+
+        if (maskEnabled) {
+            if (maskDetectBitmap == null && rgbBitmap != null) {
+                maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
+                processImageAndGetMaskStatus(maskDetectBitmap);
+            }
+        }
+
+        runOnUiThread(() -> {
+            if (rl_header == null) return;
+            CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+            changeVerifyBackground(R.color.colorTransparency, true);
+            relative_main.setVisibility(View.GONE);
+        });
     }
 
     private void resetToHomePage() {

@@ -37,6 +37,7 @@ public class CameraController {
     private RegisteredMembers secondScanMember = null;
     private ScanProcessState scanProcessState = ScanProcessState.IDLE;
     private UserExportedData data = null;
+    private int requestId = -1;
 
     public enum ScanState {
         IDLE,
@@ -295,11 +296,14 @@ public class CameraController {
 
     public boolean isPrimarySecondaryMemberMatch() {
         if ((scanProcessState == ScanProcessState.IDLE) ||
-                (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue())) {
+                (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue()) ||
+                (QrCodeController.getInstance().isMemberCheckedIn())) {
+            Log.d(TAG, "Deep scanProcess State idle");
             return true;
         }
         boolean result = false;
         if (qrCodeData != null) {
+            Log.d(TAG, "Deep qrcode data is not null");
             if (firstScanMember != null) {
                 if (firstScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
                     result = true;
@@ -310,14 +314,25 @@ public class CameraController {
                 }
             }
         } else {
+            Log.d(TAG, "Deep else");
             if (firstScanMember == null || secondScanMember == null) {
+                Log.d(TAG, "Deep else first or second scan member is null");
                 return false;
             }
             if (firstScanMember.primaryid == secondScanMember.primaryid) {
+                Log.d(TAG, "Deep else first or second scan member matches");
                 result = true;
             }
         }
         return result;
+    }
+
+    public int getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(int requestId) {
+        this.requestId = requestId;
     }
 
     public void clearData() {
@@ -334,7 +349,7 @@ public class CameraController {
         mTriggerType = triggerValue.CAMERA.toString();
         firstScanMember = null;
         secondScanMember = null;
-
+        scanProcessState = ScanProcessState.IDLE;
     }
 
 }

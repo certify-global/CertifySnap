@@ -1,10 +1,21 @@
 package com.certify.snap.controller;
 
-import com.certify.snap.common.AppSettings;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.certify.callback.GetLastCheckinTimeCallback;
+import com.certify.snap.async.AsyncGetLastCheckinTime;
+import com.certify.snap.common.EndPoints;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 
-public class QrCodeController {
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class QrCodeController implements GetLastCheckinTimeCallback {
     private final String TAG = QrCodeController.class.getSimpleName();
     private static QrCodeController mInstance = null;
     private final String QR_FORMAT_ON_DATE = "/OD";
@@ -13,12 +24,22 @@ public class QrCodeController {
     private final String QR_DATE_FORMAT = "yyyyMMdd";
     private boolean isQrCodeMemberMatch = false;
     private UserExportedData data = null;
+    private QrCodeListener listener = null;
+    private boolean memberCheckedIn = false;
+
+    public interface QrCodeListener {
+        void onGetLastCheckInTime(boolean checkedIn);
+    }
 
     public static QrCodeController getInstance() {
         if (mInstance == null) {
             mInstance = new QrCodeController();
         }
         return mInstance;
+    }
+
+    public void setListener(QrCodeListener callbackListener) {
+        listener = callbackListener;
     }
 
     /**
@@ -84,8 +105,53 @@ public class QrCodeController {
         this.data = data;
     }
 
+    public void getLastCheckInTime(Context context, String certifyId) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+            obj.put("certifyId", certifyId);
+            new AsyncGetLastCheckinTime(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GetLastCheckinTime, context).execute();
+        } catch (Exception e) {
+            Log.d(TAG, "getLanguagesApi" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void onJSONObjectListenerGetCheckInTime(JSONObject report, String status, JSONObject req) {
+        if (report == null) {
+            Logger.error(TAG, "onJSONObjectListenerGetCheckInTime", "Get Last Check-in time failed");
+            if (listener != null) {
+                listener.onGetLastCheckInTime(false);
+            }
+            return;
+        }
+        try {
+            if (report.getString("responseCode").equals("1")) {
+                if (listener != null) {
+                    listener.onGetLastCheckInTime(true);
+                }
+            } else {
+                if (listener != null) {
+                    listener.onGetLastCheckInTime(false);
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error in get last check in response " + e.getMessage());
+        }
+    }
+
+    public boolean isMemberCheckedIn() {
+        return memberCheckedIn;
+    }
+
+    public void setMemberCheckedIn(boolean memberCheckedIn) {
+        this.memberCheckedIn = memberCheckedIn;
+    }
+
     public void clearData () {
         this.data = null;
         isQrCodeMemberMatch = false;
+        memberCheckedIn = false;
     }
 }

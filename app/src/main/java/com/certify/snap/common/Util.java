@@ -2323,6 +2323,20 @@ public class Util {
             Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
                     + ", url = " + url, e.getMessage());
             return null;
+        }
+        return null;
+    }
+
+    public static JSONObject getJSONObjectLastCheckInTime(JSONObject req, String url, String header, Context context) {
+        try {
+            String responseTemp = Requestor.postJson(url, req, context);
+            if (responseTemp != null && !responseTemp.equals("")) {
+                return new JSONObject(responseTemp);
+            }
+        } catch (Exception e) {
+            Logger.error(LOG + "getJSONObject(JSONObject req, String url): req = " + req
+                    + ", url = " + url, e.getMessage());
+            return null;
 
         }
         return null;
