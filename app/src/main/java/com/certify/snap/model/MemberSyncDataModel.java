@@ -577,7 +577,11 @@ public class MemberSyncDataModel {
         switch (dbAddType) {
             case SCALE: {
                 if (membersList.size() == NUM_OF_RECORDS) {
-                    addToDatabase(context);
+                    if (isMemberSyncGroupIdEnabled()) {
+                        checkDatabaseMembers();
+                    } else {
+                        addToDatabase(context);
+                    }
                 }
             }
             break;
@@ -630,13 +634,79 @@ public class MemberSyncDataModel {
     }
 
     private boolean isMemberSyncGroupIdEnabled() {
-        return (!AppSettings.getMemberSyncGroupId().equals("0"));
+        return (AppSettings.isMemberGroupSyncEnabled() && !AppSettings.getMemberSyncGroupId().equals("0"));
     }
 
     private void updateSyncCompletion() {
         doSendBroadcast(SYNC_COMPLETED, 0, 0);
         if (failedImageSyncCount > 0) {
             doSendBroadcast(SYNC_PHOTO_FAILED, failedImageSyncCount, 0);
+        }
+    }
+
+    /**
+     * Method that checks if the members exists in the data and based on the group setting
+     * delete the member records
+     */
+    public void checkDatabaseMembers() {
+        isSyncing = true;
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    checkDatabase(membersList);
+                    emitter.onNext(true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable addMemberDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addMemberDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        Log.d(TAG, "SnapXT Add API response Member added " + membersList.size());
+
+                        //Add records fetched from server, add it to the database
+                        if (dbAddType == DatabaseAddType.SCALE) {
+                            addToDatabase(context);
+                        }
+                        addMemberDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in adding the member to data model from server");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    private void checkDatabase(List<RegisteredMembers> membersList) {
+        if (isMemberSyncGroupIdEnabled()) {
+            List<RegisteredMembers> dbMembersList = DatabaseController.getInstance().findAll();
+            List<RegisteredMembers> sameMemberList = new ArrayList<>();
+            for (int i = 0; i < dbMembersList.size(); i++) {
+                for (int j = 0; j < membersList.size(); j++) {
+                    RegisteredMembers dbMember = dbMembersList.get(i);
+                    RegisteredMembers member = membersList.get(j);
+                    if (member.primaryid == dbMember.primaryid) {
+                        sameMemberList.add(member);
+                    }
+                }
+            }
+            for (int k = 0; k < dbMembersList.size(); k++) {
+                RegisteredMembers member = dbMembersList.get(k);
+                if (!sameMemberList.contains(member)) {
+                    deleteRecord(member.firstname, member.primaryid);
+                }
+            }
         }
     }
 
