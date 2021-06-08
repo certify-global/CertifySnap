@@ -2005,7 +2005,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreview() {
-        if (!AppSettings.isTemperatureScanEnabled()) {
+        if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) {
             onTemperatureScanDisabled();
             return;
         }
@@ -3281,12 +3281,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onPrintComplete() {
+        if (!AppSettings.isTemperatureScanEnabled()) {
+            updateOnTemperatureScanDisabled();
+            return;
+        }
         onTemperatureUpdate();
         TemperatureController.getInstance().clearData();
     }
 
     @Override
     public void onPrintError() {
+        if (!AppSettings.isTemperatureScanEnabled()) {
+            updateOnTemperatureScanDisabled();
+            return;
+        }
         onTemperatureUpdate();
         TemperatureController.getInstance().clearData();
     }
@@ -3321,7 +3329,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String thermalText = "";
 
         PrinterController.getInstance().checkPrintFileExists();
-        if(AppSettings.isPrintLabelFace()) {
+        if(AppSettings.isPrintLabelFace() && rgbBitmap != null) {
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
             PrinterController.getInstance().updateImageForPrint(bitmap);
         }
@@ -3420,7 +3428,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         scanTimeText.setText(scanTime);
         userName.setText(name);
         thermalDisplayText.setText(thermalText);
-        if (highTemperature) {
+        if (highTemperature || !AppSettings.isTemperatureScanEnabled()) {
             tempPass.setText("");
             tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {
@@ -3549,7 +3557,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (isProDevice) {
                 delay = 1500;
             }
-            if (AppSettings.isTemperatureScanEnabled()) {
+            if (AppSettings.isTemperatureScanEnabled() || AppSettings.isFacialDetect()) {
                 CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
                 setCameraPreview();
             }
@@ -3832,13 +3840,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void onTemperatureScanDisabled() {
-        disableLedPower();
-        TemperatureController.getInstance().updateControllersOnTempScanDisabled(registeredMemberslist);
-        launchConfirmationFragment(String.valueOf(false));
-        if (isHomeViewEnabled) {
-            pauseCameraScan();
+        if (PrinterController.getInstance().isPrintScan(false) &&
+                CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
+            updatePrinterParameters(false);
+            PrinterController.getInstance().printOnNormalTemperature();
+            return;
         }
-        resetHomeScreen();
+        updateOnTemperatureScanDisabled();
     }
 
     private void onRfidOnlyEnabled(String cardId) {
@@ -4026,5 +4034,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (text.length() > 100) {
             tv_thermal_subtitle.setTextSize(22);
         }
+    }
+
+    private void updateOnTemperatureScanDisabled() {
+        disableLedPower();
+        TemperatureController.getInstance().updateControllersOnTempScanDisabled(registeredMemberslist);
+        launchConfirmationFragment(String.valueOf(false));
+        if (isHomeViewEnabled) {
+            pauseCameraScan();
+        }
+        resetHomeScreen();
     }
 }

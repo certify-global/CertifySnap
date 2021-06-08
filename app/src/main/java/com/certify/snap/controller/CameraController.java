@@ -8,9 +8,13 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
+import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.QrCodeData;
+import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.ThermalImageUtil;
+
+import java.util.List;
 
 public class CameraController {
     private final String TAG = CameraController.class.getSimpleName();
@@ -185,6 +189,31 @@ public class CameraController {
         else if (length > 350)
             return 24;
         return 34;
+    }
+
+    public boolean isMemberIdentified(List<RegisteredMembers> registeredMemberslist) {
+        boolean result = false;
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+            if (CameraController.getInstance().getQrCodeData() != null) {
+                if (AppSettings.isFacialDetect() && registeredMemberslist == null) {
+                    result = false;
+                } else {
+                    result = true;
+                }
+            }
+        } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
+            if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
+                if (AppSettings.isFacialDetect() && registeredMemberslist == null) {
+                    result = false;
+                } else {
+                    result = true;
+                }
+            }
+        } else if (registeredMemberslist != null) {
+            result = true;
+        }
+        return result;
     }
 
     public void clearData() {
