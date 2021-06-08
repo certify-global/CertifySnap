@@ -20,8 +20,8 @@ public class AccessControlSettings {
     @SerializedName("allowAnonymous")
     public String allowAnonymous = "0";
 
-    @SerializedName("blockAccessHighTemperature")
-    public String blockAccessHighTemperature = "0";
+    @SerializedName("blockAccessOnHighTemperature")
+    public String blockAccessOnHighTemperature = "0";
 
     @SerializedName("doorControlTimeWired")
     public int doorControlTimeWired = 5;
