@@ -26,6 +26,7 @@ import android.provider.MediaStore;
 import com.certify.snap.api.response.MemberListData;
 import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.async.AsyncTaskExecutorService;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
@@ -1417,7 +1418,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     private void enableHidReader() {
-        if (sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
+        if (AppSettings.isRfidEnabled()) {
             if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
                 startHidService();
             }

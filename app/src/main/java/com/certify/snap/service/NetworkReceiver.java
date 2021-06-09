@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -32,8 +33,8 @@ public class NetworkReceiver extends BroadcastReceiver {
     private void updateMemberSyncService(Context context) {
         try {
             if (!Util.isServiceRunning(MemberSyncService.class, context)) {
-                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                if (sharedPreferences != null && (AppSettings.isFacialDetect()
+                        || AppSettings.isRfidEnabled())) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
                         context.startService(new Intent(context, MemberSyncService.class));
                         Application.StartService(context);

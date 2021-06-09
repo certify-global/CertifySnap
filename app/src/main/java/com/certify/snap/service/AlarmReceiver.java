@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -21,7 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 //            if (Util.isServiceRunning(BeaconService.class, context))
 //                context.stopService(new Intent(context, BackgroundSyncService.class));
             context.startService(new Intent(context, DeviceHealthService.class));
-            if((sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT,true) || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE,false))
+            if((AppSettings.isFacialDetect() || AppSettings.isRfidEnabled())
                     && sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS,false))
                 context.startService(new Intent(context, MemberSyncService.class));
             //  BackgroundSyncService.callFromCreate = true;

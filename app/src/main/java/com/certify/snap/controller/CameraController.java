@@ -296,19 +296,11 @@ public class CameraController {
 
     //TODO: Optimize
     public boolean isPrimarySecondaryMemberMatch() {
-        if ((scanProcessState == ScanProcessState.IDLE) ||
-                (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue()) ||
-                (QrCodeController.getInstance().isMemberCheckedIn()) ||
-                (AppSettings.isAnonymousQREnable()) ||
-                (AccessCardController.getInstance().isEnableWiegandPt()) ||
-                (AccessCardController.getInstance().isAllowAnonymous()) ||
-                (GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
-            Log.d(TAG, "Deep scanProcess State idle");
+        if (!isPerformMemberMatch()) {
             return true;
         }
         boolean result = false;
         if (qrCodeData != null) {
-            Log.d(TAG, "Deep qrcode data is not null");
             if (firstScanMember != null) {
                 if (firstScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
                     result = true;
@@ -319,11 +311,10 @@ public class CameraController {
                 }
             }
         } else {
-            if (firstScanMember == null || secondScanMember == null) {
-                return false;
-            }
-            if (firstScanMember.primaryid == secondScanMember.primaryid) {
-                result = true;
+            if (firstScanMember != null && secondScanMember != null) {
+                if (firstScanMember.primaryid == secondScanMember.primaryid) {
+                    result = true;
+                }
             }
         }
         return result;
@@ -335,6 +326,20 @@ public class CameraController {
 
     public void setRequestId(int requestId) {
         this.requestId = requestId;
+    }
+
+    public boolean isPerformMemberMatch() {
+        boolean result = true;
+        if ((scanProcessState == ScanProcessState.IDLE) ||
+                (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue()) ||
+                (QrCodeController.getInstance().isMemberCheckedIn()) ||
+                (AppSettings.isAnonymousQREnable()) ||
+                (AccessCardController.getInstance().isEnableWiegandPt()) ||
+                (AccessCardController.getInstance().isAllowAnonymous()) ||
+                (GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
+            result = false;
+        }
+        return result;
     }
 
     /*public boolean validateAnonymousQrCode() {

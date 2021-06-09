@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.certify.snap.R;
+import com.certify.snap.controller.CameraController;
 
 public class AppSettings {
     private static final String TAG = AppSettings.class.getSimpleName();
@@ -111,7 +112,6 @@ public class AppSettings {
         confirmScreenAbove = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
         confirmScreenBelow = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
         confirmScreenDelayValue = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "3");
-        facialDetect = sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, false);
         captureImagesAll = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false);
         captureImagesAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, false);
         proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false);
@@ -136,9 +136,6 @@ public class AppSettings {
         printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
         acknowledgementScreen = sharedPreferences.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
         temperatureResultBar = sharedPreferences.getBoolean(GlobalParameters.RESULT_BAR, true);
-        qrCodeEnabled = (sharedPreferences.getBoolean(GlobalParameters.QR_SCREEN, false) ||
-                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false));
-        rfidEnabled = sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false);
         gestureProgressEnabled = sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR, false);
         gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
         scanType = sharedPreferences.getInt(GlobalParameters.ScanType,1);
@@ -170,7 +167,31 @@ public class AppSettings {
         primaryIdentifier = Integer.parseInt(primaryValue);
         String secondaryValue = sharedPreferences.getString(GlobalParameters.SECONDARY_IDENTIFIER, "1");
         secondaryIdentifier = Integer.parseInt(secondaryValue);
-
+        if ((primaryIdentifier == CameraController.PrimaryIdentification.FACE.getValue()) ||
+                (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) ||
+                (secondaryIdentifier == CameraController.SecondaryIdentification.FACE.getValue())) {
+            facialDetect = true;
+        } else {
+            facialDetect = false;
+        }
+        if ((primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) ||
+                (primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
+                (secondaryIdentifier == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
+                (secondaryIdentifier == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) ||
+                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+            qrCodeEnabled = true;
+        } else {
+            qrCodeEnabled = false;
+        }
+        if ((primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) ||
+                (primaryIdentifier == CameraController.PrimaryIdentification.RFID.getValue()) ||
+                (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) ||
+                (secondaryIdentifier == CameraController.SecondaryIdentification.RFID.getValue()) ||
+                (secondaryIdentifier == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue())) {
+            rfidEnabled = true;
+        } else {
+            rfidEnabled = false;
+        }
     }
 
     public static String getThermalScanTitle() {

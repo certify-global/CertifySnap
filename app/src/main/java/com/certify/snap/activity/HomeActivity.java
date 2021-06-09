@@ -278,8 +278,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                    || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (AppSettings.isFacialDetect()
+                    || AppSettings.isRfidEnabled())) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
                         isClearMemberData();
                         startService(new Intent(HomeActivity.this, MemberSyncService.class));

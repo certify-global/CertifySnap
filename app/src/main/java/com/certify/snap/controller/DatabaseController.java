@@ -18,6 +18,7 @@ import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.api.response.PrinterSettings;
 import com.certify.snap.api.response.ScanViewSettings;
 import com.certify.snap.api.response.TouchlessSettings;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -114,8 +115,8 @@ public class DatabaseController {
                         Util.stopMemberSyncService(mContext);
                         MemberSyncDataModel.getInstance().clear();
                     }
-                    if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                            || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                    if (sharedPreferences != null && (AppSettings.isFacialDetect()
+                            || AppSettings.isRfidEnabled())) {
                         if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
                             mContext.startService(new Intent(mContext, MemberSyncService.class));
                             Application.StartService(mContext);

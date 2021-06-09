@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -132,7 +133,7 @@ public class AddDeviceActivity extends SettingsBaseActivity implements JSONObjec
 
     private void startMemberSyncService() {
         try {
-            if ((sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true) || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))
+            if ((AppSettings.isFacialDetect() || AppSettings.isRfidEnabled())
                     && sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false))
                 startService(new Intent(this, MemberSyncService.class));
         } catch (Exception e) {

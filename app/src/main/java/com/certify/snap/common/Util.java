@@ -910,7 +910,7 @@ public class Util {
     public static String FaceParameters(Context context, UserExportedData data) {
         String value = "";
         SharedPreferences sp = Util.getSharedPreferences(context);
-        if (sp.getBoolean(GlobalParameters.FACIAL_DETECT, false)) {
+        if (AppSettings.isFacialDetect()) {
             String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
             value = "thresholdValue:" + thresholdvalue + ", " +
@@ -1404,10 +1404,10 @@ public class Util {
                     //Identification Settings
                     IdentificationSettings identificationSettings = deviceSettingsApi.identificationSettings;
                     if (identificationSettings != null) {
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, identificationSettings.enableQRCodeScanner.equals("1"));
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, identificationSettings.enableRFIDScanner.equals("1"));
+                        //Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, identificationSettings.enableQRCodeScanner.equals("1"));
+                        //Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, identificationSettings.enableRFIDScanner.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationSettings.identificationTimeout);
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, identificationSettings.enableFacialRecognition.equals("1"));
+                        //Util.writeBoolean(sharedPreferences, GlobalParameters.FACIAL_DETECT, identificationSettings.enableFacialRecognition.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.FACIAL_THRESHOLD, identificationSettings.facialThreshold);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, identificationSettings.enableConfirmationNameAndImage.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ANONYMOUS_ENABLE, identificationSettings.enableAnonymousQRCode.equals("1"));
