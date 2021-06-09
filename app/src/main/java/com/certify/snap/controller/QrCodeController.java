@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -147,6 +148,16 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public void setMemberCheckedIn(boolean memberCheckedIn) {
         this.memberCheckedIn = memberCheckedIn;
+    }
+
+    public boolean isOnlyQrCodeEnabled() {
+        boolean result = false;
+        if ((AppSettings.getPrimaryIdentifier()
+                == CameraController.PrimaryIdentification.QR_CODE.getValue()) &&
+                (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue())) {
+            result = true;
+        }
+        return result;
     }
 
     public void clearData () {

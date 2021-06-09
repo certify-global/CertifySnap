@@ -308,75 +308,24 @@ public class AccessCardController implements AccessCallback {
                 denyAccess();
                 return;
             }
-            if (((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect()) && isEnableWiegandPt()) || isAllowAnonymous()) {
+            if (isAllowAnonymous()) {
                 allowAccess();
                 return;
             }
-            if (AppSettings.isFacialDetect()) {
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
-                    if ((membersList != null && membersList.size() > 0)
-                            && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isAccessFaceNotMatch || isAccessTimeExpired(membersList.get(0))) {
-                            denyAccess();
-                        } else {
-                            allowAccess();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
-                    if ((membersList != null && membersList.size() > 0) &&
-                            (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
-                        if (isAccessTimeExpired(membersList.get(0))) {
-                            denyAccess();
-                        } else {
-                            allowAccess();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
-                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
-                            denyAccess();
-                        } else {
-                            allowAccess();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
-                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
-                            (membersList != null && membersList.size() > 0)) {
-                        if (membersList != null && (membersList.size() > 0) &&
-                            isAccessTimeExpired(membersList.get(0))) {
-                            denyAccess();
-                        } else {
-                            allowAccess();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-            }
-            if (AppSettings.isRfidEnabled()) {
-                if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
-                        AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
-                        AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                    if (isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+            if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()
+                && !QrCodeController.getInstance().isOnlyQrCodeEnabled()) {
+                if ((membersList != null && membersList.size() > 0)) {
+                    if (isAccessTimeExpired(membersList.get(0))) {
                         denyAccess();
                     } else {
                         allowAccess();
                     }
                 } else {
-                    denyAccess();
+                    if (isEnableWiegandPt()) {
+                        allowAccess();
+                    } else {
+                        denyAccess();
+                    }
                 }
             }
         }
@@ -384,7 +333,7 @@ public class AccessCardController implements AccessCallback {
 
     public void processUnlockDoorHigh(List<RegisteredMembers> membersList) {
         if (isAccessSignalEnabled()) {
-            if (((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect()) && isEnableWiegandPt()) || isAllowAnonymous()) {
+            if (isAllowAnonymous()) {
                 if (isBlockAccessOnHighTempEnabled()) {
                     denyAccess();
                 } else {
@@ -392,74 +341,20 @@ public class AccessCardController implements AccessCallback {
                 }
                 return;
             }
-            if (AppSettings.isFacialDetect()) {
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
-                    if ((membersList != null && membersList.size() > 0)
-                            && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isAccessFaceNotMatch || isAccessTimeExpired(membersList.get(0)) ||
-                                isBlockAccessOnHighTempEnabled()) {
-                            denyAccess();
-                        } else {
-                            allowAccessOnHighTemp();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) {
-                    if ((membersList != null && membersList.size() > 0) &&
-                            (AccessControlModel.getInstance().getRfidScanMatchedMember() == null)) {
-                        if (isBlockAccessOnHighTempEnabled() || isAccessTimeExpired(membersList.get(0))) {
-                            denyAccess();
-                        } else {
-                            allowAccessOnHighTemp();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue()) {
-                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                        if (isBlockAccessOnHighTempEnabled() ||
-                                isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
-                            denyAccess();
-                        } else {
-                            allowAccessOnHighTemp();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-                if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) {
-                    if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null ||
-                            (membersList != null && membersList.size() > 0)) {
-                        if ((isBlockAccessOnHighTempEnabled()) ||
-                                (membersList != null && (membersList.size() > 0) && isAccessTimeExpired(membersList.get(0)))) {
-                            denyAccess();
-                        } else {
-                            allowAccessOnHighTemp();
-                        }
-                    } else {
-                        denyAccess();
-                    }
-                    return;
-                }
-            }
-            if (AppSettings.isRfidEnabled()) {
-                if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue() ||
-                        AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue()) &&
-                        AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                    if (isBlockAccessOnHighTempEnabled() ||
-                            isAccessTimeExpired(AccessControlModel.getInstance().getRfidScanMatchedMember())) {
+            if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()
+                    && !QrCodeController.getInstance().isOnlyQrCodeEnabled()) {
+                if ((membersList != null && membersList.size() > 0)) {
+                    if (isAccessTimeExpired(membersList.get(0)) || isBlockAccessOnHighTempEnabled()) {
                         denyAccess();
                     } else {
-                        allowAccessOnHighTemp();
+                        allowAccess();
                     }
                 } else {
-                    denyAccess();
+                    if (isEnableWiegandPt() && !isBlockAccessOnHighTempEnabled()) {
+                        allowAccess();
+                    } else {
+                        denyAccess();
+                    }
                 }
             }
         }
@@ -469,7 +364,7 @@ public class AccessCardController implements AccessCallback {
         if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         RegisteredMembers registeredMember = new RegisteredMembers();
-        if ((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {
+        if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()) {
             try {
                 String qrCodeId = "";
                 String accessId = "";
@@ -499,7 +394,8 @@ public class AccessCardController implements AccessCallback {
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
                         registeredMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-                    } else if (AppSettings.isFacialDetect()) {
+                    } else if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.FACE.getValue())
+                                || (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue())) {
                         registeredMember = data.member;
                         registeredMember.setAccessid(mAccessCardID);
                     } else {
@@ -565,7 +461,7 @@ public class AccessCardController implements AccessCallback {
     public void sendAccessLogInvalid(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
         if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        if ((AppSettings.isRfidEnabled() || AppSettings.isFacialDetect() || AppSettings.isQrCodeEnabled())) {
+        if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()) {
             try {
                 String qrCodeId = "";
                 String accessId = "";

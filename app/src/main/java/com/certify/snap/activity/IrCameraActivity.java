@@ -117,6 +117,7 @@ import com.certify.snap.fragment.AcknowledgementFragment;
 import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.fragment.GestureFragment;
 import com.certify.snap.fragment.MaskEnforceFragment;
+import com.certify.snap.fragment.SecondaryIdentificationFragment;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
@@ -307,6 +308,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Fragment acknowledgementFragment;
     private Fragment gestureFragment;
     private Fragment maskEnforceFragment;
+    private Fragment secondaryScreenFragment;
     private boolean qrCodeReceived = false;
     private boolean resumedFromGesture = false;
     private boolean isRecordNotSent = false;
@@ -423,8 +425,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             preview.getDrawingCache(true);
             createCameraSource(BARCODE_DETECTION);
-            if ((AppSettings.getPrimaryIdentifier() == 2) || (AppSettings.getSecondaryIdentifier() == 1) ||
-                    (AppSettings.getPrimaryIdentifier() == 5) || (AppSettings.getSecondaryIdentifier() == 4)) {
+            if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) ||
+                    (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) ||
+                    (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
+                    (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
                 //Move the logo to the top
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -2372,40 +2376,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     }
                                     CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN);
                                     showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
-                                    /*if (AppSettings.isScanOnQrEnabled()) {
-                                        if ((!registeredMembers.isMemberAccessed) ||
-                                                (MemberSyncDataModel.getInstance().isMemberTypeExists(registeredMemberslist))) {
-                                            registeredMembers.isMemberAccessed = true;
-                                            DatabaseController.getInstance().updateMember(registeredMembers);
-                                            QrCodeController.getInstance().setQrCodeMemberMatch(true);
-                                            isReadyToScan = false;
-                                            clearLeftFace(null);
-                                            resetQrCode();
-                                            UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
-                                            data.compareResult = compareResult;
-                                            data.faceScore = (int) similarValue;
-                                            QrCodeController.getInstance().setData(data);
-                                            showResult(compareResult, requestId, registeredMembers.firstname, registeredMembers.memberid, formattedSimilarityScore, false);
-                                            CameraController.getInstance().setCompareResult(compareResult);
-                                            return;
-                                        }
-                                        showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
-                                    }*/
+
                                     CameraController.getInstance().setFaceVisible(true);
-                                    if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString())) {
-                                        //QrCodeController.getInstance().isQrCodeMemberMatch(registeredMembers);
-                                    } else if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
+                                    if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
                                         CameraController.getInstance().setTriggerType(CameraController.triggerValue.FACE.toString());
-                                    }
-                                    if (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) {
-                                        RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-                                        if (rfidScanMatchMember != null) {
-                                            if (rfidScanMatchMember.primaryid != registeredMembers.primaryid) {
-                                                AccessCardController.getInstance().setAccessFaceNotMatch(true);
-                                                runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
-                                                return;
-                                            }
-                                        }
                                     }
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
@@ -2500,6 +2474,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture()) return;
+
+        if (isTopFragmentSecondaryScreen()) {
+            closeFragment(secondaryScreenFragment);
+        }
         isReadyToScan = false;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
@@ -2534,13 +2512,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     if (checkSecondaryIdentifier()) {
                         initSecondaryScan();
                         new Handler().postDelayed(() -> {
-                            closeFragment();
+                            closeFragment(acknowledgementFragment);
                             accessCardController.setTapCount(0);
                         }, 1000);
                         return;
                     }
                     new Handler().postDelayed(() -> {
-                        closeFragment();
+                        closeFragment(acknowledgementFragment);
                         accessCardController.setTapCount(0);
                     }, 2000);
                 }
@@ -2894,7 +2872,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if ((!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) ||
                 (GestureController.getInstance().isGestureWithMaskEnforceEnabled())) {
             return;
-        } else if ((CameraController.getInstance().getScanProcessState()
+        }
+        if ((CameraController.getInstance().getScanProcessState()
                         != CameraController.ScanProcessState.SECOND_SCAN) &&
                 (CameraController.getInstance().getScanProcessState() != CameraController.ScanProcessState.IDLE) &&
                 (AppSettings.getSecondaryIdentifier() != CameraController.SecondaryIdentification.NONE.getValue())) {
@@ -3064,11 +3043,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void resetRfid() {
         if (rfIdEnable) {
             enableNfc();
-            /*if (!faceDetectEnabled ||
-                    ((AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_AND_FACE.getValue()) ||
-                            (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.ID_ONLY.getValue()))) {
-                isReadyToScan = false;
-            }*/
             CameraController.getInstance().setCameraOnRfid(false);
         }
     }
@@ -3703,7 +3677,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
                 setCameraPreview();
             }
-            new Handler().postDelayed(this::closeGestureFragment, delay);
+            new Handler().postDelayed(() -> closeFragment(gestureFragment), delay);
         });
     }
 
@@ -3874,7 +3848,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resumedFromGesture = true;
         runOnUiThread(() -> {
             int delay = 500;
-            new Handler().postDelayed(this::closeGestureFragment, delay);
+            new Handler().postDelayed(() -> closeFragment(gestureFragment), delay);
             boolean confirmAboveScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
             boolean confirmBelowScreen = sharedPreferences.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true);
             if (confirmAboveScreen || confirmBelowScreen) {
@@ -3953,31 +3927,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         transaction.commitAllowingStateLoss();
     }
 
-    private void closeFragment() {
-        if (acknowledgementFragment != null) {
-            if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+    private void closeFragment(Fragment fragment) {
+        if (fragment != null) {
+            if (isDestroyed() || isFinishing()) return;
             try {
-                getFragmentManager().beginTransaction().remove(acknowledgementFragment).commitAllowingStateLoss();
+                getFragmentManager().beginTransaction().remove(fragment).commitAllowingStateLoss();
             } catch (Exception e) {
                 Log.d(TAG, "Error in closing Acknowledgement fragment");
             }
         }
     }
 
-    private void closeGestureFragment() {
-        if (gestureFragment != null) {
-            if (isDestroyed() || isFinishing() || !isActivityResumed) return;
-            try {
-                getFragmentManager().beginTransaction().remove(gestureFragment).commitAllowingStateLoss();
-            } catch (Exception e) {
-                Log.d(TAG, "Error in closing Gesture fragment");
-            }
-        }
-    }
-
     private void resetAcknowledgementScreen() {
         if (AppSettings.isAcknowledgementScreen()) {
-            closeFragment();
+            closeFragment(acknowledgementFragment);
             AccessCardController.getInstance().setTapCount(0);
         }
     }
@@ -4014,13 +3977,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (checkSecondaryIdentifier()) {
                 initSecondaryScan();
                 new Handler().postDelayed(() -> {
-                    closeFragment();
+                    closeFragment(acknowledgementFragment);
                     accessCardController.setTapCount(0);
                 }, 1000);
                 return;
             }
             new Handler().postDelayed(() -> {
-                closeFragment();
+                closeFragment(acknowledgementFragment);
                 accessCardController.setTapCount(0);
             }, 2000);
         }
@@ -4138,6 +4101,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return result;
     }
 
+    private boolean isTopFragmentSecondaryScreen() {
+        boolean result = false;
+        Fragment fragment = getFragmentManager().findFragmentByTag("SecondaryIdentificationFragment");
+        if ((fragment != null && fragment.isVisible())) {
+            result = true;
+        }
+        return result;
+    }
+
     private String getTemperatureValue(boolean aboveThreshold) {
         int tempValue = 0;
         String tempValueStr = "";
@@ -4239,17 +4211,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private boolean initSecondaryScan() {
-        boolean result = false;
+    private void initSecondaryScan() {
         if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) {
             enableQrCodeScan();
             enableRfidScan();
             isReadyToScan = false;
         } else if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue()) {
             isReadyToScan = true;
-            result = true;
         } else if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
-            Toast.makeText(this, getString(R.string.rfid_msg), Toast.LENGTH_LONG).show();
+            displaySecondaryIdentificationScreen();
             enableRfidScan();
             isReadyToScan = false;
         } else if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
@@ -4275,12 +4245,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
         CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
-        return result;
+        setSecondaryIdentificationTimer();
     }
 
     private void enableFaceScan() {
         initRgbCamera();
         initIrCamera();
+        AccessCardController.getInstance().setCallbackListener(this);
     }
 
     private void disableFaceScan() {
@@ -4346,33 +4317,39 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return result;
     }
 
-    private void showCamera() {
-        checkDeviceMode();
-        cancelPreviewIdleTimer();
-        enableLedPower();
+    private void displaySecondaryIdentificationScreen() {
+        secondaryScreenFragment = new SecondaryIdentificationFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.dynamic_fragment_frame_layout, secondaryScreenFragment, "SecondaryIdentificationFragment");
+        transaction.addToBackStack("SecondaryIdentificationFragment");
+        transaction.commitAllowingStateLoss();
+    }
 
-        if (maskEnabled) {
-            if (maskDetectBitmap == null && rgbBitmap != null) {
-                maskDetectBitmap = rgbBitmap.copy(rgbBitmap.getConfig(), false);
-                processImageAndGetMaskStatus(maskDetectBitmap);
-            }
+    private void setSecondaryIdentificationTimer() {
+        if (imageTimer != null) {
+            imageTimer.cancel();
+            imageTimer = null;
         }
-
-        runOnUiThread(() -> {
-            if (rl_header == null) return;
-            CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            changeVerifyBackground(R.color.colorTransparency, true);
-            relative_main.setVisibility(View.GONE);
-        });
+        imageTimer = new Timer();
+        imageTimer.schedule(new TimerTask() {
+            public void run() {
+                resetToHomePage();
+            }
+        }, 10 * 1000); //wait 10 seconds for the secondary scan, go to home otherwise
     }
 
     private void resetToHomePage() {
         runOnUiThread(() -> {
+            if (isTopFragmentSecondaryScreen()) {
+                closeFragment(secondaryScreenFragment);
+            }
             resetAcknowledgementScreen();
             clearData();
             resetHomeScreen();
             resetRfid();
+            frameLayout.setVisibility(View.GONE);
             img_qr.setVisibility(View.GONE);
+            resetImageLogo();
             clearQrCodePreview();
             resetGesture();
             initScan();

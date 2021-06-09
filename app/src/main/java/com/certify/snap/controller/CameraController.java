@@ -294,6 +294,7 @@ public class CameraController {
         setScanProcessState(state);
     }
 
+    //TODO: Optimize
     public boolean isPrimarySecondaryMemberMatch() {
         if ((scanProcessState == ScanProcessState.IDLE) ||
                 (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue()) ||
@@ -318,13 +319,10 @@ public class CameraController {
                 }
             }
         } else {
-            Log.d(TAG, "Deep else");
             if (firstScanMember == null || secondScanMember == null) {
-                Log.d(TAG, "Deep else first or second scan member is null");
                 return false;
             }
             if (firstScanMember.primaryid == secondScanMember.primaryid) {
-                Log.d(TAG, "Deep else first or second scan member matches");
                 result = true;
             }
         }
