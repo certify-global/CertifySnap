@@ -4339,6 +4339,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         imageTimer = new Timer();
         imageTimer.schedule(new TimerTask() {
             public void run() {
+                disableLedPower();
                 resetToHomePage();
             }
         }, 10 * 1000); //wait 10 seconds for the secondary scan, go to home otherwise
