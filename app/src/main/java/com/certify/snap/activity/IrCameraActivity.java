@@ -2261,7 +2261,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (((CameraController.getInstance().getScanProcessState() == CameraController.ScanProcessState.IDLE) &&
                     !GestureController.getInstance().isGestureEnabledAndDeviceConnected()) ||
                 ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue()) &&
-                        (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.FACE.getValue()))) {
+                        !AppSettings.isPrimaryIdentifierFace())) {
             runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
             return;
         }

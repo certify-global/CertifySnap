@@ -523,6 +523,11 @@ public class AppSettings {
         return askQrCodeAlways;
     }
 
+    public static boolean isPrimaryIdentifierFace() {
+        return (primaryIdentifier == CameraController.PrimaryIdentification.FACE.getValue()) ||
+                (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue());
+    }
+
     public static void getTextSettings(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         thermalScanTitle = sharedPreferences.getString(GlobalParameters.Thermalscan_title, context.getString(R.string.thermal_scan));
