@@ -2586,13 +2586,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 String text = tv_thermal.getText().toString();
                 if (qrCodeEnable) {
                     tv_thermal.setTextSize(22);
-                    if ((text.length() > 100)) {
-                        setLayoutMargins();
-                    }
-                } else {
-                    if ((text.length() > 100)) {
-                        tv_thermal.setTextSize(22);
-                    }
+                    setLayoutMargins();
+                }
+                if ((text.length() > 100)) {
+                    tv_thermal.setTextSize(22);
                 }
                 tv_thermal.setVisibility(View.VISIBLE);
                 tv_thermal_subtitle.setVisibility(View.VISIBLE);
