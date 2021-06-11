@@ -206,8 +206,12 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     protected void onResume() {
         super.onResume();
         enableNfc();
-        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        }
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
+        }
     }
 
     @Override
@@ -215,13 +219,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         super.onPause();
         disableNfc();
         if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver = null;
         }
         if (mMessageReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver = null;
         }
     }

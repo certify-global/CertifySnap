@@ -809,9 +809,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             faceHelperIr.release();
             faceHelperIr = null;
         }
-        if (mMessageReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        }
 
         //FaceServer.getInstance().unInit();
         temperatureBitmap = null;
