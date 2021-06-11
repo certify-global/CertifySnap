@@ -67,24 +67,26 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            sharedPreferences = Util.getSharedPreferences(this);
-            //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
-            restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, MemberSyncService.class), PendingIntent.FLAG_ONE_SHOT);
-            alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            Calendar cal = Calendar.getInstance();
-            long sysTime = elapsedRealtime();
-            cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_MINUTES)));
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long currTime = Util.getCurrentTimeLong();
-            if (alarmService != null) {
-                alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
+            if (!MemberSyncDataModel.getInstance().isSyncing()) {
+                sharedPreferences = Util.getSharedPreferences(this);
+                //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
+                restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, MemberSyncService.class), PendingIntent.FLAG_ONE_SHOT);
+                alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+                Calendar cal = Calendar.getInstance();
+                long sysTime = elapsedRealtime();
+                cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_MINUTES)));
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                long currTime = Util.getCurrentTimeLong();
+                if (alarmService != null) {
+                    alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
+                }
+                resetCounters();
+                MemberSyncDataModel.getInstance().init(this);
+                AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+                taskExecutorService = executorService.getExecutorService();
+                Util.getmemberList(this, this);
             }
-            resetCounters();
-            MemberSyncDataModel.getInstance().init(this);
-            AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
-            taskExecutorService = executorService.getExecutorService();
-            Util.getmemberList(this, this);
         } catch (Exception e) {
             Logger.error(TAG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
         }

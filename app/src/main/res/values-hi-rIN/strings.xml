@@ -688,5 +688,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">प्रश्नावली उपलब्ध नहीं है, जेस्चर स्क्रीन समापन</string>
+    <string name="syncing_wait_msg">सिंक किया जा रहा है, कृपया प्रतीक्षा करें....</string>
 
 </resources>

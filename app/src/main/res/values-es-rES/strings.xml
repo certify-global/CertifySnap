@@ -701,5 +701,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">Cuestionario no disponible, pantalla de gesto de cierre</string>
+    <string name="syncing_wait_msg">Sincronizando, espere....</string>
 
 </resources>

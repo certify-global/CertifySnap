@@ -740,6 +740,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+            hidReceiver.clearAbortBroadcast();
+            hidReceiver = null;
+        }
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mMessageReceiver.clearAbortBroadcast();
+            mMessageReceiver = null;
         }
     }
 
@@ -780,6 +787,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+            hidReceiver.clearAbortBroadcast();
+            hidReceiver = null;
+        }
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mMessageReceiver.clearAbortBroadcast();
+            mMessageReceiver = null;
         }
         clearDisposables();
         if (faceEngineHelper != null) {
@@ -799,7 +813,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         }
 
-        FaceServer.getInstance().unInit();
+        //FaceServer.getInstance().unInit();
         temperatureBitmap = null;
         clearQrCodePreview();
         resetMaskStatus();

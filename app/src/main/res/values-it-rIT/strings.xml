@@ -699,5 +699,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">Fragebogen nicht verfügbar, Bildschirm "Geste schließen"</string>
+    <string name="syncing_wait_msg">Sincronizzazione, attendere prego....</string>
 
 </resources>

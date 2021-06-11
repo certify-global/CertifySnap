@@ -85,9 +85,14 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 sendSettingBroadcastMessage();
                 Thread.sleep(1000);
                 Util.restartApp(this);
-            }else if(command.equals("ALLMEMBER")){
-                startService(new Intent(this, MemberSyncService.class));
-                Application.StartService(this);
+            }else if(command.equals("ALLMEMBER")) {
+                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
+                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        startService(new Intent(this, MemberSyncService.class));
+                        Application.StartService(this);
+                    }
+                }
             }else if(command.equals("MEMBER")){
                 String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
                 Util.getMemberID(this,CertifyId);

@@ -136,7 +136,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     private RelativeLayout relative_management;
     int listPosition;
     int count=0;
-    private BroadcastReceiver hidReceiver;
+    private BroadcastReceiver hidReceiver, mMessageReceiver;
     private int activeMemberCount = 0;
     private int totalMemberCount = 0;
     private ExecutorService taskExecutorService;
@@ -187,14 +187,18 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         });
 
         initMember();
-        initData(true);
         initNfc();
-        initMemberSync();
 
-        if (MemberSyncDataModel.getInstance().isSyncing()){
+        if (MemberSyncDataModel.getInstance().isSyncing() &&
+                (MemberSyncDataModel.getInstance().getDbAddType() == MemberSyncDataModel.DatabaseAddType.SCALE)) {
+            initBroadcastReceiver();
+            MemberSyncDataModel.getInstance().setListener(this);
+            mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, "", getString(R.string.syncing_wait_msg));
             refresh.setEnabled(false);
         } else {
+            initData(true);
             refresh.setEnabled(true);
+            initMemberSync();
         }
     }
 
@@ -203,6 +207,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         super.onResume();
         enableNfc();
         LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
     }
 
     @Override
@@ -211,6 +216,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         disableNfc();
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+            hidReceiver.clearAbortBroadcast();
+            hidReceiver = null;
+        }
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mMessageReceiver.clearAbortBroadcast();
+            mMessageReceiver = null;
         }
     }
 
@@ -241,6 +253,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         activeMemberCount = totalMemberCount = 0;
                         datalist.clear();
                         mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
+                        MemberSyncDataModel.getInstance().setSyncing(true);
                         Util.getmemberList(this, this);
                     }
                 }
@@ -258,9 +271,22 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 break;
             case R.id.member_back:
                 //startActivity(new Intent(ManagementActivity.this, SettingActivity.class));
+                if (MemberSyncDataModel.getInstance().isSyncing()) {
+                    Toast.makeText(this, getString(R.string.syncing_wait_msg), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (MemberSyncDataModel.getInstance().isSyncing()) {
+            Toast.makeText(this, getString(R.string.syncing_wait_msg), Toast.LENGTH_LONG).show();
+            return;
+        }
+        super.onBackPressed();
     }
 
     private void initData(final boolean isNeedInit) {
@@ -1193,7 +1219,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        FaceServer.getInstance().unInit();
+        //FaceServer.getInstance().unInit();
         MemberSyncDataModel.getInstance().setListener(null);
         MemberSyncDataModel.getInstance().clear();
     }
@@ -1360,7 +1386,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
             } else if(response.responseSubCode.equals("101")){
                 DismissProgressDialog(mloadingprogress);
-                DatabaseController.getInstance().deleteAllMember();
                 refresh();
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
@@ -1463,14 +1488,35 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     @Override
     public void onMemberAddedToDb(RegisteredMembers addedMember) {
         runOnUiThread(() -> {
-            DismissProgressDialog(mloadingprogress);
-            if (testCount == totalMemberCount) {
-                mCountTv.setText(String.valueOf(datalist.size() + 1));
-            } else {
-                mCountTv.setText(testCount++ + " / " + totalMemberCount);
+            if (MemberSyncDataModel.getInstance().getDbAddType() == MemberSyncDataModel.DatabaseAddType.SERIAL) {
+                DismissProgressDialog(mloadingprogress);
+                if (testCount == totalMemberCount) {
+                    mCountTv.setText(String.valueOf(datalist.size() + 1));
+                    MemberSyncDataModel.getInstance().setSyncing(false);
+                } else {
+                    mCountTv.setText(testCount++ + " / " + totalMemberCount);
+                }
+                datalist.add(addedMember);
+                refreshMemberList(datalist);
             }
-            datalist.add(addedMember);
-            refreshMemberList(datalist);
         });
+    }
+
+    private void initBroadcastReceiver() {
+        mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int actionCode = intent.getIntExtra("actionCode", 0);
+                if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
+                    if (mloadingprogress != null && mloadingprogress.isShowing()) {
+                        mloadingprogress.dismiss();
+                        mloadingprogress = null;
+                    }
+                    initMemberSync();
+                    initData(false);
+                    refresh.setEnabled(true);
+                }
+            }
+        };
     }
 }

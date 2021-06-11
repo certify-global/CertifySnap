@@ -713,5 +713,6 @@
     <string name="qr_code">Qr Code</string>
     <string name="rfid_msg">Secondary Identification:\nPlease tap the badge to continue</string>
     <string name="auth_failed">Authentication failed.</string>
+    <string name="syncing_wait_msg">Syncing, Please wait....</string>
 
 </resources>
