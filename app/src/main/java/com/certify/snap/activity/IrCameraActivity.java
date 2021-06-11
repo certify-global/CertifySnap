@@ -738,6 +738,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             hidReceiver.clearAbortBroadcast();
             hidReceiver = null;
         }
+        if (mMessageReceiver != null) {
+            mMessageReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mMessageReceiver = null;
+        }
     }
 
     @Override
@@ -776,13 +781,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraHelperIr = null;
         }
         if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver = null;
         }
         if (mMessageReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver = null;
         }
         clearDisposables();
