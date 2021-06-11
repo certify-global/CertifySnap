@@ -698,5 +698,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait...</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">ಪ್ರಶ್ನಾವಳಿ ಲಭ್ಯವಿಲ್ಲ, ಗೆಸ್ಚರ್ ಪರದೆಯನ್ನು ಮುಚ್ಚಲಾಗುತ್ತಿದೆ</string>
+    <string name="syncing_wait_msg">ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ, ದಯವಿಟ್ಟು ಕಾಯಿರಿ ....</string>
 
 </resources>

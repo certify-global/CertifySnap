@@ -695,4 +695,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait...</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">调查问卷不可用，“关闭手势”屏幕</string>
+    <string name="syncing_wait_msg">正在同步，请稍候....</string>
+
 </resources>

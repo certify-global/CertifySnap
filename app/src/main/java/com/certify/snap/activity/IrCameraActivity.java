@@ -735,6 +735,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+            hidReceiver.clearAbortBroadcast();
+            hidReceiver = null;
         }
     }
 
@@ -775,6 +777,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+            hidReceiver.clearAbortBroadcast();
+            hidReceiver = null;
+        }
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mMessageReceiver.clearAbortBroadcast();
+            mMessageReceiver = null;
         }
         clearDisposables();
         if (faceEngineHelper != null) {
@@ -792,9 +801,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (mMessageReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+            mMessageReceiver.clearAbortBroadcast();
+            mMessageReceiver = null;
         }
 
-        FaceServer.getInstance().unInit();
+        //FaceServer.getInstance().unInit();
         temperatureBitmap = null;
         clearQrCodePreview();
         resetMaskStatus();

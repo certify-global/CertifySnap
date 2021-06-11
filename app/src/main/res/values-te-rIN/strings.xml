@@ -686,5 +686,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">ప్రశ్నాపత్రం అందుబాటులో లేదు, సంజ్ఞ స్క్రీన్‌ను మూసివేయడం</string>
+    <string name="syncing_wait_msg">సమకాలీకరిస్తోంది, దయచేసి వేచి ఉండండి ....</string>
 
 </resources>

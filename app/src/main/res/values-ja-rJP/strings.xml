@@ -690,4 +690,6 @@
     <string name="update_language_msg">Updating to %s language, Please wait....</string>
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">アンケートはご利用いただけません、ジェスチャー画面を閉じる</string>
+    <string name="syncing_wait_msg">同期しています。お待ちください....</string>
+
 </resources>

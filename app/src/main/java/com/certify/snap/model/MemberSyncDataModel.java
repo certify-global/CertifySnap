@@ -344,7 +344,6 @@ public class MemberSyncDataModel {
                 }
             }
         }
-        isSyncing = false;
     }
 
     /**
@@ -631,6 +630,14 @@ public class MemberSyncDataModel {
 
     public boolean isSyncing() {
         return isSyncing;
+    }
+
+    public void setSyncing(boolean syncing) {
+        isSyncing = syncing;
+    }
+
+    public DatabaseAddType getDbAddType() {
+        return dbAddType;
     }
 
     private boolean isMemberSyncGroupIdEnabled() {
