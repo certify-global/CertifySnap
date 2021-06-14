@@ -676,8 +676,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onResume");
         super.onResume();
         isActivityResumed = true;
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
-        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
+        }
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        }
         enableNfc();
         enableHidReader();
         //startCameraSource();
@@ -734,8 +738,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraHelperIr.stop();
         }
         if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver = null;
         }
         if (mMessageReceiver != null) {
@@ -803,11 +807,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             ConfigUtil.setTrackedFaceCount(this, faceHelperIr.getTrackedFaceCount());
             faceHelperIr.release();
             faceHelperIr = null;
-        }
-        if (mMessageReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-            mMessageReceiver.clearAbortBroadcast();
-            mMessageReceiver = null;
         }
 
         //FaceServer.getInstance().unInit();
