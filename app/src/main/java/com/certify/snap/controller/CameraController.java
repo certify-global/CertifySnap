@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
+import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
 import com.certify.snap.model.AccessControlModel;
@@ -35,6 +36,7 @@ public class CameraController {
     private  int deviceMode =0;
     private long scannerRemainingTime = 0;
     private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
+    private UserExportedData userExportedData = null;
 
     public enum ScanState {
         IDLE,
@@ -162,6 +164,14 @@ public class CameraController {
         this.scannerRemainingTime = scannerRemainingTime;
     }
 
+    public UserExportedData getUserExportedData() {
+        return userExportedData;
+    }
+
+    public void setUserExportedData(UserExportedData userExportedData) {
+        this.userExportedData = userExportedData;
+    }
+
     public void startProDeviceInitTimer(Context context) {
         if (scannerRemainingTime > 0) {
             long timeDuration = (scannerRemainingTime * 60 * 1000);
@@ -210,6 +220,8 @@ public class CameraController {
                     result = true;
                 }
             }
+        } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+            result = true;
         } else if (registeredMemberslist != null) {
             result = true;
         }
@@ -227,6 +239,7 @@ public class CameraController {
         }
         isAppExitTriggered = false;
         scanState = ScanState.IDLE;
+        userExportedData = null;
         mTriggerType = triggerValue.CAMERA.toString();
     }
 
