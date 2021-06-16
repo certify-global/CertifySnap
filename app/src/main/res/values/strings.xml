@@ -703,7 +703,6 @@
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">Questionnaire not available, Closing Gesture screen</string>
     <string name="ask_qr_code">Ask for QR code always</string>
-    <string name="face_qr_code">Use Face for identification over QR Code</string>
     <string name="primary_identification">Primary Identification</string>
     <string name="secondary_identification">Secondary Identification</string>
     <string name="face_or_rfid">Face or RFID</string>

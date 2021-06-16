@@ -793,6 +793,7 @@ public class Util {
             }
             if (!isInstitutionIdValid(context)) return;
             SharedPreferences sp = Util.getSharedPreferences(context);
+            String triggerType = data.triggerType;
             JSONObject obj = new JSONObject();
             obj.put("deviceId", Util.getSerialNumber());
             obj.put("temperature", data.temperature);
@@ -818,7 +819,7 @@ public class Util {
             RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
 
             //TODO Simplifying following logic
-            if (rfidScanMatchedMember != null) {
+            if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) && rfidScanMatchedMember != null) {
                 obj.put("id", rfidScanMatchedMember.getUniqueid());
                 obj.put("accessId", rfidScanMatchedMember.getAccessid());
                 obj.put("firstName", rfidScanMatchedMember.getFirstname());
@@ -829,10 +830,11 @@ public class Util {
                 obj.put("trqStatus", ""); // Send this empty if not Qr
                 obj.put("networkId", rfidScanMatchedMember.getNetworkId());
 
-            } else if (!AccessCardController.getInstance().getAccessCardID().isEmpty()) {
+            } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) &&
+                    !AccessCardController.getInstance().getAccessCardID().isEmpty()) {
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
                 updateFaceMemberValues(obj, data);
-            } else if (qrCodeData != null) {
+            } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
                 obj.put("id", qrCodeData.getUniqueId());
                 obj.put("accessId", qrCodeData.getAccessId());
                 obj.put("firstName", qrCodeData.getFirstName());
@@ -842,7 +844,7 @@ public class Util {
                 obj.put("memberTypeId", qrCodeData.getMemberTypeId());
                 obj.put("memberTypeName", qrCodeData.getMemberTypeName());
             } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && data.triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
                 updateFaceMemberValues(obj, data);
             } else {

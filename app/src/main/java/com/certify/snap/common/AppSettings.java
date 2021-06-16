@@ -165,7 +165,7 @@ public class AppSettings {
         faceQrCode = sharedPreferences.getBoolean(GlobalParameters.FACE_QR_CODE, false);
         String primaryValue = sharedPreferences.getString(GlobalParameters.PRIMARY_IDENTIFIER, "1");
         primaryIdentifier = Integer.parseInt(primaryValue);
-        String secondaryValue = sharedPreferences.getString(GlobalParameters.SECONDARY_IDENTIFIER, "1");
+        String secondaryValue = sharedPreferences.getString(GlobalParameters.SECONDARY_IDENTIFIER, "0");
         secondaryIdentifier = Integer.parseInt(secondaryValue);
         if ((primaryIdentifier == CameraController.PrimaryIdentification.FACE.getValue()) ||
                 (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) ||

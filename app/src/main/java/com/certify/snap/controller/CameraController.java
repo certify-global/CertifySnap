@@ -357,6 +357,12 @@ public class CameraController {
         return result;
     }*/
 
+    public void updateTriggerType(String triggerType) {
+        if (scanProcessState == ScanProcessState.FIRST_SCAN) {
+            mTriggerType = triggerType;
+        }
+    }
+
     public boolean isMemberIdentified(List<RegisteredMembers> registeredMemberslist) {
         boolean result = false;
         String triggerType = CameraController.getInstance().getTriggerType();

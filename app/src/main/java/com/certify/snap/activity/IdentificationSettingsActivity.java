@@ -548,17 +548,21 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     }
 
     private void setSecondaryIdentifierListener() {
-        int value = Integer.parseInt(sp.getString(GlobalParameters.SECONDARY_IDENTIFIER, "1"));
-        if (value == 1) {
-            rbQrCodeRfidSecondary.setChecked(true);
-        } else if (value == 2) {
-            rbFaceSecondary.setChecked(true);
-        } else if (value == 3) {
-            rbRfidSecondary.setChecked(true);
-        } else if (value == 4) {
-            rbQrCodeSecondary.setChecked(true);
-        } else if (value == 5) {
+        int value = Integer.parseInt(sp.getString(GlobalParameters.SECONDARY_IDENTIFIER, "0"));
+        if (value == 0) {
             rbNoneSecondary.setChecked(true);
+        } else {
+            if (value == 1) {
+                rbQrCodeRfidSecondary.setChecked(true);
+            } else if (value == 2) {
+                rbFaceSecondary.setChecked(true);
+            } else if (value == 3) {
+                rbRfidSecondary.setChecked(true);
+            } else if (value == 4) {
+                rbQrCodeSecondary.setChecked(true);
+            } else if (value == 5) {
+                rbNoneSecondary.setChecked(true);
+            }
         }
 
         secIdentityRg.setOnCheckedChangeListener((radioGroup, id) -> {

@@ -695,5 +695,15 @@
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">Questionnaire non disponible, écran Geste de fermeture</string>
     <string name="syncing_wait_msg">Synchronisation, veuillez patienter....</string>
+    <string name="ask_qr_code">Demandez toujours le code QR</string>
+    <string name="primary_identification">Identification primaire</string>
+    <string name="secondary_identification">Identification secondaire</string>
+    <string name="face_or_rfid">Visage ou RFID</string>
+    <string name="qr_code_or_rfid">QR code ou RFID</string>
+    <string name="face">Visage</string>
+    <string name="rfid">RFID</string>
+    <string name="qr_code">Qr Code</string>
+    <string name="rfid_msg">Identification secondaire:\nVeuillez appuyer sur le badge pour continuer</string>
+    <string name="auth_failed">Authentification échouée.</string>
 
 </resources>

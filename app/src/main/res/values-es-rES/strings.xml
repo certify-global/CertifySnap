@@ -702,5 +702,15 @@
     <string name="updated_language_msg">Updated to %s language.</string>
     <string name="gesture_questions_not_available">Cuestionario no disponible, pantalla de gesto de cierre</string>
     <string name="syncing_wait_msg">Sincronizando, espere....</string>
+    <string name="ask_qr_code">Pide siempre el código QR</string>
+    <string name="primary_identification">Identificación primaria</string>
+    <string name="secondary_identification">Identificación secundaria</string>
+    <string name="face_or_rfid">Cara o RFID</string>
+    <string name="qr_code_or_rfid">Código QR o RFID</string>
+    <string name="face">Cara</string>
+    <string name="rfid">RFID</string>
+    <string name="qr_code">Código QR</string>
+    <string name="rfid_msg">Identificación secundaria:\nPulse la insignia para continuar</string>
+    <string name="auth_failed">Falló la autenticación.</string>
 
 </resources>

@@ -152,8 +152,10 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public boolean isOnlyQrCodeEnabled() {
         boolean result = false;
-        if ((AppSettings.getPrimaryIdentifier()
-                == CameraController.PrimaryIdentification.QR_CODE.getValue()) &&
+        String triggerType = CameraController.getInstance().getTriggerType();
+        if (((AppSettings.getPrimaryIdentifier()
+                == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
+                triggerType.equals(CameraController.triggerValue.CODEID.toString()))  &&
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue())) {
             result = true;
         }

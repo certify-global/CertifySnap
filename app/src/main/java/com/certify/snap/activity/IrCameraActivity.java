@@ -673,8 +673,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onResume");
         super.onResume();
         isActivityResumed = true;
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
-        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        if (mMessageReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
+        }
+        if (hidReceiver != null) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        }
         enableNfc();
         enableHidReader();
         //startCameraSource();
@@ -739,13 +743,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraHelperIr.stop();
         }
         if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver = null;
         }
         if (mMessageReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver = null;
         }
     }
@@ -786,13 +790,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraHelperIr = null;
         }
         if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver = null;
         }
         if (mMessageReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
             mMessageReceiver = null;
         }
         clearDisposables();
@@ -1871,7 +1875,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString())) return;
             if (!qrCodeReceived) {
                 qrCodeReceived = true;
-                CameraController.getInstance().setTriggerType(CameraController.triggerValue.CODEID.toString());
+                CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
                 preview.stop();
                 frameLayout.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
@@ -2366,6 +2370,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+
+                                    if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
+                                        CameraController.getInstance().updateTriggerType(CameraController.triggerValue.FACE.toString());
+                                    }
+
                                     CameraController.getInstance().updateScanProcessState(registeredMembers);
 
                                     if (checkSecondaryIdentifier()) {
@@ -2383,9 +2392,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
 
                                     CameraController.getInstance().setFaceVisible(true);
-                                    if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
-                                        CameraController.getInstance().setTriggerType(CameraController.triggerValue.FACE.toString());
-                                    }
+
                                     UserExportedData data = new UserExportedData(rgb, ir, registeredMemberslist.get(0), (int) similarValue);
                                     data.compareResult = compareResult;
                                     data.faceScore = (int) similarValue;
@@ -2484,7 +2491,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             closeFragment(secondaryScreenFragment);
         }
         isReadyToScan = false;
-        CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
+        CameraController.getInstance().updateTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (accessCardController.isDoMemberMatch()) {
             accessCardController.setAccessCardId(cardId);
@@ -4242,6 +4249,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             enableRfidScan();
             isReadyToScan = false;
         } else if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
+            closeCameraPreview();
             if (AppSettings.isAskQrCodeAlwaysEnabled() || AppSettings.isAnonymousQREnable()) {
                 enableQrCodeScan();
                 isReadyToScan = false;
@@ -4376,5 +4384,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             pauseCameraScan();
         }
         resetHomeScreen();
+    }
+
+    private void closeCameraPreview() {
+        disableLedPower();
+        relative_main.setVisibility(View.VISIBLE);
     }
 }
