@@ -355,6 +355,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().init();
         CameraController.getInstance().startProDeviceInitTimer(this);
         //initAccessControl();
+        initNfc();
         initGesture();
         SoundController.getInstance().init(this);
 
@@ -2050,10 +2051,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             isReadyToScan = false;
         }*/
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
-        mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         enableNfc();
+    }
+
+    private void initNfc() {
+        mNfcAdapter = M1CardUtils.isNfcAble(this);
     }
 
     private void enableNfc() {
