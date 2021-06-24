@@ -1334,15 +1334,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tv_sync.setText(totalCount++ + " " + getString(R.string.out_of) + " " + memberCount);
         } else if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
             tv_sync.setText(getString(R.string.sync_completed));
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    tv_sync.setText("");
-                }
-            }, 2 * 1000);
+            new Handler().postDelayed(() -> tv_sync.setText(""), 2 * 1000);
         } else if (actionCode == MemberSyncDataModel.SYNC_PHOTO_FAILED) {
             String message = String.format(getString(R.string.image_sync_failed_msg), memberCount);
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        } else if (actionCode == MemberSyncDataModel.SYNC_GROUP_ID_NOT_EXIST) {
+            Toast.makeText(this, getString(R.string.sync_failed), Toast.LENGTH_LONG).show();
         } else {
             tv_sync.setText(getString(R.string.syncing));
         }
