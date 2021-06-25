@@ -680,9 +680,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         }
-        enableNfc();
+        if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
+            disableNfc();
+        } else {
+            enableNfc();
+        }
         enableHidReader();
-        //startCameraSource();
         String longVal = sharedPreferences.getString(GlobalParameters.DELAY_VALUE, "1");
         if (longVal.equals("")) {
             delayMilli = 1;
@@ -693,34 +696,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
             clearLeftFace(null);
         }
-        /*if (qrCodeEnable) {
-            runOnUiThread(() -> {
-                if (!AppSettings.isScanOnQrEnabled()) {
-                    img_qr.setVisibility(View.GONE);
-                    clearQrCodePreview();
-                    initQRCode();
-                    startCameraSource();
-                } else {
-                    if (cameraHelper != null) {
-                        cameraHelper.start();
-                    }
-                    if (cameraHelperIr != null) {
-                        cameraHelperIr.start();
-                    }
-                }
-            });
-        } else {
-            try {
-                if (cameraHelper != null) {
-                    cameraHelper.start();
-                }
-                if (cameraHelperIr != null) {
-                    cameraHelperIr.start();
-                }
-            } catch (RuntimeException e) {
-                Logger.error(TAG, "onResume()", "Exception occurred in starting CameraHelper, CameraIrHelper:" + e.getMessage());
-            }
-        }*/
         if (ApplicationController.getInstance().isDeviceBoot()) {
             showPrintMsgDialog();
             ApplicationController.getInstance().setDeviceBoot(false);
@@ -1240,15 +1215,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            /*if (qrCodeEnable) {
-                faceEngineHelper.initEngine(this);
-                if (!AppSettings.isScanOnQrEnabled()) {
-                    return;
-                }
-            }
-            faceEngineHelper.initEngine(this);
-            initRgbCamera();
-            initIrCamera();*/
             faceEngineHelper.initEngine(this);
             initScan();
         }
@@ -2051,13 +2017,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             isReadyToScan = false;
         }*/
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
-        mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         enableNfc();
     }
 
     private void initNfc() {
         mNfcAdapter = M1CardUtils.isNfcAble(this);
+        mPendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
     }
 
     private void enableNfc() {
@@ -2520,6 +2486,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 } else {
                     CameraController.getInstance().updateScanProcessState(matchedMember);
                     if (checkSecondaryIdentifier()) {
+                        disableNfc();
                         initSecondaryScan();
                         return;
                     }
@@ -3043,10 +3010,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetGesture();
         }
         resetRfid();
-        /* if (qrCodeEnable) {
-            resetQrCode();
-            return;
-        }*/
         resetImageLogo();
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
@@ -3151,6 +3114,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent != null && intent.getAction().equals(HIDService.HID_BROADCAST_ACTION)) {
+                    if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
+                        return;
+                    }
                     String data = intent.getStringExtra(HIDService.HID_DATA);
                     runOnUiThread(() -> {
                         if (!data.equals(HIDService.HID_RESTART_SERVICE)) {
