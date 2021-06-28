@@ -661,6 +661,7 @@
     <string name="launch_settings_msg">Launching Settings, Please wait....</string>
     <string name="app_exit_msg">Are you sure you want to exit?</string>
     <string name="sync_completed">Sync completed</string>
+    <string name="sync_failed">Member Sync failed</string>
     <string name="no_mask">Without Mask</string>
     <string name="mask_detected">Mask Detected</string>
     <string name="mask_not_detected">Unable to detect Mask</string>

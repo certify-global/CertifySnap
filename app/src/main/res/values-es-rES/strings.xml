@@ -660,6 +660,7 @@
     <string name="launch_settings_msg">Iniciando Configuración, espere....</string>
     <string name="app_exit_msg">¿Estás seguro de que quieres salir?</string>
     <string name="sync_completed">Sincronización completada</string>
+    <string name="sync_failed">Sincronización fallida</string>
     <string name="no_mask">Sin mascara</string>
     <string name="mask_detected">Máscara detectada</string>
     <string name="mask_not_detected">No se puede detectar la máscara</string>

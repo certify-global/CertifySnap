@@ -1495,7 +1495,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             if (MemberSyncDataModel.getInstance().getDbAddType() == MemberSyncDataModel.DatabaseAddType.SERIAL) {
                 DismissProgressDialog(mloadingprogress);
                 if (testCount == totalMemberCount) {
-                    mCountTv.setText(String.valueOf(datalist.size() + 1));
+                    if (!MemberSyncDataModel.getInstance().checkIfMemberExists(datalist, addedMember)) {
+                        mCountTv.setText(String.valueOf(datalist.size() + 1));
+                    }
                     MemberSyncDataModel.getInstance().setSyncing(false);
                 } else {
                     mCountTv.setText(testCount++ + " / " + totalMemberCount);
@@ -1504,6 +1506,14 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 refreshMemberList(datalist);
             }
         });
+    }
+
+    @Override
+    public void onMemberDeletedFromDb(RegisteredMembers member) {
+        if (MemberSyncDataModel.getInstance().checkIfMemberExists(datalist, member)) {
+            mCountTv.setText(String.valueOf(datalist.size()));
+            refreshMemberList(datalist);
+        }
     }
 
     private void initBroadcastReceiver() {

@@ -1421,7 +1421,6 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.FACE_QR_CODE, identificationSettings.enableFaceIdentification.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, identificationSettings.enablePrimary);
                         Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, identificationSettings.enabledSecondary);
-
                     }
 
                     //AccessControl Settings

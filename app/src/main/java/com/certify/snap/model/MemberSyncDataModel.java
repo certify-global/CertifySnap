@@ -46,14 +46,17 @@ public class MemberSyncDataModel {
     private DatabaseAddType dbAddType = DatabaseAddType.SCALE;
     private long index = 0;
     private int failedImageSyncCount = 0;
+    private RegisteredMembers deletedMember = null;
 
     public static final int SYNC_START = 1;
     public static final int SYNC_IN_PROGRESS = 2;
     public static final int SYNC_COMPLETED = 3;
-    public static final int SYNC_PHOTO_FAILED = 4;
+    public static final int SYNC_GROUP_ID_NOT_EXIST = 4;
+    public static final int SYNC_PHOTO_FAILED = 5;
 
     public interface SyncDataCallBackListener {
         void onMemberAddedToDb(RegisteredMembers member);
+        void onMemberDeletedFromDb(RegisteredMembers member);
     }
 
     public enum DatabaseAddType {
@@ -220,23 +223,36 @@ public class MemberSyncDataModel {
 
                             List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
                             if (membersList != null && membersList.size() > 0) {
-                                if (isMemberSyncGroupIdEnabled() &&
-                                    !AppSettings.getMemberSyncGroupId().contains(groupId)) {
-                                    deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId());
-                                    updateSyncCompletion();
-                                    emitter.onNext(null);
+                                if (isMemberSyncGroupIdEnabled() && !isGroupIdExists(groupId)) {
+                                    if (deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId())) {
+                                        deletedMember = membersList.get(0);
+                                    }
+                                    RegisteredMembers member1 = new RegisteredMembers();
+                                    member1.uniqueid = "-1";
+                                    emitter.onNext(member1);
                                 } else {
                                     member.setPrimaryId(membersList.get(0).getPrimaryId());
                                     emitter.onNext(member);
                                 }
                             } else {
-                                if (isMemberSyncGroupIdEnabled() &&
-                                    AppSettings.getMemberSyncGroupId().contains(groupId)) {
+                                List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
+                                if (members != null && members.size() > 0) {
+                                    index = members.size() + 1;
+                                } else {
                                     index = index + 1;
+                                }
+                                if (isMemberSyncGroupIdEnabled()) {
+                                    if (isGroupIdExists(groupId)) {
+                                        member.setPrimaryId(index);
+                                        emitter.onNext(member);
+                                    } else {
+                                        RegisteredMembers member1 = new RegisteredMembers();
+                                        member1.uniqueid = "0";
+                                        emitter.onNext(member1);
+                                    }
+                                } else {
                                     member.setPrimaryId(index);
                                     emitter.onNext(member);
-                                } else {
-                                    emitter.onNext(null);
                                 }
                             }
                         }
@@ -256,12 +272,24 @@ public class MemberSyncDataModel {
 
                     @Override
                     public void onNext(RegisteredMembers member) {
-                        if (member != null) {
+                        if (member != null && (!member.uniqueid.equals("0") &&
+                                !member.uniqueid.equals("-1"))) {
                             membersList.add(member);
                             Log.d(TAG, "SnapXT Add API response Member added to List " + membersList.size());
 
                             //Add records fetched from server, add it to the database
                             addToDatabase();
+                        } else {
+                            if (member.uniqueid.equals("-1")) {
+                                doSendBroadcast(SYNC_COMPLETED, 0, 0);
+                                if (listener != null && deletedMember != null) {
+                                    listener.onMemberDeletedFromDb(deletedMember);
+                                }
+                            } else if (member.uniqueid.equals("0")) {
+                                doSendBroadcast(SYNC_GROUP_ID_NOT_EXIST, 0, 0);
+                            }
+                            clear();
+                            isSyncing = false;
                         }
                         addMemberDisposable.dispose();
                     }
@@ -336,6 +364,11 @@ public class MemberSyncDataModel {
                             member.getImage(), "sync", context, member, member.getPrimaryId());
                     if (listener != null) {
                         listener.onMemberAddedToDb(member);
+                        membersList.remove(member);
+                    } else {
+                        doSendBroadcast(SYNC_COMPLETED, 0, 0);
+                        clear();
+                        isSyncing = false;
                     }
                     membersList.remove(member);
                 } else {
@@ -345,8 +378,12 @@ public class MemberSyncDataModel {
                             member.getImage(), "sync", context, member, member.getPrimaryId());
                     if (listener != null) {
                         listener.onMemberAddedToDb(member);
+                        membersList.remove(member);
+                    } else {
+                        doSendBroadcast(SYNC_COMPLETED, 0, 0);
+                        clear();
+                        isSyncing = false;
                     }
-                    membersList.remove(member);
                 }
             }
         }
@@ -650,6 +687,10 @@ public class MemberSyncDataModel {
         return dbAddType;
     }
 
+    public void setDbType(DatabaseAddType dbType) {
+        this.dbAddType = dbType;
+    }
+
     private boolean isMemberSyncGroupIdEnabled() {
         return (AppSettings.isMemberGroupSyncEnabled() && !AppSettings.getMemberSyncGroupId().equals("0"));
     }
@@ -752,6 +793,49 @@ public class MemberSyncDataModel {
                 }
             }
         }
+    }
+
+    private boolean isGroupIdExists(String groupId) {
+        boolean result = false;
+        if (groupId.isEmpty()) {
+            return false;
+        }
+        String groupIdSetting = AppSettings.getMemberSyncGroupId();
+        if (groupId.contains(",")) {
+            String[] groupIds = groupId.split(",");
+            if (groupIdSetting.contains(",")) {
+                for (String grpId : groupIds) {
+                    if (groupIdSetting.contains(grpId)) {
+                        result = true;
+                        break;
+                    }
+                }
+            } else {
+                result = groupId.contains(groupIdSetting);
+            }
+        } else {
+            if (groupIdSetting.contains(",")) {
+                result = groupIdSetting.contains(groupId);
+            } else {
+                if (groupIdSetting.equals(groupId)) {
+                    result = true;
+                }
+            }
+        }
+        return result;
+    }
+
+    public boolean checkIfMemberExists(List<RegisteredMembers> membersList, RegisteredMembers member) {
+        boolean result = false;
+        for (int i = 0; i < membersList.size(); i++) {
+            RegisteredMembers member1 = membersList.get(i);
+            if (member1.uniqueid.equals(member.uniqueid)) {
+                result = true;
+                membersList.remove(member1);
+                break;
+            }
+        }
+        return result;
     }
 
     /**

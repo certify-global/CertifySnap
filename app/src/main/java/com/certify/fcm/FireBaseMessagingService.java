@@ -16,6 +16,7 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.PushCallback;
 import com.certify.callback.SettingCallback;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -86,8 +87,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 Thread.sleep(1000);
                 Util.restartApp(this);
             }else if(command.equals("ALLMEMBER")) {
-                if (sharedPreferences != null && (sharedPreferences.getBoolean(GlobalParameters.FACIAL_DETECT, true)
-                        || sharedPreferences.getBoolean(GlobalParameters.RFID_ENABLE, false))) {
+                if (sharedPreferences != null && (AppSettings.isFacialDetect()
+                        || AppSettings.isRfidEnabled())) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
                         startService(new Intent(this, MemberSyncService.class));
                         Application.StartService(this);
@@ -179,6 +180,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
             if (reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
+                    MemberSyncDataModel.getInstance().setDbType(MemberSyncDataModel.DatabaseAddType.SERIAL);
                     MemberSyncDataModel.getInstance().createMemberDataAndUpdate(memberList);
                 }
             }

@@ -653,6 +653,7 @@
     <string name="launch_settings_msg">Lancement des paramètres, veuillez patienter ...</string>
     <string name="app_exit_msg">Êtes-vous sûr de vouloir quitter?</string>
     <string name="sync_completed">Sync terminée</string>
+    <string name="sync_failed">Échec de la synchronisation</string>
     <string name="no_mask">Sans masque</string>
     <string name="mask_detected">Masque détecté</string>
     <string name="mask_not_detected">Impossible de détecter le masque</string>
