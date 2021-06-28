@@ -41,6 +41,7 @@ public class CameraController {
     private ScanProcessState scanProcessState = ScanProcessState.IDLE;
     private UserExportedData data = null;
     private int requestId = -1;
+    private UserExportedData userExportedData = null;
 
     public enum ScanState {
         IDLE,
@@ -213,6 +214,14 @@ public class CameraController {
         this.scannerRemainingTime = scannerRemainingTime;
     }
 
+    public UserExportedData getUserExportedData() {
+        return userExportedData;
+    }
+
+    public void setUserExportedData(UserExportedData userExportedData) {
+        this.userExportedData = userExportedData;
+    }
+
     public void startProDeviceInitTimer(Context context) {
         if (scannerRemainingTime > 0) {
             long timeDuration = (scannerRemainingTime * 60 * 1000);
@@ -382,6 +391,8 @@ public class CameraController {
                     result = true;
                 }
             }
+        } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+            result = true;
         } else if (registeredMemberslist != null) {
             result = true;
         }
@@ -403,6 +414,7 @@ public class CameraController {
         firstScanMember = null;
         secondScanMember = null;
         scanProcessState = ScanProcessState.IDLE;
+        userExportedData = null;
         data = null;
     }
 

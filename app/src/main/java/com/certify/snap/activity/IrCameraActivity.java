@@ -828,6 +828,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (!isScanWithMaskEnforced()) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
+            CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
             return;
         }
@@ -2053,7 +2054,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setCameraPreview() {
-        if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect()) {
+        if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect() &&
+                !AppSettings.isPrintLabelFace()) {
             onTemperatureScanDisabled();
             return;
         }
@@ -3443,7 +3445,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             name = AppSettings.getEditTextNameLabel();
         }
         RegisteredMembers member = null;
-        UserExportedData data = TemperatureController.getInstance().getTemperatureRecordData();
+        UserExportedData data = null;
+        if (AppSettings.isTemperatureScanEnabled()) {
+            data = TemperatureController.getInstance().getTemperatureRecordData();
+        } else {
+            data = CameraController.getInstance().getUserExportedData();
+        }
         if (data != null) {
             member = data.member;
         }
@@ -3457,6 +3464,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && qrCodeData != null) {
+                if(AppSettings.isPrintLabelFace() && member != null) {
+                    bitmap = BitmapFactory.decodeFile(member.image);
+                    if (bitmap == null) {
+                        bitmap = rgbBitmap;
+                    }
+                }
                 if (AppSettings.isPrintLabelName()) {
                     name = qrCodeData.getFirstName();
                 }
@@ -3482,6 +3495,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
+                if(AppSettings.isPrintLabelFace() && member != null) {
+                    bitmap = BitmapFactory.decodeFile(member.image);
+                    if (bitmap == null) {
+                        bitmap = rgbBitmap;
+                    }
+                }
                 if (AppSettings.isEnablePrinter()) {
                     date = new SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).format(new Date());
                 }
@@ -3669,11 +3688,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (isProDevice) {
                 delay = 1500;
             }
-            if (AppSettings.isTemperatureScanEnabled() || AppSettings.isFacialDetect()) {
+            if (AppSettings.isTemperatureScanEnabled() || AppSettings.isFacialDetect() ||
+                    AppSettings.isPrintLabelFace()) {
                 CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
                 setCameraPreview();
+                new Handler().postDelayed(this::closeGestureFragment, delay);
+            } else {
+                onTemperatureScanDisabled();
             }
-            new Handler().postDelayed(() -> closeFragment(gestureFragment), delay);
         });
     }
 
@@ -3944,6 +3966,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void onTemperatureScanDisabled() {
         if (PrinterController.getInstance().isPrintScan(false) &&
                 CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
+            cancelImageTimer();
             updatePrinterParameters(false);
             PrinterController.getInstance().printOnNormalTemperature();
             return;
@@ -4349,15 +4372,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void updateOnTemperatureScanDisabled() {
         disableLedPower();
         TemperatureController.getInstance().updateControllersOnTempScanDisabled(registeredMemberslist);
-        launchConfirmationFragment(String.valueOf(false));
-        if (isHomeViewEnabled) {
-            pauseCameraScan();
-        }
-        resetHomeScreen();
+        runOnUiThread(() -> {
+            closeGestureFragment();
+            launchConfirmationFragment(String.valueOf(false));
+            if (isHomeViewEnabled) {
+                pauseCameraScan();
+            }
+            resetHomeScreen();
+        });
     }
 
     private void closeCameraPreview() {
         disableLedPower();
         relative_main.setVisibility(View.VISIBLE);
+    }
+
+    private void closeGestureFragment() {
+        if (gestureFragment != null) {
+            if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+            try {
+                getFragmentManager().beginTransaction().remove(gestureFragment).commitAllowingStateLoss();
+            } catch (Exception e) {
+                Log.d(TAG, "Error in closing Gesture fragment");
+            }
+        }
     }
 }
