@@ -378,6 +378,8 @@ public class MemberSyncDataModel {
                         isSyncing = false;
                     }
                 }
+            } else {
+                doSendBroadcast(SYNC_GROUP_ID_NOT_EXIST, 0, 0);
             }
         }
     }
