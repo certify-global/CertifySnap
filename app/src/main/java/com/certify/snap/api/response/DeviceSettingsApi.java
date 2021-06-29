@@ -44,6 +44,9 @@ public class DeviceSettingsApi {
     @SerializedName("configuredLanguageId")
     public int languageId = 0;
 
+    @SerializedName("settingVersion")
+    public String settingVersion = "";   //Setting version with primary/secondary identification settings
+
     @Nullable
     @SerializedName("settings")
     public List<DeviceSettings> settings;

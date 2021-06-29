@@ -4036,11 +4036,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().sendAccessLogInvalid(this, member, 0,
                 new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
 
-        //If Access denied, stop the reader and start again
-        //Optimize: Not to close the stream
-        if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-            resetRfid();
-        }
+        resetToHomePage();
     }
 
     private void launchMaskEnforceFragment() {

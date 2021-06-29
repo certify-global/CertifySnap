@@ -1406,6 +1406,37 @@ public class Util {
                     //Identification Settings
                     IdentificationSettings identificationSettings = deviceSettingsApi.identificationSettings;
                     if (identificationSettings != null) {
+                        if (deviceSettingsApi.settingVersion.isEmpty()) {
+                            if ((identificationSettings.enableQRCodeScanner.equals("1") &&
+                                identificationSettings.enableRFIDScanner.equals("1"))) {
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()));
+                                if (identificationSettings.enableFacialRecognition.equals("1")) {
+                                    Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
+                                } else {
+                                    Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.NONE.getValue()));
+                                }
+                            } else if ((identificationSettings.enableQRCodeScanner.equals("1") &&
+                                    identificationSettings.enableFacialRecognition.equals("1"))) {
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
+                            } else if ((identificationSettings.enableRFIDScanner.equals("1") &&
+                                    identificationSettings.enableFacialRecognition.equals("1"))) {
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.RFID.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
+                            } else if (identificationSettings.enableQRCodeScanner.equals("1")) {
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QR_CODE.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.NONE.getValue()));
+                            } else if ((identificationSettings.enableRFIDScanner.equals("1"))) {
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.RFID.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.NONE.getValue()));
+                            } else if ((identificationSettings.enableFacialRecognition.equals("1"))) {
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.FACE.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.NONE.getValue()));
+                            }
+                        } else {
+                            Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, identificationSettings.enablePrimary);
+                            Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, identificationSettings.enabledSecondary);
+                        }
                         //Util.writeBoolean(sharedPreferences, GlobalParameters.QR_SCREEN, identificationSettings.enableQRCodeScanner.equals("1"));
                         //Util.writeBoolean(sharedPreferences, GlobalParameters.RFID_ENABLE, identificationSettings.enableRFIDScanner.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.Timeout, identificationSettings.identificationTimeout);
@@ -1419,8 +1450,6 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ASK_QR_CODE_ALWAYS, identificationSettings.enableQRCode.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.QR_CODE_MEMBER_TYPE, identificationSettings.memberTypeId);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.FACE_QR_CODE, identificationSettings.enableFaceIdentification.equals("1"));
-                        Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, identificationSettings.enablePrimary);
-                        Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, identificationSettings.enabledSecondary);
                     }
 
                     //AccessControl Settings
