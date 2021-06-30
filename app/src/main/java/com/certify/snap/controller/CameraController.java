@@ -212,15 +212,8 @@ public class CameraController {
                     result = true;
                 }
             }
-        } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
-            if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                if (AppSettings.isFacialDetect() && registeredMemberslist == null) {
-                    result = false;
-                } else {
-                    result = true;
-                }
-            }
-        } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+        } else if ((triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) ||
+                triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             result = true;
         } else if (registeredMemberslist != null) {
             result = true;
