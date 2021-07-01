@@ -49,7 +49,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     TextView tv_display;
     TextView mAnonymousTv, qr_skip_button_enable_text,tv_acknowledge;
     TextInputLayout text_input_timeout, text_input_qr_button,text_input_acknowledge;
-    LinearLayout qr_scanner_layout, anonymous_qr_bar_code_layout, rfid_layout, display_image_layout;
+    private LinearLayout anonymous_qr_bar_code_layout, display_image_layout;
     private TextView scanMode;
     private RadioGroup scanModeRg,radio_group_acknowledge;
     private RadioButton scanModeRbEasy;
@@ -70,7 +70,6 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             rubiklight = Typeface.createFromAsset(getAssets(),
                     "rubiklight.ttf");
             sp = Util.getSharedPreferences(this);
-            RadioGroup radio_group_qr = findViewById(R.id.radio_group_qr);
             rbguideyes = findViewById(R.id.radio_yes_qr);
             rbguideno = findViewById(R.id.radio_no_qr);
             editTextDialogTimeout = findViewById(R.id.editTextDialogTimeout);
@@ -132,9 +131,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             parentLayout = findViewById(R.id.parent_view_layout);
             text_input_timeout = findViewById(R.id.text_input_timeout);
             text_input_qr_button = findViewById(R.id.text_input_QR_button);
-            qr_scanner_layout = findViewById(R.id.qr_scanner_layout);
             anonymous_qr_bar_code_layout = findViewById(R.id.anonymous_qr_bar_code_layout);
-            rfid_layout = findViewById(R.id.rfid_layout);
             editTextAcknowledge = findViewById(R.id.editTextAcknowledge);
             text_input_acknowledge = findViewById(R.id.text_input_acknowledge);
             display_image_layout = findViewById(R.id.display_image_layout);
@@ -145,13 +142,8 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             editTextAcknowledge.setText(sp.getString(GlobalParameters.ACKNOWLEDGEMENT_TEXT, "All the acknowledge"));
             editTextDialogUserInput.setText(sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD)));
             editTextQRButton.setText(sp.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
-            if (sp.getBoolean(GlobalParameters.QR_SCREEN, false))
-                rbguideyes.setChecked(true);
-            else rbguideno.setChecked(true);
 
             getIdentificationSettingsFromDb();
-            setRfidDefault();
-            setRfidClickListener();
             setAnonymousDefault();
             setAnonymousClickListener();
             setScanModeDefault();
@@ -159,23 +151,6 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             getHomeScreenEnabledStatus();
             setEditTextTimeOutListener();
             qrSkipCode();
-
-            radio_group_qr.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(RadioGroup group, int checkedId) {
-                    if (checkedId == R.id.radio_yes_qr) {
-                        if (!isHomeScreenViewEnabled) {
-                            showSnackBarMessage(getString(R.string.enable_home_view_msg));
-                            rbguideno.setChecked(true);
-                            return;
-                        }
-                        Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, true);
-                    }
-                    else
-                        Util.writeBoolean(sp, GlobalParameters.QR_SCREEN, false);
-
-                }
-            });
 
             setPrimaryIdentifierListener();
             setSecondaryIdentifierListener();
@@ -224,7 +199,6 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                         Toast.makeText(getApplicationContext(), getString(R.string.screen_timeout_msg), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    saveRfidSettings();
                     startActivity(new Intent(IdentificationSettingsActivity.this, SettingsActivity.class));
                     Util.showToast(IdentificationSettingsActivity.this, getString(R.string.save_success));
                     Util.writeString(sp, GlobalParameters.Timeout, editTextDialogTimeout.getText().toString().trim());
@@ -274,44 +248,6 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             rAnonymousNoRb.setChecked(true);
             rAnonymousYesRb.setChecked(false);
         }
-    }
-
-    private void setRfidDefault() {
-        if (sp.getBoolean(GlobalParameters.RFID_ENABLE, false)) {
-            rfidYesRb.setChecked(true);
-            rfidNoRb.setChecked(false);
-            acknowledgmentLayout.setVisibility(View.VISIBLE);
-        } else {
-            rfidNoRb.setChecked(true);
-            rfidYesRb.setChecked(false);
-            acknowledgmentLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private void setRfidClickListener() {
-        rfidRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int id) {
-                if (id == R.id.radio_yes_rfid) {
-                    if (!isHomeScreenViewEnabled && !isHomeScreenTextOnlyEnabled) {
-                        showSnackBarMessage(getString(R.string.enable_home_view_msg));
-                        rfidNoRb.setChecked(true);
-                        return;
-                    }
-                    rfidYesRb.setChecked(true);
-                    rfidNoRb.setChecked(false);
-                    acknowledgmentLayout.setVisibility(View.VISIBLE);
-                } else if (id == R.id.radio_no_rfid) {
-                    rfidNoRb.setChecked(true);
-                    rfidYesRb.setChecked(false);
-                    acknowledgmentLayout.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void saveRfidSettings() {
-        Util.writeBoolean(sp, GlobalParameters.RFID_ENABLE, rfidYesRb.isChecked());
     }
 
     private void setScanModeDefault() {
@@ -418,21 +354,15 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
         if (Util.isDeviceProModel()) {
             if (AppSettings.isProSettings()) {
                 Log.d(TAG, "proSettings: true");
-                qr_scanner_layout.setVisibility(View.GONE);
                 anonymous_qr_bar_code_layout.setVisibility(View.GONE);
-                rfid_layout.setVisibility(View.GONE);
                 text_input_timeout.setVisibility(View.GONE);
             } else {
                 Log.d(TAG, "proSettings: false");
-                qr_scanner_layout.setVisibility(View.VISIBLE);
                 anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
-                rfid_layout.setVisibility(View.VISIBLE);
                 text_input_timeout.setVisibility(View.VISIBLE);
             }
         }else {
-            qr_scanner_layout.setVisibility(View.VISIBLE);
             anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
-            rfid_layout.setVisibility(View.VISIBLE);
             text_input_timeout.setVisibility(View.VISIBLE);
         }
     }

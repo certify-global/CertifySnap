@@ -96,7 +96,10 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 }
             }else if(command.equals("MEMBER")){
                 String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
-                Util.getMemberID(this,CertifyId);
+                String memberStatus = jsonObject.isNull("memberStatus") ? "":jsonObject.getString("memberStatus");
+                if (!MemberSyncDataModel.getInstance().isMemberInactive(CertifyId, memberStatus)) {
+                    Util.getMemberID(this, CertifyId);
+                }
             }else if(command.equals("RESET")){
                 Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
                 Thread.sleep(1000);

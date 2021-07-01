@@ -121,13 +121,15 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 Log.d(TAG, "MemberList Size " + memberList.size());
                 MemberSyncDataModel.getInstance().setNumOfRecords(memberList.size());
                 for (int i = 0; i < memberList.size(); i++) {
-                    if (memberList.get(i).status) {
+                    if (!MemberSyncDataModel.getInstance().isMemberInactive(memberList.get(i).id, String.valueOf(memberList.get(i).status))) {
                         activeMemberCount++;
                         getMemberID(memberList.get(i).id);
                     }
                 }
-                MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-                doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count);
+                if (activeMemberCount > 0) {
+                    MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
+                    doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count);
+                }
                 return;
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);

@@ -535,12 +535,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                     obj.put("toDate", member.getAccessToTime());
                                 }
                                 obj.put("groupId", member.getGroupId());
+                                obj.put("groupTypeName", member.getGroupTypeName());
                                 new AsyncJSONObjectManageMember(obj, MemberManagementActivity.this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ManageMember, MemberManagementActivity.this).execute();
                             } catch (Exception e) {
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
-                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "","", "", "", "");
+                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "","", "", "", "", "");
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError(getString(R.string.member_empty_msg));
@@ -879,7 +880,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
             if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId,
-                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false)) {
+                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false, "")) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -902,7 +903,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     public void localUpdate(String fistname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId,
-                            String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime, String groupId) {
+                            String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime, String groupId, String groupName) {
         String data = "";
         List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
         if (list != null && list.size() > 0) {
@@ -932,6 +933,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     Members.setAccessFromTime(accessFromTime);
                     Members.setAccessToTime(accessToTime);
                     Members.setGroupId(groupId);
+                    Members.setGroupTypeName(groupName);
                     //Members.save();
                     DatabaseController.getInstance().updateMember(Members);
 
@@ -1275,6 +1277,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     String networkId = "";
                     String accessFromTime = "";
                     String accessToTime = "";
+                    String groupTypeName = "";
                     if (responseData.has("memberType")) {
                         memberType = responseData.getString("memberType");
                     }
@@ -1284,6 +1287,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     }
                     if (responseData.has("groupId")) {
                         groupId = responseData.getString("groupId");
+                    }
+                    if (responseData.has("groupTypeName")) {
+                        groupTypeName = responseData.getString("groupTypeName");
                     }
                     String accessstr = responseData.getString("accessId");
                     String uniquestr = responseData.getString("uniqueId");
@@ -1302,7 +1308,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
                         localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId(),
-                                    memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId);
+                                    memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, groupTypeName);
                     } else if (isDeleted) {
                         RegisteredMembers members = new RegisteredMembers();
                         members.setFirstname(firstnamestr);

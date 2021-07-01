@@ -124,7 +124,9 @@ public class CameraController {
     }
 
     public void setQrCodeId(String qrCodeId) {
-        this.qrCodeId = qrCodeId;
+        if (scanProcessState == ScanProcessState.FIRST_SCAN) {
+            this.qrCodeId = qrCodeId;
+        }
     }
 
     public boolean isFaceVisible() {
@@ -384,13 +386,7 @@ public class CameraController {
                 }
             }
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
-            if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                if (AppSettings.isFacialDetect() && registeredMemberslist == null) {
-                    result = false;
-                } else {
-                    result = true;
-                }
-            }
+            result = true;
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             result = true;
         } else if (registeredMemberslist != null) {

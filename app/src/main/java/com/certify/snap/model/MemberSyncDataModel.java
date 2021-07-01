@@ -128,6 +128,9 @@ public class MemberSyncDataModel {
                             if (c.has("toDate")) {
                                 member.setAccessToTime(c.getString("toDate"));
                             }
+                            if (c.has("groupTypeName")) {
+                                member.setGroupTypeName(c.getString("groupTypeName"));
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
@@ -213,6 +216,9 @@ public class MemberSyncDataModel {
                             }
                             if (c.has("toDate")) {
                                 member.setAccessToTime(c.getString("toDate"));
+                            }
+                            if (c.has("groupTypeName")) {
+                                member.setGroupTypeName(c.getString("groupTypeName"));
                             }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
@@ -428,7 +434,8 @@ public class MemberSyncDataModel {
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
-                                 member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed)) {
+                                 member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
+                                member.groupTypeName)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -447,7 +454,8 @@ public class MemberSyncDataModel {
             }*/
             failedImageSyncCount++;
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
-                    member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed)) {
+                    member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
+                    member.groupTypeName)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -502,7 +510,7 @@ public class MemberSyncDataModel {
      */
     public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
                                     String dateTime, long primaryId, String memberType, String memberTypeName,String networkId, String accessFromTime, String accessToTime,
-                                    String groupId, boolean isMemberAccessed) {
+                                    String groupId, boolean isMemberAccessed, String groupTypeName) {
         try {
             String username = firstname + "-" + primaryId;
             String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
@@ -531,6 +539,7 @@ public class MemberSyncDataModel {
             registeredMembers.setAccessToTime(accessToTime);
             registeredMembers.setGroupId(groupId);
             registeredMembers.setMemberAccessed(isMemberAccessed);
+            registeredMembers.setGroupTypeName(groupTypeName);
             DatabaseController.getInstance().insertMemberToDB(registeredMembers);
             return true;
         } catch (Exception e) {
@@ -836,6 +845,21 @@ public class MemberSyncDataModel {
                 membersList.remove(member1);
                 break;
             }
+        }
+        return result;
+    }
+
+    public boolean isMemberInactive(String certifyId, String memberStatus) {
+        boolean result = false;
+        List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+        if (membersList != null && membersList.size() > 0) {
+            RegisteredMembers registeredMember = membersList.get(0);
+            if (!Boolean.parseBoolean(memberStatus)) {
+                deleteRecord(registeredMember.firstname, registeredMember.primaryid);
+                result = true;
+            }
+        } else if (!Boolean.parseBoolean(memberStatus)) {
+            result = true;
         }
         return result;
     }

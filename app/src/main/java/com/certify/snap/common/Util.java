@@ -1421,8 +1421,8 @@ public class Util {
                                 Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
                             } else if ((identificationSettings.enableRFIDScanner.equals("1") &&
                                     identificationSettings.enableFacialRecognition.equals("1"))) {
-                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.RFID.getValue()));
-                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()));
+                                Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.NONE.getValue()));
                             } else if (identificationSettings.enableQRCodeScanner.equals("1")) {
                                 Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QR_CODE.getValue()));
                                 Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.NONE.getValue()));

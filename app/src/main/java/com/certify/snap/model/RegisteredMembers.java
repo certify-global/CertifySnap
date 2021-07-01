@@ -31,6 +31,7 @@ public class RegisteredMembers {
     public String accessFromTime;
     public String accessToTime;
     public boolean isMemberAccessed;
+    public String groupTypeName;
 
     public String getNetworkId() {
         return networkId;
@@ -189,6 +190,14 @@ public class RegisteredMembers {
 
     public void setMemberAccessed(boolean memberAccessed) {
         isMemberAccessed = memberAccessed;
+    }
+
+    public String getGroupTypeName() {
+        return groupTypeName;
+    }
+
+    public void setGroupTypeName(String groupTypeName) {
+        this.groupTypeName = groupTypeName;
     }
 
     @Override

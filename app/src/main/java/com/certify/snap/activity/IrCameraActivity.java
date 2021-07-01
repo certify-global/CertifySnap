@@ -4019,8 +4019,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (AppSettings.isTemperatureScanEnabled()) {
             enableLedPower();
             showSnackBarMessage(getString(R.string.access_granted));
+            setCameraPreview();
+        } else {
+            onTemperatureScanDisabled();
         }
-        setCameraPreview();
     }
 
     private void onRfidNoMemberMatch(String cardId) {
