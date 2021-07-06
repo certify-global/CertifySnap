@@ -2520,7 +2520,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     showSnackBarMessage(getString(R.string.access_granted));
                     setCameraPreview();
                 } else {
-                    onTemperatureScanDisabled();
+                    if (AppSettings.isPrintLabelFace()) {
+                        setCameraPreview();
+                    } else {
+                        onTemperatureScanDisabled();
+                    }
                 }
                 return;
             }
@@ -4005,10 +4009,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }, 1000);
                 return;
             }
-            new Handler().postDelayed(() -> {
-                closeFragment(acknowledgementFragment);
-                accessCardController.setTapCount(0);
-            }, 2000);
         }
         if ((CameraController.getInstance().getScanProcessState()
                 == CameraController.ScanProcessState.FIRST_SCAN) ||
@@ -4021,8 +4021,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             showSnackBarMessage(getString(R.string.access_granted));
             setCameraPreview();
         } else {
-            onTemperatureScanDisabled();
+            if (AppSettings.isPrintLabelFace()) {
+                setCameraPreview();
+            } else {
+                onTemperatureScanDisabled();
+                return;
+            }
         }
+        new Handler().postDelayed(() -> {
+            closeFragment(acknowledgementFragment);
+            accessCardController.setTapCount(0);
+        }, 2000);
     }
 
     private void onRfidNoMemberMatch(String cardId) {
@@ -4204,7 +4213,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initScan() {
-        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()) return;
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect()) return;
         int primaryIdentifier = AppSettings.getPrimaryIdentifier();
         if (primaryIdentifier != CameraController.PrimaryIdentification.NONE.getValue()) {
             if (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) {
@@ -4376,6 +4385,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         TemperatureController.getInstance().updateControllersOnTempScanDisabled(registeredMemberslist);
         runOnUiThread(() -> {
             closeGestureFragment();
+            closeFragment(acknowledgementFragment);
             launchConfirmationFragment(String.valueOf(false));
             if (isHomeViewEnabled) {
                 pauseCameraScan();
