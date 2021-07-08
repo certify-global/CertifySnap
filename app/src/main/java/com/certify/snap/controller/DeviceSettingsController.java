@@ -423,6 +423,18 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         return languageDataList;
     }
 
+    public boolean isSettingsRetrieved() {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        return sharedPreferences.getBoolean(GlobalParameters.SETTINGS_RETRIEVED, false);
+    }
+
+    public void setSettingsRetrieved(boolean value) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        if (sharedPreferences != null) {
+            Util.writeBoolean(sharedPreferences, GlobalParameters.SETTINGS_RETRIEVED, value);
+        }
+    }
+
     public void clearLanguageSettings() {
         DatabaseController.getInstance().deleteLanguagesFromDb();
         DatabaseController.getInstance().deleteDeviceSettingsData();

@@ -8,8 +8,11 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,21 +21,29 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.certify.fcm.FireBaseMessagingService;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.Application;
 import com.certify.snap.common.ContextUtils;
+import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
+import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DeviceSettingsController;
-import com.certify.snap.service.NetworkReceiver;
+import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.MemberSyncService;
+import com.certify.snap.service.OfflineRecordSyncService;
 
 import java.util.Locale;
 
 public abstract class BaseActivity extends Activity {
 
     private BroadcastReceiver activityReceiver;
-    private NetworkReceiver networkReceiver;
+    private BroadcastReceiver networkReceiver;
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
+    protected ImageView internetIndicatorImg;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -45,10 +56,23 @@ public abstract class BaseActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initActivityReceiver();
-        networkReceiver = new NetworkReceiver();
+        initNetworkReceiver();
         activityReceiverFilter = new IntentFilter();
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (internetIndicatorImg != null) {
+            if (!Util.isNetworkOff(this) && Util.getSharedPreferences(this).getBoolean(GlobalParameters.Internet_Indicator, true)) {
+                internetIndicatorImg.setVisibility(View.GONE);
+            } else {
+                internetIndicatorImg.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
@@ -136,6 +160,32 @@ public abstract class BaseActivity extends Activity {
         }
     };
 
+    private void initNetworkReceiver() {
+        networkReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (("android.net.wifi.WIFI_STATE_CHANGED".equals(intent.getAction())) || ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction()))) {
+                    if (Util.isConnectedWifi(context) || Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)) {
+                        if (internetIndicatorImg != null) {
+                            internetIndicatorImg.setVisibility(View.GONE);
+                        }
+                        if (!DeviceSettingsController.getInstance().isSettingsRetrieved()) {
+                            Toast.makeText(context, getString(R.string.restarting_wait_msg), Toast.LENGTH_LONG).show();
+                            Intent guideintent = new Intent(context, HomeActivity.class);
+                            guideintent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(guideintent);
+                        } else {
+                            updateHealthService(context);
+                            updateMemberSyncService(context);
+                            updateOfflineService(context);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
     protected void restartApplication() {
         finishAffinity();
         Intent intent = new Intent(this, HomeActivity.class);
@@ -155,5 +205,48 @@ public abstract class BaseActivity extends Activity {
                 restartApplication();
             }
         });
+    }
+
+    private void updateMemberSyncService(Context context) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+            if (!Util.isServiceRunning(MemberSyncService.class, context)) {
+                if (sharedPreferences != null && (AppSettings.isFacialDetect()
+                        || AppSettings.isRfidEnabled())) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        context.startService(new Intent(context, MemberSyncService.class));
+                        Application.StartService(context);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in starting Member sync service " +e.getMessage());
+        }
+    }
+
+    private void updateOfflineService(Context context) {
+        try {
+            if (!Util.isServiceRunning(OfflineRecordSyncService.class, context)) {
+                Log.d(TAG, "Offline service ");
+                context.startService(new Intent(context, OfflineRecordSyncService.class));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in starting offline sync service " +e.getMessage());
+        }
+    }
+
+    private void updateHealthService(Context context) {
+        try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+            if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                if (!Util.isServiceRunning(DeviceHealthService.class, context)) {
+                    context.startService(new Intent(context, DeviceHealthService.class));
+                    Application.StartService(context);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+        }
     }
 }

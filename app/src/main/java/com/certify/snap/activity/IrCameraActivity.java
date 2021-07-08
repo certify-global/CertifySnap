@@ -293,7 +293,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isNfcFDispatchEnabled = false;
     private boolean isNavigationBarOn = true;
     private boolean isActivityResumed = false;
-    private ImageView internetIndicatorImg;
     private boolean isReadyToScan = true;
     private BroadcastReceiver hidReceiver;
     private ProgressDialog progressDialog;
@@ -396,11 +395,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
-        if (!Util.isNetworkOff(IrCameraActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)) {
-            internetIndicatorImg.setVisibility(View.GONE);
-        } else {
-            internetIndicatorImg.setVisibility(View.VISIBLE);
-        }
+
         initHidReceiver();
         initRecordUserTempService();
         initBluetoothPrinter();
@@ -2520,11 +2515,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     showSnackBarMessage(getString(R.string.access_granted));
                     setCameraPreview();
                 } else {
-                    if (AppSettings.isPrintLabelFace()) {
-                        setCameraPreview();
-                    } else {
-                        onTemperatureScanDisabled();
-                    }
+                    onTemperatureScanDisabled();
                 }
                 return;
             }
@@ -4021,12 +4012,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             showSnackBarMessage(getString(R.string.access_granted));
             setCameraPreview();
         } else {
-            if (AppSettings.isPrintLabelFace()) {
-                setCameraPreview();
-            } else {
-                onTemperatureScanDisabled();
-                return;
-            }
+            onTemperatureScanDisabled();
+            return;
         }
         new Handler().postDelayed(() -> {
             closeFragment(acknowledgementFragment);

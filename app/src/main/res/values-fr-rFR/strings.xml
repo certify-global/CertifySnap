@@ -706,5 +706,6 @@
     <string name="qr_code">Qr Code</string>
     <string name="rfid_msg">Identification secondaire:\nVeuillez appuyer sur le badge pour continuer</string>
     <string name="auth_failed">Authentification échouée.</string>
+    <string name="restarting_wait_msg">Redémarrage de l\'application pour récupérer les paramètres, veuillez patienter....</string>
 
 </resources>

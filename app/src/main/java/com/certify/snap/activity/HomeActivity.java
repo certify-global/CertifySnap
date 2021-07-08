@@ -287,6 +287,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
      * Method that processes next steps after the App settings are updated in the SharedPref on app launch
      */
     private void onSettingsUpdated() {
+        DeviceSettingsController.getInstance().setSettingsRetrieved(true);
         AppSettings.getInstance().getSettingsFromSharedPref(HomeActivity.this);
         initGesture();
         initLanguageList();
