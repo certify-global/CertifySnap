@@ -674,6 +674,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
+        } else {
+            initHidReceiver();
+            LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         }
         if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
             disableNfc();
@@ -686,6 +689,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             delayMilli = 1;
         } else {
             delayMilli = Long.parseLong(longVal);
+        }
+        if (preview != null) {
+            try {
+                preview.start(cameraSource, graphicOverlay);
+            } catch (IOException e) {
+                Log.e(TAG, "Exception is camera preview");
+            }
         }
         homeDisplayView();
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
