@@ -3985,6 +3985,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void onRfidOnlyEnabled(String cardId) {
         AccessCardController accessCardController = AccessCardController.getInstance();
+        accessCardController.setAccessCardId(cardId);
         //launch the fragment
         if (AppSettings.isAcknowledgementScreen()) {
             if (accessCardController.getTapCount() == 0) {
