@@ -178,6 +178,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void start() {
+        if (sharedPreferences != null) {
+            Util.writeBoolean(sharedPreferences, GlobalParameters.SETTINGS_RETRIEVED, false);
+        }
         if (!License.activateLicense(HomeActivity.this)) {
             String message = getResources().getString(R.string.active_failed);
             Log.e(TAG, message);
