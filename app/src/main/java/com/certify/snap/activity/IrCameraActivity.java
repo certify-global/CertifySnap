@@ -3728,7 +3728,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
-        new Handler().postDelayed(() -> dialog.dismiss(), 6000);
+        new Handler().postDelayed(() -> {
+            if (isDestroyed() || isFinishing()) return;
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+        }, 6000);
     }
 
     private void startBLEService() {
