@@ -3568,7 +3568,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         scanTimeText.setText(scanTime);
         userName.setText(name);
         thermalDisplayText.setText(thermalText);
-        if (highTemperature || !AppSettings.isTemperatureScanEnabled()) {
+        if (highTemperature) {
             tempPass.setText("");
             tempPass.setBackgroundColor(getColor(R.color.colorWhite));
         } else {

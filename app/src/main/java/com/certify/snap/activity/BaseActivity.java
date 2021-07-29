@@ -117,6 +117,7 @@ public abstract class BaseActivity extends Activity {
                     finishAffinity();
                 }
                 if (intent != null && intent.getAction().equals(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION)) {
+                    if (isDestroyed() || isFinishing()) return;
                     Toast.makeText(BaseActivity.this, getString(R.string.update_setting_app_restart), Toast.LENGTH_SHORT).show();
                     finishAffinity();
                 }
@@ -169,17 +170,7 @@ public abstract class BaseActivity extends Activity {
                         if (internetIndicatorImg != null) {
                             internetIndicatorImg.setVisibility(View.GONE);
                         }
-                        if (!DeviceSettingsController.getInstance().isSettingsRetrieved()) {
-                            Toast.makeText(context, getString(R.string.restarting_wait_msg), Toast.LENGTH_LONG).show();
-                            Intent guideintent = new Intent(context, HomeActivity.class);
-                            guideintent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(guideintent);
-                        } else {
-                            updateHealthService(context);
-                            updateMemberSyncService(context);
-                            updateOfflineService(context);
-                        }
+                        onNetworkConnected(context);
                     }
                 }
             }
@@ -205,6 +196,21 @@ public abstract class BaseActivity extends Activity {
                 restartApplication();
             }
         });
+    }
+
+    private void onNetworkConnected(Context context) {
+        if (!DeviceSettingsController.getInstance().isSettingsRetrieved(context)) {
+            if (isDestroyed() || isFinishing()) return;
+            Toast.makeText(context, getString(R.string.restarting_wait_msg), Toast.LENGTH_LONG).show();
+            Intent guideintent = new Intent(context, HomeActivity.class);
+            guideintent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(guideintent);
+        } else {
+            updateHealthService(context);
+            updateMemberSyncService(context);
+            updateOfflineService(context);
+        }
     }
 
     private void updateMemberSyncService(Context context) {

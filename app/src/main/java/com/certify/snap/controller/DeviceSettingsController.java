@@ -423,7 +423,7 @@ public class DeviceSettingsController implements GetLanguagesCallback {
         return languageDataList;
     }
 
-    public boolean isSettingsRetrieved() {
+    public boolean isSettingsRetrieved(Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         return sharedPreferences.getBoolean(GlobalParameters.SETTINGS_RETRIEVED, false);
     }
