@@ -1,6 +1,7 @@
 package com.certify.snap.common;
 
 import java.security.PublicKey;
+import java.util.UUID;
 
 //虹软 key
 public class Constants {
@@ -53,5 +54,9 @@ public class Constants {
     public static final int DEFAULT_ACCESS_CONTROL_SCAN_MODE = 1;
 
     public static final int LANGUAGES_MAX_COUNT = 3;
+
+    public static final String UUID_VALUE = "CF9346F3-BC1E-4354-BD6C-196B27C97A2A";
+    public static final UUID HEART_RATE_SERVICE_UUID = UUID.fromString(UUID_VALUE);
+    public static final UUID CHARACTERISTIC_UUID = UUID.fromString("DC54568E-DE09-46F3-A693-45DEDDDD4D4F");
 }
 

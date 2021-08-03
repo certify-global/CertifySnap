@@ -33,6 +33,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.BleController1;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
@@ -44,6 +45,7 @@ import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
+import com.certify.snap.service.BluetoothLeService;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.service.ResetOfflineDataReceiver;
@@ -60,7 +62,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 
-public class HomeActivity extends Activity implements SettingCallback, JSONObjectCallback, DeviceSettingsController.GetLanguagesListener {
+public class HomeActivity extends Activity implements SettingCallback, JSONObjectCallback, DeviceSettingsController.GetLanguagesListener,
+    BleController1.BleCallbackListener {
 
     public static final String TAG = HomeActivity.class.getSimpleName();
     public static Activity mActivity;
@@ -110,6 +113,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             }
             initApp();
         }, 1000);
+        BleController1.getInstance().init(this);
+        BleController1.getInstance().setBleListener(this);
     }
 
     @Override
@@ -151,8 +156,11 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                    checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE}, 1000);
+                    checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE,
+                                                Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
             } else {
                 start();
             }
@@ -298,6 +306,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         initNavigationBar();
         startMemberSyncService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
+        BleController1.getInstance().startLeScan(true);
     }
 
     private void initNavigationBar() {
@@ -493,5 +502,31 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void initLanguageList() {
         DeviceSettingsController.getInstance().getLanguagesListFromDb();
+    }
+
+    private void initConnection() {
+        BleController1.getInstance().initServiceConnection();
+        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        bindService(gattServiceIntent, BleController1.getInstance().getServiceConnection(), BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onScanResultsUpdate() {
+
+    }
+
+    @Override
+    public void onScanFailed(int errorCode) {
+
+    }
+
+    @Override
+    public void onStartLeScan() {
+        initConnection();
+    }
+
+    @Override
+    public void onUpdateStatus(String status) {
+
     }
 }
