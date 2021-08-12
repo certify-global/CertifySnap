@@ -715,5 +715,8 @@
     <string name="auth_failed">Authentication failed.</string>
     <string name="syncing_wait_msg">Syncing, Please wait....</string>
     <string name="restarting_wait_msg">Restarting application to retrieve settings, Please wait....</string>
+    <string name="attendance_mode_options">Time and Attendance options</string>
+    <string name="auto_mode">Auto</string>
+    <string name="manual_mode">Manual</string>
 
 </resources>

@@ -49,6 +49,7 @@ public class GlobalParameters {
     public static final String ScanType = "ScanType";
     public static final String EnableTempScan = "EnableTempScan";
     public static final String LogOfflineData = "logOfflineData";
+    public static final String TimeAttendanceOption = "TimeAttendanceOption";
 
     public static String Access_token = "";
     public static String channelID = "";
