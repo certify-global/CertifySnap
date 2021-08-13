@@ -630,6 +630,7 @@
     <string name="anonymous_text">匿名</string>
     <string name="unrecognized">認識されない</string>
     <string name="valid_access">有効なアクセスオプション（匿名およびウィーガンドパススルーには適用されません）</string>
+    <string name="time_attendance_options">時間と注意のオプション</string>
     <string name="password_empty_msg">パスワードは空にしないでください</string>
     <string name="password_invalid_msg">パスワードが無効です。再試行してください</string>
     <string name="serial_num">シリアル番号：</string>

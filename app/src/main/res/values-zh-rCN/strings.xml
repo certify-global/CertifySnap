@@ -635,6 +635,7 @@
     <string name="anonymous_text">匿名的</string>
     <string name="unrecognized">无法识别</string>
     <string name="valid_access">有效访问选项（不适用于匿名和韦根传递）</string>
+    <string name="time_attendance_options">时间和出勤选项</string>
     <string name="password_empty_msg">密码不能为空</string>
     <string name="password_invalid_msg">密码无效，请重试</string>
     <string name="serial_num">序列号：</string>

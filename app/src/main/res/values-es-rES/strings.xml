@@ -641,6 +641,7 @@
     <string name="anonymous_text">Anónimo</string>
     <string name="unrecognized">Poco reconocido</string>
     <string name="valid_access">Opciones de acceso válidas (no aplicable para transferencia anónima y Wiegand)</string>
+    <string name="time_attendance_options">Opciones de tiempo y atención</string>
     <string name="password_empty_msg">La contraseña no debe estar vacía</string>
     <string name="password_invalid_msg">Contraseña no válida, inténtelo de nuevo</string>
     <string name="serial_num">Número de serie:&#160;</string>

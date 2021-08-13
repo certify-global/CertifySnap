@@ -171,14 +171,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
-    Button logo;
+    private Button logo, button_checkIn, button_checkOut;
     private RelativeLayout relativeLayout;
 
     private CompareResult compareResult;
     private static final int GUEST_QR_CODE = 333;
     List<RegisteredMembers> registeredMemberslist = null;
     private boolean isFaceIdentified;
-    RelativeLayout rl_header;
+    private RelativeLayout rl_header;
+    private LinearLayout time_attendance_layout;
 
     private View previewViewRgb;
     private View previewViewIr;
@@ -592,6 +593,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         qrSkipButton = findViewById(R.id.qr_skip_button);
         faceRectView = findViewById(R.id.face_rect_view);
         tvFaceMessage.setTypeface(rubiklight);
+        time_attendance_layout = findViewById(R.id.time_attendance_linear_layout);
+        button_checkIn = findViewById(R.id.btn_check_in);
+        button_checkOut = findViewById(R.id.btn_check_out);
 
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
@@ -697,7 +701,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Log.e(TAG, "Exception is camera preview");
             }
         }
-        homeDisplayView();
+        DisplayTimeAttendance();
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
             clearLeftFace(null);
         }
@@ -2612,6 +2616,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void homeDisplayView() {
+        time_attendance_layout.setVisibility(View.GONE);
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
             relative_main.setVisibility(View.GONE);
             // rl_header.setVisibility(View.GONE);
@@ -2985,7 +2990,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             outerCircle.setBackgroundResource(R.drawable.border_shape);
         }
         cancelImageTimer();
-        homeDisplayView();
+        DisplayTimeAttendance();
     }
 
     public void resumeScan() {
@@ -4411,5 +4416,35 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Log.d(TAG, "Error in closing Gesture fragment");
             }
         }
+    }
+
+    private void DisplayTimeAttendance() {
+        try {
+            if(AppSettings.getTimeAndAttendance() == 1) {
+                relative_main.setVisibility(View.GONE);
+                time_attendance_layout.setVisibility(View.VISIBLE);
+            }else if(AppSettings.getTimeAndAttendance() == 0){
+                homeDisplayView();
+            }
+            else {
+                new Handler().postDelayed(() -> {
+                    //logo.setVisibility(View.GONE);
+                    relative_main.setVisibility(View.GONE);
+                    changeVerifyBackground(R.color.colorTransparency, true);
+                }, 150);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onCheckInClick(View view){
+        time_attendance_layout.setVisibility(View.GONE);
+        homeDisplayView();
+    }
+
+    public void onCheckOutClick(View view){
+        time_attendance_layout.setVisibility(View.GONE);
+        homeDisplayView();
     }
 }
