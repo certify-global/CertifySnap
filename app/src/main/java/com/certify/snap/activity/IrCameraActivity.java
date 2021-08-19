@@ -2748,6 +2748,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void checkFaceClosenessAndSearch(FaceFeature faceFeature, int requestId, Bitmap rgb, Bitmap ir) {
+        if (!AppSettings.isTemperatureScanEnabled()) {
+            runOnUiThread(() -> {
+                if (tvErrorMessage != null) {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
+                    tvErrorMessage.setText(getString(R.string.face_center));
+                }
+            });
+        }
         if (searchFaceInfoList.isEmpty()) {
             setPreviewIdleTimer();
             detectAlignedFaces(faceEngineHelper.getFrEngine(), rgb, requestId);
@@ -3983,6 +3991,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void onTemperatureScanDisabled() {
+        tvErrorMessage.setText(getString(R.string.face_center));
         if (PrinterController.getInstance().isPrintScan(false) &&
                 CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
             cancelImageTimer();
@@ -4439,11 +4448,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onCheckInClick(View view){
+        ApplicationController.getInstance().setTimeAttendance(0);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
     }
 
     public void onCheckOutClick(View view){
+        ApplicationController.getInstance().setTimeAttendance(1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
     }

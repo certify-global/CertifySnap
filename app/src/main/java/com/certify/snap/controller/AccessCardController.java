@@ -53,12 +53,19 @@ public class AccessCardController implements AccessCallback {
         ID_OR_FACE(4);
 
         private final int id;
-        AccessControlScanMode(int id) { this.id = id; }
-        public int getValue() { return id; }
+
+        AccessControlScanMode(int id) {
+            this.id = id;
+        }
+
+        public int getValue() {
+            return id;
+        }
     }
 
     public interface AccessCallbackListener {
         void onAccessGranted();
+
         void onAccessDenied();
     }
 
@@ -313,7 +320,7 @@ public class AccessCardController implements AccessCallback {
                 return;
             }
             if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()
-                && !QrCodeController.getInstance().isOnlyQrCodeEnabled()) {
+                    && !QrCodeController.getInstance().isOnlyQrCodeEnabled()) {
                 if ((membersList != null && membersList.size() > 0)) {
                     if (isAccessTimeExpired(membersList.get(0))) {
                         denyAccess();
@@ -395,7 +402,7 @@ public class AccessCardController implements AccessCallback {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
                         registeredMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
                     } else if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.FACE.getValue())
-                                || (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue())) {
+                            || (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue())) {
                         registeredMember = data.member;
                         registeredMember.setAccessid(mAccessCardID);
                     } else {
@@ -441,6 +448,14 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
+                if(ApplicationController.getInstance().getTimeAttendance() == 1){
+                    AppSettings.setTimeAndAttendance(1);
+                    obj.put("attendanceMode", AppSettings.getTimeAndAttendance());
+                }else{
+                    AppSettings.setTimeAndAttendance(0);
+                    obj.put("attendanceMode", AppSettings.getTimeAndAttendance());
+                }
+
                 if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
                     obj.put("allowAccess", getAllowAccessValue(data));
                 }
@@ -517,7 +532,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
-
+                obj.put("attendanceMode", AppSettings.getTimeAndAttendance());
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
@@ -535,15 +550,15 @@ public class AccessCardController implements AccessCallback {
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
-                Logger.error(TAG,"onJSONObjectListenerAccess","Access Log api failed, store is local DB");
-                saveOfflineAccessLogRecord(req,0);
+                Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
+                saveOfflineAccessLogRecord(req, 0);
                 return;
             }
             if (!reportInfo.getString("responseCode").equals("1")) {
-                saveOfflineAccessLogRecord(req,0);
+                saveOfflineAccessLogRecord(req, 0);
             }
         } catch (Exception e) {
-            Logger.error(TAG,"onJSONObjectListenerAccess", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());
         }
     }
 
@@ -609,7 +624,7 @@ public class AccessCardController implements AccessCallback {
         return result;
     }
 
-    private boolean getAllowAccessValue (UserExportedData data) {
+    private boolean getAllowAccessValue(UserExportedData data) {
         if (allowAccessValue) {
             if (data.exceedsThreshold) {
                 if (mNormalRelayMode && mStopRelayOnHighTemp) {
@@ -629,7 +644,7 @@ public class AccessCardController implements AccessCallback {
         if ((AppSettings.getAccessControlScanMode() == AccessControlScanMode.FACE_ONLY.getValue()) ||
                 (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_OR_FACE.getValue())) {
             if (isAccessTimeExpired(registeredMembers)) {
-               result = true;
+                result = true;
             }
         } else if (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_AND_FACE.getValue()) {
             RegisteredMembers rfidScanMatchMember = AccessControlModel.getInstance().getRfidScanMatchedMember();

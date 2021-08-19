@@ -553,4 +553,8 @@ public class AppSettings {
     public static int getTimeAndAttendance() {
         return timeAndAttendance;
     }
+
+    public static void setTimeAndAttendance(int timeAndAttendance) {
+        AppSettings.timeAndAttendance = timeAndAttendance;
+    }
 }
