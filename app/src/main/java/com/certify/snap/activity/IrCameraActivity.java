@@ -1847,7 +1847,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onBarcodeData(String guid) {
         try {
             if (isTopFragmentGesture() ||
-                CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString())) return;
+                    CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
+                return;
             if (!qrCodeReceived) {
                 qrCodeReceived = true;
                 CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
@@ -2253,7 +2254,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.d(TAG, String.format("Snap searchFace requestId: %s", requestId));
         if (!isScanWithMaskEnforced()) return;
         if (((CameraController.getInstance().getScanProcessState() == CameraController.ScanProcessState.IDLE) &&
-                    !GestureController.getInstance().isGestureEnabledAndDeviceConnected()) ||
+                !GestureController.getInstance().isGestureEnabledAndDeviceConnected()) ||
                 ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue()) &&
                         !AppSettings.isPrimaryIdentifierFace())) {
             runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0));
@@ -2743,6 +2744,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void checkFaceClosenessAndSearch(FaceFeature faceFeature, int requestId, Bitmap rgb, Bitmap ir) {
+
+        if (!AppSettings.isTemperatureScanEnabled()) {
+            runOnUiThread(() -> {
+                if (tvErrorMessage != null) {
+                    tvErrorMessage.setVisibility(View.VISIBLE);
+                    tvErrorMessage.setText(getString(R.string.face_center));
+                }
+            });
+        }
+
         if (searchFaceInfoList.isEmpty()) {
             setPreviewIdleTimer();
             detectAlignedFaces(faceEngineHelper.getFrEngine(), rgb, requestId);
@@ -2865,7 +2876,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         if ((CameraController.getInstance().getScanProcessState()
-                        != CameraController.ScanProcessState.SECOND_SCAN) &&
+                != CameraController.ScanProcessState.SECOND_SCAN) &&
                 (CameraController.getInstance().getScanProcessState() != CameraController.ScanProcessState.IDLE) &&
                 (AppSettings.getSecondaryIdentifier() != CameraController.SecondaryIdentification.NONE.getValue())) {
             return;
@@ -2898,7 +2909,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void startFaceSearch(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
         if (CameraController.getInstance().isScanCloseProximityEnabled()
-            && !AppSettings.isLivenessDetect()) {
+                && !AppSettings.isLivenessDetect()) {
             //searchFace(faceFeature, requestId, rgbBitmap, irBitmap);
             return;
         }
@@ -3257,7 +3268,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 text = AppSettings.getTempResultBarNormal();
             } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
                 float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
-                String tempRead = String.format("%.1f",  tempValue);
+                String tempRead = String.format("%.1f", tempValue);
                 if (TemperatureController.getInstance().isTemperatureAboveThreshold(tempValue)) {
                     text = AppSettings.getTempResultBarHigh() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
                     TemperatureCallBackUISetup(true, text, tempRead, false, TemperatureController.getInstance().getTemperatureRecordData());
@@ -3446,7 +3457,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         String thermalText = "";
 
         PrinterController.getInstance().checkPrintFileExists();
-        if(AppSettings.isPrintLabelFace() && rgbBitmap != null) {
+        if (AppSettings.isPrintLabelFace() && rgbBitmap != null) {
             bitmap = Bitmap.createScaledBitmap(rgbBitmap, 320, 320, false);
             PrinterController.getInstance().updateImageForPrint(bitmap);
         }
@@ -3473,7 +3484,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
             if ((AppSettings.isPrintQrCodeUsers() || AppSettings.isPrintAllScan()) && qrCodeData != null) {
-                if(AppSettings.isPrintLabelFace() && member != null) {
+                if (AppSettings.isPrintLabelFace() && member != null) {
                     bitmap = BitmapFactory.decodeFile(member.image);
                     if (bitmap == null) {
                         bitmap = rgbBitmap;
@@ -3483,13 +3494,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     name = qrCodeData.getFirstName();
                 }
             }
-            if(AppSettings.isPrintLabelQRAnswers()){
+            if (AppSettings.isPrintLabelQRAnswers()) {
                 thermalText = AppSettings.getEditTextPrintQRAnswers();
             }
             thermalText = thermalText + " " + getTemperatureValue(highTemperature);
         } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
             if ((AppSettings.isPrintAccessCardUsers() || AppSettings.isPrintAllScan()) && AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
-                if(AppSettings.isPrintLabelFace()) {
+                if (AppSettings.isPrintLabelFace()) {
                     bitmap = BitmapFactory.decodeFile(AccessControlModel.getInstance().getRfidScanMatchedMember().image);
                     if (bitmap == null) {
                         bitmap = rgbBitmap;
@@ -3504,7 +3515,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
             if ((AppSettings.isPrintWaveUsers() || AppSettings.isPrintAllScan())) {
-                if(AppSettings.isPrintLabelFace() && member != null) {
+                if (AppSettings.isPrintLabelFace() && member != null) {
                     bitmap = BitmapFactory.decodeFile(member.image);
                     if (bitmap == null) {
                         bitmap = rgbBitmap;
@@ -3530,7 +3541,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             if (AppSettings.isPrintAllScan()) {
                 if (AppSettings.isFacialDetect() && member != null) {
-                    if(AppSettings.isPrintLabelFace()) {
+                    if (AppSettings.isPrintLabelFace()) {
                         bitmap = BitmapFactory.decodeFile(member.image);
                     }
                     if (member.firstname != null) {
@@ -3575,7 +3586,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             String passText = AppSettings.getEditTextPrintPassName();
             String triggerType = CameraController.getInstance().getTriggerType();
             if (triggerType.equals(CameraController.triggerValue.WAVE.toString()) &&
-                GestureController.getInstance().isQuestionnaireFailed()) {
+                    GestureController.getInstance().isQuestionnaireFailed()) {
                 tempPass.setText("");
                 tempPass.setBackgroundColor(getColor(R.color.colorWhite));
             } else {
@@ -3622,7 +3633,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 text = AppSettings.getTempResultBarNormal();
             } else if (temperature < TemperatureController.MIN_TEMPERATURE_THRESHOLD) {
                 float tempValue = TemperatureController.MIN_TEMPERATURE_THRESHOLD - 0.1f;
-                String tempRead = String.format("%.1f",  tempValue);
+                String tempRead = String.format("%.1f", tempValue);
                 if (TemperatureController.getInstance().isTemperatureAboveThreshold(tempValue)) {
                     text = AppSettings.getTempResultBarHigh() + ": " + tempRead + TemperatureController.getInstance().getTemperatureUnit();
                     TemperatureCallBackUISetup(true, text, tempRead, false, TemperatureController.getInstance().getTemperatureRecordData());
@@ -3903,7 +3914,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
-                    (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) return;
+                    (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString())))
+                return;
 
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
@@ -4039,7 +4051,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void onRfidNoMemberMatch(String cardId) {
         if (AccessCardController.getInstance().isEnableWiegandPt() ||
-            AccessCardController.getInstance().isAllowAnonymous()) {
+                AccessCardController.getInstance().isAllowAnonymous()) {
             onRfidOnlyEnabled(cardId);
             return;
         }
@@ -4216,7 +4228,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initScan() {
-        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect()) return;
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect())
+            return;
         int primaryIdentifier = AppSettings.getPrimaryIdentifier();
         if (primaryIdentifier != CameraController.PrimaryIdentification.NONE.getValue()) {
             if (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) {
