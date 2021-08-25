@@ -477,6 +477,7 @@
             android:visibility="gone"
             android:background="@color/colorLightGray"></View>
         <LinearLayout
+            android:id="@+id/time_attendance_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

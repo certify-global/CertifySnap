@@ -1225,8 +1225,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!checkPermissions(NEEDED_PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
         } else {
-            faceEngineHelper.initEngine(this);
-            initScan();
+            if (AppSettings.getTimeAndAttendance() == 0) {
+                faceEngineHelper.initEngine(this);
+                initScan();
+            }
         }
     }
 
@@ -2948,6 +2950,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         PrinterController.getInstance().setPrinting(false);
         //GestureController.getInstance().setLanguageUpdated(false);
         QrCodeController.getInstance().clearData();
+        ApplicationController.getInstance().setTimeAttendance(-1);
     }
 
     private void setPreviewIdleTimer() {
@@ -3020,6 +3023,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvErrorMessage.setVisibility(View.GONE);
             }
             tvFaceMessage.setVisibility(View.GONE);
+            DisplayTimeAttendance();
         });
         clearData();
         if (AppSettings.isEnableHandGesture()) {
@@ -3037,7 +3041,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resetImageLogo();
         if (!isHomeViewEnabled) isReadyToScan = true;
         resumeCameraScan();
-        initScan();
+        if (AppSettings.getTimeAndAttendance() == 0) {
+            initScan();
+        }
     }
 
     private void resetRfid() {
@@ -4451,11 +4457,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         ApplicationController.getInstance().setTimeAttendance(0);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
+        faceEngineHelper.initEngine(this);
+        initScan();
     }
 
     public void onCheckOutClick(View view){
         ApplicationController.getInstance().setTimeAttendance(1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
+        faceEngineHelper.initEngine(this);
+        initScan();
     }
 }
