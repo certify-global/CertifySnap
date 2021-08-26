@@ -20,7 +20,7 @@ public class ApplicationController {
     private String fcmPushToken = "";
     private ThermalImageUtil temperatureUtil = null;
     private boolean isDeviceBoot = false;
-    public int timeAttendance = -1;
+    public int timeAttendance = 0;
 
     public static ApplicationController getInstance() {
         if (instance == null)

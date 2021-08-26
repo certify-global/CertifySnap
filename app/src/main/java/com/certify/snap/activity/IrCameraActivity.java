@@ -2096,6 +2096,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (relative_main != null) {
                 relative_main.setVisibility(View.GONE);
             }
+            time_attendance_layout.setVisibility(View.GONE);
             changeVerifyBackground(R.color.colorTransparency, true);
             disableNfc();
         }, delay);
@@ -3040,8 +3041,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resetRfid();
         resetImageLogo();
         if (!isHomeViewEnabled) isReadyToScan = true;
-        resumeCameraScan();
         if (AppSettings.getTimeAndAttendance() == 0) {
+            resumeCameraScan();
             initScan();
         }
     }
@@ -4454,7 +4455,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onCheckInClick(View view){
-        ApplicationController.getInstance().setTimeAttendance(0);
+        ApplicationController.getInstance().setTimeAttendance(1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
@@ -4462,7 +4463,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onCheckOutClick(View view){
-        ApplicationController.getInstance().setTimeAttendance(1);
+        ApplicationController.getInstance().setTimeAttendance(2);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);

@@ -448,9 +448,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
-                if (AppSettings.getTimeAndAttendance() == 1) {
-                    obj.put("attendanceMode", ApplicationController.getInstance().getTimeAttendance());
-                }
+                obj.put("attendanceMode", ApplicationController.getInstance().getTimeAttendance());
 
                 if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
                     obj.put("allowAccess", getAllowAccessValue(data));
