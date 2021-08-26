@@ -229,7 +229,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
                 rb_logging_time.setChecked(false);
                 rb_logging_access_both.setChecked(true);
                 rb_logging_none.setChecked(false);
-                timeAttendanceLayout.setVisibility(View.GONE);
+                timeAttendanceLayout.setVisibility(View.VISIBLE);
             }else if(checkedId==R.id.rb_logging_none){
                 rb_logging_access_control.setChecked(false);
                 rb_logging_time.setChecked(false);
