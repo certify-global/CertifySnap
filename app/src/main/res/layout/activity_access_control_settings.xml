@@ -3,12 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -62,16 +65,14 @@
                 android:id="@+id/enable_relay_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false">
-            </CheckBox>
+                android:checked="false"></CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/automatic_door_access"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
+                android:textSize="18sp"></TextView>
         </LinearLayout>
 
         <LinearLayout
@@ -125,8 +126,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray">
-        </View>
+            android:background="@color/colorLightGray"></View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -140,16 +140,14 @@
                 android:id="@+id/enable_weigand_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false">
-            </CheckBox>
+                android:checked="false"></CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/enable_access_control"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
+                android:textSize="18sp"></TextView>
         </LinearLayout>
 
         <LinearLayout
@@ -167,8 +165,7 @@
                 android:checked="false"
                 android:text="@string/enable_wiegand_passthrough"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </CheckBox>
+                android:textSize="18sp"></CheckBox>
         </LinearLayout>
 
         <LinearLayout
@@ -184,8 +181,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/access_control_card_format"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
+                android:textSize="18sp"></TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -243,8 +239,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray">
-        </View>
+            android:background="@color/colorLightGray"></View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -258,16 +253,14 @@
                 android:id="@+id/allow_anonymous_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false">
-            </CheckBox>
+                android:checked="false"></CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/allow_anonymous"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
+                android:textSize="18sp"></TextView>
         </LinearLayout>
 
         <LinearLayout
@@ -300,8 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="60dp"
                     android:checked="false"
-                    android:text="@string/stop_relay">
-                </CheckBox>
+                    android:text="@string/stop_relay"></CheckBox>
 
                 <RadioButton
                     android:id="@+id/reverse_mode_rb"
@@ -321,8 +313,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray">
-        </View>
+            android:background="@color/colorLightGray"></View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -337,8 +328,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/enable_logging"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
+                android:textSize="18sp"></TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -402,8 +392,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorLightGray">
-        </View>
+            android:background="@color/colorLightGray"></View>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -419,8 +408,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/valid_access"
                 android:textColor="@color/black"
-                android:textSize="18sp">
-            </TextView>
+                android:textSize="18sp"></TextView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -480,7 +468,71 @@
             </LinearLayout>
 
         </LinearLayout>
-    </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            android:visibility="gone"
+            android:background="@color/colorLightGray"></View>
+        <LinearLayout
+            android:id="@+id/time_attendance_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="@dimen/size_05"
+            android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time_attendance_options"
+                android:textColor="@color/black"
+                android:textSize="18sp"></TextView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:id="@+id/rg_time_attendance_options"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/size_05"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/rb_auto_option"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/auto_mode"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/size_18"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/rb_manual_option"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/manual_mode"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/size_18"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

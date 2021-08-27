@@ -626,6 +626,7 @@
     <string name="anonymous_text">అనామక</string>
     <string name="unrecognized">గుర్తించబడలేదు</string>
     <string name="valid_access">చెల్లుబాటు అయ్యే యాక్సెస్ ఎంపికలు (అనామక మరియు వైగాండ్ పాస్-త్రూకు వర్తించవు)</string>
+    <string name="time_attendance_options">సమయం మరియు శ్రద్ధ ఎంపికలు</string>
     <string name="password_empty_msg">పాస్వర్డ్ ఖాళీగా ఉండకూడదు</string>
     <string name="password_invalid_msg">పాస్వర్డ్ చెల్లదు, మళ్ళీ ప్రయత్నించండి</string>
     <string name="serial_num">క్రమసంఖ్య:</string>

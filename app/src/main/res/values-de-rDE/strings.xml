@@ -629,6 +629,7 @@
     <string name="anonymous_text">Anonym</string>
     <string name="unrecognized">Unerkannt</string>
     <string name="valid_access">Gültige Zugriffsoptionen (gilt nicht für Anonymous und Wiegand Pass-Through)</string>
+    <string name="time_attendance_options">Zeit- und Anwesenheitsoptionen</string>
     <string name="password_empty_msg">Das Passwort sollte nicht leer sein</string>
     <string name="password_invalid_msg">Ungültiges Passwort, versuchen Sie es erneut</string>
     <string name="serial_num">Seriennummer:</string>

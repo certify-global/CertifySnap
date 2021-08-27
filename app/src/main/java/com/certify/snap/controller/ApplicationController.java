@@ -20,6 +20,7 @@ public class ApplicationController {
     private String fcmPushToken = "";
     private ThermalImageUtil temperatureUtil = null;
     private boolean isDeviceBoot = false;
+    public int timeAttendance = 0;
 
     public static ApplicationController getInstance() {
         if (instance == null)
@@ -140,5 +141,13 @@ public class ApplicationController {
             sharedPreferences.edit().clear().apply();
             Util.writeBoolean(sharedPreferences, GlobalParameters.CLEAR_SHARED_PREF, true);
         }
+    }
+
+    public int getTimeAttendance() {
+        return timeAttendance;
+    }
+
+    public void setTimeAttendance(int timeAttendance) {
+        this.timeAttendance = timeAttendance;
     }
 }

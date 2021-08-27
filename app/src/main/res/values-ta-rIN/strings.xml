@@ -629,6 +629,7 @@
     <string name="anonymous_text">அநாமதேய</string>
     <string name="unrecognized">அங்கீகரிக்கப்படாதது</string>
     <string name="valid_access">செல்லுபடியாகும் அணுகல் விருப்பங்கள் (அநாமதேய மற்றும் வைகண்ட் பாஸ்-த்ரூவுக்கு பொருந்தாது)</string>
+    <string name="time_attendance_options">நேரம் மற்றும் கவனிப்பு விருப்பங்கள்</string>
     <string name="password_empty_msg">கடவுச்சொல் காலியாக இருக்கக்கூடாது</string>
     <string name="password_invalid_msg">கடவுச்சொல் தவறானது, மீண்டும் முயற்சிக்கவும்</string>
     <string name="serial_num">வரிசை எண்:</string>

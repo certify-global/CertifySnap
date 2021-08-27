@@ -2,9 +2,11 @@ package com.certify.snap.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -36,12 +38,13 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     private RadioButton rb_logging_access_control;
     private RadioButton rb_logging_time;
     private RadioButton rb_logging_access_both;
-    private RadioGroup rg_valid_access;
-    private RadioButton rb_id_only;
-    private RadioButton rb_face_only;
+    private RadioGroup rg_valid_access, rg_attendance_option;
+    private RadioButton rb_id_only, rb_auto_option;
+    private RadioButton rb_face_only, rb_manual_option;
     private RadioButton rb_id_and_face;
     private RadioButton rb_id_or_face;
     private CheckBox mEnableWiegandPt;
+    private LinearLayout timeAttendanceLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +75,10 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         rb_face_only = findViewById(R.id.rb_face_only);
         rb_id_and_face = findViewById(R.id.rb_id_and_face);
         rb_id_or_face = findViewById(R.id.rb_id_or_face);
+        rg_attendance_option = findViewById(R.id.rg_time_attendance_options);
+        rb_auto_option = findViewById(R.id.rb_auto_option);
+        rb_manual_option = findViewById(R.id.rb_manual_option);
+        timeAttendanceLayout = findViewById(R.id.time_attendance_layout);
 
         setDefaults();
         handleClickListeners();
@@ -146,6 +153,20 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
             rb_id_and_face.setChecked(false);
             rb_id_or_face.setChecked(true);
         }
+
+        if (Util.getSharedPreferences(this).getInt(GlobalParameters.TimeAttendanceOption, 0)==0) {
+            rb_auto_option.setChecked(true);
+            rb_manual_option.setChecked(false);
+        } else if(Util.getSharedPreferences(this).getInt(GlobalParameters.TimeAttendanceOption, 0)==1) {
+            rb_auto_option.setChecked(false);
+            rb_manual_option.setChecked(true);
+        }
+
+        if (Util.getSharedPreferences(this).getInt(GlobalParameters.AccessControlLogMode, Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE) ==2) {
+            timeAttendanceLayout.setVisibility(View.VISIBLE);
+        } else {
+            timeAttendanceLayout.setVisibility(View.GONE);
+        }
     }
 
     private void handleClickListeners() {
@@ -196,22 +217,25 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
                 rb_logging_time.setChecked(false);
                 rb_logging_access_both.setChecked(false);
                 rb_logging_none.setChecked(false);
+                timeAttendanceLayout.setVisibility(View.GONE);
             } else if (checkedId == R.id.rb_logging_time) {
                 rb_logging_access_control.setChecked(false);
                 rb_logging_time.setChecked(true);
                 rb_logging_access_both.setChecked(false);
                 rb_logging_none.setChecked(false);
+                timeAttendanceLayout.setVisibility(View.VISIBLE);
             }else if(checkedId==R.id.rb_logging_access_both){
                 rb_logging_access_control.setChecked(false);
                 rb_logging_time.setChecked(false);
                 rb_logging_access_both.setChecked(true);
                 rb_logging_none.setChecked(false);
-
+                timeAttendanceLayout.setVisibility(View.VISIBLE);
             }else if(checkedId==R.id.rb_logging_none){
                 rb_logging_access_control.setChecked(false);
                 rb_logging_time.setChecked(false);
                 rb_logging_access_both.setChecked(false);
                 rb_logging_none.setChecked(true);
+                timeAttendanceLayout.setVisibility(View.GONE);
             }
         });
         rg_valid_access.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -237,6 +261,17 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
                     rb_face_only.setChecked(false);
                     rb_id_and_face.setChecked(false);
                     rb_id_or_face.setChecked(true);
+                }
+            }
+        });
+
+        rg_attendance_option.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId == R.id.rb_auto_option) {
+                    rb_auto_option.setChecked(true);
+                } else if (checkedId == R.id.rb_manual_option) {
+                    rb_manual_option.setChecked(true);
                 }
             }
         });
@@ -278,6 +313,13 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         }else if(rb_id_or_face.isChecked()) {
             Util.writeInt(sp, GlobalParameters.AccessControlScanMode, 4);
         }
+
+        if (rb_auto_option.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.TimeAttendanceOption, 0);
+        } else if (rb_manual_option.isChecked()) {
+            Util.writeInt(sp, GlobalParameters.TimeAttendanceOption, 1);
+        }
+
         finish();
         Toast.makeText(getApplicationContext(), getString(R.string.save_success), Toast.LENGTH_LONG).show();
     }

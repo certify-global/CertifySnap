@@ -638,6 +638,7 @@
     <string name="anonymous_text">ಅನಾಮಧೇಯ</string>
     <string name="unrecognized">ಗುರುತಿಸಲಾಗಿಲ್ಲ</string>
     <string name="valid_access">ಮಾನ್ಯ ಪ್ರವೇಶ ಆಯ್ಕೆಗಳು (ಅನಾಮಧೇಯ ಮತ್ತು ವೈಗಂಡ್ ಪಾಸ್-ಮೂಲಕ ಅನ್ವಯಿಸುವುದಿಲ್ಲ)</string>
+    <string name="time_attendance_options">ಸಮಯ ಮತ್ತು ಗಮನ ಆಯ್ಕೆಗಳು</string>
     <string name="password_empty_msg">ಪಾಸ್ವರ್ಡ್ ಖಾಲಿಯಾಗಿರಬಾರದು</string>
     <string name="password_invalid_msg">ಪಾಸ್ವರ್ಡ್ ಅಮಾನ್ಯವಾಗಿದೆ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</string>
     <string name="serial_num">ಕ್ರಮ ಸಂಖ್ಯೆ:</string>

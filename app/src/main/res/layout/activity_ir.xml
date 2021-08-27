@@ -56,6 +56,43 @@
             android:background="@mipmap/inner_circle"
             android:visibility="gone" />
 
+        <LinearLayout
+            android:id="@+id/time_attendance_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorWhite"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btn_check_in"
+                style="@style/buttonNumberStyle"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="150dp"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/btn_shape"
+                android:onClick="onCheckInClick"
+                android:text="@string/check_in"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/btn_check_out"
+                style="@style/buttonNumberStyle"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="350dp"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/btn_shape"
+                android:onClick="onCheckOutClick"
+                android:text="@string/check_out"
+                android:textSize="25sp"
+                android:layout_below="@id/btn_check_in"/>
+
+        </LinearLayout>
+
         <RelativeLayout
             android:id="@+id/relative_layout"
             android:layout_width="match_parent"

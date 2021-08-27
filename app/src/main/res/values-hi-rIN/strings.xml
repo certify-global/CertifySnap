@@ -628,6 +628,7 @@
     <string name="anonymous_text">गुमनाम</string>
     <string name="unrecognized">पहचानने अयोग्य</string>
     <string name="valid_access">वैध पहुँच विकल्प (बेनामी और वेजंड पास के लिए लागू नहीं)</string>
+    <string name="time_attendance_options">समय और उपस्थिति विकल्प</string>
     <string name="password_empty_msg">पासवर्ड खाली नहीं होना चाहिए</string>
     <string name="password_invalid_msg">अमान्य पासवर्ड, पुनः प्रयास करें</string>
     <string name="serial_num">सीरीयल नम्बर:</string>

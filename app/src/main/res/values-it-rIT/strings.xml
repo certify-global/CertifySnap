@@ -639,6 +639,7 @@
     <string name="anonymous_text">Anonimo</string>
     <string name="unrecognized">Non riconosciuto</string>
     <string name="valid_access">Opzioni di accesso valide (non applicabile per il pass-through anonimo e Wiegand)</string>
+    <string name="time_attendance_options">Opzioni di tempo e attenzione</string>
     <string name="password_empty_msg">la password non può essere vuota</string>
     <string name="password_invalid_msg">Password non valida, riprova</string>
     <string name="serial_num">Numero di serie:</string>

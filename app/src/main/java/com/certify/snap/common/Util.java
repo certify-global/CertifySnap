@@ -1465,6 +1465,7 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.EnableWeigandPassThrough, accessControlSettings.enableWeigandPassThrough.equals("1"));
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlSettings.loggingMode);
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlSettings.validAccessOption);
+                        Util.writeInt(sharedPreferences, GlobalParameters.TimeAttendanceOption, accessControlSettings.attendanceMode);
                     }
 
                     //Audio-Visual settings

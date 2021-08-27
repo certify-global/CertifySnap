@@ -634,6 +634,7 @@
     <string name="anonymous_text">Anonyme</string>
     <string name="unrecognized">Méconnu</string>
     <string name="valid_access">Options d\'accès valides (non applicables pour les connexions Anonyme et Wiegand)</string>
+    <string name="time_attendance_options">Options de temps et de présence</string>
     <string name="password_empty_msg">Le mot de passe ne doit pas être vide</string>
     <string name="password_invalid_msg">Mot de passe invalide, réessayer</string>
     <string name="serial_num">Numéro de série:</string>
