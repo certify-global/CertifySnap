@@ -2952,7 +2952,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         PrinterController.getInstance().setPrinting(false);
         //GestureController.getInstance().setLanguageUpdated(false);
         QrCodeController.getInstance().clearData();
-        ApplicationController.getInstance().setTimeAttendance(-1);
+        ApplicationController.getInstance().setTimeAttendance(0);
     }
 
     private void setPreviewIdleTimer() {

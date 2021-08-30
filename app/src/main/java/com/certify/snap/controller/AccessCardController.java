@@ -448,7 +448,9 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
-                obj.put("attendanceMode", ApplicationController.getInstance().getTimeAttendance());
+                if (AppSettings.getTimeAndAttendance() == 1) {
+                    obj.put("attendanceMode", ApplicationController.getInstance().getTimeAttendance());
+                }
 
                 if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
                     obj.put("allowAccess", getAllowAccessValue(data));
@@ -526,7 +528,7 @@ public class AccessCardController implements AccessCallback {
                 obj.put("utcRecordDate", Util.getUTCDate(""));
                 obj.put("loggingMode", AppSettings.getAccessControlLogMode());
                 obj.put("accessOption", AppSettings.getAccessControlScanMode());
-                obj.put("attendanceMode", AppSettings.getTimeAndAttendance());
+
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
