@@ -3921,6 +3921,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onGestureDetected() {
         GestureController.getInstance().setLanguageSelectionIndex(0);
         runOnUiThread(() -> {
+            if (time_attendance_layout.getVisibility() == View.VISIBLE) {
+                GestureController.getInstance().setCallback(false);
+                return;
+            }
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
                     (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) return;
