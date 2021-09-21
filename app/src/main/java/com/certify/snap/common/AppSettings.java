@@ -33,7 +33,7 @@ public class AppSettings {
     private static boolean proSettings = false;
     private static boolean displayInfoConfirmScreen = false;
     private static boolean qrSoundValid = false;
-    private static  boolean qrSoundInvalid = false;
+    private static boolean qrSoundInvalid = false;
     private static boolean bleLightNormalTemperature = false;
     private static boolean bleLightHighTemperature = false;
     private static boolean anonymousQREnable = false;
@@ -90,6 +90,8 @@ public class AppSettings {
     private static int primaryIdentifier = 0;
     private static int secondaryIdentifier = 0;
     private static int timeAndAttendance = 0;
+    private static boolean showVaccinationIndicator = false;
+    private static boolean showNonVaccinationIndicator = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -118,28 +120,28 @@ public class AppSettings {
         proSettings = sharedPreferences.getBoolean(GlobalParameters.PRO_SETTINGS, false);
         displayInfoConfirmScreen = sharedPreferences.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
         qrSoundValid = sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_VALID, false);
-        qrSoundInvalid= sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);
-        bleLightNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_NORMAL,false);
-        bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH,false);
-        anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE,false);
-        isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar,false);
-        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER,false);
+        qrSoundInvalid = sharedPreferences.getBoolean(GlobalParameters.QR_SOUND_INVALID, false);
+        bleLightNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_NORMAL, false);
+        bleLightHighTemperature = sharedPreferences.getBoolean(GlobalParameters.BLE_LIGHT_HIGH, false);
+        anonymousQREnable = sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false);
+        isNavigationBarOn = sharedPreferences.getBoolean(GlobalParameters.NavigationBar, false);
+        enablePrinter = sharedPreferences.getBoolean(GlobalParameters.BROTHER_BLUETOOTH_PRINTER, false);
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
-        enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION,false);
-        enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE,false);
+        enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION, false);
+        enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE, false);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
-        setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD,false);
-        printUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER,false);
-        printAllScan = sharedPreferences.getBoolean(GlobalParameters.PRINT_ALL_SCAN,false);
-        printAccessCardUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS,false);
-        printQrCodeUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS,false);
-        printWaveUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_WAVE_USERS,false);
-        printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE,false);
+        setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD, false);
+        printUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER, false);
+        printAllScan = sharedPreferences.getBoolean(GlobalParameters.PRINT_ALL_SCAN, false);
+        printAccessCardUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_ACCESS_CARD_USERS, false);
+        printQrCodeUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_USERS, false);
+        printWaveUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_WAVE_USERS, false);
+        printHighTemperatureUsers = sharedPreferences.getBoolean(GlobalParameters.PRINT_HIGH_TEMPERATURE, false);
         acknowledgementScreen = sharedPreferences.getBoolean(GlobalParameters.ACKNOWLEDGEMENT_SCREEN, false);
         temperatureResultBar = sharedPreferences.getBoolean(GlobalParameters.RESULT_BAR, true);
         gestureProgressEnabled = sharedPreferences.getBoolean(GlobalParameters.PROGRESS_BAR, false);
-        gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id,"");
-        scanType = sharedPreferences.getInt(GlobalParameters.ScanType,1);
+        gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id, "");
+        scanType = sharedPreferences.getInt(GlobalParameters.ScanType, 1);
         enableTempScan = sharedPreferences.getBoolean(GlobalParameters.EnableTempScan, true);
         logOfflineData = sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false);
         printLabelFace = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_FACE, false);
@@ -148,19 +150,19 @@ public class AppSettings {
         printLabelHighTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_HIGH_TEMPERATURE, false);
         printLabelWaveAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_WAVE_ANSWERS, false);
         printLabelUnidentifiedName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_UNIDENTIFIED_NAME, false);
-        editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME,"");
+        editTextNameLabel = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_NAME, "");
         maskEnforced = sharedPreferences.getBoolean(GlobalParameters.MASK_ENFORCEMENT, false);
         printLabelQRAnswers = sharedPreferences.getBoolean(GlobalParameters.PRINT_QR_CODE_FOR_WAVE_INDICATOR, false);
-        editTextPrintQRAnswers = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS,"XXXX");
-        editTextPrintWaveYes = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER,"1");
-        editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER,"0");
+        editTextPrintQRAnswers = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_EDIT_QR_ANSWERS, "XXXX");
+        editTextPrintWaveYes = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_YES_ANSWER, "1");
+        editTextPrintWaveNo = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_WAVE_NO_ANSWER, "0");
         gestureExitOnNegativeOp = sharedPreferences.getBoolean(GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, false);
-        accessControlLogMode = sharedPreferences.getInt(GlobalParameters.AccessControlLogMode,Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE);
-        accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode,Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
-        memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID,"0");
-        memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC,false);
+        accessControlLogMode = sharedPreferences.getInt(GlobalParameters.AccessControlLogMode, Constants.DEFAULT_ACCESS_CONTROL_LOG_MODE);
+        accessControlScanMode = sharedPreferences.getInt(GlobalParameters.AccessControlScanMode, Constants.DEFAULT_ACCESS_CONTROL_SCAN_MODE);
+        memberSyncGroupId = sharedPreferences.getString(GlobalParameters.MEMBER_GROUP_ID, "0");
+        memberGroupSyncEnabled = sharedPreferences.getBoolean(GlobalParameters.MEMBER_GROUP_SYNC, false);
         languageType = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
-        multiLingualEnabled = sharedPreferences.getBoolean(GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL,false);
+        multiLingualEnabled = sharedPreferences.getBoolean(GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, false);
         askQrCodeAlways = sharedPreferences.getBoolean(GlobalParameters.ASK_QR_CODE_ALWAYS, false);
         qrCodeMemberTypes = sharedPreferences.getString(GlobalParameters.QR_CODE_MEMBER_TYPE, "");
         faceQrCode = sharedPreferences.getBoolean(GlobalParameters.FACE_QR_CODE, false);
@@ -193,7 +195,10 @@ public class AppSettings {
         } else {
             rfidEnabled = false;
         }
-        timeAndAttendance = sharedPreferences.getInt(GlobalParameters.TimeAttendanceOption,0);
+        timeAndAttendance = sharedPreferences.getInt(GlobalParameters.TimeAttendanceOption, 0);
+        showVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_VACCINATION_INDICATOR, false);
+        showNonVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, false);
+
     }
 
     public static String getThermalScanTitle() {
@@ -546,7 +551,7 @@ public class AppSettings {
         guideText3 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT3, context.getString(R.string.text_value3));
         gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, context.getString(R.string.gesture_msg));
         maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, context.getString(R.string.mask_enforce_msg));
-        editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,context.getString(R.string.pass));
+        editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, context.getString(R.string.pass));
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, context.getString(R.string.gesture_exit_msg));
     }
 
@@ -556,5 +561,21 @@ public class AppSettings {
 
     public static void setTimeAndAttendance(int timeAndAttendance) {
         AppSettings.timeAndAttendance = timeAndAttendance;
+    }
+
+    public static boolean getShowVaccinationIndicator() {
+        return showVaccinationIndicator;
+    }
+
+    public static void setShowVaccinationIndicator(boolean showVaccinationIndicator) {
+        AppSettings.showVaccinationIndicator = showVaccinationIndicator;
+    }
+
+    public static boolean getShowNonVaccinationIndicator() {
+        return showNonVaccinationIndicator;
+    }
+
+    public static void setShowNonVaccinationIndicator(boolean showNonVaccinationIndicator) {
+        AppSettings.showNonVaccinationIndicator = showNonVaccinationIndicator;
     }
 }

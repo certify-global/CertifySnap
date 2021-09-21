@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class ConfirmationScreenFragment extends Fragment {
     private CompareResult compareResultValues;
     private String confirm_title = "";
     private String confirm_subtitle = "";
+    private LinearLayout confirmation_screen_layout;
     private int count = 1;
 
     @Override
@@ -56,6 +58,7 @@ public class ConfirmationScreenFragment extends Fragment {
         user_img = view.findViewById(R.id.iv_item_head_img);
         user_name = view.findViewById(R.id.tv_item_name);
         face_score = view.findViewById(R.id.facial_score);
+        confirmation_screen_layout = view.findViewById(R.id.confirmation_screen_layout);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -69,6 +72,20 @@ public class ConfirmationScreenFragment extends Fragment {
             showSnackBarMessage("Potential face match didn't happen. Please retry");
         } else {
             onAccessCardMatch();
+        }
+
+        if(AppSettings.getShowVaccinationIndicator()){
+            Log.d(TAG, "naga............. show");
+            confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
+        }else {
+            confirmation_screen_layout.setBackgroundResource(R.color.colorWhite);
+        }
+
+        if(AppSettings.getShowNonVaccinationIndicator()){
+            Log.d(TAG, "naga............. not show");
+            confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
+        } else{
+            confirmation_screen_layout.setBackgroundResource(R.color.colorWhite);
         }
         if (value != null) {
             if (value.equals("high")) {

@@ -720,5 +720,7 @@
     <string name="manual_mode">Manual</string>
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
+    <string name="show_vaccination_indicator">Show Vaccination Indicator</string>
+    <string name="show_non_vaccination_indicator">Show Non Vaccination Indicator</string>
 
 </resources>
