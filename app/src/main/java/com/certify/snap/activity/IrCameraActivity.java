@@ -3881,6 +3881,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         GestureController.getInstance().checkGestureStatus();
     }
 
+    public void resetGestureScreen() {
+        resetGesture();
+        if (AppSettings.getTimeAndAttendance() == 1) {
+            runOnUiThread(this::recreate);
+        }
+    }
+
     public void resetGesture() {
         GestureController.getInstance().setGestureHomeCallbackListener(this);
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
