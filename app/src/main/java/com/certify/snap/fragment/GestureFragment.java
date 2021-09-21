@@ -301,7 +301,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 mActivity.getFragmentManager().beginTransaction().remove(GestureFragment.this).commitAllowingStateLoss();
                 IrCameraActivity activity = (IrCameraActivity) mActivity;
                 if (activity != null) {
-                    activity.resetGesture();
+                    activity.resetGestureScreen();
                 }
             });
         }
