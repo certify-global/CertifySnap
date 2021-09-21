@@ -3008,6 +3008,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resumeScan() {
         if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
             GestureController.getInstance().setLanguageUpdated(false);
+            GestureController.getInstance().setCallback(false);
             if (AppSettings.isMultiLingualEnabled()) {
                 resetGesture();
                 return;
@@ -4241,7 +4242,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initScan() {
-        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect()) return;
+        if (AppSettings.getTimeAndAttendance() == 0) {
+            if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect())
+                return;
+        }
         int primaryIdentifier = AppSettings.getPrimaryIdentifier();
         if (primaryIdentifier != CameraController.PrimaryIdentification.NONE.getValue()) {
             if (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) {
@@ -4458,15 +4462,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    public void onCheckInClick(View view){
+    public void onCheckInClick(View view) {
         ApplicationController.getInstance().setTimeAttendance(1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        initScan();
+        if (!GestureController.getInstance().isGestureEnabledAndDeviceConnected()) {
+            initScan();
+        }
+        GestureController.getInstance().setCallback(false);
     }
 
-    public void onCheckOutClick(View view){
+    public void onCheckOutClick(View view) {
+        GestureController.getInstance().setCallback(true);
         ApplicationController.getInstance().setTimeAttendance(2);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
