@@ -3884,7 +3884,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resetGestureScreen() {
         resetGesture();
         if (AppSettings.getTimeAndAttendance() == 1) {
-            runOnUiThread(this::recreate);
+            DisplayTimeAttendance();
         }
     }
 
@@ -4474,7 +4474,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        if (!GestureController.getInstance().isGestureEnabledAndDeviceConnected()) {
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()) {
+            int primaryIdentifier = AppSettings.getPrimaryIdentifier();
+            if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
+                    (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
+                initScan();
+            }
+        } else {
             initScan();
         }
         GestureController.getInstance().setCallback(false);
