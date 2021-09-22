@@ -4492,6 +4492,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        initScan();
+        int primaryIdentifier = AppSettings.getPrimaryIdentifier();
+        if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
+            enableFaceScan();
+            isReadyToScan = true;
+        } else if (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) {
+            enableRfidScan();
+            enableFaceScan();
+            isReadyToScan = true;
+        } else {
+            initScan();
+        }
     }
 }
