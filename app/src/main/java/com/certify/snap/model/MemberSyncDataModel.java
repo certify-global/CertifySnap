@@ -136,6 +136,9 @@ public class MemberSyncDataModel {
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
                             member.setDateTime(Util.currentDate());
+                            if (c.has("isdocument")) {
+                                member.setDocument(c.getBoolean("isdocument"));
+                            }
                             index = index +1;
                             member.setPrimaryId(index);
                             emitter.onNext(member);

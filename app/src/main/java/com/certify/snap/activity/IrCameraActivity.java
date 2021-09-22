@@ -4439,13 +4439,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void DisplayTimeAttendance() {
         try {
-            if(AppSettings.getTimeAndAttendance() == 1) {
+            if (AppSettings.getTimeAndAttendance() == 1) {
                 relative_main.setVisibility(View.GONE);
                 time_attendance_layout.setVisibility(View.VISIBLE);
-            }else if(AppSettings.getTimeAndAttendance() == 0){
+            } else if (AppSettings.getTimeAndAttendance() == 0) {
                 homeDisplayView();
-            }
-            else {
+            } else {
                 new Handler().postDelayed(() -> {
                     //logo.setVisibility(View.GONE);
                     relative_main.setVisibility(View.GONE);
@@ -4457,7 +4456,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    public void onCheckInClick(View view){
+    public void onCheckInClick(View view) {
         ApplicationController.getInstance().setTimeAttendance(1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
@@ -4465,7 +4464,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initScan();
     }
 
-    public void onCheckOutClick(View view){
+    public void onCheckOutClick(View view) {
         ApplicationController.getInstance().setTimeAttendance(2);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();

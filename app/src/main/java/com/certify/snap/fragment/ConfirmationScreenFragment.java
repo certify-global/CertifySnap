@@ -75,18 +75,17 @@ public class ConfirmationScreenFragment extends Fragment {
         }
 
         if(AppSettings.getShowVaccinationIndicator()){
-            Log.d(TAG, "naga............. show");
             confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
         }else {
             confirmation_screen_layout.setBackgroundResource(R.color.colorWhite);
         }
 
         if(AppSettings.getShowNonVaccinationIndicator()){
-            Log.d(TAG, "naga............. not show");
             confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
         } else{
             confirmation_screen_layout.setBackgroundResource(R.color.colorWhite);
         }
+
         if (value != null) {
             if (value.equals("high")) {
                 confirm_title = sp.getString(GlobalParameters.Confirm_title_above, getResources().getString(R.string.confirmation_text_above));

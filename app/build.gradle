@@ -60,17 +60,20 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            debuggable true
+            //minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "ENDPOINT_URL", "\"https://api.certify.me\""
         }
         qa {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+            //minifyEnabled false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "String", "ENDPOINT_URL", "\"https://apiqa.certify.me\""
             testCoverageEnabled = true
         }
         debug {
+            debuggable true
             minifyEnabled false
             buildConfigField "String", "ENDPOINT_URL", "\"https://apidev.certify.me\""
         }

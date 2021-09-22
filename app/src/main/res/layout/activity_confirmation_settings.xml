@@ -228,8 +228,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:visibility="gone">
+            android:layout_marginRight="10dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edittext_title_above"
@@ -248,8 +247,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:visibility="gone">
+            android:layout_marginRight="10dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edittext_subtitle_above"
@@ -268,8 +266,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:visibility="gone">
+            android:layout_marginRight="10dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_screen_delay"
