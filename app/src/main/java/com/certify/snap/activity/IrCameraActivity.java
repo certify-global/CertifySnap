@@ -3009,6 +3009,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resumeScan() {
         if (AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) {
             GestureController.getInstance().setLanguageUpdated(false);
+            GestureController.getInstance().setCallback(false);
             if (AppSettings.isMultiLingualEnabled()) {
                 resetGesture();
                 return;
@@ -3881,6 +3882,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         GestureController.getInstance().checkGestureStatus();
     }
 
+    public void resetGestureScreen() {
+        resetGesture();
+        if (AppSettings.getTimeAndAttendance() == 1) {
+            DisplayTimeAttendance();
+        }
+    }
+
     public void resetGesture() {
         GestureController.getInstance().setGestureHomeCallbackListener(this);
         CameraController.getInstance().setScanState(CameraController.ScanState.GESTURE_SCAN);
@@ -3922,6 +3930,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onGestureDetected() {
         GestureController.getInstance().setLanguageSelectionIndex(0);
         runOnUiThread(() -> {
+            if (time_attendance_layout.getVisibility() == View.VISIBLE) {
+                GestureController.getInstance().setCallback(false);
+                return;
+            }
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
                     (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString())))
@@ -4239,8 +4251,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initScan() {
-        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect())
-            return;
+        if (AppSettings.getTimeAndAttendance() == 0) {
+            if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() && AppSettings.isFacialDetect())
+                return;
+        }
         int primaryIdentifier = AppSettings.getPrimaryIdentifier();
         if (primaryIdentifier != CameraController.PrimaryIdentification.NONE.getValue()) {
             if (primaryIdentifier == CameraController.PrimaryIdentification.FACE_OR_RFID.getValue()) {
@@ -4457,19 +4471,39 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    public void onCheckInClick(View view){
+    public void onCheckInClick(View view) {
         ApplicationController.getInstance().setTimeAttendance(1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        initScan();
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()) {
+            int primaryIdentifier = AppSettings.getPrimaryIdentifier();
+            if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
+                    (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
+                initScan();
+            }
+        } else {
+            initScan();
+        }
+        GestureController.getInstance().setCallback(false);
     }
 
-    public void onCheckOutClick(View view){
+    public void onCheckOutClick(View view) {
+        GestureController.getInstance().setCallback(true);
         ApplicationController.getInstance().setTimeAttendance(2);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        initScan();
+        int primaryIdentifier = AppSettings.getPrimaryIdentifier();
+        if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
+            enableFaceScan();
+            isReadyToScan = true;
+        } else if (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) {
+            enableRfidScan();
+            enableFaceScan();
+            isReadyToScan = true;
+        } else {
+            initScan();
+        }
     }
 }

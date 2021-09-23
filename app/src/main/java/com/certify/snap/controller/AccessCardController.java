@@ -427,6 +427,18 @@ public class AccessCardController implements AccessCallback {
                     obj.put("memberTypeId", registeredMember.getMemberType());
                     obj.put("memberTypeName", registeredMember.getMemberTypeName());
                     obj.put("networkId", registeredMember.getNetworkId());
+                } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+                    registeredMember = data.member;
+                    if (registeredMember != null) {
+                        obj.put("id", 0);
+                        obj.put("firstName", registeredMember.getFirstname());
+                        obj.put("lastName", registeredMember.getLastname());
+                        obj.put("accessId", registeredMember.getAccessid());
+                        obj.put("memberId", registeredMember.getMemberid());
+                        obj.put("memberTypeId", registeredMember.getMemberType());
+                        obj.put("memberTypeName", registeredMember.getMemberTypeName());
+                        obj.put("networkId", registeredMember.getNetworkId());
+                    }
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);

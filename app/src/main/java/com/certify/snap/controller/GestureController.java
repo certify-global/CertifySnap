@@ -201,6 +201,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 Logger.error(TAG, "onJSONObjectListenerGesture", "GetQuestions Log api failed");
                 getQuestionsFromDb(DeviceSettingsController.getInstance().getLanguageToUpdate());
                 if (listener != null) {
+                    cancelQuestionsTimer();
                     listener.onQuestionsReceived();
                 }
                 return;
