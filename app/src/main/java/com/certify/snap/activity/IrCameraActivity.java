@@ -4453,13 +4453,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void DisplayTimeAttendance() {
         try {
-            if(AppSettings.getTimeAndAttendance() == 1) {
+            if (AppSettings.getTimeAndAttendance() == 1) {
                 relative_main.setVisibility(View.GONE);
                 time_attendance_layout.setVisibility(View.VISIBLE);
-            }else if(AppSettings.getTimeAndAttendance() == 0){
+            } else if (AppSettings.getTimeAndAttendance() == 0) {
                 homeDisplayView();
-            }
-            else {
+            } else {
                 new Handler().postDelayed(() -> {
                     //logo.setVisibility(View.GONE);
                     relative_main.setVisibility(View.GONE);
@@ -4498,10 +4497,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
             enableFaceScan();
             isReadyToScan = true;
+            CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         } else if (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) {
             enableRfidScan();
             enableFaceScan();
             isReadyToScan = true;
+            CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         } else {
             initScan();
         }
