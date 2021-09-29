@@ -184,7 +184,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private View previewViewRgb;
     private View previewViewIr;
 
-    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly;
+    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate;
 
     Timer tTimer, pTimer, imageTimer, lanchTimer;
 
@@ -596,6 +596,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         time_attendance_layout = findViewById(R.id.time_attendance_linear_layout);
         button_checkIn = findViewById(R.id.btn_check_in);
         button_checkOut = findViewById(R.id.btn_check_out);
+        tvTime = findViewById(R.id.tv_time);
+        tvDate = findViewById(R.id.tv_date);
 
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
@@ -2637,6 +2639,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 new Handler().postDelayed(() -> Toast.makeText(IrCameraActivity.this, String.format(getString(R.string.scanner_remaining_time_msg), scannerRemainingTime), Toast.LENGTH_SHORT).show(), 100);
             }
         }
+
         /*if (AppSettings.isScanOnQrEnabled()) {
             frameLayout.setVisibility(View.GONE);
             qr_main.setVisibility(View.GONE);
@@ -4456,6 +4459,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (AppSettings.getTimeAndAttendance() == 1) {
                 relative_main.setVisibility(View.GONE);
                 time_attendance_layout.setVisibility(View.VISIBLE);
+                String currentTime = new SimpleDateFormat("HH:mm aaa", Locale.getDefault()).format(new Date());
+                tvTime.setText(currentTime);
+                String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
+                tvDate.setText(currentDate);
             } else if (AppSettings.getTimeAndAttendance() == 0) {
                 homeDisplayView();
             } else {

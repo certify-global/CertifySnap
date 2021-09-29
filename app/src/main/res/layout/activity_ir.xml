@@ -61,35 +61,64 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/colorWhite"
+            android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
 
+            <ImageView
+                android:id="@+id/certify_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="120dp"
+                android:background="@drawable/final_logo"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="120dp"
+                android:gravity="center"
+                android:text="04:26 PM"
+                android:textColor="@color/colorBlack"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="Tuesday, 28 Nov 2021"
+                android:textColor="@color/colorGray"
+                android:textSize="18sp" />
+
             <Button
                 android:id="@+id/btn_check_in"
-                style="@style/buttonNumberStyle"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+                style="@style/checkInButtonNumberStyle"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="150dp"
+                android:layout_marginTop="100dp"
                 android:layout_marginRight="40dp"
                 android:background="@drawable/btn_shape"
                 android:onClick="onCheckInClick"
                 android:text="@string/check_in"
+                android:textAllCaps="false"
                 android:textSize="25sp" />
 
             <Button
                 android:id="@+id/btn_check_out"
                 style="@style/buttonNumberStyle"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_below="@id/btn_check_in"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="350dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginRight="40dp"
-                android:background="@drawable/btn_shape"
+                android:background="@drawable/btn_checkout_shape"
                 android:onClick="onCheckOutClick"
                 android:text="@string/check_out"
-                android:textSize="25sp"
-                android:layout_below="@id/btn_check_in"/>
+                android:textAllCaps="false"
+                android:textSize="25sp" />
 
         </LinearLayout>
 
