@@ -720,5 +720,12 @@
     <string name="manual_mode">Manual</string>
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
+    <string name="valid">Valid</string>
+    <string name="family_name">Standardised Family Name</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="target_disease">Target Disease</string>
+    <string name="covid">Covid-19</string>
+    <string name="date_of_vaccine">Date of vaccination</string>
+    <string name="done">Done</string>
 
 </resources>

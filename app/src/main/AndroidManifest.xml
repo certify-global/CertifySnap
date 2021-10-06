@@ -125,6 +125,10 @@
             android:name=".activity.TouchlessSettingsActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.QRCodeResultActivity"
+            android:screenOrientation="portrait" />
+
         <service android:name=".service.GuideService" />
 
         <provider
