@@ -35,4 +35,6 @@
     <color name="colorBgGreen">#00CC74</color>
     <color name="colorBgBlue">#3A95EF</color>
 
+    <color name="grey_transparent">#3CD1D0D0</color>
+
 </resources>

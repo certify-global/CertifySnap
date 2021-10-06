@@ -33,7 +33,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.certify.snap"
-        minSdkVersion 23
+        minSdkVersion 25
         targetSdkVersion 28
         compileSdkVersion 28
         versionCode = gitVersionCode
@@ -116,11 +116,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation "com.journeyapps:zxing-android-embedded:4.2.0"
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //  api project(path: ':myokhttp')
     implementation files('libs/bcpissuelibrary')
-    implementation files('libs/core-3.1.0.jar')
+    //implementation files('libs/core-3.1.0.jar')
     implementation files('libs/telpo_api.jar')
     implementation files('libs/util.jar')
     implementation files('libs/arcsoft_image_util.jar')
@@ -162,6 +163,9 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+
+    implementation project(':decoder')
+    implementation project(':engine')
 }
 apply plugin: 'com.google.gms.google-services'
 

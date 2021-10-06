@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.certify.snap">
 
-    <uses-sdk tools:overrideLibrary="           androidx.camera.camera2, androidx.camera.core,           androidx.camera.view, androidx.camera.lifecycle" />
 
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -58,9 +57,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.RgbCameraActivity"
-            android:launchMode="singleTask" />
-        <activity
             android:name=".activity.IrCameraActivity"
             android:launchMode="singleTask" />
         <activity
@@ -74,6 +70,9 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.ConfirmationSettingsActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".activity.QrCodeScannerActivity"
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.ScanSettingsActivity"
