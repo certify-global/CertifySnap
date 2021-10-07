@@ -104,8 +104,6 @@ public class QrCodeScannerActivity extends AppCompatActivity {
             public void barcodeResult(BarcodeResult result) {
                 Log.d(TAG, "barcode result ");
                 barcodeScanner.pause();
-                barcodeScanner.setVisibility(View.GONE);
-                cameraSquareImage.setVisibility(View.GONE);
                 verification=true;
                 String qrText = result.getText();
                 parseQrText(qrText);
