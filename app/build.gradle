@@ -1,6 +1,18 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.palantir.git-version'
+//apply plugin: 'com.android.application'
+//apply plugin: 'com.palantir.git-version'
 import com.android.build.OutputFile
+
+plugins {
+    id 'com.android.application'
+    id 'com.palantir.git-version'
+    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'com.google.android.gms.oss-licenses-plugin'
+    id 'kotlin-parcelize'
+}
 
 //TODO:need version only for release, literal for debug.
 ext {
@@ -45,6 +57,7 @@ android {
         ndk {
             abiFilters 'arm64-v8a'
         }
+        buildConfigField "String", "CONFIG_FILE_NAME", "\"verifier-context.jsonc\""
     }
     flavorDimensions "version"
     productFlavors {
@@ -83,20 +96,36 @@ android {
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
+        coreLibraryDesugaringEnabled true
     }
 }
 android.applicationVariants.all { variant ->
     def buildType = variant.buildType.buildType.name
     variant.outputs.all { output ->
 
-        def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
-        version = buildType == "release" ? "${output.apkData.versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
-        output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
+        //def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
+        //version = buildType == "release" ? "${output.apkData.versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
+        //output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
 
 def room_version="2.2.5"
 dependencies {
+
+    /*implementation project(':decoder')
+    implementation project(':engine')*/
+
+    implementation Deps.kotlin_stdlib
+
+    implementation Deps.hilt
+    kapt Deps.hilt_compiler
+    implementation Deps.hilt_viewmodel
+    implementation Deps.hilt_work
+    kapt Deps.androidx_hilt_compiler
+    kapt Deps.room_compiler
+
+    coreLibraryDesugaring Deps.android_tools_desugar_jdk_libs
+
     implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.0.0'
@@ -164,8 +193,8 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
-    implementation project(':decoder')
-    implementation project(':engine')
+    //implementation project(':decoder')
+    //implementation project(':engine')
 }
 apply plugin: 'com.google.gms.google-services'
 
