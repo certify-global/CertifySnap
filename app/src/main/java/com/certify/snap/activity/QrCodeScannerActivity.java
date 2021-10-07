@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.certify.snap.R;
 import com.google.zxing.BarcodeFormat;
@@ -16,10 +19,11 @@ import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class QrCodeScannerActivity extends Activity {
+public class QrCodeScannerActivity extends AppCompatActivity {
 
     private static final String TAG = QrCodeScannerActivity.class.getSimpleName();
     private BarcodeView barcodeScanner;
+    private FragmentManager fragmentManager=null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class QrCodeScannerActivity extends Activity {
 
     private void initView() {
         barcodeScanner = findViewById(R.id.barcode_scanner);
+        fragmentManager=getSupportFragmentManager();
     }
 
     private void initQrCodeScanner() {
@@ -53,6 +58,9 @@ public class QrCodeScannerActivity extends Activity {
             @Override
             public void barcodeResult(BarcodeResult result) {
                 Log.d(TAG, "barcode result ");
+                barcodeScanner.pause();
+                launchVerificationFragment();
+
             }
         };
         Collection<BarcodeFormat> decodeFormats = new ArrayList<>();
@@ -61,4 +69,10 @@ public class QrCodeScannerActivity extends Activity {
         barcodeScanner.setDecoderFactory(new DefaultDecoderFactory(decodeFormats));
         barcodeScanner.decodeContinuous(barcodeCallback);
     }
+
+    private void launchVerificationFragment() {
+        DialogFragment dialogFragment=new DialogFragment();
+        dialogFragment.show(fragmentManager,"VerificationFragment");
+    }
+
 }

@@ -98,7 +98,11 @@ android {
         targetCompatibility 1.8
         coreLibraryDesugaringEnabled true
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
+    buildFeatures {        viewBinding = true    }
     packagingOptions {
         pickFirst 'META-INF/ASL-2.0.txt'
         pickFirst 'draftv4/schema'
@@ -202,8 +206,29 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
-    //implementation project(':decoder')
-    //implementation project(':engine')
+    implementation Deps.kotlin_stdlib
+    implementation Deps.androidx_core
+    implementation Deps.androidx_appcompat
+    implementation Deps.androidx_material
+    implementation Deps.androidx_constraint
+    implementation Deps.androidx_navigation_fragment
+    implementation Deps.androidx_navigation_ui
+    implementation Deps.androidx_fragment_ktx
+    implementation Deps.androidx_lifecycle_livedata_ktx
+    implementation Deps.androidx_worker_ktx
+    implementation Deps.kotlinx_coroutines
+    implementation(Deps.zxing) { transitive = false }
+    implementation Deps.zxing_core
+    implementation Deps.guava_conflict_resolver
+    implementation Deps.retrofit2
+    implementation Deps.log_interceptor
+    implementation Deps.gson_converter
+    implementation Deps.jackson_kotlin
+
+    implementation Deps.timber
+
+    implementation Deps.google_licenses
+
 }
 apply plugin: 'com.google.gms.google-services'
 
