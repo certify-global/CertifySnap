@@ -29,6 +29,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
+import com.certify.snap.qrverification.CertificateModel;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -60,6 +61,9 @@ public class QRCodeResultActivity extends AppCompatActivity {
         dateVaccination=findViewById(R.id.date_vaccination);
         buttonDone=findViewById(R.id.btn_done);
         firstName=findViewById(R.id.first_name);
+
+        CertificateModel model = getIntent().getParcelableExtra("certificateModel");
+        familyName.setText(model.getPerson().getFamilyName());
 
     }
 

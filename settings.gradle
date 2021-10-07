@@ -2,5 +2,5 @@ include ':app'
 include ':decoder'
 //include ':certlogic'
 include ':engine'
-project(':decoder').projectDir = new File("../dgca-app-core-android/decoder")
-project(':engine').projectDir = new File("../dgc-certlogic-android/engine")
+//project(':decoder').projectDir = new File("../dgca-app-core-android/decoder")
+//project(':engine').projectDir = new File("../dgc-certlogic-android/engine")
