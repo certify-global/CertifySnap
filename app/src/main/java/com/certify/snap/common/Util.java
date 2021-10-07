@@ -63,7 +63,7 @@ import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
-import com.certify.snap.activity.QrCodeScanner;
+import com.certify.snap.activity.QrCodeScannerActivity;
 import com.certify.snap.activity.SettingsActivity;
 import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
@@ -203,7 +203,7 @@ public class Util {
     public static void switchRgbOrIrActivity(Context context, Boolean isActivity) {
         if (context == null)
             return;
-        Class<?> activity = QrCodeScanner.class;
+        Class<?> activity = QrCodeScannerActivity.class;
         if (isDeviceProModel() && getSharedPreferences(context).getBoolean(GlobalParameters.PRO_SETTINGS, false)) {
             activity = ProIrCameraActivity.class;
         }
@@ -212,7 +212,7 @@ public class Util {
             else
                 context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
-            if (isActivity) context.startActivity(new Intent(context, QrCodeScanner.class));
+            if (isActivity) context.startActivity(new Intent(context, QrCodeScannerActivity.class));
             else
                 context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
