@@ -74,7 +74,7 @@ sealed class QrCodeVerificationResult {
 }
 
 @HiltViewModel
-class VerificationViewModel @Inject constructor(
+ public class VerificationViewModel @Inject public constructor(
     private val prefixValidationService: PrefixValidationService,
     private val base45Service: Base45Service,
     private val compressorService: CompressorService,

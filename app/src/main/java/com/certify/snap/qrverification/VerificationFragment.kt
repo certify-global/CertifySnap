@@ -32,15 +32,16 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.certify.snap.databinding.FragmentVerificationBinding
 import dagger.hilt.android.AndroidEntryPoint
 import dgca.verifier.app.android.model.rules.RuleValidationResultModelsContainer
 
-@AndroidEntryPoint
-class VerificationFragment : DialogFragment() {
+class VerificationFragment : Fragment() {
     private val viewModel by viewModels<VerificationViewModel>()
   //  private val args by navArgs<VerificationFragmentArgs>()
 
@@ -75,11 +76,4 @@ class VerificationFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState).apply {
-            this.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            this.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            setStyle(STYLE_NO_FRAME, android.R.style.Theme)
-        }
-    }
 }

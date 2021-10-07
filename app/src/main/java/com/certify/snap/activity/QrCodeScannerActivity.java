@@ -4,18 +4,25 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.certify.snap.R;
 import com.certify.snap.qrverification.CertificateModel;
 import com.certify.snap.qrverification.DiseaseType;
 import com.certify.snap.qrverification.PersonModel;
 import com.certify.snap.qrverification.VaccinationModel;
+import com.certify.snap.qrverification.QRModelData;
+import com.certify.snap.qrverification.VerificationFragment;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -28,6 +35,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -52,11 +60,14 @@ import dgca.verifier.app.decoder.schema.DefaultSchemaValidator;
 import dgca.verifier.app.decoder.services.X509;
 
 
+import dagger.hilt.android.AndroidEntryPoint;
 public class QrCodeScannerActivity extends AppCompatActivity {
 
     private static final String TAG = QrCodeScannerActivity.class.getSimpleName();
     private BarcodeView barcodeScanner;
     private FragmentManager fragmentManager=null;
+    private AppCompatImageView cameraSquareImage;
+    private boolean verification;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,6 +93,7 @@ public class QrCodeScannerActivity extends AppCompatActivity {
 
     private void initView() {
         barcodeScanner = findViewById(R.id.barcode_scanner);
+        cameraSquareImage = findViewById(R.id.camera_square_image);
         fragmentManager=getSupportFragmentManager();
     }
 
@@ -92,7 +104,9 @@ public class QrCodeScannerActivity extends AppCompatActivity {
             public void barcodeResult(BarcodeResult result) {
                 Log.d(TAG, "barcode result ");
                 barcodeScanner.pause();
-//                launchVerificationFragment();
+                barcodeScanner.setVisibility(View.GONE);
+                cameraSquareImage.setVisibility(View.GONE);
+                verification=true;
                 String qrText = result.getText();
                 parseQrText(qrText);
             }
@@ -177,11 +191,6 @@ public class QrCodeScannerActivity extends AppCompatActivity {
 
         }
 
-    }
-
-    private void launchVerificationFragment() {
-        DialogFragment dialogFragment=new DialogFragment();
-        dialogFragment.show(fragmentManager,"VerificationFragment");
     }
 
 }

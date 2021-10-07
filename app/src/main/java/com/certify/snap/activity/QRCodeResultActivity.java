@@ -10,8 +10,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
 import com.certify.snap.qrverification.CertificateModel;
+import com.certify.snap.qrverification.QRModelData;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
@@ -40,19 +43,38 @@ import java.util.HashMap;
 
 public class QRCodeResultActivity extends AppCompatActivity {
     public static String TAG = "QRCodeResultActivity";
-    private TextView familyName,QRDob,dateVaccination,firstName;
-    private Button buttonDone;
+    private TextView familyName,QRDob,dateVaccination,firstName,given_name,issuer_country,certificate_identifier,medicinal_product,manufacturer;
+    private Button buttonDone,buttonRetry;
+    private LinearLayout linearLayout_success;
+    private RelativeLayout relativeLayout_failure;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrcode_result);
         initView();
+        updateUI();
         setClickListener();
+    }
+
+    private void updateUI() {
+        CertificateModel model = getIntent().getParcelableExtra("certificateModel");
+         linearLayout_success.setVisibility(View.VISIBLE);
+           familyName.setText(model.getPerson().getFamilyName());
+            firstName.setText(model.getFullName());
+            QRDob.setText(model.getDateOfBirth());
+            dateVaccination.setText(model.getVaccinations().get(0).getDateOfVaccination());
+            given_name.setText(model.getPerson().getGivenName());
+            issuer_country.setText(model.getVaccinations().get(0).getCertificateIssuer());
+           certificate_identifier.setText(model.getVaccinations().get(0).getCertificateIdentifier());
+        medicinal_product.setText(model.getVaccinations().get(0).getMedicinalProduct());
+        manufacturer.setText(model.getVaccinations().get(0).getManufacturer());
+
     }
 
     private void setClickListener() {
         buttonDone.setOnClickListener(view -> finish());
+        buttonRetry.setOnClickListener(v -> finish());
     }
 
     private void initView() {
@@ -61,9 +83,14 @@ public class QRCodeResultActivity extends AppCompatActivity {
         dateVaccination=findViewById(R.id.date_vaccination);
         buttonDone=findViewById(R.id.btn_done);
         firstName=findViewById(R.id.first_name);
-
-        CertificateModel model = getIntent().getParcelableExtra("certificateModel");
-        familyName.setText(model.getPerson().getFamilyName());
+        given_name=findViewById(R.id.given_name);
+        issuer_country=findViewById(R.id.issuer_country);
+        buttonRetry=findViewById(R.id.btn_retry);
+        certificate_identifier=findViewById(R.id.certificate_identifier);
+        medicinal_product=findViewById(R.id.medicinal_product);
+        manufacturer=findViewById(R.id.manufacturer);
+        linearLayout_success=findViewById(R.id.linearLayout_success);
+        relativeLayout_failure=findViewById(R.id.relativeLayout_failure);
 
     }
 

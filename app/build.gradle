@@ -126,17 +126,6 @@ dependencies {
     implementation project(':decoder')
     implementation project(':engine')
 
-    implementation Deps.kotlin_stdlib
-
-    implementation Deps.hilt
-    kapt Deps.hilt_compiler
-    implementation Deps.hilt_viewmodel
-    implementation Deps.hilt_work
-    kapt Deps.androidx_hilt_compiler
-    kapt Deps.room_compiler
-
-    coreLibraryDesugaring Deps.android_tools_desugar_jdk_libs
-
     implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.0.0'
@@ -215,6 +204,8 @@ dependencies {
     implementation Deps.androidx_navigation_ui
     implementation Deps.androidx_fragment_ktx
     implementation Deps.androidx_lifecycle_livedata_ktx
+    implementation Deps.room_runtime
+    implementation Deps.room_ktx
     implementation Deps.androidx_worker_ktx
     implementation Deps.kotlinx_coroutines
     implementation(Deps.zxing) { transitive = false }
@@ -228,6 +219,17 @@ dependencies {
     implementation Deps.timber
 
     implementation Deps.google_licenses
+
+    implementation Deps.kotlin_stdlib
+
+    implementation Deps.hilt
+    kapt Deps.hilt_compiler
+    implementation Deps.hilt_viewmodel
+    implementation Deps.hilt_work
+    kapt Deps.androidx_hilt_compiler
+    kapt Deps.room_compiler
+
+    coreLibraryDesugaring Deps.android_tools_desugar_jdk_libs
 
 }
 apply plugin: 'com.google.gms.google-services'

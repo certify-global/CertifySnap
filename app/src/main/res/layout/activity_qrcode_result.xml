@@ -4,14 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 <LinearLayout
     android:id="@+id/linearLayout_success"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:visibility="visible">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="100dp"
         android:orientation="vertical"
         android:background="@color/green">
 
@@ -21,7 +25,7 @@
             android:layout_height="wrap_content"
             android:text="@string/first_name"
             android:textColor="@color/colorWhite"
-            android:layout_marginTop="@dimen/size_30"
+            android:layout_marginTop="@dimen/size_20"
             android:layout_marginLeft="@dimen/size_20"
             android:textSize="@dimen/size_20" />
 
@@ -48,6 +52,21 @@
         </LinearLayout>
 
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/given_name"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_16"/>
+
+    <TextView
+        android:id="@+id/given_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/size_20"
+        android:layout_marginTop="@dimen/size_10"
+        android:textSize="@dimen/size_18" />
 
     <TextView
         android:layout_width="match_parent"
@@ -83,26 +102,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/target_disease"
+        android:text="@string/vaccination_date"
         android:layout_marginTop="@dimen/size_20"
         android:layout_marginLeft="@dimen/size_20"
         android:textSize="@dimen/size_16"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/covid"
-        android:layout_marginTop="@dimen/size_10"
-        android:layout_marginLeft="@dimen/size_20"
-        android:textSize="@dimen/size_18"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/date_of_vaccine"
-        android:layout_marginTop="@dimen/size_20"
-        android:layout_marginLeft="@dimen/size_20"
-        android:textSize="@dimen/size_16"/>
 
     <TextView
         android:id="@+id/date_vaccination"
@@ -111,6 +115,71 @@
         android:layout_marginTop="@dimen/size_10"
         android:layout_marginLeft="@dimen/size_20"
         android:textSize="@dimen/size_18"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/issues_country"
+        android:layout_marginTop="@dimen/size_20"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_16"/>
+
+    <TextView
+        android:id="@+id/issuer_country"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_18"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/certificate_identifier"
+        android:layout_marginTop="@dimen/size_20"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_16"/>
+
+    <TextView
+        android:id="@+id/certificate_identifier"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_18"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/medicinal_product"
+        android:layout_marginTop="@dimen/size_20"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_16"/>
+
+    <TextView
+        android:id="@+id/medicinal_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_18"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/manufacturer"
+        android:layout_marginTop="@dimen/size_20"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_16"/>
+
+    <TextView
+        android:id="@+id/manufacturer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/size_10"
+        android:layout_marginLeft="@dimen/size_20"
+        android:textSize="@dimen/size_18"/>
+
 
     <Button
         android:id="@+id/btn_done"
@@ -123,6 +192,39 @@
         android:textColor="@color/colorWhite"/>
 
 </LinearLayout>
+    </ScrollView>
 
+    <RelativeLayout
+        android:id="@+id/relativeLayout_failure"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+    <LinearLayout
+        android:id="@+id/ll_header_failure"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:orientation="vertical"
+        android:background="@color/colorRed">
+    </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/verification_failed"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_22"
+            android:layout_centerInParent="true"
+            android:gravity="center"/>
 
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/retry"
+            android:background="@color/colorRed"
+            android:textColor="@color/colorWhite"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="@dimen/size_20"/>
+    </RelativeLayout>
 </RelativeLayout>

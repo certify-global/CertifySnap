@@ -22,6 +22,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -33,9 +34,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0" />
+        app:layout_constraintVertical_bias="0" >
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.journeyapps.barcodescanner.BarcodeView>
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/camera_square_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitXY"
@@ -68,14 +76,5 @@
         app:layout_constraintBottom_toBottomOf="@id/validate_with"
         app:layout_constraintStart_toEndOf="@id/validate_with"
         app:layout_constraintTop_toTopOf="@id/validate_with" />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

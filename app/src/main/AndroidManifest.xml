@@ -70,7 +70,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.ConfirmationSettingsActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleInstance" />
         <activity
             android:name=".activity.QrCodeScannerActivity"
             android:launchMode="singleTask" >
@@ -135,7 +135,11 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".service.GuideService" />
-
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:exported="false"
+            tools:node="remove" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
