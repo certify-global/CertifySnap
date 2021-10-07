@@ -43,10 +43,11 @@ import java.util.HashMap;
 
 public class QRCodeResultActivity extends AppCompatActivity {
     public static String TAG = "QRCodeResultActivity";
-    private TextView familyName,QRDob,dateVaccination,firstName,given_name,issuer_country,certificate_identifier,medicinal_product,manufacturer;
-    private Button buttonDone,buttonRetry;
+    private TextView familyName, QRDob, dateVaccination, firstName, given_name, issuer_country, certificate_identifier, medicinal_product, manufacturer;
+    private Button buttonDone, buttonRetry;
     private LinearLayout linearLayout_success;
     private RelativeLayout relativeLayout_failure;
+    private boolean verification;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,38 +60,45 @@ public class QRCodeResultActivity extends AppCompatActivity {
 
     private void updateUI() {
         CertificateModel model = getIntent().getParcelableExtra("certificateModel");
-         linearLayout_success.setVisibility(View.VISIBLE);
-           familyName.setText(model.getPerson().getFamilyName());
+        verification=getIntent().getBooleanExtra("verification",false);
+        if(verification) {
+            linearLayout_success.setVisibility(View.VISIBLE);
+            relativeLayout_failure.setVisibility(View.GONE);
+            familyName.setText(model.getPerson().getFamilyName());
             firstName.setText(model.getFullName());
             QRDob.setText(model.getDateOfBirth());
             dateVaccination.setText(model.getVaccinations().get(0).getDateOfVaccination());
             given_name.setText(model.getPerson().getGivenName());
             issuer_country.setText(model.getVaccinations().get(0).getCertificateIssuer());
-           certificate_identifier.setText(model.getVaccinations().get(0).getCertificateIdentifier());
-        medicinal_product.setText(model.getVaccinations().get(0).getMedicinalProduct());
-        manufacturer.setText(model.getVaccinations().get(0).getManufacturer());
+            certificate_identifier.setText(model.getVaccinations().get(0).getCertificateIdentifier());
+            medicinal_product.setText(model.getVaccinations().get(0).getMedicinalProduct());
+            manufacturer.setText(model.getVaccinations().get(0).getManufacturer());
+        }else{
+            linearLayout_success.setVisibility(View.GONE);
+            relativeLayout_failure.setVisibility(View.VISIBLE);
+        }
 
     }
 
     private void setClickListener() {
-        buttonDone.setOnClickListener(view -> finish());
+        buttonDone.setOnClickListener(v -> finish());
         buttonRetry.setOnClickListener(v -> finish());
     }
 
     private void initView() {
-        familyName=findViewById(R.id.family_name);
-        QRDob=findViewById(R.id.qr_dob);
-        dateVaccination=findViewById(R.id.date_vaccination);
-        buttonDone=findViewById(R.id.btn_done);
-        firstName=findViewById(R.id.first_name);
-        given_name=findViewById(R.id.given_name);
-        issuer_country=findViewById(R.id.issuer_country);
-        buttonRetry=findViewById(R.id.btn_retry);
-        certificate_identifier=findViewById(R.id.certificate_identifier);
-        medicinal_product=findViewById(R.id.medicinal_product);
-        manufacturer=findViewById(R.id.manufacturer);
-        linearLayout_success=findViewById(R.id.linearLayout_success);
-        relativeLayout_failure=findViewById(R.id.relativeLayout_failure);
+        familyName = findViewById(R.id.family_name);
+        QRDob = findViewById(R.id.qr_dob);
+        dateVaccination = findViewById(R.id.date_vaccination);
+        buttonDone = findViewById(R.id.btn_done);
+        firstName = findViewById(R.id.first_name);
+        given_name = findViewById(R.id.given_name);
+        issuer_country = findViewById(R.id.issuer_country);
+        buttonRetry = findViewById(R.id.btn_retry);
+        certificate_identifier = findViewById(R.id.certificate_identifier);
+        medicinal_product = findViewById(R.id.medicinal_product);
+        manufacturer = findViewById(R.id.manufacturer);
+        linearLayout_success = findViewById(R.id.linearLayout_success);
+        relativeLayout_failure = findViewById(R.id.relativeLayout_failure);
 
     }
 
