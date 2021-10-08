@@ -214,7 +214,7 @@ public class ConfirmationScreenFragment extends Fragment {
         if (vaccineValue == 1) {
             if (member.isDocument) {
                 confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
-            } else {
+            }else if(AppSettings.getShowNonVaccinationIndicator()) {
                 confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
             }
         } else if (vaccineValue == 2) {
