@@ -2,6 +2,7 @@ package com.certify.snap.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.os.Parcelable;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.DialogFragment;
@@ -19,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.certify.snap.R;
 import com.certify.snap.qrverification.CertificateModel;
 import com.certify.snap.qrverification.DiseaseType;
+import com.certify.snap.qrverification.JwtHelper;
 import com.certify.snap.qrverification.PersonModel;
 import com.certify.snap.qrverification.VaccinationModel;
 import com.certify.snap.qrverification.QRModelData;
@@ -30,6 +33,7 @@ import com.journeyapps.barcodescanner.BarcodeView;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -103,8 +107,13 @@ public class QrCodeScannerActivity extends AppCompatActivity {
             public void barcodeResult(BarcodeResult result) {
                 Log.d(TAG, "barcode result ");
                 barcodeScanner.pause();
-                String qrText = result.getText();
-                parseQrText(qrText);
+              //  String qrText = result.getText();
+                String qrText = "shc:/5676290952432060346029243740446031222959532654603460292540772804336028702864716745222809286241223803127633772937404037614124294155414509364367694562294037054106322567213239452755415503563944035363327154065460573601064529295312707424284350386122127671683834312572613671033437362564734538002421394407702525072631242357365700113210522031626775766064074006067511100827066624302023664444751221414137593763702428277454403458096325310735255507293205663225526239566061205365573633547377111172317604421231337269453626395934075607642524092710114457093556063354312759216830550476675962043811376353353522684253413300704425342012336061614069666905651024054162381071210056506620063209722261697060245650100429717157282666502129385075337172270303457560583538524005036675320974211166280826390471001129702723572556390726277522355831755225081063204435243024404567071133523875665511756308335231652739113076610640296408622253594225577654607008694170636540775230714445093137120303771073080026502528446844366610312575093731055838406068315212556558653812707371703521752237273309350636775810076865551243062674414125502909440720326212224204502373296231262411414523701012266145051211336270592964437756076922067659743753360854547676685272561166575728436638327761347641052740287155087077081061755212032654574321594125296830665930046008003905572866043563696505767457454033716872435373225233055309575832014230085341293629725630375074601259594561336359591158565941384004692662365022523508312341041163767058072571415973314070597520580300353366275266726831351155644123411027082220\";";
+                if(qrText.startsWith("shc:")){
+                    smartHealthCard(qrText);
+                }else {
+                    parseQrText(qrText);
+                }
             }
         };
         Collection<BarcodeFormat> decodeFormats = new ArrayList<>();
@@ -113,6 +122,29 @@ public class QrCodeScannerActivity extends AppCompatActivity {
         barcodeScanner.setDecoderFactory(new DefaultDecoderFactory(decodeFormats));
         barcodeScanner.decodeContinuous(barcodeCallback);
     }
+
+
+    private void smartHealthCard(String qrText) {
+        new Thread(() -> {
+            try {
+                JwtHelper j = JwtHelper.decode(qrText);
+                JwtHelper.VerifiableCredential vc = j.payload.vc;
+
+            } catch (JwtHelper.DecodeException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            QrCodeScannerActivity.this.runOnUiThread(() -> {
+
+            });
+        }).start();
+
+
+
+
+    }
+
     private void parseQrText(String qrText) {
 
         VerificationResult verificationResult = new VerificationResult();
