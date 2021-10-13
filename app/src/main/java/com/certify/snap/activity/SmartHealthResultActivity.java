@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +22,9 @@ import org.w3c.dom.Text;
 public class SmartHealthResultActivity extends AppCompatActivity {
     public static String TAG = "SmartHealthResultActivity";
     private boolean verification;
-    private TextView userName, dob, date1, location1, lotnumber1, date2, location2, lotnumber2;
-    private ImageView img_close;
+    private TextView userName, dob, date1, location1, lotnumber1, date2, location2, lotnumber2,secondDoseHeader;
+    private ImageView img_close,img_circle_dose2;
+    private LinearLayout second_dose;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,8 +50,14 @@ public class SmartHealthResultActivity extends AppCompatActivity {
                 date2.setText(model.getDose2Date());
                 location2.setText(model.getVaccinationLocation2());
                 lotnumber2.setText(model.getDose2Lotnumber());
+            }else{
+                second_dose.setVisibility(View.GONE);
+                secondDoseHeader.setVisibility(View.GONE);
+                img_circle_dose2.setVisibility(View.GONE);
             }
         } else {
+            Toast.makeText(this, "Invalid QRCode", Toast.LENGTH_SHORT).show();
+            finish();
 
         }
 
@@ -69,6 +77,9 @@ public class SmartHealthResultActivity extends AppCompatActivity {
         location2 = findViewById(R.id.vaccine_location1);
         lotnumber2 = findViewById(R.id.tv_lot_number2);
         img_close = findViewById(R.id.img_close);
+        secondDoseHeader = findViewById(R.id.textView4);
+        second_dose = findViewById(R.id.second_dose);
+        img_circle_dose2 = findViewById(R.id.img_circle_dose2);
     }
 
 
