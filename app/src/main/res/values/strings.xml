@@ -736,5 +736,11 @@
     <string name="medicinal_product">Medicinal Product</string>
     <string name="manufacturer">Manufacturer</string>
     <string name="vaccination_date">Vaccination Date</string>
+    <string name="first_dose">First Dose</string>
+    <string name="vaccine_date_text">Vaccine Date</string>
+    <string name="clinic_site">Clinic Site</string>
+    <string name="second_dose">Second Dose</string>
+    <string name="view_vaccination">View Vaccination</string>
+    <string name="lot_number">Lot Number</string>
 
 </resources>

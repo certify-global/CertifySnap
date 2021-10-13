@@ -134,6 +134,10 @@
             android:name=".activity.QRCodeResultActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.SmartHealthResultActivity"
+            android:screenOrientation="portrait" />
+
         <service android:name=".service.GuideService" />
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"

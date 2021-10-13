@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.certify.snap.R;
+import com.certify.snap.model.SmartHealthCardData;
 import com.certify.snap.qrverification.CertificateModel;
 import com.certify.snap.qrverification.DiseaseType;
 import com.certify.snap.qrverification.JwtHelper;
@@ -125,10 +126,28 @@ public class QrCodeScannerActivity extends AppCompatActivity {
 
 
     private void smartHealthCard(String qrText) {
+        SmartHealthCardData smartHealthCardData=new SmartHealthCardData();
         new Thread(() -> {
             try {
                 JwtHelper j = JwtHelper.decode(qrText);
                 JwtHelper.VerifiableCredential vc = j.payload.vc;
+
+                smartHealthCardData.setName(vc.patient.name);
+                smartHealthCardData.setDob(vc.patient.birthDate);
+                if(vc.immunization.size() > 0){
+                    smartHealthCardData.setDoseType("1");
+                    smartHealthCardData.setDose1Date(vc.immunization.get(0).occurrenceDateTime);
+                    smartHealthCardData.setDose1Lotnumber(vc.immunization.get(0).lotNumber);
+                    smartHealthCardData.setVaccinationLocation1(vc.immunization.get(0).performer);
+                    smartHealthCardData.setVacinationCode1(vc.immunization.get(0).vaccinationCode);
+                }
+                if(vc.immunization.size() > 1){
+                    smartHealthCardData.setDoseType1("2");
+                    smartHealthCardData.setDose2Date(vc.immunization.get(1).occurrenceDateTime);
+                    smartHealthCardData.setDose2Lotnumber(vc.immunization.get(1).lotNumber);
+                    smartHealthCardData.setVaccinationLocation2(vc.immunization.get(1).performer);
+                    smartHealthCardData.setVacinationCode2(vc.immunization.get(1).vaccinationCode);
+                }
 
             } catch (JwtHelper.DecodeException e) {
                 e.printStackTrace();
@@ -136,6 +155,10 @@ public class QrCodeScannerActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             QrCodeScannerActivity.this.runOnUiThread(() -> {
+                Intent intent = new Intent(this, SmartHealthResultActivity.class);
+                intent.putExtra("verification", true);
+                intent.putExtra("smartHealthModel", smartHealthCardData);
+                startActivity(intent);
 
             });
         }).start();
