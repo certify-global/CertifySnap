@@ -787,9 +787,11 @@ public class Util {
                                              UserExportedData data, int offlineSyncStatus) {
         Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
         try {
-            if (data.temperature == null || data.temperature.isEmpty() || data.temperature.equals("")) {
-                Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
-                return;
+            if (!Util.isDeviceF10()) {
+                if ((data.temperature == null || data.temperature.isEmpty() || data.temperature.equals(""))) {
+                    Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
+                    return;
+                }
             }
             if (!isInstitutionIdValid(context)) return;
             SharedPreferences sp = Util.getSharedPreferences(context);
@@ -2394,4 +2396,34 @@ public class Util {
         return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
+    public static String getInternalModel() {
+        String value = "";
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            value = (String) (get.invoke(c, "ro.internal.model"));
+            if (value == null || "".equals(value)) {
+                value = (String) (get.invoke(c, "ro.product.model"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+        return value;
+    }
+
+    public static int getOrientation(SharedPreferences sp){
+        if("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
+                || getInternalModel().contains("F10")|| getInternalModel().contains("970")
+                || getInternalModel().contains("F8")){
+            if("F801".equals(getInternalModel()))  return sp.getInt(GlobalParameters.Orientation, 0);
+            return sp.getInt(GlobalParameters.Orientation, 270);
+        }else{
+            return sp.getInt(GlobalParameters.Orientation, 0);
+        }
+    }
+
+    public static boolean isDeviceF10() {
+        return getInternalModel().equals("F10");
+    }
 }

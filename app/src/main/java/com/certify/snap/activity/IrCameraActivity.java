@@ -352,7 +352,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Application.getInstance().addActivity(this);
         initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
-        CameraController.getInstance().init();
+        CameraController.getInstance().init(this);
         CameraController.getInstance().startProDeviceInitTimer(this);
         //initAccessControl();
         initNfc();
@@ -830,6 +830,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
+        if (Util.isDeviceF10()) {
+            launchConfirmationFragment(String.valueOf(false));
+            if (isHomeViewEnabled) {
+                pauseCameraScan();
+            } else {
+                isReadyToScan = false;
+            }
+            isReadyToScan = false;
+            disableLedPower();
+            CameraController.getInstance().updateControllers(registeredMemberslist, data);
+            Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, -1);
+            return;
+        }
         if (!CameraController.getInstance().isFaceVisible()) return;
         if (CameraController.getInstance().isAppExitTriggered()) {
             if (handler != null) {
@@ -977,7 +990,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         }
                         //faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                        retryRecognizeDelayed(requestId);
                     } else {
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                     }
@@ -1017,17 +1029,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         };
         CameraListener rgbCameraListener = new RgbCameraListener(faceListener);
-        int previewHeight = previewViewRgb.getMeasuredHeight();
+        /*int previewHeight = previewViewRgb.getMeasuredHeight();
         if (!isNavigationBarOn) {
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
         if (Build.VERSION.SDK_INT >= 26) {
             orientationValue = 270;
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
-        }
+        }*/
         cameraHelper = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
-                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
+                .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewViewRgb.getMeasuredHeight()))
+                .rotation(Util.getOrientation(sharedPreferences))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
                 .cameraListener(rgbCameraListener)
@@ -1044,16 +1056,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initIrCamera() {
         CameraListener irCameraListener = new IrCameraListener();
 
-        int previewHeight = previewViewIr.getMeasuredHeight();
+        /*int previewHeight = previewViewIr.getMeasuredHeight();
         if (!isNavigationBarOn) {
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
         if (Build.VERSION.SDK_INT >= 26) {
             orientationValue = 270;
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
-        }
+        }*/
         cameraHelperIr = new DualCameraHelper.Builder()
-                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
+                .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewViewIr.getMeasuredHeight()))
                 .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
                 .specificCameraId(cameraIrId != null ? cameraIrId : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .previewOn(previewViewIr)
@@ -1821,7 +1833,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (cameraSource == null) {
             cameraSource = new CameraSource(this, graphicOverlay);
         }
-        cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+        if (Util.isDeviceF10()) {
+            cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+        } else {
+            cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+        }
         try {
             switch (model) {
                 case BARCODE_DETECTION:
@@ -2377,8 +2393,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         initSecondaryScan();
                                         return;
                                     }
-                                    CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN);
-                                    showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
+                                    //CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN);
+                                    //showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
 
                                     CameraController.getInstance().setFaceVisible(true);
 
@@ -2386,7 +2402,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     data.compareResult = compareResult;
                                     data.faceScore = (int) similarValue;
                                     CameraController.getInstance().setCompareResult(compareResult);
-                                    runTemperature(requestId, data);   //TODO1: Optimize
 
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
@@ -2399,6 +2414,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         memberId = getString(R.string.id) + memberId;
                                         showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                     }
+                                    runTemperature(requestId, data);   //TODO1: Optimize
                                 } else {
                                     //showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
                                     displayCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
@@ -2755,7 +2771,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void checkFaceClosenessAndSearch(FaceFeature faceFeature, int requestId, Bitmap rgb, Bitmap ir) {
-        if (!AppSettings.isTemperatureScanEnabled()) {
+        if (!AppSettings.isTemperatureScanEnabled() && !Util.isDeviceF10()) {
             runOnUiThread(() -> {
                 if (tvErrorMessage != null) {
                     tvErrorMessage.setVisibility(View.VISIBLE);
@@ -2894,7 +2910,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void displayCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
-        checkDeviceMode();
+        if (!Util.isDeviceF10()) {
+            checkDeviceMode();
+        }
         cancelPreviewIdleTimer();
         enableLedPower();
         if (maskEnabled && !faceDetectEnabled) {

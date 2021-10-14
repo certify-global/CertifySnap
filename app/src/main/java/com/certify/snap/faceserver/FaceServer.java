@@ -17,6 +17,7 @@ import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.arcsoft.imageutil.ArcSoftRotateDegree;
 import com.certify.snap.arcface.model.FaceRegisterInfo;
+import com.certify.snap.common.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -71,7 +72,13 @@ public class FaceServer {
         synchronized (this) {
             if (faceEngine == null && context != null) {
                 faceEngine = new FaceEngine();
-                int engineCode = faceEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY, 16, 1, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT);
+                int engineCode = -1;
+                if (Util.isDeviceF10()) {
+                    engineCode = faceEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_ALL_OUT, 16,
+                            1, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT);
+                } else {
+                    engineCode = faceEngine.init(context, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY, 16, 1, FaceEngine.ASF_FACE_RECOGNITION | FaceEngine.ASF_FACE_DETECT);
+                }
                 if (engineCode == ErrorInfo.MOK) {
                     initFaceList(context);
                     return true;
