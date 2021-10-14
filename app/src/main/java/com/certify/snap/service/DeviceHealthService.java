@@ -74,6 +74,7 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         //do noop
         try {
+            Log.d("DeviceHealthService", "Health check response "+ Util.getMMDDYYYYDate());
             SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
             if (reportInfo == null) {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);

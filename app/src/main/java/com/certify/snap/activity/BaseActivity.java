@@ -170,7 +170,10 @@ public abstract class BaseActivity extends Activity {
                         if (internetIndicatorImg != null) {
                             internetIndicatorImg.setVisibility(View.GONE);
                         }
+                        Log.d(TAG, "Health network online");
                         onNetworkConnected(context);
+                    } else {
+                        Log.d(TAG, "Health network offline");
                     }
                 }
             }

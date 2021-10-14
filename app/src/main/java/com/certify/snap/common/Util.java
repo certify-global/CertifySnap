@@ -1196,6 +1196,7 @@ public class Util {
             obj.put("appUpTime", getAppUpTime(context));
             obj.put("deviceUpTime", getDeviceUpTime());
 
+            Log.d(LOG, "Health check time " + getMMDDYYYYDate());
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
 
         } catch (Exception e) {
