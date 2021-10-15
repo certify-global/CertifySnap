@@ -720,5 +720,7 @@
     <string name="manual_mode">Manual</string>
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
+    <string name="retry">Retry</string>
+    <string name="retry_scan_title">Display retry option on face scan</string>
 
 </resources>

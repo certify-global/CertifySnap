@@ -90,6 +90,7 @@ public class AppSettings {
     private static int primaryIdentifier = 0;
     private static int secondaryIdentifier = 0;
     private static int timeAndAttendance = 0;
+    private static boolean retryScanEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -548,13 +549,14 @@ public class AppSettings {
         maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, context.getString(R.string.mask_enforce_msg));
         editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME,context.getString(R.string.pass));
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, context.getString(R.string.gesture_exit_msg));
+        retryScanEnabled = sharedPreferences.getBoolean(GlobalParameters.RETRY_SCAN, false);
     }
 
     public static int getTimeAndAttendance() {
         return timeAndAttendance;
     }
 
-    public static void setTimeAndAttendance(int timeAndAttendance) {
-        AppSettings.timeAndAttendance = timeAndAttendance;
+    public static boolean isRetryScanEnabled() {
+        return retryScanEnabled;
     }
 }
