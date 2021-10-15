@@ -715,5 +715,13 @@
     <string name="rfid_msg">Identificación secundaria:\nPulse la insignia para continuar</string>
     <string name="auth_failed">Falló la autenticación.</string>
     <string name="restarting_wait_msg">Reiniciando la aplicación para recuperar la configuración, espere....</string>
+    <string name="auto_mode">Auto</string>
+    <string name="manual_mode">Manual</string>
+    <string name="check_in">Check In</string>
+    <string name="check_out">Check Out</string>
+    <string name="show_vaccination_indicator">Mostrar indicador de vacunación</string>
+    <string name="show_non_vaccination_indicator">Mostrar indicador de no vacunación</string>
+    <string name="retry">Rever</string>
+    <string name="retry_scan_title">Mostrar la opción de reintento en el escaneo facial</string>
 
 </resources>
