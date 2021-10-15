@@ -43,4 +43,12 @@ public class ConfirmationViewSettings {
     @SerializedName("viewDelayAboveThreshold")
     public String viewDelayAboveThreshold = "1";
 
+    @Ignore
+    @SerializedName("showVaccinationIndicator")
+    public String showVaccinationIndicator = "1";
+
+    @Ignore
+    @SerializedName("showNonVaccinationIndicator")
+    public String showNonVaccinationIndicator = "1";
+
 }

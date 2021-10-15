@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +43,10 @@ public class ConfirmationScreenFragment extends Fragment {
     private CompareResult compareResultValues;
     private String confirm_title = "";
     private String confirm_subtitle = "";
+    private LinearLayout confirmation_screen_layout;
     private int count = 1;
+    private static final int VACCINATED = 1;
+    private static final int NON_VACCINATED = 2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,6 +60,7 @@ public class ConfirmationScreenFragment extends Fragment {
         user_img = view.findViewById(R.id.iv_item_head_img);
         user_name = view.findViewById(R.id.tv_item_name);
         face_score = view.findViewById(R.id.facial_score);
+        confirmation_screen_layout = view.findViewById(R.id.confirmation_screen_layout);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -70,6 +75,25 @@ public class ConfirmationScreenFragment extends Fragment {
         } else {
             onAccessCardMatch();
         }
+
+        if (AppSettings.getShowVaccinationIndicator()) {
+            RegisteredMembers firstScanMember = CameraController.getInstance().getFirstScanMember();
+            RegisteredMembers secondScanMember = CameraController.getInstance().getSecondScanMember();
+            if (secondScanMember != null) {
+                showVaccinationIndicator(secondScanMember, 1);
+            } else if (firstScanMember != null) {
+                showVaccinationIndicator(firstScanMember, 1);
+            }
+        } else if (AppSettings.getShowNonVaccinationIndicator()) {
+            RegisteredMembers firstScanMember = CameraController.getInstance().getFirstScanMember();
+            RegisteredMembers secondScanMember = CameraController.getInstance().getSecondScanMember();
+            if (secondScanMember != null) {
+                showVaccinationIndicator(secondScanMember, 2);
+            } else if (firstScanMember != null) {
+                showVaccinationIndicator(firstScanMember, 2);
+            }
+        }
+
         if (value != null) {
             if (value.equals("high")) {
                 confirm_title = sp.getString(GlobalParameters.Confirm_title_above, getResources().getString(R.string.confirmation_text_above));
@@ -185,4 +209,17 @@ public class ConfirmationScreenFragment extends Fragment {
             }
         }, delayMilli * 1000);
     }
+
+    private void showVaccinationIndicator(RegisteredMembers member, int vaccineValue) {
+        if (vaccineValue == 1) {
+            if (member.isDocument) {
+                confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
+            }else if(AppSettings.getShowNonVaccinationIndicator()) {
+                confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
+            }
+        } else if (vaccineValue == 2) {
+            confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
+        }
+    }
+
 }

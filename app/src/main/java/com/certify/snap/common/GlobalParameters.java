@@ -102,6 +102,8 @@ public class GlobalParameters {
     public static final String DELAY_VALUE_CONFIRM_BELOW="delay_value_confirm";
     public static final String CONFIRM_SCREEN_BELOW="confirm_screen";
     public static final String CONFIRM_SCREEN_ABOVE="confirm_screen_above";
+    public static final String SHOW_VACCINATION_INDICATOR="show_vaccination_indicator";
+    public static final String SHOW_NON_VACCINATION_INDICATOR="show_non_vaccination_indicator";
     public static final String DELAY_VALUE_CONFIRM_ABOVE = "delay_value_confirm_above";
     public static final String Confirm_title_below = "Confirm_title_below";
     public static final String Confirm_subtitle_below = "Confirm_subtitle_below";
