@@ -32,6 +32,7 @@ public class RegisteredMembers {
     public String accessToTime;
     public boolean isMemberAccessed;
     public String groupTypeName;
+    public boolean isDocument;
 
     public String getNetworkId() {
         return networkId;
@@ -198,6 +199,14 @@ public class RegisteredMembers {
 
     public void setGroupTypeName(String groupTypeName) {
         this.groupTypeName = groupTypeName;
+    }
+
+    public boolean isDocument() {
+        return isDocument;
+    }
+
+    public void setDocument(boolean document) {
+        isDocument = document;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.certify.snap.activity;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 
 import com.certify.snap.api.response.ConfirmationViewSettings;
@@ -26,7 +27,7 @@ import com.certify.snap.common.Util;
 public class ConfirmationSettingsActivity extends SettingsBaseActivity {
     private static final String TAG = ConfirmationSettingsActivity.class.getSimpleName();
     Typeface rubiklight;
-    TextView confirmation_screen, tv_confirm_above, tv_confirm_below,confirmation_above;
+    TextView confirmation_screen, tv_confirm_above, tv_confirm_below, confirmation_above, tv_show_vaccination_indicator, tv_non_vaccination_indicator,tv_show_vaccination,tv_show_non_vaccination ;
     TextInputLayout text_input_title_below, text_input_subtitle_below, text_input_title_above, text_input_subtitle_above, text_input_delay;
     private SharedPreferences sp;
     EditText edittext_title_below, edittext_subtitle_below, edittext_title_above, edittext_subtitle_above, et_screen_delay_above, et_screen_below;
@@ -48,8 +49,18 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
             RadioGroup rgCaptureAbove = findViewById(R.id.radio_group_temp_above);
             RadioButton rbCaptureYesAbove = findViewById(R.id.radio_yes_temp_above);
             RadioButton rbCaptureNoAbove = findViewById(R.id.radio_no_temp_above);
+            RadioGroup rgShowVaccination = findViewById(R.id.radio_group_show_vaccination);
+            RadioButton rbShowVaccinationYesAbove = findViewById(R.id.radio_yes_show_vaccination);
+            RadioButton rbShowVaccinationNoAbove = findViewById(R.id.radio_no_show_vaccination);
+            RadioGroup rgNonVaccinationAbove = findViewById(R.id.radio_group_non_vaccination);
+            RadioButton rbNonVaccinationYesAbove = findViewById(R.id.radio_yes_non_vaccination);
+            RadioButton rbNonVaccinationNoAbove = findViewById(R.id.radio_no_non_vaccination);
             confirmation_screen = findViewById(R.id.confirmation_screen);
             tv_confirm_above = findViewById(R.id.tv_confirm_above);
+            tv_show_vaccination_indicator = findViewById(R.id.tv_show_vaccination_indicator);
+            tv_non_vaccination_indicator = findViewById(R.id.tv_non_vaccination_indicator);
+            tv_show_non_vaccination = findViewById(R.id.tv_show_non_vaccination);
+            tv_show_vaccination =findViewById(R.id.tv_show_vaccination);
             tv_confirm_below = findViewById(R.id.tv_confirm_below);
             text_input_title_below = findViewById(R.id.text_input_title_below);
             text_input_subtitle_below = findViewById(R.id.text_input_subtitle_below);
@@ -66,6 +77,10 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
             confirmation_above = findViewById(R.id.confirmation_above);
             confirmation_screen.setTypeface(rubiklight);
             tv_confirm_above.setTypeface(rubiklight);
+            tv_show_vaccination_indicator.setTypeface(rubiklight);
+            tv_show_non_vaccination.setTypeface(rubiklight);
+            tv_non_vaccination_indicator.setTypeface(rubiklight);
+            tv_show_vaccination.setTypeface(rubiklight);
             tv_confirm_below.setTypeface(rubiklight);
             confirmation_above.setTypeface(rubiklight);
             if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN_ABOVE, true))
@@ -74,6 +89,14 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
             if (sp.getBoolean(GlobalParameters.CONFIRM_SCREEN_BELOW, true))
                 rbCaptureYes.setChecked(true);
             else rbCaptureNo.setChecked(true);
+
+            if (sp.getBoolean(GlobalParameters.SHOW_VACCINATION_INDICATOR, true))
+                rbShowVaccinationYesAbove.setChecked(true);
+            else rbShowVaccinationNoAbove.setChecked(true);
+
+            if (sp.getBoolean(GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, true))
+                rbNonVaccinationYesAbove.setChecked(true);
+            else rbNonVaccinationNoAbove.setChecked(true);
 
             et_screen_delay_above.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_ABOVE, "1"));
             et_screen_below.setText(sp.getString(GlobalParameters.DELAY_VALUE_CONFIRM_BELOW, "1"));
@@ -93,6 +116,25 @@ public class ConfirmationSettingsActivity extends SettingsBaseActivity {
                     if (checkedId == R.id.radio_yes_temp_above)
                         Util.writeBoolean(sp, GlobalParameters.CONFIRM_SCREEN_ABOVE, true);
                     else Util.writeBoolean(sp, GlobalParameters.CONFIRM_SCREEN_ABOVE, false);
+                }
+            });
+
+            rgShowVaccination.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.radio_yes_show_vaccination)
+                        Util.writeBoolean(sp, GlobalParameters.SHOW_VACCINATION_INDICATOR, true);
+                    else Util.writeBoolean(sp, GlobalParameters.SHOW_VACCINATION_INDICATOR, false);
+                }
+            });
+
+            rgNonVaccinationAbove.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.radio_yes_non_vaccination)
+                        Util.writeBoolean(sp, GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, true);
+                    else
+                        Util.writeBoolean(sp, GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, false);
                 }
             });
 

@@ -1394,6 +1394,8 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_below, confirmationSettings.normalViewLine2);
                         Util.writeString(sharedPreferences, GlobalParameters.Confirm_title_above, confirmationSettings.aboveThresholdViewLine1);
                         Util.writeString(sharedPreferences, GlobalParameters.Confirm_subtitle_above, confirmationSettings.temperatureAboveThreshold2);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.SHOW_VACCINATION_INDICATOR, confirmationSettings.showVaccinationIndicator.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, confirmationSettings.showNonVaccinationIndicator.equals("1"));
                     }
 
                     //GuideView Settings
