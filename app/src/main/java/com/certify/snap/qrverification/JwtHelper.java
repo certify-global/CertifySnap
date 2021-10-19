@@ -4,11 +4,18 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.certify.snap.bean.QRCodeIssuer;
+import com.certify.snap.controller.DatabaseController;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -23,6 +30,7 @@ public class JwtHelper {
     private String issuer;
     private String kid;
     public Payload payload;
+    public static List<QRCodeIssuer> qrCodeIssuers=null;
     public static JwtHelper decode(String raw) throws DecodeException, IOException {
         JwtHelper instance = new JwtHelper();
         String truncated = raw.substring(5);
@@ -33,10 +41,19 @@ public class JwtHelper {
 
         String issuer = payload.iss;
         String keysJson = instance.fetchKeys(issuer);
-        assert keysJson != null;
+         qrCodeIssuers=DatabaseController.getInstance().getIssuerKey();
         Map<String, JsonWebKey> webKeyMap = JsonWebKey.Parse(keysJson);
         JsonWebKey key = webKeyMap.get(header.kid);
-        //TODO: verify signature
+        Gson gson=new Gson();
+        for(Map.Entry entry:webKeyMap.entrySet()){
+            QRCodeIssuer qrCodeIssuer=new QRCodeIssuer();
+            qrCodeIssuer.setKeyID(entry.getKey().toString());
+            qrCodeIssuer.setIssuer(issuer);
+            qrCodeIssuer.setContentValue(gson.toJson(entry.getValue()));
+            if(!DatabaseController.getInstance().isuniqueKey(entry.getKey().toString())) {
+                DatabaseController.getInstance().insertQRCodeIssuer(qrCodeIssuer);
+            }
+        }
         instance.payload =payload;
         return instance;
     }
@@ -44,10 +61,7 @@ public class JwtHelper {
         return true;
     }
     private String fetchKeys(String issuer) {
-        //TODO:
-        //1. check in local db for the key
-        //2. fetch and store if not found
-        //3. return the key
+
         String url = issuer+"/.well-known/jwks.json";
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()

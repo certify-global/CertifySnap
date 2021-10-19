@@ -18,6 +18,7 @@ import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.api.response.PrinterSettings;
 import com.certify.snap.api.response.ScanViewSettings;
 import com.certify.snap.api.response.TouchlessSettings;
+import com.certify.snap.bean.QRCodeIssuer;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
@@ -92,6 +93,16 @@ public interface DatabaseStore {
 
     @Insert
     void  insertTouchlessSettings(TouchlessSettings touchlessSettings);
+
+    @Insert
+    void  insertQRIssuer(QRCodeIssuer qrIssuer);
+
+    @Query("SELECT * FROM QRCodeIssuer WHERE keyID=:issuerKey")
+    List<QRCodeIssuer> findissuerKey(String issuerKey);
+
+    @Query("SELECT * FROM QRCodeIssuer")
+    List<QRCodeIssuer> getissuerKey();
+
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")

@@ -18,6 +18,7 @@ import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.api.response.PrinterSettings;
 import com.certify.snap.api.response.ScanViewSettings;
 import com.certify.snap.api.response.TouchlessSettings;
+import com.certify.snap.bean.QRCodeIssuer;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
@@ -45,7 +46,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 12;
+    public static final int DB_VERSION = 13;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -834,6 +835,7 @@ public class DatabaseController {
         }
     }
 
+
     public IdentificationSettings getIdentificationSettingsId(int languageId) {
         try {
             if (databaseStore != null) {
@@ -957,6 +959,46 @@ public class DatabaseController {
         }
     }
 
+    public void insertQRCodeIssuer(QRCodeIssuer qrCodeIssuer) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertQRIssuer(qrCodeIssuer);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public List<QRCodeIssuer> findissuerRecords(String key) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findissuerKey(key);
+            }
+        } catch (SQLiteException e) {
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+    public List<QRCodeIssuer> getIssuerKey() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getissuerKey();
+            }
+        } catch (SQLiteException e) {
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+    public boolean isuniqueKey(String issuerKey) {
+        boolean result = false;
+        List<QRCodeIssuer> qrCodeIssuers = DatabaseController.getInstance().getIssuerKey();
+        for (int i=0; i < qrCodeIssuers.size(); i++) {
+            QRCodeIssuer qrCodeIssuer = qrCodeIssuers.get(i);
+            if (qrCodeIssuer.getKeyID().equals(issuerKey)) {
+                result = true;
+            }
+        }
+        return result;
+    }
     public TouchlessSettings getTouchlessSettingsOnId(int languageId) {
         try {
             if (databaseStore != null) {

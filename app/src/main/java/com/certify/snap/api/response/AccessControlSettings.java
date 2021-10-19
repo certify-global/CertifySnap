@@ -45,7 +45,6 @@ public class AccessControlSettings {
     @SerializedName("enableWeigandPassThrough")
     public String enableWeigandPassThrough = "0";
 
-
     @SerializedName("attendanceMode")
     public int attendanceMode = 1;
 
