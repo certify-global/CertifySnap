@@ -35,7 +35,7 @@ public class EndPoints {
     public static final String RegisterDevice = domainUrl + "RegisterDevice";
     public static final String PushCommandResponse = domainUrl + "PushCommandResponse";
     public static final String AccessLogs = domainUrl + "AccessLogs";
-    public static final String GetQuestions = domainUrl + "GetQuestionList";
+    public static final String GetQuestions = domainUrl + "GetWaveQuestionList"; //GetQuestionList
     public static final String GetWorkflowList = domainUrl + "GetWorkflowList";
     public static final String SaveAnswer = domainUrl + "SaveAnswer";
     public static final String DeviceLogs = domainUrl + "SaveDeviceLogs";

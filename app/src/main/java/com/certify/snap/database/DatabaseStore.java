@@ -21,10 +21,10 @@ import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
+import com.certify.snap.model.LogicWaveSkipDb;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
-import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 
@@ -61,37 +61,40 @@ public interface DatabaseStore {
     void insertGestureQuestionList(GestureQuestionsDb gestureQuestionsDb);
 
     @Insert
+    void insertSkipLogicList(List<LogicWaveSkipDb> logicWaveSkipDb);
+
+    @Insert
     void insertLanguages(LanguageData questionData);
 
     @Insert
-    void  insertDeviceSettingsData(DeviceSettingsData deviceSettingsData);
+    void insertDeviceSettingsData(DeviceSettingsData deviceSettingsData);
 
     @Insert
-    void  insertAccessControlSettings(AccessControlSettings accessControlSettings);
+    void insertAccessControlSettings(AccessControlSettings accessControlSettings);
 
     @Insert
-    void  insertAudioVisualSettings(AudioVisualSettings audioVisualSettings);
+    void insertAudioVisualSettings(AudioVisualSettings audioVisualSettings);
 
     @Insert
-    void  insertConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings);
+    void insertConfirmationViewSettings(ConfirmationViewSettings confirmationViewSettings);
 
     @Insert
-    void  insertGuideSettings(GuideSettings guideSettings);
+    void insertGuideSettings(GuideSettings guideSettings);
 
     @Insert
-    void  insertHomePageSettings(HomePageSettings homePageSettings);
+    void insertHomePageSettings(HomePageSettings homePageSettings);
 
     @Insert
-    void  insertIdentificationSettings(IdentificationSettings identificationSettings);
+    void insertIdentificationSettings(IdentificationSettings identificationSettings);
 
     @Insert
-    void  insertPrinterSettings(PrinterSettings printerSettings);
+    void insertPrinterSettings(PrinterSettings printerSettings);
 
     @Insert
-    void  insertScanViewSettings(ScanViewSettings scanViewSettings);
+    void insertScanViewSettings(ScanViewSettings scanViewSettings);
 
     @Insert
-    void  insertTouchlessSettings(TouchlessSettings touchlessSettings);
+    void insertTouchlessSettings(TouchlessSettings touchlessSettings);
 
     @Transaction
     @Query("SELECT * FROM RegisteredMembers WHERE uniqueid=:uniqueID")
@@ -236,6 +239,9 @@ public interface DatabaseStore {
     @Query("SELECT * FROM GestureQuestionsDb")
     List<GestureQuestionsDb> getGestureQuestionListDb();
 
+    @Query("SELECT * FROM LogicWaveSkipDb WHERE parentQuestionId =:id AND expectedOutcomeName =:value")
+    LogicWaveSkipDb getLogicSkipListDb(String id,String value);
+
     @Update
     void updateDeviceSettingsData(DeviceSettingsData deviceSettingsData);
 
@@ -298,4 +304,8 @@ public interface DatabaseStore {
 
     @Query("DELETE FROM GestureQuestionsDb")
     void deleteAllGestureQuestionList();
+
+    @Query("DELETE FROM LogicWaveSkipDb")
+    void deleteAllLogicWaveSkipList();
+
 }

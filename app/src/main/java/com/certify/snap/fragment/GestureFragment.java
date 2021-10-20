@@ -269,7 +269,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                     return;
                 }
                 covidQuestionsText.setText(question);
-                GestureController.getInstance().getWaveSkip();
+          //     GestureController.getInstance().getWaveSkip();
                 int questionsCount = GestureController.getInstance().getQuestionsSize();
                 if (AppSettings.isGestureProgressEnabled()) {
                     if (questionsCount == 2) {
