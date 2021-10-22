@@ -74,14 +74,15 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         //do noop
         try {
-            Log.d("DeviceHealthService", "Health check response "+ Util.getMMDDYYYYDate());
             SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
             if (reportInfo == null) {
+                Log.d("DeviceHealthService", "Health check error response "+ Util.getMMDDYYYYDate());
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                 return;
             }
             JSONObject json = new JSONObject(reportInfo);
             if (json.getInt("responseCode") == 1) {
+                Log.d("DeviceHealthService", "Health check success response "+ Util.getMMDDYYYYDate());
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
                 if(ApplicationLifecycleHandler.isInBackground)
                     bringApplicationToForeground();
@@ -89,8 +90,10 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
             }
 
-            if (reportInfo.contains("token expired"))
+            if (reportInfo.contains("token expired")) {
+                Log.d("DeviceHealthService", "Health check token expired "+ Util.getMMDDYYYYDate());
                 Util.getToken(this, this);
+            }
 
         } catch (Exception e) {
             Logger.error(LOG + "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());

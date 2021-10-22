@@ -4015,7 +4015,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void onTemperatureScanDisabled() {
-        tvErrorMessage.setText(getString(R.string.face_center));
         if (PrinterController.getInstance().isPrintScan(false) &&
                 CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
             cancelImageTimer();

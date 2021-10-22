@@ -61,7 +61,7 @@ public class AppSettings {
     private static String gestureWorkFlow = "";
     private static int scanType = 1;
     private static boolean enableTempScan = true;
-    private static boolean logOfflineData = false;
+    private static boolean logOfflineData = true;
     private static boolean printLabelFace = false;
     private static boolean printLabelName = false;
     private static boolean printLabelUnidentifiedName = false;
@@ -143,7 +143,7 @@ public class AppSettings {
         gestureWorkFlow = sharedPreferences.getString(GlobalParameters.Touchless_setting_id, "");
         scanType = sharedPreferences.getInt(GlobalParameters.ScanType, 1);
         enableTempScan = sharedPreferences.getBoolean(GlobalParameters.EnableTempScan, true);
-        logOfflineData = sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false);
+        logOfflineData = sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, true);
         printLabelFace = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_FACE, false);
         printLabelName = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NAME, false);
         printLabelNormalTemperature = sharedPreferences.getBoolean(GlobalParameters.PRINT_LABEL_NORMAL_TEMPERATURE, false);

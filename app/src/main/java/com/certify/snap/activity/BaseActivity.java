@@ -31,6 +31,7 @@ import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.LoggerService;
 import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.service.OfflineRecordSyncService;
 
@@ -213,6 +214,7 @@ public abstract class BaseActivity extends Activity {
             updateHealthService(context);
             updateMemberSyncService(context);
             updateOfflineService(context);
+            updateLoggerService(context);
         }
     }
 
@@ -256,6 +258,13 @@ public abstract class BaseActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
+        }
+    }
+
+    private void updateLoggerService(Context context) {
+        if (!Util.isServiceRunning(LoggerService.class, this)) {
+            startService(new Intent(this, LoggerService.class));
+            Application.StartService(this);
         }
     }
 }

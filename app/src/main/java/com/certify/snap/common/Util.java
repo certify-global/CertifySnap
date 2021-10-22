@@ -879,33 +879,33 @@ public class Util {
     }
 
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
-        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)
-                && !AppSettings.isLogOfflineDataEnabled()) {
+        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             return;
         }
-        try {
-            OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
-            offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
-            offlineRecordTemperatureMembers.setJsonObj(obj.toString());
-            offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
-            offlineRecordTemperatureMembers.setUtcTime(obj.getString("utcTime"));
-            offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
-            offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
-            offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
-            if (data.member.getFirstname() != null) {
-                offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
-                offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
-                offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
-            } else {
-                offlineRecordTemperatureMembers.setFirstName("Anonymous");
-                offlineRecordTemperatureMembers.setLastName("");
+        if (AppSettings.isLogOfflineDataEnabled()) {
+            try {
+                OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
+                offlineRecordTemperatureMembers.setTemperature(obj.getString("temperature"));
+                offlineRecordTemperatureMembers.setJsonObj(obj.toString());
+                offlineRecordTemperatureMembers.setDeviceTime(obj.getString("deviceTime"));
+                offlineRecordTemperatureMembers.setUtcTime(obj.getString("utcTime"));
+                offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
+                offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
+                offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
+                if (data.member.getFirstname() != null) {
+                    offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
+                    offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
+                    offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
+                } else {
+                    offlineRecordTemperatureMembers.setFirstName("Anonymous");
+                    offlineRecordTemperatureMembers.setLastName("");
+                }
+                //offlineRecordTemperatureMembers.save();
+                DatabaseController.getInstance().insertOfflineMemberIntoDB(offlineRecordTemperatureMembers);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            //offlineRecordTemperatureMembers.save();
-            DatabaseController.getInstance().insertOfflineMemberIntoDB(offlineRecordTemperatureMembers);
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -1837,9 +1837,9 @@ public class Util {
             e.printStackTrace();
         }
 
+        Log.d(LOG, "Logger API call");
         new AsyncDeviceLog(obj, null, sharedPreferences.getString(GlobalParameters.URL,
                 EndPoints.prod_url) + EndPoints.DeviceLogs, context).execute();
-
     }
 
     public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {

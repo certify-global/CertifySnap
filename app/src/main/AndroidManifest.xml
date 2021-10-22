@@ -146,7 +146,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver
+        <!--<receiver
             android:name=".service.ResetOfflineDataReceiver"
             android:enabled="true"
             android:exported="true">
@@ -155,7 +155,7 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <service
             android:name=".service.DeviceHealthService"

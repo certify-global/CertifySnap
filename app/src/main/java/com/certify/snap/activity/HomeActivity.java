@@ -45,6 +45,7 @@ import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.LoggerService;
 import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.service.ResetOfflineDataReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -243,6 +244,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
             }
             startHealthCheckService();
+            startLoggerService();
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -496,5 +498,14 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void initLanguageList() {
         DeviceSettingsController.getInstance().getLanguagesListFromDb();
+    }
+
+    private void startLoggerService() {
+        if (!Util.isServiceRunning(LoggerService.class, this)) {
+            startService(new Intent(this, LoggerService.class));
+            Application.StartService(this);
+            return;
+        }
+        Log.d(TAG, "Logger service");
     }
 }

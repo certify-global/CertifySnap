@@ -44,6 +44,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.LoggerUtil;
 import com.certify.snap.common.ShellUtils;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
@@ -342,9 +343,8 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             localServerLayout.setVisibility(View.VISIBLE);
-            logOfflineDataLayout.setVisibility(View.VISIBLE);
-            captureLogsLayout.setVisibility(View.GONE);
         }
+        logOfflineDataLayout.setVisibility(View.VISIBLE);
     }
 
     private void proSettings() {
@@ -764,13 +764,17 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
     private void captureLogSetting() {
         saveLogButton.setOnClickListener(view -> {
-            Util.sendDeviceLogs(DeviceSettingsActivity.this);
-            Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
+            if (!Util.isOfflineMode(this) && !AppSettings.isLogOfflineDataEnabled()) {
+                Util.sendDeviceLogs(DeviceSettingsActivity.this);
+                Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
+            } else {
+                LoggerUtil.logMessagesToFile(this, "AppLog");
+            }
         });
     }
 
     private void logOfflineDataSetting() {
-        if (sharedPreferences.getBoolean(GlobalParameters.LogOfflineData, false)) {
+        if (AppSettings.isLogOfflineDataEnabled()) {
             logOfflineDataYes.setChecked(true);
         } else {
             logOfflineDataNo.setChecked(true);

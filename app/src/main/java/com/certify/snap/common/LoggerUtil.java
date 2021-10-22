@@ -51,16 +51,14 @@ public class LoggerUtil {
 
     public static String logMessagesToFile(Context context, String filename) {
         Date date = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy 'T'HH:mm", Locale.US);
         String dirPath = Environment.getExternalStorageDirectory() + File.separator + "CertifySnap" + File.separator + "Log" + File.separator;
-        String fileName = dirPath +  filename + " " + df.format(date) + ".log";
+        String fileName = dirPath +  filename + ".log";
         File file = new File(fileName);
-        file.mkdirs();
         //Util.writeString(Util.getSharedPreferences(context), GlobalParameters.LogFilePath, fileName); //TODO1: Optimize
 
         //clears a file
-        if (file.exists()) {
-            file.delete();
+        if (!file.exists()) {
+            file.mkdirs();
         }
 
         try {
@@ -72,6 +70,7 @@ public class LoggerUtil {
             String currentLine = null;
 
             while ((currentLine = reader.readLine()) != null) {
+                if(currentLine.contains("onFlyCompress") || currentLine.contains("expire")) continue;
                 result.append(currentLine);
                 result.append("\n");
             }
