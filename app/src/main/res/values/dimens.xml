@@ -20,5 +20,7 @@
     <dimen name="size_38">38dp</dimen>
     <dimen name="size_40">40dp</dimen>
     <dimen name="size_50">50dp</dimen>
+    <dimen name="size_100">100dp</dimen>
+
 
 </resources>

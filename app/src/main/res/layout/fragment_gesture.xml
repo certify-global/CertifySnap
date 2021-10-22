@@ -14,7 +14,7 @@
         android:id="@+id/covid_questions_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/size_40"
+        android:layout_marginTop="@dimen/size_100"
         android:layout_marginLeft="@dimen/size_20"
         android:layout_marginRight="@dimen/size_10"
         android:textColor="@color/black"
@@ -180,25 +180,27 @@
 
     <TextView
         android:id="@+id/hand_yes_text"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/size_100"
         android:layout_height="wrap_content"
-        android:text="@string/wave_no"
         android:textColor="@color/colorBlack"
         android:textSize="@dimen/size_30"
+        android:gravity="center"
         android:layout_marginRight="@dimen/size_30"
         android:layout_marginBottom="@dimen/size_30"
+        android:padding="@dimen/size_10"
         app:layout_constraintBottom_toTopOf="@+id/title_text_view"
         app:layout_constraintEnd_toEndOf="parent" />
 
 
     <TextView
         android:id="@+id/hand_no_text"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/size_100"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/size_30"
         android:layout_marginBottom="28dp"
+        android:gravity="center"
         android:src="@drawable/icon_no"
-        android:text="@string/wave_yes"
+        android:padding="@dimen/size_10"
         android:textColor="@color/colorBlack"
         android:textSize="@dimen/size_30"
         app:layout_constraintBottom_toTopOf="@+id/title_text_view"

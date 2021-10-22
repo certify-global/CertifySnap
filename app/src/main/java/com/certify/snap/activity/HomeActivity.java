@@ -80,36 +80,36 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_home);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setContentView(R.layout.activity_home);
 
-        mActivity = this;
-        ApplicationController.getInstance().initThermalUtil(this);
-        Application.getInstance().addActivity(this);
-        Util.setTokenRequestName("");
-        sharedPreferences = Util.getSharedPreferences(this);
-        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
-        taskExecutorService = executorService.getExecutorService();
-        TextView tvVersion = findViewById(R.id.tv_version_guide);
-        tvVersion.setText(Util.getVersionBuild());
+            mActivity = this;
+            ApplicationController.getInstance().initThermalUtil(this);
+            Application.getInstance().addActivity(this);
+            Util.setTokenRequestName("");
+            sharedPreferences = Util.getSharedPreferences(this);
+            AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+            taskExecutorService = executorService.getExecutorService();
+            TextView tvVersion = findViewById(R.id.tv_version_guide);
+            tvVersion.setText(Util.getVersionBuild());
 
-        Util.enableLedPower(0);
+            Util.enableLedPower(0);
 
-        Intent intent = getIntent();
-        String value = intent.getStringExtra("DEVICE_BOOT");
+            Intent intent = getIntent();
+            String value = intent.getStringExtra("DEVICE_BOOT");
 
-        //Delay of 1 second for the Thermal module to get initialized
-        new Handler().postDelayed(() -> {
-            CameraController.getInstance().initDeviceMode();
-            if (value != null && value.equals("BootCompleted")) {
-                ApplicationController.getInstance().setDeviceBoot(true);
-                if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
-                    startProDeviceInitTimer();
-                    return;
+            //Delay of 1 second for the Thermal module to get initialized
+            new Handler().postDelayed(() -> {
+                CameraController.getInstance().initDeviceMode();
+                if (value != null && value.equals("BootCompleted")) {
+                    ApplicationController.getInstance().setDeviceBoot(true);
+                    if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
+                        startProDeviceInitTimer();
+                        return;
+                    }
                 }
-            }
-            initApp();
-        }, 1000);
+                initApp();
+            }, 1000);
     }
 
     @Override

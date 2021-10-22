@@ -184,8 +184,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private View previewViewRgb;
     private View previewViewIr;
 
-    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate;
-
+    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate,tvWaveMessage;
+    private Button btWaveStart;
+    public String waveType = "wave";
     Timer tTimer, pTimer, imageTimer, lanchTimer;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
@@ -401,6 +402,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initRecordUserTempService();
         initBluetoothPrinter();
         startBLEService();
+        waveType = "wave";
+        if (AppSettings.isEnableHandGesture()) {
+            btWaveStart.setVisibility(View.VISIBLE);
+            tvWaveMessage.setVisibility(View.VISIBLE);
+        } else {
+            btWaveStart.setVisibility(View.GONE);
+            tvWaveMessage.setVisibility(View.GONE);
+        }
+        btWaveStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                waveType = "startButton";
+                GestureController.getInstance().setCallback(true);
+                onGestureDetected();
+            }
+        });
     }
 
     private void initQRCode() {
@@ -574,6 +591,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         tv_display_time = findViewById(R.id.tv_display_time);
         tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
+        btWaveStart = findViewById(R.id.bt_wave_start);
         tvVersionOnly = findViewById(R.id.tv_version_ir_only);
         tvVersionIr = findViewById(R.id.tv_version_ir);
         tvVersionIr.setText(Util.getVersionBuild());
@@ -587,6 +605,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_display_time.setTypeface(rubiklight);
         tvOnlyText.setTypeface(rubiklight);
         tvDisplayTimeOnly.setTypeface(rubiklight);
+        btWaveStart.setTypeface(rubiklight);
+        tvDisplayTimeOnly.setTypeface(rubiklight);
+        tvWaveMessage = findViewById(R.id.tv_message_wave);
+        tvWaveMessage.setTypeface(rubiklight);
         tvVersionOnly.setTypeface(rubiklight);
         tv_message = findViewById(R.id.tv_message);
         internetIndicatorImg = findViewById(R.id.img_internet_indicator);
@@ -3705,6 +3727,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             gestureFragment = new GestureFragment();
             Bundle bundle = new Bundle();
             bundle.putString("maskStatus", String.valueOf(maskStatus));
+            bundle.putString("waveType", waveType);
             gestureFragment.setArguments(bundle);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
@@ -4216,6 +4239,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             if (GestureController.getInstance().isLanguageUpdated()) {
                 GestureController.getInstance().setCallback(true);
+                waveType = "wave";
                 onGestureDetected();
             } else {
                 if (GestureController.getInstance().getLanguageSelectionIndex() != 0) {

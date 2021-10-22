@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.certify.callback.GestureAnswerCallback;
 import com.certify.callback.GestureCallback;
+import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.api.response.GestureQuestionsDb;
 import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.api.response.QuestionData;
@@ -445,38 +446,38 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         runCheck = true;
         new Thread(() -> {
             while (runCheck) {
-                Map<String, String> map = sendCMD(1);
-                if (map != null) {
+                        Map<String, String> map = sendCMD(1);
+                        if (map != null) {
                     try {
                         final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
                         final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
-                        if (left > leftHandRangeVal && right > rightHandRangeVal) {
-                            index = 0;
-                            if (listener != null) {
-                                listener.onBothHandWave();
-                                Thread.sleep(1500);
-                            }
-                        } else if (left > leftHandRangeVal) {
-                            leftHandWave();
-                        } else if (right > rightHandRangeVal) {
-                            rightHandWave();
-                        } else {
-                            cancelWaveHandTimer();
-                            if (listener != null) {
-                                listener.onWaveHandReset();
-                            }
-                            if (gestureMEListener != null) {
-                                gestureMEListener.onWaveHandReset();
-                            }
-                            resetWaveHandProcessed();
+                    if (left > leftHandRangeVal && right > rightHandRangeVal) {
+                        index = 0;
+                        if (listener != null) {
+                            listener.onBothHandWave();
+                            Thread.sleep(1500);
                         }
-                    } catch (Exception e) {
-                        Log.d(TAG, "Gesture Error in Gesture: " + e.getMessage());
-                        if (e.getMessage() == null) {
-                            restartGesture();
+                    } else if (left > leftHandRangeVal) {
+                        leftHandWave();
+                    } else if (right > rightHandRangeVal) {
+                        rightHandWave();
+                    } else {
+                        cancelWaveHandTimer();
+                        if (listener != null) {
+                            listener.onWaveHandReset();
                         }
+                        if (gestureMEListener != null) {
+                            gestureMEListener.onWaveHandReset();
+                        }
+                        resetWaveHandProcessed();
+                    }
+                } catch (Exception e) {
+                    Log.d(TAG, "Gesture Error in Gesture: " + e.getMessage());
+                    if (e.getMessage() == null) {
+                        restartGesture();
                     }
                 }
+            }
             }
             try {
                 Thread.sleep(100);
@@ -547,6 +548,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         byte[] result = null;
         Map<String, String> resultData = null;
         try {
+            if(usbReader == null) return null;
             UsbInterface usbInterface = usbReader.getInterface(0);// USBEndpoint为读写数据所需的节点
             UsbEndpoint inEndpoint = usbInterface.getEndpoint(0); // 读数据节点
             UsbEndpoint outEndpoint = usbInterface.getEndpoint(1);
@@ -624,6 +626,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             isCallback = true;
             waveHandProcessed.put(RIGHT_HAND, true);
             startWaveHandTimer();
+            new IrCameraActivity().waveType = "wave";
             gestureListener.onGestureDetected();
             return;
         }
@@ -643,7 +646,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
-    private void updateOnWave(String answers) {
+    public void updateOnWave(String answers) {
         onQuestionAnswered(answers);
     }
 

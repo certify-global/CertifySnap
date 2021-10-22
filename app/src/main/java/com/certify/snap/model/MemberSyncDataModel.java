@@ -137,7 +137,7 @@ public class MemberSyncDataModel {
                             member.setStatus(String.valueOf(c.getBoolean("status")));
                             member.setDateTime(Util.currentDate());
                             if (c.has("isdocument")) {
-                                member.setDocument(c.getBoolean("isdocument"));
+                                member.setDocument(c.getString("isdocument").equals("1"));
                             }
                             index = index +1;
                             member.setPrimaryId(index);

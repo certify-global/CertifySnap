@@ -49,6 +49,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private SharedPreferences sharedPreferences;
     private String maskStatus = "";
     private Snackbar snackbar;
+    private String waveType = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         Bundle bundle = getArguments();
         if (bundle != null) {
             maskStatus = bundle.getString("maskStatus");
+            waveType = bundle.getString("waveType");
             Log.d(TAG, "Mask status " + maskStatus);
         }
 
@@ -162,6 +164,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         titleView.setTypeface(rubiklight);
         handNoText.setTypeface(rubiklight);
         handYesText.setTypeface(rubiklight);
+        handYesText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GestureController.getInstance().updateOnWave("N");
+            }
+        });
+        handNoText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GestureController.getInstance().updateOnWave("Y");
+
+            }
+        });
     }
 
     private void handleQuestionnaireByVoice() {
@@ -187,8 +202,22 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     private void uiUpdate() {
-        titleView.setText(AppSettings.getGestureMessage());
-        titleView.setVisibility(View.VISIBLE);
+        if (waveType.equals("startButton")) {
+            handNoText.setText(getString(R.string.wave_yes).replace("< ",""));
+            handYesText.setText(getString(R.string.wave_no).replace(" >",""));
+            handNoText.setBackgroundResource(R.drawable.btn_shape);
+            handYesText.setBackgroundResource(R.drawable.btn_shape);
+            handNoText.setTextColor(getResources().getColor(R.color.colorWhite));
+            handYesText.setTextColor(getResources().getColor(R.color.colorWhite));
+            titleView.setVisibility(View.INVISIBLE);
+
+        } else {
+            titleView.setText(AppSettings.getGestureMessage());
+            titleView.setVisibility(View.VISIBLE);
+            handNoText.setText(getString(R.string.wave_yes));
+            handYesText.setText(getString(R.string.wave_no));
+
+        }
     }
 
     //-----> Voice code
@@ -269,7 +298,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                     return;
                 }
                 covidQuestionsText.setText(question);
-          //     GestureController.getInstance().getWaveSkip();
+                //     GestureController.getInstance().getWaveSkip();
                 int questionsCount = GestureController.getInstance().getQuestionsSize();
                 if (AppSettings.isGestureProgressEnabled()) {
                     if (questionsCount == 2) {
