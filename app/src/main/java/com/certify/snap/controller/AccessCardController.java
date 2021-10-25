@@ -419,14 +419,18 @@ public class AccessCardController implements AccessCallback {
                     obj.put("networkId", registeredMember.getNetworkId());
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
-                    obj.put("id", 0);
-                    obj.put("firstName", registeredMember.getFirstname());
-                    obj.put("lastName", registeredMember.getLastname());
-                    obj.put("accessId", registeredMember.getAccessid());
-                    obj.put("memberId", registeredMember.getMemberid());
-                    obj.put("memberTypeId", registeredMember.getMemberType());
-                    obj.put("memberTypeName", registeredMember.getMemberTypeName());
-                    obj.put("networkId", registeredMember.getNetworkId());
+                    if (registeredMember != null) {
+                        obj.put("id", 0);
+                        obj.put("firstName", registeredMember.getFirstname());
+                        obj.put("lastName", registeredMember.getLastname());
+                        obj.put("accessId", registeredMember.getAccessid());
+                        obj.put("memberId", registeredMember.getMemberid());
+                        obj.put("memberTypeId", registeredMember.getMemberType());
+                        obj.put("memberTypeName", registeredMember.getMemberTypeName());
+                        obj.put("networkId", registeredMember.getNetworkId());
+                    } else {
+                        obj.put("firstName", "Anonymous");
+                    }
                 } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
@@ -438,7 +442,11 @@ public class AccessCardController implements AccessCallback {
                         obj.put("memberTypeId", registeredMember.getMemberType());
                         obj.put("memberTypeName", registeredMember.getMemberTypeName());
                         obj.put("networkId", registeredMember.getNetworkId());
+                    } else {
+                        obj.put("firstName", "Anonymous");
                     }
+                } else {
+                    obj.put("firstName", "Anonymous");
                 }
                 obj.put("temperature", temperature);
                 obj.put("qrCodeId", qrCodeId);
@@ -471,7 +479,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    saveOfflineAccessLogRecord(obj, syncStatus);
+                    saveOfflineAccessLogRecord(context, obj, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
                 }
@@ -544,7 +552,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    saveOfflineAccessLogRecord(obj, syncStatus);
+                    saveOfflineAccessLogRecord(context, obj, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
                 }
@@ -559,30 +567,31 @@ public class AccessCardController implements AccessCallback {
         try {
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
-                saveOfflineAccessLogRecord(req, 0);
+                saveOfflineAccessLogRecord(context, req, 0);
                 return;
             }
             if (!reportInfo.getString("responseCode").equals("1")) {
-                saveOfflineAccessLogRecord(req, 0);
+                saveOfflineAccessLogRecord(context, req, 0);
             }
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());
         }
     }
 
-    private void saveOfflineAccessLogRecord(JSONObject obj, int syncStatus) {
-        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)
-                && !AppSettings.isLogOfflineDataEnabled()) {
+    private void saveOfflineAccessLogRecord(Context context, JSONObject obj, int syncStatus) {
+        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             return;
         }
-        AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
-        try {
-            accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
-            accessLogOfflineRecord.setJsonObj(obj.toString());
-            accessLogOfflineRecord.setOfflineSync(syncStatus);
-            DatabaseController.getInstance().insertOfflineAccessLog(accessLogOfflineRecord);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (AppSettings.isLogOfflineDataEnabled()) {
+            AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
+            try {
+                accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
+                accessLogOfflineRecord.setJsonObj(obj.toString());
+                accessLogOfflineRecord.setOfflineSync(syncStatus);
+                DatabaseController.getInstance().insertOfflineAccessLog(accessLogOfflineRecord);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

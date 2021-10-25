@@ -7,6 +7,7 @@ import android.util.Log;
 import com.certify.callback.MemberIDCallback;
 import com.certify.snap.common.Util;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AsyncDeviceLog extends AsyncTask<Void, Void, JSONObject> {
@@ -32,6 +33,16 @@ public class AsyncDeviceLog extends AsyncTask<Void, Void, JSONObject> {
 
     @Override
     protected void onPostExecute(final JSONObject reportInfo) {
-        Log.d("AsyncDeviceLog", " reportInfo");
+        try {
+            if (reportInfo == null) {
+                Log.d("ASyncDeviceLog", "Logger response null");
+                return;
+            }
+            if (reportInfo.getInt("responseCode") == 1) {
+                Log.d("ASyncDeviceLog", "Logger success response");
+            }
+        } catch (JSONException e) {
+            Log.e("ASyncDeviceLog", "Error in logger response");
+        }
     }
 }
