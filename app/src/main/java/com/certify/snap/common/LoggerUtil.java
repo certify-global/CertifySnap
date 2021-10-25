@@ -59,6 +59,10 @@ public class LoggerUtil {
         //clears a file
         if (!file.exists()) {
             file.mkdirs();
+        } else {
+            if (file.length()/(1024 * 1024) > 10) {
+                file.delete();
+            }
         }
 
         try {

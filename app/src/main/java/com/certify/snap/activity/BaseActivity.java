@@ -175,6 +175,7 @@ public abstract class BaseActivity extends Activity {
                         onNetworkConnected(context);
                     } else {
                         Log.d(TAG, "Health network offline");
+                        stopServices();
                     }
                 }
             }
@@ -266,5 +267,12 @@ public abstract class BaseActivity extends Activity {
             startService(new Intent(this, LoggerService.class));
             Application.StartService(this);
         }
+    }
+
+    private void stopServices() {
+        stopService(new Intent(this, DeviceHealthService.class));
+        stopService(new Intent(this, MemberSyncService.class));
+        stopService(new Intent(this, LoggerService.class));
+        stopService(new Intent(this, OfflineRecordSyncService.class));
     }
 }
