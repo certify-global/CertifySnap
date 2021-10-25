@@ -438,7 +438,7 @@ public class MemberSyncDataModel {
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                                  member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
-                                member.groupTypeName)) {
+                                member.groupTypeName, member.isDocument)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -458,7 +458,7 @@ public class MemberSyncDataModel {
             failedImageSyncCount++;
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                     member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
-                    member.groupTypeName)) {
+                    member.groupTypeName, member.isDocument)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -513,7 +513,7 @@ public class MemberSyncDataModel {
      */
     public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
                                     String dateTime, long primaryId, String memberType, String memberTypeName,String networkId, String accessFromTime, String accessToTime,
-                                    String groupId, boolean isMemberAccessed, String groupTypeName) {
+                                    String groupId, boolean isMemberAccessed, String groupTypeName, boolean isDocument) {
         try {
             String username = firstname + "-" + primaryId;
             String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
@@ -543,6 +543,7 @@ public class MemberSyncDataModel {
             registeredMembers.setGroupId(groupId);
             registeredMembers.setMemberAccessed(isMemberAccessed);
             registeredMembers.setGroupTypeName(groupTypeName);
+            registeredMembers.setDocument(isDocument);
             DatabaseController.getInstance().insertMemberToDB(registeredMembers);
             return true;
         } catch (Exception e) {

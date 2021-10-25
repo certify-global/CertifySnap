@@ -45,6 +45,8 @@ public class ConfirmationScreenFragment extends Fragment {
     private String confirm_subtitle = "";
     private LinearLayout confirmation_screen_layout;
     private int count = 1;
+    private static final int VACCINATED = 1;
+    private static final int NON_VACCINATED = 2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,16 +76,22 @@ public class ConfirmationScreenFragment extends Fragment {
             onAccessCardMatch();
         }
 
-        if(AppSettings.getShowVaccinationIndicator()){
-            confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
-        }else {
-            confirmation_screen_layout.setBackgroundResource(R.color.colorWhite);
-        }
-
-        if(AppSettings.getShowNonVaccinationIndicator()){
-            confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
-        } else{
-            confirmation_screen_layout.setBackgroundResource(R.color.colorWhite);
+        if (AppSettings.getShowVaccinationIndicator()) {
+            RegisteredMembers firstScanMember = CameraController.getInstance().getFirstScanMember();
+            RegisteredMembers secondScanMember = CameraController.getInstance().getSecondScanMember();
+            if (secondScanMember != null) {
+                showVaccinationIndicator(secondScanMember, 1);
+            } else if (firstScanMember != null) {
+                showVaccinationIndicator(firstScanMember, 1);
+            }
+        } else if (AppSettings.getShowNonVaccinationIndicator()) {
+            RegisteredMembers firstScanMember = CameraController.getInstance().getFirstScanMember();
+            RegisteredMembers secondScanMember = CameraController.getInstance().getSecondScanMember();
+            if (secondScanMember != null) {
+                showVaccinationIndicator(secondScanMember, 2);
+            } else if (firstScanMember != null) {
+                showVaccinationIndicator(firstScanMember, 2);
+            }
         }
 
         if (value != null) {
@@ -201,4 +209,17 @@ public class ConfirmationScreenFragment extends Fragment {
             }
         }, delayMilli * 1000);
     }
+
+    private void showVaccinationIndicator(RegisteredMembers member, int vaccineValue) {
+        if (vaccineValue == 1) {
+            if (member.isDocument) {
+                confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
+            }else if(AppSettings.getShowNonVaccinationIndicator()) {
+                confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
+            }
+        } else if (vaccineValue == 2) {
+            confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
+        }
+    }
+
 }
