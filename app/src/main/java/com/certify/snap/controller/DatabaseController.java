@@ -28,7 +28,7 @@ import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
-import com.certify.snap.model.LogicWaveSkipDb;
+import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.RegisteredFailedMembers;
@@ -45,7 +45,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 13;
+    public static final int DB_VERSION = 14;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -485,7 +485,7 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
-    public void insertWaveSkipList(List<LogicWaveSkipDb> waveLogicSkipDb) {
+    public void insertWaveSkipList(List<WaveSkipDb> waveLogicSkipDb) {
         try {
             if (databaseStore != null) {
                 databaseStore.insertSkipLogicList(waveLogicSkipDb);
@@ -505,7 +505,7 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
-    public LogicWaveSkipDb getLogicWaveSkipDb(String id,String value) {
+    public WaveSkipDb getwaveSkipDb(String id,String value) {
         try {
             if (databaseStore != null) {
                 return databaseStore.getLogicSkipListDb( id, value);
@@ -513,7 +513,7 @@ public class DatabaseController {
         } catch (SQLiteException e){
             handleDBException(e);
         }
-        return new LogicWaveSkipDb();
+        return new WaveSkipDb();
     }
 
     public void deleteGestureQuestionsListFromDb() {

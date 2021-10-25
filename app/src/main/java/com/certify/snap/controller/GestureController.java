@@ -32,7 +32,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.gesture.GestureConfiguration;
-import com.certify.snap.model.LogicWaveSkipDb;
+import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.TouchlessWaveSkip;
 import com.google.gson.Gson;
@@ -96,6 +96,11 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private UsbDeviceConnection connection;
+    public AnswerType answerType = AnswerType.Wave;
+    public enum AnswerType{
+        Wave,
+        Touch
+    }
 
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
@@ -276,14 +281,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 Util.writeInt(sharedPreferences, GlobalParameters.Touchless_wave_skip, response.responseData.logicJsonAdvan.enableLogic);
                 if (response.responseData.logicJsonAdvan.enableLogic == 1) {
                     List<TouchlessWaveSkip> waveSkipList = response.responseData.logicJsonAdvan.touchlessWaveSkips;
-                    List<LogicWaveSkipDb> logicWaveSkipDbList = new ArrayList<>();
+                    List<WaveSkipDb> waveSkipDbList = new ArrayList<>();
                     if (waveSkipList != null && waveSkipList.size() > 0) {
                         for (int i = 0; i < waveSkipList.size(); i++) {
                             TouchlessWaveSkip waveSkip = waveSkipList.get(i);
-                            LogicWaveSkipDb temp = getDbWaveSkipData(waveSkip, i);
-                            logicWaveSkipDbList.add(temp);
+                            WaveSkipDb temp = getDbWaveSkipData(waveSkip, i);
+                            waveSkipDbList.add(temp);
                         }
-                        DatabaseController.getInstance().insertWaveSkipList(logicWaveSkipDbList);
+                        DatabaseController.getInstance().insertWaveSkipList(waveSkipDbList);
                     }
                 }
 
@@ -626,7 +631,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             isCallback = true;
             waveHandProcessed.put(RIGHT_HAND, true);
             startWaveHandTimer();
-            new IrCameraActivity().waveType = "wave";
             gestureListener.onGestureDetected();
             return;
         }
@@ -676,7 +680,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         questionAnswerMap.put(currentQuestionData, answer);
         List<QuestionData> questionDataList = new ArrayList<>(questionAnswerMap.keySet());
         if (sharedPreferences.getInt(GlobalParameters.Touchless_wave_skip, 0) == 1) {
-            LogicWaveSkipDb temp = DatabaseController.getInstance().getLogicWaveSkipDb(String.valueOf(currentQuestionData.id), answer.equalsIgnoreCase("N") ? "No" : "Yes");
+            WaveSkipDb temp = DatabaseController.getInstance().getwaveSkipDb(String.valueOf(currentQuestionData.id), answer.equalsIgnoreCase("N") ? "No" : "Yes");
             if (temp != null) {
                 int oldIndex = index;
                 if (temp.childQuestionId.equalsIgnoreCase("Confirmation")) {
@@ -778,6 +782,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 questionDataList.add(questionData);
             }
         }
+        GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
         /*List<QuestionSurveyOptions> qSurveyList = new ArrayList<>();
         try {
             for (int i = 0; i < gestureQuestionsDbList.size(); i++) {
@@ -902,33 +907,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
-//    public void getWaveSkip() {
-//        try {
-//            touchlessWaveSkipList.clear();
-    //    String skipValues = sharedPreferences.getString(GlobalParameters.Touchless_wave_skip, "0");
-//            if (skipValues != null && !skipValues.equals("0")) {
-//                JSONArray jsonArraySkipValues = new JSONArray(skipValues);
-//                Gson gson = new Gson();
-//                for (int i = 0; i < jsonArraySkipValues.length(); i++) {
-//                    TouchlessWaveSkip touchlessWaveSkip = gson.fromJson(String.valueOf(jsonArraySkipValues.getJSONObject(i)), TouchlessWaveSkip.class);
-//                    touchlessWaveSkipList.add(touchlessWaveSkip);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    private String TouchlessWaveLogic(String id, String answer) {
-//        for (int i = 0; i < touchlessWaveSkipList.size(); i++) {
-//            if (id.equals(touchlessWaveSkipList.get(i).parentQuestionId) && answer.equalsIgnoreCase(touchlessWaveSkipList.get(i).expectedOutcomeName.substring(0, 1))) {
-//                return touchlessWaveSkipList.get(i).childQuestionId;
-//            }
-//        }
-//        return "-1";
-//    }
-
-    public void clearQuestionAnswerMap() {
+   public void clearQuestionAnswerMap() {
         questionAnswerMap.clear();
     }
 
@@ -999,14 +978,13 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         return questionDataDb;
     }
 
-    private LogicWaveSkipDb getDbWaveSkipData(TouchlessWaveSkip touchlessWaveSkip, int index) {
+    private WaveSkipDb getDbWaveSkipData(TouchlessWaveSkip touchlessWaveSkip, int index) {
         index = index + 1;
-        LogicWaveSkipDb logicWaveSkipDb = new LogicWaveSkipDb();
+        WaveSkipDb logicWaveSkipDb = new WaveSkipDb();
         logicWaveSkipDb.primaryId = index;
         logicWaveSkipDb.childQuestionId = touchlessWaveSkip.childQuestion;
         logicWaveSkipDb.parentQuestionId = touchlessWaveSkip.parentQuestion;
         logicWaveSkipDb.expectedOutcomeName = touchlessWaveSkip.expectedOutcomeName;
-        // logicWaveSkipDb.expectedOutcome = touchlessWaveSkip.expecte;
         return logicWaveSkipDb;
     }
 

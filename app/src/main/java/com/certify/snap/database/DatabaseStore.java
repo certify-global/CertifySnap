@@ -21,7 +21,7 @@ import com.certify.snap.api.response.TouchlessSettings;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
-import com.certify.snap.model.LogicWaveSkipDb;
+import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.OfflineVerifyMembers;
@@ -61,7 +61,7 @@ public interface DatabaseStore {
     void insertGestureQuestionList(GestureQuestionsDb gestureQuestionsDb);
 
     @Insert
-    void insertSkipLogicList(List<LogicWaveSkipDb> logicWaveSkipDb);
+    void insertSkipLogicList(List<WaveSkipDb> waveSkipDb);
 
     @Insert
     void insertLanguages(LanguageData questionData);
@@ -239,8 +239,8 @@ public interface DatabaseStore {
     @Query("SELECT * FROM GestureQuestionsDb")
     List<GestureQuestionsDb> getGestureQuestionListDb();
 
-    @Query("SELECT * FROM LogicWaveSkipDb WHERE parentQuestionId =:id AND expectedOutcomeName =:value")
-    LogicWaveSkipDb getLogicSkipListDb(String id,String value);
+    @Query("SELECT * FROM waveSkipDb WHERE parentQuestionId =:id AND expectedOutcomeName =:value")
+    WaveSkipDb getLogicSkipListDb(String id,String value);
 
     @Update
     void updateDeviceSettingsData(DeviceSettingsData deviceSettingsData);
@@ -305,7 +305,7 @@ public interface DatabaseStore {
     @Query("DELETE FROM GestureQuestionsDb")
     void deleteAllGestureQuestionList();
 
-    @Query("DELETE FROM LogicWaveSkipDb")
+    @Query("DELETE FROM WaveSkipDb")
     void deleteAllLogicWaveSkipList();
 
 }

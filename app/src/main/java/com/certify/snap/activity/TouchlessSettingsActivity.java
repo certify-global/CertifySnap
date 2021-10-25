@@ -45,7 +45,6 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
-   // private HashMap<String, String> waveSkipHashmap = new HashMap<>();
     private EditText editTextWaveFooter, editTextMaskEnforce, editGestureExitMsg;
     private String gestureWorkFlow = "";
     private TextInputLayout maskEditLayout, gestureExitLayout;
@@ -265,11 +264,6 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
                 String settingID = flowHashmap.get(name);
 
                 Util.writeString(sharedPreferences, GlobalParameters.Touchless_setting_id, settingID);
-             /*   if (waveSkipHashmap.get(settingID) == null)
-                    Util.writeString(sharedPreferences, GlobalParameters.Touchless_wave_skip, "0");
-                else
-                    Util.writeString(sharedPreferences, GlobalParameters.Touchless_wave_skip, waveSkipHashmap.get(settingID));
-*/
             }
 
             @Override
@@ -305,7 +299,6 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         try {
             if (report == null) return;
             flowHashmap.clear();
-           // waveSkipHashmap.clear();
             if (report.getInt("responseCode") == 1) {
                 JSONArray jsonArray = report.getJSONArray("responseData");
                 flowHashmap.put("Choose Questionnaire", "header");
@@ -314,16 +307,11 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
                     String id = jsonObject.getString("id");
                     String settingName = jsonObject.getString("settingName");
                     int statusVal = jsonObject.getInt("status");
-                  //  int enableLogic = jsonObject.isNull("enableLogic") ? 0 : jsonObject.getInt("enableLogic");
                     if (statusVal == 1) {
                         flowHashmap.put(settingName, id);
                         Log.d("CertifyXT settingID", id);
 
                     }
-//                    if (enableLogic == 1) {
-//                        JSONArray logicJsonObject = jsonObject.isNull("logicJsonObject") ? new JSONArray() : jsonObject.getJSONArray("logicJsonObject");
-//                        waveSkipHashmap.put(id, logicJsonObject.toString());
-//                    }
                 }
                 setValues();
 

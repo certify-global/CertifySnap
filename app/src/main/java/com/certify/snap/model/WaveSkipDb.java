@@ -6,7 +6,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(indices={@Index(value="primaryId", unique=true)})
-public class LogicWaveSkipDb {
+public class WaveSkipDb {
 
     @PrimaryKey
     @NonNull

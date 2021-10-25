@@ -184,9 +184,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private View previewViewRgb;
     private View previewViewIr;
 
-    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate,tvWaveMessage;
+    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate, tvWaveMessage;
     private Button btWaveStart;
-    public String waveType = "wave";
     Timer tTimer, pTimer, imageTimer, lanchTimer;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
@@ -402,7 +401,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initRecordUserTempService();
         initBluetoothPrinter();
         startBLEService();
-        waveType = "wave";
+        GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
         if (AppSettings.isEnableHandGesture()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
@@ -413,7 +412,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         btWaveStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                waveType = "startButton";
+                GestureController.getInstance().answerType = GestureController.AnswerType.Touch;
                 GestureController.getInstance().setCallback(true);
                 onGestureDetected();
             }
@@ -3727,7 +3726,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             gestureFragment = new GestureFragment();
             Bundle bundle = new Bundle();
             bundle.putString("maskStatus", String.valueOf(maskStatus));
-            bundle.putString("waveType", waveType);
             gestureFragment.setArguments(bundle);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.add(R.id.dynamic_fragment_frame_layout, gestureFragment, "GestureFragment");
@@ -4239,7 +4237,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             if (GestureController.getInstance().isLanguageUpdated()) {
                 GestureController.getInstance().setCallback(true);
-                waveType = "wave";
+                GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
                 onGestureDetected();
             } else {
                 if (GestureController.getInstance().getLanguageSelectionIndex() != 0) {

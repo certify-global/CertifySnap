@@ -4,7 +4,7 @@ import com.certify.snap.model.TouchlessWaveSkip;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-public class LogicJsonAdvan {
+public class GetAdvancedWaveQuestions {
     @SerializedName("enableLogic")
     public int enableLogic;
     @SerializedName("logicJsonObject")

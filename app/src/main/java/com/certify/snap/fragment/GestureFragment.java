@@ -49,7 +49,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     private SharedPreferences sharedPreferences;
     private String maskStatus = "";
     private Snackbar snackbar;
-    private String waveType = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +65,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         Bundle bundle = getArguments();
         if (bundle != null) {
             maskStatus = bundle.getString("maskStatus");
-            waveType = bundle.getString("waveType");
             Log.d(TAG, "Mask status " + maskStatus);
         }
 
@@ -191,6 +189,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onDestroy() {
         super.onDestroy();
+        GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
@@ -202,9 +201,9 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     private void uiUpdate() {
-        if (waveType.equals("startButton")) {
-            handNoText.setText(getString(R.string.wave_yes).replace("< ",""));
-            handYesText.setText(getString(R.string.wave_no).replace(" >",""));
+        if (GestureController.AnswerType.Touch == GestureController.getInstance().answerType) {
+            handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
+            handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
             handNoText.setBackgroundResource(R.drawable.btn_shape);
             handYesText.setBackgroundResource(R.drawable.btn_shape);
             handNoText.setTextColor(getResources().getColor(R.color.colorWhite));

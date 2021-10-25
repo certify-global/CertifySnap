@@ -9,5 +9,5 @@ public class GetWaveQuestionList {
     @SerializedName("surveyQuestionary")
     public List<QuestionData> questionList;
     @SerializedName("logicJson")
-    public LogicJsonAdvan logicJsonAdvan;
+    public GetAdvancedWaveQuestions logicJsonAdvan;
 }
