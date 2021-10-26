@@ -96,7 +96,16 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private SpeechRecognizer speechRecognizer;
     private Intent speechRecognizerIntent;
     private UsbDeviceConnection connection;
-    public AnswerType answerType = AnswerType.Wave;
+
+    public AnswerType getAnswerType() {
+        return answerType;
+    }
+
+    public void setAnswerType(AnswerType answerType) {
+        this.answerType = answerType;
+    }
+
+    private AnswerType answerType = AnswerType.Wave;
     public enum AnswerType{
         Wave,
         Touch
@@ -782,7 +791,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 questionDataList.add(questionData);
             }
         }
-        GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         /*List<QuestionSurveyOptions> qSurveyList = new ArrayList<>();
         try {
             for (int i = 0; i < gestureQuestionsDbList.size(); i++) {

@@ -189,7 +189,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onDestroy() {
         super.onDestroy();
-        GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
@@ -201,7 +201,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     private void uiUpdate() {
-        if (GestureController.AnswerType.Touch == GestureController.getInstance().answerType) {
+        if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
             handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
             handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
             handNoText.setBackgroundResource(R.drawable.btn_shape);

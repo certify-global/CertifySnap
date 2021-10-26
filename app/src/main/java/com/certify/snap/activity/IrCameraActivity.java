@@ -401,7 +401,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initRecordUserTempService();
         initBluetoothPrinter();
         startBLEService();
-        GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         if (AppSettings.isEnableHandGesture()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
@@ -412,7 +412,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         btWaveStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GestureController.getInstance().answerType = GestureController.AnswerType.Touch;
+                GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
                 GestureController.getInstance().setCallback(true);
                 onGestureDetected();
             }
@@ -4237,7 +4237,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             if (GestureController.getInstance().isLanguageUpdated()) {
                 GestureController.getInstance().setCallback(true);
-                GestureController.getInstance().answerType = GestureController.AnswerType.Wave;
+                GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
                 onGestureDetected();
             } else {
                 if (GestureController.getInstance().getLanguageSelectionIndex() != 0) {
