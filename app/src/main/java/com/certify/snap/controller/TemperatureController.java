@@ -667,8 +667,13 @@ public class TemperatureController {
     public void updateControllersOnTempScanDisabled(List<RegisteredMembers> membersList) {
         CameraController.getInstance().setFaceVisible(false);
         AccessCardController.getInstance().processUnlockDoor(membersList);
-        AccessCardController.getInstance().sendAccessLogValid(context, temperature,
-                TemperatureController.getInstance().getTemperatureRecordData());
+        UserExportedData data;
+        if (AppSettings.isTemperatureScanEnabled()) {
+            data = TemperatureController.getInstance().getTemperatureRecordData();
+        } else {
+            data = CameraController.getInstance().getUserExportedData();
+        }
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
     }
 
     /**

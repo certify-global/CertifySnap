@@ -201,7 +201,11 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
 
             if (json.has("irTemplate")){
                 jsonObject.put("irTemplate", json.getString("irTemplate"));
+            }
+            if (json.has("rgbTemplate")) {
                 jsonObject.put("rgbTemplate", json.getString("rgbTemplate"));
+            }
+            if (json.has("thermalTemplate")) {
                 jsonObject.put("thermalTemplate", json.getString("thermalTemplate"));
             }
             if (list.get(i).getOfflineSync() ==1){
@@ -295,13 +299,13 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             jsonObject.put("facilityName", json.getString("facilityName"));
             jsonObject.put("locationName", json.getString("locationName"));
 
+            jsonObject.put("deviceId", json.getString("deviceId"));
+            jsonObject.put("deviceName", json.getString("deviceName"));
             jsonObject.put("deviceTime", json.getString("deviceTime"));
             if (json.has("timezone")) {
                 jsonObject.put("timezone", json.getString("timezone"));
             }
-            if (json.has("timezone")) {
-                jsonObject.put("timezone", json.getString("timezone"));
-            }
+            jsonObject.put("sourceIP", json.getString("deviceData"));
             jsonObject.put("deviceData", json.getString("deviceData"));
             jsonObject.put("guid", json.getString("guid"));
             jsonObject.put("faceParameters", json.getString("faceParameters"));
@@ -317,7 +321,15 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
             if (json.has("networkId")) {
                 jsonObject.put("networkId", json.getString("networkId"));
             }
-            
+            jsonObject.put("loggingMode", json.getString("loggingMode"));
+            jsonObject.put("accessOption", json.getString("accessOption"));
+            if (jsonObject.has("attendanceMode")) {
+                jsonObject.put("attendanceMode", "attendanceMode");
+            }
+            if (json.has("allowAccess")) {
+                jsonObject.put("allowAccess", json.getString("allowAccess"));
+            }
+
             if (logList.get(i).getOfflineSync()==1){
                 jsonObject.put("utcOfflineDateTime",json.getString("utcRecordDate"));
                 jsonObject.put("offlineSync", logList.get(i).getOfflineSync());
