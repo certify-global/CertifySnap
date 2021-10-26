@@ -203,7 +203,7 @@ public class Util {
     public static void switchRgbOrIrActivity(Context context, Boolean isActivity) {
         if (context == null)
             return;
-        Class<?> activity = QrCodeScannerActivity.class;
+        Class<?> activity = IrCameraActivity.class;
         if (isDeviceProModel() && getSharedPreferences(context).getBoolean(GlobalParameters.PRO_SETTINGS, false)) {
             activity = ProIrCameraActivity.class;
         }
@@ -212,7 +212,7 @@ public class Util {
             else
                 context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         } else {
-            if (isActivity) context.startActivity(new Intent(context, QrCodeScannerActivity.class));
+            if (isActivity) context.startActivity(new Intent(context, IrCameraActivity.class));
             else
                 context.startActivity(new Intent(context, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
