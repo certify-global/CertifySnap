@@ -118,6 +118,7 @@ import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.fragment.GestureFragment;
 import com.certify.snap.fragment.MaskEnforceFragment;
 import com.certify.snap.fragment.SecondaryIdentificationFragment;
+import com.certify.snap.fragment.TouchModeFragment;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
@@ -309,6 +310,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Fragment gestureFragment;
     private Fragment maskEnforceFragment;
     private Fragment secondaryScreenFragment;
+    private Fragment touchModeFragment;
     private boolean qrCodeReceived = false;
     private boolean resumedFromGesture = false;
     private boolean isRecordNotSent = false;
@@ -402,6 +404,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initBluetoothPrinter();
         startBLEService();
         GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
+        if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
+            btWaveStart.setText(getResources().getString(R.string.touch_flow));
+            tvWaveMessage.setText(getResources().getString(R.string.home_with_lang_message));
+        } else {
+            tvWaveMessage.setText(getResources().getString(R.string.home_wave_message));
+            btWaveStart.setText(getResources().getString(R.string.start));
+        }
         if (AppSettings.isEnableHandGesture()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
@@ -412,9 +421,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         btWaveStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
-                GestureController.getInstance().setCallback(true);
-                onGestureDetected();
+                if (DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
+                    launchTouchFragment();
+                } else {
+                    GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
+                    GestureController.getInstance().setCallback(true);
+                    onGestureDetected();
+                }
             }
         });
     }
@@ -3735,6 +3748,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    private void launchTouchFragment() {
+        if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+        try {
+            touchModeFragment = new TouchModeFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("maskStatus", String.valueOf(maskStatus));
+            touchModeFragment.setArguments(bundle);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.add(R.id.dynamic_fragment_frame_layout, touchModeFragment, "launchTouch");
+            transaction.addToBackStack("launchTouch");
+            transaction.commitAllowingStateLoss();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in launching Touch fragment");
+        }
+    }
+
     public void resumeFromGesture() {
         resumedFromGesture = true;
         runOnUiThread(() -> {
@@ -4151,6 +4180,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void resetMaskEnforcementGesture() {
         resetMaskEnforceStatus();
         resetGesture();
+    }
+
+    public void resetTouchModeGesture() {
+        touchModeGesture();
+    }
+
+    private void touchModeGesture() {
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
+        GestureController.getInstance().setCallback(true);
+        onGestureDetected();
     }
 
     private void updateUIOnPrint(boolean displayCScreen, boolean aboveThreshold) {

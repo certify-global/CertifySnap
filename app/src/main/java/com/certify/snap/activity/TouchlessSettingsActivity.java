@@ -159,14 +159,21 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
     }
 
     private void waveQuestionCheck() {
-        if (sharedPreferences.getBoolean(GlobalParameters.WAVE_QUESTIONS, false))
+        if (sharedPreferences.getBoolean(GlobalParameters.WAVE_QUESTIONS, false)) {
             radioYesWaveQuestions.setChecked(true);
-        else radioNoWaveQuestions.setChecked(true);
-
+            spinnerQuestionSelector.setVisibility(View.VISIBLE);
+        } else {
+            spinnerQuestionSelector.setVisibility(View.GONE);
+            radioNoWaveQuestions.setChecked(true);
+        }
         radioGroupQuestions.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radio_yes_wave_questions)
+            if (checkedId == R.id.radio_yes_wave_questions) {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, true);
-            else Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, false);
+                spinnerQuestionSelector.setVisibility(View.VISIBLE);
+            }else {
+                spinnerQuestionSelector.setVisibility(View.GONE);
+                Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, false);
+            }
         });
     }
 

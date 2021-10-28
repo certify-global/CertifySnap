@@ -106,7 +106,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     private AnswerType answerType = AnswerType.Wave;
-    public enum AnswerType{
+
+    public enum AnswerType {
         Wave,
         Touch
     }
@@ -460,38 +461,38 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         runCheck = true;
         new Thread(() -> {
             while (runCheck) {
-                        Map<String, String> map = sendCMD(1);
-                        if (map != null) {
+                Map<String, String> map = sendCMD(1);
+                if (map != null) {
                     try {
                         final int left = Integer.parseInt(Objects.requireNonNull(map.get("leftPower")));
                         final int right = Integer.parseInt(Objects.requireNonNull(map.get("rightPower")));
-                    if (left > leftHandRangeVal && right > rightHandRangeVal) {
-                        index = 0;
-                        if (listener != null) {
-                            listener.onBothHandWave();
-                            Thread.sleep(1500);
+                        if (left > leftHandRangeVal && right > rightHandRangeVal) {
+                            index = 0;
+                            if (listener != null) {
+                                listener.onBothHandWave();
+                                Thread.sleep(1500);
+                            }
+                        } else if (left > leftHandRangeVal) {
+                            leftHandWave();
+                        } else if (right > rightHandRangeVal) {
+                            rightHandWave();
+                        } else {
+                            cancelWaveHandTimer();
+                            if (listener != null) {
+                                listener.onWaveHandReset();
+                            }
+                            if (gestureMEListener != null) {
+                                gestureMEListener.onWaveHandReset();
+                            }
+                            resetWaveHandProcessed();
                         }
-                    } else if (left > leftHandRangeVal) {
-                        leftHandWave();
-                    } else if (right > rightHandRangeVal) {
-                        rightHandWave();
-                    } else {
-                        cancelWaveHandTimer();
-                        if (listener != null) {
-                            listener.onWaveHandReset();
+                    } catch (Exception e) {
+                        Log.d(TAG, "Gesture Error in Gesture: " + e.getMessage());
+                        if (e.getMessage() == null) {
+                            restartGesture();
                         }
-                        if (gestureMEListener != null) {
-                            gestureMEListener.onWaveHandReset();
-                        }
-                        resetWaveHandProcessed();
-                    }
-                } catch (Exception e) {
-                    Log.d(TAG, "Gesture Error in Gesture: " + e.getMessage());
-                    if (e.getMessage() == null) {
-                        restartGesture();
                     }
                 }
-            }
             }
             try {
                 Thread.sleep(100);
@@ -562,7 +563,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         byte[] result = null;
         Map<String, String> resultData = null;
         try {
-            if(usbReader == null) return null;
+            if (usbReader == null) return null;
             UsbInterface usbInterface = usbReader.getInterface(0);// USBEndpoint为读写数据所需的节点
             UsbEndpoint inEndpoint = usbInterface.getEndpoint(0); // 读数据节点
             UsbEndpoint outEndpoint = usbInterface.getEndpoint(1);
@@ -916,7 +917,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         }
     }
 
-   public void clearQuestionAnswerMap() {
+    public void clearQuestionAnswerMap() {
         questionAnswerMap.clear();
     }
 
@@ -1012,6 +1013,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         break;
                     }
                 }
+                if (questionDataDbList == null && gestureQuestionsDbList.size() > 0)
+                    questionDataDbList = gestureQuestionsDbList.get(0).questionsDbList;
+
                 questionAnswerMap.clear();
                 if (questionDataDbList != null) {
                     for (int i = 0; i < questionDataDbList.size(); i++) {
