@@ -688,6 +688,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onResume");
         super.onResume();
         isActivityResumed = true;
+        resumeCameraScan();
         if (mMessageReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
         }
@@ -745,12 +746,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (hidReceiver != null) {
             hidReceiver.clearAbortBroadcast();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
-            hidReceiver = null;
         }
         if (mMessageReceiver != null) {
             mMessageReceiver.clearAbortBroadcast();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-            mMessageReceiver = null;
         }
     }
 
@@ -4044,7 +4043,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void onTemperatureScanDisabled() {
-        tvErrorMessage.setText(getString(R.string.face_center));
         if (PrinterController.getInstance().isPrintScan(false) &&
                 CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
             cancelImageTimer();
