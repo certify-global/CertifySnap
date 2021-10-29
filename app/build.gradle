@@ -71,7 +71,6 @@ android {
             testCoverageEnabled = true
         }
         debug {
-            debuggable true
             minifyEnabled false
             buildConfigField "String", "ENDPOINT_URL", "\"https://apidev.certify.me\""
         }

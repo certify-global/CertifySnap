@@ -35,9 +35,9 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private RadioGroup scanProximityRg;
     private RadioButton scanProximityYes;
     private RadioButton scanProximityNo;
-    private TextView scanType;
-    private RadioGroup scanTypeRg;
-    private RadioButton scanTypeQuick;
+    private TextView scanType, retryScan;
+    private RadioGroup scanTypeRg, retryScanRg;
+    private RadioButton scanTypeQuick, retryScanRbYes, retryScanRbNo;
     private RadioButton scanTypeStandard;
     private TextView enableTempScan;
     private RadioGroup tempScanRg;
@@ -121,6 +121,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             setTempScanClickListener();
             setDefaultLiveness();
             setLivenessClickListener();
+            setRetryScanSettings();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -211,6 +212,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
                     saveScanType();
                     saveTempScan();
                     saveLiveness();
+                    saveRetryScan();
                     finish();
                 }
             });
@@ -270,6 +272,10 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         livenessRg = findViewById(R.id.liveness_rg);
         livenessYes = findViewById(R.id.liveness_yes_rb);
         livenessNo = findViewById(R.id.liveness_no_rb);
+        retryScanRg = findViewById(R.id.retry_scan_rg);
+        retryScanRbYes = findViewById(R.id.retry_scan_yes);
+        retryScanRbNo = findViewById(R.id.retry_scan_no);
+        retryScan = findViewById(R.id.retry_scan_tv);
 
         rubiklight = Typeface.createFromAsset(getAssets(),
                 "rubiklight.ttf");
@@ -289,6 +295,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         scanType.setTypeface(rubiklight);
         enableTempScan.setTypeface(rubiklight);
         enableLivenessTv.setTypeface(rubiklight);
+        retryScan.setTypeface(rubiklight);
     }
 
     private void setDefaultScanProximity() {
@@ -423,5 +430,25 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
         scanViewSettings = DatabaseController.getInstance().getScanViewSettingsOnId(
                 DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
 
+    }
+
+    private void setRetryScanSettings() {
+        if (sp.getBoolean(GlobalParameters.RETRY_SCAN, false)) {
+            retryScanRbYes.setChecked(true);
+        } else {
+            retryScanRbNo.setChecked(true);
+        }
+
+        retryScanRg.setOnCheckedChangeListener((radioGroup, id) -> {
+            if (id == R.id.retry_scan_yes) {
+                retryScanRbYes.setChecked(true);
+            } else if (id == R.id.retry_scan_no) {
+                retryScanRbNo.setChecked(true);
+            }
+        });
+    }
+
+    private void saveRetryScan() {
+        Util.writeBoolean(sp, GlobalParameters.RETRY_SCAN, retryScanRbYes.isChecked());
     }
 }

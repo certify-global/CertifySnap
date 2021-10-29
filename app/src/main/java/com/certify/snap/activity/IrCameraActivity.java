@@ -241,6 +241,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private int relaytimenumber = 5;
     ImageView img_guest, temperature_image, img_logo;
     TextView txt_guest;
+    private Button retryButton;
 
     private volatile byte[] irData;
     private Bitmap irBitmap;
@@ -314,6 +315,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean qrCodeReceived = false;
     private boolean resumedFromGesture = false;
     private boolean isRecordNotSent = false;
+    private boolean isFaceNotDetectedTimer = false;
+    private Timer previewTimer;
 
     private void instanceStart() {
         try {
@@ -388,6 +391,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_thermal_subtitle.setTypeface(rubiklight);
 
         initView();
+        setClickListener();
         resetImageLogo();
 
         String onlyTextMes = sharedPreferences.getString(GlobalParameters.HOME_TEXT_ONLY_MESSAGE, "");
@@ -429,6 +433,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     onGestureDetected();
                 }
             }
+        });
+    }
+
+    private void setClickListener() {
+        retryButton.setOnClickListener(view -> {
+            TemperatureController.getInstance().setTemperatureListener(null);
+            retryButton.setVisibility(View.GONE);
+            resetHomePage();
         });
     }
 
@@ -632,6 +644,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         button_checkOut = findViewById(R.id.btn_check_out);
         tvTime = findViewById(R.id.tv_time);
         tvDate = findViewById(R.id.tv_date);
+        retryButton = findViewById(R.id.button_retry);
 
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
@@ -805,6 +818,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraHelper.release();
             cameraHelper = null;
         }
+        cancelPreviewTimer();
         if (cameraHelperIr != null) {
             cameraHelperIr.release();
             cameraHelperIr = null;
@@ -1167,6 +1181,32 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
+    private void initPreviewTimer() {
+        if (!isFaceNotDetectedTimer) {
+            cancelImageTimer();
+            isFaceNotDetectedTimer = true;
+            previewTimer = new Timer();
+            previewTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(() -> {
+                        if (relative_main.getVisibility() != View.VISIBLE) {
+                            cancelImageTimer();
+                            retryButton.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+            }, 15 * 1000);
+        }
+    }
+
+    private void cancelPreviewTimer() {
+        if (previewTimer != null) {
+            previewTimer.cancel();
+            previewTimer = null;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1445,6 +1485,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 public void run() {
                     Logger.verbose(TAG, "ShowLauncherView()", "Display Home page start");
                     if (!isHomeViewEnabled) {
+                        cancelPreviewTimer();
                         final Activity that = IrCameraActivity.this;
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -2944,8 +2985,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             relative_main.setVisibility(View.GONE);
             // rl_header.setVisibility(View.GONE);
             //logo.setVisibility(View.GONE);
-
-            startCameraPreviewTimer();
+            //setCameraPreviewTimer();
+            if (AppSettings.isRetryScanEnabled()) {
+                if (!isFaceIdentified) {
+                    initPreviewTimer();
+                }
+            }
         });
     }
 
@@ -3030,6 +3075,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetHomeScreen() {
+        cancelPreviewTimer();
         if (tv_message != null) tv_message.setVisibility(View.GONE);
         if (tvErrorMessage != null) tvErrorMessage.setVisibility(View.GONE);
         tvFaceMessage.setVisibility(View.GONE);
@@ -3038,6 +3084,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (outerCircle != null) {
             outerCircle.setBackgroundResource(R.drawable.border_shape);
         }
+        retryButton.setVisibility(View.GONE);
         cancelImageTimer();
         DisplayTimeAttendance();
     }
@@ -3889,25 +3936,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (CameraController.getInstance().isAppExitTriggered()) {
-                            if (handler != null) {
-                                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
-                            }
-                            return;
-                        }
-
-                        Logger.debug(TAG, "showCameraPreview", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
-
-                        tv_message.setText("");
-                        tv_message.setVisibility(View.GONE);
-                        tvErrorMessage.setVisibility(View.GONE);
-                        tvFaceMessage.setVisibility(View.GONE);
-                        temperature_image.setVisibility(View.GONE);
-                        homeDisplayView();
-                        mask_message.setText("");
-                        mask_message.setVisibility(View.GONE);
-                        disableLedPower();
-                        resetToHomePage();
+                        resetHomePage();
                     }
                 });
                 this.cancel();
@@ -4469,6 +4498,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 resetToHomePage();
             }
         }, 10 * 1000); //wait 10 seconds for the secondary scan, go to home otherwise
+    }
+
+    private void resetHomePage() {
+        if (CameraController.getInstance().isAppExitTriggered()) {
+            if (handler != null) {
+                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
+            }
+            return;
+        }
+
+        Logger.debug(TAG, "showCameraPreview", "ImageTimer execute, isFaceIdentified:" + isFaceIdentified);
+
+        isFaceNotDetectedTimer = false;
+        tv_message.setText("");
+        tv_message.setVisibility(View.GONE);
+        tvErrorMessage.setVisibility(View.GONE);
+        tvFaceMessage.setVisibility(View.GONE);
+        temperature_image.setVisibility(View.GONE);
+        homeDisplayView();
+        mask_message.setText("");
+        mask_message.setVisibility(View.GONE);
+        disableLedPower();
+        resetToHomePage();
     }
 
     private void resetToHomePage() {
