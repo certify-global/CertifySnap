@@ -716,5 +716,6 @@
     <string name="show_non_vaccination_indicator">Afficher l\'indicateur de non-vaccination</string>
     <string name="retry">Réessayez</string>
     <string name="retry_scan_title">Afficher l\'option de nouvelle tentative sur l\'analyse du visage</string>
+    <string name="face_not_matched_msg">Le match face potentiel n\'a pas eu lieu. Veuillez réessayer</string>
 
 </resources>
