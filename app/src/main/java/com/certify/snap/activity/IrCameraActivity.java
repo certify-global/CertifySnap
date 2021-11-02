@@ -1156,9 +1156,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 @Override
                 public void run() {
                     runOnUiThread(() -> {
-                        if (relative_main.getVisibility() != View.VISIBLE) {
+                        if ((relative_main.getVisibility() != View.VISIBLE)) {
                             cancelImageTimer();
                             retryButton.setVisibility(View.VISIBLE);
+                            tv_thermal.setVisibility(View.GONE);
+                            Toast.makeText(IrCameraActivity.this, getString(R.string.face_not_detected), Toast.LENGTH_LONG).show();
                         }
                     });
                 }
