@@ -732,5 +732,7 @@
     <string name="check_out">Check Out</string>
     <string name="show_vaccination_indicator">Show Vaccination Indicator</string>
     <string name="show_non_vaccination_indicator">Show Non Vaccination Indicator</string>
+    <string name="retry">Retry</string>
+    <string name="retry_scan_title">Display retry option on face scan</string>
 
 </resources>

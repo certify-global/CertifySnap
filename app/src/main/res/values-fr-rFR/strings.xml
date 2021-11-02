@@ -711,5 +711,13 @@
     <string name="rfid_msg">Identification secondaire:\nVeuillez appuyer sur le badge pour continuer</string>
     <string name="auth_failed">Authentification échouée.</string>
     <string name="restarting_wait_msg">Redémarrage de l\'application pour récupérer les paramètres, veuillez patienter....</string>
+    <string name="auto_mode">Auto</string>
+    <string name="manual_mode">Manuel</string>
+    <string name="check_in">Enregistrement</string>
+    <string name="check_out">Check Out</string>
+    <string name="show_vaccination_indicator">Afficher l\'indicateur de vaccination</string>
+    <string name="show_non_vaccination_indicator">Afficher l\'indicateur de non-vaccination</string>
+    <string name="retry">Réessayez</string>
+    <string name="retry_scan_title">Afficher l\'option de nouvelle tentative sur l\'analyse du visage</string>
 
 </resources>
