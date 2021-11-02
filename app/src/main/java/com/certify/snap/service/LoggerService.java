@@ -20,7 +20,7 @@ import static android.os.SystemClock.elapsedRealtime;
 public class LoggerService extends Service {
 
     private final String TAG = LoggerService.class.getSimpleName();
-    private final static int BACKGROUND_INTERVAL_MINUTES = 2;
+    private final static int BACKGROUND_INTERVAL_MINUTES = 60;
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
 
