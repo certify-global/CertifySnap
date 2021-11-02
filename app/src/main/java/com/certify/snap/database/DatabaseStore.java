@@ -121,6 +121,9 @@ public interface DatabaseStore {
     @Query("SELECT * FROM RegisteredMembers")
     List<RegisteredMembers> findAllRegisterMembersList();
 
+    @Query("SELECT * FROM RegisteredMembers ORDER BY dateTime DESC LIMIT 1")
+    RegisteredMembers getLastMemberSyncDateTime();
+
     @Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid DESC LIMIT 1")
     OfflineRecordTemperatureMembers OfflineRecordTemperatureMembers();
 

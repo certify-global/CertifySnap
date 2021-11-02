@@ -256,7 +256,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         testCount = 1;
                         activeMemberCount = totalMemberCount = 0;
                         datalist.clear();
-                        DatabaseController.getInstance().deleteAllMember();
                         mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
                         MemberSyncDataModel.getInstance().setSyncing(true);
                         Util.getmemberList(this, this);

@@ -220,6 +220,17 @@ public class DatabaseController {
         return 1L;
     }
 
+    public RegisteredMembers getLastMemberSyncDateTime() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getLastMemberSyncDateTime();
+            }
+        } catch (SQLiteException e) {
+            handleDBException(e);
+        }
+        return null;
+    }
+
     public void deleteAllMember(){
         try {
             if (databaseStore != null){
