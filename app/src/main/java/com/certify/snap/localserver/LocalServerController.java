@@ -234,7 +234,7 @@ public class LocalServerController {
                 Members.setStatus(member.getString("status"));
                 Members.setImage(member.getString("faceTemplate"));
                 Members.setPrimaryId(member.getLong("primaryId"));
-                Members.setDateTime(Util.currentDate());
+                Members.setDateTime(Util.getUTCDate(""));
                 DatabaseController.getInstance().updateMember(Members);
                 findAllMembers();
                 return "result: OK";
