@@ -507,9 +507,7 @@
     <string name="Start">Début</string>
     <string name="lang_wave_message">Lancer le questionnaire</string>
     <string name="lang_choose_your">Choisissez votre langue préférée</string>
-    <string name="wave_yes">&lt;OUI</string>
-    <string name="wave_no">NON&gt;</string>
-    <string name="scan_type">Type de scan</string>
+        <string name="scan_type">Type de scan</string>
     <string name="scan_type_quick">Rapide</string>
     <string name="scan_type_standard">la norme</string>
 

@@ -202,8 +202,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
 
     private void uiUpdate() {
         if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
-            handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
-            handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
             handNoText.setBackgroundResource(R.drawable.btn_shape);
             handYesText.setBackgroundResource(R.drawable.btn_shape);
             handNoText.setTextColor(getResources().getColor(R.color.colorWhite));
@@ -213,9 +211,38 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         } else {
             titleView.setText(AppSettings.getGestureMessage());
             titleView.setVisibility(View.VISIBLE);
-            handNoText.setText(getString(R.string.wave_yes));
-            handYesText.setText(getString(R.string.wave_no));
+        }
+        setLangBaseYesNO(GestureController.getInstance().getQaLangType());
+    }
 
+    private void setLangBaseYesNO(String langType) {
+        switch (langType) {
+            case "en":
+                if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+                    handNoText.setText(getString(R.string.wave_yes_en).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no_en).replace(" >", ""));
+                } else {
+                    handNoText.setText(getString(R.string.wave_yes_en));
+                    handYesText.setText(getString(R.string.wave_no_en));
+                }
+                break;
+            case "fr":
+                if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+                    handNoText.setText(getString(R.string.wave_yes_fr).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no_fr).replace(" >", ""));
+                } else {
+                    handNoText.setText(getString(R.string.wave_yes_fr));
+                    handYesText.setText(getString(R.string.wave_no_fr));
+                }
+                break;
+            case "es":
+                if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+                    handNoText.setText(getString(R.string.wave_yes_es).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no_es).replace(" >", ""));
+                } else {
+                    handNoText.setText(getString(R.string.wave_yes_es));
+                    handYesText.setText(getString(R.string.wave_no_es));
+                }
         }
     }
 

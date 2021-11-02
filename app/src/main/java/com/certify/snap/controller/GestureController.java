@@ -97,6 +97,16 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     private Intent speechRecognizerIntent;
     private UsbDeviceConnection connection;
 
+    public String getQaLangType() {
+        return qaLangType;
+    }
+
+    public void setQaLangType(String qaLangType) {
+        this.qaLangType = qaLangType;
+    }
+
+    private String qaLangType = "en";
+
     public AnswerType getAnswerType() {
         return answerType;
     }
@@ -253,7 +263,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                     clearQuestionAnswerMap();
                     for (int i = 0; i < questionList.size(); i++) {
                         QuestionData questionData = questionList.get(i);
-                        if (questionData.languageCode != null) {
+                        if (questionData.languageCode != null && !questionData.questionName.isEmpty()) {
                             if (questionData.languageCode.equals(AppSettings.getLanguageType())) {
                                 questionAnswerMap.put(questionData, "NA");
                             }
@@ -261,7 +271,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                                 qData = questionData;
                                 languageCode = questionData.languageCode;
                             }
-                            if (languageCode.equals(questionData.languageCode)) {
+                            if (languageCode.equals(questionData.languageCode) && !questionData.questionName.isEmpty()) {
                                 questionDataDbList.add(getDbQuestionData(questionData, i));
                                 continue;
                             }
@@ -1028,6 +1038,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                         questionData.settingId = questionDataDb.settingId;
                         questionData.userId = questionDataDb.userId;
                         questionData.expectedOutcome = questionDataDb.expectedOutcome;
+                        setQaLangType(questionDataDb.languageCode);
                         questionData.surveyQuestionaryDetails = questionDataDb.surveyQuestionaryDetails;
                         Gson gson = new Gson();
                         Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
