@@ -1190,9 +1190,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 @Override
                 public void run() {
                     runOnUiThread(() -> {
-                        if (relative_main.getVisibility() != View.VISIBLE) {
+                        if ((relative_main.getVisibility() != View.VISIBLE)) {
                             cancelImageTimer();
                             retryButton.setVisibility(View.VISIBLE);
+                            tv_thermal.setVisibility(View.GONE);
+                            Toast.makeText(IrCameraActivity.this, getString(R.string.face_not_detected), Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -1416,7 +1418,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             String message = String.format(getString(R.string.image_sync_failed_msg), memberCount);
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         } else if (actionCode == MemberSyncDataModel.SYNC_GROUP_ID_NOT_EXIST) {
-            Toast.makeText(this, getString(R.string.sync_failed), Toast.LENGTH_LONG).show();
+          //  Toast.makeText(this, getString(R.string.sync_failed), Toast.LENGTH_LONG).show();
         } else {
             tv_sync.setText(getString(R.string.syncing));
         }
