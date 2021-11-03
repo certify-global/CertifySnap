@@ -135,7 +135,7 @@ public class MemberSyncDataModel {
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
-                            member.setDateTime(Util.currentDate());
+                            member.setDateTime(Util.getUTCDate(""));
                             if (c.has("isdocument")) {
                                 member.setDocument(c.getString("isdocument").equals("1"));
                             }
@@ -227,7 +227,7 @@ public class MemberSyncDataModel {
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
                             member.setStatus(String.valueOf(c.getBoolean("status")));
-                            member.setDateTime(Util.currentDate());
+                            member.setDateTime(Util.getUTCDate(""));
                             member.setGroupId(groupId);
 
                             List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
