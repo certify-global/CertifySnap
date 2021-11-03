@@ -93,6 +93,7 @@ public class AppSettings {
     private static boolean showVaccinationIndicator = false;
     private static boolean showNonVaccinationIndicator = false;
     private static boolean retryScanEnabled = false;
+    private static boolean debugModeEnabled = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -199,6 +200,7 @@ public class AppSettings {
         timeAndAttendance = sharedPreferences.getInt(GlobalParameters.TimeAttendanceOption, 0);
         showVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_VACCINATION_INDICATOR, false);
         showNonVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, false);
+        debugModeEnabled = sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false);
 
     }
 
@@ -579,5 +581,9 @@ public class AppSettings {
 
     public static void setShowNonVaccinationIndicator(boolean showNonVaccinationIndicator) {
         AppSettings.showNonVaccinationIndicator = showNonVaccinationIndicator;
+    }
+
+    public static boolean isDebugModeEnabled() {
+        return debugModeEnabled;
     }
 }

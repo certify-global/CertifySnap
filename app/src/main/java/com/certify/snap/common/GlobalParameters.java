@@ -221,5 +221,6 @@ public class GlobalParameters {
     public static final String PRIMARY_IDENTIFIER = "PrimaryIdentifier";
     public static final String SECONDARY_IDENTIFIER = "SecondaryIdentifier";
     public static final String SETTINGS_RETRIEVED = "SettingsRetrieved";
+    public static final String DEBUG_MODE = "DebugMode";
 
 }

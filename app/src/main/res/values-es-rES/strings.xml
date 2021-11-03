@@ -723,5 +723,6 @@
     <string name="show_non_vaccination_indicator">Mostrar indicador de no vacunación</string>
     <string name="retry">Rever</string>
     <string name="retry_scan_title">Mostrar la opción de reintento en el escaneo facial</string>
+    <string name="debug_mode">Modo de depuración</string>
 
 </resources>

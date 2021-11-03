@@ -83,11 +83,11 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private LinearLayout pro_layout;
     private TextView tvProtocol, tvHostName;
     private View pro_settings_border;
-    RadioGroup sync_member_radio_group, logOfflineDataRg, multiLingualRg;
-    RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo, multiLingualRbYes, multiLingualRbNo;
-    RadioGroup radio_group_local_server;
-    RadioButton radio_yes_server, radio_no_server;
-    TextView tvLocalServer, tvServerIp, tvLocaleSettings,additional_locale_settings;
+    private RadioGroup sync_member_radio_group, logOfflineDataRg, multiLingualRg;
+    private RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo, multiLingualRbYes, multiLingualRbNo;
+    private RadioGroup radio_group_local_server, debugModeRg;
+    private RadioButton radio_yes_server, radio_no_server, debugModeRbYes, debugModeRbNo;
+    private TextView tvLocalServer, tvServerIp, tvLocaleSettings,additional_locale_settings, debugModeTv;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
@@ -124,6 +124,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
             logOfflineDataSetting();
             languageSetting();
             multiLingualSetting();
+            debugModeSetting();
             //additionalLanguageSetting();
 
             tvProtocol = findViewById(R.id.tv_protocol);
@@ -221,6 +222,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                     Util.writeString(sharedPreferences, GlobalParameters.DEVICE_NAME, etDeviceName.getText().toString().trim());
                     Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, proSettingValue);
                     Util.writeBoolean(sharedPreferences, GlobalParameters.LogOfflineData, logOfflineDataYes.isChecked());
+                    Util.writeBoolean(sharedPreferences, GlobalParameters.DEBUG_MODE, debugModeRbYes.isChecked());
                     AppSettings.setProSettings(proSettingValue);
 
                     String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
@@ -309,6 +311,10 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         multiLingualRg = findViewById(R.id.multilingual_rg);
         multiLingualRbYes = findViewById(R.id.multilingual_rb_yes);
         multiLingualRbNo = findViewById(R.id.multilingual_rb_no);
+        debugModeTv = findViewById(R.id.debug_mode_tv);
+        debugModeRg = findViewById(R.id.debug_mode_rg);
+        debugModeRbYes = findViewById(R.id.debug_mode_yes);
+        debugModeRbNo = findViewById(R.id.debug_mode_no);
         //additional_spinner_language_selector = findViewById(R.id.additional_spinner_language_selector);
         //additional_locale_settings = findViewById(R.id.additional_locale_settings);
 
@@ -339,6 +345,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         logOfflineData.setTypeface(rubiklight);
         tvLocaleSettings.setTypeface(rubiklight);
         multilingualSetting.setTypeface(rubiklight);
+        debugModeTv.setTypeface(rubiklight);
         //additional_locale_settings.setTypeface(rubiklight);
 
         if (!sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
@@ -905,6 +912,30 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                 Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, true);
             } else {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, false);
+            }
+        });
+    }
+
+    private void debugModeSetting() {
+        if (sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false)) {
+            captureLogsLayout.setVisibility(View.VISIBLE);
+            debugModeRbYes.setChecked(true);
+            debugModeRbNo.setChecked(false);
+        } else {
+            captureLogsLayout.setVisibility(View.GONE);
+            debugModeRbNo.setChecked(true);
+            debugModeRbYes.setChecked(false);
+        }
+
+        debugModeRg.setOnCheckedChangeListener((radioGroup, id) -> {
+            if (id == R.id.debug_mode_yes) {
+                debugModeRbYes.setChecked(true);
+                debugModeRbNo.setChecked(false);
+                captureLogsLayout.setVisibility(View.VISIBLE);
+            } else if (id == R.id.debug_mode_no) {
+                debugModeRbNo.setChecked(true);
+                debugModeRbYes.setChecked(false);
+                captureLogsLayout.setVisibility(View.GONE);
             }
         });
     }

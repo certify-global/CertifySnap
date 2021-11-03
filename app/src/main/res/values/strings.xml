@@ -724,5 +724,6 @@
     <string name="show_non_vaccination_indicator">Show Non Vaccination Indicator</string>
     <string name="retry">Retry</string>
     <string name="retry_scan_title">Display retry option on face scan</string>
+    <string name="debug_mode">Debug Mode</string>
 
 </resources>

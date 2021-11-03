@@ -501,7 +501,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void startLoggerService() {
-        if (!Util.isServiceRunning(LoggerService.class, this)) {
+        if (!Util.isServiceRunning(LoggerService.class, this) && AppSettings.isDebugModeEnabled()) {
             startService(new Intent(this, LoggerService.class));
             Application.StartService(this);
             return;
