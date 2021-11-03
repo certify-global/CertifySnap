@@ -925,7 +925,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     Members.setStatus(Members.getStatus());
                     Members.setImage(Members.getImage());
                     Members.setFeatures(Members.getFeatures());
-                    Members.setDateTime(Util.currentDate());
+                    Members.setDateTime(Util.getUTCDate(""));
                     Members.setPrimaryId(primaryId);
                     Members.setMemberType(memberType);
                     Members.setMemberTypeName(memberTypeName);
@@ -1397,6 +1397,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             } else if(response.responseSubCode.equals("101")){
                 DismissProgressDialog(mloadingprogress);
                 refresh();
+                MemberSyncDataModel.getInstance().setSyncing(false);
             }
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }

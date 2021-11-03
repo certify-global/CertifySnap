@@ -116,8 +116,10 @@ public class MemberSyncDataModel {
                             if (c.has("memberTypeName")) {
                                 member.setMemberTypeName(c.getString("memberTypeName"));
                             }
+                            String groupId = "0";
                             if (c.has("groupId")) {
-                                member.setGroupId(c.getString("groupId"));
+                                groupId = c.getString("groupId");
+                                member.setGroupId(groupId);
                             }
                             if (c.has("networkId")) {
                                 member.setNetworkId(c.getString("networkId"));
@@ -139,9 +141,40 @@ public class MemberSyncDataModel {
                             if (c.has("isdocument")) {
                                 member.setDocument(c.getString("isdocument").equals("1"));
                             }
-                            index = index +1;
-                            member.setPrimaryId(index);
-                            emitter.onNext(member);
+                            List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+                            if (membersList != null && membersList.size() > 0) {
+                                if (isMemberSyncGroupIdEnabled() && !isGroupIdExists(groupId)) {
+                                    if (deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId())) {
+                                        deletedMember = membersList.get(0);
+                                    }
+                                    RegisteredMembers member1 = new RegisteredMembers();
+                                    member1.uniqueid = "-1";
+                                    emitter.onNext(member1);
+                                } else {
+                                    member.setPrimaryId(membersList.get(0).getPrimaryId());
+                                    emitter.onNext(member);
+                                }
+                            } else {
+                                List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
+                                if (members != null && members.size() > 0) {
+                                    index = members.size() + 1;
+                                } else {
+                                    index = index + 1;
+                                }
+                                if (isMemberSyncGroupIdEnabled()) {
+                                    if (isGroupIdExists(groupId)) {
+                                        member.setPrimaryId(index);
+                                        emitter.onNext(member);
+                                    } else {
+                                        RegisteredMembers member1 = new RegisteredMembers();
+                                        member1.uniqueid = "0";
+                                        emitter.onNext(member1);
+                                    }
+                                } else {
+                                    member.setPrimaryId(index);
+                                    emitter.onNext(member);
+                                }
+                            }
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "SnapXT Exception while adding API response member to the model");
