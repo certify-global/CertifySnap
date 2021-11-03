@@ -8,7 +8,9 @@ import android.util.Base64;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,11 +30,18 @@ import com.certify.snap.qrverification.PersonModel;
 import com.certify.snap.qrverification.VaccinationModel;
 import com.certify.snap.qrverification.QRModelData;
 import com.certify.snap.qrverification.VerificationFragment;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.BarcodeView;
+import com.journeyapps.barcodescanner.CaptureActivity;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,6 +52,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -65,14 +75,22 @@ import dgca.verifier.app.decoder.prefixvalidation.DefaultPrefixValidationService
 import dgca.verifier.app.decoder.schema.DefaultSchemaValidator;
 import dgca.verifier.app.decoder.services.X509;
 
-
-import dagger.hilt.android.AndroidEntryPoint;
 public class QrCodeScannerActivity extends AppCompatActivity {
 
     private static final String TAG = QrCodeScannerActivity.class.getSimpleName();
-    private BarcodeView barcodeScanner;
+    private static final int CUSTOMIZED_REQUEST_CODE = 123;
+     private BarcodeView barcodeScanner;
     private FragmentManager fragmentManager=null;
     private AppCompatImageView cameraSquareImage;
+    private  BarcodeCallback barcodeCallback;
+  /*  private  final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                if(result.getContents() == null) {
+                    Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                }
+            });*/
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,14 +115,23 @@ public class QrCodeScannerActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        barcodeScanner = findViewById(R.id.barcode_scanner);
+        barcodeScanner=findViewById(R.id.barcode_scanner_view);
         cameraSquareImage = findViewById(R.id.camera_square_image);
-        fragmentManager=getSupportFragmentManager();
+
     }
 
     private void initQrCodeScanner() {
-        BarcodeCallback barcodeCallback = new BarcodeCallback() {
+/*
+        ScanOptions options = new ScanOptions();
+        options.setDesiredBarcodeFormats(ScanOptions.CODE_39);
+        options.setOrientationLocked(false);
+        options.setPrompt("Scan a barcode");
+        options.setCameraId(0);
+        options.setBeepEnabled(false);
+        options.setBarcodeImageEnabled(true);
+        barcodeLauncher.launch(options);*/
 
+        barcodeCallback = new BarcodeCallback() {
             @Override
             public void barcodeResult(BarcodeResult result) {
                 Log.d(TAG, "barcode result ");
@@ -123,11 +150,8 @@ public class QrCodeScannerActivity extends AppCompatActivity {
                 }
             }
         };
-        Collection<BarcodeFormat> decodeFormats = new ArrayList<>();
-        decodeFormats.add(BarcodeFormat.AZTEC);
-        decodeFormats.add(BarcodeFormat.QR_CODE);
-        barcodeScanner.setDecoderFactory(new DefaultDecoderFactory(decodeFormats));
-        barcodeScanner.decodeContinuous(barcodeCallback);
+
+
     }
 
 
@@ -251,5 +275,4 @@ public class QrCodeScannerActivity extends AppCompatActivity {
 
 
     }
-
 }

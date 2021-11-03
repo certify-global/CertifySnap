@@ -73,7 +73,8 @@
             android:launchMode="singleInstance" />
         <activity
             android:name=".activity.QrCodeScannerActivity"
-            android:launchMode="singleTask" >
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" >
            <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -53,7 +53,7 @@ object Versions {
     const val android_tools_desugar_jdk_libs_version = "1.1.5"
 
     // QR
-    const val zxing = "4.2.0"
+    const val zxing = "4.3.0"
     const val zxing_core = "3.3.0"
     const val guave_conflict_resolver_version = "9999.0-empty-to-avoid-conflict-with-guava"
 
