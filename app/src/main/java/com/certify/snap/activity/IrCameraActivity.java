@@ -118,6 +118,7 @@ import com.certify.snap.fragment.ConfirmationScreenFragment;
 import com.certify.snap.fragment.GestureFragment;
 import com.certify.snap.fragment.MaskEnforceFragment;
 import com.certify.snap.fragment.SecondaryIdentificationFragment;
+import com.certify.snap.fragment.TouchModeFragment;
 import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.GuestMembers;
@@ -184,8 +185,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private View previewViewRgb;
     private View previewViewIr;
 
-    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate;
-
+    private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate, tvWaveMessage;
+    private Button btWaveStart;
     Timer tTimer, pTimer, imageTimer, lanchTimer;
 
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
@@ -310,6 +311,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Fragment gestureFragment;
     private Fragment maskEnforceFragment;
     private Fragment secondaryScreenFragment;
+    private Fragment touchModeFragment;
     private boolean qrCodeReceived = false;
     private boolean resumedFromGesture = false;
     private boolean isRecordNotSent = false;
@@ -410,6 +412,33 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initRecordUserTempService();
         initBluetoothPrinter();
         startBLEService();
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
+        if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
+            btWaveStart.setText(getResources().getString(R.string.touch_flow));
+            tvWaveMessage.setText(getResources().getString(R.string.home_with_lang_message));
+        } else {
+            tvWaveMessage.setText(getResources().getString(R.string.home_wave_message));
+            btWaveStart.setText(getResources().getString(R.string.start));
+        }
+        if (AppSettings.isEnableHandGesture()) {
+            btWaveStart.setVisibility(View.VISIBLE);
+            tvWaveMessage.setVisibility(View.VISIBLE);
+        } else {
+            btWaveStart.setVisibility(View.GONE);
+            tvWaveMessage.setVisibility(View.GONE);
+        }
+        btWaveStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
+                    launchTouchFragment();
+                } else {
+                    GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
+                    GestureController.getInstance().setCallback(true);
+                    onGestureDetected();
+                }
+            }
+        });
     }
 
     private void setClickListener() {
@@ -591,6 +620,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         tv_display_time = findViewById(R.id.tv_display_time);
         tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
+        btWaveStart = findViewById(R.id.bt_wave_start);
         tvVersionOnly = findViewById(R.id.tv_version_ir_only);
         tvVersionIr = findViewById(R.id.tv_version_ir);
         tvVersionIr.setText(Util.getVersionBuild());
@@ -604,6 +634,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_display_time.setTypeface(rubiklight);
         tvOnlyText.setTypeface(rubiklight);
         tvDisplayTimeOnly.setTypeface(rubiklight);
+        btWaveStart.setTypeface(rubiklight);
+        tvDisplayTimeOnly.setTypeface(rubiklight);
+        tvWaveMessage = findViewById(R.id.tv_message_wave);
+        tvWaveMessage.setTypeface(rubiklight);
         tvVersionOnly.setTypeface(rubiklight);
         tv_message = findViewById(R.id.tv_message);
         internetIndicatorImg = findViewById(R.id.img_internet_indicator);
@@ -3803,6 +3837,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    private void launchTouchFragment() {
+        if (isDestroyed() || isFinishing() || !isActivityResumed) return;
+        try {
+            touchModeFragment = new TouchModeFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("maskStatus", String.valueOf(maskStatus));
+            touchModeFragment.setArguments(bundle);
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.add(R.id.dynamic_fragment_frame_layout, touchModeFragment, "launchTouch");
+            transaction.addToBackStack("launchTouch");
+            transaction.commitAllowingStateLoss();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in launching Touch fragment");
+        }
+    }
+
     public void resumeFromGesture() {
         resumedFromGesture = true;
         runOnUiThread(() -> {
@@ -4203,6 +4253,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resetGesture();
     }
 
+    public void resetTouchModeGesture() {
+        touchModeGesture();
+    }
+
+    private void touchModeGesture() {
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
+        GestureController.getInstance().setCallback(true);
+        onGestureDetected();
+    }
+
     private void updateUIOnPrint(boolean displayCScreen, boolean aboveThreshold) {
         if (displayCScreen) {
             if (isDestroyed()) return;
@@ -4285,6 +4345,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             if (GestureController.getInstance().isLanguageUpdated()) {
                 GestureController.getInstance().setCallback(true);
+                GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
                 onGestureDetected();
             } else {
                 if (GestureController.getInstance().getLanguageSelectionIndex() != 0) {

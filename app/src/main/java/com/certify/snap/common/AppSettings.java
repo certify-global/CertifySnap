@@ -92,6 +92,7 @@ public class AppSettings {
     private static int timeAndAttendance = 0;
     private static boolean showVaccinationIndicator = false;
     private static boolean showNonVaccinationIndicator = false;
+    private static int TouchLessWaveSkip = 0;
     private static boolean retryScanEnabled = false;
 
     public static AppSettings getInstance() {

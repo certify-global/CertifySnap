@@ -174,6 +174,7 @@ public class GlobalParameters {
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
     public static final String APP_LAUNCH_TIME = "app_launch_time";
     public static final String Touchless_setting_id = "touchless_setting_id";
+    public static final String Touchless_wave_skip = "touchless_wave_skip";
 
     public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
 

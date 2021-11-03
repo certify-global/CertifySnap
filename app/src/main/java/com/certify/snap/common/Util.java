@@ -2293,7 +2293,7 @@ public class Util {
     }
 
     public static boolean isGestureDeviceConnected(Context context) {
-        boolean result = false;
+        boolean result = AppSettings.isEnableHandGesture();
         UsbManager mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
         HashMap<String, UsbDevice> deviceHashMap = mUsbManager.getDeviceList();
         Iterator<UsbDevice> iterator = deviceHashMap.values().iterator();
