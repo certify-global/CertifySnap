@@ -420,7 +420,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tvWaveMessage.setText(getResources().getString(R.string.home_wave_message));
             btWaveStart.setText(getResources().getString(R.string.start));
         }
-        if (AppSettings.isEnableHandGesture()) {
+        if (AppSettings.isEnableHandGesture() && !Util.isDeviceF10()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
         } else {

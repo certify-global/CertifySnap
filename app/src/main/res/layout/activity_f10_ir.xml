@@ -355,6 +355,34 @@
                 android:textSize="24sp"
                 android:visibility="visible" />
 
+            <Button
+                android:id="@+id/bt_wave_start"
+                style="@style/checkInButtonNumberStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/tv_display_time"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginEnd="@dimen/size_20"
+                android:layout_marginBottom="@dimen/size_40"
+                android:background="@drawable/btn_shape"
+                />
+
+            <TextView
+                android:id="@+id/tv_message_wave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/bt_wave_start"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_10"
+                android:layout_marginEnd="@dimen/size_20"
+                android:layout_marginBottom="@dimen/size_20"
+                android:gravity="center"
+                android:text="Wave to continue with gesture or press below button to Start the questionnaire."
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="@dimen/text_size_22" />
+
             <TextView
                 android:id="@+id/tv_version_ir"
                 android:layout_width="wrap_content"
