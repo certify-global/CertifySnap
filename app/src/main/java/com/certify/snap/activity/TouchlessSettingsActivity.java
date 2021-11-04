@@ -37,11 +37,11 @@ import java.util.HashMap;
 
 public class TouchlessSettingsActivity extends SettingsBaseActivity implements FlowListCallback {
     public static String TAG = "GestureActivity";
-    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition, enable_progress_bar, btn_save, tvWaveImage, gestureExitTv;
-    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice, radio_group_progress, radioGroupWaveImage, gestureExitRg;
+    TextView enableWave, waveOptions, enableWaveQuestions, enableMask, enableVoiceRecognition, enable_progress_bar, btn_save, tvWaveImage, gestureExitTv, tvTouchMode;
+    RadioGroup radioGroupWave, radioGroupQuestions, radioGroupMask, radioGroupVoice, radio_group_progress, radioGroupWaveImage, gestureExitRg, radioGroupTouch;
     Spinner spinnerQuestionSelector;
     RadioButton radioYesWave, radioNoWave, radioYesWaveQuestions, radioNoWaveQuestions, radioYesMask, radioNoMask,
-            radioYesVoice, radioNoVoice, radio_yes_progress, radio_no_progress, radioYesWaveImage, radioNoWaveImage, gestureExitRbYes, gestureExitRbNo;
+            radioYesVoice, radioNoVoice, radio_yes_progress, radio_no_progress, radioYesWaveImage, radioNoWaveImage, gestureExitRbYes, gestureExitRbNo, radioYesTouch, radioNoTouch;
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
@@ -62,7 +62,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         progressbarCheck();
         waveImageCheck();
         gestureExitCheck();
-
+        TouchModeCheck();
         getTouchlessSettingsFromDb();
     }
 
@@ -81,7 +81,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         radioGroupWave = findViewById(R.id.radio_group_wave);
         radioYesWave = findViewById(R.id.radio_yes_wave);
         radioNoWave = findViewById(R.id.radio_no_wave);
-
+        tvTouchMode = findViewById(R.id.tv_touch_mode);
         radioGroupQuestions = findViewById(R.id.radio_group_enable_questions);
         radioYesWaveQuestions = findViewById(R.id.radio_yes_wave_questions);
         radioNoWaveQuestions = findViewById(R.id.radio_no_wave_questions);
@@ -93,6 +93,10 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         gestureExitRg = findViewById(R.id.gesture_exit_rg);
         gestureExitRbYes = findViewById(R.id.gesture_exit_rb_yes);
         gestureExitRbNo = findViewById(R.id.gesture_exit_rb_no);
+
+        radioGroupTouch = findViewById(R.id.radio_group_touch);
+        radioYesTouch = findViewById(R.id.radio_yes_touch);
+        radioNoTouch = findViewById(R.id.radio_no_touch);
 
         radioGroupVoice = findViewById(R.id.radio_group_voice_recognition);
         radioYesVoice = findViewById(R.id.radio_yes_voice_recognition);
@@ -119,7 +123,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         enable_progress_bar.setTypeface(rubikLight);
         tvWaveImage.setTypeface(rubikLight);
         gestureExitTv.setTypeface(rubikLight);
-
+        tvTouchMode.setTypeface(rubikLight);
         sharedPreferences = Util.getSharedPreferences(this);
         gestureWorkFlow = AppSettings.getGestureWorkFlow();
         getFlowListAPI();
@@ -170,7 +174,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             if (checkedId == R.id.radio_yes_wave_questions) {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, true);
                 spinnerQuestionSelector.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 spinnerQuestionSelector.setVisibility(View.GONE);
                 Util.writeBoolean(sharedPreferences, GlobalParameters.WAVE_QUESTIONS, false);
             }
@@ -193,6 +197,21 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             } else {
                 Util.writeBoolean(sharedPreferences, GlobalParameters.MASK_ENFORCEMENT, false);
                 maskEditLayout.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void TouchModeCheck() {
+        if (sharedPreferences.getBoolean(GlobalParameters.ENABLE_TOUCH_MODE, false)) {
+            radioYesTouch.setChecked(true);
+        } else {
+            radioNoTouch.setChecked(true);
+        }
+        radioGroupTouch.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_yes_touch) {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_TOUCH_MODE, true);
+            } else {
+                Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_TOUCH_MODE, false);
             }
         });
     }

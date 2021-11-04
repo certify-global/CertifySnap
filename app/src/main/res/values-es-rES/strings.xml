@@ -513,8 +513,6 @@
     <string name="Start">Comienzo</string>
     <string name="lang_wave_message">Lanzar el cuestionario</string>
     <string name="lang_choose_your">Elija su idioma preferido</string>
-    <string name="wave_yes">&lt; SI </string>
-    <string name="wave_no"> NO &gt; </string>
     <string name="scan_type">Tipo de scaneado</string>
     <string name="scan_type_quick">Rápido</string>
     <string name="scan_type_standard">Estándar</string>
@@ -535,9 +533,8 @@
     <string name="gesture_exit_default">Comuníquese con el administrador</string>
     <string name="gesture_exit_hint">Mensaje para mostrar al salir de un resultado negativo</string>
     <string name="gesture_timeout_msg">Mueva su mano hacia abajo para pasar a la siguiente pregunta	</string>
-
     <string name="listening">Escuchando…</string>
-
+    <string name="enable_touch_mode">Habilitar el modo táctil</string>
     <!--member management page-->
     <string name="failed_member">Miembro fallido:</string>
     <string name="member">Miembro:</string>

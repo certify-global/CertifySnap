@@ -543,6 +543,7 @@
     <string name="gesture_exit_hint">Message to display on exit of negative outcome</string>
     <string name="gesture_timeout_msg">Please move Your Hand down to proceed to the next question</string>
     <string name="listening">Listening...</string>
+    <string name="enable_touch_mode">Enable Touch Mode</string>
 
     <!--member management page-->
     <string name="failed_member">Failed Member:</string>

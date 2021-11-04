@@ -1030,6 +1030,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 if (questionDataDbList != null) {
                     for (int i = 0; i < questionDataDbList.size(); i++) {
                         QuestionDataDb questionDataDb = questionDataDbList.get(i);
+                        if (questionDataDb.questionName.isEmpty()) continue;
                         QuestionData questionData = new QuestionData();
                         questionData.id = questionDataDb.id;
                         questionData.institutionId = questionDataDb.institutionId;
@@ -1068,7 +1069,8 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         waveHandTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                waveHandTimer.cancel();
+                if (waveHandTimer != null)
+                    waveHandTimer.cancel();
                 if (listener != null) {
                     listener.onWaveHandTimeout();
                 }

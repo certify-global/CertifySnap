@@ -528,7 +528,7 @@
     <string name="gesture_exit_hint">Message à afficher à la sortie du résultat négatif</string>
     <string name="gesture_timeout_msg">Veuillez déplacer votre main vers le bas pour passer à la question suivante</string>
     <string name="listening">Écoute...</string>
-
+    <string name="enable_touch_mode">Activer le mode tactile</string>
 
     <string name="failed_member">Membre ayant échoué:</string>
     <string name="member">Membre:</string>

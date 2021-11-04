@@ -408,16 +408,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initBluetoothPrinter();
         startBLEService();
         GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
-        if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
-            btWaveStart.setText(getResources().getString(R.string.touch_flow));
-            tvWaveMessage.setText(getResources().getString(R.string.home_with_lang_message));
-        } else {
-            tvWaveMessage.setText(getResources().getString(R.string.home_wave_message));
-            btWaveStart.setText(getResources().getString(R.string.start));
-        }
-        if (AppSettings.isEnableHandGesture()) {
+        if (AppSettings.isEnableTouchMode()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
+            if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
+                btWaveStart.setText(getResources().getString(R.string.touch_flow));
+                tvWaveMessage.setText(getResources().getString(R.string.home_with_lang_message));
+            } else {
+                tvWaveMessage.setText(getResources().getString(R.string.home_wave_message));
+                btWaveStart.setText(getResources().getString(R.string.start));
+            }
         } else {
             btWaveStart.setVisibility(View.GONE);
             tvWaveMessage.setVisibility(View.GONE);

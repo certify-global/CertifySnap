@@ -46,6 +46,7 @@ public class TouchModeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_touch_mode, container, false);
         this.view = view;
+        DeviceSettingsController.getInstance().getLanguagesListFromDb();
         initView();
         //sharedPreferences = Util.getSharedPreferences(this.getContext());
         languageSetting();
@@ -118,10 +119,11 @@ public class TouchModeFragment extends Fragment {
         languageCode = AppSettings.getLanguageType();
         languageCode = DeviceSettingsController.getInstance().getLanguageToUpdate();
         List<LanguageData> languageDataList = DeviceSettingsController.getInstance().getLanguageDataList();
-        for (LanguageData languageData : languageDataList) {
-            SelectedLag(languageData.languageCode, languageData);
+        if (languageDataList != null) {
+            for (LanguageData languageData : languageDataList) {
+                SelectedLag(languageData.languageCode, languageData);
+            }
         }
-
     }
 
     private void SelectedLag(String lagType, LanguageData languageData) {

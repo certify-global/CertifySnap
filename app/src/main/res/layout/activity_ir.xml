@@ -297,8 +297,7 @@
                 android:layout_marginStart="@dimen/size_20"
                 android:layout_marginEnd="@dimen/size_20"
                 android:layout_marginBottom="@dimen/size_40"
-                android:background="@drawable/btn_shape"
-                 />
+                android:background="@drawable/btn_shape" />
 
             <TextView
                 android:id="@+id/tv_message_wave"
