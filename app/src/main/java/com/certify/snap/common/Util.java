@@ -1819,7 +1819,6 @@ public class Util {
             } else {
                 obj.put("groupId", "0");
             }
-            obj.put ("fromDate", Util.getUTCDate(""));
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 
