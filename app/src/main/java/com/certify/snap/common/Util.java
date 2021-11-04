@@ -1531,6 +1531,8 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, touchlessSettings.maskEnforceText);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, touchlessSettings.exitOnNegativeOutcome.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, touchlessSettings.messageForNegativeOutcome);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_TOUCH_MODE, touchlessSettings.enableTouchMode.equals("1"));
+
                     }
 
                     /*//Add settings to DB

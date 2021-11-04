@@ -12,14 +12,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/size_30"
-        android:textColor="@color/colorRed"
-        android:textSize="25dp"
         android:gravity="center"
         android:padding="@dimen/size_20"
-        android:text= "@string/wear_a_mask"
+        android:text="@string/wear_a_mask"
+        android:textColor="@color/colorRed"
+        android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bt_wave_start_mask"
+        style="@style/checkInButtonNumberStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/size_20"
+        android:layout_marginEnd="@dimen/size_20"
+        android:layout_marginBottom="@dimen/size_50"
+        android:background="@drawable/btn_shape"
+        android:text="@string/start"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

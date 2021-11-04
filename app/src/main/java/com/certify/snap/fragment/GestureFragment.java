@@ -228,8 +228,8 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                 break;
             case "fr":
                 if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
-                    handNoText.setText(getString(R.string.wave_yes_fr).replace("< ", ""));
-                    handYesText.setText(getString(R.string.wave_no_fr).replace(" >", ""));
+                    handNoText.setText(getString(R.string.wave_yes_fr).replace("<", ""));
+                    handYesText.setText(getString(R.string.wave_no_fr).replace(">", ""));
                 } else {
                     handNoText.setText(getString(R.string.wave_yes_fr));
                     handYesText.setText(getString(R.string.wave_no_fr));
@@ -243,6 +243,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                     handNoText.setText(getString(R.string.wave_yes_es));
                     handYesText.setText(getString(R.string.wave_no_es));
                 }
+                break;
         }
     }
 
