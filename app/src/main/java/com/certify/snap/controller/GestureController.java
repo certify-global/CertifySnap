@@ -791,6 +791,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public void sendAnswers(boolean negativeAnswer) {
+//        CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
         List<QuestionData> questionDataList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
