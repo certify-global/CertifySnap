@@ -515,12 +515,8 @@
     <string name="Start">Start</string>
     <string name="lang_wave_message">Launch the questionnaire</string>
     <string name="lang_choose_your">Choose your Preferred Language</string>
-    <string name="wave_yes_en" translatable="false">&lt; YES </string>
-    <string name="wave_no_en" translatable="false"> NO &gt; </string>
-    <string name="wave_yes_fr" translatable="false">&lt;OUI</string>
-    <string name="wave_no_fr" translatable="false">NON&gt;</string>
-    <string name="wave_yes_es" translatable="false">&lt; SI </string>
-    <string name="wave_no_es" translatable="false"> NO &gt; </string>
+    <string name="wave_yes">&lt; YES </string>
+    <string name="wave_no"> NO &gt; </string>
 
     <string name="scan_type">Scan Type</string>
     <string name="scan_type_quick">Quick</string>

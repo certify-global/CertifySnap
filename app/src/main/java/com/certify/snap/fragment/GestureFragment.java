@@ -219,29 +219,29 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         switch (langType) {
             case "en":
                 if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
-                    handNoText.setText(getString(R.string.wave_yes_en).replace("< ", ""));
-                    handYesText.setText(getString(R.string.wave_no_en).replace(" >", ""));
+                    handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
                 } else {
-                    handNoText.setText(getString(R.string.wave_yes_en));
-                    handYesText.setText(getString(R.string.wave_no_en));
+                    handNoText.setText(getString(R.string.wave_yes));
+                    handYesText.setText(getString(R.string.wave_no));
                 }
                 break;
             case "fr":
                 if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
-                    handNoText.setText(getString(R.string.wave_yes_fr).replace("<", ""));
-                    handYesText.setText(getString(R.string.wave_no_fr).replace(">", ""));
+                    handNoText.setText(getString(R.string.wave_yes).replace("<", ""));
+                    handYesText.setText(getString(R.string.wave_no).replace(">", ""));
                 } else {
-                    handNoText.setText(getString(R.string.wave_yes_fr));
-                    handYesText.setText(getString(R.string.wave_no_fr));
+                    handNoText.setText(getString(R.string.wave_yes));
+                    handYesText.setText(getString(R.string.wave_no));
                 }
                 break;
             case "es":
                 if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
-                    handNoText.setText(getString(R.string.wave_yes_es).replace("< ", ""));
-                    handYesText.setText(getString(R.string.wave_no_es).replace(" >", ""));
+                    handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
                 } else {
-                    handNoText.setText(getString(R.string.wave_yes_es));
-                    handYesText.setText(getString(R.string.wave_no_es));
+                    handNoText.setText(getString(R.string.wave_yes));
+                    handYesText.setText(getString(R.string.wave_no));
                 }
                 break;
         }
