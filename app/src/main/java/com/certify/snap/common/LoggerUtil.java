@@ -53,12 +53,13 @@ public class LoggerUtil {
         Date date = new Date();
         String dirPath = Environment.getExternalStorageDirectory() + File.separator + "CertifySnap" + File.separator + "Log" + File.separator;
         String fileName = dirPath +  filename + ".log";
-        File file = new File(fileName);
+        File dir = new File(dirPath);
+        File file = new File (fileName);
         //Util.writeString(Util.getSharedPreferences(context), GlobalParameters.LogFilePath, fileName); //TODO1: Optimize
 
         //clears a file
-        if (!file.exists()) {
-            file.mkdirs();
+        if (!dir.exists()) {
+            dir.mkdirs();
         } else {
             if (file.length()/(1024 * 1024) > 10) {
                 file.delete();
@@ -74,7 +75,7 @@ public class LoggerUtil {
             String currentLine = null;
 
             while ((currentLine = reader.readLine()) != null) {
-                if(currentLine.contains("onFlyCompress") || currentLine.contains("expire")) continue;
+                if(currentLine.contains("skia") || currentLine.contains("expire")) continue;
                 result.append(currentLine);
                 result.append("\n");
             }
