@@ -509,9 +509,15 @@
     <string name="send_logs">Send Logs</string>
     <string name="wave_instructions">Enter wave indicator instructions</string>
     <string name="mask_enforce_instructions">Enter mask enforce text</string>
-
+    <string name="home_with_lang_message">Wave to continue with gesture or click below to select the language for touch flow</string>
+    <string name="home_wave_message">Wave to continue with gesture or press below button to Start the questionnaire</string>
+    <string name="touch_flow">Touch Flow</string>
+    <string name="Start">Start</string>
+    <string name="lang_wave_message">Launch the questionnaire</string>
+    <string name="lang_choose_your">Choose your Preferred Language</string>
     <string name="wave_yes">&lt; YES </string>
     <string name="wave_no"> NO &gt; </string>
+
     <string name="scan_type">Scan Type</string>
     <string name="scan_type_quick">Quick</string>
     <string name="scan_type_standard">Standard</string>
@@ -533,6 +539,7 @@
     <string name="gesture_exit_hint">Message to display on exit of negative outcome</string>
     <string name="gesture_timeout_msg">Please move Your Hand down to proceed to the next question</string>
     <string name="listening">Listening...</string>
+    <string name="enable_touch_mode">Enable Touch Mode</string>
 
     <!--member management page-->
     <string name="failed_member">Failed Member:</string>
@@ -576,7 +583,7 @@
     <string name="enable_pro_setting">Enable Pro Settings</string>
     <string name="led_brightness">LED Brightness:</string>
     <string name="enable_local_server">Enable Local Server:</string>
-    
+
     <string name="serial_number">SERIAL NUMBER:</string>
     <string name="imei_number">IMEI NUMBER:</string>
     <string name="close_button">Close</string>
@@ -625,8 +632,8 @@
     <string name="all_rect">allRect</string>
     <string name="select_date">Please select Date</string>
     <string name="select_date_range">Please select the date range of the exported data. The location of the exported file is /sdcard/offline/record/</string>
-    <string name="start_time" >Start Time(year/month): </string>
-    <string name="end_time" >End Time(year/month): </string>
+    <string name="start_time">Start Time(year/month): </string>
+    <string name="end_time">End Time(year/month): </string>
     <string name="set_temp_text">Set temperature threshold for display</string>
     <string name="enter_password_text">Enter Password</string>
     <string name="enable_voice_recognition">Enable voice recognition</string>
@@ -725,5 +732,7 @@
     <string name="retry">Retry</string>
     <string name="retry_scan_title">Display retry option on face scan</string>
     <string name="debug_mode">Debug Mode</string>
+    <string name="face_not_matched_msg">Potential face match didn\'t happen. Please retry</string>
+    <string name="face_not_detected">Face not detected, please click on Retry</string>
 
 </resources>

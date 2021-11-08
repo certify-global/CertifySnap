@@ -97,4 +97,7 @@ public class ScanViewSettings {
     @SerializedName("audioForHighTemperature")
     public String audioForHighTemperature = "";
 
+    @Ignore
+    @SerializedName("retryOptionFaceScan")
+    public String retryOptionFaceScan = "";
 }

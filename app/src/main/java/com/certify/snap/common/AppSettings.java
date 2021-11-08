@@ -42,6 +42,7 @@ public class AppSettings {
     private static float temperatureCompensation = 0;
     private static boolean enableVoice = false;
     private static boolean enableHandGesture = false;
+    private static boolean enableTouchMode = false;
     private static float displayTemperatureThreshold = 0;
     private static boolean setTemperatureThreshold = false;
     private static boolean printUsbEnabled = false;
@@ -92,6 +93,7 @@ public class AppSettings {
     private static int timeAndAttendance = 0;
     private static boolean showVaccinationIndicator = false;
     private static boolean showNonVaccinationIndicator = false;
+    private static int TouchLessWaveSkip = 0;
     private static boolean retryScanEnabled = false;
     private static boolean debugModeEnabled = false;
 
@@ -131,6 +133,7 @@ public class AppSettings {
         temperatureCompensation = sharedPreferences.getFloat(GlobalParameters.COMPENSATION, 0);
         enableVoice = sharedPreferences.getBoolean(GlobalParameters.VISUAL_RECOGNITION, false);
         enableHandGesture = sharedPreferences.getBoolean(GlobalParameters.HAND_GESTURE, false);
+        enableTouchMode = sharedPreferences.getBoolean(GlobalParameters.ENABLE_TOUCH_MODE, false);
         displayTemperatureThreshold = sharedPreferences.getFloat(GlobalParameters.DISPLAY_TEMP_THRESHOLD, 0);
         setTemperatureThreshold = sharedPreferences.getBoolean(GlobalParameters.TEMPERATURE_THRESHOLD, false);
         printUsbEnabled = sharedPreferences.getBoolean(GlobalParameters.TOSHIBA_USB_PRINTER, false);
@@ -335,7 +338,9 @@ public class AppSettings {
     public static boolean isEnableHandGesture() {
         return enableHandGesture;
     }
-
+    public static boolean isEnableTouchMode() {
+        return enableTouchMode;
+    }
     public static float getDisplayTemperatureThreshold() {
         return displayTemperatureThreshold;
     }

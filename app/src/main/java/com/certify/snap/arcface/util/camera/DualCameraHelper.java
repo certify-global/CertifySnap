@@ -12,6 +12,8 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 
+import com.certify.snap.common.Util;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +131,9 @@ public class DualCameraHelper implements Camera.PreviewCallback {
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setPreviewFormat(ImageFormat.NV21);
 
-                if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
+                if (Util.isDeviceF10()) {
+                    parameters.setPreviewSize(640, 640);
+                } else if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
                     parameters.setPreviewSize(640, 480);
                 } else {
                     //预览大小设置

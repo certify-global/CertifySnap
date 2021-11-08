@@ -28,9 +28,9 @@ import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
+import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
-import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.MemberSyncService;
@@ -45,7 +45,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 12;
+    public static final int DB_VERSION = 14;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -496,6 +496,15 @@ public class DatabaseController {
             handleDBException(e);
         }
     }
+    public void insertWaveSkipList(List<WaveSkipDb> waveLogicSkipDb) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertSkipLogicList(waveLogicSkipDb);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
 
     public List<GestureQuestionsDb> getGestureQuestionsListFromDb() {
         try {
@@ -507,11 +516,30 @@ public class DatabaseController {
         }
         return new ArrayList<>();
     }
+    public WaveSkipDb getwaveSkipDb(String id,String value) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getLogicSkipListDb( id, value);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new WaveSkipDb();
+    }
 
     public void deleteGestureQuestionsListFromDb() {
         try {
             if (databaseStore != null) {
                 databaseStore.deleteAllGestureQuestionList();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public void deleteWaveLogicSkipListFromDb() {
+        try {
+            if (databaseStore != null) {
+                databaseStore.deleteAllLogicWaveSkipList();
             }
         } catch (SQLiteException e){
             handleDBException(e);

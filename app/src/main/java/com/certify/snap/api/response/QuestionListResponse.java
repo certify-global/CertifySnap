@@ -16,6 +16,6 @@ public class QuestionListResponse {
     public String responseMessage;
 
     @SerializedName("responseData")
-    public List<QuestionData> questionList;
+    public GetWaveQuestionList responseData;
 
 }

@@ -56,4 +56,7 @@ public class TouchlessSettings {
     @SerializedName("waveIndicatorInstructions")
     public String waveIndicatorInstructions = "Hold your palm on side of the screen where indicate to answer. If you have to start over, hold both hands.";
 
+    @Ignore
+    @SerializedName("enableTouchMode")
+    public String enableTouchMode = "0";
 }

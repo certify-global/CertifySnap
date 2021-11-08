@@ -42,6 +42,7 @@ public class CameraController {
     private UserExportedData data = null;
     private int requestId = -1;
     private UserExportedData userExportedData = null;
+    private Context context;
 
     public enum ScanState {
         IDLE,
@@ -103,7 +104,8 @@ public class CameraController {
         return mInstance;
     }
 
-    public void init() {
+    public void init(Context context) {
+        this.context = context;
         clearData();
         faceParameters = new FaceParameters();
         if (AppSettings.isEnableHandGesture() || AppSettings.isEnableVoice()) {
@@ -393,6 +395,12 @@ public class CameraController {
             result = true;
         }
         return result;
+    }
+
+    public void updateControllers(List<RegisteredMembers> member, UserExportedData data) {
+        CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
+        AccessCardController.getInstance().processUnlockDoor(member);
+        AccessCardController.getInstance().sendAccessLogValid(context, 0.0f, data);
     }
 
     public void clearData() {

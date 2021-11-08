@@ -507,9 +507,12 @@
     <string name="send_logs">Enviar registros</string>
     <string name="wave_instructions">Ingrese las instrucciones del indicador de ola</string>
     <string name="mask_enforce_instructions">Ingrese el texto de aplicación de máscara</string>
-
-    <string name="wave_yes">&lt; SI </string>
-    <string name="wave_no"> NO &gt; </string>
+    <string name="home_with_lang_message">Salude para continuar con el gesto o haga clic a continuación para seleccionar el idioma para el flujo táctil</string>
+    <string name="home_wave_message">Salude para continuar con el gesto o presione el botón de abajo para iniciar el cuestionario</string>
+    <string name="touch_flow">Toque el flujo</string>
+    <string name="Start">Comienzo</string>
+    <string name="lang_wave_message">Lanzar el cuestionario</string>
+    <string name="lang_choose_your">Elija su idioma preferido</string>
     <string name="scan_type">Tipo de scaneado</string>
     <string name="scan_type_quick">Rápido</string>
     <string name="scan_type_standard">Estándar</string>
@@ -530,9 +533,8 @@
     <string name="gesture_exit_default">Comuníquese con el administrador</string>
     <string name="gesture_exit_hint">Mensaje para mostrar al salir de un resultado negativo</string>
     <string name="gesture_timeout_msg">Mueva su mano hacia abajo para pasar a la siguiente pregunta	</string>
-
     <string name="listening">Escuchando…</string>
-
+    <string name="enable_touch_mode">Habilitar el modo táctil</string>
     <!--member management page-->
     <string name="failed_member">Miembro fallido:</string>
     <string name="member">Miembro:</string>
@@ -724,5 +726,7 @@
     <string name="retry">Rever</string>
     <string name="retry_scan_title">Mostrar la opción de reintento en el escaneo facial</string>
     <string name="debug_mode">Modo de depuración</string>
+    <string name="face_not_matched_msg">La posible coincidencia de rostros no sucedió. Por favor, intenta de nuevo</string>
+    <string name="face_not_detected">Rostro no detectado, haga clic en Reintentar</string>
 
 </resources>

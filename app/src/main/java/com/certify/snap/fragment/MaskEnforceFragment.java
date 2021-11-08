@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.certify.snap.R;
@@ -20,6 +21,7 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
 
     private Activity mActivity;
     private TextView maskEnforceDescription;
+    private Button btStartMask;
     private View view;
     private Typeface rubiklight;
     private Snackbar snackbar;
@@ -39,12 +41,29 @@ public class MaskEnforceFragment extends Fragment implements GestureController.G
 
         initView();
         GestureController.getInstance().startWaveHandTimer();
+        if (GestureController.getInstance().getAnswerType() == GestureController.AnswerType.Touch) {
+            btStartMask.setVisibility(View.VISIBLE);
+            GestureController.getInstance().cancelWaveHandTimer();
+        } else btStartMask.setVisibility(View.GONE);
+        btStartMask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               // GestureController.getInstance().cancelWaveHandTimer();
+                mActivity.runOnUiThread(() -> {
+                    GestureController.getInstance().setGestureMECallbackListener(null);
+                    IrCameraActivity activity = (IrCameraActivity) mActivity;
+                    if (activity != null) {
+                        activity.resumeFromMaskEnforcement();
+                    }
+                });
+            }
+        });
         return view;
     }
 
     private void initView() {
         maskEnforceDescription = view.findViewById(R.id.mask_enforce_description);
-
+        btStartMask = view.findViewById(R.id.bt_wave_start_mask);
         rubiklight = Typeface.createFromAsset(mActivity.getAssets(),
                 "rubiklight.ttf");
         maskEnforceDescription.setTypeface(rubiklight);

@@ -41,9 +41,17 @@ public class ConfigUtil {
 
     public static DetectFaceOrientPriority getFtOrient(Context context) {
         if (context == null) {
-            return DetectFaceOrientPriority.ASF_OP_90_ONLY;
+            if (Util.isDeviceF10()) {
+                return DetectFaceOrientPriority.ASF_OP_ALL_OUT;
+            } else {
+                return DetectFaceOrientPriority.ASF_OP_90_ONLY;
+            }
         }
         SharedPreferences sharedPreferences = context.getSharedPreferences(APP_NAME, Context.MODE_PRIVATE);
-        return DetectFaceOrientPriority.valueOf(sharedPreferences.getString(FT_ORIENT, DetectFaceOrientPriority.ASF_OP_90_ONLY.name()));
+        DetectFaceOrientPriority detectFaceOrientPriority = DetectFaceOrientPriority.valueOf(sharedPreferences.getString(FT_ORIENT, DetectFaceOrientPriority.ASF_OP_90_ONLY.name()));
+        if (Util.isDeviceF10()) {
+            detectFaceOrientPriority = DetectFaceOrientPriority.valueOf(sharedPreferences.getString(FT_ORIENT, DetectFaceOrientPriority.ASF_OP_ALL_OUT.name()));
+        }
+        return detectFaceOrientPriority;
     }
 }

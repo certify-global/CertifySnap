@@ -70,8 +70,8 @@ public class ConfirmationScreenFragment extends Fragment {
         if (compareResultValues != null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
             user_img.setVisibility(View.VISIBLE);
             compareResult();
-        } else if (CameraController.getInstance().isFaceNotMatchedOnRetry()) {
-            showSnackBarMessage("Potential face match didn't happen. Please retry");
+        } else if (CameraController.getInstance().isFaceNotMatchedOnRetry() && !Util.isDeviceF10()) {
+            showSnackBarMessage(getString(R.string.face_not_matched_msg));
         } else {
             onAccessCardMatch();
         }

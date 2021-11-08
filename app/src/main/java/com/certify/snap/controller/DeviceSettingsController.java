@@ -41,6 +41,16 @@ public class DeviceSettingsController implements GetLanguagesCallback {
     private String languageToUpdate = "";
     private List<LanguageData> languageDataList = null;
 
+    public String getSelectedLang() {
+        return selectedLang;
+    }
+
+    public void setSelectedLang(String selectedLang) {
+        this.selectedLang = selectedLang;
+    }
+
+    private String selectedLang = "";
+
     public interface GetLanguagesListener {
         void onGetLanguages();
     }

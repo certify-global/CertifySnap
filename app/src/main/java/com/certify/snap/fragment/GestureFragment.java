@@ -162,6 +162,19 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
         titleView.setTypeface(rubiklight);
         handNoText.setTypeface(rubiklight);
         handYesText.setTypeface(rubiklight);
+        handYesText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GestureController.getInstance().updateOnWave("N");
+            }
+        });
+        handNoText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GestureController.getInstance().updateOnWave("Y");
+
+            }
+        });
     }
 
     private void handleQuestionnaireByVoice() {
@@ -176,6 +189,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onDestroy() {
         super.onDestroy();
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
@@ -187,8 +201,50 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     }
 
     private void uiUpdate() {
-        titleView.setText(AppSettings.getGestureMessage());
-        titleView.setVisibility(View.VISIBLE);
+        if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+            handNoText.setBackgroundResource(R.drawable.btn_shape);
+            handYesText.setBackgroundResource(R.drawable.btn_shape);
+            handNoText.setTextColor(getResources().getColor(R.color.colorWhite));
+            handYesText.setTextColor(getResources().getColor(R.color.colorWhite));
+            titleView.setVisibility(View.INVISIBLE);
+
+        } else {
+            titleView.setText(AppSettings.getGestureMessage());
+            titleView.setVisibility(View.VISIBLE);
+        }
+        setLangBaseYesNO(GestureController.getInstance().getQaLangType());
+    }
+
+    private void setLangBaseYesNO(String langType) {
+        switch (langType) {
+            case "en":
+                if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+                    handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
+                } else {
+                    handNoText.setText(getString(R.string.wave_yes));
+                    handYesText.setText(getString(R.string.wave_no));
+                }
+                break;
+            case "fr":
+                if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+                    handNoText.setText(getString(R.string.wave_yes).replace("<", ""));
+                    handYesText.setText(getString(R.string.wave_no).replace(">", ""));
+                } else {
+                    handNoText.setText(getString(R.string.wave_yes));
+                    handYesText.setText(getString(R.string.wave_no));
+                }
+                break;
+            case "es":
+                if (GestureController.AnswerType.Touch == GestureController.getInstance().getAnswerType()) {
+                    handNoText.setText(getString(R.string.wave_yes).replace("< ", ""));
+                    handYesText.setText(getString(R.string.wave_no).replace(" >", ""));
+                } else {
+                    handNoText.setText(getString(R.string.wave_yes));
+                    handYesText.setText(getString(R.string.wave_no));
+                }
+                break;
+        }
     }
 
     //-----> Voice code
@@ -269,6 +325,7 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
                     return;
                 }
                 covidQuestionsText.setText(question);
+                //     GestureController.getInstance().getWaveSkip();
                 int questionsCount = GestureController.getInstance().getQuestionsSize();
                 if (AppSettings.isGestureProgressEnabled()) {
                     if (questionsCount == 2) {

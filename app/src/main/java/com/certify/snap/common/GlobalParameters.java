@@ -159,6 +159,7 @@ public class GlobalParameters {
     public static final String PRO_DEVICE_BOOT_TIME = "ProDeviceBootTime";
     public static final String GESTURE_EXIT_NEGATIVE_OP = "gestureExitNegativeOp";
     public static final String GESTURE_EXIT_CONFIRM_TEXT = "gestureExitConfirmText";
+    public static final String ENABLE_TOUCH_MODE = "enableTouchMode";
 
     public static final String Temperature = "temperature";
     public static final String Temphint = "temphint";
@@ -174,6 +175,7 @@ public class GlobalParameters {
     public static final String LOCAL_SERVER_SETTINGS = "local_server_settings";
     public static final String APP_LAUNCH_TIME = "app_launch_time";
     public static final String Touchless_setting_id = "touchless_setting_id";
+    public static final String Touchless_wave_skip = "touchless_wave_skip";
 
     public static final String TEMPERATURE_THRESHOLD = "temperature_threshold";
 

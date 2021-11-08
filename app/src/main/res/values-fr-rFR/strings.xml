@@ -501,10 +501,13 @@
     <string name="send_logs">Envoyer des journaux</string>
     <string name="wave_instructions">Entrez les instructions de l\'indicateur de vague</string>
     <string name="mask_enforce_instructions">Entrez le masque appliquer le texte</string>
-
-    <string name="wave_yes">&lt;OUI</string>
-    <string name="wave_no">NON&gt;</string>
-    <string name="scan_type">Type de scan</string>
+    <string name="home_with_lang_message">Agitez pour continuer avec le geste ou cliquez ci-dessous pour sélectionner la langue du flux tactile</string>
+    <string name="home_wave_message">Agitez pour continuer avec le geste ou appuyez sur le bouton ci-dessous pour démarrer le questionnaire</string>
+    <string name="touch_flow">Flux tactile</string>
+    <string name="Start">Début</string>
+    <string name="lang_wave_message">Lancer le questionnaire</string>
+    <string name="lang_choose_your">Choisissez votre langue préférée</string>
+        <string name="scan_type">Type de scan</string>
     <string name="scan_type_quick">Rapide</string>
     <string name="scan_type_standard">la norme</string>
 
@@ -525,7 +528,7 @@
     <string name="gesture_exit_hint">Message à afficher à la sortie du résultat négatif</string>
     <string name="gesture_timeout_msg">Veuillez déplacer votre main vers le bas pour passer à la question suivante</string>
     <string name="listening">Écoute...</string>
-
+    <string name="enable_touch_mode">Activer le mode tactile</string>
 
     <string name="failed_member">Membre ayant échoué:</string>
     <string name="member">Membre:</string>
@@ -717,5 +720,7 @@
     <string name="retry">Réessayez</string>
     <string name="retry_scan_title">Afficher l\'option de nouvelle tentative sur l\'analyse du visage</string>
     <string name="debug_mode">Modo de depuración</string>
+    <string name="face_not_matched_msg">Le match face potentiel n\'a pas eu lieu. Veuillez réessayer</string>
+    <string name="face_not_detected">Visage non détecté, veuillez cliquer sur Réessayer</string>
 
 </resources>
