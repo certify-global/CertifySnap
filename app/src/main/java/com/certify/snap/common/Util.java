@@ -1371,6 +1371,7 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.LivingType, scanViewSettings.enableLiveness.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, scanViewSettings.temperatureNormal);
                         Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, scanViewSettings.temperatureHigh);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.RETRY_SCAN, scanViewSettings.retryOptionFaceScan.equals("1"));
 
                         if (scanViewSettings.audioForNormalTemperature != null && !scanViewSettings.audioForNormalTemperature.isEmpty()) {
                             SoundController.getInstance().saveAudioFile(scanViewSettings.audioForNormalTemperature, "Normal.mp3");
