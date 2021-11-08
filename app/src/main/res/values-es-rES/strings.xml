@@ -725,6 +725,7 @@
     <string name="show_non_vaccination_indicator">Mostrar indicador de no vacunación</string>
     <string name="retry">Rever</string>
     <string name="retry_scan_title">Mostrar la opción de reintento en el escaneo facial</string>
+    <string name="face_not_matched_msg">La posible coincidencia de rostros no sucedió. Por favor, intenta de nuevo</string>
     <string name="face_not_detected">Rostro no detectado, haga clic en Reintentar</string>
 
 </resources>

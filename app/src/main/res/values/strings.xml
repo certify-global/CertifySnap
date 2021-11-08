@@ -737,7 +737,7 @@
     <string name="show_non_vaccination_indicator">Show Non Vaccination Indicator</string>
     <string name="retry">Retry</string>
     <string name="retry_scan_title">Display retry option on face scan</string>
+    <string name="face_not_matched_msg">Potential face match didn\'t happen. Please retry</string>
     <string name="face_not_detected">Face not detected, please click on Retry</string>
-
 
 </resources>

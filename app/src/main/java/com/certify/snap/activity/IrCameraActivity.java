@@ -287,7 +287,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private AutofitTextView tvOnlyText;
     int memberCount;
     int totalCount;
-    RelativeLayout snack_layout;
+    private RelativeLayout snack_layout, cameraPreviewLayout;
     private int scanMode = 0;
     private boolean isHomeViewEnabled;
     private List<FaceInfo> searchFaceInfoList = new ArrayList<>();
@@ -344,7 +344,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 "rubiklight.ttf");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_ir);
+        if (Util.isDeviceF10()) {
+            setContentView(R.layout.activity_f10_ir);
+        } else {
+            setContentView(R.layout.activity_ir);
+        }
 
         instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
@@ -357,7 +361,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Application.getInstance().addActivity(this);
         initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
-        CameraController.getInstance().init();
+        CameraController.getInstance().init(this);
         CameraController.getInstance().startProDeviceInitTimer(this);
         //initAccessControl();
         initNfc();
@@ -373,7 +377,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 CameraController.getInstance().setAppExitTriggered(true);
                 Logger.debug(TAG, "onLongClick", "Launch Login activity");
                 progressDialog = ProgressDialog.show(IrCameraActivity.this, "", getString(R.string.launch_settings_msg));
-                if (CameraController.getInstance().getScanState() == CameraController.ScanState.FACIAL_SCAN) {
+                if ((CameraController.getInstance().getScanState() == CameraController.ScanState.FACIAL_SCAN) &&
+                    !Util.isDeviceF10()) {
                     return false;
                 }
                 Intent loginIt = new Intent(IrCameraActivity.this, LoginActivity.class);
@@ -408,7 +413,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initBluetoothPrinter();
         startBLEService();
         GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
-        if (AppSettings.isEnableTouchMode()) {
+        if (AppSettings.isEnableTouchMode() && !Util.isDeviceF10()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
             if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
@@ -645,6 +650,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tvTime = findViewById(R.id.tv_time);
         tvDate = findViewById(R.id.tv_date);
         retryButton = findViewById(R.id.button_retry);
+        cameraPreviewLayout = findViewById(R.id.camera_preview_layout);
 
         tTimer = new Timer();
         tTimer.schedule(new TimerTask() {
@@ -673,6 +679,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());*/
         if (isProDevice) {
             faceRectView.setVisibility(View.VISIBLE);
+            outerCircle.setVisibility(View.GONE);
+        } else if (Util.isDeviceF10()) {
             outerCircle.setVisibility(View.GONE);
         } else {
             outerCircle.setVisibility(View.VISIBLE);
@@ -877,6 +885,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
+        if (Util.isDeviceF10()) {
+            launchConfirmationFragment(String.valueOf(false));
+            if (isHomeViewEnabled) {
+                pauseCameraScan();
+            } else {
+                isReadyToScan = false;
+            }
+            disableLedPower();
+            CameraController.getInstance().updateControllers(registeredMemberslist, data);
+            Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, -1);
+            return;
+        }
         if (!CameraController.getInstance().isFaceVisible()) return;
         if (CameraController.getInstance().isAppExitTriggered()) {
             if (handler != null) {
@@ -1024,7 +1044,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         }
                         //faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
-                        retryRecognizeDelayed(requestId);
                     } else {
                         requestFeatureStatusMap.put(requestId, RequestFeatureStatus.TO_RETRY);
                     }
@@ -1072,9 +1091,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             orientationValue = 270;
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
         }
+        if (Util.isDeviceF10()) {
+            previewHeight = previewViewRgb.getMeasuredHeight();
+        }
         cameraHelper = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewRgb.getMeasuredWidth(), previewHeight))
-                .rotation(sharedPreferences.getInt(GlobalParameters.Orientation, orientationValue))
+                .rotation(Util.getOrientation(sharedPreferences))
                 .specificCameraId(cameraRgbId != null ? cameraRgbId : Camera.CameraInfo.CAMERA_FACING_BACK)
                 .previewOn(previewViewRgb)
                 .cameraListener(rgbCameraListener)
@@ -1098,6 +1120,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (Build.VERSION.SDK_INT >= 26) {
             orientationValue = 270;
             previewHeight = CameraController.getInstance().CAMERA_PREVIEW_HEIGHT;
+        }
+        if (Util.isDeviceF10()) {
+            previewHeight = previewViewIr.getMeasuredHeight();
         }
         cameraHelperIr = new DualCameraHelper.Builder()
                 .previewViewSize(new Point(previewViewIr.getMeasuredWidth(), previewHeight))
@@ -1190,7 +1215,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 @Override
                 public void run() {
                     runOnUiThread(() -> {
-                        if ((relative_main.getVisibility() != View.VISIBLE)) {
+                        if ((relative_main.getVisibility() != View.VISIBLE) || Util.isDeviceF10()) {
                             cancelImageTimer();
                             retryButton.setVisibility(View.VISIBLE);
                             tv_thermal.setVisibility(View.GONE);
@@ -1897,7 +1922,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (cameraSource == null) {
             cameraSource = new CameraSource(this, graphicOverlay);
         }
-        cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+        if (Util.isDeviceF10()) {
+            cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+        } else {
+            cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+        }
         try {
             switch (model) {
                 case BARCODE_DETECTION:
@@ -2167,13 +2196,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         enableLedPower();
         isReadyToScan = true;
         new Handler().postDelayed(() -> {
-            if (outerCircle != null)
-                outerCircle.setBackgroundResource(R.drawable.border_shape);
+            if (!Util.isDeviceF10()) {
+                if (outerCircle != null)
+                    outerCircle.setBackgroundResource(R.drawable.border_shape);
                 /*if (logo != null) {
                     logo.setVisibility(View.GONE);
                 }*/
-            if (relative_main != null) {
-                relative_main.setVisibility(View.GONE);
+                if (relative_main != null) {
+                    relative_main.setVisibility(View.GONE);
+                }
             }
             time_attendance_layout.setVisibility(View.GONE);
             changeVerifyBackground(R.color.colorTransparency, true);
@@ -2453,8 +2484,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         initSecondaryScan();
                                         return;
                                     }
-                                    CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN);
-                                    showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
+                                    //CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN);
+                                    //showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
 
                                     CameraController.getInstance().setFaceVisible(true);
 
@@ -2462,7 +2493,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     data.compareResult = compareResult;
                                     data.faceScore = (int) similarValue;
                                     CameraController.getInstance().setCompareResult(compareResult);
-                                    runTemperature(requestId, data);   //TODO1: Optimize
 
                                     String status = registeredMembers.getStatus();
                                     String name = registeredMembers.getFirstname();
@@ -2475,6 +2505,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         memberId = getString(R.string.id) + memberId;
                                         showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                     }
+                                    runTemperature(requestId, data);   //TODO1: Optimize
                                 } else {
                                     //showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
                                     displayCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
@@ -2831,7 +2862,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void checkFaceClosenessAndSearch(FaceFeature faceFeature, int requestId, Bitmap rgb, Bitmap ir) {
-        if (!AppSettings.isTemperatureScanEnabled()) {
+        if (!AppSettings.isTemperatureScanEnabled() && !Util.isDeviceF10()) {
             runOnUiThread(() -> {
                 if (tvErrorMessage != null) {
                     tvErrorMessage.setVisibility(View.VISIBLE);
@@ -2970,7 +3001,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void displayCameraPreview(FaceFeature faceFeature, int requestId, Bitmap rgbBitmap, Bitmap irBitmap) {
-        checkDeviceMode();
+        if (!Util.isDeviceF10()) {
+            checkDeviceMode();
+        }
         cancelPreviewIdleTimer();
         enableLedPower();
         if (maskEnabled && !faceDetectEnabled) {
@@ -2983,8 +3016,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             if (rl_header == null) return;
             CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-            changeVerifyBackground(R.color.colorTransparency, true);
-            relative_main.setVisibility(View.GONE);
+
+            if (!Util.isDeviceF10()) {
+                changeVerifyBackground(R.color.colorTransparency, true);
+                relative_main.setVisibility(View.GONE);
+            }
             // rl_header.setVisibility(View.GONE);
             //logo.setVisibility(View.GONE);
             //setCameraPreviewTimer();
@@ -3083,7 +3119,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tvFaceMessage.setVisibility(View.GONE);
         if (temperature_image != null) temperature_image.setVisibility(View.GONE);
         if (mask_message != null) mask_message.setVisibility(View.GONE);
-        if (outerCircle != null) {
+        if (outerCircle != null && !Util.isDeviceF10()) {
             outerCircle.setBackgroundResource(R.drawable.border_shape);
         }
         retryButton.setVisibility(View.GONE);
@@ -3114,6 +3150,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             DisplayTimeAttendance();
         });
         clearData();
+        if (AppSettings.getTimeAndAttendance() == 0) {
+            resumeCameraScan();
+            initScan();
+        }
         if (AppSettings.isEnableHandGesture()) {
             if (Util.isGestureDeviceConnected(this)) {
                 if (AppSettings.isMaskEnforced()) {
@@ -3126,12 +3166,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetGesture();
         }
         resetRfid();
-        resetImageLogo();
-        if (!isHomeViewEnabled) isReadyToScan = true;
-        if (AppSettings.getTimeAndAttendance() == 0) {
-            resumeCameraScan();
-            initScan();
+        if (!Util.isDeviceF10()) {
+            resetImageLogo();
         }
+        if (!isHomeViewEnabled) isReadyToScan = true;
     }
 
     private void resetRfid() {
@@ -3154,6 +3192,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void pauseCameraScan() {
+        Log.d(TAG, "Pause camera scan");
         if (cameraHelper != null) {
             cameraHelper.stop();
         }
@@ -3163,6 +3202,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resumeCameraScan() {
+        Log.d(TAG, "resume camera scan");
         if (cameraHelper != null && cameraHelper.isStopped()) {
             cameraHelper.start();
         }
@@ -4577,7 +4617,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
                 tvDate.setText(currentDate);
             } else if (AppSettings.getTimeAndAttendance() == 0) {
-                homeDisplayView();
+                if (Util.isDeviceF10()) {
+                    CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+                    changeVerifyBackground(R.color.colorTransparency, true);
+                    relative_main.setVisibility(View.VISIBLE);
+                    homeIcon(sharedPreferences.getString(GlobalParameters.IMAGE_ICON, ""));
+                    setCameraLayout();
+                } else {
+                    homeDisplayView();
+                }
             } else {
                 new Handler().postDelayed(() -> {
                     //logo.setVisibility(View.GONE);
@@ -4626,5 +4674,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             initScan();
         }
+    }
+
+    private void setCameraLayout() {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        params.setMargins(0, (int) Util.convertDpToPixel(20, this), 0, 0);
     }
 }

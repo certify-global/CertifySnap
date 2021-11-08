@@ -13,6 +13,7 @@ import com.arcsoft.face.LivenessInfo;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.widget.FaceLandmarkView;
 import com.certify.snap.arcface.widget.FaceRectView;
+import com.certify.snap.common.Util;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class DrawHelper {
     private boolean isMirror;
     private boolean mirrorHorizontal = false, mirrorVertical = false;
     private static final String TAG = "DrawHelper";
+    private String internalmodel;
     /**
      * 创建一个绘制辅助类对象，并且设置绘制相关的参数
      *
@@ -47,6 +49,7 @@ public class DrawHelper {
         this.isMirror = isMirror;
         this.mirrorHorizontal = mirrorHorizontal;
         this.mirrorVertical = mirrorVertical;
+        internalmodel = Util.getInternalModel();
     }
 
     public void drawPreviewInfo(FaceRectView faceRectView, List<DrawInfo> drawInfoList) {
@@ -165,7 +168,7 @@ public class DrawHelper {
          *
          * XOR
          */
-        /*if (isMirror ^ mirrorHorizontal) {
+        if (isMirror ^ mirrorHorizontal) {
             int left = newRect.left;
             int right = newRect.right;
             newRect.left = canvasWidth - right;
@@ -176,7 +179,7 @@ public class DrawHelper {
             int bottom = newRect.bottom;
             newRect.top = canvasHeight - bottom;
             newRect.bottom = canvasHeight - top;
-        }*/
+        }
         if (mirrorHorizontal) {
 //            Log.e(TAG,"isMirrorHorizontal");
             newRect.left = rect.top;
@@ -188,6 +191,14 @@ public class DrawHelper {
             newRect.left = canvasWidth - rect.bottom;
             newRect.top = rect.left;
             newRect.bottom = rect.right;
+        }
+        if(internalmodel.contains("F10") || internalmodel.contains("970")|| "F8".equals(internalmodel)){
+            int top = newRect.top;
+            int bottom = newRect.bottom;
+            newRect.top = canvasHeight - bottom;
+            newRect.bottom = canvasHeight - top;
+        }else if (internalmodel.contains("680")){
+            newRect = rect;
         }
 //        Log.e(TAG,newRect.toString());
         return newRect;
