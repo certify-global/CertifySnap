@@ -45,7 +45,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
     Typeface rubikLight;
     private SharedPreferences sharedPreferences;
     private HashMap<String, String> flowHashmap = new HashMap<>();
-    private EditText editTextWaveFooter, editTextMaskEnforce, editGestureExitMsg;
+    private EditText editTextWaveFooter, editTextMaskEnforce, editGestureExitMsg,editTouchMsg,editLangMsg;
     private String gestureWorkFlow = "";
     private TextInputLayout maskEditLayout, gestureExitLayout;
     private TouchlessSettings touchlessSettingsDb;
@@ -108,6 +108,8 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         btn_save = findViewById(R.id.btn_exit);
         editTextWaveFooter = findViewById(R.id.editTextWaveFooter);
         editTextMaskEnforce = findViewById(R.id.editTextMaskEnforce);
+        editTouchMsg = findViewById(R.id.editTextTouch);
+        editLangMsg = findViewById(R.id.editTextLang);
         radioYesWaveImage = findViewById(R.id.radio_yes_wave_image);
         radioNoWaveImage = findViewById(R.id.radio_no_wave_image);
         tvWaveImage = findViewById(R.id.tv_wave_image);
