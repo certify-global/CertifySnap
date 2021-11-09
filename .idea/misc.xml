@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable-v24/btn_shape_blue.xml" value="0.3828125" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/border_shape.xml" value="0.3828125" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/btn_shape.xml" value="0.3828125" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/btn_shape_blue.xml" value="0.3828125" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/red_border.xml" value="0.2703125" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activate_dialog_activate.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_device_settings.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_home.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_ir.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_settings.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_touchless_settings.xml" value="0.2513586956521739" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_acknowledge.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_confirmation_screen.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_gesture.xml" value="0.22644927536231885" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_mask_enforce.xml" value="0.20572916666666666" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_tach_mode.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_touch_mode.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/q_five_layout.xml" value="0.22644927536231885" />
-      </map>
-    </option>
-  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

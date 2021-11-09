@@ -892,6 +892,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 isReadyToScan = false;
             }
+            resetHomeScreen();
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
             Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, -1);
@@ -3151,8 +3152,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         });
         clearData();
         if (AppSettings.getTimeAndAttendance() == 0) {
-            resumeCameraScan();
-            initScan();
+            if (Util.isDeviceF10()) {
+                resumeCameraScan();
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+            } else {
+                resumeCameraScan();
+                initScan();
+            }
         }
         if (AppSettings.isEnableHandGesture()) {
             if (Util.isGestureDeviceConnected(this)) {

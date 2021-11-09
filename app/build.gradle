@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.palantir.git-version'
-//import com.android.build.OutputFile
+import com.android.build.OutputFile
 
 //TODO:need version only for release, literal for debug.
 ext {

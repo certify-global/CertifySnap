@@ -132,7 +132,7 @@ public class DualCameraHelper implements Camera.PreviewCallback {
                 parameters.setPreviewFormat(ImageFormat.NV21);
 
                 if (Util.isDeviceF10()) {
-                    //parameters.setPreviewSize(1280, 720);
+                    parameters.setPreviewSize(640, 640);
                 } else if (Build.MODEL.contains("950") || "TPS980Q".equals(Build.MODEL)) {
                     parameters.setPreviewSize(640, 480);
                 } else {
