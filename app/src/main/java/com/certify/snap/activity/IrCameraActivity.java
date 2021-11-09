@@ -1772,6 +1772,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (tvErrorMessage != null) {
                     tvErrorMessage.setVisibility(View.GONE);
                 }
+                retryButton.setVisibility(View.GONE);
                 tvFaceMessage.setVisibility(View.GONE);
                 // requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                 if (AppSettings.isTemperatureResultBar()) {
