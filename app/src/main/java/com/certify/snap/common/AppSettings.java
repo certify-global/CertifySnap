@@ -43,6 +43,8 @@ public class AppSettings {
     private static boolean enableVoice = false;
     private static boolean enableHandGesture = false;
     private static boolean enableTouchMode = false;
+    private static String touchHomePageMsg = "";
+    private static String multiLanguageHomeMsg = "";
     private static float displayTemperatureThreshold = 0;
     private static boolean setTemperatureThreshold = false;
     private static boolean printUsbEnabled = false;
@@ -93,7 +95,6 @@ public class AppSettings {
     private static int timeAndAttendance = 0;
     private static boolean showVaccinationIndicator = false;
     private static boolean showNonVaccinationIndicator = false;
-    private static int TouchLessWaveSkip = 0;
     private static boolean retryScanEnabled = false;
 
     public static AppSettings getInstance() {
@@ -339,6 +340,13 @@ public class AppSettings {
     public static boolean isEnableTouchMode() {
         return enableTouchMode;
     }
+    public static String getTouchHomePageMsg() {
+        return touchHomePageMsg;
+    }
+    public static String getMultiLanguageHomeMsg() {
+        return multiLanguageHomeMsg;
+    }
+
     public static float getDisplayTemperatureThreshold() {
         return displayTemperatureThreshold;
     }
@@ -556,6 +564,8 @@ public class AppSettings {
         guideText2 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT2, context.getString(R.string.text_value2));
         guideText3 = sharedPreferences.getString(GlobalParameters.GUIDE_TEXT3, context.getString(R.string.text_value3));
         gestureMessage = sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, context.getString(R.string.gesture_msg));
+        touchHomePageMsg = sharedPreferences.getString(GlobalParameters.TOUCH_HOME_PAGE_MSG, context.getString(R.string.touch_home_page_msg));
+        multiLanguageHomeMsg = sharedPreferences.getString(GlobalParameters.MULTI_LANGUAGE_INSTRUCTIONS, context.getString(R.string.multi_language_home_msg));
         maskEnforceMessage = sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, context.getString(R.string.mask_enforce_msg));
         editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, context.getString(R.string.pass));
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, context.getString(R.string.gesture_exit_msg));

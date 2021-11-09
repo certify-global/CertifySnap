@@ -1533,6 +1533,8 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.GESTURE_EXIT_NEGATIVE_OP, touchlessSettings.exitOnNegativeOutcome.equals("1"));
                         Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, touchlessSettings.messageForNegativeOutcome);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_TOUCH_MODE, touchlessSettings.enableTouchMode.equals("1"));
+                        Util.writeString(sharedPreferences, GlobalParameters.TOUCH_HOME_PAGE_MSG, touchlessSettings.waveHomePage);
+                        Util.writeString(sharedPreferences, GlobalParameters.MULTI_LANGUAGE_INSTRUCTIONS, touchlessSettings.multilanguageInstructions);
 
                     }
 

@@ -160,6 +160,8 @@ public class GlobalParameters {
     public static final String GESTURE_EXIT_NEGATIVE_OP = "gestureExitNegativeOp";
     public static final String GESTURE_EXIT_CONFIRM_TEXT = "gestureExitConfirmText";
     public static final String ENABLE_TOUCH_MODE = "enableTouchMode";
+    public static final String TOUCH_HOME_PAGE_MSG = "touchHomePageMsg";
+    public static final String MULTI_LANGUAGE_INSTRUCTIONS = "multilanguageInstructions";
 
     public static final String Temperature = "temperature";
     public static final String Temphint = "temphint";

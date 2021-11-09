@@ -63,6 +63,7 @@ public class TouchModeFragment extends Fragment {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    GestureController.getInstance().setTouchModeFragment(false);
                                     mActivity.getFragmentManager().beginTransaction().remove(TouchModeFragment.this).commitAllowingStateLoss();
                                 }
                             }, 1000);
@@ -91,7 +92,7 @@ public class TouchModeFragment extends Fragment {
         radio_english.setTypeface(rubikLight);
         radio_spanish.setTypeface(rubikLight);
         radio_french.setTypeface(rubikLight);
-
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
         radio_english.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

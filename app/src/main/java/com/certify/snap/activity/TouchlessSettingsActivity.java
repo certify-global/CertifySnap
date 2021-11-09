@@ -133,6 +133,8 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         editTextWaveFooter.setText(sharedPreferences.getString(GlobalParameters.WAVE_INDICATOR, getResources().getString(R.string.bottom_text)));
         editTextMaskEnforce.setText(sharedPreferences.getString(GlobalParameters.MASK_ENFORCE_INDICATOR, getResources().getString(R.string.wear_a_mask)));
         editGestureExitMsg.setText(sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, getString(R.string.gesture_exit_default)));
+        editTouchMsg.setText(sharedPreferences.getString(GlobalParameters.TOUCH_HOME_PAGE_MSG, getResources().getString(R.string.touch_home_page_msg)));
+        editLangMsg.setText(sharedPreferences.getString(GlobalParameters.MULTI_LANGUAGE_INSTRUCTIONS, getResources().getString(R.string.multi_language_home_msg)));
 
         btn_save.setOnClickListener(v -> {
             if (!gestureWorkFlow.isEmpty() && !gestureWorkFlow.equals(sharedPreferences.getString(GlobalParameters.Touchless_setting_id, ""))) {
@@ -141,7 +143,8 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
             Util.writeString(sharedPreferences, GlobalParameters.WAVE_INDICATOR, editTextWaveFooter.getText().toString());
             Util.writeString(sharedPreferences, GlobalParameters.MASK_ENFORCE_INDICATOR, editTextMaskEnforce.getText().toString());
             Util.writeString(sharedPreferences, GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, editGestureExitMsg.getText().toString());
-
+            Util.writeString(sharedPreferences, GlobalParameters.TOUCH_HOME_PAGE_MSG, editTouchMsg.getText().toString());
+            Util.writeString(sharedPreferences, GlobalParameters.MULTI_LANGUAGE_INSTRUCTIONS, editLangMsg.getText().toString());
             if (touchlessSettingsDb != null) {
                 touchlessSettingsDb.waveIndicatorInstructions = editTextWaveFooter.getText().toString();
                 touchlessSettingsDb.maskEnforceText = editTextMaskEnforce.getText().toString();

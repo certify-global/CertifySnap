@@ -45,6 +45,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -117,11 +119,19 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private AnswerType answerType = AnswerType.Wave;
 
+    private boolean isTouchModeFragment = false;
+
     public enum AnswerType {
         Wave,
         Touch
     }
+    public boolean isTouchModeFragment() {
+        return isTouchModeFragment;
+    }
 
+    public void setTouchModeFragment(boolean touchModeFragment) {
+        isTouchModeFragment = touchModeFragment;
+    }
     public interface GestureCallbackListener {
         void onQuestionAnswered(String question);
 
@@ -253,6 +263,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
             if (response.responseCode != null && response.responseCode.equals("1")) {
                 List<QuestionData> questionList = response.responseData.questionList;
+                Collections.sort(questionList, compareByLanguage);
                 if (questionList.size() > 0) {
                     List<QuestionDataDb> questionDataDbList = new ArrayList<>();
                     GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
@@ -791,7 +802,6 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public void sendAnswers(boolean negativeAnswer) {
-//        CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
         List<QuestionData> questionDataList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {
@@ -1176,4 +1186,10 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         currentQuestionData = null;
         gestureListener = null;
     }
+    Comparator<QuestionData> compareByLanguage = new Comparator<QuestionData>() {
+        @Override
+        public int compare(QuestionData o1, QuestionData o2) {
+            return o1.languageCode.compareTo(o2.languageCode);
+        }
+    };
 }

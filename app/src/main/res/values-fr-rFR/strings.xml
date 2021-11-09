@@ -501,8 +501,8 @@
     <string name="send_logs">Envoyer des journaux</string>
     <string name="wave_instructions">Entrez les instructions de l\'indicateur de vague</string>
     <string name="mask_enforce_instructions">Entrez le masque appliquer le texte</string>
-    <string name="home_with_lang_message">Agitez pour continuer avec le geste ou cliquez ci-dessous pour sélectionner la langue du flux tactile</string>
-    <string name="home_wave_message">Agitez pour continuer avec le geste ou appuyez sur le bouton ci-dessous pour démarrer le questionnaire</string>
+    <string name="multi_language_home_msg">Agitez pour continuer avec le geste ou cliquez ci-dessous pour sélectionner la langue du flux tactile</string>
+    <string name="touch_home_page_msg">Agitez pour continuer avec le geste ou appuyez sur le bouton ci-dessous pour démarrer le questionnaire</string>
     <string name="touch_flow">Flux tactile</string>
     <string name="Start">Début</string>
     <string name="lang_wave_message">Lancer le questionnaire</string>
@@ -510,7 +510,8 @@
         <string name="scan_type">Type de scan</string>
     <string name="scan_type_quick">Rapide</string>
     <string name="scan_type_standard">la norme</string>
-
+    <string name="lang_instructions">Entrez le message pour le flux multilingue</string>
+    <string name="touch_instructions">Texte pour la page d’accueil</string>
     <string name="enter_text1">Texte1</string>
     <string name="enter_text2">Texte2</string>
     <string name="enter_text3">Texte3</string>
