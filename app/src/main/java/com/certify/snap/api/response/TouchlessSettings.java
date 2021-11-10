@@ -59,4 +59,12 @@ public class TouchlessSettings {
     @Ignore
     @SerializedName("enableTouchMode")
     public String enableTouchMode = "0";
+
+    @SerializedName("waveHomePage")
+    public String waveHomePage = "Wave to continue with gesture or press below button to start the questionnaire.";
+
+    @SerializedName("multilanguageInstructions")
+    public String multilanguageInstructions = "Wave to continue with gesture or click below to select the language for touch flow.";
+
+
 }

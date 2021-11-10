@@ -45,6 +45,8 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -117,9 +119,19 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private AnswerType answerType = AnswerType.Wave;
 
+    private boolean isTouchModeFragment = false;
+
     public enum AnswerType {
         Wave,
         Touch
+    }
+
+    public boolean isTouchModeFragment() {
+        return isTouchModeFragment;
+    }
+
+    public void setTouchModeFragment(boolean touchModeFragment) {
+        isTouchModeFragment = touchModeFragment;
     }
 
     public interface GestureCallbackListener {
@@ -253,6 +265,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
             QuestionListResponse response = gson.fromJson(String.valueOf(reportInfo), QuestionListResponse.class);
             if (response.responseCode != null && response.responseCode.equals("1")) {
                 List<QuestionData> questionList = response.responseData.questionList;
+                getQuestionDataLanguageOrderBy(questionList);
                 if (questionList.size() > 0) {
                     List<QuestionDataDb> questionDataDbList = new ArrayList<>();
                     GestureQuestionsDb gestureQuestionsDb = new GestureQuestionsDb();
@@ -1032,33 +1045,33 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
                 if (questionDataDbList != null && questionDataDbList.get(0).questionName.isEmpty() && gestureQuestionsDbList.size() == 2)
                     questionDataDbList = gestureQuestionsDbList.get(1).questionsDbList;
 
-            questionAnswerMap.clear();
-            if (questionDataDbList != null) {
-                for (int i = 0; i < questionDataDbList.size(); i++) {
-                    QuestionDataDb questionDataDb = questionDataDbList.get(i);
-                    if (questionDataDb.questionName.isEmpty()) continue;
-                    QuestionData questionData = new QuestionData();
-                    questionData.id = questionDataDb.id;
-                    questionData.institutionId = questionDataDb.institutionId;
-                    questionData.questionName = questionDataDb.questionName;
-                    questionData.title = questionDataDb.title;
-                    questionData.settingId = questionDataDb.settingId;
-                    questionData.userId = questionDataDb.userId;
-                    questionData.expectedOutcome = questionDataDb.expectedOutcome;
-                    setQaLangType(questionDataDb.languageCode);
-                    questionData.surveyQuestionaryDetails = questionDataDb.surveyQuestionaryDetails;
-                    Gson gson = new Gson();
-                    Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
-                    }.getType();
-                    questionData.surveyOptions = gson.fromJson(questionDataDb.surveyOptions, listType);
-                    questionData.questionParentId = questionDataDb.questionParentId;
-                    questionAnswerMap.put(questionData, "NA");
+                questionAnswerMap.clear();
+                if (questionDataDbList != null) {
+                    for (int i = 0; i < questionDataDbList.size(); i++) {
+                        QuestionDataDb questionDataDb = questionDataDbList.get(i);
+                        if (questionDataDb.questionName.isEmpty()) continue;
+                        QuestionData questionData = new QuestionData();
+                        questionData.id = questionDataDb.id;
+                        questionData.institutionId = questionDataDb.institutionId;
+                        questionData.questionName = questionDataDb.questionName;
+                        questionData.title = questionDataDb.title;
+                        questionData.settingId = questionDataDb.settingId;
+                        questionData.userId = questionDataDb.userId;
+                        questionData.expectedOutcome = questionDataDb.expectedOutcome;
+                        setQaLangType(questionDataDb.languageCode);
+                        questionData.surveyQuestionaryDetails = questionDataDb.surveyQuestionaryDetails;
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<QuestionSurveyOptions>>() {
+                        }.getType();
+                        questionData.surveyOptions = gson.fromJson(questionDataDb.surveyOptions, listType);
+                        questionData.questionParentId = questionDataDb.questionParentId;
+                        questionAnswerMap.put(questionData, "NA");
+                    }
                 }
             }
         }
-    }
 
-}
+    }
 
     private void resetWaveHandProcessed() {
         waveHandProcessed.clear();
@@ -1174,5 +1187,14 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
         index = 0;
         currentQuestionData = null;
         gestureListener = null;
+    }
+
+    public void getQuestionDataLanguageOrderBy(List<QuestionData> questionList) {
+        Collections.sort(questionList, new Comparator<QuestionData>() {
+            @Override
+            public int compare(QuestionData o1, QuestionData o2) {
+                return o1.languageCode.compareTo(o2.languageCode);
+            }
+        });
     }
 }

@@ -37,7 +37,7 @@ public class QuestionData {
 
     @Nullable
     @SerializedName("languageCode")
-    public String languageCode;
+    public String languageCode = "";
 
     @Nullable
     @SerializedName("questionParentId")

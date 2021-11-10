@@ -509,14 +509,20 @@
     <string name="send_logs">Send Logs</string>
     <string name="wave_instructions">Enter wave indicator instructions</string>
     <string name="mask_enforce_instructions">Enter mask enforce text</string>
-    <string name="home_with_lang_message">Wave to continue with gesture or click below to select the language for touch flow</string>
-    <string name="home_wave_message">Wave to continue with gesture or press below button to Start the questionnaire</string>
+    <string name="multi_language_home_msg">Wave to continue with gesture or click below to select the language for touch flow</string>
+    <string name="touch_home_page_msg">Wave to continue with gesture or press below button to Start the questionnaire</string>
     <string name="touch_flow">Touch Flow</string>
     <string name="Start">Start</string>
     <string name="lang_wave_message">Launch the questionnaire</string>
     <string name="lang_choose_your">Choose your Preferred Language</string>
-    <string name="wave_yes">&lt; YES </string>
-    <string name="wave_no"> NO &gt; </string>
+    <string name="lang_instructions">Enter the Message for Multilanguage Flow</string>
+    <string name="touch_instructions">Text for Home Page</string>
+    <string name="wave_yes_en" translatable="false">&lt; YES </string>
+    <string name="wave_no_en" translatable="false"> NO &gt; </string>
+    <string name="wave_yes_fr" translatable="false">&lt;OUI</string>
+    <string name="wave_no_fr" translatable="false">NON&gt;</string>
+    <string name="wave_yes_es" translatable="false">&lt; SI </string>
+    <string name="wave_no_es" translatable="false"> NO &gt; </string>
 
     <string name="scan_type">Scan Type</string>
     <string name="scan_type_quick">Quick</string>
