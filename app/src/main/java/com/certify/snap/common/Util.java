@@ -1337,7 +1337,7 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, false);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.DEBUG_MODE, deviceSettings.debugMode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.DEBUG_MODE, true);
                     }
 
                     //HomeView settings
@@ -1825,10 +1825,11 @@ public class Util {
             } else {
                 obj.put("groupId", "0");
             }
-            RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
+            //Disable for now
+            /*RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
             if (registeredMember != null) {
                 obj.put("fromDate", registeredMember.dateTime);
-            }
+            }*/
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 

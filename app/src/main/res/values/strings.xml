@@ -517,6 +517,8 @@
     <string name="lang_choose_your">Choose your Preferred Language</string>
     <string name="lang_instructions">Enter the Message for Multilanguage Flow</string>
     <string name="touch_instructions">Text for Home Page</string>
+    <string name="wave_yes" translatable="false">&lt; YES </string>
+    <string name="wave_no" translatable="false"> NO &gt; </string>
     <string name="wave_yes_en" translatable="false">&lt; YES </string>
     <string name="wave_no_en" translatable="false"> NO &gt; </string>
     <string name="wave_yes_fr" translatable="false">&lt;OUI</string>
