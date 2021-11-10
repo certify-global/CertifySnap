@@ -32,7 +32,7 @@
         android:layout_marginEnd="@dimen/size_20"
         android:layout_marginBottom="@dimen/size_50"
         android:background="@drawable/btn_shape"
-        android:text="@string/start"
+        android:text="@string/continue_str"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -511,6 +511,7 @@
     <string name="touch_home_page_msg">Salude para continuar con el gesto o presione el botón de abajo para iniciar el cuestionario</string>
     <string name="touch_flow">Toque el flujo</string>
     <string name="Start">Comienzo</string>
+    <string name="continue_str">continuar</string>
     <string name="lang_wave_message">Lanzar el cuestionario</string>
     <string name="lang_choose_your">Elija su idioma preferido</string>
     <string name="scan_type">Tipo de scaneado</string>

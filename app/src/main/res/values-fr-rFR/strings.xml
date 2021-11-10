@@ -505,6 +505,7 @@
     <string name="touch_home_page_msg">Agitez pour continuer avec le geste ou appuyez sur le bouton ci-dessous pour démarrer le questionnaire</string>
     <string name="touch_flow">Flux tactile</string>
     <string name="Start">Début</string>
+    <string name="continue_str">continuer</string>
     <string name="lang_wave_message">Lancer le questionnaire</string>
     <string name="lang_choose_your">Choisissez votre langue préférée</string>
         <string name="scan_type">Type de scan</string>

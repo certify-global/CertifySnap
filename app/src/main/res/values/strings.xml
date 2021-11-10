@@ -513,6 +513,7 @@
     <string name="touch_home_page_msg">Wave to continue with gesture or press below button to Start the questionnaire</string>
     <string name="touch_flow">Touch Flow</string>
     <string name="Start">Start</string>
+    <string name="continue_str">continue</string>
     <string name="lang_wave_message">Launch the questionnaire</string>
     <string name="lang_choose_your">Choose your Preferred Language</string>
     <string name="lang_instructions">Enter the Message for Multilanguage Flow</string>

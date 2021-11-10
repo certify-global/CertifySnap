@@ -415,12 +415,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (AppSettings.isEnableTouchMode() && !Util.isDeviceF10()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
+            btWaveStart.setText(getResources().getString(R.string.start));
             if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
-                btWaveStart.setText(getResources().getString(R.string.touch_flow));
                 tvWaveMessage.setText(AppSettings.getMultiLanguageHomeMsg());
             } else {
                 tvWaveMessage.setText(AppSettings.getTouchHomePageMsg());
-                btWaveStart.setText(getResources().getString(R.string.start));
+
             }
         } else {
             btWaveStart.setVisibility(View.GONE);
@@ -4074,6 +4074,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
+        if(!AppSettings.isEnableQuestions()){
+            Toast.makeText(this, getString(R.string.gesture_questions_not_available), Toast.LENGTH_LONG).show();
+            return;
+        }
         GestureController.getInstance().setLanguageSelectionIndex(0);
         runOnUiThread(() -> {
             if (time_attendance_layout.getVisibility() == View.VISIBLE) {
