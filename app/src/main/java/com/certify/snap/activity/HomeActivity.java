@@ -244,7 +244,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
             }
             startHealthCheckService();
-            startLoggerService();
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -302,6 +301,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         }
         initNavigationBar();
         startMemberSyncService();
+        startLoggerService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
     }
 
@@ -501,7 +501,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void startLoggerService() {
-        if (!Util.isServiceRunning(LoggerService.class, this) && AppSettings.isDebugModeEnabled()) {
+        if (!Util.isServiceRunning(LoggerService.class, this) &&
+            sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false)) {
             startService(new Intent(this, LoggerService.class));
             Application.StartService(this);
             return;

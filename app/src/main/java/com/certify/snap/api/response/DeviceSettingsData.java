@@ -43,4 +43,7 @@ public class DeviceSettingsData {
     @SerializedName("allowMultilingual")
     public String allowMultilingual = "0";
 
+    @SerializedName("debugMode")
+    public String debugMode = "0";
+
 }

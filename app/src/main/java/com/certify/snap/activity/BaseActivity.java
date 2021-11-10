@@ -263,7 +263,9 @@ public abstract class BaseActivity extends Activity {
     }
 
     private void updateLoggerService(Context context) {
-        if (!Util.isServiceRunning(LoggerService.class, this)) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        if (!Util.isServiceRunning(LoggerService.class, this) &&
+            sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false)) {
             startService(new Intent(this, LoggerService.class));
             Application.StartService(this);
         }
