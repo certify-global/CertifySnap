@@ -502,7 +502,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void startLoggerService() {
         if (!Util.isServiceRunning(LoggerService.class, this) &&
-            sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false)) {
+            sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, true)) {
             startService(new Intent(this, LoggerService.class));
             Application.StartService(this);
             return;
