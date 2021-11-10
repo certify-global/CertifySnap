@@ -119,19 +119,9 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
 
     private AnswerType answerType = AnswerType.Wave;
 
-    private boolean isTouchModeFragment = false;
-
     public enum AnswerType {
         Wave,
         Touch
-    }
-
-    public boolean isTouchModeFragment() {
-        return isTouchModeFragment;
-    }
-
-    public void setTouchModeFragment(boolean touchModeFragment) {
-        isTouchModeFragment = touchModeFragment;
     }
 
     public interface GestureCallbackListener {
@@ -804,6 +794,7 @@ public class GestureController implements GestureCallback, GestureAnswerCallback
     }
 
     public void sendAnswers(boolean negativeAnswer) {
+        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         List<QuestionSurveyOptions> qSurveyOptionList = new ArrayList<>();
         List<QuestionData> questionDataList = new ArrayList<>();
         for (Map.Entry entry : questionAnswerMap.entrySet()) {

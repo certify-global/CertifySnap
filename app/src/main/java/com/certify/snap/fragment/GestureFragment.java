@@ -189,7 +189,6 @@ public class GestureFragment extends Fragment implements GestureController.Gestu
     @Override
     public void onDestroy() {
         super.onDestroy();
-        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }

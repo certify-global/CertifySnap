@@ -412,7 +412,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initRecordUserTempService();
         initBluetoothPrinter();
         startBLEService();
-        GestureController.getInstance().setAnswerType(GestureController.AnswerType.Wave);
         if (AppSettings.isEnableTouchMode() && !Util.isDeviceF10()) {
             btWaveStart.setVisibility(View.VISIBLE);
             tvWaveMessage.setVisibility(View.VISIBLE);
@@ -2109,7 +2108,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         getAccessControlSettings();
         getAudioVisualSettings();
-        GestureController.getInstance().setTouchModeFragment(false);
     }
 
     /**
@@ -3857,7 +3855,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void launchTouchFragment() {
         if (isDestroyed() || isFinishing() || !isActivityResumed) return;
         try {
-            GestureController.getInstance().setTouchModeFragment(true);
             touchModeFragment = new TouchModeFragment();
             Bundle bundle = new Bundle();
             bundle.putString("maskStatus", String.valueOf(maskStatus));
@@ -4017,8 +4014,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 GestureController.getInstance().setGestureHomeCallbackListener(this);
                 return;
             }
-            if(GestureController.getInstance().getAnswerType() != GestureController.AnswerType.Touch)
-            runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, getString(R.string.connect_gesture_device), Toast.LENGTH_LONG).show());
+            if (GestureController.getInstance().getAnswerType() != GestureController.AnswerType.Touch)
+                runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, getString(R.string.connect_gesture_device), Toast.LENGTH_LONG).show());
             return;
         }
         if (AppSettings.isEnableTouchMode()) {
@@ -4077,7 +4074,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
-        GestureController.getInstance().setTouchModeFragment(false);
         GestureController.getInstance().setLanguageSelectionIndex(0);
         runOnUiThread(() -> {
             if (time_attendance_layout.getVisibility() == View.VISIBLE) {
@@ -4092,11 +4088,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resumedFromGesture = false;
             GestureController.getInstance().clearData();
             CameraController.getInstance().setTriggerType(CameraController.triggerValue.WAVE.toString());
-            if(AppSettings.isEnableHandGesture())
-            Toast.makeText(this, getString(R.string.gesture_launch_msg), Toast.LENGTH_SHORT).show();
+            if (AppSettings.isEnableHandGesture() && GestureController.getInstance().getAnswerType() == GestureController.AnswerType.Wave)
+                Toast.makeText(this, getString(R.string.gesture_launch_msg), Toast.LENGTH_SHORT).show();
             if (AppSettings.isMaskEnforced()) {
                 isReadyToScan = false;
                 clearLeftFace(null);
+
                 if (maskStatus == 1) {
                     new Handler().postDelayed(this::launchGestureFragment, 1000);
                 } else {
@@ -4111,7 +4108,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onLeftHandGesture() {
         runOnUiThread(() -> {
-            if (GestureController.getInstance().isTouchModeFragment()) return;
+            if (GestureController.getInstance().getAnswerType() == GestureController.AnswerType.Touch)
+                return;
             if ((relative_main.getVisibility() == View.GONE) ||
                     (AccessCardController.getInstance().getTapCount() != 0) ||
                     (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) {
