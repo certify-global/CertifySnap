@@ -2459,7 +2459,9 @@ public class Util {
         String hrStr = splitStr[0];
         String splitStr1[] = hrStr.split(" ");
         int hour = Integer.parseInt(splitStr1[1]);
-        hour--;
+        if (hour != 0) {
+            hour--;
+        }
         splitStr1[1] = String.valueOf(hour);
         String dateTimeHour = splitStr1[0] + " " + splitStr1[1];
         return dateTimeHour + ":" + splitStr[1] + ":" + splitStr[2];
