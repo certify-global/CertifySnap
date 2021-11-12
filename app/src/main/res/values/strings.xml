@@ -753,7 +753,6 @@
     <string name="certificate_type">Certificate Type</string>
     <string name="issues_country">Issuer country</string>
     <string name="verification_failed">Verification failed</string>
-    <string name="retry">Retry</string>
     <string name="given_name">Given Name</string>
     <string name="certificate_identifier">Certificate Idenifier</string>
     <string name="medicinal_product">Medicinal Product</string>
