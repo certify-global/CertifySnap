@@ -255,7 +255,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         count = 0;
                         testCount = 1;
                         activeMemberCount = totalMemberCount = 0;
-                        datalist.clear();
                         mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
                         MemberSyncDataModel.getInstance().setSyncing(true);
                         Util.getmemberList(this, this);
@@ -1507,9 +1506,10 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     }
                     MemberSyncDataModel.getInstance().setSyncing(false);
                 } else {
-                    mCountTv.setText(testCount++ + " / " + totalMemberCount);
+                    //mCountTv.setText(testCount++ + " / " + totalMemberCount);
                 }
-                datalist.add(addedMember);
+                datalist.clear();
+                datalist.addAll(DatabaseController.getInstance().findAll());
                 refreshMemberList(datalist);
             }
         });
