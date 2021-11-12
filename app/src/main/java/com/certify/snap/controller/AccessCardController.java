@@ -570,7 +570,11 @@ public class AccessCardController implements AccessCallback {
                 saveOfflineAccessLogRecord(context, req, 0);
                 return;
             }
-            if (!reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo.has("responseCode")) {
+                if (!reportInfo.getString("responseCode").equals("1")) {
+                    saveOfflineAccessLogRecord(context, req, 0);
+                }
+            } else {
                 saveOfflineAccessLogRecord(context, req, 0);
             }
         } catch (Exception e) {

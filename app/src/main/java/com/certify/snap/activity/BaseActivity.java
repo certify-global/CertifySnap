@@ -274,7 +274,6 @@ public abstract class BaseActivity extends Activity {
     private void stopServices() {
         stopService(new Intent(this, DeviceHealthService.class));
         stopService(new Intent(this, MemberSyncService.class));
-        stopService(new Intent(this, LoggerService.class));
         stopService(new Intent(this, OfflineRecordSyncService.class));
     }
 }

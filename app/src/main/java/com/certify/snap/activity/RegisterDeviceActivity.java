@@ -151,7 +151,7 @@ public class RegisterDeviceActivity extends SettingsBaseActivity implements AddD
         try {
             if (report != null) {
                 mprogressDialog.dismiss();
-                if (report.getString("responseCode").equals("1")) {
+                if (report.has("responseCode") && report.getString("responseCode").equals("1")) {
                    Logger.toast(this,"Device Registered Successfully");
                    startActivity(new Intent(RegisterDeviceActivity.this,RegisterSuccessActivity.class));
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);

@@ -1906,9 +1906,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 0);
                 return;
             }
-            if (!reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo.has("responseCode")) {
+                if (!reportInfo.getString("responseCode").equals("1")) {
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 0);
+                }
+            } else {
                 Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 0);
-                return;
             }
             if (reportInfo.isNull("Message")) return;
             if (reportInfo.getString("Message").contains("token expired"))
@@ -2051,7 +2054,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Logger.debug(TAG, reportInfo.toString());
                 return;
             }
-            if (reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo.has("responseCode") && reportInfo.getString("responseCode").equals("1")) {
                 runOnUiThread(() -> {
                     if (isReadyToScan) return;
                     if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())

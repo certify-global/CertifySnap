@@ -81,7 +81,7 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
                 return;
             }
             JSONObject json = new JSONObject(reportInfo);
-            if (json.getInt("responseCode") == 1) {
+            if (json.has("responseCode") && json.getInt("responseCode") == 1) {
                 Log.d("DeviceHealthService", "Health check success response "+ Util.getMMDDYYYYDate());
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
                 if(ApplicationLifecycleHandler.isInBackground)

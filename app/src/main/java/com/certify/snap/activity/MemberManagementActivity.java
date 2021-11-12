@@ -1266,7 +1266,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         if (reportInfo != null || responseData != null) {
             try {
                 JSONObject json = new JSONObject(reportInfo);
-                if (json.getInt("responseCode") == 1) {
+                if (json.has("responseCode") && json.getInt("responseCode") == 1) {
                     String firstnamestr = responseData.getString("firstName");
                     String lastnamestr = responseData.getString("lastname");
                     String emailstr = responseData.getString("email");
