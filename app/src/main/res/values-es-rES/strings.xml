@@ -729,5 +729,6 @@
     <string name="debug_mode">Modo de depuración</string>
     <string name="face_not_matched_msg">La posible coincidencia de rostros no sucedió. Por favor, intenta de nuevo</string>
     <string name="face_not_detected">Rostro no detectado, haga clic en Reintentar</string>
+    <string name="health_check_failed_msg">La verificación de estado falló, la aplicación se reiniciará a las %s</string>
 
 </resources>

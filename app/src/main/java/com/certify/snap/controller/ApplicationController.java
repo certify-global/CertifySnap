@@ -2,8 +2,10 @@ package com.certify.snap.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.CountDownTimer;
 import android.util.Log;
 
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.StringConstants;
@@ -21,6 +23,15 @@ public class ApplicationController {
     private ThermalImageUtil temperatureUtil = null;
     private boolean isDeviceBoot = false;
     public int timeAttendance = 0;
+    private ApplicationCallbackListener listener = null;
+    private CountDownTimer healthCheckTimer = null;
+    private boolean healthCheckInterval = false;
+    private String appRestartTime = "";
+
+    public interface ApplicationCallbackListener {
+        void onHealthCheckNoResponse(int min, int sec);
+        void onHealthCheckTimeout();
+    }
 
     public static ApplicationController getInstance() {
         if (instance == null)
@@ -149,5 +160,56 @@ public class ApplicationController {
 
     public void setTimeAttendance(int timeAttendance) {
         this.timeAttendance = timeAttendance;
+    }
+
+    public void setListener(ApplicationCallbackListener callbackListener) {
+        listener = callbackListener;
+    }
+
+    public String getAppRestartTime() {
+        return appRestartTime;
+    }
+
+    public void setAppRestartTime(String appRestartTime) {
+        this.appRestartTime = appRestartTime;
+    }
+
+    public void startHealthCheckTimer() {
+        if (healthCheckTimer != null) return;
+        healthCheckTimer = new CountDownTimer(Constants.HEALTH_CHECK_INIT_TIME, Constants.HEALTH_CHECK_INTERVAL) {
+            @Override
+            public void onTick(long remTime) {
+                if (listener != null && healthCheckInterval) {
+                    int minute = (int) (remTime/1000)/60;
+                    int second = (int) (remTime/1000)%60;
+                    listener.onHealthCheckNoResponse(minute, second);
+                    return;
+                }
+                healthCheckInterval = true;
+                Log.d(TAG, " health set " + healthCheckInterval);
+            }
+
+            @Override
+            public void onFinish() {
+                healthCheckTimer.cancel();
+                if (listener != null) {
+                    listener.onHealthCheckTimeout();
+                }
+            }
+        };
+        healthCheckTimer.start();
+    }
+
+    public boolean isHealthCheckInterval() {
+        return healthCheckInterval;
+    }
+
+    public void cancelHealthCheckTimer() {
+        if (healthCheckTimer != null) {
+            healthCheckTimer.cancel();
+            healthCheckTimer = null;
+            healthCheckInterval = false;
+            appRestartTime = "";
+        }
     }
 }

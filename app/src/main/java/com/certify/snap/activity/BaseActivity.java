@@ -175,6 +175,9 @@ public abstract class BaseActivity extends Activity {
                         onNetworkConnected(context);
                     } else {
                         Log.d(TAG, "Health network offline");
+                        if (internetIndicatorImg != null) {
+                            internetIndicatorImg.setVisibility(View.VISIBLE);
+                        }
                         stopServices();
                     }
                 }
@@ -254,6 +257,8 @@ public abstract class BaseActivity extends Activity {
                 if (!Util.isServiceRunning(DeviceHealthService.class, context)) {
                     context.startService(new Intent(context, DeviceHealthService.class));
                     Application.StartService(context);
+                    ApplicationController.getInstance().cancelHealthCheckTimer();
+                    ApplicationController.getInstance().startHealthCheckTimer();
                 }
             }
         } catch (Exception e) {
@@ -271,9 +276,14 @@ public abstract class BaseActivity extends Activity {
         }
     }
 
-    private void stopServices() {
-        stopService(new Intent(this, DeviceHealthService.class));
+    protected void stopServices() {
+        stopHealthCheckService();
         stopService(new Intent(this, MemberSyncService.class));
         stopService(new Intent(this, OfflineRecordSyncService.class));
+    }
+
+    private void stopHealthCheckService() {
+        ApplicationController.getInstance().cancelHealthCheckTimer();
+        stopService(new Intent(this, DeviceHealthService.class));
     }
 }

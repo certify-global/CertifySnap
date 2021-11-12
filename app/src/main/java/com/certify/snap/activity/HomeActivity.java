@@ -260,6 +260,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
                     startService(new Intent(this, DeviceHealthService.class));
                     Application.StartService(this);
+                    ApplicationController.getInstance().cancelHealthCheckTimer();
+                    ApplicationController.getInstance().startHealthCheckTimer();
                 }
         } catch (Exception e) {
             e.printStackTrace();

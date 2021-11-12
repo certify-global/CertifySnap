@@ -21,6 +21,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 
 import org.json.JSONObject;
 
@@ -84,6 +85,7 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
             if (json.has("responseCode") && json.getInt("responseCode") == 1) {
                 Log.d("DeviceHealthService", "Health check success response "+ Util.getMMDDYYYYDate());
                 Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
+                ApplicationController.getInstance().cancelHealthCheckTimer();
                 if(ApplicationLifecycleHandler.isInBackground)
                     bringApplicationToForeground();
             } else {

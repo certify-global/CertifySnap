@@ -145,6 +145,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -168,7 +169,7 @@ import me.grantland.widget.AutofitTextView;
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
         PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener,
-        QrCodeController.QrCodeListener {
+        QrCodeController.QrCodeListener, ApplicationController.ApplicationCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -363,6 +364,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         FaceServer.getInstance().init(this);//init FaceServer;
         CameraController.getInstance().init(this);
         CameraController.getInstance().startProDeviceInitTimer(this);
+        ApplicationController.getInstance().setListener(this);
         //initAccessControl();
         initNfc();
         initGesture();
@@ -2546,8 +2548,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    tvErrorMessage.setVisibility(View.VISIBLE);
-                                    tvErrorMessage.setText(getString(R.string.analyzing_face));
+                                    showGuideMessage(getString(R.string.analyzing_face));
                                     tvFaceMessage.setVisibility(View.GONE);
                                 }
                             });
@@ -2871,8 +2872,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!AppSettings.isTemperatureScanEnabled() && !Util.isDeviceF10()) {
             runOnUiThread(() -> {
                 if (tvErrorMessage != null) {
-                    tvErrorMessage.setVisibility(View.VISIBLE);
-                    tvErrorMessage.setText(getString(R.string.face_center));
+                    showGuideMessage(getString(R.string.face_center));
                 }
             });
         }
@@ -2919,8 +2919,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void checkFaceCloseness(List<FaceInfo> searchFaceList, int requestId) {
         if (searchFaceList.size() > 0 && !isFaceClose(searchFaceList.get(0))) {
             if (isProDevice) {
-                tvErrorMessage.setVisibility(View.VISIBLE);
-                tvErrorMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
+                showGuideMessage(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
             } else {
                 runOnUiThread(() -> {
                     tvFaceMessage.setVisibility(View.VISIBLE);
@@ -2936,8 +2935,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (searchFaceList.size() > 0 && !isFaceAngleCentered(face3DAngle)) {
                 runOnUiThread(() -> {
                     if (isProDevice) {
-                        tvErrorMessage.setVisibility(View.VISIBLE);
-                        tvErrorMessage.setText(getString(R.string.face_center));
+                        showGuideMessage(getString(R.string.face_center));
                     } else {
                         tvFaceMessage.setVisibility(View.VISIBLE);
                         tvFaceMessage.setText(getString(R.string.face_center));
@@ -3134,6 +3132,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeScan() {
+        updateHealthCheckUI();
         if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
             GestureController.getInstance().setLanguageUpdated(false);
             GestureController.getInstance().setCallback(false);
@@ -4715,5 +4714,46 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         params.setMargins(0, (int) Util.convertDpToPixel(20, this), 0, 0);
+    }
+
+    private void updateHealthCheckUI() {
+        if (ApplicationController.getInstance().isHealthCheckInterval()) {
+            internetIndicatorImg.setVisibility(View.VISIBLE);
+            tvErrorMessage.setVisibility(View.VISIBLE);
+            tvErrorMessage.setTextSize(22);
+            tvVersionIr.setVisibility(View.GONE);
+            tvVersionOnly.setVisibility(View.GONE);
+            tvErrorMessage.setText(String.format(getString(R.string.health_check_failed_msg), ApplicationController.getInstance().getAppRestartTime()));
+        }
+    }
+
+    @Override
+    public void onHealthCheckNoResponse(int min, int sec) {
+        runOnUiThread(() -> {
+            internetIndicatorImg.setVisibility(View.VISIBLE);
+            tvErrorMessage.setVisibility(View.VISIBLE);
+            tvErrorMessage.setTextSize(22);
+            tvVersionIr.setVisibility(View.GONE);
+            tvVersionOnly.setVisibility(View.GONE);
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MINUTE, min);
+            calendar.add(Calendar.SECOND, sec);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss a", Locale.getDefault());
+            String appRestartTime = simpleDateFormat.format(calendar.getTime());
+            ApplicationController.getInstance().setAppRestartTime(appRestartTime);
+            tvErrorMessage.setText(String.format(getString(R.string.health_check_failed_msg), appRestartTime));
+        });
+    }
+
+    @Override
+    public void onHealthCheckTimeout() {
+        stopServices();
+        restartApplication();
+    }
+
+    private void showGuideMessage(String message) {
+        tvErrorMessage.setVisibility(View.VISIBLE);
+        tvErrorMessage.setTextSize(28);
+        tvErrorMessage.setText(message);
     }
 }

@@ -742,5 +742,6 @@
     <string name="debug_mode">Debug Mode</string>
     <string name="face_not_matched_msg">Potential face match didn\'t happen. Please retry</string>
     <string name="face_not_detected">Face not detected, please click on Retry</string>
+    <string name="health_check_failed_msg">Health check failed, app will restart at %s</string>
 
 </resources>
