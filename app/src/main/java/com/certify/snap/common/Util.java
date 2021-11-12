@@ -117,12 +117,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1335,6 +1337,7 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, false);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.DEBUG_MODE, true);
                     }
 
                     //HomeView settings
@@ -1822,10 +1825,11 @@ public class Util {
             } else {
                 obj.put("groupId", "0");
             }
-            RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
+            //Disable for now
+            /*RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
             if (registeredMember != null) {
                 obj.put("fromDate", registeredMember.dateTime);
-            }
+            }*/
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 
@@ -2437,5 +2441,29 @@ public class Util {
 
     public static boolean isDeviceF10() {
         return getInternalModel().equals("F10");
+    }
+
+    public static void writeToFile(File file, long offset, byte[] content) throws IOException {
+        RandomAccessFile accessFile = new RandomAccessFile(file, "rw");
+        FileChannel sourceChannel = accessFile.getChannel();
+        sourceChannel.truncate(offset);
+        accessFile.seek(offset);
+        accessFile.write(content);
+        sourceChannel.close();
+        accessFile.close();
+    }
+
+    //TODO: Optimize
+    public static String getDateTimePastHour(String currentTime) {
+        String splitStr[] = currentTime.split(":");
+        String hrStr = splitStr[0];
+        String splitStr1[] = hrStr.split(" ");
+        int hour = Integer.parseInt(splitStr1[1]);
+        if (hour != 0) {
+            hour--;
+        }
+        splitStr1[1] = String.valueOf(hour);
+        String dateTimeHour = splitStr1[0] + " " + splitStr1[1];
+        return dateTimeHour + ":" + splitStr[1] + ":" + splitStr[2];
     }
 }
