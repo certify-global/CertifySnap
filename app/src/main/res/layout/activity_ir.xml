@@ -311,8 +311,9 @@
                 android:gravity="center"
                 android:text="Wave to continue with gesture or press below button to Start the questionnaire."
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_size_22" />
+                android:textSize="@dimen/text_size_22"
+                android:visibility="gone"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_thermal_subtitle"
@@ -320,20 +321,21 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/tv_message_wave"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="@dimen/text_size_10"
+                android:layout_marginRight="@dimen/text_size_10"
                 android:layout_marginBottom="@dimen/size_30"
                 android:gravity="center"
                 android:text="@string/thermal_scan"
                 android:textColor="@color/black"
                 android:textSize="28sp"
                 android:visibility="visible" />
+
             <TextView
                 android:id="@+id/tv_thermal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/tv_thermal_subtitle"
-                android:layout_marginLeft="@dimen/text_size_10"
-                android:layout_marginRight="@dimen/text_size_10"
-                android:gravity="center"
+                android:layout_margin="@dimen/text_size_10"
                 android:text="@string/thermal_scan"
                 android:textAlignment="center"
                 android:textColor="@color/black"

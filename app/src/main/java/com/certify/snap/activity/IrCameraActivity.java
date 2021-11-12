@@ -1971,6 +1971,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
                 qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
+                if(guid.startsWith("shc:")){
+                    QrCodeController.getInstance().smartHealthCard(guid,this);
+                    clearQrCodePreview();
+                    qrCodeReceived = false;
+                    return;
+                }else if(guid.startsWith("HC1:")){
+                    QrCodeController.getInstance().parseQrText(guid,this);
+                    clearQrCodePreview();
+                    qrCodeReceived = false;
+                    return;
+                }else
                 if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     tv_scan.setText(R.string.tv_qr_validating);
                     if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
@@ -4402,10 +4413,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setLayoutMargins() {
-        RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
-        RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
-        tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
-        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
+        // Small text time top Text is overriding in Scan view
+      //  RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
+      //  RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
+     //   tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
+      //  tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
         tv_thermal_subtitle.setMaxLines(2);
         tv_thermal_subtitle.setEllipsize(TextUtils.TruncateAt.END);
         String text = tv_thermal.getText().toString();
