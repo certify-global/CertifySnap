@@ -592,7 +592,7 @@
     <string name="enable_pro_setting">Enable Pro Settings</string>
     <string name="led_brightness">LED Brightness:</string>
     <string name="enable_local_server">Enable Local Server:</string>
-
+    
     <string name="serial_number">SERIAL NUMBER:</string>
     <string name="imei_number">IMEI NUMBER:</string>
     <string name="close_button">Close</string>
@@ -743,5 +743,27 @@
     <string name="debug_mode">Debug Mode</string>
     <string name="face_not_matched_msg">Potential face match didn\'t happen. Please retry</string>
     <string name="face_not_detected">Face not detected, please click on Retry</string>
+    <string name="valid">Valid</string>
+    <string name="family_name">Standardised Family Name</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="target_disease">Target Disease</string>
+    <string name="covid">Covid-19</string>
+    <string name="date_of_vaccine">Date of vaccination</string>
+    <string name="done">Done</string>
+    <string name="certificate_type">Certificate Type</string>
+    <string name="issues_country">Issuer country</string>
+    <string name="verification_failed">Verification failed</string>
+    <string name="retry">Retry</string>
+    <string name="given_name">Given Name</string>
+    <string name="certificate_identifier">Certificate Idenifier</string>
+    <string name="medicinal_product">Medicinal Product</string>
+    <string name="manufacturer">Manufacturer</string>
+    <string name="vaccination_date">Vaccination Date</string>
+    <string name="first_dose">First Dose</string>
+    <string name="vaccine_date_text">Vaccine Date</string>
+    <string name="clinic_site">Clinic Site</string>
+    <string name="second_dose">Second Dose</string>
+    <string name="view_vaccination">View Vaccination</string>
+    <string name="lot_number">Lot Number</string>
 
 </resources>

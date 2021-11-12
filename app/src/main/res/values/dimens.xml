@@ -20,6 +20,14 @@
     <dimen name="size_38">38dp</dimen>
     <dimen name="size_40">40dp</dimen>
     <dimen name="size_50">50dp</dimen>
+    <dimen name="margin_50">50</dimen>
+    <dimen name="margin_5">5</dimen>
+    <dimen name="font_18">18</dimen>
+    <dimen name="dm_40sp">40</dimen>
+    <dimen name="margin_10">10</dimen>
+    <dimen name="margin_20">20</dimen>
+    <dimen name="margin_30">30</dimen>
+    <dimen name="font_20">20</dimen>
     <dimen name="size_100">100dp</dimen>
 
 
