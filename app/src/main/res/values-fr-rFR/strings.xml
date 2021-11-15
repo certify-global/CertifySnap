@@ -724,5 +724,6 @@
     <string name="debug_mode">Modo de depuración</string>
     <string name="face_not_matched_msg">Le match face potentiel n\'a pas eu lieu. Veuillez réessayer</string>
     <string name="face_not_detected">Visage non détecté, veuillez cliquer sur Réessayer</string>
+    <string name="health_check_failed_msg">Échec de la vérification de l\'état, l\'application redémarrera à %s</string>
 
 </resources>

@@ -764,5 +764,6 @@
     <string name="second_dose">Second Dose</string>
     <string name="view_vaccination">View Vaccination</string>
     <string name="lot_number">Lot Number</string>
+    <string name="health_check_failed_msg">Health check failed, app will restart at %s</string>
 
 </resources>

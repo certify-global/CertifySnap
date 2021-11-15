@@ -556,7 +556,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseSubCode").equals("105")) {
                 switch_activate.setChecked(false);
-            } else if (json1.getString("responseCode").equals("1")) {
+            } else if (json1.has("responseCode") && json1.getString("responseCode").equals("1")) {
                 switch_activate.setChecked(true);
             } else if (json1.getString("responseSubCode").equals("103")) {
                 switch_activate.setChecked(true);

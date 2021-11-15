@@ -38,7 +38,7 @@ public class AsyncDeviceLog extends AsyncTask<Void, Void, JSONObject> {
                 Log.d("ASyncDeviceLog", "Logger response null");
                 return;
             }
-            if (reportInfo.getInt("responseCode") == 1) {
+            if (reportInfo.has("responseCode") && reportInfo.getInt("responseCode") == 1) {
                 Log.d("ASyncDeviceLog", "Logger success response");
             }
         } catch (JSONException e) {
