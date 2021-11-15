@@ -380,8 +380,8 @@
                 android:gravity="center"
                 android:text="Wave to continue with gesture or press below button to Start the questionnaire."
                 android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="@dimen/text_size_22" />
+                android:textSize="@dimen/text_size_22"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_version_ir"

@@ -2193,7 +2193,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         long delay = 1000;
-
+        qr_main.setVisibility(View.GONE);
         if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue() ||
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue())) {
