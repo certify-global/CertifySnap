@@ -117,7 +117,7 @@ public class AdminLoginActivity extends SettingsBaseActivity implements JSONObje
         try {
             if (report != null) {
                 mprogressDialog.dismiss();
-                if (report.getString("responseCode").equals("1")) {
+                if (report.has("responseCode") && report.getString("responseCode").equals("1")) {
                     String institutionID=report.getString("InstitutionID");
                     String token=report.getString("access_token");
                     Util.writeString(sharedPreferences,GlobalParameters.Admin_InstitutionID,institutionID);

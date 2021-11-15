@@ -330,7 +330,7 @@ public class TouchlessSettingsActivity extends SettingsBaseActivity implements F
         try {
             if (report == null) return;
             flowHashmap.clear();
-            if (report.getInt("responseCode") == 1) {
+            if (report.has("responseCode") && report.getInt("responseCode") == 1) {
                 JSONArray jsonArray = report.getJSONArray("responseData");
                 flowHashmap.put("Choose Questionnaire", "header");
                 for (int i = 0; i < jsonArray.length(); i++) {

@@ -1306,7 +1306,7 @@ public class Util {
     public static void retrieveSetting(JSONObject reportInfo, Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         try {
-            if (reportInfo.getString("responseCode") != null && reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo.has("responseCode") && reportInfo.getString("responseCode") != null && reportInfo.getString("responseCode").equals("1")) {
                 Gson gson = new Gson();
                 SettingsResponse settingsResponse = gson.fromJson(String.valueOf(reportInfo), SettingsResponse.class);
 
@@ -1578,7 +1578,7 @@ public class Util {
             }
 
             if (status.contains("ActivateApplication")) {
-                if (json1.getString("responseCode").equals("1")) {
+                if (json1.has("responseCode") && json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     Util.getToken((JSONObjectCallback) context, context);
 
