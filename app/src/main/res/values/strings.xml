@@ -736,6 +736,9 @@
     <string name="manual_mode">Manual</string>
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
+    <string name="already_check_in">Already Checked In</string>
+    <string name="already_check_out">Already Checked Out</string>
+    <string name="please_click_check_in_out">Please select on check in or check out</string>
     <string name="show_vaccination_indicator">Show Vaccination Indicator</string>
     <string name="show_non_vaccination_indicator">Show Non Vaccination Indicator</string>
     <string name="retry">Retry</string>

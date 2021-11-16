@@ -3,8 +3,10 @@ package com.certify.snap.controller;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.certify.callback.AccessCallback;
+import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -67,6 +69,8 @@ public class AccessCardController implements AccessCallback {
         void onAccessGranted();
 
         void onAccessDenied();
+
+        void onCheckInOutStatus(boolean isFirst);
     }
 
     public static AccessCardController getInstance() {
@@ -573,6 +577,10 @@ public class AccessCardController implements AccessCallback {
             if (reportInfo.has("responseCode")) {
                 if (!reportInfo.getString("responseCode").equals("1")) {
                     saveOfflineAccessLogRecord(context, req, 0);
+//                } else {
+//                    if (!reportInfo.isNull("responseSubCode") && reportInfo.getInt("responseSubCode") == 103) {
+//                   //     listener.onCheckInOutStatus(false);
+//                    }
                 }
             } else {
                 saveOfflineAccessLogRecord(context, req, 0);

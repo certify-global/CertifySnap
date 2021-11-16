@@ -67,7 +67,6 @@ public class ApplicationController {
     public void setDeviceBoot(boolean deviceBoot) {
         isDeviceBoot = deviceBoot;
     }
-
     /**
      * Method that initializes the Thermal util
      * @param context context

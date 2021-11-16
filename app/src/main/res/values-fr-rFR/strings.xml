@@ -717,6 +717,9 @@
     <string name="manual_mode">Manuel</string>
     <string name="check_in">Enregistrement</string>
     <string name="check_out">Check Out</string>
+    <string name="already_check_in">Already Check in</string>
+    <string name="already_check_out">Already Check Out</string>
+    <string name="please_click_check_in_out">Please click on check in or check out</string>
     <string name="show_vaccination_indicator">Afficher l\'indicateur de vaccination</string>
     <string name="show_non_vaccination_indicator">Afficher l\'indicateur de non-vaccination</string>
     <string name="retry">Réessayez</string>

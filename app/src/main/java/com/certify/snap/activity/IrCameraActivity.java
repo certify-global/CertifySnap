@@ -1545,6 +1545,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onAccessGranted() {
         SoundController.getInstance().playAccessGrantedSound();
         runOnUiThread(() -> {
+            if (userData.member.firstname != null) {
+                if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(userData.member.getDateTimeCheckInOut())) {
+                    return;
+                }
+            }
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
         });
     }
@@ -1555,6 +1560,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_denied), Toast.LENGTH_SHORT).show();
         });
+    }
+
+    @Override
+    public void onCheckInOutStatus(boolean isFirst) {
+        if (registeredMemberslist != null) {
+            RegisteredMembers registeredMember = registeredMemberslist.get(0);
+            if (registeredMember != null) {
+                if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                    registeredMember.dateTimeCheckInOut = Util.getMMDDYYYYDate();
+                if (ApplicationController.getInstance().getTimeAttendance() == 2)
+                    registeredMember.dateTimeCheckInOut = "";
+                DatabaseController.getInstance().updateMember(registeredMember);
+            }
+        }
     }
 
     @Override
@@ -1841,6 +1860,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         if (confirmAboveScreen || confirmBelowScreen) {
                             runOnUiThread(() -> {
                                 if (isDestroyed()) return;
+                                if (userData.member.firstname != null) {
+                                    if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(userData.member.getDateTimeCheckInOut())) {
+                                        if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                                            Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
+                                        if (ApplicationController.getInstance().getTimeAttendance() == 2)
+                                            Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_out), Toast.LENGTH_LONG).show();
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (isHomeViewEnabled) {
+                                                    pauseCameraScan();
+                                                } else {
+                                                    isReadyToScan = false;
+                                                }
+                                                resetHomeScreen();
+                                            }
+                                        }, 3000);
+                                        return;
+                                    }
+                                }
+                                if ((AppSettings.getTimeAndAttendance() == 1))
+                                    onCheckInOutStatus(true);
                                 launchConfirmationFragment(String.valueOf(aboveThreshold));
                                 if (isHomeViewEnabled) {
                                     pauseCameraScan();
@@ -2586,7 +2627,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void onRfidScan(String cardId) {
         Log.v(TAG, "onRfidScan cardId: " + cardId);
-        if (cardId.isEmpty() || isTopFragmentGesture()) return;
+        if (cardId.isEmpty() || isTopFragmentGesture())
+            return;
+        if ((AppSettings.getTimeAndAttendance() == 1 && ApplicationController.getInstance().getTimeAttendance() == 0)) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.please_click_check_in_out), Toast.LENGTH_LONG).show();
+            return;
+        }
 
         if (isTopFragmentSecondaryScreen()) {
             closeFragment(secondaryScreenFragment);
@@ -2602,6 +2648,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     onRfidNoMemberMatch(cardId);
                     return;
                 }
+                if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(matchedMember.getDateTimeCheckInOut())) {
+                    if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                        Toast.makeText(this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
+                    if (ApplicationController.getInstance().getTimeAttendance() == 2)
+                        Toast.makeText(this, getResources().getString(R.string.already_check_out), Toast.LENGTH_LONG).show();
+                    if (isHomeViewEnabled) {
+                        pauseCameraScan();
+                    } else {
+                        isReadyToScan = false;
+                    }
+                    resetHomeScreen();
+                    return;
+                }
+
                 registeredMemberslist = new ArrayList<>();
                 registeredMemberslist.add(matchedMember);
 
@@ -3073,7 +3133,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         PrinterController.getInstance().setPrinting(false);
         //GestureController.getInstance().setLanguageUpdated(false);
         QrCodeController.getInstance().clearData();
-        ApplicationController.getInstance().setTimeAttendance(0);
+        //   ApplicationController.getInstance().setTimeAttendance(0);
     }
 
     private void setPreviewIdleTimer() {
@@ -4076,7 +4136,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onGestureDetected() {
-        if(!AppSettings.isEnableQuestions()){
+        if (!AppSettings.isEnableQuestions()) {
             Toast.makeText(this, getString(R.string.gesture_questions_not_available), Toast.LENGTH_LONG).show();
             return;
         }
@@ -4609,6 +4669,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             clearQrCode();
             resetGesture();
             initScan();
+            DisplayTimeAttendance();
         });
     }
 
@@ -4651,6 +4712,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvTime.setText(currentTime);
                 String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
                 tvDate.setText(currentDate);
+                ApplicationController.getInstance().setTimeAttendance(0);
+                if (isHomeViewEnabled) {
+                    pauseCameraScan();
+                } else {
+                    isReadyToScan = false;
+                }
             } else if (AppSettings.getTimeAndAttendance() == 0) {
                 if (Util.isDeviceF10()) {
                     CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);

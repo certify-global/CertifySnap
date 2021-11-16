@@ -125,6 +125,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.FileChannel;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -257,8 +258,7 @@ public class Util {
             }
             Log.d(LOG, "permissions getSNCode: ");
             return android.os.Build.getSerial();
-        }
-        else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
+        } else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
             return getSerialNumber();
@@ -944,7 +944,7 @@ public class Util {
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
-            obj.put("networkId",data.member.getNetworkId());
+            obj.put("networkId", data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1417,7 +1417,7 @@ public class Util {
                     if (identificationSettings != null) {
                         if (deviceSettingsApi.settingVersion.isEmpty()) {
                             if ((identificationSettings.enableQRCodeScanner.equals("1") &&
-                                identificationSettings.enableRFIDScanner.equals("1"))) {
+                                    identificationSettings.enableRFIDScanner.equals("1"))) {
                                 Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()));
                                 if (identificationSettings.enableFacialRecognition.equals("1")) {
                                     Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
@@ -1612,7 +1612,7 @@ public class Util {
 
                 String institutionIdOld = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
 
-                if(institutionIdOld != null && !institutionId.isEmpty()
+                if (institutionIdOld != null && !institutionId.isEmpty()
                         && !institutionIdOld.equals(institutionId)) {
                     DatabaseController.getInstance().clearAll();
                 }
@@ -2242,6 +2242,28 @@ public class Util {
         return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
     }
 
+    public static boolean isAlreadyChecked(String oldDateTime) {
+        try {
+            if (ApplicationController.getInstance().getTimeAttendance() == 2 && oldDateTime.isEmpty())
+                return true;
+            else if (ApplicationController.getInstance().getTimeAttendance() == 2 && !oldDateTime.isEmpty())
+                return false;
+            if (ApplicationController.getInstance().getTimeAttendance() == 1 && oldDateTime.isEmpty())
+                return false;
+            else if (ApplicationController.getInstance().getTimeAttendance() == 1 && !oldDateTime.isEmpty()){
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                Date appLaunchDateTime = format.parse(oldDateTime);
+                Date currentDateTime = new Date(System.currentTimeMillis());
+                long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+                long seconds = TimeUnit.MILLISECONDS.toSeconds(differenceInTime) % 60;
+                return seconds < 86400;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private static String getDeviceUpTime() {
         long uptimeMillis = SystemClock.elapsedRealtime();
         String deviceUptime = String.format(Locale.getDefault(),
@@ -2396,7 +2418,7 @@ public class Util {
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
         long timeZoneValue = TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
-        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings()/(3600 * 1000));
+        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings() / (3600 * 1000));
         String timeZoneStr = String.valueOf(timeZoneValue);
         if (!timeZoneStr.contains("-")) {
             timeZoneStr = "+" + timeZoneStr;
@@ -2404,11 +2426,11 @@ public class Util {
         return (timeZoneStr + ":00");
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
@@ -2428,13 +2450,14 @@ public class Util {
         return value;
     }
 
-    public static int getOrientation(SharedPreferences sp){
-        if("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
-                || getInternalModel().contains("F10")|| getInternalModel().contains("970")
-                || getInternalModel().contains("F8")){
-            if("F801".equals(getInternalModel()))  return sp.getInt(GlobalParameters.Orientation, 0);
+    public static int getOrientation(SharedPreferences sp) {
+        if ("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
+                || getInternalModel().contains("F10") || getInternalModel().contains("970")
+                || getInternalModel().contains("F8")) {
+            if ("F801".equals(getInternalModel()))
+                return sp.getInt(GlobalParameters.Orientation, 0);
             return sp.getInt(GlobalParameters.Orientation, 270);
-        }else{
+        } else {
             return sp.getInt(GlobalParameters.Orientation, 0);
         }
     }

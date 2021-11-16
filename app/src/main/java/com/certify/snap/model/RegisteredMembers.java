@@ -33,6 +33,7 @@ public class RegisteredMembers {
     public boolean isMemberAccessed;
     public String groupTypeName;
     public boolean isDocument;
+    public String dateTimeCheckInOut = "";
 
     public String getNetworkId() {
         return networkId;
@@ -209,6 +210,14 @@ public class RegisteredMembers {
         isDocument = document;
     }
 
+
+    public String getDateTimeCheckInOut() {
+        return dateTimeCheckInOut;
+    }
+
+    public void setDateTimeCheckInOut(String dateTimeCheckInOut) {
+        this.dateTimeCheckInOut = dateTimeCheckInOut;
+    }
     @Override
     public String toString() {
         return "Members{" +
