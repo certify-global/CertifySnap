@@ -658,6 +658,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public void run() {
                 SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy hh:mm:ss a", Locale.getDefault()); //yyyy-MM-dd HH:mm:ss
+                String currentTime = new SimpleDateFormat("HH:mm aaa", Locale.getDefault()).format(new Date());
                 Date curDate = new Date(System.currentTimeMillis());
                 final String str = formatter.format(curDate);
                 runOnUiThread(new Runnable() {
@@ -667,6 +668,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                             tv_display_time.setText(str);
                         if (tvDisplayTimeOnly != null)//todo null value
                             tvDisplayTimeOnly.setText(str);
+                        if(tvTime != null && time_attendance_layout.getVisibility() == View.VISIBLE)
+                        tvTime.setText(currentTime);
                     }
                 });
             }
@@ -1564,14 +1567,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onCheckInOutStatus(boolean isFirst) {
+        String dateTimeCheckInOut = "";
         if (registeredMemberslist != null) {
             RegisteredMembers registeredMember = registeredMemberslist.get(0);
             if (registeredMember != null) {
-                if (ApplicationController.getInstance().getTimeAttendance() == 1)
-                    registeredMember.dateTimeCheckInOut = Util.getMMDDYYYYDate();
+               if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                    dateTimeCheckInOut = Util.getMMDDYYYYDate();
                 if (ApplicationController.getInstance().getTimeAttendance() == 2)
-                    registeredMember.dateTimeCheckInOut = "";
-                DatabaseController.getInstance().updateMember(registeredMember);
+                    dateTimeCheckInOut = "";
+                String finalDateTimeCheckInOut = dateTimeCheckInOut;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
+                        DatabaseController.getInstance().updateMember(registeredMember);
+                    }
+                }, 4000);
             }
         }
     }
@@ -1880,8 +1891,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         return;
                                     }
                                 }
-                                if ((AppSettings.getTimeAndAttendance() == 1))
-                                    onCheckInOutStatus(true);
                                 launchConfirmationFragment(String.valueOf(aboveThreshold));
                                 if (isHomeViewEnabled) {
                                     pauseCameraScan();
@@ -4464,10 +4473,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setLayoutMargins() {
-        RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
-        RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
-        tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
-        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
+//        RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
+//        RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
+//        tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
+//        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
         tv_thermal_subtitle.setMaxLines(2);
         tv_thermal_subtitle.setEllipsize(TextUtils.TruncateAt.END);
         String text = tv_thermal.getText().toString();

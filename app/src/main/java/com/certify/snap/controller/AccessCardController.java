@@ -483,6 +483,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
+                    listener.onCheckInOutStatus(false);
                     saveOfflineAccessLogRecord(context, obj, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
@@ -575,12 +576,11 @@ public class AccessCardController implements AccessCallback {
                 return;
             }
             if (reportInfo.has("responseCode")) {
-                if (!reportInfo.getString("responseCode").equals("1")) {
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    if ((AppSettings.getTimeAndAttendance() == 1))
+                        listener.onCheckInOutStatus(true);
+                } else {
                     saveOfflineAccessLogRecord(context, req, 0);
-//                } else {
-//                    if (!reportInfo.isNull("responseSubCode") && reportInfo.getInt("responseSubCode") == 103) {
-//                   //     listener.onCheckInOutStatus(false);
-//                    }
                 }
             } else {
                 saveOfflineAccessLogRecord(context, req, 0);
