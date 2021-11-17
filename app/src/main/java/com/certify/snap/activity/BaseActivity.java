@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,6 +42,7 @@ public abstract class BaseActivity extends Activity {
 
     private BroadcastReceiver activityReceiver;
     private BroadcastReceiver networkReceiver;
+    private BroadcastReceiver offlineCheckReceiver;
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
@@ -58,6 +60,7 @@ public abstract class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
         initActivityReceiver();
         initNetworkReceiver();
+        initHealthCheckReceiver();
         activityReceiverFilter = new IntentFilter();
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION);
@@ -68,7 +71,8 @@ public abstract class BaseActivity extends Activity {
         super.onStart();
 
         if (internetIndicatorImg != null) {
-            if (!Util.isNetworkOff(this) && Util.getSharedPreferences(this).getBoolean(GlobalParameters.Internet_Indicator, true)) {
+            if (!Util.isNetworkOff(this)
+                    && Util.getSharedPreferences(this).getBoolean(GlobalParameters.Internet_Indicator, true)) {
                 internetIndicatorImg.setVisibility(View.GONE);
             } else {
                 internetIndicatorImg.setVisibility(View.VISIBLE);
@@ -89,6 +93,12 @@ public abstract class BaseActivity extends Activity {
             this.registerReceiver(networkReceiver, intentFilter);
         }
         this.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        if (offlineCheckReceiver != null) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(DeviceHealthService.HEALTH_CHECK_OFFLINE_ACTION);
+            intentFilter.addAction(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION);
+            LocalBroadcastManager.getInstance(this).registerReceiver(offlineCheckReceiver, intentFilter);
+        }
     }
 
     @Override
@@ -101,6 +111,9 @@ public abstract class BaseActivity extends Activity {
             this.unregisterReceiver(networkReceiver);
         }
         this.unregisterReceiver(mGattUpdateReceiver);
+        if (offlineCheckReceiver != null) {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(offlineCheckReceiver);
+        }
     }
 
     @Override
@@ -108,6 +121,7 @@ public abstract class BaseActivity extends Activity {
         super.onDestroy();
         networkReceiver = null;
         activityReceiver = null;
+        offlineCheckReceiver = null;
     }
 
     private void initActivityReceiver() {
@@ -121,6 +135,33 @@ public abstract class BaseActivity extends Activity {
                     if (isDestroyed() || isFinishing()) return;
                     Toast.makeText(BaseActivity.this, getString(R.string.update_setting_app_restart), Toast.LENGTH_SHORT).show();
                     finishAffinity();
+                }
+            }
+        };
+    }
+
+    private void initHealthCheckReceiver() {
+        offlineCheckReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null && intent.getAction() != null) {
+                    runOnUiThread(() -> {
+                        Log.d(TAG, "Health Intent action " + intent.getAction());
+                        if (intent.getAction().equals(DeviceHealthService.HEALTH_CHECK_OFFLINE_ACTION)) {
+                            ApplicationController.getInstance().cancelHealthCheckTimer(BaseActivity.this);
+                            if (internetIndicatorImg != null) {
+                                internetIndicatorImg.setVisibility(View.VISIBLE);
+                            }
+                        } else if (intent.getAction().equals(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION)) {
+                            new Handler().postDelayed(() -> {
+                                ApplicationController.getInstance().startHealthCheckTimer(BaseActivity.this);
+                            }, 1000);
+                            if (internetIndicatorImg != null) {
+                                internetIndicatorImg.setVisibility(View.GONE);
+                            }
+                            updateOfflineService(BaseActivity.this);
+                        }
+                    });
                 }
             }
         };
@@ -169,6 +210,8 @@ public abstract class BaseActivity extends Activity {
                 if (("android.net.wifi.WIFI_STATE_CHANGED".equals(intent.getAction())) || ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction()))) {
                     if (Util.isConnectedWifi(context) || Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)) {
                         if (internetIndicatorImg != null) {
+                            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                             internetIndicatorImg.setVisibility(View.GONE);
                         }
                         Log.d(TAG, "Health network online");
@@ -178,7 +221,6 @@ public abstract class BaseActivity extends Activity {
                         if (internetIndicatorImg != null) {
                             internetIndicatorImg.setVisibility(View.VISIBLE);
                         }
-                        stopServices();
                     }
                 }
             }
@@ -257,8 +299,6 @@ public abstract class BaseActivity extends Activity {
                 if (!Util.isServiceRunning(DeviceHealthService.class, context)) {
                     context.startService(new Intent(context, DeviceHealthService.class));
                     Application.StartService(context);
-                    ApplicationController.getInstance().cancelHealthCheckTimer();
-                    ApplicationController.getInstance().startHealthCheckTimer();
                 }
             }
         } catch (Exception e) {
@@ -282,8 +322,8 @@ public abstract class BaseActivity extends Activity {
         stopService(new Intent(this, OfflineRecordSyncService.class));
     }
 
-    private void stopHealthCheckService() {
-        ApplicationController.getInstance().cancelHealthCheckTimer();
+    protected void stopHealthCheckService() {
+        ApplicationController.getInstance().cancelHealthCheckTimer(this);
         stopService(new Intent(this, DeviceHealthService.class));
     }
 }

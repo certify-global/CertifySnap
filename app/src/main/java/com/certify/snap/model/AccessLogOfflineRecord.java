@@ -44,14 +44,17 @@ public class AccessLogOfflineRecord {
     }
 
     public static long lastPrimaryId() {
+        long primaryId = 1;
         AccessLogOfflineRecord offlineRecord = DatabaseController.getInstance().getLastAccessLogPrimaryId();
         if (offlineRecord != null) {
-            Log.d("OfflineAccessLogRecord", "primaryId offlineRecord " + (offlineRecord.getPrimaryId() + 1));
-            return offlineRecord.getPrimaryId() + 1;
+            primaryId = offlineRecord.primaryId;
+            ++primaryId;
+            Log.d("OfflineAccessLogRecord", "primaryId offlineRecord " + primaryId);
+            return primaryId;
         }
-        Log.d("OfflineAccessLogRecord", "primaryId lastPrimaryId " + 0L);
+        Log.d("OfflineAccessLogRecord", "primaryId lastPrimaryId " + primaryId);
 
-        return 1L;
+        return primaryId;
     }
 
     /*@Override

@@ -31,6 +31,7 @@ public class ApplicationController {
     public interface ApplicationCallbackListener {
         void onHealthCheckNoResponse(int min, int sec);
         void onHealthCheckTimeout();
+        void onHealthCheckTimerCancelled();
     }
 
     public static ApplicationController getInstance() {
@@ -174,19 +175,22 @@ public class ApplicationController {
         this.appRestartTime = appRestartTime;
     }
 
-    public void startHealthCheckTimer() {
-        if (healthCheckTimer != null) return;
+    public void startHealthCheckTimer(Context context) {
+        if (healthCheckTimer != null) {
+            Log.d(TAG, "Health check timer on");
+            return;
+        }
         healthCheckTimer = new CountDownTimer(Constants.HEALTH_CHECK_INIT_TIME, Constants.HEALTH_CHECK_INTERVAL) {
             @Override
             public void onTick(long remTime) {
                 if (listener != null && healthCheckInterval) {
+                    Log.d(TAG, "Health check api no response");
                     int minute = (int) (remTime/1000)/60;
                     int second = (int) (remTime/1000)%60;
                     listener.onHealthCheckNoResponse(minute, second);
                     return;
                 }
                 healthCheckInterval = true;
-                Log.d(TAG, " health set " + healthCheckInterval);
             }
 
             @Override
@@ -197,19 +201,22 @@ public class ApplicationController {
                 }
             }
         };
+        Log.d(TAG, "Health Start timer ");
         healthCheckTimer.start();
     }
 
-    public boolean isHealthCheckInterval() {
-        return healthCheckInterval;
-    }
-
-    public void cancelHealthCheckTimer() {
+    public void cancelHealthCheckTimer(Context context) {
         if (healthCheckTimer != null) {
+            Log.d(TAG, "Health cancel timer ");
             healthCheckTimer.cancel();
             healthCheckTimer = null;
-            healthCheckInterval = false;
-            appRestartTime = "";
+            if (listener != null) {
+                listener.onHealthCheckTimerCancelled();
+            }
         }
+        appRestartTime = "";
+        healthCheckInterval = false;
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        Util.writeBoolean(sharedPreferences, GlobalParameters.HEALTH_CHECK_OFFLINE, false);
     }
 }
