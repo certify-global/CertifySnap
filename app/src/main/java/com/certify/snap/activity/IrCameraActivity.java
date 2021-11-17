@@ -3190,7 +3190,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeScan() {
-        updateHealthCheckUI();
+        runOnUiThread(this::updateHealthCheckUI);
         if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
             GestureController.getInstance().setLanguageUpdated(false);
             GestureController.getInstance().setCallback(false);
@@ -4787,7 +4787,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void updateHealthCheckUI() {
         if (ApplicationController.getInstance().isHealthCheckInterval()) {
-            internetIndicatorImg.setVisibility(View.VISIBLE);
+            if (internetIndicatorImg != null) {
+                internetIndicatorImg.setVisibility(View.VISIBLE);
+            }
             tvErrorMessage.setVisibility(View.VISIBLE);
             tvErrorMessage.setTextSize(22);
             tvVersionIr.setVisibility(View.GONE);
@@ -4799,7 +4801,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     @Override
     public void onHealthCheckNoResponse(int min, int sec) {
         runOnUiThread(() -> {
-            internetIndicatorImg.setVisibility(View.VISIBLE);
+            if (internetIndicatorImg != null) {
+                internetIndicatorImg.setVisibility(View.VISIBLE);
+            }
             tvErrorMessage.setVisibility(View.VISIBLE);
             tvErrorMessage.setTextSize(22);
             tvVersionIr.setVisibility(View.GONE);
