@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,17 +21,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.certify.fcm.FireBaseMessagingService;
 import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
-import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.Application;
 import com.certify.snap.common.ContextUtils;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.service.DeviceHealthService;
-import com.certify.snap.service.LoggerService;
 import com.certify.snap.service.MemberSyncService;
 import com.certify.snap.service.OfflineRecordSyncService;
 
@@ -58,7 +52,7 @@ public abstract class BaseActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initActivityReceiver();
-        initHealthCheckReceiver();
+        //initHealthCheckReceiver();
         activityReceiverFilter = new IntentFilter();
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_SETTING_BROADCAST_ACTION);
@@ -69,11 +63,10 @@ public abstract class BaseActivity extends Activity {
         super.onStart();
 
         if (internetIndicatorImg != null) {
-            if (!Util.isNetworkOff(this)
-                    && Util.getSharedPreferences(this).getBoolean(GlobalParameters.Internet_Indicator, true)) {
-                internetIndicatorImg.setVisibility(View.GONE);
-            } else {
+            if (Util.isNetworkOff(this)) {
                 internetIndicatorImg.setVisibility(View.VISIBLE);
+            } else {
+                internetIndicatorImg.setVisibility(View.GONE);
             }
         }
     }

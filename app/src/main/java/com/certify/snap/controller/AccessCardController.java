@@ -477,8 +477,7 @@ public class AccessCardController implements AccessCallback {
                 }
 
                 int syncStatus = -1;
-                if (Util.isOfflineMode(context) ||
-                    Util.getSharedPreferences(context).getBoolean(GlobalParameters.Internet_Indicator, false)) {
+                if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
                     saveOfflineAccessLogRecord(context, obj, syncStatus);
                 } else {

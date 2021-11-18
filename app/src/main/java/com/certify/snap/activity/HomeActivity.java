@@ -258,8 +258,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         try {
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
                 if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
-                    ApplicationController.getInstance().cancelHealthCheckTimer(this);
-                    ApplicationController.getInstance().startHealthCheckTimer(this);
+                    /*ApplicationController.getInstance().cancelHealthCheckTimer(this);
+                    ApplicationController.getInstance().startHealthCheckTimer(this);*/
                     startService(new Intent(this, DeviceHealthService.class));
                     Application.StartService(this);
                 }

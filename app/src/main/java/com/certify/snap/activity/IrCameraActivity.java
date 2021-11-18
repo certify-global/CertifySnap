@@ -4632,7 +4632,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void DisplayTimeAttendance() {
         try {
-            updateHealthCheckUI();
+            //updateHealthCheckUI();
             if (AppSettings.getTimeAndAttendance() == 1) {
                 relative_main.setVisibility(View.GONE);
                 time_attendance_layout.setVisibility(View.VISIBLE);

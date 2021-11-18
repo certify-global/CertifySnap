@@ -878,8 +878,7 @@ public class Util {
             if (BuildConfig.DEBUG) {
                 Log.v(LOG, "recordUserTemperature body: " + obj.toString());
             }
-            if (isOfflineMode(context) ||
-                    (Util.getSharedPreferences(context).getBoolean(GlobalParameters.Internet_Indicator, false)) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
+            if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
                 obj.put("utcTime", Util.getUTCDate(""));
                 saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
             } else {
@@ -1211,7 +1210,7 @@ public class Util {
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
-            checkForInternetConnection(context);
+            //checkForInternetConnection(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
