@@ -41,7 +41,6 @@ import java.util.Locale;
 public abstract class BaseActivity extends Activity {
 
     private BroadcastReceiver activityReceiver;
-    private BroadcastReceiver networkReceiver;
     private BroadcastReceiver offlineCheckReceiver;
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
@@ -59,7 +58,6 @@ public abstract class BaseActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initActivityReceiver();
-        initNetworkReceiver();
         initHealthCheckReceiver();
         activityReceiverFilter = new IntentFilter();
         activityReceiverFilter.addAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
@@ -86,12 +84,6 @@ public abstract class BaseActivity extends Activity {
         if (activityReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(activityReceiver, activityReceiverFilter);
         }
-        if (networkReceiver != null) {
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-            intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
-            this.registerReceiver(networkReceiver, intentFilter);
-        }
         this.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (offlineCheckReceiver != null) {
             IntentFilter intentFilter = new IntentFilter();
@@ -107,9 +99,6 @@ public abstract class BaseActivity extends Activity {
         if (activityReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(activityReceiver);
         }
-        if (networkReceiver != null) {
-            this.unregisterReceiver(networkReceiver);
-        }
         this.unregisterReceiver(mGattUpdateReceiver);
         if (offlineCheckReceiver != null) {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(offlineCheckReceiver);
@@ -119,7 +108,6 @@ public abstract class BaseActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        networkReceiver = null;
         activityReceiver = null;
         offlineCheckReceiver = null;
     }
@@ -203,30 +191,6 @@ public abstract class BaseActivity extends Activity {
         }
     };
 
-    private void initNetworkReceiver() {
-        networkReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (("android.net.wifi.WIFI_STATE_CHANGED".equals(intent.getAction())) || ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction()))) {
-                    if (Util.isConnectedWifi(context) || Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)) {
-                        if (internetIndicatorImg != null) {
-                            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-                            Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
-                            internetIndicatorImg.setVisibility(View.GONE);
-                        }
-                        Log.d(TAG, "Health network online");
-                        onNetworkConnected(context);
-                    } else {
-                        Log.d(TAG, "Health network offline");
-                        if (internetIndicatorImg != null) {
-                            internetIndicatorImg.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }
-            }
-        };
-    }
-
     protected void restartApplication() {
         finishAffinity();
         Intent intent = new Intent(this, HomeActivity.class);
@@ -248,39 +212,6 @@ public abstract class BaseActivity extends Activity {
         });
     }
 
-    private void onNetworkConnected(Context context) {
-        if (!DeviceSettingsController.getInstance().isSettingsRetrieved(context)) {
-            if (isDestroyed() || isFinishing()) return;
-            Toast.makeText(context, getString(R.string.restarting_wait_msg), Toast.LENGTH_LONG).show();
-            Intent guideintent = new Intent(context, HomeActivity.class);
-            guideintent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            guideintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(guideintent);
-        } else {
-            updateHealthService(context);
-            updateMemberSyncService(context);
-            updateOfflineService(context);
-            updateLoggerService(context);
-        }
-    }
-
-    private void updateMemberSyncService(Context context) {
-        try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
-            if (!Util.isServiceRunning(MemberSyncService.class, context)) {
-                if (sharedPreferences != null && (AppSettings.isFacialDetect()
-                        || AppSettings.isRfidEnabled())) {
-                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        context.startService(new Intent(context, MemberSyncService.class));
-                        Application.StartService(context);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error in starting Member sync service " +e.getMessage());
-        }
-    }
-
     private void updateOfflineService(Context context) {
         try {
             if (!Util.isServiceRunning(OfflineRecordSyncService.class, context)) {
@@ -289,30 +220,6 @@ public abstract class BaseActivity extends Activity {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error in starting offline sync service " +e.getMessage());
-        }
-    }
-
-    private void updateHealthService(Context context) {
-        try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
-            if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                if (!Util.isServiceRunning(DeviceHealthService.class, context)) {
-                    context.startService(new Intent(context, DeviceHealthService.class));
-                    Application.StartService(context);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
-        }
-    }
-
-    private void updateLoggerService(Context context) {
-        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
-        if (!Util.isServiceRunning(LoggerService.class, this) &&
-            sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, true)) {
-            startService(new Intent(this, LoggerService.class));
-            Application.StartService(this);
         }
     }
 
