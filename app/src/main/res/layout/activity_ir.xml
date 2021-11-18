@@ -108,11 +108,10 @@
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
                 android:padding="@dimen/size_10"
-                android:textSize="35sp" />
+                android:textSize="38sp" />
 
             <Button
                 android:id="@+id/btn_check_out"
-                style="@style/buttonNumberStyle"
                 android:layout_below="@id/btn_check_in"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"

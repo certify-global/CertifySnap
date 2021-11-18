@@ -2244,6 +2244,7 @@ public class Util {
 
     public static boolean isAlreadyChecked(String oldDateTime) {
         try {
+            Log.i("BNreddy", "isAlreadyChecked oldDateTime: " + oldDateTime);
             if (ApplicationController.getInstance().getTimeAttendance() == 2 && oldDateTime.isEmpty())
                 return true;
             else if (ApplicationController.getInstance().getTimeAttendance() == 2 && !oldDateTime.isEmpty())
@@ -2256,6 +2257,8 @@ public class Util {
                 Date currentDateTime = new Date(System.currentTimeMillis());
                 long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
                 long seconds = TimeUnit.MILLISECONDS.toSeconds(differenceInTime) % 60;
+                long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+                Log.i("BNreddy", "hours:" + hours +"seconds:"+seconds);
                 return seconds < 86400;
             }
         } catch (Exception e) {
