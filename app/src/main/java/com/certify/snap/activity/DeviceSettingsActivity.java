@@ -766,7 +766,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
     private void captureLogSetting() {
         saveLogButton.setOnClickListener(view -> {
-            if (!Util.isOfflineMode(this) && !AppSettings.isLogOfflineDataEnabled()) {
+            if (!Util.isOfflineMode(this)) {
                 Util.sendDeviceLogs(DeviceSettingsActivity.this);
                 Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
             } else {
