@@ -1548,7 +1548,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onAccessGranted() {
         SoundController.getInstance().playAccessGrantedSound();
         runOnUiThread(() -> {
-            if (userData.member.firstname != null) {
+            if (userData != null && userData.member.firstname != null) {
                 if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(userData.member.getDateTimeCheckInOut())) {
                     return;
                 }
@@ -1871,7 +1871,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         if (confirmAboveScreen || confirmBelowScreen) {
                             runOnUiThread(() -> {
                                 if (isDestroyed()) return;
-                                if (userData.member.firstname != null) {
+                                if (userData != null && userData.member.firstname != null) {
                                     if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(userData.member.getDateTimeCheckInOut())) {
                                         if (ApplicationController.getInstance().getTimeAttendance() == 1)
                                             Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
