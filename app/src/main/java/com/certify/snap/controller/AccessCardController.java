@@ -406,7 +406,6 @@ public class AccessCardController implements AccessCallback {
                 String accessId = "";
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-                Log.i("BNreddy triggerType : ", "" + triggerType);
                 JSONObject obj = new JSONObject();
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
@@ -505,7 +504,6 @@ public class AccessCardController implements AccessCallback {
                 if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
                     obj.put("allowAccess", getAllowAccessValue(data));
                 }
-                Log.i("BNreddy", "isAlreadyChecked oldDateTime: " + obj);
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
@@ -596,8 +594,6 @@ public class AccessCardController implements AccessCallback {
     @Override
     public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
         try {
-            Log.i("BNreddy", "onJSONObjectListenerAccess : " + reportInfo);
-
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
                 saveOfflineAccessLogRecord(context, req, 0);

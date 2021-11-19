@@ -356,7 +356,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         homeIcon(path);
-
         getAppSettings();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Application.getInstance().addActivity(this);
@@ -1568,7 +1567,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onCheckInOutStatus(boolean isStatus) {
         if (registeredMemberslist != null && registeredMemberslist.size() > 0) {
             RegisteredMembers registeredMember = registeredMemberslist.get(0);
-            Log.i("BNreddy", "ApplicationController.getInstance().getTimeAttendance()" + ApplicationController.getInstance().getTimeAttendance() + ",onCheckInOutStatus " + registeredMemberslist);
             if (registeredMember != null) {
                 String dateTimeCheckInOut = "";
                 if (ApplicationController.getInstance().getTimeAttendance() == 1)
@@ -1580,14 +1578,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Log.i("BNreddy", "ApplicationController.getInstance().getTimeAttendance()" + ApplicationController.getInstance().getTimeAttendance());
                             AccessCardController.getInstance().setResponse_code(-1);
                             registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
                             DatabaseController.getInstance().updateMember(registeredMember);
                         }
                     }, 4000);
                 } else {
-                    Log.i("BNreddy", "isStatus .getInstance().getTimeAttendance()" + ApplicationController.getInstance().getTimeAttendance());
                     AccessCardController.getInstance().setResponse_code(-1);
                     registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
                     DatabaseController.getInstance().updateMember(registeredMember);
@@ -2519,7 +2515,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
-                                    Log.i("BNreddy : ", "" + registeredMembers);
                                     if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
                                         CameraController.getInstance().updateTriggerType(CameraController.triggerValue.FACE.toString());
                                     }

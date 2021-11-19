@@ -2245,7 +2245,6 @@ public class Util {
 
     public static boolean isAlreadyChecked(String oldDateTime) {
         try {
-            Log.i("BNreddy", "isAlreadyChecked oldDateTime: " + oldDateTime + "getResponse_code :"+ AccessCardController.getInstance().getResponse_code());
             if (AccessCardController.getInstance().getResponse_code() == -1)
                 return false;
             if (AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue()||AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
@@ -2261,17 +2260,16 @@ public class Util {
                 Date appLaunchDateTime = format.parse(oldDateTime);
                 Date currentDateTime = new Date(System.currentTimeMillis());
                 long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
-                long seconds = TimeUnit.MILLISECONDS.toSeconds(differenceInTime) % 60;
                 long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
-                Log.i("BNreddy", "hours:" + hours +"seconds:"+seconds);
-                return seconds < 86400;
+                long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+                long totalHours = hours + days * 24;
+                return totalHours < 24;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
-
     private static String getDeviceUpTime() {
         long uptimeMillis = SystemClock.elapsedRealtime();
         String deviceUptime = String.format(Locale.getDefault(),
