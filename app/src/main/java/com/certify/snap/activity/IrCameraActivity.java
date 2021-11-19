@@ -432,7 +432,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public void onClick(View v) {
                 GestureController.getInstance().setAnswerType(GestureController.AnswerType.Touch);
-                if (DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
+                if (AppSettings.isMultiLingualEnabled() && DatabaseController.getInstance().getLanguagesFromDb().size() > 1) {
                     launchTouchFragment();
                 } else {
                     GestureController.getInstance().setCallback(true);

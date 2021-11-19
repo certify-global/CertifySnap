@@ -65,6 +65,7 @@ public class AccessCardController implements AccessCallback {
             return id;
         }
     }
+
     public enum AccessCheckInOutStatus {
         RESPONSE_CODE_SUCCESS(1),
         RESPONSE_CODE_FIELD(0),
@@ -80,6 +81,7 @@ public class AccessCardController implements AccessCallback {
             return statusId;
         }
     }
+
     public interface AccessCallbackListener {
         void onAccessGranted();
 
@@ -113,6 +115,7 @@ public class AccessCardController implements AccessCallback {
     public boolean isAllowAnonymous() {
         return mAllowAnonymous;
     }
+
     public int getResponse_code() {
         return response_code;
     }
@@ -602,18 +605,17 @@ public class AccessCardController implements AccessCallback {
             }
             if (reportInfo.has("responseCode")) {
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")){
+                    if ((AppSettings.getTimeAndAttendance() == 1))
+                        listener.onCheckInOutStatus(true);
+                    if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")) {
                         setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
-                    }else {
-                        if ((AppSettings.getTimeAndAttendance() == 1))
-                            listener.onCheckInOutStatus(true);
+                    } else {
                         setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
                     }
                 } else if (reportInfo.getString("responseCode").equals("0")) {
                     setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue());
-                    if ((AppSettings.getTimeAndAttendance() == 1))
-                        listener.onCheckInOutStatus(true);
-                    else  saveOfflineAccessLogRecord(context, req, 0);
+                    if ((AppSettings.getTimeAndAttendance() != 1))
+                        saveOfflineAccessLogRecord(context, req, 0);
                 }
             } else {
                 saveOfflineAccessLogRecord(context, req, 0);

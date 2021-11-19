@@ -33,7 +33,7 @@ public class RegisteredMembers {
     public String groupTypeName;
     public boolean isDocument;
     public String image;
-    public String dateTimeCheckInOut = "-1";
+    public String dateTimeCheckInOut = "";
 
     public String getNetworkId() {
         return networkId;
