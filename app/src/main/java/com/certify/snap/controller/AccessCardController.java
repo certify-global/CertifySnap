@@ -479,7 +479,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    saveOfflineAccessLogRecord(context, obj, syncStatus);
+                    saveOfflineAccessLogRecord(context, obj, data, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
                 }
@@ -552,7 +552,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    saveOfflineAccessLogRecord(context, obj, syncStatus);
+                    saveOfflineAccessLogRecord(context, obj, data, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
                 }
@@ -567,22 +567,22 @@ public class AccessCardController implements AccessCallback {
         try {
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
-                saveOfflineAccessLogRecord(context, req, 0);
+                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(), 0);
                 return;
             }
             if (reportInfo.has("responseCode")) {
                 if (!reportInfo.getString("responseCode").equals("1")) {
-                    saveOfflineAccessLogRecord(context, req, 0);
+                    saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),0);
                 }
             } else {
-                saveOfflineAccessLogRecord(context, req, 0);
+                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),0);
             }
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());
         }
     }
 
-    private void saveOfflineAccessLogRecord(Context context, JSONObject obj, int syncStatus) {
+    private void saveOfflineAccessLogRecord(Context context, JSONObject obj, UserExportedData data, int syncStatus) {
         if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             return;
         }
@@ -592,6 +592,27 @@ public class AccessCardController implements AccessCallback {
                 accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
                 accessLogOfflineRecord.setJsonObj(obj.toString());
                 accessLogOfflineRecord.setOfflineSync(syncStatus);
+                accessLogOfflineRecord.setDeviceTime(obj.getString("deviceTime"));
+                accessLogOfflineRecord.setUtcTime(obj.getString("utcRecordDate"));
+                if (data != null && data.member != null) {
+                    if (data.member.memberid != null) {
+                        accessLogOfflineRecord.setMemberId(data.member.getMemberid());
+                    }
+                    if (data.member.firstname != null) {
+                        accessLogOfflineRecord.setFirstName(data.member.getFirstname());
+                        if (data.member.lastname != null) {
+                            accessLogOfflineRecord.setLastName(data.member.getLastname());
+                        }
+                    } else {
+                        accessLogOfflineRecord.setFirstName("Anonymous");
+                    }
+                    if (data.member.image != null) {
+                        accessLogOfflineRecord.setImagePath(data.member.image);
+                    }
+                } else {
+                    accessLogOfflineRecord.setFirstName("Anonymous");
+                    accessLogOfflineRecord.setLastName("");
+                }
                 DatabaseController.getInstance().insertOfflineAccessLog(accessLogOfflineRecord);
             } catch (Exception e) {
                 e.printStackTrace();

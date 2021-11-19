@@ -553,7 +553,7 @@
     <string name="failed_member">Failed Member:</string>
     <string name="member">Member:</string>
     <string name="certify_snapXt">CERTIFY SnapXT</string>
-    <string name="tv_record">Record</string>
+    <string name="tv_record">Records</string>
     <string name="member_delete_msg">Do you want to delete member?</string>
     <string name="pls_input_name">Please Input Name or User ID</string>
     <string name="unique_id">unique Id</string>
@@ -743,5 +743,7 @@
     <string name="face_not_matched_msg">Potential face match didn\'t happen. Please retry</string>
     <string name="face_not_detected">Face not detected, please click on Retry</string>
     <string name="health_check_failed_msg">Health check failed, app will restart at %s</string>
+    <string name="temperature_records">Temperature records</string>
+    <string name="access_log_records">Access Log records</string>
 
 </resources>
