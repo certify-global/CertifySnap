@@ -1547,10 +1547,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onAccessGranted() {
         SoundController.getInstance().playAccessGrantedSound();
         runOnUiThread(() -> {
-
-            if ((AppSettings.getTimeAndAttendance() == 1)) {
-                return;
-            }
+            if ((AppSettings.getTimeAndAttendance() == 1)) return;
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
         });
     }
@@ -3167,12 +3164,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
 
         if (AppSettings.getTimeAndAttendance() == 1) {
-
             if (registeredMemberslist != null && registeredMemberslist.size() > 0 && Util.isAlreadyChecked(registeredMemberslist.get(0).getDateTimeCheckInOut())) {
                 isAlreadyCheckEdOut();
                 return;
-            } else if (Util.isOfflineMode(getApplicationContext())) onCheckInOutStatus(false);
-            Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
+            } else if (registeredMemberslist != null && registeredMemberslist.size() > 0 && AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue())
+                Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
+            if (Util.isOfflineMode(getApplicationContext())) onCheckInOutStatus(false);
         }
 
         Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
@@ -4757,7 +4754,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()) {
+        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() || AppSettings.isEnableTouchMode()) {
             int primaryIdentifier = AppSettings.getPrimaryIdentifier();
             if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
                     (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
