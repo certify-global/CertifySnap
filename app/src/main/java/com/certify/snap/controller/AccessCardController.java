@@ -36,6 +36,7 @@ public class AccessCardController implements AccessCallback {
     private boolean mStopRelayOnHighTemp = false;
     private boolean mEnableWeigan = false;
     private boolean mEnableWiegandPt = false;
+    private int response_code = -1;
     private int mRelayTime = 0;
     private Timer mRelayTimer;
     private int mWeiganControllerFormat = 26;
@@ -64,7 +65,21 @@ public class AccessCardController implements AccessCallback {
             return id;
         }
     }
+    public enum AccessCheckInOutStatus {
+        RESPONSE_CODE_SUCCESS(1),
+        RESPONSE_CODE_FIELD(0),
+        RESPONSE_CODE_ALREADY(103);
 
+        private final int statusId;
+
+        AccessCheckInOutStatus(int statusId) {
+            this.statusId = statusId;
+        }
+
+        public int getValue() {
+            return statusId;
+        }
+    }
     public interface AccessCallbackListener {
         void onAccessGranted();
 
@@ -97,6 +112,13 @@ public class AccessCardController implements AccessCallback {
 
     public boolean isAllowAnonymous() {
         return mAllowAnonymous;
+    }
+    public int getResponse_code() {
+        return response_code;
+    }
+
+    public void setResponse_code(int response_code) {
+        this.response_code = response_code;
     }
 
     public void setAllowAnonymous(boolean mAllowAnonymous) {
@@ -484,7 +506,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    listener.onCheckInOutStatus(true);
+                    setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
                     saveOfflineAccessLogRecord(context, obj, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
@@ -579,12 +601,18 @@ public class AccessCardController implements AccessCallback {
                 return;
             }
             if (reportInfo.has("responseCode")) {
-                if (reportInfo.getString("responseCode").equals("1") && reportInfo.getString("responseSubCode").equals("0")) {
+                if (reportInfo.getString("responseCode").equals("1")) {
+                    if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")){
+                        setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                    }else {
+                        if ((AppSettings.getTimeAndAttendance() == 1))
+                            listener.onCheckInOutStatus(true);
+                        setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
+                    }
+                } else if (reportInfo.getString("responseCode").equals("0")) {
+                    setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue());
                     if ((AppSettings.getTimeAndAttendance() == 1))
                         listener.onCheckInOutStatus(true);
-                } else if (reportInfo.getString("responseCode").equals("0")) {
-                    if ((AppSettings.getTimeAndAttendance() == 1))
-                        listener.onCheckInOutStatus(false);
                     else  saveOfflineAccessLogRecord(context, req, 0);
                 }
             } else {

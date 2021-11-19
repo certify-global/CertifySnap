@@ -1840,6 +1840,7 @@ public class Util {
     }
 
     public static void sendDeviceLogs(Context context) {
+        if (Util.isOfflineMode(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         JSONObject obj = new JSONObject();
         try {
@@ -2244,14 +2245,19 @@ public class Util {
 
     public static boolean isAlreadyChecked(String oldDateTime) {
         try {
-            Log.i("BNreddy", "isAlreadyChecked oldDateTime: " + oldDateTime);
-            if (ApplicationController.getInstance().getTimeAttendance() == 2 && oldDateTime.isEmpty())
+            Log.i("BNreddy", "isAlreadyChecked oldDateTime: " + oldDateTime + "getResponse_code :"+ AccessCardController.getInstance().getResponse_code());
+            if (AccessCardController.getInstance().getResponse_code() == -1 || oldDateTime.equals("-1"))
+                return false;
+            if (AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue()||AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
+                return true;
+            if (ApplicationController.getInstance().getTimeAttendance() == 2 && (oldDateTime.isEmpty()))
                 return true;
             else if (ApplicationController.getInstance().getTimeAttendance() == 2 && !oldDateTime.isEmpty())
                 return false;
             if (ApplicationController.getInstance().getTimeAttendance() == 1 && oldDateTime.isEmpty())
                 return false;
             else if (ApplicationController.getInstance().getTimeAttendance() == 1 && !oldDateTime.isEmpty()){
+                oldDateTime = "11/17/2021 11:30:00";
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                 Date appLaunchDateTime = format.parse(oldDateTime);
                 Date currentDateTime = new Date(System.currentTimeMillis());

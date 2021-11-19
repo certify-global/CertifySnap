@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.License;
@@ -678,7 +679,12 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     }
 
     private void initiateLaunchHomeScreen() {
-        ProgressDialog.show(this, "", getString(R.string.launch_home_screen));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ProgressDialog.show(SettingsActivity.this, "", getString(R.string.launch_home_screen));
+            }
+        });
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
                     AppSettings.getInstance().getSettingsFromSharedPref(SettingsActivity.this);
