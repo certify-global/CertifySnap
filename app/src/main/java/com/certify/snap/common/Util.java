@@ -2534,4 +2534,25 @@ public class Util {
                     }
                 });
     }
+
+    /**
+     * Method that truncates the leading zero's
+     * @param accessId accessId value
+     * @return accessId
+     */
+    public static String validateAccessId(String accessId) {
+        String accessIdStr = accessId;
+        if (accessId != null && !accessId.isEmpty()) {
+                char[] accessIdArray = accessId.toCharArray();
+                for (int i = 0; i < accessIdArray.length; i++) {
+                    if (accessIdStr.startsWith("0")) {
+                        accessIdStr = accessIdStr.replaceFirst("0", "");
+                    } else {
+                        break;
+                    }
+                }
+
+        }
+        return accessIdStr;
+    }
 }

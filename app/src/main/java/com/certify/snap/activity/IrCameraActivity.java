@@ -2699,7 +2699,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
                 //logo.setVisibility(View.VISIBLE);
                 String text = tv_thermal.getText().toString();
-                if (qrCodeEnable) {
+                if (qrCodeEnable && AppSettings.isEnableHandGesture()) {
                     tv_thermal.setTextSize(22);
                     setLayoutMargins();
                 }
@@ -3175,7 +3175,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         }
         resetRfid();
-        if (!Util.isDeviceF10()) {
+        if (!Util.isDeviceF10() && !qrCodeEnable) {
             resetImageLogo();
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
@@ -3959,7 +3959,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                             == CameraController.ScanProcessState.FIRST_SCAN) ||
                             (CameraController.getInstance().getScanProcessState() ==
                                     CameraController.ScanProcessState.FIRST_SCAN_COMPLETE)) {
-                        initSecondaryScan();
+                        if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue()) ||
+                                (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue())) {
+                            setCameraPreview();
+                        } else {
+                            initSecondaryScan();
+                        }
                     } else {
                         setCameraPreview();
                     }
@@ -4392,10 +4397,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setLayoutMargins() {
-        RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
         RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
-        tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
-        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
+        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(10, this);
         tv_thermal_subtitle.setMaxLines(2);
         tv_thermal_subtitle.setEllipsize(TextUtils.TruncateAt.END);
         String text = tv_thermal.getText().toString();
