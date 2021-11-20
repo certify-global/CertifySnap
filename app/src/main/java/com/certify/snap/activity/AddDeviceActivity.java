@@ -91,11 +91,6 @@ public class AddDeviceActivity extends SettingsBaseActivity implements JSONObjec
         }
     }
 
-    private void stopHealthCheckService() {
-        Intent intent = new Intent(this, DeviceHealthService.class);
-        stopService(intent);
-    }
-
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
