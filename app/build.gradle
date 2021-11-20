@@ -117,8 +117,9 @@ android.applicationVariants.all { variant ->
     variant.outputs.all { output ->
 
         //def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
-        //version = buildType == "release" ? "${output.apkData.versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
-        //output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
+        def suffix = ""
+        version = buildType == "release" ? "${versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
+        output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
 
@@ -153,7 +154,7 @@ dependencies {
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //  api project(path: ':myokhttp')
-    implementation files('libs/bcpissuelibrary')
+    implementation files('libs/bcpissuelibrary.jar')
     //implementation files('libs/core-3.1.0.jar')
     implementation files('libs/telpo_api.jar')
     implementation files('libs/util.jar')
