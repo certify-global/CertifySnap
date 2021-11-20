@@ -1340,6 +1340,15 @@ public class Util {
                         if (deviceSettings.groupId.isEmpty()) {
                             deviceSettings.groupId = "0";
                         }
+                        if (AppSettings.isMemberGroupSyncEnabled() != deviceSettings.syncMemberGroup.equals("1")) {
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, false);
+                        } else {
+                            if (deviceSettings.syncMemberGroup.equals("1")) {
+                                if (!AppSettings.getMemberSyncGroupId().equals(deviceSettings.groupId)) {
+                                    Util.writeBoolean(sharedPreferences, GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, false);
+                                }
+                            }
+                        }
                         Util.writeString(sharedPreferences, GlobalParameters.MEMBER_GROUP_ID, deviceSettings.groupId);
                         Util.writeString(sharedPreferences, GlobalParameters.deviceSettingMasterCode, deviceSettings.deviceMasterCode);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
@@ -1833,10 +1842,11 @@ public class Util {
             } else {
                 obj.put("groupId", "0");
             }
-            //Disable for now
-            RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
-            if (registeredMember != null) {
-                obj.put("fromDate", registeredMember.dateTime);
+            if (sharedPreferences.getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true)) {
+                RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
+                if (registeredMember != null) {
+                    obj.put("fromDate", registeredMember.dateTime);
+                }
             }
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();

@@ -139,7 +139,7 @@ public class DatabaseController {
         return -1;
     }
 
-    public List<RegisteredMembers> isUniqueIdExit(String uniqueID) {
+    public List<RegisteredMembers> isUniqueIdExist(String uniqueID) {
         try {
             if (databaseStore != null) {
                 return databaseStore.findMemberByUniqueId(uniqueID);

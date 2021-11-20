@@ -227,5 +227,6 @@ public class GlobalParameters {
     public static final String SETTINGS_RETRIEVED = "SettingsRetrieved";
     public static final String DEBUG_MODE = "DebugMode";
     public static final String HEALTH_CHECK_OFFLINE = "HealthCheckOffline";
+    public static final String MEMBER_DELTA_SYNC_ENABLED = "MemberDeltaSyncEnabled";
 
 }

@@ -12,6 +12,7 @@ import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.MemberUtilData;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
@@ -141,7 +142,7 @@ public class MemberSyncDataModel {
                             if (c.has("isdocument")) {
                                 member.setDocument(c.getString("isdocument").equals("1"));
                             }
-                            List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+                            List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExist(certifyId);
                             if (membersList != null && membersList.size() > 0) {
                                 if (isMemberSyncGroupIdEnabled() && !isGroupIdExists(groupId)) {
                                     if (deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId())) {
@@ -155,11 +156,14 @@ public class MemberSyncDataModel {
                                     emitter.onNext(member);
                                 }
                             } else {
-                                List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
-                                if (members != null && members.size() > 0) {
-                                    index = members.size() + 1;
-                                } else {
-                                    index = index + 1;
+                                if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
+                                    List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
+                                    if (members != null && members.size() > 0) {
+                                        int size = members.size();
+                                        index = size + 1;
+                                    } else {
+                                        index = index + 1;
+                                    }
                                 }
                                 if (isMemberSyncGroupIdEnabled()) {
                                     if (isGroupIdExists(groupId)) {
@@ -198,7 +202,11 @@ public class MemberSyncDataModel {
                         Log.d(TAG, "SnapXT Add API response Member added " + membersList.size());
 
                         //Add records fetched from server, add it to the database
-                        addToDatabase();
+                        if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
+                            addToDatabase();
+                        } else {
+                            setPrimaryIdAndAddToDb();
+                        }
                         addMemberDisposable.dispose();
                     }
 
@@ -263,7 +271,7 @@ public class MemberSyncDataModel {
                             member.setDateTime(Util.getUTCDate(""));
                             member.setGroupId(groupId);
 
-                            List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+                            List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExist(certifyId);
                             if (membersList != null && membersList.size() > 0) {
                                 if (isMemberSyncGroupIdEnabled() && !isGroupIdExists(groupId)) {
                                     if (deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId())) {
@@ -279,7 +287,8 @@ public class MemberSyncDataModel {
                             } else {
                                 List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
                                 if (members != null && members.size() > 0) {
-                                    index = members.size() + 1;
+                                    int size = members.size();
+                                    index = size + 1;
                                 } else {
                                     index = index + 1;
                                 }
@@ -334,6 +343,58 @@ public class MemberSyncDataModel {
                             isSyncing = false;
                         }
                         addMemberDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "Error in adding the member to data model from server");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
+    }
+
+    private void setPrimaryIdAndAddToDb() {
+        if (membersList.size() != NUM_OF_RECORDS) return;
+        doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    if (isMemberSyncGroupIdEnabled()) {
+                        checkDatabase(membersList);
+                    }
+                    index = 0;
+                    for (int i = 0; i < membersList.size(); i++) {
+                        RegisteredMembers member = membersList.get(i);
+                        if (member.getStatus().equalsIgnoreCase("true") ||
+                                member.getStatus().equalsIgnoreCase("1")) {
+                            RegisteredMembers memberExist = isMemberExistsInDb(member.primaryid);
+                            if (memberExist != null) {
+                                boolean isMemberAccessed = memberExist.isMemberAccessed;
+                                deleteRecord(member.firstname, member.getPrimaryId());
+                                member.setMemberAccessed(isMemberAccessed);
+                            }
+                            index = index + 1;
+                            member.setPrimaryId(index);
+                        }
+                    }
+                    emitter.onNext(true);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable addMemberDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        addMemberDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        addToDatabaseOnSettingChange();
                     }
 
                     @Override
@@ -434,13 +495,46 @@ public class MemberSyncDataModel {
     }
 
     /**
+     * Method that adds the member to the database
+     */
+    private void addToDatabaseOnSettingChange() {
+        doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+        new Thread(() -> {
+            for (int i = 0; i < membersList.size(); i++) {
+                doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+                RegisteredMembers member = membersList.get(i);
+                Log.d(TAG, "SnapXT New member update " +i);
+                localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                        member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                        member.getImage(), "sync", context, member, member.getPrimaryId());
+            }
+            if (dbSyncErrorMemberList.isEmpty()) {
+                updateSyncCompletion();
+            }
+            isSyncing = false;
+        }).start();
+    }
+
+    /**
      * Method that checks if a member already exists in the database
      * @param primaryId Primary Id
      * @return true or false accordingly
      */
     private RegisteredMembers isMemberExistsInDb(long primaryId) {
-        boolean result = false;
         List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
+        if (list != null && list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    /**
+     * Method that checks if a member already exists in the database
+     * @param certifyId
+     * @return true or false accordingly
+     */
+    private RegisteredMembers isMemberExistsInDb(String certifyId) {
+        List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExist(certifyId);
         if (list != null && list.size() > 0) {
             return list.get(0);
         }
@@ -748,6 +842,7 @@ public class MemberSyncDataModel {
         if (failedImageSyncCount > 0) {
             doSendBroadcast(SYNC_PHOTO_FAILED, failedImageSyncCount, 0);
         }
+        Util.writeBoolean(Util.getSharedPreferences(context), GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true);
     }
 
     public String[] getMemberTypes() {
@@ -888,7 +983,7 @@ public class MemberSyncDataModel {
 
     public boolean isMemberInactive(String certifyId, String memberStatus) {
         boolean result = false;
-        List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+        List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExist(certifyId);
         if (membersList != null && membersList.size() > 0) {
             RegisteredMembers registeredMember = membersList.get(0);
             if (!Boolean.parseBoolean(memberStatus)) {
