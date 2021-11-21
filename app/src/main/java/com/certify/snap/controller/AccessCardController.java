@@ -3,10 +3,8 @@ package com.certify.snap.controller;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.certify.callback.AccessCallback;
-import com.certify.snap.R;
 import com.certify.snap.async.AsyncJSONObjectAccessLog;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -36,7 +34,6 @@ public class AccessCardController implements AccessCallback {
     private boolean mStopRelayOnHighTemp = false;
     private boolean mEnableWeigan = false;
     private boolean mEnableWiegandPt = false;
-    private int response_code = -1;
     private int mRelayTime = 0;
     private Timer mRelayTimer;
     private int mWeiganControllerFormat = 26;
@@ -48,6 +45,8 @@ public class AccessCardController implements AccessCallback {
     private AccessCallbackListener listener;
     private boolean isAccessFaceNotMatch = false;
     private boolean allowAccessValue = true;
+    private int checkInResponseCode = -1;
+    private RegisteredMembers checkedInOutMember = null;
 
     public enum AccessControlScanMode {
         ID_ONLY(1),
@@ -68,7 +67,7 @@ public class AccessCardController implements AccessCallback {
 
     public enum AccessCheckInOutStatus {
         RESPONSE_CODE_SUCCESS(1),
-        RESPONSE_CODE_FIELD(0),
+        RESPONSE_CODE_FAILED(0),
         RESPONSE_CODE_ALREADY(103);
 
         private final int statusId;
@@ -87,7 +86,7 @@ public class AccessCardController implements AccessCallback {
 
         void onAccessDenied();
 
-        void onCheckInOutStatus(boolean isFirst);
+        void onCheckInOutStatus();
     }
 
     public static AccessCardController getInstance() {
@@ -116,12 +115,16 @@ public class AccessCardController implements AccessCallback {
         return mAllowAnonymous;
     }
 
-    public int getResponse_code() {
-        return response_code;
+    public int getCheckInResponseCode() {
+        return checkInResponseCode;
     }
 
-    public void setResponse_code(int response_code) {
-        this.response_code = response_code;
+    public void setCheckInResponseCode(int responseCode) {
+        if (responseCode == AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue() ||
+            responseCode == AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue()) {
+            ApplicationController.getInstance().setTimeAttendance(0);
+        }
+        this.checkInResponseCode = responseCode;
     }
 
     public void setAllowAnonymous(boolean mAllowAnonymous) {
@@ -507,7 +510,7 @@ public class AccessCardController implements AccessCallback {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
+                    setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
                     saveOfflineAccessLogRecord(context, obj, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
@@ -596,26 +599,45 @@ public class AccessCardController implements AccessCallback {
         try {
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
+                if (AppSettings.getTimeAndAttendance() == 1) {
+                    setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
+                    if (listener != null) {
+                        listener.onCheckInOutStatus();
+                    }
+                }
                 saveOfflineAccessLogRecord(context, req, 0);
                 return;
             }
             if (reportInfo.has("responseCode")) {
                 if (reportInfo.getString("responseCode").equals("1")) {
-                    if ((AppSettings.getTimeAndAttendance() == 1))
-                        listener.onCheckInOutStatus(true);
-                    if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")) {
-                        setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
-                    } else {
-                        setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
+                    if ((AppSettings.getTimeAndAttendance() == 1)) {
+                        if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")) {
+                            setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                        } else {
+                            setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
+                            if (listener != null) {
+                                listener.onCheckInOutStatus();
+                            }
+                        }
+                        return;
                     }
                 } else if (reportInfo.getString("responseCode").equals("0")) {
-                    setResponse_code(AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue());
-                    if ((AppSettings.getTimeAndAttendance() != 1))
-                        saveOfflineAccessLogRecord(context, req, 0);
+                    if (AppSettings.getTimeAndAttendance() == 1) {
+                        //TODO: Check for responseSubCode
+                        if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("1")) {
+                            setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                        }
+                        return;
+                    }
                 }
-            } else {
-                saveOfflineAccessLogRecord(context, req, 0);
             }
+            if (AppSettings.getTimeAndAttendance() == 1) {
+                setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
+                if (listener != null) {
+                    listener.onCheckInOutStatus();
+                }
+            }
+            saveOfflineAccessLogRecord(context, req, 0);
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());
         }
@@ -714,6 +736,37 @@ public class AccessCardController implements AccessCallback {
                     result = true;
                 }
             } else if (isAccessTimeExpired(registeredMembers)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    public RegisteredMembers getCheckedInOutMember() {
+        return checkedInOutMember;
+    }
+
+    public void setCheckedInOutMember(RegisteredMembers checkedInOutMember) {
+        this.checkedInOutMember = checkedInOutMember;
+    }
+
+    public boolean isCheckedIn(RegisteredMembers member) {
+        boolean result = false;
+        if (AppSettings.getTimeAndAttendance() == 1) {
+            if (((ApplicationController.getInstance().getTimeAttendance() == 1) &&
+                    !member.getDateTimeCheckInOut().isEmpty()) ||
+                    (checkInResponseCode == AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.statusId)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    public boolean isCheckedOut(RegisteredMembers member) {
+        boolean result = false;
+        if (AppSettings.getTimeAndAttendance() == 1) {
+            if ((ApplicationController.getInstance().getTimeAttendance() == 2) &&
+                    member.getDateTimeCheckInOut().isEmpty()) {
                 result = true;
             }
         }

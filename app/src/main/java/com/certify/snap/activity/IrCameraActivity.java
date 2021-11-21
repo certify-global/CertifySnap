@@ -1547,7 +1547,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onAccessGranted() {
         SoundController.getInstance().playAccessGrantedSound();
         runOnUiThread(() -> {
-            if ((AppSettings.getTimeAndAttendance() == 1)) return;
+            //if ((AppSettings.getTimeAndAttendance() == 1)) return;
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
         });
     }
@@ -1561,32 +1561,36 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
-    public void onCheckInOutStatus(boolean isStatus) {
-        if (registeredMemberslist != null && registeredMemberslist.size() > 0) {
-            RegisteredMembers registeredMember = registeredMemberslist.get(0);
+    public void onCheckInOutStatus() {
+        runOnUiThread(() -> {
+            RegisteredMembers registeredMember = AccessCardController.getInstance().getCheckedInOutMember();
             if (registeredMember != null) {
                 String dateTimeCheckInOut = "";
-                if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                if (ApplicationController.getInstance().getTimeAttendance() == 1) {
                     dateTimeCheckInOut = Util.getMMDDYYYYDate();
-                if (ApplicationController.getInstance().getTimeAttendance() == 2)
+                } else if (ApplicationController.getInstance().getTimeAttendance() == 2) {
                     dateTimeCheckInOut = "";
-                String finalDateTimeCheckInOut = dateTimeCheckInOut;
-                if (isStatus) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            AccessCardController.getInstance().setResponse_code(-1);
-                            registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
-                            DatabaseController.getInstance().updateMember(registeredMember);
-                        }
-                    }, 4000);
-                } else {
-                    AccessCardController.getInstance().setResponse_code(-1);
-                    registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
-                    DatabaseController.getInstance().updateMember(registeredMember);
                 }
+                registeredMember.dateTimeCheckInOut = dateTimeCheckInOut;
+                DatabaseController.getInstance().updateMember(registeredMember);
+                AccessCardController.getInstance().setCheckedInOutMember(null);
+                ApplicationController.getInstance().setTimeAttendance(0);
+            /*if (isStatus) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        AccessCardController.getInstance().setCheckInResponseCode(-1);
+                        registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
+
+                    }
+                }, 4000);
+            } else {
+                AccessCardController.getInstance().setCheckInResponseCode(-1);
+                registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
+                DatabaseController.getInstance().updateMember(registeredMember);
+            }*/
             }
-        }
+        });
     }
 
     @Override
@@ -2512,6 +2516,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
+                                    if (validateCheckInCheckOut(registeredMembers)) {
+                                        searchFaceDisposable.remove(searchMemberDisposable);
+                                        return;
+                                    }
                                     if (CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CAMERA.toString())) {
                                         CameraController.getInstance().updateTriggerType(CameraController.triggerValue.FACE.toString());
                                     }
@@ -2627,7 +2635,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture())
             return;
-        if ((AppSettings.getTimeAndAttendance() == 1 && ApplicationController.getInstance().getTimeAttendance() == 0)) {
+        if ((AppSettings.getTimeAndAttendance() == 1) && (time_attendance_layout.getVisibility() == View.VISIBLE)) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.please_click_check_in_out), Toast.LENGTH_LONG).show();
             return;
         }
@@ -2646,6 +2654,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     onRfidNoMemberMatch(cardId);
                     return;
                 }
+                if (validateCheckInCheckOut(matchedMember)) {
+                    return;
+                }
+
 //                if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(matchedMember.getDateTimeCheckInOut())) {
 //                    if (ApplicationController.getInstance().getTimeAttendance() == 1)
 //                        Toast.makeText(this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
@@ -3163,14 +3175,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             argVal = "high";
         }
 
-        if (AppSettings.getTimeAndAttendance() == 1) {
+        /*if (AppSettings.getTimeAndAttendance() == 1) {
             if (registeredMemberslist != null && registeredMemberslist.size() > 0 && Util.isAlreadyChecked(registeredMemberslist.get(0).getDateTimeCheckInOut())) {
                 isAlreadyCheckEdOut();
                 return;
-            } else if (registeredMemberslist != null && registeredMemberslist.size() > 0 && AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue())
+            } else if (registeredMemberslist != null && registeredMemberslist.size() > 0 && AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue())
                 Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
             if (Util.isOfflineMode(getApplicationContext())) onCheckInOutStatus(false);
-        }
+        }*/
 
         Fragment confirmationScreenFragment = new ConfirmationScreenFragment();
         Bundle bundle = new Bundle();
@@ -4720,7 +4732,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvTime.setText(currentTime);
                 String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
                 tvDate.setText(currentDate);
-                ApplicationController.getInstance().setTimeAttendance(0);
                 if (isHomeViewEnabled) {
                     pauseCameraScan();
                 } else {
@@ -4750,7 +4761,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void onCheckInClick(View view) {
         ApplicationController.getInstance().setTimeAttendance(1);
-        AccessCardController.getInstance().setResponse_code(-1);
+        AccessCardController.getInstance().setCheckInResponseCode(-1);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
@@ -4767,31 +4778,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onCheckOutClick(View view) {
-        AccessCardController.getInstance().setResponse_code(-1);
         GestureController.getInstance().setCallback(true);
         ApplicationController.getInstance().setTimeAttendance(2);
         time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-//        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected()) {
-//            int primaryIdentifier = AppSettings.getPrimaryIdentifier();
-//            if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
-//                    (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
-//                initScan();
-//            }
-//        } else {
-//            initScan();
-//        }
         int primaryIdentifier = AppSettings.getPrimaryIdentifier();
         if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
+            clearQrCode();
             enableFaceScan();
             isReadyToScan = true;
             CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         } else if (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) {
+            clearQrCode();
             enableRfidScan();
-            initScan();
-//            enableFaceScan();
-//            isReadyToScan = true;
+            enableFaceScan();
+            isReadyToScan = true;
             CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         } else {
             initScan();
@@ -4851,7 +4853,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void isAlreadyCheckEdOut() {
-        if (AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue())
+        if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue())
             Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.please_try_again), Toast.LENGTH_LONG).show();
         else if (ApplicationController.getInstance().getTimeAttendance() == 1)
             Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
@@ -4868,5 +4870,26 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 resetHomeScreen();
             }
         }, 3000);
+    }
+
+    private boolean validateCheckInCheckOut(RegisteredMembers matchedMember) {
+        if (AccessCardController.getInstance().isCheckedIn(matchedMember)) {
+            runOnUiThread(() -> {
+                Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
+                disableLedPower();
+                resetToHomePage();
+            });
+            return true;
+        }
+        if (AccessCardController.getInstance().isCheckedOut(matchedMember)) {
+            runOnUiThread(() -> {
+                Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_out), Toast.LENGTH_LONG).show();
+                disableLedPower();
+                resetToHomePage();
+            });
+            return true;
+        }
+        AccessCardController.getInstance().setCheckedInOutMember(matchedMember);
+        return false;
     }
 }

@@ -125,7 +125,6 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.FileChannel;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -2245,9 +2244,9 @@ public class Util {
 
     public static boolean isAlreadyChecked(String oldDateTime) {
         try {
-            if (AccessCardController.getInstance().getResponse_code() == -1)
+            if (AccessCardController.getInstance().getCheckInResponseCode() == -1)
                 return false;
-            if (AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FIELD.getValue()||AccessCardController.getInstance().getResponse_code() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
+            if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue()||AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
                 return true;
             if (ApplicationController.getInstance().getTimeAttendance() == 2 && (oldDateTime.isEmpty()))
                 return true;
