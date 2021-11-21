@@ -14,17 +14,15 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.certify.snap.R;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 
-public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHolder> {
+public class TemperatureRecordAdapter extends RecyclerView.Adapter<TemperatureRecordAdapter.MyViewHolder> {
 
     Context mcontext;
     List<OfflineRecordTemperatureMembers> mlist;
 
-    public RecordAdapter(Context context, List<OfflineRecordTemperatureMembers> list) {
+    public TemperatureRecordAdapter(Context context, List<OfflineRecordTemperatureMembers> list) {
         this.mcontext = context;
         this.mlist = list;
     }
@@ -81,8 +79,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.MyViewHold
                 holder.mobile.setText("Id: " + id);
             }
             if (mlist.get(position).getDeviceTime() != null){
-                Date date = new Date(mlist.get(position).getDeviceTime());
-                holder.time.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date));
+                holder.time.setText(mlist.get(position).deviceTime);
             }
             String path = mlist.get(position).getImagepath();
 

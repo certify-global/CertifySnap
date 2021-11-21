@@ -18,6 +18,7 @@ import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.api.response.PrinterSettings;
 import com.certify.snap.api.response.ScanViewSettings;
 import com.certify.snap.api.response.TouchlessSettings;
+import com.certify.snap.bean.QRCodeIssuer;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
@@ -31,6 +32,7 @@ import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.MemberSyncService;
@@ -139,7 +141,7 @@ public class DatabaseController {
         return -1;
     }
 
-    public List<RegisteredMembers> isUniqueIdExit(String uniqueID) {
+    public List<RegisteredMembers> isUniqueIdExist(String uniqueID) {
         try {
             if (databaseStore != null) {
                 return databaseStore.findMemberByUniqueId(uniqueID);
@@ -996,6 +998,46 @@ public class DatabaseController {
         }
     }
 
+    public void insertQRCodeIssuer(QRCodeIssuer qrCodeIssuer) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertQRIssuer(qrCodeIssuer);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+    public List<QRCodeIssuer> findissuerRecords(String key) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findissuerKey(key);
+            }
+        } catch (SQLiteException e) {
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+    public List<QRCodeIssuer> getIssuerKey() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getissuerKey();
+            }
+        } catch (SQLiteException e) {
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+    public boolean isuniqueKey(String issuerKey) {
+        boolean result = false;
+        List<QRCodeIssuer> qrCodeIssuers = DatabaseController.getInstance().getIssuerKey();
+        for (int i=0; i < qrCodeIssuers.size(); i++) {
+            QRCodeIssuer qrCodeIssuer = qrCodeIssuers.get(i);
+            if (qrCodeIssuer.getKeyID().equals(issuerKey)) {
+                result = true;
+            }
+        }
+        return result;
+    }
     public TouchlessSettings getTouchlessSettingsOnId(int languageId) {
         try {
             if (databaseStore != null) {

@@ -1,6 +1,18 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.palantir.git-version'
+//apply plugin: 'com.android.application'
+//apply plugin: 'com.palantir.git-version'
 import com.android.build.OutputFile
+
+plugins {
+    id 'com.android.application'
+    id 'com.palantir.git-version'
+    id 'kotlin-android'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.4.30'
+    id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'com.google.android.gms.oss-licenses-plugin'
+    id 'kotlin-parcelize'
+}
 
 //TODO:need version only for release, literal for debug.
 ext {
@@ -30,12 +42,12 @@ android {
             keyPassword = keyStore['snapEnt.passwd']
         }
     }
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.certify.snap"
-        minSdkVersion 23
-        targetSdkVersion 28
-        compileSdkVersion 28
+        minSdkVersion 25
+        targetSdkVersion 29
+        compileSdkVersion 29
         versionCode = gitVersionCode
         versionName = gitVersionName
         versionNameSuffix ""
@@ -45,6 +57,7 @@ android {
         ndk {
             abiFilters 'arm64-v8a'
         }
+        buildConfigField "String", "CONFIG_FILE_NAME", "\"verifier-context.jsonc\""
     }
     flavorDimensions "version"
     productFlavors {
@@ -83,20 +96,39 @@ android {
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {        viewBinding = true    }
+    packagingOptions {
+        pickFirst 'META-INF/ASL-2.0.txt'
+        pickFirst 'draftv4/schema'
+        pickFirst 'draftv3/schema'
+        pickFirst 'META-INF/LGPL-3.0.txt'
     }
 }
 android.applicationVariants.all { variant ->
     def buildType = variant.buildType.buildType.name
     variant.outputs.all { output ->
 
-        def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
-        version = buildType == "release" ? "${output.apkData.versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
+        //def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
+        def suffix = ""
+        version = buildType == "release" ? "${versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
         output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
 
 def room_version="2.2.5"
 dependencies {
+
+    implementation project(':decoder')
+    implementation project(':engine')
+
     implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
     //noinspection GradleCompatible
     implementation 'androidx.appcompat:appcompat:1.0.0'
@@ -116,11 +148,14 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation "android.arch.lifecycle:extensions:1.1.1"
+    implementation "com.journeyapps:zxing-android-embedded:4.3.0"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    implementation "androidx.multidex:multidex:2.0.1"
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     //  api project(path: ':myokhttp')
-    implementation files('libs/bcpissuelibrary')
-    implementation files('libs/core-3.1.0.jar')
+    implementation files('libs/bcpissuelibrary.jar')
+    //implementation files('libs/core-3.1.0.jar')
     implementation files('libs/telpo_api.jar')
     implementation files('libs/util.jar')
     implementation files('libs/arcsoft_image_util.jar')
@@ -156,12 +191,51 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.3.1"
     api "net.zetetic:android-database-sqlcipher:4.4.0@aar"
     api "androidx.sqlite:sqlite:2.1.0"
-    implementation 'android.arch.persistence.room:runtime:1.1.1'
-    annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
+    //implementation 'android.arch.persistence.room:runtime:1.1.1'
+    //annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
+    implementation "androidx.room:room-runtime:2.3.0"
+    annotationProcessor "androidx.room:room-compiler:2.3.0"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+
+    implementation Deps.kotlin_stdlib
+    implementation Deps.androidx_core
+    implementation Deps.androidx_appcompat
+    implementation Deps.androidx_material
+    implementation Deps.androidx_constraint
+    implementation Deps.androidx_navigation_fragment
+    implementation Deps.androidx_navigation_ui
+    implementation Deps.androidx_fragment_ktx
+    implementation Deps.androidx_lifecycle_livedata_ktx
+    implementation Deps.room_runtime
+    implementation Deps.room_ktx
+    implementation Deps.androidx_worker_ktx
+    implementation Deps.kotlinx_coroutines
+    implementation(Deps.zxing) { transitive = false }
+    implementation Deps.zxing_core
+    implementation Deps.guava_conflict_resolver
+    implementation Deps.retrofit2
+    implementation Deps.log_interceptor
+    implementation Deps.gson_converter
+    implementation Deps.jackson_kotlin
+
+    implementation Deps.timber
+
+    implementation Deps.google_licenses
+
+    implementation Deps.kotlin_stdlib
+
+    implementation Deps.hilt
+    kapt Deps.hilt_compiler
+    implementation Deps.hilt_viewmodel
+    implementation Deps.hilt_work
+    kapt Deps.androidx_hilt_compiler
+    kapt Deps.room_compiler
+
+    coreLibraryDesugaring Deps.android_tools_desugar_jdk_libs
+
 }
 apply plugin: 'com.google.gms.google-services'
 

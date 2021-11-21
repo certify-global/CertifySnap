@@ -1919,15 +1919,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    /**
-     * Method that stop the HealthCheck service
-     */
-    private void stopHealthCheckService() {
-        Intent intent = new Intent(this, DeviceHealthService.class);
-        stopService(intent);
-    }
-
-
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -2019,6 +2010,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
                 qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
+                if (guid.startsWith("shc:")) {
+                    QrCodeController.getInstance().smartHealthCard(guid,this);
+                    clearQrCodePreview();
+                    qrCodeReceived = false;
+                    return;
+                }
+                if (guid.startsWith("HC1:")) {
+                    QrCodeController.getInstance().parseQrText(guid,this);
+                    clearQrCodePreview();
+                    qrCodeReceived = false;
+                    return;
+                }
                 if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     tv_scan.setText(R.string.tv_qr_validating);
                     if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
@@ -2776,7 +2779,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
                 //logo.setVisibility(View.VISIBLE);
                 String text = tv_thermal.getText().toString();
-                if (qrCodeEnable) {
+                if (qrCodeEnable && AppSettings.isEnableHandGesture()) {
                     tv_thermal.setTextSize(22);
                     setLayoutMargins();
                 }
@@ -3210,7 +3213,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeScan() {
-        runOnUiThread(this::updateHealthCheckUI);
         if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
             GestureController.getInstance().setLanguageUpdated(false);
             GestureController.getInstance().setCallback(false);
@@ -3263,7 +3265,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         }
         resetRfid();
-        if (!Util.isDeviceF10()) {
+        if (!Util.isDeviceF10() && !qrCodeEnable) {
             resetImageLogo();
         }
         if (!isHomeViewEnabled) isReadyToScan = true;
@@ -4046,7 +4048,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                             == CameraController.ScanProcessState.FIRST_SCAN) ||
                             (CameraController.getInstance().getScanProcessState() ==
                                     CameraController.ScanProcessState.FIRST_SCAN_COMPLETE)) {
-                        initSecondaryScan();
+                        if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue()) ||
+                                (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue())) {
+                            setCameraPreview();
+                        } else {
+                            initSecondaryScan();
+                        }
                     } else {
                         setCameraPreview();
                     }
@@ -4484,10 +4491,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void setLayoutMargins() {
-//        RelativeLayout.LayoutParams tvTitleParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
-//        RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
-//        tvTitleParams.bottomMargin = (int) Util.convertPixelsToDp(250, this);
-//        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(180, this);
+        RelativeLayout.LayoutParams tvSubTitleParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
+        tvSubTitleParams.bottomMargin = (int) Util.convertPixelsToDp(10, this);
         tv_thermal_subtitle.setMaxLines(2);
         tv_thermal_subtitle.setEllipsize(TextUtils.TruncateAt.END);
         String text = tv_thermal.getText().toString();
@@ -4725,6 +4730,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void DisplayTimeAttendance() {
         try {
+            //updateHealthCheckUI();
             if (AppSettings.getTimeAndAttendance() == 1) {
                 relative_main.setVisibility(View.GONE);
                 time_attendance_layout.setVisibility(View.VISIBLE);
@@ -4808,7 +4814,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void updateHealthCheckUI() {
-        if (ApplicationController.getInstance().isHealthCheckInterval()) {
+        String appRestartTime = ApplicationController.getInstance().getAppRestartTime();
+        if (sharedPreferences.getBoolean(GlobalParameters.HEALTH_CHECK_OFFLINE, false) && !appRestartTime.isEmpty()) {
             if (internetIndicatorImg != null) {
                 internetIndicatorImg.setVisibility(View.VISIBLE);
             }
@@ -4816,7 +4823,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tvErrorMessage.setTextSize(22);
             tvVersionIr.setVisibility(View.GONE);
             tvVersionOnly.setVisibility(View.GONE);
-            tvErrorMessage.setText(String.format(getString(R.string.health_check_failed_msg), ApplicationController.getInstance().getAppRestartTime()));
+            tvErrorMessage.setText(String.format(getString(R.string.health_check_failed_msg), appRestartTime));
         }
     }
 
@@ -4837,13 +4844,23 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             String appRestartTime = simpleDateFormat.format(calendar.getTime());
             ApplicationController.getInstance().setAppRestartTime(appRestartTime);
             tvErrorMessage.setText(String.format(getString(R.string.health_check_failed_msg), appRestartTime));
+            Util.writeBoolean(sharedPreferences, GlobalParameters.HEALTH_CHECK_OFFLINE, true);
         });
     }
 
     @Override
     public void onHealthCheckTimeout() {
+        Util.writeBoolean(sharedPreferences, GlobalParameters.HEALTH_CHECK_OFFLINE, false);
         stopServices();
         restartApplication();
+    }
+
+    @Override
+    public void onHealthCheckTimerCancelled() {
+        runOnUiThread(() -> {
+            tvErrorMessage.setVisibility(View.GONE);
+            tvErrorMessage.setTextSize(28);
+        });
     }
 
     private void showGuideMessage(String message) {

@@ -612,15 +612,6 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         }
     }
 
-    /**
-     * Method that stop the HealthCheck service
-     * //TODO1: Create BaseActivity for the common code
-     */
-    private void stopHealthCheckService() {
-        Intent intent = new Intent(this, DeviceHealthService.class);
-        stopService(intent);
-    }
-
     private void proSettings(){
         if (Util.isDeviceProModel()) {
             Log.d(TAG, "proSettings: true");

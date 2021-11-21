@@ -54,9 +54,9 @@ public class Constants {
 
     public static final int LANGUAGES_MAX_COUNT = 3;
 
-    public static final int HEALTH_CHECK_INIT_TIME = 1380 * 1000; //23 minutes
+    public static final int HEALTH_CHECK_INIT_TIME = 1440 * 1000; //24 minutes
 
-    public static final int HEALTH_CHECK_INTERVAL =  1260 * 1000; //21 minutes
+    public static final int HEALTH_CHECK_INTERVAL =  1200 * 1000; //20 minutes
 
 }
 

@@ -114,15 +114,17 @@ public class OfflineRecordTemperatureMembers {
     }
 
     public static Long lastPrimaryId() {
-        //OfflineRecordTemperatureMembers offlineRecord = LitePal.findLast(OfflineRecordTemperatureMembers.class);
+        long primaryId = 1;
         OfflineRecordTemperatureMembers offlineRecord = DatabaseController.getInstance().getLastPrimaryId();
         if (offlineRecord != null) {
-            Log.d("OfflineRecordTemp", "primaryId offlineRecord " + (offlineRecord.getPrimaryid() + 1));
-            return offlineRecord.getPrimaryid() + 1;
+            primaryId = offlineRecord.getPrimaryid();
+            ++primaryId;
+            Log.d("OfflineAccessLogRecord", "primaryId offlineRecord " + primaryId);
+            return primaryId;
         }
-        Log.d("OfflineRecordTemp", "primaryId lastPrimaryId " + 0L);
+        Log.d("OfflineRecordTemp", "primaryId lastPrimaryId " + primaryId);
 
-        return 1L;
+        return primaryId;
     }
 
     @Override

@@ -17,7 +17,14 @@ public class AccessLogOfflineRecord {
     public long primaryId;
     public String jsonObj;
     public int offlineSync;
-
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String memberId;
+    private String temperature;
+    private String deviceTime;
+    private String utcTime;
+    private String imagePath;
 
     public int getOfflineSync() {
         return offlineSync;
@@ -43,15 +50,82 @@ public class AccessLogOfflineRecord {
         this.jsonObj = jsonObj;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
+    }
+
+    public String getDeviceTime() {
+        return deviceTime;
+    }
+
+    public void setDeviceTime(String deviceTime) {
+        this.deviceTime = deviceTime;
+    }
+
+    public String getUtcTime() {
+        return utcTime;
+    }
+
+    public void setUtcTime(String utcTime) {
+        this.utcTime = utcTime;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public static long lastPrimaryId() {
+        long primaryId = 1;
         AccessLogOfflineRecord offlineRecord = DatabaseController.getInstance().getLastAccessLogPrimaryId();
         if (offlineRecord != null) {
-            Log.d("OfflineAccessLogRecord", "primaryId offlineRecord " + (offlineRecord.getPrimaryId() + 1));
-            return offlineRecord.getPrimaryId() + 1;
+            primaryId = offlineRecord.primaryId;
+            ++primaryId;
+            Log.d("OfflineAccessLogRecord", "primaryId offlineRecord " + primaryId);
+            return primaryId;
         }
-        Log.d("OfflineAccessLogRecord", "primaryId lastPrimaryId " + 0L);
+        Log.d("OfflineAccessLogRecord", "primaryId lastPrimaryId " + primaryId);
 
-        return 1L;
+        return primaryId;
     }
 
     /*@Override

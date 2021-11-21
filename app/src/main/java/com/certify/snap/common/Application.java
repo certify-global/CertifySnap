@@ -9,6 +9,10 @@ import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.hilt.work.HiltWorkerFactory;
+import androidx.work.Configuration;
+
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
@@ -30,12 +34,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.HiltAndroidApp;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by tsy on 2016/12/6.
  */
-
 public class Application extends android.app.Application {
     private static final String TAG = Application.class.getSimpleName();
     private static Application mInstance;
@@ -188,5 +194,6 @@ public class Application extends android.app.Application {
             hex.append(String.format("%02x", b & 0xFF));
         return hex.toString();
     }
+
 
 }
