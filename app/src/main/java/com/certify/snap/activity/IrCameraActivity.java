@@ -950,7 +950,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 final Bitmap irBitmapClone = irBitmap == null ? null : irBitmap.copy(irBitmap.getConfig(), false);
                 Log.v(TAG, String.format("onFaceFeatureInfoGet irBitmapClone: %s, rgbBitmapClone: %s", irBitmapClone, rgbBitmapClone));
                 if (!AppSettings.isTemperatureScanEnabled()) {
-                    if (!faceDetectEnabled && !rfIdEnable) {
+                    if (!faceDetectEnabled && !rfIdEnable && !AppSettings.isPrintLabelFace()) {
                         return;
                     }
                 }
