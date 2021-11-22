@@ -583,9 +583,6 @@ public class AccessCardController implements AccessCallback {
     }
 
     private void saveOfflineAccessLogRecord(Context context, JSONObject obj, UserExportedData data, int syncStatus) {
-        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-            return;
-        }
         if (AppSettings.isLogOfflineDataEnabled()) {
             AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
             try {
