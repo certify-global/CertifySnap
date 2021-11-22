@@ -509,8 +509,11 @@ public class AccessCardController implements AccessCallback {
                 }
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
+                    if ((AppSettings.getTimeAndAttendance() == 1) && listener != null) {
+                        listener.onCheckInOutStatus();
+                        setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
+                    }
                     syncStatus = 1;
-                    setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
                     saveOfflineAccessLogRecord(context, obj, data, syncStatus);
                 } else {
                     new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
