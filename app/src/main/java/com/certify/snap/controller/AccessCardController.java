@@ -122,7 +122,7 @@ public class AccessCardController implements AccessCallback {
     public void setCheckInResponseCode(int responseCode) {
         if (responseCode == AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue() ||
             responseCode == AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue()) {
-            ApplicationController.getInstance().setTimeAttendance(0);
+           // ApplicationController.getInstance().setTimeAttendance(0);
         }
         this.checkInResponseCode = responseCode;
     }
@@ -615,9 +615,10 @@ public class AccessCardController implements AccessCallback {
                 if (reportInfo.getString("responseCode").equals("1")) {
                     if ((AppSettings.getTimeAndAttendance() == 1)) {
                         if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")) {
-                            setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                           // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                            listener.onCheckInOutStatus();
                         } else {
-                            setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
+                           // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
                             if (listener != null) {
                                 listener.onCheckInOutStatus();
                             }
@@ -778,8 +779,7 @@ public class AccessCardController implements AccessCallback {
         boolean result = false;
         if (AppSettings.getTimeAndAttendance() == 1) {
             if (((ApplicationController.getInstance().getTimeAttendance() == 1) &&
-                    !member.getDateTimeCheckInOut().isEmpty()) ||
-                    (checkInResponseCode == AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.statusId)) {
+                    !member.getDateTimeCheckInOut().isEmpty())) {
                 result = true;
             }
         }

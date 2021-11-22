@@ -1567,6 +1567,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (registeredMember != null) {
                 String dateTimeCheckInOut = "";
                 if (ApplicationController.getInstance().getTimeAttendance() == 1) {
+                    if(registeredMember.dateTimeCheckInOut.isEmpty())
                     dateTimeCheckInOut = Util.getMMDDYYYYDate();
                 } else if (ApplicationController.getInstance().getTimeAttendance() == 2) {
                     dateTimeCheckInOut = "";
