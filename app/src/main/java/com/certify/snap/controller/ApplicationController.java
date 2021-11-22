@@ -2,8 +2,10 @@ package com.certify.snap.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.CountDownTimer;
 import android.util.Log;
 
+import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.StringConstants;
@@ -21,6 +23,16 @@ public class ApplicationController {
     private ThermalImageUtil temperatureUtil = null;
     private boolean isDeviceBoot = false;
     public int timeAttendance = 0;
+    private ApplicationCallbackListener listener = null;
+    private CountDownTimer healthCheckTimer = null;
+    private boolean healthCheckInterval = false;
+    private String appRestartTime = "";
+
+    public interface ApplicationCallbackListener {
+        void onHealthCheckNoResponse(int min, int sec);
+        void onHealthCheckTimeout();
+        void onHealthCheckTimerCancelled();
+    }
 
     public static ApplicationController getInstance() {
         if (instance == null)
@@ -149,5 +161,62 @@ public class ApplicationController {
 
     public void setTimeAttendance(int timeAttendance) {
         this.timeAttendance = timeAttendance;
+    }
+
+    public void setListener(ApplicationCallbackListener callbackListener) {
+        listener = callbackListener;
+    }
+
+    public String getAppRestartTime() {
+        return appRestartTime;
+    }
+
+    public void setAppRestartTime(String appRestartTime) {
+        this.appRestartTime = appRestartTime;
+    }
+
+    public void startHealthCheckTimer(Context context) {
+        if (healthCheckTimer != null) {
+            Log.d(TAG, "Health check timer on");
+            return;
+        }
+        healthCheckTimer = new CountDownTimer(Constants.HEALTH_CHECK_INIT_TIME, Constants.HEALTH_CHECK_INTERVAL) {
+            @Override
+            public void onTick(long remTime) {
+                if (listener != null && healthCheckInterval) {
+                    Log.d(TAG, "Health check api no response");
+                    int minute = (int) (remTime/1000)/60;
+                    int second = (int) (remTime/1000)%60;
+                    listener.onHealthCheckNoResponse(minute, second);
+                    return;
+                }
+                healthCheckInterval = true;
+            }
+
+            @Override
+            public void onFinish() {
+                healthCheckTimer.cancel();
+                if (listener != null) {
+                    listener.onHealthCheckTimeout();
+                }
+            }
+        };
+        Log.d(TAG, "Health Start timer ");
+        healthCheckTimer.start();
+    }
+
+    public void cancelHealthCheckTimer(Context context) {
+        if (healthCheckTimer != null) {
+            Log.d(TAG, "Health cancel timer ");
+            healthCheckTimer.cancel();
+            healthCheckTimer = null;
+            if (listener != null) {
+                listener.onHealthCheckTimerCancelled();
+            }
+        }
+        appRestartTime = "";
+        healthCheckInterval = false;
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        Util.writeBoolean(sharedPreferences, GlobalParameters.HEALTH_CHECK_OFFLINE, false);
     }
 }

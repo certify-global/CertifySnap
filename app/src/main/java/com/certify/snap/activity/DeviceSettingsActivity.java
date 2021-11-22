@@ -533,11 +533,6 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         }
     }
 
-    private void stopHealthCheckService() {
-        Intent intent = new Intent(this, DeviceHealthService.class);
-        stopService(intent);
-    }
-
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -560,7 +555,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                 switch_activate.setChecked(false);
             } else if (json1.getString("responseSubCode").equals("105")) {
                 switch_activate.setChecked(false);
-            } else if (json1.getString("responseCode").equals("1")) {
+            } else if (json1.has("responseCode") && json1.getString("responseCode").equals("1")) {
                 switch_activate.setChecked(true);
                 activateStatus.setText(getString(R.string.activated));
                 not_activate.setVisibility(View.GONE);
@@ -771,7 +766,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
 
     private void captureLogSetting() {
         saveLogButton.setOnClickListener(view -> {
-            if (!Util.isOfflineMode(this) && !AppSettings.isLogOfflineDataEnabled()) {
+            if (!Util.isOfflineMode(this)) {
                 Util.sendDeviceLogs(DeviceSettingsActivity.this);
                 Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
             } else {

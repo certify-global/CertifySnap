@@ -99,6 +99,7 @@ import com.certify.snap.model.OfflineRecordTemperatureMembers;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.AccessTokenJobService;
+import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 import com.common.pos.api.util.PosUtil;
 import com.example.a950jnisdk.SDKUtil;
@@ -141,6 +142,13 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 //工具类  目前有获取sharedPreferences 方法
 public class Util {
@@ -1202,7 +1210,7 @@ public class Util {
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
-
+            //checkForInternetConnection(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
@@ -1306,7 +1314,7 @@ public class Util {
     public static void retrieveSetting(JSONObject reportInfo, Context context) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         try {
-            if (reportInfo.getString("responseCode") != null && reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo.has("responseCode") && reportInfo.getString("responseCode") != null && reportInfo.getString("responseCode").equals("1")) {
                 Gson gson = new Gson();
                 SettingsResponse settingsResponse = gson.fromJson(String.valueOf(reportInfo), SettingsResponse.class);
 
@@ -1337,7 +1345,7 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.NavigationBar, deviceSettings.navigationBar.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.PRO_SETTINGS, false);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.LANGUAGE_ALLOW_MULTILINGUAL, deviceSettings.allowMultilingual.equals("1"));
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.DEBUG_MODE, true);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.DEBUG_MODE, deviceSettings.debugMode.equals("1"));
                     }
 
                     //HomeView settings
@@ -1578,7 +1586,7 @@ public class Util {
             }
 
             if (status.contains("ActivateApplication")) {
-                if (json1.getString("responseCode").equals("1")) {
+                if (json1.has("responseCode") && json1.getString("responseCode").equals("1")) {
                     Util.writeBoolean(sharedPreferences, GlobalParameters.ONLINE_MODE, true);
                     Util.getToken((JSONObjectCallback) context, context);
 
@@ -1826,10 +1834,10 @@ public class Util {
                 obj.put("groupId", "0");
             }
             //Disable for now
-            /*RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
+            RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
             if (registeredMember != null) {
                 obj.put("fromDate", registeredMember.dateTime);
-            }*/
+            }
             new AsyncJSONObjectGetMemberList(obj, callback, sharedPreferences.getString(GlobalParameters.URL,
                     EndPoints.prod_url) + EndPoints.GetMemberList, context).execute();
 
@@ -2465,5 +2473,65 @@ public class Util {
         splitStr1[1] = String.valueOf(hour);
         String dateTimeHour = splitStr1[0] + " " + splitStr1[1];
         return dateTimeHour + ":" + splitStr[1] + ":" + splitStr[2];
+    }
+
+    public static boolean isInternetConnected() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int processValue = mIpAddrProcess.waitFor();
+            if (processValue == 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(LOG, "Error is executing ping command");
+        }
+        return false;
+    }
+
+    private static void checkForInternetConnection(Context context) {
+        Observable
+                .create((ObservableOnSubscribe<Boolean>) emitter -> {
+                    Boolean value = isInternetConnected();
+                    emitter.onNext(value);
+                })
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    Disposable connectionDisposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        connectionDisposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Boolean value) {
+                        if (!value) {
+                            writeBoolean(getSharedPreferences(context), GlobalParameters.Internet_Indicator, true);
+                            Log.d(LOG, "Offline internet " + Util.getSharedPreferences(context).getBoolean(GlobalParameters.Internet_Indicator, false));
+                            Intent intent = new Intent();
+                            intent.setAction(DeviceHealthService.HEALTH_CHECK_OFFLINE_ACTION);
+                            LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(intent);
+                        } else {
+                            writeBoolean(getSharedPreferences(context), GlobalParameters.Internet_Indicator, false);
+                            Log.d(LOG, "Online internet " + Util.getSharedPreferences(context).getBoolean(GlobalParameters.Internet_Indicator, false));
+                            Intent intent = new Intent();
+                            intent.setAction(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION);
+                            LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(intent);
+                        }
+                        connectionDisposable.dispose();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(LOG, "Error in checking connection");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //do noop
+                    }
+                });
     }
 }

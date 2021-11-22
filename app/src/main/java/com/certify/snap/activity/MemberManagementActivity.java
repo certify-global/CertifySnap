@@ -255,7 +255,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         count = 0;
                         testCount = 1;
                         activeMemberCount = totalMemberCount = 0;
-                        datalist.clear();
                         mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
                         MemberSyncDataModel.getInstance().setSyncing(true);
                         Util.getmemberList(this, this);
@@ -1266,7 +1265,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         if (reportInfo != null || responseData != null) {
             try {
                 JSONObject json = new JSONObject(reportInfo);
-                if (json.getInt("responseCode") == 1) {
+                if (json.has("responseCode") && json.getInt("responseCode") == 1) {
                     String firstnamestr = responseData.getString("firstName");
                     String lastnamestr = responseData.getString("lastname");
                     String emailstr = responseData.getString("email");
@@ -1507,9 +1506,10 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     }
                     MemberSyncDataModel.getInstance().setSyncing(false);
                 } else {
-                    mCountTv.setText(testCount++ + " / " + totalMemberCount);
+                    //mCountTv.setText(testCount++ + " / " + totalMemberCount);
                 }
-                datalist.add(addedMember);
+                datalist.clear();
+                datalist.addAll(DatabaseController.getInstance().findAll());
                 refreshMemberList(datalist);
             }
         });

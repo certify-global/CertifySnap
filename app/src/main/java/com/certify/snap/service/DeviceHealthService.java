@@ -21,6 +21,7 @@ import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 
 import org.json.JSONObject;
 
@@ -33,6 +34,8 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
     private final static int BACKGROUND_INTERVAL_10_MINUTES = 10;
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
+    public static String HEALTH_CHECK_OFFLINE_ACTION = "com.action.health.offline";
+    public static String HEALTH_CHECK_ONLINE_ACTION = "com.action.health.online";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -77,17 +80,14 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
             if (reportInfo == null) {
                 Log.d("DeviceHealthService", "Health check error response "+ Util.getMMDDYYYYDate());
-                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
                 return;
             }
             JSONObject json = new JSONObject(reportInfo);
-            if (json.getInt("responseCode") == 1) {
+            if (json.has("responseCode") && json.getInt("responseCode") == 1) {
                 Log.d("DeviceHealthService", "Health check success response "+ Util.getMMDDYYYYDate());
-                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, true);
+                ApplicationController.getInstance().cancelHealthCheckTimer(this);
                 if(ApplicationLifecycleHandler.isInBackground)
                     bringApplicationToForeground();
-            } else {
-                Util.writeBoolean(sharedPreferences, GlobalParameters.Internet_Indicator, false);
             }
 
             if (reportInfo.contains("token expired")) {
