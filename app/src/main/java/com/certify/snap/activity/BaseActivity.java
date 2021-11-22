@@ -128,9 +128,6 @@ public abstract class BaseActivity extends Activity {
                 if (intent != null && intent.getAction() != null) {
                     runOnUiThread(() -> {
                         if (intent.getAction().equals(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION)) {
-                            if (internetIndicatorImg != null) {
-                                internetIndicatorImg.setVisibility(View.GONE);
-                            }
                             updateOfflineService(BaseActivity.this);
                         }
                     });
@@ -200,6 +197,9 @@ public abstract class BaseActivity extends Activity {
         try {
             if (!Util.isOfflineMode(this) && !Util.isServiceRunning(OfflineRecordSyncService.class, this)) {
                 Log.d(TAG, "Offline service ");
+                if (internetIndicatorImg != null) {
+                    internetIndicatorImg.setVisibility(View.GONE);
+                }
                 startService(new Intent(this, OfflineRecordSyncService.class));
             }
         } catch (Exception e) {
