@@ -1206,6 +1206,7 @@ public class Util {
             obj.put("deviceUpTime", getDeviceUpTime());
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
+            if(!Util.isOfflineMode(context))
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
             sendOfflineServiceBroadcast(context);
         } catch (Exception e) {
@@ -2262,7 +2263,7 @@ public class Util {
         try {
             if (AccessCardController.getInstance().getCheckInResponseCode() == -1)
                 return false;
-            if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue()||AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
+            if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue() || AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
                 return true;
             if (ApplicationController.getInstance().getTimeAttendance() == 2 && (oldDateTime.isEmpty()))
                 return true;
@@ -2270,7 +2271,7 @@ public class Util {
                 return false;
             if (ApplicationController.getInstance().getTimeAttendance() == 1 && oldDateTime.isEmpty())
                 return false;
-            else if (ApplicationController.getInstance().getTimeAttendance() == 1 && !oldDateTime.isEmpty()){
+            else if (ApplicationController.getInstance().getTimeAttendance() == 1 && !oldDateTime.isEmpty()) {
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                 Date appLaunchDateTime = format.parse(oldDateTime);
                 Date currentDateTime = new Date(System.currentTimeMillis());
@@ -2285,6 +2286,24 @@ public class Util {
         }
         return false;
     }
+
+    public static boolean differenceInTimeTwoDates(String lastCheckInTime) {
+        try {
+            if (lastCheckInTime.isEmpty()) return false;
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            Date appLaunchDateTime = format.parse(lastCheckInTime);
+            Date currentDateTime = new Date(System.currentTimeMillis());
+            long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+            long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+            long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+            long totalHours = hours + days * 24;
+            return totalHours < 24;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private static String getDeviceUpTime() {
         long uptimeMillis = SystemClock.elapsedRealtime();
         String deviceUptime = String.format(Locale.getDefault(),
@@ -2514,7 +2533,7 @@ public class Util {
     public static boolean isInternetConnected() {
         Runtime runtime = Runtime.getRuntime();
         try {
-            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            Process mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
             int processValue = mIpAddrProcess.waitFor();
             if (processValue == 0) {
                 return true;
@@ -2573,6 +2592,7 @@ public class Util {
 
     /**
      * Method that truncates the leading zero's
+     *
      * @param accessId accessId value
      * @return accessId
      */

@@ -1547,7 +1547,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onAccessGranted() {
         SoundController.getInstance().playAccessGrantedSound();
         runOnUiThread(() -> {
-            //if ((AppSettings.getTimeAndAttendance() == 1)) return;
+            if ((AppSettings.getTimeAndAttendance() == 1)) {
+                if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                Toast.makeText(IrCameraActivity.this, getString(R.string.checked_in), Toast.LENGTH_SHORT).show();
+                else Toast.makeText(IrCameraActivity.this, getString(R.string.checked_out), Toast.LENGTH_SHORT).show();
+                return;
+            }
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
         });
     }

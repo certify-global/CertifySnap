@@ -776,7 +776,7 @@ public class AccessCardController implements AccessCallback {
         boolean result = false;
         if (AppSettings.getTimeAndAttendance() == 1) {
             if (((ApplicationController.getInstance().getTimeAttendance() == 1) &&
-                    !member.getDateTimeCheckInOut().isEmpty())) {
+                    !member.getDateTimeCheckInOut().isEmpty() && Util.differenceInTimeTwoDates(member.getDateTimeCheckInOut()))) {
                 result = true;
             }
         }
