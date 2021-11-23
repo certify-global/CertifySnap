@@ -891,9 +891,6 @@ public class Util {
     }
 
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
-        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-            return;
-        }
         if (AppSettings.isLogOfflineDataEnabled()) {
             try {
                 OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
@@ -1210,7 +1207,7 @@ public class Util {
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
-            //checkForInternetConnection(context);
+            sendOfflineServiceBroadcast(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
@@ -2593,5 +2590,11 @@ public class Util {
 
         }
         return accessIdStr;
+    }
+
+    private static void sendOfflineServiceBroadcast(Context context) {
+        Intent intent = new Intent();
+        intent.setAction(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION);
+        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(intent);
     }
 }
