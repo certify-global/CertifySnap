@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -50,6 +51,8 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
     private Long primaryid;
     private int index = 0;
     private int logIndex = 0;
+    private AsyncRecordUserTemperature asyncRecordUserTemperature = null;
+    private AsyncJSONObjectAccessLog asyncJSONObjectAccessLog = null;
 
     @Nullable
     @Override
@@ -213,11 +216,16 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                 jsonObject.put("offlineSync", list.get(i).getOfflineSync());
             }
 
+            if (asyncRecordUserTemperature != null && ((asyncRecordUserTemperature.getStatus() == AsyncTask.Status.RUNNING) ||
+                    (asyncRecordUserTemperature.getStatus() == AsyncTask.Status.PENDING))) {
+                asyncRecordUserTemperature.cancel(true);
+                asyncRecordUserTemperature = null;
+            }
             primaryid = list.get(i).getPrimaryid();
             if (taskExecutorService != null) {
-                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).executeOnExecutor(taskExecutorService);
+                asyncRecordUserTemperature = (AsyncRecordUserTemperature) new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).executeOnExecutor(taskExecutorService);
             } else {
-                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
+                asyncRecordUserTemperature = (AsyncRecordUserTemperature) new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -335,11 +343,16 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
                 jsonObject.put("offlineSync", logList.get(i).getOfflineSync());
             }
 
+            if (asyncJSONObjectAccessLog != null && ((asyncJSONObjectAccessLog.getStatus() == AsyncTask.Status.RUNNING) ||
+                    (asyncJSONObjectAccessLog.getStatus() == AsyncTask.Status.PENDING))) {
+                asyncJSONObjectAccessLog.cancel(true);
+                asyncJSONObjectAccessLog = null;
+            }
             primaryid = logList.get(i).getPrimaryId();
             if (taskExecutorService != null) {
-                new AsyncJSONObjectAccessLog(jsonObject, (AccessCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).executeOnExecutor(taskExecutorService);
+                asyncJSONObjectAccessLog = (AsyncJSONObjectAccessLog) new AsyncJSONObjectAccessLog(jsonObject, (AccessCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).executeOnExecutor(taskExecutorService);
             } else {
-                new AsyncJSONObjectAccessLog(jsonObject, (AccessCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                asyncJSONObjectAccessLog = (AsyncJSONObjectAccessLog) new AsyncJSONObjectAccessLog(jsonObject, (AccessCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
             }
 
 

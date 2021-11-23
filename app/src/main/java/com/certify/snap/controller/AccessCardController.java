@@ -567,15 +567,15 @@ public class AccessCardController implements AccessCallback {
         try {
             if (reportInfo == null) {
                 Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
-                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(), 0);
+                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(), 1);
                 return;
             }
             if (reportInfo.has("responseCode")) {
                 if (!reportInfo.getString("responseCode").equals("1")) {
-                    saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),0);
+                    saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),1);
                 }
             } else {
-                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),0);
+                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),1);
             }
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());

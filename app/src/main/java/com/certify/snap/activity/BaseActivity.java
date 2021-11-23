@@ -195,11 +195,12 @@ public abstract class BaseActivity extends Activity {
 
     private void updateOfflineService(Context context) {
         try {
-            if (!Util.isOfflineMode(this) && !Util.isServiceRunning(OfflineRecordSyncService.class, this)) {
+            if (!Util.isOfflineMode(this)) {
                 Log.d(TAG, "Offline service ");
                 if (internetIndicatorImg != null) {
                     internetIndicatorImg.setVisibility(View.GONE);
                 }
+                stopService(new Intent(context, OfflineRecordSyncService.class));
                 startService(new Intent(this, OfflineRecordSyncService.class));
             }
         } catch (Exception e) {
