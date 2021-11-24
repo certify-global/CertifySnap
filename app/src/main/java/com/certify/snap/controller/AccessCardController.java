@@ -616,7 +616,7 @@ public class AccessCardController implements AccessCallback {
                     if ((AppSettings.getTimeAndAttendance() == 1)) {
                         if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")) {
                            // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
-                            listener.onCheckInOutStatus();
+                            if (listener != null)listener.onCheckInOutStatus();
                         } else {
                            // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
                             if (listener != null) {
@@ -628,20 +628,15 @@ public class AccessCardController implements AccessCallback {
                 } else if (reportInfo.getString("responseCode").equals("0")) {
                     if (AppSettings.getTimeAndAttendance() == 1) {
                         //TODO: Check for responseSubCode
-                        if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("1")) {
-                            setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                        if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("102")) {
+                            if (listener != null)listener.onCheckInOutStatus();
                         }
                         return;
                     }
+                    saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(), 0);
                 }
             }
-            if (AppSettings.getTimeAndAttendance() == 1) {
-                setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
-                if (listener != null) {
-                    listener.onCheckInOutStatus();
-                }
-            }
-            saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(), 0);
+
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());
         }
