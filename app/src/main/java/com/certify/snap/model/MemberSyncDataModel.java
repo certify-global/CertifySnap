@@ -765,7 +765,8 @@ public class MemberSyncDataModel {
         switch (dbAddType) {
             case SCALE: {
                 if (membersList.size() == NUM_OF_RECORDS) {
-                    if (isMemberSyncGroupIdEnabled()) {
+                    if (isMemberSyncGroupIdEnabled()
+                        && !Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
                         checkDatabaseMembers();
                     } else {
                         addToDatabase(context);
