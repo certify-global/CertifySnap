@@ -285,13 +285,13 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     @Override
     protected void onResume() {
         super.onResume();
-        if (Util.isNetworkOff(SettingsActivity.this)) {
+        /*if (Util.isNetworkOff(SettingsActivity.this)) {
             record.setVisibility(View.VISIBLE);
             recordDivider.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             record.setVisibility(View.GONE);
             recordDivider.setVisibility(View.GONE);
-        }
+        }*/
         setData();
     }
 
@@ -575,7 +575,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
                 return;
             }
             if (!reportInfo.isNull("Message")) {
-                if (reportInfo.getString("Message").contains("token expired"))
+                if (reportInfo.getString("Message").contains(""))
                     Util.getToken(this, this);
 
             } else {

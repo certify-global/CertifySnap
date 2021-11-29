@@ -63,8 +63,9 @@ import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
-import com.certify.snap.activity.QrCodeScannerActivity;
 import com.certify.snap.activity.SettingsActivity;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.DeviceInfo;
 import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
@@ -655,7 +656,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static void scheduleJobAccessToken(Context context) {
+    public static void scheduleJobAccessToken(Context context) {
         ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(1, componentName)
                 .setPeriodic(timeInMillis, 5 * 60 * 1000).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
@@ -791,104 +792,6 @@ public class Util {
 
     public static boolean isConnectingToInternet(Context context) {
         return true;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             UserExportedData data, int offlineSyncStatus) {
-        Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
-        try {
-            if (!Util.isDeviceF10()) {
-                if ((data.temperature == null || data.temperature.isEmpty() || data.temperature.equals(""))) {
-                    Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
-                    return;
-                }
-            }
-            if (!isInstitutionIdValid(context)) return;
-            SharedPreferences sp = Util.getSharedPreferences(context);
-            String triggerType = data.triggerType;
-            JSONObject obj = new JSONObject();
-            obj.put("deviceId", Util.getSerialNumber());
-            obj.put("temperature", data.temperature);
-            obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("facilityId", 0);
-            obj.put("locationId", 0);
-            obj.put("deviceTime", Util.getMMDDYYYYDate());
-            obj.put("trigger", data.triggerType);
-            obj.put("machineTemperature", data.machineTemperature);
-            obj.put("ambientTemperature", data.ambientTemperature);
-            if (data.sendImages) {
-                obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
-                obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
-                obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
-            }
-            String deviceParametersValue = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
-            obj.put("deviceData", MobileDetails(context));
-            obj.put("deviceParameters", deviceParametersValue);
-            obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
-            obj.put("exceedThreshold", data.exceedsThreshold);
-
-            QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-            RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-
-            //TODO Simplifying following logic
-            if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) && rfidScanMatchedMember != null) {
-                obj.put("id", rfidScanMatchedMember.getUniqueid());
-                obj.put("accessId", rfidScanMatchedMember.getAccessid());
-                obj.put("firstName", rfidScanMatchedMember.getFirstname());
-                obj.put("lastName", rfidScanMatchedMember.getLastname());
-                obj.put("memberId", rfidScanMatchedMember.getMemberid());
-                obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
-                obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
-                obj.put("trqStatus", ""); // Send this empty if not Qr
-                obj.put("networkId", rfidScanMatchedMember.getNetworkId());
-
-            } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) &&
-                    !AccessCardController.getInstance().getAccessCardID().isEmpty()) {
-                obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
-                updateFaceMemberValues(obj, data);
-            } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
-                obj.put("id", qrCodeData.getUniqueId());
-                obj.put("accessId", qrCodeData.getAccessId());
-                obj.put("firstName", qrCodeData.getFirstName());
-                obj.put("lastName", qrCodeData.getLastName());
-                obj.put("memberId", qrCodeData.getMemberId());
-                obj.put("trqStatus", qrCodeData.getTrqStatus());
-                obj.put("memberTypeId", qrCodeData.getMemberTypeId());
-                obj.put("memberTypeName", qrCodeData.getMemberTypeName());
-            } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-                obj.put("accessId", CameraController.getInstance().getQrCodeId());
-                updateFaceMemberValues(obj, data);
-            } else {
-                obj.put("accessId", data.member.getAccessid());
-                updateFaceMemberValues(obj, data);
-            }
-            if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
-                if (!GestureController.getInstance().isQuestionnaireFailed()) {
-                    obj.put("trqStatus", "0");
-                } else {
-                    obj.put("trqStatus", "1");
-                }
-            }
-            obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
-            obj.put("maskStatus", data.maskStatus);
-            obj.put("faceScore", data.faceScore);
-            obj.put("faceParameters", FaceParameters(context, data));
-
-            if (BuildConfig.DEBUG) {
-                Log.v(LOG, "recordUserTemperature body: " + obj.toString());
-            }
-            if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
-                obj.put("utcTime", Util.getUTCDate(""));
-                saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
-            } else {
-                new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
-            }
-
-        } catch (Exception e) {
-            Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
-        }
     }
 
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
@@ -1615,7 +1518,7 @@ public class Util {
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
-                if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
+                if (json1.has("Message") && json1.getString("Message").equals("Authorization has been denied for this request")) {
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
@@ -1636,6 +1539,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
+                RetrofitInstance.getInstance().createRetrofitInstance();
 
                 Util.getSettings((SettingCallback) context, context);
             }
@@ -2244,7 +2148,7 @@ public class Util {
         return null;
     }
 
-    private static String getAppUpTime(Context context) {
+    public static String getAppUpTime(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
         Date appLaunchDateTime = new Date(Long.parseLong(appLaunchTime));
@@ -2258,7 +2162,7 @@ public class Util {
         return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
     }
 
-    private static String getDeviceUpTime() {
+    public static String getDeviceUpTime() {
         long uptimeMillis = SystemClock.elapsedRealtime();
         String deviceUptime = String.format(Locale.getDefault(),
                 "%d:%02d:%02d",
@@ -2564,9 +2468,28 @@ public class Util {
         return accessIdStr;
     }
 
-    private static void sendOfflineServiceBroadcast(Context context) {
+    public static void sendOfflineServiceBroadcast(Context context) {
         Intent intent = new Intent();
         intent.setAction(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION);
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(intent);
+    }
+
+    public static DeviceInfo getDeviceInfo(Context context) {
+        getNumberVersion(context);
+        getDeviceUUid(context);
+
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.appVersion = Util.getVersionBuild();
+        deviceInfo.osVersion = "Android - " + Build.VERSION.RELEASE;
+        deviceInfo.mobileIp = getLocalIpAddress();
+        deviceInfo.mobileNumber = getSharedPreferences(context).getString(GlobalParameters.MOBILE_NUMBER, "+1");
+        deviceInfo.uniqueDeviceId = getSharedPreferences(context).getString(GlobalParameters.UUID, "");
+        deviceInfo.imeiNumber = getSharedPreferences(context).getString(GlobalParameters.IMEI, "");
+        deviceInfo.deviceModel = Build.MODEL;
+        deviceInfo.deviceSerialNumber = getSerialNumber();
+        deviceInfo.batteryStatus = getBatteryLevel(context);
+        deviceInfo.networkStatus = isConnectedEthernet(context);
+        deviceInfo.appState = getAppState();
+        return deviceInfo;
     }
 }

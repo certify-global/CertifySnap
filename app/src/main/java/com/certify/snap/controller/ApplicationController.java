@@ -2,9 +2,14 @@ package com.certify.snap.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.util.Log;
 
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.GetTokenRequest;
+import com.certify.snap.api.response.GetTokenResponse;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -12,8 +17,15 @@ import com.certify.snap.common.StringConstants;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.DeviceKeySettings;
 import com.common.thermalimage.ThermalImageUtil;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ApplicationController {
     private static final String TAG = ApplicationController.class.getSimpleName();
@@ -218,5 +230,51 @@ public class ApplicationController {
         healthCheckInterval = false;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         Util.writeBoolean(sharedPreferences, GlobalParameters.HEALTH_CHECK_OFFLINE, false);
+    }
+
+    public void getToken(Context context) {
+        checkTokenExpiry(context);
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        GetTokenRequest tokenRequest = new GetTokenRequest();
+        String serialNum = Util.getSerialNumber();
+        tokenRequest.deviceSN = serialNum;
+        Call<String> call = apiInterface.getToken(serialNum, tokenRequest);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.body() != null) {
+                    Log.d(TAG, "Get token response success");
+                    Gson gson = new Gson();
+                    Type type = new TypeToken<GetTokenResponse>(){}.getType();
+                    GetTokenResponse tokenResponse = gson.fromJson(response.body(), type);
+                    SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+                    Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, tokenResponse.accessToken);
+                    Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, tokenResponse.tokenType);
+                    Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, tokenResponse.institutionId);
+                    Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, tokenResponse.expiryTime);
+                    Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, tokenResponse.command);
+                    RetrofitInstance.getInstance().createRetrofitInstance();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.d(TAG, "Get token response error");
+            }
+        });
+    }
+
+    private void checkTokenExpiry(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        String expire_time = sharedPreferences.getString(GlobalParameters.EXPIRE_TIME, "");
+        if (expire_time != null && !expire_time.isEmpty()) {
+            String expireTime = Util.getUTCDate(expire_time);
+            String currentTime = Util.currentDate();
+            if (Util.isDateOneBigger(expireTime, currentTime)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Util.scheduleJobAccessToken(context);
+                }
+            }
+        }
     }
 }
