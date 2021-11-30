@@ -9,23 +9,19 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.certify.callback.AccessCallback;
-import com.certify.callback.RecordTemperatureCallback;
-import com.certify.snap.activity.IrCameraActivity;
-import com.certify.snap.async.AsyncJSONObjectAccessLog;
-import com.certify.snap.async.AsyncRecordUserTemperature;
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.AccessLogRequest;
+import com.certify.snap.api.request.TemperatureRecordRequest;
+import com.certify.snap.api.response.AccessLogResponse;
+import com.certify.snap.api.response.TemperatureRecordResponse;
 import com.certify.snap.async.AsyncTaskExecutorService;
-import com.certify.snap.common.Constants;
-import com.certify.snap.common.EndPoints;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.google.gson.Gson;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -37,8 +33,11 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class OfflineRecordSyncService extends Service implements RecordTemperatureCallback, AccessCallback {
+public class OfflineRecordSyncService extends Service {
 
     private static final String TAG = OfflineRecordSyncService.class.getSimpleName();
     private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
@@ -158,71 +157,45 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
     }
 
     private void uploadTemperatureRecordData(List<OfflineRecordTemperatureMembers> list, int i) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            JSONObject json = new JSONObject(list.get(i).getJsonObj());
-            jsonObject.put("deviceId", json.getString("deviceId"));
-            jsonObject.put("temperature", list.get(i).getTemperature());
-            jsonObject.put("institutionId", json.getString("institutionId"));
-            jsonObject.put("facilityId", json.getString("facilityId"));
-            jsonObject.put("locationId", json.getString("locationId"));
-            jsonObject.put("deviceTime", list.get(i).getDeviceTime());
-            jsonObject.put("trigger", json.getString("trigger"));
+        Gson gson = new Gson();
+        TemperatureRecordRequest request = gson.fromJson(list.get(i).jsonObj, TemperatureRecordRequest.class);
 
-            //images
-
-            //jsonObject.put("deviceData", json.getString("deviceData"));
-            jsonObject.put("deviceParameters", json.getString("deviceParameters"));
-            jsonObject.put("temperatureFormat", json.getString("temperatureFormat"));
-            jsonObject.put("exceedThreshold", json.getString("exceedThreshold"));
-            jsonObject.put("trqStatus", json.getString("trqStatus"));
-            jsonObject.put("qrCodeId", json.getString("qrCodeId"));
-            if (json.has("accessId")) {
-                jsonObject.put("accessId", json.getString("accessId"));
-            }
-            if (json.has("allowAccess")) {
-                jsonObject.put("allowAccess", json.getString("allowAccess"));
-            }
-            jsonObject.put("firstName", list.get(i).getFirstName());
-            jsonObject.put("lastName", list.get(i).getLastName());
-            jsonObject.put("memberId", list.get(i).getMemberId());
-            jsonObject.put("maskStatus", json.getString("maskStatus"));
-            jsonObject.put("faceScore", json.getString("faceScore"));
-            jsonObject.put("faceParameters", json.getString("faceParameters"));
-            if (json.has("memberTypeId")) {
-                jsonObject.put("memberTypeId", json.getString("memberTypeId"));
-            }
-            if (json.has("memberTypeName")) {
-                jsonObject.put("memberTypeName", json.getString("memberTypeName"));
-            }
-            if (json.has("networkId")) {
-                jsonObject.put("networkId", json.getString("networkId"));
+        primaryid = list.get(i).getPrimaryid();
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        Call<TemperatureRecordResponse> call = apiInterface.recordUserTemperature(request);
+        call.enqueue(new Callback<TemperatureRecordResponse>() {
+            @Override
+            public void onResponse(Call<TemperatureRecordResponse> call, Response<TemperatureRecordResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().responseCode == 1) {
+                        OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
+                        if (firstMember != null) {
+                            Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
+                            DatabaseController.getInstance().deleteOfflineRecord(primaryid);
+                        } else {
+                            if (DatabaseController.getInstance().isOfflineAccessLogExist())
+                                findAllOfflineAccessLogRecord();
+                            else
+                                stopService(new Intent(context, OfflineRecordSyncService.class));
+                        }
+                    }
+                    index++;
+                    if (index < datalist.size()) {
+                        uploadTemperatureRecordData(datalist, index);
+                    } else {
+                        if (DatabaseController.getInstance().isOfflineAccessLogExist())
+                            findAllOfflineAccessLogRecord();
+                        else
+                            stopService(new Intent(context, OfflineRecordSyncService.class));
+                    }
+                }
             }
 
-            if (json.has("irTemplate")){
-                jsonObject.put("irTemplate", json.getString("irTemplate"));
+            @Override
+            public void onFailure(Call<TemperatureRecordResponse> call, Throwable t) {
+                Log.e(TAG, "Error in uploading record user temperature " + t.getMessage());
             }
-            if (json.has("rgbTemplate")) {
-                jsonObject.put("rgbTemplate", json.getString("rgbTemplate"));
-            }
-            if (json.has("thermalTemplate")) {
-                jsonObject.put("thermalTemplate", json.getString("thermalTemplate"));
-            }
-            if (list.get(i).getOfflineSync() ==1){
-                jsonObject.put("utcOfflineDateTime", list.get(i).getUtcTime());
-                jsonObject.put("offlineSync", list.get(i).getOfflineSync());
-            }
-
-            primaryid = list.get(i).getPrimaryid();
-            if (taskExecutorService != null) {
-                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).executeOnExecutor(taskExecutorService);
-            } else {
-                new AsyncRecordUserTemperature(jsonObject, (RecordTemperatureCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        });
 
     }
 
@@ -235,146 +208,39 @@ public class OfflineRecordSyncService extends Service implements RecordTemperatu
         }
     }
 
-    @Override
-    public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            if (reportInfo.getString("responseCode").equals("1")) {
-                try {
-                    OfflineRecordTemperatureMembers firstMember = DatabaseController.getInstance().getFirstOfflineRecord();
-                    if (firstMember != null) {
-                        Log.d(TAG, "OfflineRecord successfully sent with primaryId " + primaryid);
-                        DatabaseController.getInstance().deleteOfflineRecord(primaryid);
-                    } else {
-                        if (DatabaseController.getInstance().isOfflineAccessLogExist())
-                            findAllOfflineAccessLogRecord();
-                        else
-                            stopService(new Intent(context, OfflineRecordSyncService.class));
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "OfflineRecord Exception occurred while querying for first member from db");
-                }
-            }
-            index++;
-            if(index < datalist.size()) {
-                uploadTemperatureRecordData(datalist, index);
-            } else {
-                if (DatabaseController.getInstance().isOfflineAccessLogExist())
-                    findAllOfflineAccessLogRecord();
-                else
-                    stopService(new Intent(context, OfflineRecordSyncService.class));
-            }
-        } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
-        }
-    }
-
     private void uploadAccessLogData(List<AccessLogOfflineRecord> logList, int i) {
-        JSONObject jsonObject = new JSONObject();
-        try {
-            JSONObject json = new JSONObject(logList.get(i).getJsonObj());
-            if (json.has("id")) {
-                jsonObject.put("id", json.getInt("id"));
-            }
-            if (json.has("firstName")) {
-                jsonObject.put("firstName", json.getString("firstName"));
-            }
-            if (json.has("lastName")) {
-                jsonObject.put("lastName", json.getString("lastName"));
-            }
-            jsonObject.put("temperature", json.getString("temperature"));
-            if (json.has("memberId")) {
-                jsonObject.put("memberId", json.getString("memberId"));
-            }
-            if (json.has("accessId")) {
-                jsonObject.put("accessId", json.getString("accessId"));
-            }
-            jsonObject.put("qrCodeId", json.getString("qrCodeId"));
-            jsonObject.put("deviceName", json.getString("deviceName"));
-            jsonObject.put("institutionId", json.getString("institutionId"));
-            jsonObject.put("facilityId", json.getString("facilityId"));
-            jsonObject.put("locationId", json.getString("locationId"));
-            jsonObject.put("facilityName", json.getString("facilityName"));
-            jsonObject.put("locationName", json.getString("locationName"));
-
-            jsonObject.put("deviceId", json.getString("deviceId"));
-            jsonObject.put("deviceName", json.getString("deviceName"));
-            jsonObject.put("deviceTime", json.getString("deviceTime"));
-            if (json.has("timezone")) {
-                jsonObject.put("timezone", json.getString("timezone"));
-            }
-            jsonObject.put("sourceIP", json.getString("deviceData"));
-            jsonObject.put("deviceData", json.getString("deviceData"));
-            jsonObject.put("guid", json.getString("guid"));
-            jsonObject.put("faceParameters", json.getString("faceParameters"));
-            jsonObject.put("eventType", json.getString("eventType"));
-            jsonObject.put("evenStatus", json.getString("evenStatus"));
-            jsonObject.put("utcRecordDate", json.getString("utcRecordDate"));
-            if (json.has("memberTypeId")) {
-                jsonObject.put("memberTypeId", json.getString("memberTypeId"));
-            }
-            if (json.has("memberTypeName")) {
-                jsonObject.put("memberTypeName", json.getString("memberTypeName"));
-            }
-            if (json.has("networkId")) {
-                jsonObject.put("networkId", json.getString("networkId"));
-            }
-            jsonObject.put("loggingMode", json.getString("loggingMode"));
-            jsonObject.put("accessOption", json.getString("accessOption"));
-            if (jsonObject.has("attendanceMode")) {
-                jsonObject.put("attendanceMode", "attendanceMode");
-            }
-            if (json.has("allowAccess")) {
-                jsonObject.put("allowAccess", json.getString("allowAccess"));
-            }
-
-            if (logList.get(i).getOfflineSync()==1){
-                jsonObject.put("utcOfflineDateTime",json.getString("utcRecordDate"));
-                jsonObject.put("offlineSync", logList.get(i).getOfflineSync());
-            }
-
-            primaryid = logList.get(i).getPrimaryId();
-            if (taskExecutorService != null) {
-                new AsyncJSONObjectAccessLog(jsonObject, (AccessCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).executeOnExecutor(taskExecutorService);
-            } else {
-                new AsyncJSONObjectAccessLog(jsonObject, (AccessCallback) context, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo == null) {
-                return;
-            }
-            if (reportInfo.getString("responseCode").equals("1")) {
-                try {
-                    AccessLogOfflineRecord firstAccessLogRecord = DatabaseController.getInstance().getFirstOfflineAccessLogRecord();
-                    if (firstAccessLogRecord != null) {
-                        Log.d(TAG, "OfflineRecord successfully sent with id " + primaryid);
-                        DatabaseController.getInstance().deleteOfflineAccessLogRecord(primaryid);
+        Gson gson = new Gson();
+        AccessLogRequest request = gson.fromJson(logList.get(i).jsonObj, AccessLogRequest.class);
+        primaryid = logList.get(i).primaryId;
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        Call<AccessLogResponse> call = apiInterface.sendAccessLog(request);
+        call.enqueue(new Callback<AccessLogResponse>() {
+            @Override
+            public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().responseCode == 1) {
+                        AccessLogOfflineRecord firstAccessLogRecord = DatabaseController.getInstance().getFirstOfflineAccessLogRecord();
+                        if (firstAccessLogRecord != null) {
+                            Log.d(TAG, "OfflineRecord successfully sent with id " + primaryid);
+                            DatabaseController.getInstance().deleteOfflineAccessLogRecord(primaryid);
+                        } else {
+                            stopService(new Intent(context, OfflineRecordSyncService.class));
+                        }
+                    }
+                    logIndex++;
+                    if(logIndex < accessLogDatalist.size()) {
+                        uploadAccessLogData(accessLogDatalist, logIndex);
                     } else {
                         stopService(new Intent(context, OfflineRecordSyncService.class));
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "OfflineRecord Exception occurred while querying for first member from db");
                 }
             }
-            logIndex++;
-            if(logIndex < accessLogDatalist.size()) {
-                uploadAccessLogData(accessLogDatalist, logIndex);
-            } else {
-                stopService(new Intent(context, OfflineRecordSyncService.class));
+
+            @Override
+            public void onFailure(Call<AccessLogResponse> call, Throwable t) {
+                Log.e(TAG, "Error in sending the access logs " + t.getMessage());
             }
-        } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
-        }
+        });
     }
+
 }

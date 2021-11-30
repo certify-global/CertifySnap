@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.api.RetrofitInstance;
 import com.certify.snap.api.response.LanguageData;
 import com.certify.snap.async.AsyncTaskExecutorService;
 import com.certify.snap.common.AppSettings;
@@ -86,6 +87,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
             mActivity = this;
             ApplicationController.getInstance().initThermalUtil(this);
+            RetrofitInstance.getInstance().init(this);
             Application.getInstance().addActivity(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);

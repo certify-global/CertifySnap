@@ -4,10 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.certify.callback.AccessCallback;
-import com.certify.snap.async.AsyncJSONObjectAccessLog;
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.AccessLogRequest;
+import com.certify.snap.api.response.AccessLogResponse;
 import com.certify.snap.common.AppSettings;
-import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
@@ -17,14 +18,17 @@ import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.pos.api.util.PosUtil;
-
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AccessCardController implements AccessCallback {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AccessCardController {
     private static final String TAG = AccessCardController.class.getSimpleName();
     private static AccessCardController mInstance = null;
     private boolean mEnableRelay = false;
@@ -47,6 +51,7 @@ public class AccessCardController implements AccessCallback {
     private boolean allowAccessValue = true;
     private int checkInResponseCode = -1;
     private RegisteredMembers checkedInOutMember = null;
+    private AccessLogRequest accessLogRequest = null;
 
     public enum AccessControlScanMode {
         ID_ONLY(1),
@@ -407,28 +412,28 @@ public class AccessCardController implements AccessCallback {
             try {
                 String qrCodeId = "";
                 String accessId = "";
+                accessLogRequest = new AccessLogRequest();
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-                JSONObject obj = new JSONObject();
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
-                        obj.put("id", qrCodeData.getUniqueId());
-                        obj.put("accessId", qrCodeData.getAccessId());
-                        obj.put("firstName", qrCodeData.getFirstName());
-                        obj.put("lastName", qrCodeData.getLastName());
-                        obj.put("memberId", qrCodeData.getMemberId());
-                        obj.put("memberTypeId", qrCodeData.getMemberTypeId());
-                        obj.put("memberTypeName", qrCodeData.getMemberTypeName());
+                        accessLogRequest.id = Integer.parseInt(qrCodeData.getUniqueId());
+                        accessLogRequest.accessId = qrCodeData.getAccessId();
+                        accessLogRequest.firstName = qrCodeData.getFirstName();
+                        accessLogRequest.lastName = qrCodeData.getLastName();
+                        accessLogRequest.memberId = qrCodeData.getMemberId();
+                        accessLogRequest.memberTypeId = String.valueOf(qrCodeData.getMemberTypeId());
+                        accessLogRequest.memberTypeName = qrCodeData.getMemberTypeName();
                     } else {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
-                        obj.put("id", 0);
-                        obj.put("accessId", "");
-                        obj.put("firstName", "Anonymous");
-                        obj.put("lastName", "");
-                        obj.put("memberId", "");
-                        obj.put("memberTypeId", 0);
-                        obj.put("memberTypeName", "");
+                        accessLogRequest.id = 0;
+                        accessLogRequest.accessId = "";
+                        accessLogRequest.firstName = "Anonymous";
+                        accessLogRequest.lastName = "";
+                        accessLogRequest.memberId = "";
+                        accessLogRequest.memberTypeId = "";
+                        accessLogRequest.memberTypeName = "";
                     }
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {
@@ -441,71 +446,70 @@ public class AccessCardController implements AccessCallback {
                         registeredMember.setFirstname("Anonymous");
                         registeredMember.setAccessid(mAccessCardID);
                     }
-                    obj.put("id", 0);
-                    obj.put("firstName", registeredMember.getFirstname());
-                    obj.put("lastName", registeredMember.getLastname());
-                    obj.put("accessId", registeredMember.getAccessid());
-                    obj.put("memberId", registeredMember.getMemberid());
-                    obj.put("memberTypeId", registeredMember.getMemberType());
-                    obj.put("memberTypeName", registeredMember.getMemberTypeName());
-                    obj.put("networkId", registeredMember.getNetworkId());
+                    accessLogRequest.id = 0;
+                    accessLogRequest.accessId = registeredMember.getAccessid();
+                    accessLogRequest.firstName = registeredMember.getFirstname();
+                    accessLogRequest.lastName = registeredMember.getLastname();
+                    accessLogRequest.memberId = registeredMember.getMemberid();
+                    accessLogRequest.memberTypeId = registeredMember.getMemberType();
+                    accessLogRequest.memberTypeName = registeredMember.getMemberTypeName();
+                    accessLogRequest.networkId = registeredMember.getNetworkId();
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
-                        obj.put("id", 0);
-                        obj.put("firstName", registeredMember.getFirstname());
-                        obj.put("lastName", registeredMember.getLastname());
-                        obj.put("accessId", registeredMember.getAccessid());
-                        obj.put("memberId", registeredMember.getMemberid());
-                        obj.put("memberTypeId", registeredMember.getMemberType());
-                        obj.put("memberTypeName", registeredMember.getMemberTypeName());
-                        obj.put("networkId", registeredMember.getNetworkId());
+                        accessLogRequest.id = 0;
+                        accessLogRequest.accessId = registeredMember.getAccessid();
+                        accessLogRequest.firstName = registeredMember.getFirstname();
+                        accessLogRequest.lastName = registeredMember.getLastname();
+                        accessLogRequest.memberId = registeredMember.getMemberid();
+                        accessLogRequest.memberTypeId = registeredMember.getMemberType();
+                        accessLogRequest.memberTypeName = registeredMember.getMemberTypeName();
+                        accessLogRequest.networkId = registeredMember.getNetworkId();
                     } else {
-                        obj.put("firstName", "Anonymous");
+                        accessLogRequest.firstName = "Anonymous";
                     }
                 } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
-                        obj.put("id", 0);
-                        obj.put("firstName", registeredMember.getFirstname());
-                        obj.put("lastName", registeredMember.getLastname());
-                        obj.put("accessId", registeredMember.getAccessid());
-                        obj.put("memberId", registeredMember.getMemberid());
-                        obj.put("memberTypeId", registeredMember.getMemberType());
-                        obj.put("memberTypeName", registeredMember.getMemberTypeName());
-                        obj.put("networkId", registeredMember.getNetworkId());
+                        accessLogRequest.id = 0;
+                        accessLogRequest.accessId = registeredMember.getAccessid();
+                        accessLogRequest.firstName = registeredMember.getFirstname();
+                        accessLogRequest.lastName = registeredMember.getLastname();
+                        accessLogRequest.memberId = registeredMember.getMemberid();
+                        accessLogRequest.memberTypeId = registeredMember.getMemberType();
+                        accessLogRequest.memberTypeName = registeredMember.getMemberTypeName();
+                        accessLogRequest.networkId = registeredMember.getNetworkId();
                     } else {
-                        obj.put("firstName", "Anonymous");
+                        accessLogRequest.firstName = "Anonymous";
                     }
                 } else {
-                    obj.put("firstName", "Anonymous");
+                    accessLogRequest.firstName = "Anonymous";
                 }
-                obj.put("temperature", temperature);
-                obj.put("qrCodeId", qrCodeId);
-                obj.put("deviceId", Util.getSNCode(context));
-                obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
-                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                obj.put("facilityId", 0);
-                obj.put("locationId", 0);
-                obj.put("facilityName", "");
-                obj.put("locationName", "");
-                obj.put("deviceTime", Util.getMMDDYYYYDate());
-                obj.put("timezone", Util.getDateTimeZone());
-                obj.put("sourceIP", Util.getLocalIpAddress());
-                obj.put("deviceData", Util.MobileDetails(context));
-                obj.put("guid", "");
-                obj.put("faceParameters", Util.FaceParameters(context, data));
-                obj.put("eventType", "");
-                obj.put("evenStatus", "");
-                obj.put("utcRecordDate", Util.getUTCDate(""));
-                obj.put("loggingMode", AppSettings.getAccessControlLogMode());
-                obj.put("accessOption", AppSettings.getAccessControlScanMode());
+                accessLogRequest.temperature = temperature;
+                accessLogRequest.qrCodeId = qrCodeId;
+                accessLogRequest.deviceId = Util.getSNCode(context);
+                accessLogRequest.deviceName = sharedPreferences.getString(GlobalParameters.DEVICE_NAME, "");
+                accessLogRequest.institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+                accessLogRequest.facilityId = 0;
+                accessLogRequest.locationId = 0;
+                accessLogRequest.facilityName = "";
+                accessLogRequest.locationName = "";
+                accessLogRequest.deviceTime = Util.getMMDDYYYYDate();
+                accessLogRequest.timezone = Util.getDateTimeZone();
+                accessLogRequest.sourceIP = Util.getLocalIpAddress();
+                accessLogRequest.deviceData = Util.getDeviceInfo(context);
+                accessLogRequest.guid = "";
+                accessLogRequest.faceParameters = Util.FaceParameters(context, data);
+                accessLogRequest.eventType = "";
+                accessLogRequest.evenStatus = "";
+                accessLogRequest.utcRecordDate = Util.getUTCDate("");
+                accessLogRequest.loggingMode = AppSettings.getAccessControlLogMode();
+                accessLogRequest.accessOption = AppSettings.getAccessControlScanMode();
                 if (AppSettings.getTimeAndAttendance() == 1) {
-                    obj.put("attendanceMode", ApplicationController.getInstance().getTimeAttendance());
+                    accessLogRequest.attendanceMode = ApplicationController.getInstance().getTimeAttendance();
                 }
-
                 if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
-                    obj.put("allowAccess", getAllowAccessValue(data));
+                    accessLogRequest.allowAccess = getAllowAccessValue(data);
                 }
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
@@ -514,12 +518,61 @@ public class AccessCardController implements AccessCallback {
                         setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
                     }
                     syncStatus = 1;
-                    saveOfflineAccessLogRecord(context, obj, data, syncStatus);
+                    saveOfflineAccessLogRecord(context, accessLogRequest, data, syncStatus);
                 } else {
-                    new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                    ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+                    Call<AccessLogResponse> call = apiInterface.sendAccessLog(accessLogRequest);
+                    call.enqueue(new Callback<AccessLogResponse>() {
+                        @Override
+                        public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
+                            if (response.body() != null) {
+                                if (response.body().responseCode == 1) {
+                                    Log.d(TAG, "Access logs response success");
+                                    if (AppSettings.getTimeAndAttendance() == 1) {
+                                        if (response.body().responseSubCode != null && response.body().responseSubCode.equals("103")) {
+                                            // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
+                                            if (listener != null) listener.onCheckInOutStatus();
+                                        } else {
+                                            // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
+                                            if (listener != null) {
+                                                listener.onCheckInOutStatus();
+                                            }
+                                        }
+                                    }
+                                } else if (response.body().responseCode == 0) {
+                                    if (response.body().responseSubCode != null && response.body().responseSubCode.equals("102")) {
+                                        if (AppSettings.getTimeAndAttendance() == 1) {
+                                            if (listener != null) {
+                                                listener.onCheckInOutStatus();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (AppSettings.getTimeAndAttendance() == 1) {
+                                setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
+                                if (listener != null) {
+                                    listener.onCheckInOutStatus();
+                                }
+                            }
+                            saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(),0);
+                        }
+
+                        @Override
+                        public void onFailure(Call<AccessLogResponse> call, Throwable t) {
+                            Log.d(TAG, "Access logs response error " + t.getMessage());
+                            if (AppSettings.getTimeAndAttendance() == 1) {
+                                setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
+                                if (listener != null) {
+                                    listener.onCheckInOutStatus();
+                                }
+                            }
+                            saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(), 0);
+                        }
+                    });
                 }
             } catch (Exception e) {
-                Logger.error(TAG + "AccessLogInvalid Error", e.getMessage());
+                Logger.error(TAG + "AccessLogInvalid Error ", e.getMessage());
             }
         }
     }
@@ -533,63 +586,85 @@ public class AccessCardController implements AccessCallback {
                 String qrCodeId = "";
                 String accessId = "";
                 String triggerType = CameraController.getInstance().getTriggerType();
-                JSONObject obj = new JSONObject();
+                QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+                accessLogRequest = new AccessLogRequest();
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
-                    obj.put("id", 0);
-                    obj.put("firstName", "Anonymous");
-                    obj.put("lastName", "");
-                    obj.put("accessId", "");
-                    obj.put("memberId", "");
-                    obj.put("memberTypeId", "");
-                    obj.put("memberTypeName", "");
+                    accessLogRequest.id = 0;
+                    accessLogRequest.accessId = "";
+                    accessLogRequest.firstName = "Anonymous";
+                    accessLogRequest.lastName = "";
+                    accessLogRequest.memberId = "";
+                    accessLogRequest.memberTypeId = "";
+                    accessLogRequest.memberTypeName = "";
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     accessId = mAccessCardID;
-                    obj.put("id", 0);
-                    obj.put("firstName", registeredMembers.getFirstname());
-                    obj.put("lastName", registeredMembers.getLastname());
-                    obj.put("accessId", accessId);
-                    obj.put("memberId", registeredMembers.getMemberid());
-                    obj.put("memberTypeId", registeredMembers.getMemberType());
-                    obj.put("memberTypeName", registeredMembers.getMemberTypeName());
-                    obj.put("networkId", registeredMembers.getNetworkId());
+                    accessLogRequest.id = 0;
+                    accessLogRequest.accessId = accessId;
+                    accessLogRequest.firstName = registeredMembers.getFirstname();
+                    accessLogRequest.lastName = registeredMembers.getLastname();
+                    accessLogRequest.memberId = registeredMembers.getMemberid();
+                    accessLogRequest.memberTypeId = registeredMembers.getMemberType();
+                    accessLogRequest.memberTypeName = registeredMembers.getMemberTypeName();
+                    accessLogRequest.networkId = registeredMembers.getNetworkId();
                 } else {
-                    obj.put("id", 0);
-                    obj.put("firstName", registeredMembers.getFirstname());
-                    obj.put("lastName", registeredMembers.getLastname());
-                    obj.put("accessId", accessId);
-                    obj.put("memberId", registeredMembers.getMemberid());
-                    obj.put("memberTypeId", registeredMembers.getMemberType());
-                    obj.put("memberTypeName", registeredMembers.getMemberTypeName());
-                    obj.put("networkId", registeredMembers.getNetworkId());
+                    accessLogRequest.id = 0;
+                    accessLogRequest.accessId = accessId;
+                    accessLogRequest.firstName = registeredMembers.getFirstname();
+                    accessLogRequest.lastName = registeredMembers.getLastname();
+                    accessLogRequest.memberId = registeredMembers.getMemberid();
+                    accessLogRequest.memberTypeId = registeredMembers.getMemberType();
+                    accessLogRequest.memberTypeName = registeredMembers.getMemberTypeName();
+                    accessLogRequest.networkId = registeredMembers.getNetworkId();
                 }
-                obj.put("temperature", temperature);
-                obj.put("qrCodeId", qrCodeId);
-                obj.put("deviceId", Util.getSNCode(context));
-                obj.put("deviceName", sharedPreferences.getString(GlobalParameters.DEVICE_NAME, ""));
-                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                obj.put("facilityId", 0);
-                obj.put("locationId", 0);
-                obj.put("facilityName", "");
-                obj.put("locationName", "");
-                obj.put("deviceTime", Util.getMMDDYYYYDate());
-                obj.put("timezone", Util.getDateTimeZone());
-                obj.put("sourceIP", Util.getLocalIpAddress());
-                obj.put("deviceData", Util.MobileDetails(context));
-                obj.put("guid", "");
-                obj.put("faceParameters", Util.FaceParameters(context, data));
-                obj.put("eventType", "");
-                obj.put("evenStatus", "");
-                obj.put("utcRecordDate", Util.getUTCDate(""));
-                obj.put("loggingMode", AppSettings.getAccessControlLogMode());
-                obj.put("accessOption", AppSettings.getAccessControlScanMode());
+                accessLogRequest.temperature = temperature;
+                accessLogRequest.qrCodeId = qrCodeId;
+                accessLogRequest.deviceId = Util.getSNCode(context);
+                accessLogRequest.deviceName = sharedPreferences.getString(GlobalParameters.DEVICE_NAME, "");
+                accessLogRequest.institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+                accessLogRequest.facilityId = 0;
+                accessLogRequest.locationId = 0;
+                accessLogRequest.facilityName = "";
+                accessLogRequest.locationName = "";
+                accessLogRequest.deviceTime = Util.getMMDDYYYYDate();
+                accessLogRequest.timezone = Util.getDateTimeZone();
+                accessLogRequest.sourceIP = Util.getLocalIpAddress();
+                accessLogRequest.deviceData = Util.getDeviceInfo(context);
+                accessLogRequest.guid = "";
+                accessLogRequest.faceParameters = Util.FaceParameters(context, data);
+                accessLogRequest.eventType = "";
+                accessLogRequest.evenStatus = "";
+                accessLogRequest.utcRecordDate = Util.getUTCDate("");
+                accessLogRequest.loggingMode = AppSettings.getAccessControlLogMode();
+                accessLogRequest.accessOption = AppSettings.getAccessControlScanMode();
 
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    saveOfflineAccessLogRecord(context, obj, data, syncStatus);
+                    accessLogRequest.offlineSync = true;
+                    accessLogRequest.utcOfflineDateTime = accessLogRequest.utcRecordDate;
+                    saveOfflineAccessLogRecord(context, accessLogRequest, data, syncStatus);
                 } else {
-                    new AsyncJSONObjectAccessLog(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.AccessLogs, context).execute();
+                    ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+                    Call<AccessLogResponse> call = apiInterface.sendAccessLog(accessLogRequest);
+                    call.enqueue(new Callback<AccessLogResponse>() {
+                        @Override
+                        public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
+                            if (response.body() != null) {
+                                if (response.body().responseCode != 1) {
+                                    saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(),0);
+                                }
+                            } else {
+                                saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(),0);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<AccessLogResponse> call, Throwable t) {
+                            Log.e(TAG, "Error in sending the access logs " + t.getMessage());
+                            saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(), 0);
+                        }
+                    });
                 }
             } catch (Exception e) {
                 Logger.error(TAG + "AccessLogInvalid Error", e.getMessage());
@@ -597,60 +672,17 @@ public class AccessCardController implements AccessCallback {
         }
     }
 
-    @Override
-    public void onJSONObjectListenerAccess(JSONObject reportInfo, String status, JSONObject req) {
-        try {
-            if (reportInfo == null) {
-                Logger.error(TAG, "onJSONObjectListenerAccess", "Access Log api failed, store is local DB");
-                if (AppSettings.getTimeAndAttendance() == 1) {
-                    setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
-                    if (listener != null) {
-                        listener.onCheckInOutStatus();
-                    }
-                }
-                saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(),0);
-                return;
-            }
-            if (reportInfo.has("responseCode")) {
-                if (reportInfo.getString("responseCode").equals("1")) {
-                    if ((AppSettings.getTimeAndAttendance() == 1)) {
-                        if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("103")) {
-                           // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
-                            if (listener != null)listener.onCheckInOutStatus();
-                        } else {
-                           // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
-                            if (listener != null) {
-                                listener.onCheckInOutStatus();
-                            }
-                        }
-                        return;
-                    }
-                } else if (reportInfo.getString("responseCode").equals("0")) {
-                    if (AppSettings.getTimeAndAttendance() == 1) {
-                        //TODO: Check for responseSubCode
-                        if (!reportInfo.isNull("responseSubCode") && reportInfo.getString("responseSubCode").equals("102")) {
-                            if (listener != null)listener.onCheckInOutStatus();
-                        }
-                        return;
-                    }
-                    saveOfflineAccessLogRecord(context, req, CameraController.getInstance().getUserExportedData(), 0);
-                }
-            }
-
-        } catch (Exception e) {
-            Logger.error(TAG, "onJSONObjectListenerAccess", e.getMessage());
-        }
-    }
-
-    private void saveOfflineAccessLogRecord(Context context, JSONObject obj, UserExportedData data, int syncStatus) {
+    private void saveOfflineAccessLogRecord(Context context, AccessLogRequest obj, UserExportedData data, int syncStatus) {
         if (AppSettings.isLogOfflineDataEnabled()) {
+            Log.d(TAG, "Save Access Logs");
             AccessLogOfflineRecord accessLogOfflineRecord = new AccessLogOfflineRecord();
             try {
                 accessLogOfflineRecord.setPrimaryId(accessLogOfflineRecord.lastPrimaryId());
-                accessLogOfflineRecord.setJsonObj(obj.toString());
+                Gson gson = new Gson();
+                accessLogOfflineRecord.setJsonObj(gson.toJson(obj));
                 accessLogOfflineRecord.setOfflineSync(syncStatus);
-                accessLogOfflineRecord.setDeviceTime(obj.getString("deviceTime"));
-                accessLogOfflineRecord.setUtcTime(obj.getString("utcRecordDate"));
+                accessLogOfflineRecord.setDeviceTime(obj.deviceTime);
+                accessLogOfflineRecord.setUtcTime(obj.utcRecordDate);
                 if (data != null && data.member != null) {
                     if (data.member.memberid != null) {
                         accessLogOfflineRecord.setMemberId(data.member.getMemberid());

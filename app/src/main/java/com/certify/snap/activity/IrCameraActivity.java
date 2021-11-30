@@ -167,7 +167,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.grantland.widget.AutofitTextView;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
-        JSONObjectCallback, RecordTemperatureCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
+        JSONObjectCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
         PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener,
         QrCodeController.QrCodeListener, ApplicationController.ApplicationCallbackListener {
 
@@ -898,7 +898,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetHomeScreen();
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
-            Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, -1);
+            TemperatureController.getInstance().recordUserTemperature(  data, -1);
             return;
         }
         if (!CameraController.getInstance().isFaceVisible()) return;
@@ -1581,20 +1581,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 DatabaseController.getInstance().updateMember(registeredMember);
                 AccessCardController.getInstance().setCheckedInOutMember(null);
                 ApplicationController.getInstance().setTimeAttendance(0);
-            /*if (isStatus) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        AccessCardController.getInstance().setCheckInResponseCode(-1);
-                        registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
-
-                    }
-                }, 4000);
-            } else {
-                AccessCardController.getInstance().setCheckInResponseCode(-1);
-                registeredMember.dateTimeCheckInOut = finalDateTimeCheckInOut;
-                DatabaseController.getInstance().updateMember(registeredMember);
-            }*/
             }
         });
     }
@@ -1856,11 +1842,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         syncStatus = -1;
                     }
                     if (isProDevice) {
-                        Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+                        TemperatureController.getInstance().recordUserTemperature(data, syncStatus);
                     } else {
                         if (data.thermal != null) {
                             isRecordNotSent = false;
-                            Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, data, syncStatus);
+                            TemperatureController.getInstance().recordUserTemperature(data, syncStatus);
                         } else {
                             isRecordNotSent = true;
                         }
@@ -1931,7 +1917,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (reportInfo == null) {
                 return;
             }
-            if (reportInfo.contains("token expired"))
+            if (reportInfo.contains("Authorization has been denied for this request"))
                 Util.getToken(this, this);
 
         } catch (Exception e) {
@@ -1940,7 +1926,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
-    @Override
+    /*@Override
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
@@ -1961,7 +1947,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } catch (Exception e) {
             Logger.error(TAG, "onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
-    }
+    }*/
 
     private void createCameraSource(String model) {
         // If there's no existing cameraSource, create one.
@@ -3487,7 +3473,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     } else {
                         syncStatus = -1;
                     }
-                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, syncStatus);
+                    TemperatureController.getInstance().recordUserTemperature(userData, syncStatus);
                 }
             }
         });
