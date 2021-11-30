@@ -93,10 +93,10 @@ public class AccessLogRequest {
     @SerializedName("allowAccess")
     public boolean allowAccess;
 
+    @SerializedName("offlineSync")
+    public int offlineSync;
+
     @SerializedName("utcOfflineDateTime")
     public String utcOfflineDateTime;
-
-    @SerializedName("offlineSync")
-    public boolean offlineSync;
 
 }

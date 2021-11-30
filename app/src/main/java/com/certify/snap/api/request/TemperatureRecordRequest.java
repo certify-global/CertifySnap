@@ -94,9 +94,10 @@ public class TemperatureRecordRequest {
     @SerializedName("utcTime")
     public String utcTime;
 
+    @SerializedName("offlineSync")
+    public int offlineSync = -1;
+
     @SerializedName("utcOfflineDateTime")
     public String utcOfflineDateTime;
 
-    @SerializedName("offlineSync")
-    public boolean offlineSync;
 }
