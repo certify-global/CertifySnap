@@ -548,6 +548,7 @@ public class AccessCardController {
                                         }
                                     }
                                 }
+                                return;
                             }
                             if (AppSettings.getTimeAndAttendance() == 1) {
                                 setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
