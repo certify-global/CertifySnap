@@ -3,7 +3,7 @@
     <item android:state_pressed="true"> <!-- pressed the button status -->
         <shape>
             <!-- 实心 -->
-            <solid android:color="#F44336" />
+            <solid android:color="#EE0000" />
             <!-- 圆角 -->
             <corners android:radius="5dp" />
         </shape>
@@ -11,7 +11,7 @@
     <item android:state_focused="true"> <!-- get the focus button sttaus -->
         <shape>
             <!-- 实心 -->
-            <solid android:color="#F44336" />
+            <solid android:color="#EE0000" />
             <!-- 圆角 -->
             <corners android:radius="5dp" />
         </shape>
@@ -19,7 +19,7 @@
     <item> <!-- no focus the button status(the normal status button) -->
         <shape>
             <!-- 实心 -->
-            <solid android:color="#F44336" />
+            <solid android:color="#EE0000" />
             <!-- 圆角 -->
             <corners android:radius="5dp" />
         </shape>

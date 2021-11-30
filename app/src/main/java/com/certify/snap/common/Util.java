@@ -64,8 +64,9 @@ import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
-import com.certify.snap.activity.QrCodeScannerActivity;
 import com.certify.snap.activity.SettingsActivity;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.DeviceInfo;
 import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
@@ -268,8 +269,7 @@ public class Util {
             }
             Log.d(LOG, "permissions getSNCode: ");
             return android.os.Build.getSerial();
-        }
-        else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
+        } else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
             return getSerialNumber();
@@ -657,7 +657,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static void scheduleJobAccessToken(Context context) {
+    public static void scheduleJobAccessToken(Context context) {
         ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(1, componentName)
                 .setPeriodic(timeInMillis, 5 * 60 * 1000).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
@@ -795,104 +795,6 @@ public class Util {
         return true;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             UserExportedData data, int offlineSyncStatus) {
-        Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
-        try {
-            if (!Util.isDeviceF10()) {
-                if ((data.temperature == null || data.temperature.isEmpty() || data.temperature.equals(""))) {
-                    Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
-                    return;
-                }
-            }
-            if (!isInstitutionIdValid(context)) return;
-            SharedPreferences sp = Util.getSharedPreferences(context);
-            String triggerType = data.triggerType;
-            JSONObject obj = new JSONObject();
-            obj.put("deviceId", Util.getSerialNumber());
-            obj.put("temperature", data.temperature);
-            obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("facilityId", 0);
-            obj.put("locationId", 0);
-            obj.put("deviceTime", Util.getMMDDYYYYDate());
-            obj.put("trigger", data.triggerType);
-            obj.put("machineTemperature", data.machineTemperature);
-            obj.put("ambientTemperature", data.ambientTemperature);
-            if (data.sendImages) {
-                obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
-                obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
-                obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
-            }
-            String deviceParametersValue = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
-            obj.put("deviceData", MobileDetails(context));
-            obj.put("deviceParameters", deviceParametersValue);
-            obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
-            obj.put("exceedThreshold", data.exceedsThreshold);
-
-            QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-            RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-
-            //TODO Simplifying following logic
-            if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) && rfidScanMatchedMember != null) {
-                obj.put("id", rfidScanMatchedMember.getUniqueid());
-                obj.put("accessId", rfidScanMatchedMember.getAccessid());
-                obj.put("firstName", rfidScanMatchedMember.getFirstname());
-                obj.put("lastName", rfidScanMatchedMember.getLastname());
-                obj.put("memberId", rfidScanMatchedMember.getMemberid());
-                obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
-                obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
-                obj.put("trqStatus", ""); // Send this empty if not Qr
-                obj.put("networkId", rfidScanMatchedMember.getNetworkId());
-
-            } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) &&
-                    !AccessCardController.getInstance().getAccessCardID().isEmpty()) {
-                obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
-                updateFaceMemberValues(obj, data);
-            } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
-                obj.put("id", qrCodeData.getUniqueId());
-                obj.put("accessId", qrCodeData.getAccessId());
-                obj.put("firstName", qrCodeData.getFirstName());
-                obj.put("lastName", qrCodeData.getLastName());
-                obj.put("memberId", qrCodeData.getMemberId());
-                obj.put("trqStatus", qrCodeData.getTrqStatus());
-                obj.put("memberTypeId", qrCodeData.getMemberTypeId());
-                obj.put("memberTypeName", qrCodeData.getMemberTypeName());
-            } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-                obj.put("accessId", CameraController.getInstance().getQrCodeId());
-                updateFaceMemberValues(obj, data);
-            } else {
-                obj.put("accessId", data.member.getAccessid());
-                updateFaceMemberValues(obj, data);
-            }
-            if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
-                if (!GestureController.getInstance().isQuestionnaireFailed()) {
-                    obj.put("trqStatus", "0");
-                } else {
-                    obj.put("trqStatus", "1");
-                }
-            }
-            obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
-            obj.put("maskStatus", data.maskStatus);
-            obj.put("faceScore", data.faceScore);
-            obj.put("faceParameters", FaceParameters(context, data));
-
-            if (BuildConfig.DEBUG) {
-                Log.v(LOG, "recordUserTemperature body: " + obj.toString());
-            }
-            if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
-                obj.put("utcTime", Util.getUTCDate(""));
-                saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
-            } else {
-                new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
-            }
-
-        } catch (Exception e) {
-            Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
-        }
-    }
-
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
         if (AppSettings.isLogOfflineDataEnabled()) {
             try {
@@ -952,7 +854,7 @@ public class Util {
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
-            obj.put("networkId",data.member.getNetworkId());
+            obj.put("networkId", data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1209,12 +1111,9 @@ public class Util {
             obj.put("deviceUpTime", getDeviceUpTime());
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
-            if (asyncJSONObjectSender != null && ((asyncJSONObjectSender.getStatus() == AsyncTask.Status.RUNNING) ||
-                    (asyncJSONObjectSender.getStatus() == AsyncTask.Status.PENDING))) {
-                asyncJSONObjectSender.cancel(true);
-                asyncJSONObjectSender = null;
-            }
-            asyncJSONObjectSender = (AsyncJSONObjectSender) new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
+
+            if(!Util.isOfflineMode(context))
+            new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
             sendOfflineServiceBroadcast(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
@@ -1439,7 +1338,7 @@ public class Util {
                     if (identificationSettings != null) {
                         if (deviceSettingsApi.settingVersion.isEmpty()) {
                             if ((identificationSettings.enableQRCodeScanner.equals("1") &&
-                                identificationSettings.enableRFIDScanner.equals("1"))) {
+                                    identificationSettings.enableRFIDScanner.equals("1"))) {
                                 Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()));
                                 if (identificationSettings.enableFacialRecognition.equals("1")) {
                                     Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
@@ -1622,7 +1521,7 @@ public class Util {
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
-                if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
+                if (json1.has("Message") && json1.getString("Message").equals("Authorization has been denied for this request")) {
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
@@ -1634,7 +1533,7 @@ public class Util {
 
                 String institutionIdOld = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
 
-                if(institutionIdOld != null && !institutionId.isEmpty()
+                if (institutionIdOld != null && !institutionId.isEmpty()
                         && !institutionIdOld.equals(institutionId)) {
                     DatabaseController.getInstance().clearAll();
                 }
@@ -1643,6 +1542,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
+                RetrofitInstance.getInstance().createRetrofitInstance();
 
                 Util.getSettings((SettingCallback) context, context);
             }
@@ -1863,6 +1763,7 @@ public class Util {
     }
 
     public static void sendDeviceLogs(Context context) {
+        if (Util.isOfflineMode(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         JSONObject obj = new JSONObject();
         try {
@@ -2251,7 +2152,7 @@ public class Util {
         return null;
     }
 
-    private static String getAppUpTime(Context context) {
+    public static String getAppUpTime(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
         Date appLaunchDateTime = new Date(Long.parseLong(appLaunchTime));
@@ -2265,7 +2166,52 @@ public class Util {
         return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
     }
 
-    private static String getDeviceUpTime() {
+    public static boolean isAlreadyChecked(String oldDateTime) {
+        try {
+            if (AccessCardController.getInstance().getCheckInResponseCode() == -1)
+                return false;
+            if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue() || AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
+                return true;
+            if (ApplicationController.getInstance().getTimeAttendance() == 2 && (oldDateTime.isEmpty()))
+                return true;
+            else if (ApplicationController.getInstance().getTimeAttendance() == 2 && !oldDateTime.isEmpty())
+                return false;
+            if (ApplicationController.getInstance().getTimeAttendance() == 1 && oldDateTime.isEmpty())
+                return false;
+            else if (ApplicationController.getInstance().getTimeAttendance() == 1 && !oldDateTime.isEmpty()) {
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                Date appLaunchDateTime = format.parse(oldDateTime);
+                Date currentDateTime = new Date(System.currentTimeMillis());
+                long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+                long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+                long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+                long totalHours = hours + days * 24;
+                return totalHours < 24;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean differenceInTimeTwoDates(String lastCheckInTime) {
+        try {
+            if (lastCheckInTime.isEmpty()) return false;
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            Date appLaunchDateTime = format.parse(lastCheckInTime);
+            Date currentDateTime = new Date(System.currentTimeMillis());
+            long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+            long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+            long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+            long totalHours = hours + days * 24;
+            return totalHours < 24;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String getDeviceUpTime() {
         long uptimeMillis = SystemClock.elapsedRealtime();
         String deviceUptime = String.format(Locale.getDefault(),
                 "%d:%02d:%02d",
@@ -2419,7 +2365,7 @@ public class Util {
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
         long timeZoneValue = TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
-        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings()/(3600 * 1000));
+        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings() / (3600 * 1000));
         String timeZoneStr = String.valueOf(timeZoneValue);
         if (!timeZoneStr.contains("-")) {
             timeZoneStr = "+" + timeZoneStr;
@@ -2427,11 +2373,11 @@ public class Util {
         return (timeZoneStr + ":00");
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
@@ -2451,13 +2397,14 @@ public class Util {
         return value;
     }
 
-    public static int getOrientation(SharedPreferences sp){
-        if("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
-                || getInternalModel().contains("F10")|| getInternalModel().contains("970")
-                || getInternalModel().contains("F8")){
-            if("F801".equals(getInternalModel()))  return sp.getInt(GlobalParameters.Orientation, 0);
+    public static int getOrientation(SharedPreferences sp) {
+        if ("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
+                || getInternalModel().contains("F10") || getInternalModel().contains("970")
+                || getInternalModel().contains("F8")) {
+            if ("F801".equals(getInternalModel()))
+                return sp.getInt(GlobalParameters.Orientation, 0);
             return sp.getInt(GlobalParameters.Orientation, 270);
-        }else{
+        } else {
             return sp.getInt(GlobalParameters.Orientation, 0);
         }
     }
@@ -2493,7 +2440,7 @@ public class Util {
     public static boolean isInternetConnected() {
         Runtime runtime = Runtime.getRuntime();
         try {
-            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            Process mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
             int processValue = mIpAddrProcess.waitFor();
             if (processValue == 0) {
                 return true;
@@ -2552,6 +2499,7 @@ public class Util {
 
     /**
      * Method that truncates the leading zero's
+     *
      * @param accessId accessId value
      * @return accessId
      */
@@ -2571,9 +2519,28 @@ public class Util {
         return accessIdStr;
     }
 
-    private static void sendOfflineServiceBroadcast(Context context) {
+    public static void sendOfflineServiceBroadcast(Context context) {
         Intent intent = new Intent();
         intent.setAction(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION);
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(intent);
+    }
+
+    public static DeviceInfo getDeviceInfo(Context context) {
+        getNumberVersion(context);
+        getDeviceUUid(context);
+
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.appVersion = Util.getVersionBuild();
+        deviceInfo.osVersion = "Android - " + Build.VERSION.RELEASE;
+        deviceInfo.mobileIp = getLocalIpAddress();
+        deviceInfo.mobileNumber = getSharedPreferences(context).getString(GlobalParameters.MOBILE_NUMBER, "+1");
+        deviceInfo.uniqueDeviceId = getSharedPreferences(context).getString(GlobalParameters.UUID, "");
+        deviceInfo.imeiNumber = getSharedPreferences(context).getString(GlobalParameters.IMEI, "");
+        deviceInfo.deviceModel = Build.MODEL;
+        deviceInfo.deviceSerialNumber = getSerialNumber();
+        deviceInfo.batteryStatus = getBatteryLevel(context);
+        deviceInfo.networkStatus = isConnectedEthernet(context);
+        deviceInfo.appState = getAppState();
+        return deviceInfo;
     }
 }
