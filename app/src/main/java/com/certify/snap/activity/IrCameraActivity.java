@@ -2626,8 +2626,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return !faceDetectEnabled;
     }
 
-    public void onRfidScan(String cardId) {
-        Log.v(TAG, "onRfidScan cardId: " + cardId);
+    public void onRfidScan(String cardid) {
+        Log.v(TAG, "onRfidScan cardId: " + cardid);
+        String cardId = Util.validateAccessId(cardid);
         if (cardId.isEmpty() || isTopFragmentGesture())
             return;
         if ((AppSettings.getTimeAndAttendance() == 1) && (time_attendance_layout.getVisibility() == View.VISIBLE)) {
