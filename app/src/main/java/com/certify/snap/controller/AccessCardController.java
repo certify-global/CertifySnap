@@ -518,6 +518,8 @@ public class AccessCardController {
                         setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
                     }
                     syncStatus = 1;
+                    accessLogRequest.offlineSync = syncStatus;
+                    accessLogRequest.utcOfflineDateTime = accessLogRequest.utcRecordDate;
                     saveOfflineAccessLogRecord(context, accessLogRequest, data, syncStatus);
                 } else {
                     ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
@@ -642,7 +644,7 @@ public class AccessCardController {
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
-                    accessLogRequest.offlineSync = true;
+                    accessLogRequest.offlineSync = syncStatus;
                     accessLogRequest.utcOfflineDateTime = accessLogRequest.utcRecordDate;
                     saveOfflineAccessLogRecord(context, accessLogRequest, data, syncStatus);
                 } else {

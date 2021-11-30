@@ -855,7 +855,7 @@ public class TemperatureController {
 
         if (Util.isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
             if (offlineSyncStatus == 1) {
-                temperatureRecordRequest.offlineSync = true;
+                temperatureRecordRequest.offlineSync = offlineSyncStatus;
                 temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
             }
             saveOfflineTempRecord(context, temperatureRecordRequest, data, offlineSyncStatus);

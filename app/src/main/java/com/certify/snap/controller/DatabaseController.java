@@ -47,7 +47,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 15;
+    public static final int DB_VERSION = 16;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
