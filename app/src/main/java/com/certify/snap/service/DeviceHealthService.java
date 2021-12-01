@@ -76,9 +76,7 @@ public class DeviceHealthService extends Service {
         HealthCheckRequest healthCheckRequest = new HealthCheckRequest();
         healthCheckRequest.appState = Util.getAppState();
         healthCheckRequest.deviceSN = Util.getSNCode(this);
-        DeviceInfo deviceInfo = Util.getDeviceInfo(this);
-        Gson gson = new Gson();
-        healthCheckRequest.deviceInfo = gson.toJson(deviceInfo);
+        healthCheckRequest.deviceInfo = Util.getDeviceInfo(this);
         healthCheckRequest.institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
         healthCheckRequest.appState = Util.getAppState();
         healthCheckRequest.appUpTime = Util.getAppUpTime(this);

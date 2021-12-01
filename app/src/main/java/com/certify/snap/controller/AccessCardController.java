@@ -558,7 +558,9 @@ public class AccessCardController {
                                     listener.onCheckInOutStatus();
                                 }
                             }
-                            saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(),0);
+                            accessLogRequest.offlineSync = 1;
+                            accessLogRequest.utcOfflineDateTime = accessLogRequest.utcRecordDate;
+                            saveOfflineAccessLogRecord(context, accessLogRequest, data,1);
                         }
 
                         @Override
@@ -570,7 +572,9 @@ public class AccessCardController {
                                     listener.onCheckInOutStatus();
                                 }
                             }
-                            saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(), 0);
+                            accessLogRequest.offlineSync = 1;
+                            accessLogRequest.utcOfflineDateTime = accessLogRequest.utcRecordDate;
+                            saveOfflineAccessLogRecord(context, accessLogRequest, data, 0);
                         }
                     });
                 }
@@ -655,17 +659,17 @@ public class AccessCardController {
                         public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
                             if (response.body() != null) {
                                 if (response.body().responseCode != 1) {
-                                    saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(),0);
+                                    saveOfflineAccessLogRecord(context, accessLogRequest, data,0);
                                 }
                             } else {
-                                saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(),0);
+                                saveOfflineAccessLogRecord(context, accessLogRequest, data,0);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<AccessLogResponse> call, Throwable t) {
                             Log.e(TAG, "Error in sending the access logs " + t.getMessage());
-                            saveOfflineAccessLogRecord(context, accessLogRequest, CameraController.getInstance().getUserExportedData(), 0);
+                            saveOfflineAccessLogRecord(context, accessLogRequest, data, 0);
                         }
                     });
                 }

@@ -11,7 +11,7 @@ public class HealthCheckRequest {
     public String deviceSN;
 
     @SerializedName("deviceInfo")
-    public String deviceInfo;
+    public DeviceInfo deviceInfo;
 
     @SerializedName("institutionId")
     public String institutionId;
