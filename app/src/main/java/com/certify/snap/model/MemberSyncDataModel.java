@@ -108,7 +108,7 @@ public class MemberSyncDataModel {
                             String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
                             member.setFirstname(c.getString("firstName"));
                             member.setLastname(c.getString("lastName"));
-                            member.setAccessid(Util.validateAccessId(c.getString("accessId")));
+                            member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
                             if (c.has("memberType")) {
@@ -240,7 +240,7 @@ public class MemberSyncDataModel {
                             String groupId = "0";
                             member.setFirstname(c.getString("firstName"));
                             member.setLastname(c.getString("lastName"));
-                            member.setAccessid(Util.validateAccessId(c.getString("accessId")));
+                            member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
                             if (c.has("memberType")) {
