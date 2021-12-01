@@ -867,16 +867,22 @@ public class TemperatureController {
                 public void onResponse(Call<TemperatureRecordResponse> call, Response<TemperatureRecordResponse> response) {
                     if (response.body() != null) {
                         if (response.body().responseCode != 1) {
-                            saveOfflineTempRecord(context, temperatureRecordRequest, data, 0);
+                            temperatureRecordRequest.offlineSync = 1;
+                            temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+                            saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
                         }
                     } else {
-                        saveOfflineTempRecord(context, temperatureRecordRequest, data, 0);
+                        temperatureRecordRequest.offlineSync = 1;
+                        temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+                        saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<TemperatureRecordResponse> call, Throwable t) {
-                    saveOfflineTempRecord(context, temperatureRecordRequest, CameraController.getInstance().getUserExportedData(), 0);
+                    temperatureRecordRequest.offlineSync = 1;
+                    temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+                    saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
                 }
             });
         }
@@ -904,13 +910,13 @@ public class TemperatureController {
             offlineRecordTemperatureMembers.setJsonObj(gson.toJson(temperatureRecordRequest));
             offlineRecordTemperatureMembers.setDeviceTime(temperatureRecordRequest.deviceTime);
             offlineRecordTemperatureMembers.setUtcTime(temperatureRecordRequest.utcTime);
-            offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
             offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
             offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
-            if (data.member.getFirstname() != null) {
+            if (data != null && data.member != null && data.member.getFirstname() != null) {
                 offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
                 offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
                 offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
+                offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
             } else {
                 offlineRecordTemperatureMembers.setFirstName("Anonymous");
                 offlineRecordTemperatureMembers.setLastName("");
