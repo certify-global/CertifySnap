@@ -2626,9 +2626,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return !faceDetectEnabled;
     }
 
-    public void onRfidScan(String cardid) {
-        Log.v(TAG, "onRfidScan cardId: " + cardid);
-        String cardId = Util.validateAccessId(cardid);
+    public void onRfidScan(String cardId) {
+        Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture())
             return;
         if ((AppSettings.getTimeAndAttendance() == 1) && (time_attendance_layout.getVisibility() == View.VISIBLE)) {
@@ -2986,6 +2985,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 showGuideMessage(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
             } else {
                 runOnUiThread(() -> {
+                    if (Util.isDeviceF10()) {
+                        tvVersionIr.setVisibility(View.GONE);
+                        tvVersionOnly.setVisibility(View.GONE);
+                    }
                     tvFaceMessage.setVisibility(View.VISIBLE);
                     tvFaceMessage.setText(sharedPreferences.getString(GlobalParameters.GUIDE_TEXT4, getString(R.string.step_closer)));
                 });
@@ -3153,6 +3156,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         tvErrorMessage.setVisibility(View.GONE);
                     }
                     tvFaceMessage.setVisibility(View.GONE);
+                    if (Util.isDeviceF10()) {
+                        if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
+                            tvVersionIr.setVisibility(View.VISIBLE);
+                        } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, true)) {
+                            tvVersionOnly.setVisibility(View.VISIBLE);
+                        }
+                    }
                 });
             }
         }, 10 * 1000);
@@ -4743,6 +4753,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     relative_main.setVisibility(View.VISIBLE);
                     homeIcon(sharedPreferences.getString(GlobalParameters.IMAGE_ICON, ""));
                     setCameraLayout();
+                    if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
+                        tvVersionIr.setVisibility(View.VISIBLE);
+                    } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, true)) {
+                        tvVersionOnly.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     homeDisplayView();
                 }
@@ -4860,6 +4875,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tvErrorMessage.setVisibility(View.VISIBLE);
         tvErrorMessage.setTextSize(28);
         tvErrorMessage.setText(message);
+        if (Util.isDeviceF10()) {
+            tvVersionIr.setVisibility(View.GONE);
+            tvVersionOnly.setVisibility(View.GONE);
+        }
     }
 
     private void isAlreadyCheckEdOut() {
