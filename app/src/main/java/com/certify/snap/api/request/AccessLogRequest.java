@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class AccessLogRequest {
     @SerializedName("id")
-    public int id;
+    public String id;
 
     @SerializedName("accessId")
     public String accessId;

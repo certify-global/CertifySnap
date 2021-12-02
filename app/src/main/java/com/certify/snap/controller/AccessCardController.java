@@ -418,7 +418,7 @@ public class AccessCardController {
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
-                        accessLogRequest.id = Integer.parseInt(qrCodeData.getUniqueId());
+                        accessLogRequest.id = qrCodeData.getUniqueId();
                         accessLogRequest.accessId = qrCodeData.getAccessId();
                         accessLogRequest.firstName = qrCodeData.getFirstName();
                         accessLogRequest.lastName = qrCodeData.getLastName();
@@ -427,7 +427,7 @@ public class AccessCardController {
                         accessLogRequest.memberTypeName = qrCodeData.getMemberTypeName();
                     } else {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
-                        accessLogRequest.id = 0;
+                        accessLogRequest.id = "0";
                         accessLogRequest.accessId = "";
                         accessLogRequest.firstName = "Anonymous";
                         accessLogRequest.lastName = "";
@@ -446,7 +446,7 @@ public class AccessCardController {
                         registeredMember.setFirstname("Anonymous");
                         registeredMember.setAccessid(mAccessCardID);
                     }
-                    accessLogRequest.id = 0;
+                    accessLogRequest.id = "0";
                     accessLogRequest.accessId = registeredMember.getAccessid();
                     accessLogRequest.firstName = registeredMember.getFirstname();
                     accessLogRequest.lastName = registeredMember.getLastname();
@@ -457,7 +457,7 @@ public class AccessCardController {
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
-                        accessLogRequest.id = 0;
+                        accessLogRequest.id = "0";
                         accessLogRequest.accessId = registeredMember.getAccessid();
                         accessLogRequest.firstName = registeredMember.getFirstname();
                         accessLogRequest.lastName = registeredMember.getLastname();
@@ -471,7 +471,7 @@ public class AccessCardController {
                 } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
-                        accessLogRequest.id = 0;
+                        accessLogRequest.id = "0";
                         accessLogRequest.accessId = registeredMember.getAccessid();
                         accessLogRequest.firstName = registeredMember.getFirstname();
                         accessLogRequest.lastName = registeredMember.getLastname();
@@ -579,7 +579,7 @@ public class AccessCardController {
                     });
                 }
             } catch (Exception e) {
-                Logger.error(TAG + "AccessLogInvalid Error ", e.getMessage());
+                Logger.error(TAG + " AccessLogInvalid Error ", e.getMessage());
             }
         }
     }
@@ -597,7 +597,7 @@ public class AccessCardController {
                 accessLogRequest = new AccessLogRequest();
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
-                    accessLogRequest.id = 0;
+                    accessLogRequest.id = "0";
                     accessLogRequest.accessId = "";
                     accessLogRequest.firstName = "Anonymous";
                     accessLogRequest.lastName = "";
@@ -606,7 +606,7 @@ public class AccessCardController {
                     accessLogRequest.memberTypeName = "";
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     accessId = mAccessCardID;
-                    accessLogRequest.id = 0;
+                    accessLogRequest.id = "0";
                     accessLogRequest.accessId = accessId;
                     accessLogRequest.firstName = registeredMembers.getFirstname();
                     accessLogRequest.lastName = registeredMembers.getLastname();
@@ -615,7 +615,7 @@ public class AccessCardController {
                     accessLogRequest.memberTypeName = registeredMembers.getMemberTypeName();
                     accessLogRequest.networkId = registeredMembers.getNetworkId();
                 } else {
-                    accessLogRequest.id = 0;
+                    accessLogRequest.id = "0";
                     accessLogRequest.accessId = accessId;
                     accessLogRequest.firstName = registeredMembers.getFirstname();
                     accessLogRequest.lastName = registeredMembers.getLastname();
