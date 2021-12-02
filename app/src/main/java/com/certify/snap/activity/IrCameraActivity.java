@@ -74,7 +74,6 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
-import com.certify.callback.RecordTemperatureCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.arcface.model.DrawInfo;
@@ -132,7 +131,6 @@ import com.certify.snap.qrscan.BarcodeScannerProcessor;
 import com.certify.snap.qrscan.CameraSource;
 import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
-import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.HIDService;
 import com.certify.snap.service.OfflineRecordSyncService;
 
@@ -2626,8 +2624,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return !faceDetectEnabled;
     }
 
-    public void onRfidScan(String cardId) {
-        Log.v(TAG, "onRfidScan cardId: " + cardId);
+    public void onRfidScan(String cardid) {
+        Log.v(TAG, "onRfidScan cardId: " + cardid);
+        String cardId = cardid;
+        if (AppSettings.isAccessIdTrimZeroes()) {
+            cardId = Util.validateAccessId(cardid);
+        }
         if (cardId.isEmpty() || isTopFragmentGesture())
             return;
         if ((AppSettings.getTimeAndAttendance() == 1) && (time_attendance_layout.getVisibility() == View.VISIBLE)) {
@@ -2645,6 +2647,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             accessCardController.setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+                if (AppSettings.isAccessIdTrimZeroes()) {
+                    accessCardController.setAccessCardId(matchedMember.accessid);
+                }
                 if (accessCardController.isAccessTimeExpired(matchedMember)) {
                     onRfidNoMemberMatch(cardId);
                     return;

@@ -168,6 +168,7 @@
     <string name="access_denied">Access denied!</string>
     <string name="automatic_door_access">Enable Relay</string>
     <string name="allow_anonymous">Allow Anonymous</string>
+    <string name="trim_leading_zeroes">Trim leading zeroes from accessId</string>
     <string name="relay_timeout">Relay Timeout:</string>
     <string name="normal_mode">
         <font size="16">Normal Mode</font><font size="14"> (Operate Access for every scan)</font>

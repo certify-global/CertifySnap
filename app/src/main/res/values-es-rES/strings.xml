@@ -168,6 +168,7 @@
     <string name="access_denied">¡Acceso denegado!</string>
     <string name="automatic_door_access">Habilitar relé</string>
     <string name="allow_anonymous">Permitir anónimos</string>
+    <string name="trim_leading_zeroes">Recorte los ceros iniciales del Id de acceso</string>
     <string name="relay_timeout">Tiempo de espera del relé:</string>
     <string name="normal_mode">
         <font size="16">Modo normal</font><font size="14"> (Acceso operativo para cada escaneo)</font>

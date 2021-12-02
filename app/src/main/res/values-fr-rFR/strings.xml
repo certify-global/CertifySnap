@@ -164,6 +164,7 @@
     <string name="access_denied">Accès refusé!</string>
     <string name="automatic_door_access">Activer le relais</string>
     <string name="allow_anonymous">Autoriser anonyme</string>
+    <string name="trim_leading_zeroes">Supprimer les zéros non significatifs de l\'ID d\'accès</string>
     <string name="relay_timeout">Délai d\'expiration du relais:</string>
     <string name="normal_mode"><font size="16"> Normal Mode</font>  <font size="14"> (Exploitez l\'accès pour chaque scan)</font> </string>
     <string name="reverse_mode"><font size="16"> Reverse Mode</font>  <font size="14"> (Exploiter l\'accès sur le balayage haute température uniquement)</font> </string>

@@ -48,5 +48,7 @@ public class AccessControlSettings {
     @SerializedName("attendanceMode")
     public int attendanceMode = 1;
 
+    @SerializedName("truncateZeroes")
+    public String truncateZeroes;
 
 }

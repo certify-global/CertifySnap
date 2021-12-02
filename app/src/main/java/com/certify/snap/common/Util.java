@@ -55,7 +55,6 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.PushCallback;
-import com.certify.callback.RecordTemperatureCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
@@ -85,15 +84,12 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectPush;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
-import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
-import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
-import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
@@ -1393,6 +1389,7 @@ public class Util {
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlSettings.loggingMode);
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlSettings.validAccessOption);
                         Util.writeInt(sharedPreferences, GlobalParameters.TimeAttendanceOption, accessControlSettings.attendanceMode);
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESSID_TRIM_ZEROES, accessControlSettings.truncateZeroes.equals("1"));
                     }
 
                     //Audio-Visual settings
