@@ -30,6 +30,7 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -155,6 +156,7 @@ public class Util {
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
     private static String tokenRequestModule = ""; //Optimize
+    private static AsyncJSONObjectSender asyncJSONObjectSender = null;
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -1105,6 +1107,7 @@ public class Util {
             obj.put("deviceUpTime", getDeviceUpTime());
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
+
             if(!Util.isOfflineMode(context))
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
             sendOfflineServiceBroadcast(context);

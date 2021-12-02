@@ -1928,15 +1928,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onJSONObjectListenerTemperature(JSONObject reportInfo, String status, JSONObject req) {
         try {
             if (reportInfo == null) {
-                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 0);
+                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 1);
                 return;
             }
             if (reportInfo.has("responseCode")) {
                 if (!reportInfo.getString("responseCode").equals("1")) {
-                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 0);
+                    Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 1);
                 }
             } else {
-                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 0);
+                Util.recordUserTemperature(IrCameraActivity.this, IrCameraActivity.this, userData, 1);
             }
             if (reportInfo.isNull("Message")) return;
             if (reportInfo.getString("Message").contains("token expired"))
