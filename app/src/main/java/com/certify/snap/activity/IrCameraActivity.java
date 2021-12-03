@@ -2624,12 +2624,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         return !faceDetectEnabled;
     }
 
-    public void onRfidScan(String cardid) {
-        Log.v(TAG, "onRfidScan cardId: " + cardid);
-        String cardId = cardid;
-        if (AppSettings.isAccessIdTrimZeroes()) {
-            cardId = Util.validateAccessId(cardid);
-        }
+    public void onRfidScan(String cardId) {
+        Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture())
             return;
         if ((AppSettings.getTimeAndAttendance() == 1) && (time_attendance_layout.getVisibility() == View.VISIBLE)) {
@@ -2647,9 +2643,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             accessCardController.setAccessCardId(cardId);
             if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
                 RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-                if (AppSettings.isAccessIdTrimZeroes()) {
-                    accessCardController.setAccessCardId(matchedMember.accessid);
-                }
                 if (accessCardController.isAccessTimeExpired(matchedMember)) {
                     onRfidNoMemberMatch(cardId);
                     return;

@@ -1439,11 +1439,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         }
     }
 
-    public void onRfidScan(String cardid) {
-        String cardId = cardid;
-        if (AppSettings.isAccessIdTrimZeroes()) {
-            cardId = Util.validateAccessId(cardid);
-        }
+    public void onRfidScan(String cardId) {
         if(updateMember != null) updateMember.setAccessid(cardId);
         String finalCardId = cardId;
         runOnUiThread(()->{
