@@ -1392,7 +1392,9 @@ public class Util {
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlSettings.loggingMode);
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlSettings.validAccessOption);
                         Util.writeInt(sharedPreferences, GlobalParameters.TimeAttendanceOption, accessControlSettings.attendanceMode);
-                        Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESSID_TRIM_ZEROES, accessControlSettings.truncateZeroes.equals("1"));
+                        if (accessControlSettings.truncateZeroes != null) {
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESSID_TRIM_ZEROES, accessControlSettings.truncateZeroes.equals("1"));
+                        }
                     }
 
                     //Audio-Visual settings
