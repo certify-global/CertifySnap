@@ -792,103 +792,6 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void recordUserTemperature(RecordTemperatureCallback callback, Context context,
-                                             UserExportedData data, int offlineSyncStatus) {
-        Log.v("Util", String.format("recordUserTemperature data: %s, ir==null: %s, thermal==null: %s ", data, data.ir == null, data.thermal == null));
-        try {
-            if (!Util.isDeviceF10()) {
-                if ((data.temperature == null || data.temperature.isEmpty() || data.temperature.equals(""))) {
-                    Log.w(LOG, "recordUserTemperature temperature empty, abort send to server");
-                    return;
-                }
-            }
-            if (!isInstitutionIdValid(context)) return;
-            SharedPreferences sp = Util.getSharedPreferences(context);
-            String triggerType = data.triggerType;
-            JSONObject obj = new JSONObject();
-            obj.put("deviceId", Util.getSerialNumber());
-            obj.put("temperature", data.temperature);
-            obj.put("institutionId", sp.getString(GlobalParameters.INSTITUTION_ID, ""));
-            obj.put("facilityId", 0);
-            obj.put("locationId", 0);
-            obj.put("deviceTime", Util.getMMDDYYYYDate());
-            obj.put("trigger", data.triggerType);
-            obj.put("machineTemperature", data.machineTemperature);
-            obj.put("ambientTemperature", data.ambientTemperature);
-            if (data.sendImages) {
-                obj.put("irTemplate", data.ir == null ? "" : Util.encodeToBase64(data.ir));
-                obj.put("rgbTemplate", data.rgb == null ? "" : Util.encodeToBase64(data.rgb));
-                obj.put("thermalTemplate", data.thermal == null ? "" : Util.encodeToBase64(data.thermal));
-            }
-            String deviceParametersValue = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
-            obj.put("deviceData", MobileDetails(context));
-            obj.put("deviceParameters", deviceParametersValue);
-            obj.put("temperatureFormat", sp.getString(GlobalParameters.F_TO_C, "F"));
-            obj.put("exceedThreshold", data.exceedsThreshold);
-
-            QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-            RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-
-            //TODO Simplifying following logic
-            if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) && rfidScanMatchedMember != null) {
-                obj.put("id", rfidScanMatchedMember.getUniqueid());
-                obj.put("accessId", rfidScanMatchedMember.getAccessid());
-                obj.put("firstName", rfidScanMatchedMember.getFirstname());
-                obj.put("lastName", rfidScanMatchedMember.getLastname());
-                obj.put("memberId", rfidScanMatchedMember.getMemberid());
-                obj.put("memberTypeId", rfidScanMatchedMember.getMemberType());
-                obj.put("memberTypeName", rfidScanMatchedMember.getMemberTypeName());
-                obj.put("trqStatus", ""); // Send this empty if not Qr
-                obj.put("networkId", rfidScanMatchedMember.getNetworkId());
-
-            } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) &&
-                    !AccessCardController.getInstance().getAccessCardID().isEmpty()) {
-                obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
-                updateFaceMemberValues(obj, data, context);
-            } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
-                obj.put("id", qrCodeData.getUniqueId());
-                obj.put("accessId", qrCodeData.getAccessId());
-                obj.put("firstName", qrCodeData.getFirstName());
-                obj.put("lastName", qrCodeData.getLastName());
-                obj.put("memberId", qrCodeData.getMemberId());
-                obj.put("trqStatus", qrCodeData.getTrqStatus());
-                obj.put("memberTypeId", qrCodeData.getMemberTypeId());
-                obj.put("memberTypeName", qrCodeData.getMemberTypeName());
-            } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                    !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
-                obj.put("accessId", CameraController.getInstance().getQrCodeId());
-                updateFaceMemberValues(obj, data, context);
-            } else {
-                obj.put("accessId", data.member.getAccessid());
-                updateFaceMemberValues(obj, data, context);
-            }
-            if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
-                if (!GestureController.getInstance().isQuestionnaireFailed()) {
-                    obj.put("trqStatus", "0");
-                } else {
-                    obj.put("trqStatus", "1");
-                }
-            }
-            obj.put("qrCodeId", CameraController.getInstance().getQrCodeId());
-            obj.put("maskStatus", data.maskStatus);
-            obj.put("faceScore", data.faceScore);
-            obj.put("faceParameters", FaceParameters(context, data));
-
-            if (BuildConfig.DEBUG) {
-                Log.v(LOG, "recordUserTemperature body: " + obj.toString());
-            }
-            if (isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
-                obj.put("utcTime", Util.getUTCDate(""));
-                saveOfflineTempRecord(obj, context, data, offlineSyncStatus);
-            } else {
-                new AsyncRecordUserTemperature(obj, callback, sp.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.RecordTemperature, context).execute();
-            }
-
-        } catch (Exception e) {
-            Logger.error(LOG, "getToken(JSONObjectCallback callback, Context context) " + e.getMessage());
-        }
-    }
-
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
         if (AppSettings.isLogOfflineDataEnabled()) {
             try {
@@ -955,7 +858,7 @@ public class Util {
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
-            obj.put("networkId",data.member.getNetworkId());
+            obj.put("networkId", data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1213,8 +1116,8 @@ public class Util {
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
 
-            if(!Util.isOfflineMode(context))
-            new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
+            if (!Util.isOfflineMode(context))
+                new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
             sendOfflineServiceBroadcast(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
@@ -2610,14 +2513,14 @@ public class Util {
     public static String validateAccessId(String accessId) {
         String accessIdStr = accessId;
         if (accessId != null && !accessId.isEmpty()) {
-                char[] accessIdArray = accessId.toCharArray();
-                for (int i = 0; i < accessIdArray.length; i++) {
-                    if (accessIdStr.startsWith("0")) {
-                        accessIdStr = accessIdStr.replaceFirst("0", "");
-                    } else {
-                        break;
-                    }
+            char[] accessIdArray = accessId.toCharArray();
+            for (int i = 0; i < accessIdArray.length; i++) {
+                if (accessIdStr.startsWith("0")) {
+                    accessIdStr = accessIdStr.replaceFirst("0", "");
+                } else {
+                    break;
                 }
+            }
 
         }
         return accessIdStr;
@@ -2646,5 +2549,19 @@ public class Util {
         deviceInfo.networkStatus = isConnectedEthernet(context);
         deviceInfo.appState = getAppState();
         return deviceInfo;
+    }
+
+    public static String getUTCDateMMDDYYYYHHMMSS() {
+        try {
+            final SimpleDateFormat f = new SimpleDateFormat("MMddyyyy_HHmmss");
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.format(new Date());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
+
+        }
+        return "";
     }
 }

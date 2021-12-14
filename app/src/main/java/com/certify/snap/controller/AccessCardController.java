@@ -126,8 +126,8 @@ public class AccessCardController {
 
     public void setCheckInResponseCode(int responseCode) {
         if (responseCode == AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue() ||
-            responseCode == AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue()) {
-           // ApplicationController.getInstance().setTimeAttendance(0);
+                responseCode == AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue()) {
+            // ApplicationController.getInstance().setTimeAttendance(0);
         }
         this.checkInResponseCode = responseCode;
     }
@@ -429,8 +429,13 @@ public class AccessCardController {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
                         accessLogRequest.id = "0";
                         accessLogRequest.accessId = "";
-                        accessLogRequest.firstName = "Anonymous";
-                        accessLogRequest.lastName = "";
+                        if (sharedPreferences.getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+                            accessLogRequest.firstName = "Anonymous";
+                            accessLogRequest.lastName = "";
+                        } else {
+                            accessLogRequest.firstName = sharedPreferences.getString(GlobalParameters.anonymousFirstName, "");
+                            accessLogRequest.lastName = sharedPreferences.getString(GlobalParameters.anonymousLastName, "");
+                        }
                         accessLogRequest.memberId = "";
                         accessLogRequest.memberTypeId = "";
                         accessLogRequest.memberTypeName = "";
@@ -560,7 +565,7 @@ public class AccessCardController {
                             }
                             accessLogRequest.offlineSync = 1;
                             accessLogRequest.utcOfflineDateTime = accessLogRequest.utcRecordDate;
-                            saveOfflineAccessLogRecord(context, accessLogRequest, data,1);
+                            saveOfflineAccessLogRecord(context, accessLogRequest, data, 1);
                         }
 
                         @Override
@@ -659,10 +664,10 @@ public class AccessCardController {
                         public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
                             if (response.body() != null) {
                                 if (response.body().responseCode != 1) {
-                                    saveOfflineAccessLogRecord(context, accessLogRequest, data,0);
+                                    saveOfflineAccessLogRecord(context, accessLogRequest, data, 0);
                                 }
                             } else {
-                                saveOfflineAccessLogRecord(context, accessLogRequest, data,0);
+                                saveOfflineAccessLogRecord(context, accessLogRequest, data, 0);
                             }
                         }
 
