@@ -180,7 +180,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         }
 
         try {
-            if (reportInfo.getString("responseCode").equals("1")) {
+            if (reportInfo.has("responseCode") && reportInfo.getString("responseCode").equals("1")) {
                 JSONArray memberList = reportInfo.getJSONArray("responseData");
                 if (memberList != null) {
                     MemberSyncDataModel.getInstance().setDbType(MemberSyncDataModel.DatabaseAddType.SERIAL);
@@ -188,7 +188,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 }
             }
         } catch (JSONException e) {
-
+            Log.e(TAG, "Error in getMemberId " + e.getMessage());
         }
     }
 

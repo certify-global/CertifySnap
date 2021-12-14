@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context="com.certify.snap.activity.OfflineRecordsActivity">
-
 
     <LinearLayout android:id="@+id/managetitle"
         android:layout_width="match_parent"
@@ -18,9 +18,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/back"
-            android:onClick="ontemperature"
-            />
+            android:background="@mipmap/back" />
 
         <TextView
             android:id="@+id/record"
@@ -38,28 +36,23 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="5dp"
-            android:onClick="ontemperature"
             android:src="@mipmap/refresh"
             android:visibility="gone"/>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_record"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/managetitle"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        android:layout_gravity="center_horizontal"
+        android:layout_height="match_parent">
 
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="match_parent"
+            app:tabGravity="center"
+            android:layout_height="wrap_content">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/record_export"
-        android:onClick="ontemperature"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
-        app:rippleColor="@color/colorLightBlue"
-        android:src="@mipmap/export"
-        android:visibility="gone"/>
-</RelativeLayout>
+        </com.google.android.material.tabs.TabLayout>
+
+    </androidx.viewpager.widget.ViewPager>
+
+</LinearLayout>

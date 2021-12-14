@@ -150,7 +150,7 @@ public class ManageMemberHelper {
     }
     private static boolean isCertifyIdExist(String uniqueID) {
 //        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
-        List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExit(uniqueID);
+        List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExist(uniqueID);
         if (membersList != null && membersList.size() > 0) {
             return true;
         }
@@ -158,7 +158,7 @@ public class ManageMemberHelper {
     }
     public static boolean deleteDatabaseCertifyId(String name, String certifyId) {
         //List<RegisteredMembers> list = LitePal.where("uniqueid = ?", certifyId).find(RegisteredMembers.class);
-        List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExit(certifyId);
+        List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExist(certifyId);
         if (list != null && list.size() > 0) {
             FaceServer.getInstance().deleteInfo(name + "-" + certifyId);
             String featurePath = list.get(0).getFeatures();

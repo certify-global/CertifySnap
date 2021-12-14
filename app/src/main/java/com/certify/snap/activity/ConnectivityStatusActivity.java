@@ -303,7 +303,7 @@ public class ConnectivityStatusActivity extends SettingsBaseActivity implements 
             }
 
             JSONObject json = new JSONObject(reportInfo);
-            if (json.getInt("responseCode") == 1){
+            if (json.has("responseCode") && json.getInt("responseCode") == 1){
                 mRbcloudConnectivity.setChecked(true);
 
             } else {

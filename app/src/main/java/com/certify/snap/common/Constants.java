@@ -53,5 +53,10 @@ public class Constants {
     public static final int DEFAULT_ACCESS_CONTROL_SCAN_MODE = 1;
 
     public static final int LANGUAGES_MAX_COUNT = 3;
+
+    public static final int HEALTH_CHECK_INIT_TIME = 1440 * 1000; //24 minutes
+
+    public static final int HEALTH_CHECK_INTERVAL =  1200 * 1000; //20 minutes
+
 }
 
