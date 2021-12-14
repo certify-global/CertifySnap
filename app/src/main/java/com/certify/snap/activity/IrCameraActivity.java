@@ -1881,10 +1881,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     /**
      * Method that stop the HealthCheck service
      */
-    private void stopHealthCheckService() {
-        Intent intent = new Intent(this, DeviceHealthService.class);
-        stopService(intent);
-    }
+//    private void stopHealthCheckService() {
+//        Intent intent = new Intent(this, DeviceHealthService.class);
+//        stopService(intent);
+//    }
 
 
     @Override
