@@ -392,11 +392,18 @@ public class AccessCardController implements AccessCallback {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
                         obj.put("id", 0);
                         obj.put("accessId", "");
-                        obj.put("firstName", "Anonymous");
-                        obj.put("lastName", "");
+                        if(sharedPreferences.getString(GlobalParameters.anonymousFirstName,"").isEmpty()) {
+                            obj.put("firstName", "Anonymous");
+                            obj.put("lastName", "");
+                        } else{
+                            obj.put("firstName", sharedPreferences.getString(GlobalParameters.anonymousFirstName,""));
+                            obj.put("lastName", sharedPreferences.getString(GlobalParameters.anonymousLastName,""));
+                        }
+
                         obj.put("memberId", "");
                         obj.put("memberTypeId", 0);
                         obj.put("memberTypeName", "");
+
                     }
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     if (AccessControlModel.getInstance().getRfidScanMatchedMember() != null) {

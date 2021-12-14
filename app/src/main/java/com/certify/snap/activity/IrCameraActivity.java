@@ -451,6 +451,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
+            Util.writeString(sharedPreferences,GlobalParameters.anonymousLastName,"");
+            Util.writeString(sharedPreferences,GlobalParameters.anonymousFirstName,"");
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -1975,14 +1977,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     QrCodeController.getInstance().smartHealthCard(guid,this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
+                    setCameraPreview();
                     return;
                 }else if(guid.startsWith("HC1:")){
                     QrCodeController.getInstance().parseQrText(guid,this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
+                    setCameraPreview();
                     return;
-                }else
-                if (QrCodeController.getInstance().isQrCodeDated(guid)) {
+                }else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     tv_scan.setText(R.string.tv_qr_validating);
                     if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
                         CameraController.getInstance().setQrCodeId(guid);
@@ -2257,16 +2260,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void clearQrCodePreview() {
-        if (graphicOverlay != null) {
-            graphicOverlay.clear();
-        }
-        if (preview != null) {
-            preview.stop();
-            preview.release();
-        }
-        if (cameraSource != null) {
-            cameraSource.stop();
-            cameraSource.release();
+        try {
+            if (graphicOverlay != null) {
+                graphicOverlay.clear();
+            }
+            if (preview != null) {
+                preview.stop();
+                preview.release();
+            }
+            if (cameraSource != null) {
+                cameraSource.stop();
+                cameraSource.release();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

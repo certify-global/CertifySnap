@@ -258,8 +258,7 @@ public class Util {
             }
             Log.d(LOG, "permissions getSNCode: ");
             return android.os.Build.getSerial();
-        }
-        else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
+        } else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
             return getSerialNumber();
@@ -572,6 +571,20 @@ public class Util {
         return "";
     }
 
+    public static String getUTCDateMMDDYYYYHHMMSS() {
+        try {
+            final SimpleDateFormat f = new SimpleDateFormat("MMddyyyy_HHmmss");
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.format(new Date());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
+
+        }
+        return "";
+    }
+
     public static float FahrenheitToCelcius(float celcius) {
 
         return ((celcius * 9) / 5) + 32;
@@ -838,7 +851,7 @@ public class Util {
             } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) &&
                     !AccessCardController.getInstance().getAccessCardID().isEmpty()) {
                 obj.put("accessId", AccessCardController.getInstance().getAccessCardID());
-                updateFaceMemberValues(obj, data);
+                updateFaceMemberValues(obj, data, context);
             } else if (triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
                 obj.put("id", qrCodeData.getUniqueId());
                 obj.put("accessId", qrCodeData.getAccessId());
@@ -851,10 +864,10 @@ public class Util {
             } else if ((isNumeric(CameraController.getInstance().getQrCodeId()) ||
                     !isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                 obj.put("accessId", CameraController.getInstance().getQrCodeId());
-                updateFaceMemberValues(obj, data);
+                updateFaceMemberValues(obj, data, context);
             } else {
                 obj.put("accessId", data.member.getAccessid());
-                updateFaceMemberValues(obj, data);
+                updateFaceMemberValues(obj, data, context);
             }
             if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                 if (!GestureController.getInstance().isQuestionnaireFailed()) {
@@ -935,17 +948,24 @@ public class Util {
         return value;
     }
 
-    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data) {
+    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data, Context context) {
         try {
             if (data.member == null) data.member = new RegisteredMembers();
             obj.put("id", data.member.getUniqueid());
-            obj.put("firstName", data.member.getFirstname());
-            obj.put("lastName", data.member.getLastname());
+            if (getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+                obj.put("firstName", data.member.getFirstname());
+                obj.put("lastName", data.member.getLastname());
+            } else {
+                obj.put("firstName", getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, ""));
+                obj.put("lastName", getSharedPreferences(context).getString(GlobalParameters.anonymousLastName, ""));
+                obj.put("vaccineDocumentName", String.format("%s_%s", getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, "").replace(" ", ""), Util.getUTCDateMMDDYYYYHHMMSS()));
+                obj.put("vaccinationStatus", "1");
+            }
             obj.put("memberId", data.member.getMemberid());
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
-            obj.put("networkId",data.member.getNetworkId());
+            obj.put("networkId", data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1418,7 +1438,7 @@ public class Util {
                     if (identificationSettings != null) {
                         if (deviceSettingsApi.settingVersion.isEmpty()) {
                             if ((identificationSettings.enableQRCodeScanner.equals("1") &&
-                                identificationSettings.enableRFIDScanner.equals("1"))) {
+                                    identificationSettings.enableRFIDScanner.equals("1"))) {
                                 Util.writeString(sharedPreferences, GlobalParameters.PRIMARY_IDENTIFIER, String.valueOf(CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()));
                                 if (identificationSettings.enableFacialRecognition.equals("1")) {
                                     Util.writeString(sharedPreferences, GlobalParameters.SECONDARY_IDENTIFIER, String.valueOf(CameraController.SecondaryIdentification.FACE.getValue()));
@@ -1613,7 +1633,7 @@ public class Util {
 
                 String institutionIdOld = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
 
-                if(institutionIdOld != null && !institutionId.isEmpty()
+                if (institutionIdOld != null && !institutionId.isEmpty()
                         && !institutionIdOld.equals(institutionId)) {
                     DatabaseController.getInstance().clearAll();
                 }
@@ -2397,7 +2417,7 @@ public class Util {
         TimeZone mTimeZone = mCalendar.getTimeZone();
         int mGMTOffset = mTimeZone.getRawOffset();
         long timeZoneValue = TimeUnit.HOURS.convert(mGMTOffset, TimeUnit.MILLISECONDS);
-        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings()/(3600 * 1000));
+        timeZoneValue = timeZoneValue + (mTimeZone.getDSTSavings() / (3600 * 1000));
         String timeZoneStr = String.valueOf(timeZoneValue);
         if (!timeZoneStr.contains("-")) {
             timeZoneStr = "+" + timeZoneStr;
@@ -2405,11 +2425,11 @@ public class Util {
         return (timeZoneStr + ":00");
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
@@ -2429,13 +2449,14 @@ public class Util {
         return value;
     }
 
-    public static int getOrientation(SharedPreferences sp){
-        if("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
-                || getInternalModel().contains("F10")|| getInternalModel().contains("970")
-                || getInternalModel().contains("F8")){
-            if("F801".equals(getInternalModel()))  return sp.getInt(GlobalParameters.Orientation, 0);
+    public static int getOrientation(SharedPreferences sp) {
+        if ("TPS980Q".equals(getInternalModel()) || getInternalModel().contains("TPS950")
+                || getInternalModel().contains("F10") || getInternalModel().contains("970")
+                || getInternalModel().contains("F8")) {
+            if ("F801".equals(getInternalModel()))
+                return sp.getInt(GlobalParameters.Orientation, 0);
             return sp.getInt(GlobalParameters.Orientation, 270);
-        }else{
+        } else {
             return sp.getInt(GlobalParameters.Orientation, 0);
         }
     }

@@ -239,14 +239,21 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(context, SmartHealthResultActivity.class);
-            intent.putExtra("verification", true);
-            intent.putExtra("smartHealthModel", smartHealthCardData);
-            context.startActivity(intent);
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, smartHealthCardData.getName());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, "");
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, smartHealthCardData.getDose1Date());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, smartHealthCardData.getDose2Date());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, smartHealthCardData.getDoseType());
+
+         //   Intent intent = new Intent(context, SmartHealthResultActivity.class);
+//            intent.putExtra("verification", true);
+//            intent.putExtra("smartHealthModel", smartHealthCardData);
+//            context.startActivity(intent);
 
         }).start();
     }
-    public void parseQrText(String qrText,Context context) {
+
+    public void parseQrText(String qrText, Context context) {
 
         VerificationResult verificationResult = new VerificationResult();
         String plainInput = new DefaultPrefixValidationService().decode(qrText, verificationResult);
@@ -314,10 +321,16 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             }
             CertificateModel certificateModel = new CertificateModel(personModel,
                     greenCertificate.getDateOfBirth(), vaccinationModels, null, null);
-            Intent intent = new Intent(context, QRCodeResultActivity.class);
-            intent.putExtra("verification", true);
-            intent.putExtra("certificateModel", certificateModel);
-            context.startActivity(intent);
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, certificateModel.getPerson().getGivenName());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, certificateModel.getPerson().getFamilyName());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, certificateModel.getVaccinations().get(0).getDateOfVaccination());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, "");
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, certificateModel.getVaccinations().get(0).getManufacturer());
+
+//            Intent intent = new Intent(context, QRCodeResultActivity.class);
+//            intent.putExtra("verification", true);
+//            intent.putExtra("certificateModel", certificateModel);
+//            context.startActivity(intent);
 
         }
 
