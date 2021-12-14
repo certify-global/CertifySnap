@@ -102,6 +102,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
+import com.certify.snap.controller.BleController1;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
@@ -167,7 +168,7 @@ import me.grantland.widget.AutofitTextView;
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
         PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener,
-        QrCodeController.QrCodeListener, ApplicationController.ApplicationCallbackListener {
+        QrCodeController.QrCodeListener, ApplicationController.ApplicationCallbackListener, BleController1.BleCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -366,6 +367,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initNfc();
         initGesture();
         SoundController.getInstance().init(this);
+        BleController1.getInstance().setBleListener(this);
 
         logo = findViewById(R.id.loginLogo);
         rl_header = findViewById(R.id.rl_header);
@@ -1596,6 +1598,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 enableQrCodeScan();
                 isReadyToScan = false;
             }
+        });
+    }
+
+    @Override
+    public void onScanResultsUpdate() {
+
+    }
+
+    @Override
+    public void onScanFailed(int errorCode) {
+
+    }
+
+    @Override
+    public void onStartLeScan() {
+
+    }
+
+    @Override
+    public void onUpdateStatus(String status) {
+        runOnUiThread(() -> {
+            Log.d(TAG, "Ble Update Status " + status);
+            onRfidScan(status);
         });
     }
 

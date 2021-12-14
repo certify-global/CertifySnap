@@ -34,6 +34,7 @@ import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.License;
+import com.certify.snap.controller.BleController1;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
@@ -45,6 +46,7 @@ import com.certify.snap.controller.CameraController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.localserver.LocalServerTask;
 import com.certify.snap.model.AppStatusInfo;
+import com.certify.snap.service.BluetoothLeService;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.LoggerService;
 import com.certify.snap.service.MemberSyncService;
@@ -89,6 +91,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             ApplicationController.getInstance().initThermalUtil(this);
             RetrofitInstance.getInstance().init(this);
             Application.getInstance().addActivity(this);
+            BleController1.getInstance().init(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
             AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
@@ -307,6 +310,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         startMemberSyncService();
         startLoggerService();
         updateAppStatusInfo("DEVICESETTINGS", AppStatusInfo.DEVICE_SETTINGS);
+        startBleScan();
     }
 
     private void initNavigationBar() {
@@ -512,5 +516,11 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             return;
         }
         Log.d(TAG, "Logger service");
+    }
+
+    private void startBleScan() {
+        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        bindService(gattServiceIntent, BleController1.getInstance().getServiceConnection(), BIND_AUTO_CREATE);
+        BleController1.getInstance().startLeScan(true);
     }
 }

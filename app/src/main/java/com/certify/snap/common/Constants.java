@@ -1,6 +1,7 @@
 package com.certify.snap.common;
 
 import java.security.PublicKey;
+import java.util.UUID;
 
 //虹软 key
 public class Constants {
@@ -57,6 +58,11 @@ public class Constants {
     public static final int HEALTH_CHECK_INIT_TIME = 1440 * 1000; //24 minutes
 
     public static final int HEALTH_CHECK_INTERVAL =  1200 * 1000; //20 minutes
+
+    public static final String UUID_VALUE = "CF9346F3-BC1E-4354-BD6C-196B27C97A2A";
+
+    public static final UUID CHARACTERISTIC_UUID = UUID.fromString("DC54568E-DE09-46F3-A693-45DEDDDD4D4F");
+
 
 }
 
