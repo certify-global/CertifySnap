@@ -123,6 +123,10 @@ public interface DatabaseStore {
     @Query("SELECT * FROM RegisteredMembers WHERE accessid=:accessId")
     List<RegisteredMembers> findMemberByAccessId(String accessId);
 
+    @Transaction
+    @Query("SELECT * FROM RegisteredMembers WHERE ltrim(accessid, 0)=:accessId")
+    List<RegisteredMembers> findMemberByLTrimAccessId(String accessId);
+
     @Query("DELETE FROM RegisteredMembers")
     void deleteAll();
 

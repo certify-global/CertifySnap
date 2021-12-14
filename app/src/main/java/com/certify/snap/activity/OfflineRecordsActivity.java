@@ -1,9 +1,12 @@
 package com.certify.snap.activity;
 
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 
@@ -15,8 +18,12 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.certify.snap.R;
+import com.certify.snap.common.ContextUtils;
+import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.fragment.AccessLogOfflineFragment;
 import com.certify.snap.fragment.TemperatureOfflineFragment;
+
+import java.util.Locale;
 
 public class OfflineRecordsActivity extends AppCompatActivity {
     private static final String TAG = OfflineRecordsActivity.class.getSimpleName();
@@ -24,10 +31,26 @@ public class OfflineRecordsActivity extends AppCompatActivity {
     private ImageView imageViewBack;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        Locale localeToSwitchTo = new Locale(DeviceSettingsController.getInstance().getLanguageToUpdate());
+        ContextWrapper localeUpdatedContext = ContextUtils.updateLocale(newBase, localeToSwitchTo);
+        super.attachBaseContext(localeUpdatedContext);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_offline_record);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WindowManager.LayoutParams attributes = getWindow().getAttributes();
+            attributes.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            getWindow().setAttributes(attributes);
+        }
+
         initView();
         setClickListener();
     }

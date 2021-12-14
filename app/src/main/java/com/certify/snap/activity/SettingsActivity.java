@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.License;
@@ -285,13 +286,13 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     @Override
     protected void onResume() {
         super.onResume();
-        if (Util.isNetworkOff(SettingsActivity.this)) {
+        /*if (Util.isNetworkOff(SettingsActivity.this)) {
             record.setVisibility(View.VISIBLE);
             recordDivider.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             record.setVisibility(View.GONE);
             recordDivider.setVisibility(View.GONE);
-        }
+        }*/
         setData();
     }
 
@@ -575,7 +576,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
                 return;
             }
             if (!reportInfo.isNull("Message")) {
-                if (reportInfo.getString("Message").contains("token expired"))
+                if (reportInfo.getString("Message").contains(""))
                     Util.getToken(this, this);
 
             } else {
@@ -669,7 +670,12 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     }
 
     private void initiateLaunchHomeScreen() {
-        ProgressDialog.show(this, "", getString(R.string.launch_home_screen));
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ProgressDialog.show(SettingsActivity.this, "", getString(R.string.launch_home_screen));
+            }
+        });
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
                     AppSettings.getInstance().getSettingsFromSharedPref(SettingsActivity.this);

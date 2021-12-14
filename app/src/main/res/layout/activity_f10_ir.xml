@@ -69,7 +69,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="120dp"
                 android:gravity="center"
-                android:text="04:26 PM"
                 android:textColor="@color/colorBlack"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -122,13 +121,13 @@
                 android:id="@+id/tv_close_message_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginTop="@dimen/size_10"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/tv_close_message"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:background="@color/colorTranslucentBlack"
                     android:gravity="center"
                     android:textColor="@color/colorWhite"
@@ -196,7 +195,7 @@
             <TextView
                 android:id="@+id/tv_error_message"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:layout_alignParentBottom="true"
                 android:background="@color/colorHalfTransparent"
                 android:gravity="center"

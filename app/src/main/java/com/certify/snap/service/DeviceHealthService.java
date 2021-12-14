@@ -12,24 +12,29 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.certify.callback.JSONObjectCallback;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.DeviceInfo;
+import com.certify.snap.api.request.HealthCheckRequest;
+import com.certify.snap.api.response.HealthCheckResponse;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ApplicationLifecycleHandler;
-import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
-
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.util.Calendar;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static android.os.SystemClock.elapsedRealtime;
 
-public class DeviceHealthService extends Service implements JSONObjectCallback {
+public class DeviceHealthService extends Service {
     protected static final String LOG = DeviceHealthService.class.getSimpleName();
     private final static int BACKGROUND_INTERVAL_10_MINUTES = 10;
     private AlarmManager alarmService;
@@ -58,11 +63,50 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
             long currTime = Util.getCurrentTimeLong();
             if (alarmService != null)
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
-            Util.getDeviceHealthCheck(this, this);
+            getDeviceHealthCheck();
         } catch (Exception e) {
             Log.e(LOG + "onStartCommand(Intent.)", e.getMessage());
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void getDeviceHealthCheck() {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        HealthCheckRequest healthCheckRequest = new HealthCheckRequest();
+        healthCheckRequest.appState = Util.getAppState();
+        healthCheckRequest.deviceSN = Util.getSNCode(this);
+        healthCheckRequest.deviceInfo = Util.getDeviceInfo(this);
+        healthCheckRequest.institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+        healthCheckRequest.appState = Util.getAppState();
+        healthCheckRequest.appUpTime = Util.getAppUpTime(this);
+        healthCheckRequest.deviceUpTime = Util.getDeviceUpTime();
+        healthCheckRequest.lastUpdateDateTime = Util.getUTCDate("");
+        Util.sendOfflineServiceBroadcast(getApplicationContext());
+
+        Log.d(LOG, "Health check time " + Util.getMMDDYYYYDate());
+        Call<HealthCheckResponse> call = apiInterface.getDeviceHealthCheck(Util.getSNCode(this), healthCheckRequest);
+        call.enqueue(new Callback<HealthCheckResponse>() {
+            @Override
+            public void onResponse(Call<HealthCheckResponse> call, Response<HealthCheckResponse> response) {
+                if (response.body() != null) {
+                    Log.d(LOG, "Health Response " + response.body().responseCode);
+                    if (response.body().responseCode == 1) {
+                        ApplicationController.getInstance().cancelHealthCheckTimer(getApplicationContext());
+                        if(ApplicationLifecycleHandler.isInBackground)
+                            bringApplicationToForeground();
+                    }
+                    if (response.body().message.contains("Authorization has been denied for this request")) {
+                        ApplicationController.getInstance().getToken(getApplicationContext());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<HealthCheckResponse> call, Throwable t) {
+                Log.e(LOG, "Health Error in device health check " + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -70,33 +114,6 @@ public class DeviceHealthService extends Service implements JSONObjectCallback {
         super.onDestroy();
         if (alarmService != null && restartServicePendingIntent != null) {
             alarmService.cancel(restartServicePendingIntent);
-        }
-    }
-
-    @Override
-    public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
-        //do noop
-        try {
-            SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
-            if (reportInfo == null) {
-                Log.d("DeviceHealthService", "Health check error response "+ Util.getMMDDYYYYDate());
-                return;
-            }
-            JSONObject json = new JSONObject(reportInfo);
-            if (json.has("responseCode") && json.getInt("responseCode") == 1) {
-                Log.d("DeviceHealthService", "Health check success response "+ Util.getMMDDYYYYDate());
-                ApplicationController.getInstance().cancelHealthCheckTimer(this);
-                if(ApplicationLifecycleHandler.isInBackground)
-                    bringApplicationToForeground();
-            }
-
-            if (reportInfo.contains("token expired")) {
-                Log.d("DeviceHealthService", "Health check token expired "+ Util.getMMDDYYYYDate());
-                Util.getToken(this, this);
-            }
-
-        } catch (Exception e) {
-            Logger.error(LOG + "onJSONObjectListener(JSONObject reportInfo, String status, JSONObject req)", e.getMessage());
         }
     }
 

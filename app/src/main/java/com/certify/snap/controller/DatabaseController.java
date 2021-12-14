@@ -32,7 +32,6 @@ import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
-import com.certify.snap.model.QuestionDataDb;
 import com.certify.snap.model.RegisteredFailedMembers;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.service.MemberSyncService;
@@ -47,7 +46,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 14;
+    public static final int DB_VERSION = 17;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -99,6 +98,9 @@ public class DatabaseController {
     public List<RegisteredMembers> findMemberByAccessId(String accessId) {
         try {
             if (databaseStore != null) {
+                if (AppSettings.isAccessIdTrimZeroes()) {
+                    return databaseStore.findMemberByLTrimAccessId(accessId);
+                }
                 return databaseStore.findMemberByAccessId(accessId);
             }
         } catch (SQLiteException e){

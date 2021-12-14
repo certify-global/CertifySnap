@@ -168,6 +168,7 @@
     <string name="access_denied">¡Acceso denegado!</string>
     <string name="automatic_door_access">Habilitar relé</string>
     <string name="allow_anonymous">Permitir anónimos</string>
+    <string name="trim_leading_zeroes">Recorte los ceros iniciales del Id de acceso</string>
     <string name="relay_timeout">Tiempo de espera del relé:</string>
     <string name="normal_mode">
         <font size="16">Modo normal</font><font size="14"> (Acceso operativo para cada escaneo)</font>
@@ -723,6 +724,11 @@
     <string name="manual_mode">Manual</string>
     <string name="check_in">Check In</string>
     <string name="check_out">Check Out</string>
+    <string name="already_check_in">Already Check in</string>
+    <string name="already_check_out">Already Check Out</string>
+    <string name="checked_in">Checked In</string>
+    <string name="checked_out">Checked Out</string>
+    <string name="please_click_check_in_out">Please click on check in or check out</string>
     <string name="show_vaccination_indicator">Mostrar indicador de vacunación</string>
     <string name="show_non_vaccination_indicator">Mostrar indicador de no vacunación</string>
     <string name="retry">Rever</string>

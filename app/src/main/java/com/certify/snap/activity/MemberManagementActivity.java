@@ -1441,12 +1441,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
 
     public void onRfidScan(String cardId) {
         if(updateMember != null) updateMember.setAccessid(cardId);
+        String finalCardId = cardId;
         runOnUiThread(()->{
             if (updateMember != null && maccessid != null) {
-                maccessid.setText(cardId);
+                maccessid.setText(finalCardId);
             } else {
                 if (registerAccessid != null) {
-                    registerAccessid.setText(cardId);
+                    registerAccessid.setText(finalCardId);
                 }
             }
         });

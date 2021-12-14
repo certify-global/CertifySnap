@@ -253,14 +253,40 @@
                 android:id="@+id/allow_anonymous_cb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"></CheckBox>
+                android:checked="false">
+            </CheckBox>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/allow_anonymous"
                 android:textColor="@color/black"
-                android:textSize="18sp"></TextView>
+                android:textSize="18sp">
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/trim_zeroes_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false">
+            </CheckBox>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/trim_leading_zeroes"
+                android:textColor="@color/black"
+                android:textSize="18sp">
+            </TextView>
         </LinearLayout>
 
         <LinearLayout

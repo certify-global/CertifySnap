@@ -17,7 +17,6 @@ public class RegisteredMembers {
     public String expiretime;
     public String status;
     public String mobile;
-    public String image;
     public String features;
     public String memberid;
     public String email;
@@ -33,6 +32,8 @@ public class RegisteredMembers {
     public boolean isMemberAccessed;
     public String groupTypeName;
     public boolean isDocument;
+    public String image;
+    public String dateTimeCheckInOut = "";
 
     public String getNetworkId() {
         return networkId;
@@ -209,6 +210,14 @@ public class RegisteredMembers {
         isDocument = document;
     }
 
+
+    public String getDateTimeCheckInOut() {
+        return dateTimeCheckInOut;
+    }
+
+    public void setDateTimeCheckInOut(String dateTimeCheckInOut) {
+        this.dateTimeCheckInOut = dateTimeCheckInOut;
+    }
     @Override
     public String toString() {
         return "Members{" +

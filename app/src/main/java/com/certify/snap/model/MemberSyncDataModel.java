@@ -108,7 +108,7 @@ public class MemberSyncDataModel {
                             String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
                             member.setFirstname(c.getString("firstName"));
                             member.setLastname(c.getString("lastName"));
-                            member.setAccessid(Util.validateAccessId(c.getString("accessId")));
+                            member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
                             if (c.has("memberType")) {
@@ -240,7 +240,7 @@ public class MemberSyncDataModel {
                             String groupId = "0";
                             member.setFirstname(c.getString("firstName"));
                             member.setLastname(c.getString("lastName"));
-                            member.setAccessid(Util.validateAccessId(c.getString("accessId")));
+                            member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
                             member.setMemberid(memberId);
                             if (c.has("memberType")) {
@@ -765,7 +765,8 @@ public class MemberSyncDataModel {
         switch (dbAddType) {
             case SCALE: {
                 if (membersList.size() == NUM_OF_RECORDS) {
-                    if (isMemberSyncGroupIdEnabled()) {
+                    if (isMemberSyncGroupIdEnabled()
+                        && !Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
                         checkDatabaseMembers();
                     } else {
                         addToDatabase(context);

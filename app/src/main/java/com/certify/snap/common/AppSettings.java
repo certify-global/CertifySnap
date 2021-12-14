@@ -98,6 +98,7 @@ public class AppSettings {
     private static boolean showNonVaccinationIndicator = false;
     private static boolean retryScanEnabled = false;
     private static boolean debugModeEnabled = false;
+    private static boolean accessIdTrimZeroes = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -577,6 +578,7 @@ public class AppSettings {
         editTextPrintPassName = sharedPreferences.getString(GlobalParameters.PRINT_LABEL_EDIT_PASS_NAME, context.getString(R.string.pass));
         gestureExitConfirmText = sharedPreferences.getString(GlobalParameters.GESTURE_EXIT_CONFIRM_TEXT, context.getString(R.string.gesture_exit_msg));
         retryScanEnabled = sharedPreferences.getBoolean(GlobalParameters.RETRY_SCAN, false);
+        accessIdTrimZeroes = sharedPreferences.getBoolean(GlobalParameters.ACCESSID_TRIM_ZEROES, false);
     }
 
     public static int getTimeAndAttendance() {
@@ -605,5 +607,9 @@ public class AppSettings {
 
     public static boolean isDebugModeEnabled() {
         return debugModeEnabled;
+    }
+
+    public static boolean isAccessIdTrimZeroes() {
+        return accessIdTrimZeroes;
     }
 }

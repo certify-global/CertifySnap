@@ -1,20 +1,29 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.RemoteException;
 import android.util.Log;
 
 import com.certify.snap.R;
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.TemperatureRecordRequest;
+import com.certify.snap.api.response.TemperatureRecordResponse;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.model.TemperatureRect;
 import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
+import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.MemberSyncDataModel;
+import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
 import com.common.thermalimage.GuideDataCallBack;
 import com.common.thermalimage.HotImageCallback;
@@ -22,6 +31,7 @@ import com.common.thermalimage.TemperatureBigData;
 import com.common.thermalimage.TemperatureBitmapData;
 import com.common.thermalimage.TemperatureData;
 import com.common.thermalimage.ThermalImageUtil;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +51,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class TemperatureController {
     private static final String TAG = TemperatureController.class.getSimpleName();
@@ -169,7 +182,7 @@ public class TemperatureController {
     private void sendTemperatureRecord(Context context) {
         for (Map.Entry entry : temperatureMap.entrySet()) {
             UserExportedData data = (UserExportedData) entry.getValue();
-            Util.recordUserTemperature(null, context, data, -1);
+            recordUserTemperature(data, -1);
         }
     }
 
@@ -762,6 +775,155 @@ public class TemperatureController {
      */
     public String getAmbientTemperature() {
         return ambientTemperature;
+    }
+
+    public void recordUserTemperature(UserExportedData data, int offlineSyncStatus) {
+        if (!Util.isDeviceF10()) {
+            if ((data.temperature == null || data.temperature.isEmpty())) {
+                Log.e(TAG, "recordUserTemperature temperature empty, abort send to server");
+                return;
+            }
+        }
+        if (!Util.isInstitutionIdValid(context)) return;
+
+        SharedPreferences sp = Util.getSharedPreferences(context);
+        TemperatureRecordRequest temperatureRecordRequest = new TemperatureRecordRequest();
+        temperatureRecordRequest.deviceId = Util.getSerialNumber();
+        temperatureRecordRequest.trigger = data.triggerType;
+        temperatureRecordRequest.temperature = data.temperature;
+        temperatureRecordRequest.institutionId = sp.getString(GlobalParameters.INSTITUTION_ID, "");
+        temperatureRecordRequest.facilityId = 0;
+        temperatureRecordRequest.locationId = 0;
+        temperatureRecordRequest.deviceTime = Util.getMMDDYYYYDate();
+        temperatureRecordRequest.machineTemperature = data.machineTemperature;
+        temperatureRecordRequest.ambientTemperature = data.ambientTemperature;
+
+        if (data.sendImages) {
+            temperatureRecordRequest.irTemplate = data.ir == null ? "" : Util.encodeToBase64(data.ir);
+            temperatureRecordRequest.rgbTemplate = data.rgb == null ? "" : Util.encodeToBase64(data.rgb);
+            temperatureRecordRequest.thermalTemplate = data.thermal == null ? "" : Util.encodeToBase64(data.thermal);
+        }
+        temperatureRecordRequest.deviceData = Util.getDeviceInfo(context);
+        temperatureRecordRequest.deviceParameters = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
+        temperatureRecordRequest.temperatureFormat = sp.getString(GlobalParameters.F_TO_C, "F");
+        temperatureRecordRequest.exceedThreshold = data.exceedsThreshold;
+
+        QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+        RegisteredMembers rfidScanMatchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+        if (data.triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) && rfidScanMatchedMember != null) {
+            temperatureRecordRequest.id = rfidScanMatchedMember.getUniqueid();
+            temperatureRecordRequest.accessId = rfidScanMatchedMember.getAccessid();
+            temperatureRecordRequest.firstName = rfidScanMatchedMember.getFirstname();
+            temperatureRecordRequest.lastName = rfidScanMatchedMember.getLastname();
+            temperatureRecordRequest.memberId = rfidScanMatchedMember.getMemberid();
+            temperatureRecordRequest.memberTypeId = rfidScanMatchedMember.getMemberType();
+            temperatureRecordRequest.memberTypeName = rfidScanMatchedMember.getMemberTypeName();
+            temperatureRecordRequest.trqStatus = "";
+            temperatureRecordRequest.networkId = rfidScanMatchedMember.getNetworkId();
+        } else if (data.triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) &&
+                !AccessCardController.getInstance().getAccessCardID().isEmpty()) {
+            temperatureRecordRequest.accessId = AccessCardController.getInstance().getAccessCardID();
+            updateFaceMemberValues(temperatureRecordRequest, data);
+        } else if (data.triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
+            temperatureRecordRequest.id = qrCodeData.getUniqueId();
+            temperatureRecordRequest.accessId = qrCodeData.getAccessId();
+            temperatureRecordRequest.firstName = qrCodeData.getFirstName();
+            temperatureRecordRequest.lastName = qrCodeData.getLastName();
+            temperatureRecordRequest.memberId = qrCodeData.getMemberId();
+            temperatureRecordRequest.memberTypeId = String.valueOf(qrCodeData.getMemberTypeId());
+            temperatureRecordRequest.memberTypeName = qrCodeData.getMemberTypeName();
+        } else if ((Util.isNumeric(CameraController.getInstance().getQrCodeId()) ||
+                !Util.isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && data.triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
+            temperatureRecordRequest.accessId = CameraController.getInstance().getQrCodeId();
+            updateFaceMemberValues(temperatureRecordRequest, data);
+        } else {
+            temperatureRecordRequest.accessId = data.member.getAccessid();
+            updateFaceMemberValues(temperatureRecordRequest, data);
+        }
+        if (data.triggerType != null && data.triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
+            if (!GestureController.getInstance().isQuestionnaireFailed()) {
+                temperatureRecordRequest.trqStatus = "0";
+            } else {
+                temperatureRecordRequest.trqStatus = "1";
+            }
+        }
+        temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
+        temperatureRecordRequest.maskStatus = data.maskStatus;
+        temperatureRecordRequest.faceScore = data.faceScore;
+        temperatureRecordRequest.faceParameters = Util.FaceParameters(context, data);
+        temperatureRecordRequest.utcTime = Util.getUTCDate("");
+
+        if (Util.isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
+            if (offlineSyncStatus == 1) {
+                temperatureRecordRequest.offlineSync = offlineSyncStatus;
+                temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+            }
+            saveOfflineTempRecord(context, temperatureRecordRequest, data, offlineSyncStatus);
+        } else {
+            ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+            Call<TemperatureRecordResponse> call = apiInterface.recordUserTemperature(temperatureRecordRequest);
+            call.enqueue(new Callback<TemperatureRecordResponse>() {
+                @Override
+                public void onResponse(Call<TemperatureRecordResponse> call, Response<TemperatureRecordResponse> response) {
+                    if (response.body() != null) {
+                        if (response.body().responseCode != 1) {
+                            temperatureRecordRequest.offlineSync = 1;
+                            temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+                            saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
+                        }
+                    } else {
+                        temperatureRecordRequest.offlineSync = 1;
+                        temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+                        saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<TemperatureRecordResponse> call, Throwable t) {
+                    temperatureRecordRequest.offlineSync = 1;
+                    temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
+                    saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
+                }
+            });
+        }
+    }
+
+    private static void updateFaceMemberValues(TemperatureRecordRequest temperatureRecordRequest, UserExportedData data) {
+        if (data.member == null) data.member = new RegisteredMembers();
+        temperatureRecordRequest.id = data.member.getUniqueid();
+        temperatureRecordRequest.firstName = data.member.getFirstname();
+        temperatureRecordRequest.lastName = data.member.getLastname();
+        temperatureRecordRequest.memberId = data.member.getMemberid();
+        temperatureRecordRequest.memberTypeId = data.member.getMemberType();
+        temperatureRecordRequest.memberTypeName = data.member.getMemberTypeName();
+        temperatureRecordRequest.trqStatus = "";
+        temperatureRecordRequest.networkId = data.member.getNetworkId();
+    }
+
+    private static void saveOfflineTempRecord(Context context, TemperatureRecordRequest temperatureRecordRequest,
+                                              UserExportedData data, int offlineSyncStatus) {
+        if (AppSettings.isLogOfflineDataEnabled()) {
+            OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
+            offlineRecordTemperatureMembers.setTemperature(temperatureRecordRequest.temperature);
+            Gson gson = new Gson();
+            gson.toJson(temperatureRecordRequest);
+            offlineRecordTemperatureMembers.setJsonObj(gson.toJson(temperatureRecordRequest));
+            offlineRecordTemperatureMembers.setDeviceTime(temperatureRecordRequest.deviceTime);
+            offlineRecordTemperatureMembers.setUtcTime(temperatureRecordRequest.utcTime);
+            offlineRecordTemperatureMembers.setPrimaryid(OfflineRecordTemperatureMembers.lastPrimaryId());
+            offlineRecordTemperatureMembers.setOfflineSync(offlineSyncStatus);
+            if (data != null && data.member != null && data.member.getFirstname() != null) {
+                offlineRecordTemperatureMembers.setMemberId(data.member.getMemberid());
+                offlineRecordTemperatureMembers.setFirstName(data.member.getFirstname());
+                offlineRecordTemperatureMembers.setLastName(data.member.getLastname());
+                offlineRecordTemperatureMembers.setImagepath(data.member.getImage());
+            } else {
+                offlineRecordTemperatureMembers.setFirstName("Anonymous");
+                offlineRecordTemperatureMembers.setLastName("");
+            }
+            //offlineRecordTemperatureMembers.save();
+            DatabaseController.getInstance().insertOfflineMemberIntoDB(offlineRecordTemperatureMembers);
+        }
     }
 
     /**

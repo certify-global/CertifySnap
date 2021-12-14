@@ -43,7 +43,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     private RadioButton rb_face_only, rb_manual_option;
     private RadioButton rb_id_and_face;
     private RadioButton rb_id_or_face;
-    private CheckBox mEnableWiegandPt;
+    private CheckBox mEnableWiegandPt, mTrimLeadingZeroesCb;
     private LinearLayout timeAttendanceLayout;
 
     @Override
@@ -79,6 +79,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         rb_auto_option = findViewById(R.id.rb_auto_option);
         rb_manual_option = findViewById(R.id.rb_manual_option);
         timeAttendanceLayout = findViewById(R.id.time_attendance_layout);
+        mTrimLeadingZeroesCb = findViewById(R.id.trim_zeroes_cb);
 
         setDefaults();
         handleClickListeners();
@@ -167,6 +168,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         } else {
             timeAttendanceLayout.setVisibility(View.GONE);
         }
+        mTrimLeadingZeroesCb.setChecked(Util.getSharedPreferences(this).getBoolean(GlobalParameters.ACCESSID_TRIM_ZEROES, false));
     }
 
     private void handleClickListeners() {
@@ -275,6 +277,8 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
                 }
             }
         });
+
+        mTrimLeadingZeroesCb.setOnCheckedChangeListener((buttonView, isChecked) -> mTrimLeadingZeroesCb.setChecked(isChecked));
     }
 
     private void saveSetting() {
@@ -319,6 +323,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         } else if (rb_manual_option.isChecked()) {
             Util.writeInt(sp, GlobalParameters.TimeAttendanceOption, 1);
         }
+        Util.writeBoolean(sp, GlobalParameters.ACCESSID_TRIM_ZEROES, mTrimLeadingZeroesCb.isChecked());
 
         finish();
         Toast.makeText(getApplicationContext(), getString(R.string.save_success), Toast.LENGTH_LONG).show();

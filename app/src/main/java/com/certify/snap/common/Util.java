@@ -30,6 +30,7 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -55,7 +56,6 @@ import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.MemberIDCallback;
 import com.certify.callback.MemberListCallback;
 import com.certify.callback.PushCallback;
-import com.certify.callback.RecordTemperatureCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
@@ -63,8 +63,9 @@ import com.certify.snap.activity.AddDeviceActivity;
 import com.certify.snap.activity.HomeActivity;
 import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.activity.ProIrCameraActivity;
-import com.certify.snap.activity.QrCodeScannerActivity;
 import com.certify.snap.activity.SettingsActivity;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.DeviceInfo;
 import com.certify.snap.api.response.AccessControlSettings;
 import com.certify.snap.api.response.AudioVisualSettings;
 import com.certify.snap.api.response.ConfirmationViewSettings;
@@ -84,15 +85,12 @@ import com.certify.snap.async.AsyncJSONObjectGetMemberList;
 import com.certify.snap.async.AsyncJSONObjectPush;
 import com.certify.snap.async.AsyncJSONObjectSender;
 import com.certify.snap.async.AsyncJSONObjectSetting;
-import com.certify.snap.async.AsyncRecordUserTemperature;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
-import com.certify.snap.controller.GestureController;
 import com.certify.snap.controller.SoundController;
-import com.certify.snap.model.AccessControlModel;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
 import com.certify.snap.model.MemberSyncDataModel;
@@ -158,6 +156,7 @@ public class Util {
     private static Long timeInMillis;
     private static ExecutorService taskExecutorService;
     private static String tokenRequestModule = ""; //Optimize
+    private static AsyncJSONObjectSender asyncJSONObjectSender = null;
 
     public static final class permission {
         public static final String[] camera = new String[]{android.Manifest.permission.CAMERA};
@@ -579,20 +578,6 @@ public class Util {
         return "";
     }
 
-    public static String getUTCDateMMDDYYYYHHMMSS() {
-        try {
-            final SimpleDateFormat f = new SimpleDateFormat("MMddyyyy_HHmmss");
-            f.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return f.format(new Date());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
-
-        }
-        return "";
-    }
-
     public static float FahrenheitToCelcius(float celcius) {
 
         return ((celcius * 9) / 5) + 32;
@@ -668,7 +653,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private static void scheduleJobAccessToken(Context context) {
+    public static void scheduleJobAccessToken(Context context) {
         ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(1, componentName)
                 .setPeriodic(timeInMillis, 5 * 60 * 1000).setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
@@ -905,9 +890,6 @@ public class Util {
     }
 
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
-        if (!Util.getSharedPreferences(context).getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-            return;
-        }
         if (AppSettings.isLogOfflineDataEnabled()) {
             try {
                 OfflineRecordTemperatureMembers offlineRecordTemperatureMembers = new OfflineRecordTemperatureMembers();
@@ -973,7 +955,7 @@ public class Util {
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
             obj.put("trqStatus", ""); //Send this empty if not Qr
-            obj.put("networkId", data.member.getNetworkId());
+            obj.put("networkId",data.member.getNetworkId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1230,8 +1212,10 @@ public class Util {
             obj.put("deviceUpTime", getDeviceUpTime());
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
+
+            if(!Util.isOfflineMode(context))
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
-            //checkForInternetConnection(context);
+            sendOfflineServiceBroadcast(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
 
@@ -1513,6 +1497,9 @@ public class Util {
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlLogMode, accessControlSettings.loggingMode);
                         Util.writeInt(sharedPreferences, GlobalParameters.AccessControlScanMode, accessControlSettings.validAccessOption);
                         Util.writeInt(sharedPreferences, GlobalParameters.TimeAttendanceOption, accessControlSettings.attendanceMode);
+                        if (accessControlSettings.truncateZeroes != null) {
+                            Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESSID_TRIM_ZEROES, accessControlSettings.truncateZeroes.equals("1"));
+                        }
                     }
 
                     //Audio-Visual settings
@@ -1638,7 +1625,7 @@ public class Util {
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
-                if (json1.has("Message") && json1.getString("Message").equals("token expired")) {
+                if (json1.has("Message") && json1.getString("Message").equals("Authorization has been denied for this request")) {
                     Util.switchRgbOrIrActivity(context, true);
                     return;
                 }
@@ -1659,6 +1646,7 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
+                RetrofitInstance.getInstance().createRetrofitInstance();
 
                 Util.getSettings((SettingCallback) context, context);
             }
@@ -1879,6 +1867,7 @@ public class Util {
     }
 
     public static void sendDeviceLogs(Context context) {
+        if (Util.isOfflineMode(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         JSONObject obj = new JSONObject();
         try {
@@ -2267,7 +2256,7 @@ public class Util {
         return null;
     }
 
-    private static String getAppUpTime(Context context) {
+    public static String getAppUpTime(Context context) {
         SharedPreferences sharedPreferences = getSharedPreferences(context);
         String appLaunchTime = sharedPreferences.getString(GlobalParameters.APP_LAUNCH_TIME, "");
         Date appLaunchDateTime = new Date(Long.parseLong(appLaunchTime));
@@ -2281,7 +2270,52 @@ public class Util {
         return String.format(Locale.getDefault(), "%d:%02d:%02d", totalHours, minutes, seconds);
     }
 
-    private static String getDeviceUpTime() {
+    public static boolean isAlreadyChecked(String oldDateTime) {
+        try {
+            if (AccessCardController.getInstance().getCheckInResponseCode() == -1)
+                return false;
+            if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue() || AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue())
+                return true;
+            if (ApplicationController.getInstance().getTimeAttendance() == 2 && (oldDateTime.isEmpty()))
+                return true;
+            else if (ApplicationController.getInstance().getTimeAttendance() == 2 && !oldDateTime.isEmpty())
+                return false;
+            if (ApplicationController.getInstance().getTimeAttendance() == 1 && oldDateTime.isEmpty())
+                return false;
+            else if (ApplicationController.getInstance().getTimeAttendance() == 1 && !oldDateTime.isEmpty()) {
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                Date appLaunchDateTime = format.parse(oldDateTime);
+                Date currentDateTime = new Date(System.currentTimeMillis());
+                long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+                long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+                long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+                long totalHours = hours + days * 24;
+                return totalHours < 24;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean differenceInTimeTwoDates(String lastCheckInTime) {
+        try {
+            if (lastCheckInTime.isEmpty()) return false;
+            SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+            Date appLaunchDateTime = format.parse(lastCheckInTime);
+            Date currentDateTime = new Date(System.currentTimeMillis());
+            long differenceInTime = currentDateTime.getTime() - appLaunchDateTime.getTime();
+            long hours = TimeUnit.MILLISECONDS.toHours(differenceInTime) % 24;
+            long days = TimeUnit.MILLISECONDS.toDays(differenceInTime) % 365;
+            long totalHours = hours + days * 24;
+            return totalHours < 24;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String getDeviceUpTime() {
         long uptimeMillis = SystemClock.elapsedRealtime();
         String deviceUptime = String.format(Locale.getDefault(),
                 "%d:%02d:%02d",
@@ -2510,7 +2544,7 @@ public class Util {
     public static boolean isInternetConnected() {
         Runtime runtime = Runtime.getRuntime();
         try {
-            Process  mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            Process mIpAddrProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
             int processValue = mIpAddrProcess.waitFor();
             if (processValue == 0) {
                 return true;
@@ -2569,6 +2603,7 @@ public class Util {
 
     /**
      * Method that truncates the leading zero's
+     *
      * @param accessId accessId value
      * @return accessId
      */
@@ -2586,5 +2621,30 @@ public class Util {
 
         }
         return accessIdStr;
+    }
+
+    public static void sendOfflineServiceBroadcast(Context context) {
+        Intent intent = new Intent();
+        intent.setAction(DeviceHealthService.HEALTH_CHECK_ONLINE_ACTION);
+        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(intent);
+    }
+
+    public static DeviceInfo getDeviceInfo(Context context) {
+        getNumberVersion(context);
+        getDeviceUUid(context);
+
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.appVersion = Util.getVersionBuild();
+        deviceInfo.osVersion = "Android - " + Build.VERSION.RELEASE;
+        deviceInfo.mobileIp = getLocalIpAddress();
+        deviceInfo.mobileNumber = getSharedPreferences(context).getString(GlobalParameters.MOBILE_NUMBER, "+1");
+        deviceInfo.uniqueDeviceId = getSharedPreferences(context).getString(GlobalParameters.UUID, "");
+        deviceInfo.imeiNumber = getSharedPreferences(context).getString(GlobalParameters.IMEI, "");
+        deviceInfo.deviceModel = Build.MODEL;
+        deviceInfo.deviceSerialNumber = getSerialNumber();
+        deviceInfo.batteryStatus = getBatteryLevel(context);
+        deviceInfo.networkStatus = isConnectedEthernet(context);
+        deviceInfo.appState = getAppState();
+        return deviceInfo;
     }
 }
