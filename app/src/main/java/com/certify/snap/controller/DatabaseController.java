@@ -99,7 +99,8 @@ public class DatabaseController {
         try {
             if (databaseStore != null) {
                 if (AppSettings.isAccessIdTrimZeroes()) {
-                    return databaseStore.findMemberByLTrimAccessId(accessId);
+                    String accessIdVal = Util.validateAccessId(accessId);
+                    return databaseStore.findMemberByLTrimAccessId(accessIdVal);
                 }
                 return databaseStore.findMemberByAccessId(accessId);
             }
