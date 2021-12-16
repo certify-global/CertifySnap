@@ -450,8 +450,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
-            Util.writeString(sharedPreferences,GlobalParameters.anonymousLastName,"");
-            Util.writeString(sharedPreferences,GlobalParameters.anonymousFirstName,"");
+            QrCodeController.getInstance().resetQrCodeData(this);
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -888,6 +887,24 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
+        if (!CameraController.getInstance().isFaceVisible()) return;
+        if (CameraController.getInstance().isAppExitTriggered()) {
+            if (handler != null) {
+                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
+            }
+            return;
+        }
+        if (!isScanWithMaskEnforced()) return;
+        if (!CameraController.getInstance().isPrimarySecondaryMemberMatch()) {
+            runOnUiThread(() -> {
+                Toast.makeText(IrCameraActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(() -> {
+                    disableLedPower();
+                    resetToHomePage();
+                }, 1000);
+            });
+            return;
+        }
         if (Util.isDeviceF10()) {
             launchConfirmationFragment(String.valueOf(false));
             if (isHomeViewEnabled) {
@@ -901,27 +918,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             TemperatureController.getInstance().recordUserTemperature(  data, -1);
             return;
         }
-        if (!CameraController.getInstance().isFaceVisible()) return;
-        if (CameraController.getInstance().isAppExitTriggered()) {
-            if (handler != null) {
-                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
-            }
-            return;
-        }
-        if (!isScanWithMaskEnforced()) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
-            return;
-        }
-        if (!CameraController.getInstance().isPrimarySecondaryMemberMatch()) {
-            runOnUiThread(() -> {
-                Toast.makeText(IrCameraActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                new Handler().postDelayed(() -> {
-                    disableLedPower();
-                    resetToHomePage();
-                }, 1000);
-            });
             return;
         }
         Log.d(TAG, "runTemperature");
@@ -4575,7 +4574,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         if (MemberSyncDataModel.getInstance().isMemberTypeExists(registeredMemberslist)) {
                             enableQrCodeScan();
                         } else {
-                            QrCodeController.getInstance().setListener(this);
+                            QrCodeController.getInstance().setListener(this, this);
                             QrCodeController.getInstance().getLastCheckInTime(this, registeredMember.uniqueid);
                         }
                     }

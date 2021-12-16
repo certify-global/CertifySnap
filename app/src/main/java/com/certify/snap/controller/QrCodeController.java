@@ -1,15 +1,11 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
-import com.certify.snap.activity.QRCodeResultActivity;
-import com.certify.snap.activity.QrCodeScannerActivity;
-import com.certify.snap.activity.SmartHealthResultActivity;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -67,6 +63,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     private UserExportedData data = null;
     private QrCodeListener listener = null;
     private boolean memberCheckedIn = false;
+    private Context context = null;
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
@@ -79,8 +76,9 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         return mInstance;
     }
 
-    public void setListener(QrCodeListener callbackListener) {
+    public void setListener(QrCodeListener callbackListener, Context context) {
         listener = callbackListener;
+        this.context = context;
     }
 
     /**
@@ -208,6 +206,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         this.data = null;
         isQrCodeMemberMatch = false;
         memberCheckedIn = false;
+        resetQrCodeData(context);
     }
 
     public void smartHealthCard(String qrText, Context context) {
@@ -333,7 +332,15 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 //            context.startActivity(intent);
 
         }
-
-
     }
+
+    public void resetQrCodeData(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate2, "");
+        Util.writeString(sharedPreferences, GlobalParameters.vaccineDocumentName, "");
+    }
+
 }
