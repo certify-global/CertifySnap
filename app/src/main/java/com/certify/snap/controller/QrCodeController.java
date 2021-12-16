@@ -63,7 +63,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     private UserExportedData data = null;
     private QrCodeListener listener = null;
     private boolean memberCheckedIn = false;
-    private Context context = null;
+    private Context mContext = null;
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
@@ -76,9 +76,12 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         return mInstance;
     }
 
-    public void setListener(QrCodeListener callbackListener, Context context) {
+    public void init(Context context) {
+        this.mContext = context;
+    }
+
+    public void setListener(QrCodeListener callbackListener) {
         listener = callbackListener;
-        this.context = context;
     }
 
     /**
@@ -206,7 +209,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         this.data = null;
         isQrCodeMemberMatch = false;
         memberCheckedIn = false;
-        resetQrCodeData(context);
+        resetQrCodeData(mContext);
     }
 
     public void smartHealthCard(String qrText, Context context) {

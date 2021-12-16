@@ -362,6 +362,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().init(this);
         CameraController.getInstance().startProDeviceInitTimer(this);
         ApplicationController.getInstance().setListener(this);
+        QrCodeController.getInstance().init(this);
         //initAccessControl();
         initNfc();
         initGesture();
@@ -4574,7 +4575,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         if (MemberSyncDataModel.getInstance().isMemberTypeExists(registeredMemberslist)) {
                             enableQrCodeScan();
                         } else {
-                            QrCodeController.getInstance().setListener(this, this);
+                            QrCodeController.getInstance().setListener(this);
                             QrCodeController.getInstance().getLastCheckInTime(this, registeredMember.uniqueid);
                         }
                     }
