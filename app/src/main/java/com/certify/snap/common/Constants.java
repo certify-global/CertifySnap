@@ -59,9 +59,9 @@ public class Constants {
 
     public static final int HEALTH_CHECK_INTERVAL =  1200 * 1000; //20 minutes
 
-    public static final String UUID_VALUE = "CF9346F3-BC1E-4354-BD6C-196B27C97A2A";
-
-    public static final UUID CHARACTERISTIC_UUID = UUID.fromString("DC54568E-DE09-46F3-A693-45DEDDDD4D4F");
+    public static final String UUID_VALUE = "2531dcd3-861a-41a1-8525-6495e6059ee1";
+    public static final UUID ACCESS_CARD_UUID = UUID.fromString(UUID_VALUE);
+    public static final UUID ACCESS_CARD_CHARACTERISTIC_UUID = UUID.fromString("1e67bdac-a5c8-4d78-8e6a-7e6424b1ac7a");
 
 
 }

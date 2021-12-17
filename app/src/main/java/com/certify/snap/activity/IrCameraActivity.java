@@ -102,7 +102,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.controller.AccessCardController;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.BLEController;
-import com.certify.snap.controller.BleController1;
+import com.certify.snap.controller.BlePeripheralController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
@@ -168,7 +168,7 @@ import me.grantland.widget.AutofitTextView;
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
         PrintStatusCallback, GestureController.GestureHomeCallBackListener, AccessCardController.AccessCallbackListener,
-        QrCodeController.QrCodeListener, ApplicationController.ApplicationCallbackListener, BleController1.BleCallbackListener {
+        QrCodeController.QrCodeListener, ApplicationController.ApplicationCallbackListener, BlePeripheralController.BleCallbackListener {
 
     private static final String TAG = IrCameraActivity.class.getSimpleName();
     ImageView outerCircle, innerCircle;
@@ -367,7 +367,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         initNfc();
         initGesture();
         SoundController.getInstance().init(this);
-        BleController1.getInstance().setBleListener(this);
+        BlePeripheralController.getInstance().setBleListener(this);
 
         logo = findViewById(R.id.loginLogo);
         rl_header = findViewById(R.id.rl_header);
@@ -888,6 +888,24 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void runTemperature(int requestId, final UserExportedData data) {
+        if (!CameraController.getInstance().isFaceVisible()) return;
+        if (CameraController.getInstance().isAppExitTriggered()) {
+            if (handler != null) {
+                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
+            }
+            return;
+        }
+        if (!isScanWithMaskEnforced()) return;
+        if (!CameraController.getInstance().isPrimarySecondaryMemberMatch()) {
+            runOnUiThread(() -> {
+                Toast.makeText(IrCameraActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                new Handler().postDelayed(() -> {
+                    disableLedPower();
+                    resetToHomePage();
+                }, 1000);
+            });
+            return;
+        }
         if (Util.isDeviceF10()) {
             launchConfirmationFragment(String.valueOf(false));
             if (isHomeViewEnabled) {
@@ -901,27 +919,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             TemperatureController.getInstance().recordUserTemperature(  data, -1);
             return;
         }
-        if (!CameraController.getInstance().isFaceVisible()) return;
-        if (CameraController.getInstance().isAppExitTriggered()) {
-            if (handler != null) {
-                handler.obtainMessage(CameraController.IMAGE_PROCESS_COMPLETE).sendToTarget();
-            }
-            return;
-        }
-        if (!isScanWithMaskEnforced()) return;
         if (!AppSettings.isTemperatureScanEnabled()) {
             CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
-            return;
-        }
-        if (!CameraController.getInstance().isPrimarySecondaryMemberMatch()) {
-            runOnUiThread(() -> {
-                Toast.makeText(IrCameraActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
-                new Handler().postDelayed(() -> {
-                    disableLedPower();
-                    resetToHomePage();
-                }, 1000);
-            });
             return;
         }
         Log.d(TAG, "runTemperature");
@@ -1599,21 +1599,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 isReadyToScan = false;
             }
         });
-    }
-
-    @Override
-    public void onScanResultsUpdate() {
-
-    }
-
-    @Override
-    public void onScanFailed(int errorCode) {
-
-    }
-
-    @Override
-    public void onStartLeScan() {
-
     }
 
     @Override

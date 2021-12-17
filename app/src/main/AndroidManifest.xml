@@ -225,7 +225,7 @@
             </intent-filter>
         </service>
         <service android:name=".bluetooth.bleCommunication.BluetoothLeService" />
-        <service android:name=".service.BluetoothLeService" />
+        <service android:name=".service.PeripheralAdvertiseService" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
