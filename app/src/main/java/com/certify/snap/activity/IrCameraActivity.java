@@ -89,6 +89,7 @@ import com.certify.snap.arcface.util.face.RequestLivenessStatus;
 import com.certify.snap.arcface.widget.FaceRectView;
 import com.certify.snap.async.AsyncJSONObjectQRCode;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
+import com.certify.snap.bluetooth.data.WritePacket;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.ConfigUtil;
@@ -1605,7 +1606,24 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onUpdateStatus(String status) {
         runOnUiThread(() -> {
             Log.d(TAG, "Ble Update Status " + status);
-            onRfidScan(status);
+        });
+    }
+
+    @Override
+    public void onDataReceived(WritePacket writePacket) {
+        runOnUiThread(() -> {
+            if (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.RFID.getValue() ||
+                AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() ||
+                AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue() ||
+                AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) {
+                if (!writePacket.getAccessId().isEmpty()) {
+                    onRfidScan(writePacket.getAccessId());
+                    return;
+                }
+                if (!writePacket.getCertifyId().isEmpty()) {
+                    onRfidScan(writePacket.getCertifyId());
+                }
+            }
         });
     }
 

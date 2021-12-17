@@ -99,6 +99,7 @@ public class AppSettings {
     private static boolean retryScanEnabled = false;
     private static boolean debugModeEnabled = false;
     private static boolean accessIdTrimZeroes = false;
+    private static boolean mobileAccessCard = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -611,5 +612,9 @@ public class AppSettings {
 
     public static boolean isAccessIdTrimZeroes() {
         return accessIdTrimZeroes;
+    }
+
+    public static boolean isMobileAccessCard() {
+        return mobileAccessCard;
     }
 }

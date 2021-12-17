@@ -1,6 +1,7 @@
 package com.certify.snap.model;
 
 
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.controller.DatabaseController;
 
 import java.util.List;
@@ -19,12 +20,20 @@ public class AccessControlModel {
     }
 
     public boolean isMemberMatch(String cardId) {
+        boolean result = false;
         List<RegisteredMembers> membersList = DatabaseController.getInstance().findMemberByAccessId(cardId);
         if (membersList != null && membersList.size() > 0) {
             currentScannedMember = membersList.get(0);
-            return true;
+            result = true;
         }
-        return false;
+        if (AppSettings.isMobileAccessCard()) {
+            List<RegisteredMembers> members = DatabaseController.getInstance().isUniqueIdExist(cardId);
+            if (members != null && members.size() > 0) {
+                currentScannedMember = membersList.get(0);
+                result = true;
+            }
+        }
+        return result;
     }
 
     public RegisteredMembers getRfidScanMatchedMember() {

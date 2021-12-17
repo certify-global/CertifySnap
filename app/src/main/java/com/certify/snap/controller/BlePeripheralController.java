@@ -57,6 +57,7 @@ public class BlePeripheralController {
 
     public interface BleCallbackListener {
         void onUpdateStatus(String status);
+        void onDataReceived(WritePacket writePacket);
     }
 
     public static BlePeripheralController getInstance() {
@@ -206,10 +207,14 @@ public class BlePeripheralController {
             WritePacket packet = gson.fromJson(byteStr, WritePacket.class);
             Log.d(TAG, "Ble Write packet data " + packet.getAccessId());
 
-            /*mSampleCharacteristic.setValue(value);
+            if (listener != null) {
+                listener.onDataReceived(packet);
+            }
 
+            /*String dataReceived = "DataReceived";
+            //mSampleCharacteristic.setValue(dataReceived);
             if (responseNeeded) {
-                mBleGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value);
+                mBleGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null);
             }*/
         }
 
