@@ -93,7 +93,12 @@ public class ConfirmationScreenFragment extends Fragment {
                 showVaccinationIndicator(firstScanMember, 2);
             }
         }
-
+        if (AppSettings.getShowVaccinationIndicator() && !Util.getSharedPreferences(getContext()).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+            user_name.setText(Util.getSharedPreferences(getContext()).getString(GlobalParameters.anonymousFirstName, ""));
+            confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
+            user_name.setVisibility(View.VISIBLE);
+            confirmation_screen_layout.setVisibility(View.VISIBLE);
+        }
         if (value != null) {
             if (value.equals("high")) {
                 confirm_title = sp.getString(GlobalParameters.Confirm_title_above, getResources().getString(R.string.confirmation_text_above));
@@ -170,7 +175,7 @@ public class ConfirmationScreenFragment extends Fragment {
                 }
             }
             user_name.setText(matchedMember.getFirstname());
-        }else {
+        } else {
             user_img.setVisibility(View.GONE);
             user_name.setVisibility(View.GONE);
             face_score.setVisibility(View.GONE);
@@ -184,6 +189,7 @@ public class ConfirmationScreenFragment extends Fragment {
             return 34;
         else return 40;
     }
+
     private float titleSizeSub(int titleLength) {
         if (titleLength > 500)
             return 22;
@@ -214,7 +220,7 @@ public class ConfirmationScreenFragment extends Fragment {
         if (vaccineValue == 1) {
             if (member.isDocument) {
                 confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
-            }else if(AppSettings.getShowNonVaccinationIndicator()) {
+            } else if (AppSettings.getShowNonVaccinationIndicator()) {
                 confirmation_screen_layout.setBackgroundResource(R.drawable.red_border);
             }
         } else if (vaccineValue == 2) {

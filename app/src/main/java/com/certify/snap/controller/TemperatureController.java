@@ -82,18 +82,24 @@ public class TemperatureController {
 
     public interface TemperatureCallbackListener {
         void onThermalImage(Bitmap bitmap);
+
         void onTemperatureRead(float temperature);
+
         void onTemperatureFail(GuideMessage errorCode);
+
         void onFaceNotInRangeOfThermal();
+
         void onThermalGuideReset();
+
         void onTemperatureLow(int retryCount, float temperature);
+
         void onFaceDistanceNotInRange();
     }
 
     public enum GuideMessage {
-        FACE_OUT_OF_RANGE ("face out of range or for head too low", 1),
+        FACE_OUT_OF_RANGE("face out of range or for head too low", 1),
         WRONG_TEMP_TOO_COLD("wrong tem , too cold", 2),
-        NOT_ENOUGH_DATA ("not enough validData , get tem fail", 3),
+        NOT_ENOUGH_DATA("not enough validData , get tem fail", 3),
         GENERIC_ERROR("generic error", 4);
 
         GuideMessage(final String name, final int value) {
@@ -122,6 +128,7 @@ public class TemperatureController {
 
     /**
      * Method that initializes the Temperature parameters
+     *
      * @param context Context
      */
     public void init(Context context) {
@@ -139,14 +146,16 @@ public class TemperatureController {
 
     /**
      * Method that set the callback Listener
+     *
      * @param callbackListener callbackListener
      */
-    public void setTemperatureListener (TemperatureCallbackListener callbackListener) {
+    public void setTemperatureListener(TemperatureCallbackListener callbackListener) {
         this.listener = callbackListener;
     }
 
     /**
      * Method that gets the Temperature Listener
+     *
      * @return Temperature Listener
      */
     public TemperatureCallbackListener getTemperatureListener() {
@@ -155,6 +164,7 @@ public class TemperatureController {
 
     /**
      * Method that gets the Temperature Map
+     *
      * @return Temperature Map
      */
     public ConcurrentHashMap<Integer, UserExportedData> getTemperatureMap() {
@@ -163,8 +173,9 @@ public class TemperatureController {
 
     /**
      * Method that updates the Temperature map
+     *
      * @param trackId Request id
-     * @param data User export data
+     * @param data    User export data
      */
     public void updateTemperatureMap(int trackId, UserExportedData data) {
         boolean value = temperatureMap.containsKey(trackId);
@@ -177,6 +188,7 @@ public class TemperatureController {
 
     /**
      * Method that sends the Temperature record
+     *
      * @param context context
      */
     private void sendTemperatureRecord(Context context) {
@@ -188,8 +200,9 @@ public class TemperatureController {
 
     /**
      * Method that sets the rect for the Guide temperature service
+     *
      * @param facePreviewInfoList Face preview list
-     * @param drawHelperRgb Draw helper
+     * @param drawHelperRgb       Draw helper
      */
     public void setRect(final List<FacePreviewInfo> facePreviewInfoList, DrawHelper drawHelperRgb) {
         /*if (!isGuideInited) {
@@ -314,7 +327,7 @@ public class TemperatureController {
                     temperature = 0;
                     for (int i = 0; i < maxInRectInfo.size(); i++) {
                         float temperatureCelsius = maxInRectInfo.get(i)[3];
-                        float machineTemperatureValue = maxInRectInfo.get(i)[0]* (9f / 5) + 32;
+                        float machineTemperatureValue = maxInRectInfo.get(i)[0] * (9f / 5) + 32;
                         float ambientTemperatureValue = temperatureBigData.getEmvirTem() * (9f / 5) + 32;
                         machineTemperature = new DecimalFormat("##.#").format(machineTemperatureValue);
                         ambientTemperature = new DecimalFormat("##.#").format(ambientTemperatureValue);
@@ -329,7 +342,7 @@ public class TemperatureController {
                     }
                     if (listener != null) {
                         Log.d(TAG, "Temp measured " + temperature);
-                        if ((temperature - AppSettings.getTemperatureCompensation())  >= MIN_TEMPERATURE_THRESHOLD) {
+                        if ((temperature - AppSettings.getTemperatureCompensation()) >= MIN_TEMPERATURE_THRESHOLD) {
                             listener.onTemperatureRead(temperature);
                         } else {
                             mTemperatureRetry++;
@@ -369,6 +382,7 @@ public class TemperatureController {
 
     /**
      * Method that initiates the Temperature measure
+     *
      * @param requestId Request id
      */
     public void startTemperatureMeasure(int requestId) {
@@ -394,6 +408,7 @@ public class TemperatureController {
 
     /**
      * Method that starts reading the Temperature
+     *
      * @param requestId Request Id
      */
     private void startTemperature(int requestId) {
@@ -452,6 +467,7 @@ public class TemperatureController {
 
     /**
      * Method that gets the Temperature
+     *
      * @return temperature value
      */
     public float getTemperature() {
@@ -460,6 +476,7 @@ public class TemperatureController {
 
     /**
      * Method that gets the Temperature Unit
+     *
      * @return temperature unit value
      */
     public String getTemperatureUnit() {
@@ -468,6 +485,7 @@ public class TemperatureController {
 
     /**
      * Method that sets the temperature process flag
+     *
      * @param temperatureInProcess
      */
     public void setTemperatureInProcess(boolean temperatureInProcess) {
@@ -476,6 +494,7 @@ public class TemperatureController {
 
     /**
      * Method that checks if the given temperature is above threshold
+     *
      * @param temperature temperature input parameter
      * @return true or false accordingly
      */
@@ -491,6 +510,7 @@ public class TemperatureController {
 
     /**
      * Method that gets the temperature record data
+     *
      * @return Temperature record data
      */
     public UserExportedData getTemperatureRecordData() {
@@ -499,6 +519,7 @@ public class TemperatureController {
 
     /**
      * Method that sets the Temperature record data
+     *
      * @param temperatureRecordData input data
      */
     public void setTemperatureRecordData(UserExportedData temperatureRecordData) {
@@ -507,6 +528,7 @@ public class TemperatureController {
 
     /**
      * Method that returns the Temperature retry value
+     *
      * @return value
      */
     public int getTemperatureRetry() {
@@ -558,6 +580,7 @@ public class TemperatureController {
 
         /**
          * Method that checks and handles the Guide message settings
+         *
          * @param errorCode error value
          */
         private void updateGuideMsgOnTemperatureFail(String errorCode, String reason) {
@@ -611,7 +634,8 @@ public class TemperatureController {
 
         /**
          * Method that checks and handles the low temperature value reading
-         * @param errorCode error value
+         *
+         * @param errorCode     error value
          * @param tempNoCorrect temperature value read
          */
         private void updateAllowLowOnTemperatureFail(String errorCode, float tempNoCorrect) {
@@ -640,6 +664,7 @@ public class TemperatureController {
 
     /**
      * Method that updates the corresponding Controllers for further processing on reading normal temperature
+     *
      * @param membersList Members list
      */
     public void updateControllersOnNormalTempRead(List<RegisteredMembers> membersList) {
@@ -657,6 +682,7 @@ public class TemperatureController {
 
     /**
      * Method that updates the corresponding Controllers for further processing on reading high temperature
+     *
      * @param membersList Members list
      */
     public void updateControllersOnHighTempRead(List<RegisteredMembers> membersList) {
@@ -675,6 +701,7 @@ public class TemperatureController {
     /**
      * Method that updates the corresponding Controllers for further processing when
      * Temperature Scan is disabled
+     *
      * @param membersList Members list
      */
     public void updateControllersOnTempScanDisabled(List<RegisteredMembers> membersList) {
@@ -691,6 +718,7 @@ public class TemperatureController {
 
     /**
      * Method that returns the value if the temperature read is above threshold
+     *
      * @return true or false accordingly
      */
     public boolean isTempAboveThreshold() {
@@ -706,6 +734,7 @@ public class TemperatureController {
 
     /**
      * Method that returns the trackId Map for Temperature
+     *
      * @return Map data
      */
     public HashMap<Integer, String> getTrackIdMap() {
@@ -763,6 +792,7 @@ public class TemperatureController {
 
     /**
      * Method that get the Guide interface device temperature
+     *
      * @return value
      */
     public String getMachineTemperature() {
@@ -771,6 +801,7 @@ public class TemperatureController {
 
     /**
      * Method that get the Guide interface atmospheric temperature
+     *
      * @return value
      */
     public String getAmbientTemperature() {
@@ -891,8 +922,15 @@ public class TemperatureController {
     private static void updateFaceMemberValues(TemperatureRecordRequest temperatureRecordRequest, UserExportedData data) {
         if (data.member == null) data.member = new RegisteredMembers();
         temperatureRecordRequest.id = data.member.getUniqueid();
-        temperatureRecordRequest.firstName = data.member.getFirstname();
-        temperatureRecordRequest.lastName = data.member.getLastname();
+        if (Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+            temperatureRecordRequest.firstName = data.member.getFirstname();
+            temperatureRecordRequest.lastName = data.member.getLastname();
+        } else {
+            temperatureRecordRequest.firstName = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "");
+            temperatureRecordRequest.lastName = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousLastName, "");
+            temperatureRecordRequest.vaccineDocumentName = String.format("%s_%s", Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "").replace(" ", ""), Util.getUTCDateMMDDYYYYHHMMSS());
+            temperatureRecordRequest.vaccinationStatus = "1";
+        }
         temperatureRecordRequest.memberId = data.member.getMemberid();
         temperatureRecordRequest.memberTypeId = data.member.getMemberType();
         temperatureRecordRequest.memberTypeName = data.member.getMemberTypeName();

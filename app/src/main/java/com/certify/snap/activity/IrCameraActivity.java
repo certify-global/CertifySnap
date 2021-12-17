@@ -364,6 +364,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().init(this);
         CameraController.getInstance().startProDeviceInitTimer(this);
         ApplicationController.getInstance().setListener(this);
+        QrCodeController.getInstance().init(this);
         //initAccessControl();
         initNfc();
         initGesture();
@@ -453,6 +454,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void initQRCode() {
         if (!isHomeViewEnabled) return;
         try {
+            QrCodeController.getInstance().resetQrCodeData(this);
             qr_main.setVisibility(View.VISIBLE);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
@@ -1937,6 +1939,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    /**
+     * Method that stop the HealthCheck service
+     */
+//    private void stopHealthCheckService() {
+//        Intent intent = new Intent(this, DeviceHealthService.class);
+//        stopService(intent);
+//    }
+
+
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -2028,19 +2039,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
                 qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
-                if (guid.startsWith("shc:")) {
+                if(guid.startsWith("shc:")){
                     QrCodeController.getInstance().smartHealthCard(guid,this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
+                    setCameraPreview();
                     return;
-                }
-                if (guid.startsWith("HC1:")) {
+                }else if(guid.startsWith("HC1:")){
                     QrCodeController.getInstance().parseQrText(guid,this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
+                    setCameraPreview();
                     return;
-                }
-                if (QrCodeController.getInstance().isQrCodeDated(guid)) {
+                }else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     tv_scan.setText(R.string.tv_qr_validating);
                     if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
                         CameraController.getInstance().setQrCodeId(guid);
@@ -2251,7 +2262,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         long delay = 1000;
-
+        qr_main.setVisibility(View.GONE);
         if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue() ||
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue())) {
@@ -2315,16 +2326,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void clearQrCodePreview() {
-        if (graphicOverlay != null) {
-            graphicOverlay.clear();
-        }
-        if (preview != null) {
-            preview.stop();
-            preview.release();
-        }
-        if (cameraSource != null) {
-            cameraSource.stop();
-            cameraSource.release();
+        try {
+            if (graphicOverlay != null) {
+                graphicOverlay.clear();
+            }
+            if (preview != null) {
+                preview.stop();
+                preview.release();
+            }
+            if (cameraSource != null) {
+                cameraSource.stop();
+                cameraSource.release();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

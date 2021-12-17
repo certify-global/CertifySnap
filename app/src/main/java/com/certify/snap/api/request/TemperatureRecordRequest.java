@@ -100,4 +100,9 @@ public class TemperatureRecordRequest {
     @SerializedName("utcOfflineDateTime")
     public String utcOfflineDateTime;
 
+    @SerializedName("vaccineDocumentName")
+    public String vaccineDocumentName;
+
+    @SerializedName("vaccinationStatus")
+    public String vaccinationStatus;
 }

@@ -791,6 +791,7 @@ public class Util {
         return true;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private static void saveOfflineTempRecord(JSONObject obj, Context context, UserExportedData data, int offlineSyncStatus) {
         if (AppSettings.isLogOfflineDataEnabled()) {
             try {
@@ -840,12 +841,19 @@ public class Util {
         return value;
     }
 
-    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data) {
+    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data, Context context) {
         try {
             if (data.member == null) data.member = new RegisteredMembers();
             obj.put("id", data.member.getUniqueid());
-            obj.put("firstName", data.member.getFirstname());
-            obj.put("lastName", data.member.getLastname());
+            if (getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+                obj.put("firstName", data.member.getFirstname());
+                obj.put("lastName", data.member.getLastname());
+            } else {
+                obj.put("firstName", getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, ""));
+                obj.put("lastName", getSharedPreferences(context).getString(GlobalParameters.anonymousLastName, ""));
+                obj.put("vaccineDocumentName", String.format("%s_%s", getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, "").replace(" ", ""), Util.getUTCDateMMDDYYYYHHMMSS()));
+                obj.put("vaccinationStatus", "1");
+            }
             obj.put("memberId", data.member.getMemberid());
             obj.put("memberTypeId", data.member.getMemberType());
             obj.put("memberTypeName", data.member.getMemberTypeName());
@@ -1108,8 +1116,8 @@ public class Util {
 
             Log.d(LOG, "Health check time " + getMMDDYYYYDate());
 
-            if(!Util.isOfflineMode(context))
-            new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
+            if (!Util.isOfflineMode(context))
+                new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.DEVICEHEALTHCHECK, context).execute();
             sendOfflineServiceBroadcast(context);
         } catch (Exception e) {
             Logger.error(LOG + "getDeviceHealthCheck Error ", e.getMessage());
@@ -2505,14 +2513,14 @@ public class Util {
     public static String validateAccessId(String accessId) {
         String accessIdStr = accessId;
         if (accessId != null && !accessId.isEmpty()) {
-                char[] accessIdArray = accessId.toCharArray();
-                for (int i = 0; i < accessIdArray.length; i++) {
-                    if (accessIdStr.startsWith("0")) {
-                        accessIdStr = accessIdStr.replaceFirst("0", "");
-                    } else {
-                        break;
-                    }
+            char[] accessIdArray = accessId.toCharArray();
+            for (int i = 0; i < accessIdArray.length; i++) {
+                if (accessIdStr.startsWith("0")) {
+                    accessIdStr = accessIdStr.replaceFirst("0", "");
+                } else {
+                    break;
                 }
+            }
 
         }
         return accessIdStr;
@@ -2541,5 +2549,19 @@ public class Util {
         deviceInfo.networkStatus = isConnectedEthernet(context);
         deviceInfo.appState = getAppState();
         return deviceInfo;
+    }
+
+    public static String getUTCDateMMDDYYYYHHMMSS() {
+        try {
+            final SimpleDateFormat f = new SimpleDateFormat("MMddyyyy_HHmmss");
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.format(new Date());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果throw java.text.ParseException或者NullPointerException，就说明格式不对
+
+        }
+        return "";
     }
 }

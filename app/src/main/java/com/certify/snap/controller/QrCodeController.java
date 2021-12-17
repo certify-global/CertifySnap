@@ -1,15 +1,11 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
-import com.certify.snap.activity.QRCodeResultActivity;
-import com.certify.snap.activity.QrCodeScannerActivity;
-import com.certify.snap.activity.SmartHealthResultActivity;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -67,6 +63,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     private UserExportedData data = null;
     private QrCodeListener listener = null;
     private boolean memberCheckedIn = false;
+    private Context mContext = null;
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
@@ -77,6 +74,10 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             mInstance = new QrCodeController();
         }
         return mInstance;
+    }
+
+    public void init(Context context) {
+        this.mContext = context;
     }
 
     public void setListener(QrCodeListener callbackListener) {
@@ -208,6 +209,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         this.data = null;
         isQrCodeMemberMatch = false;
         memberCheckedIn = false;
+        resetQrCodeData(mContext);
     }
 
     public void smartHealthCard(String qrText, Context context) {
@@ -239,14 +241,21 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(context, SmartHealthResultActivity.class);
-            intent.putExtra("verification", true);
-            intent.putExtra("smartHealthModel", smartHealthCardData);
-            context.startActivity(intent);
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, smartHealthCardData.getName());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, "");
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, smartHealthCardData.getDose1Date());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, smartHealthCardData.getDose2Date());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, smartHealthCardData.getDoseType());
+
+         //   Intent intent = new Intent(context, SmartHealthResultActivity.class);
+//            intent.putExtra("verification", true);
+//            intent.putExtra("smartHealthModel", smartHealthCardData);
+//            context.startActivity(intent);
 
         }).start();
     }
-    public void parseQrText(String qrText,Context context) {
+
+    public void parseQrText(String qrText, Context context) {
 
         VerificationResult verificationResult = new VerificationResult();
         String plainInput = new DefaultPrefixValidationService().decode(qrText, verificationResult);
@@ -314,13 +323,27 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             }
             CertificateModel certificateModel = new CertificateModel(personModel,
                     greenCertificate.getDateOfBirth(), vaccinationModels, null, null);
-            Intent intent = new Intent(context, QRCodeResultActivity.class);
-            intent.putExtra("verification", true);
-            intent.putExtra("certificateModel", certificateModel);
-            context.startActivity(intent);
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, certificateModel.getPerson().getGivenName());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, certificateModel.getPerson().getFamilyName());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, certificateModel.getVaccinations().get(0).getDateOfVaccination());
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, "");
+            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, certificateModel.getVaccinations().get(0).getManufacturer());
+
+//            Intent intent = new Intent(context, QRCodeResultActivity.class);
+//            intent.putExtra("verification", true);
+//            intent.putExtra("certificateModel", certificateModel);
+//            context.startActivity(intent);
 
         }
-
-
     }
+
+    public void resetQrCodeData(Context context) {
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate2, "");
+        Util.writeString(sharedPreferences, GlobalParameters.vaccineDocumentName, "");
+    }
+
 }

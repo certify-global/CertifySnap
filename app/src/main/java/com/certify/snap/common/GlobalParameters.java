@@ -51,6 +51,11 @@ public class GlobalParameters {
     public static final String LogOfflineData = "logOfflineData";
     public static final String TimeAttendanceOption = "TimeAttendanceOption";
     public static final String RETRY_SCAN = "RetryScan";
+    public static final String anonymousFirstName = "anonymous_first_name";
+    public static final String anonymousLastName = "anonymous_Last_name";
+    public static final String anonymousVaccDate = "anonymous_vacc_date";
+    public static final String anonymousVaccDate2 = "anonymous_vacc_date2";
+    public static final String vaccineDocumentName = "vaccineDocumentName";
 
     public static String Access_token = "";
     public static String channelID = "";
