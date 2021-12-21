@@ -46,7 +46,7 @@ public class DatabaseController {
     private static final String TAG = DatabaseController.class.getSimpleName();
     private static DatabaseController mInstance = null;
     private static DatabaseStore databaseStore = null;
-    public static final int DB_VERSION = 18;
+    public static final int DB_VERSION = 19;
     public static Context mContext;
     private SharedPreferences sharedPreferences;
 
@@ -103,6 +103,17 @@ public class DatabaseController {
                     return databaseStore.findMemberByLTrimAccessId(accessIdVal);
                 }
                 return databaseStore.findMemberByAccessId(accessId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public List<RegisteredMembers> findMemberByGuid(String guid) {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findMemberByGuid(guid);
             }
         } catch (SQLiteException e){
             handleDBException(e);

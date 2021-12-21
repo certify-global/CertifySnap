@@ -127,6 +127,10 @@ public interface DatabaseStore {
     @Query("SELECT * FROM RegisteredMembers WHERE ltrim(accessid, 0)=:accessId")
     List<RegisteredMembers> findMemberByLTrimAccessId(String accessId);
 
+    @Transaction
+    @Query("SELECT * FROM RegisteredMembers WHERE certifyUniversalGuid=:guId")
+    List<RegisteredMembers> findMemberByGuid(String guId);
+
     @Query("DELETE FROM RegisteredMembers")
     void deleteAll();
 

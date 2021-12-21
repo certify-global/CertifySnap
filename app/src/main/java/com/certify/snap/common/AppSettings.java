@@ -209,7 +209,7 @@ public class AppSettings {
         showVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_VACCINATION_INDICATOR, false);
         showNonVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, false);
         debugModeEnabled = sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false);
-
+        mobileAccessCard = sharedPreferences.getBoolean(GlobalParameters.MOBILE_ACCESS_CARD, false);
     }
 
     public static String getThermalScanTitle() {
@@ -433,6 +433,9 @@ public class AppSettings {
     }
 
     public static boolean isTemperatureScanEnabled() {
+        if (Util.isDeviceF10()) {
+            return false;
+        }
         return enableTempScan;
     }
 

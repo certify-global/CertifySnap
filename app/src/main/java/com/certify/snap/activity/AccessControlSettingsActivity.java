@@ -45,6 +45,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
     private RadioButton rb_id_or_face;
     private CheckBox mEnableWiegandPt, mTrimLeadingZeroesCb;
     private LinearLayout timeAttendanceLayout;
+    private CheckBox mobileAccessCardCb;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,6 +81,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         rb_manual_option = findViewById(R.id.rb_manual_option);
         timeAttendanceLayout = findViewById(R.id.time_attendance_layout);
         mTrimLeadingZeroesCb = findViewById(R.id.trim_zeroes_cb);
+        mobileAccessCardCb = findViewById(R.id.mobile_access_card_cb);
 
         setDefaults();
         handleClickListeners();
@@ -169,6 +171,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
             timeAttendanceLayout.setVisibility(View.GONE);
         }
         mTrimLeadingZeroesCb.setChecked(Util.getSharedPreferences(this).getBoolean(GlobalParameters.ACCESSID_TRIM_ZEROES, false));
+        mobileAccessCardCb.setChecked(Util.getSharedPreferences(this).getBoolean(GlobalParameters.MOBILE_ACCESS_CARD, false));
     }
 
     private void handleClickListeners() {
@@ -279,6 +282,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
         });
 
         mTrimLeadingZeroesCb.setOnCheckedChangeListener((buttonView, isChecked) -> mTrimLeadingZeroesCb.setChecked(isChecked));
+        mobileAccessCardCb.setOnCheckedChangeListener((buttonView, isChecked) -> mobileAccessCardCb.setChecked(isChecked));
     }
 
     private void saveSetting() {
@@ -324,6 +328,7 @@ public class AccessControlSettingsActivity extends SettingsBaseActivity {
             Util.writeInt(sp, GlobalParameters.TimeAttendanceOption, 1);
         }
         Util.writeBoolean(sp, GlobalParameters.ACCESSID_TRIM_ZEROES, mTrimLeadingZeroesCb.isChecked());
+        Util.writeBoolean(sp, GlobalParameters.MOBILE_ACCESS_CARD, mobileAccessCardCb.isChecked());
 
         finish();
         Toast.makeText(getApplicationContext(), getString(R.string.save_success), Toast.LENGTH_LONG).show();

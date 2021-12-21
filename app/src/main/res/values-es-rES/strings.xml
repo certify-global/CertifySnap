@@ -739,5 +739,6 @@
     <string name="health_check_failed_msg">La verificación de estado falló, la aplicación se reiniciará a las %s</string>
     <string name="temperature_records">Registros de temperatura</string>
     <string name="access_log_records">Registros de registro de acceso</string>
+    <string name="mobile_access_card">Habilitar la tarjeta de acceso móvil</string>
 
 </resources>

@@ -1,25 +1,8 @@
 package com.certify.snap.bluetooth.data;
 
 public class WritePacket {
-    private String certifyId;
-    private String accessId;
+    private String guid;
     private String mp;
-
-    public String getCertifyId() {
-        return certifyId;
-    }
-
-    public void setCertifyId(String certifyId) {
-        this.certifyId = certifyId;
-    }
-
-    public String getAccessId() {
-        return accessId;
-    }
-
-    public void setAccessId(String id) {
-        this.accessId = id;
-    }
 
     public String getModel() {
         return mp;
@@ -29,4 +12,11 @@ public class WritePacket {
         this.mp = model;
     }
 
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
 }

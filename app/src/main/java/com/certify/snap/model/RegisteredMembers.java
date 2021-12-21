@@ -34,6 +34,7 @@ public class RegisteredMembers {
     public boolean isDocument;
     public String image;
     public String dateTimeCheckInOut = "";
+    public String certifyUniversalGuid = "";
 
     public String getNetworkId() {
         return networkId;
@@ -218,6 +219,15 @@ public class RegisteredMembers {
     public void setDateTimeCheckInOut(String dateTimeCheckInOut) {
         this.dateTimeCheckInOut = dateTimeCheckInOut;
     }
+
+    public String getCertifyUniversalGuid() {
+        return certifyUniversalGuid;
+    }
+
+    public void setCertifyUniversalGuid(String certifyUniversalGuid) {
+        this.certifyUniversalGuid = certifyUniversalGuid;
+    }
+
     @Override
     public String toString() {
         return "Members{" +

@@ -91,7 +91,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             ApplicationController.getInstance().initThermalUtil(this);
             RetrofitInstance.getInstance().init(this);
             Application.getInstance().addActivity(this);
-            BlePeripheralController.getInstance().init(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
             AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
@@ -519,6 +518,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void startBleAdvertising() {
-        BlePeripheralController.getInstance().startAdvertising();
+        if (sharedPreferences.getBoolean(GlobalParameters.MOBILE_ACCESS_CARD, false)) {
+            BlePeripheralController.getInstance().init(this);
+            BlePeripheralController.getInstance().startAdvertising();
+        }
     }
 }

@@ -1605,25 +1605,27 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
-    public void onUpdateStatus(String status) {
+    public void onBleUpdateStatus(String status) {
         runOnUiThread(() -> {
             Log.d(TAG, "Ble Update Status " + status);
         });
     }
 
     @Override
-    public void onDataReceived(WritePacket writePacket) {
+    public void onBleDataReceived(WritePacket writePacket) {
         runOnUiThread(() -> {
             if (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.RFID.getValue() ||
                 AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() ||
                 AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue() ||
                 AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) {
-                if (!writePacket.getAccessId().isEmpty()) {
-                    onRfidScan(writePacket.getAccessId());
-                    return;
-                }
-                if (!writePacket.getCertifyId().isEmpty()) {
-                    onRfidScan(writePacket.getCertifyId());
+                if (writePacket.getGuid() != null && !writePacket.getGuid().isEmpty()) {
+                    List<RegisteredMembers> registeredMembers = DatabaseController.getInstance().findMemberByGuid(writePacket.getGuid());
+                    if (registeredMembers != null && registeredMembers.size() > 0) {
+                        RegisteredMembers member = registeredMembers.get(0);
+                        onRfidScan(member.accessid);
+                        return;
+                    }
+                    //Make API call and get AccessId
                 }
             }
         });
@@ -1704,6 +1706,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
             if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan) {
+                Log.d(TAG, "Ble isReadyToScan " + isReadyToScan);
                 return;
             }
             processPreviewData(nv21);
@@ -2276,6 +2279,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().setCameraOnRfid(true);
         enableLedPower();
         isReadyToScan = true;
+        Log.d(TAG, "Ble setCameraPreview " + isReadyToScan);
         new Handler().postDelayed(() -> {
             if (!Util.isDeviceF10()) {
                 if (outerCircle != null)
@@ -2680,6 +2684,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             closeFragment(secondaryScreenFragment);
         }
         isReadyToScan = false;
+        Log.d(TAG, "Ble onRfidScan " + isReadyToScan);
         CameraController.getInstance().updateTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (accessCardController.isDoMemberMatch()) {

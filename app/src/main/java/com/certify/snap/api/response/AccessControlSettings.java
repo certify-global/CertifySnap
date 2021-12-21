@@ -51,4 +51,7 @@ public class AccessControlSettings {
     @SerializedName("truncateZeroes")
     public String truncateZeroes = "0";
 
+    @SerializedName("enableMobileAccessCard")
+    public String enableMobileAccessCard = "0";
+
 }

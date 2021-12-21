@@ -850,7 +850,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "","", "", "", "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "","", "", "", "", "");
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -873,13 +873,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     private void localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId,
-                               String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime, String groupId) {
+                               String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime, String groupId, String guid) {
         String data = "";
         Log.d(TAG, "Snap Primary id : " + primaryId);
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
             if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId,
-                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false, "", false)) {
+                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false, "", false, guid)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -1277,6 +1277,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     String accessFromTime = "";
                     String accessToTime = "";
                     String groupTypeName = "";
+                    String certifyUniversalGuid = "";
                     if (responseData.has("memberType")) {
                         memberType = responseData.getString("memberType");
                     }
@@ -1302,6 +1303,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     }
                     if (responseData.has("toDate")) {
                         accessToTime = responseData.getString("toDate");
+                    }
+                    if (responseData.has("certifyUniversalGuid")) {
+                        accessToTime = responseData.getString("certifyUniversalGuid");
                     }
 
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
@@ -1330,7 +1334,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     } else {
                         localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "",
                                 Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), memberType, memberTypeName,
-                                networkId, accessFromTime, accessToTime, groupId);
+                                networkId, accessFromTime, accessToTime, groupId, certifyUniversalGuid);
                     }
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));

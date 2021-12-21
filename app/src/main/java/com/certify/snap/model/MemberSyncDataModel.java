@@ -134,6 +134,9 @@ public class MemberSyncDataModel {
                             if (c.has("groupTypeName")) {
                                 member.setGroupTypeName(c.getString("groupTypeName"));
                             }
+                            if (c.has("certifyUniversalGuid")) {
+                                member.setCertifyUniversalGuid(c.getString("certifyUniversalGuid"));
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
@@ -263,6 +266,9 @@ public class MemberSyncDataModel {
                             }
                             if (c.has("groupTypeName")) {
                                 member.setGroupTypeName(c.getString("groupTypeName"));
+                            }
+                            if (c.has("certifyUniversalGuid")) {
+                                member.setCertifyUniversalGuid(c.getString("certifyUniversalGuid"));
                             }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
@@ -565,7 +571,7 @@ public class MemberSyncDataModel {
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                                  member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
-                                member.groupTypeName, member.isDocument)) {
+                                member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -585,7 +591,7 @@ public class MemberSyncDataModel {
             failedImageSyncCount++;
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                     member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
-                    member.groupTypeName, member.isDocument)) {
+                    member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -640,7 +646,7 @@ public class MemberSyncDataModel {
      */
     public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
                                     String dateTime, long primaryId, String memberType, String memberTypeName,String networkId, String accessFromTime, String accessToTime,
-                                    String groupId, boolean isMemberAccessed, String groupTypeName, boolean isDocument) {
+                                    String groupId, boolean isMemberAccessed, String groupTypeName, boolean isDocument, String guid) {
         try {
             String username = firstname + "-" + primaryId;
             String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
@@ -671,6 +677,7 @@ public class MemberSyncDataModel {
             registeredMembers.setMemberAccessed(isMemberAccessed);
             registeredMembers.setGroupTypeName(groupTypeName);
             registeredMembers.setDocument(isDocument);
+            registeredMembers.setCertifyUniversalGuid(guid);
             DatabaseController.getInstance().insertMemberToDB(registeredMembers);
             return true;
         } catch (Exception e) {

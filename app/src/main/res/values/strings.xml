@@ -774,5 +774,6 @@
     <string name="health_check_failed_msg">Health check failed, app will restart at %s</string>
     <string name="temperature_records">Temperature records</string>
     <string name="access_log_records">Access Log records</string>
+    <string name="mobile_access_card">Enable Mobile Access Card</string>
 
 </resources>

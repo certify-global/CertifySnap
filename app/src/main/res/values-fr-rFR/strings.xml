@@ -733,5 +733,6 @@
     <string name="health_check_failed_msg">Échec de la vérification de l\'état, l\'application redémarrera à %s</string>
     <string name="temperature_records">Enregistrements de température</string>
     <string name="access_log_records">Accéder aux enregistrements</string>
+    <string name="mobile_access_card">Activer la carte d\'accès mobile</string>
 
 </resources>

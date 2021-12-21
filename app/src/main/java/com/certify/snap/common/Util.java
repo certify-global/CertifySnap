@@ -1403,6 +1403,7 @@ public class Util {
                         if (accessControlSettings.truncateZeroes != null) {
                             Util.writeBoolean(sharedPreferences, GlobalParameters.ACCESSID_TRIM_ZEROES, accessControlSettings.truncateZeroes.equals("1"));
                         }
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.MOBILE_ACCESS_CARD, accessControlSettings.enableMobileAccessCard.equals("1"));
                     }
 
                     //Audio-Visual settings

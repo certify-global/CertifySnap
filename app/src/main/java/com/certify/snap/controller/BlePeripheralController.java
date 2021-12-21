@@ -56,8 +56,8 @@ public class BlePeripheralController {
     private static final long PERIPHERAL_ADVERTISE_TIME = 20000;
 
     public interface BleCallbackListener {
-        void onUpdateStatus(String status);
-        void onDataReceived(WritePacket writePacket);
+        void onBleUpdateStatus(String status);
+        void onBleDataReceived(WritePacket writePacket);
     }
 
     public static BlePeripheralController getInstance() {
@@ -101,7 +101,7 @@ public class BlePeripheralController {
         Log.d(TAG, "CertME Start Peripheral Advertise Service");
         // startPeripheralScanTimer();
         if (listener != null) {
-            listener.onUpdateStatus("Advertising");
+            listener.onBleUpdateStatus("Advertising");
         }
         try {
             Intent restartServiceIntent = new Intent(context, PeripheralAdvertiseService.class);
@@ -205,10 +205,10 @@ public class BlePeripheralController {
             String byteStr = new String(value, StandardCharsets.UTF_8);
             Gson gson = new Gson();
             WritePacket packet = gson.fromJson(byteStr, WritePacket.class);
-            Log.d(TAG, "Ble Write packet data " + packet.getAccessId());
+            Log.d(TAG, "Ble Write packet data " + packet.getGuid());
 
             if (listener != null) {
-                listener.onDataReceived(packet);
+                listener.onBleDataReceived(packet);
             }
 
             /*String dataReceived = "DataReceived";
