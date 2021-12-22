@@ -7,7 +7,10 @@ import android.util.Log;
 import com.certify.snap.api.ApiInterface;
 import com.certify.snap.api.RetrofitInstance;
 import com.certify.snap.api.request.AccessLogRequest;
+import com.certify.snap.api.request.GetMemberDetailsGuidRequest;
 import com.certify.snap.api.response.AccessLogResponse;
+import com.certify.snap.api.response.GetMemberGuidResponse;
+import com.certify.snap.api.response.MemberData;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
@@ -92,6 +95,8 @@ public class AccessCardController {
         void onAccessDenied();
 
         void onCheckInOutStatus();
+
+        void onMemberDetailsReceived(MemberData memberData);
     }
 
     public static AccessCardController getInstance() {
@@ -831,6 +836,29 @@ public class AccessCardController {
             }
         }
         return result;
+    }
+
+    public void getMemberDetailsByGuid(String guid) {
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        GetMemberDetailsGuidRequest memberDetailRequest = new GetMemberDetailsGuidRequest();
+        memberDetailRequest.certifyUniversalGuid = guid;
+        Call<GetMemberGuidResponse> call = apiInterface.getMemberDetailsByGuid(Util.getSNCode(context), memberDetailRequest);
+        call.enqueue(new Callback<GetMemberGuidResponse>() {
+            @Override
+            public void onResponse(Call<GetMemberGuidResponse> call, Response<GetMemberGuidResponse> response) {
+                if (response.body() != null && response.body().responseCode == 1) {
+                    MemberData memberData = response.body().memberData;
+                    if (listener != null) {
+                        listener.onMemberDetailsReceived(memberData);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetMemberGuidResponse> call, Throwable t) {
+                Log.e(TAG, "Error in GetMemberDetails " + t.getMessage());
+            }
+        });
     }
 
     public void clearData() {

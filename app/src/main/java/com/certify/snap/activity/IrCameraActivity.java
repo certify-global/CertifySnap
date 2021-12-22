@@ -76,6 +76,7 @@ import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.api.response.MemberData;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.model.FacePreviewInfo;
 import com.certify.snap.arcface.util.DrawHelper;
@@ -1589,6 +1590,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
+    public void onMemberDetailsReceived(MemberData memberData) {
+        runOnUiThread(() -> {
+            if (memberData != null) {
+                onRfidScan(memberData.accessId);
+            }
+        });
+    }
+
+    @Override
     public void onGetLastCheckInTime(boolean checkedIn) {
         runOnUiThread(() -> {
             if (checkedIn) {
@@ -1626,6 +1636,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         return;
                     }
                     //Make API call and get AccessId
+                    AccessCardController.getInstance().getMemberDetailsByGuid(writePacket.getGuid());
                 }
             }
         });

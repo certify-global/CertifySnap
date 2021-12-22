@@ -207,6 +207,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             if (Util.isNetworkOff(HomeActivity.this)) {
                 initGesture();
                 initLanguage();
+                startBleAdvertising();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> Util.switchRgbOrIrActivity(HomeActivity.this, true), 2 * 1000);
                 return;
             }
