@@ -94,7 +94,9 @@ public class BlePeripheralController {
     public void startPeripheralAdvertiseService(Context context) {
         if (mBluetoothManager != null) {
             mBleGattServer = mBluetoothManager.openGattServer(context, mGattServerCallback);
-            mBleGattServer.clearServices();
+            if (mBleGattServer != null) {
+                mBleGattServer.clearServices();
+            }
         }
         setBluetoothService();
 

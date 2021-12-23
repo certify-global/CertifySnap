@@ -2769,6 +2769,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     showSnackBarMessage(getString(R.string.access_granted));
                     setCameraPreview();
                 } else {
+                    UserExportedData userExportedData = new UserExportedData(rgbBitmap, irBitmap, registeredMemberslist.get(0), 0);
+                    CameraController.getInstance().setUserExportedData(userExportedData);
                     onTemperatureScanDisabled();
                 }
                 return;
@@ -4805,16 +4807,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             } else if (AppSettings.getTimeAndAttendance() == 0) {
                 if (Util.isDeviceF10()) {
-                    CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
-                    changeVerifyBackground(R.color.colorTransparency, true);
-                    relative_main.setVisibility(View.VISIBLE);
-                    homeIcon(sharedPreferences.getString(GlobalParameters.IMAGE_ICON, ""));
-                    setCameraLayout();
-                    if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
-                        tvVersionIr.setVisibility(View.VISIBLE);
-                    } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, true)) {
-                        tvVersionOnly.setVisibility(View.VISIBLE);
-                    }
+                    updateUI();
                 } else {
                     homeDisplayView();
                 }
@@ -4977,5 +4970,31 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         AccessCardController.getInstance().setCheckedInOutMember(matchedMember);
         return false;
+    }
+
+    private void updateUI() {
+        if (rfIdEnable) {
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
+            layoutParams.bottomMargin = (int) Util.convertDpToPixel(200, this);
+        } else if (qrCodeEnable) {
+            setCameraLayout();
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
+            layoutParams.bottomMargin = (int) Util.convertDpToPixel(100, this);
+            RelativeLayout.LayoutParams tvThermalParams = (RelativeLayout.LayoutParams) tv_thermal.getLayoutParams();
+            tvThermalParams.bottomMargin = (int) Util.convertDpToPixel(210, this);
+        } else {
+            setCameraLayout();
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) tv_thermal_subtitle.getLayoutParams();
+            layoutParams.bottomMargin = (int) Util.convertDpToPixel(90, this);
+        }
+        CameraController.getInstance().setScanState(CameraController.ScanState.FACIAL_SCAN);
+        changeVerifyBackground(R.color.colorTransparency, true);
+        relative_main.setVisibility(View.VISIBLE);
+        homeIcon(sharedPreferences.getString(GlobalParameters.IMAGE_ICON, ""));
+        if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
+            tvVersionIr.setVisibility(View.VISIBLE);
+        } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, true)) {
+            tvVersionOnly.setVisibility(View.VISIBLE);
+        }
     }
 }
