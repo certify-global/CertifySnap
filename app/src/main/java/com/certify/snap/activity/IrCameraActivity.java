@@ -1717,7 +1717,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         public void onPreview(final byte[] nv21, final Camera camera) {
             if (nv21 == null || camera == null) return;
             if ((rfIdEnable || qrCodeEnable || AppSettings.isEnableHandGesture()) && !isReadyToScan) {
-                Log.d(TAG, "Ble isReadyToScan " + isReadyToScan);
                 return;
             }
             processPreviewData(nv21);
@@ -2290,7 +2289,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().setCameraOnRfid(true);
         enableLedPower();
         isReadyToScan = true;
-        Log.d(TAG, "Ble setCameraPreview " + isReadyToScan);
         new Handler().postDelayed(() -> {
             if (!Util.isDeviceF10()) {
                 if (outerCircle != null)
@@ -2695,7 +2693,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             closeFragment(secondaryScreenFragment);
         }
         isReadyToScan = false;
-        Log.d(TAG, "Ble onRfidScan " + isReadyToScan);
         CameraController.getInstance().updateTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         if (accessCardController.isDoMemberMatch()) {
