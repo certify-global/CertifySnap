@@ -6,6 +6,7 @@ import android.util.Log;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
+import com.certify.snap.controller.ApplicationController;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -32,9 +33,13 @@ public class RetrofitInstance {
     }
 
     public void createRetrofitInstance() {
+        String endPointUrl = BuildConfig.ENDPOINT_URL;
+        if (!ApplicationController.getInstance().getEndPointUrl().isEmpty()) {
+            endPointUrl = Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL);
+        }
         OkHttpClient okHttpClient = createOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.ENDPOINT_URL)
+                .baseUrl(endPointUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient)
