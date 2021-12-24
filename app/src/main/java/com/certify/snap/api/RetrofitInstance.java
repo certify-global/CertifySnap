@@ -20,7 +20,7 @@ public class RetrofitInstance {
     private ApiInterface apiInterface = null;
     private Context context;
 
-    public void init (Context context) {
+    public void init(Context context) {
         this.context = context;
         createRetrofitInstance();
     }
@@ -33,13 +33,9 @@ public class RetrofitInstance {
     }
 
     public void createRetrofitInstance() {
-        String endPointUrl = BuildConfig.ENDPOINT_URL;
-        if (!ApplicationController.getInstance().getEndPointUrl().isEmpty()) {
-            endPointUrl = Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL);
-        }
         OkHttpClient okHttpClient = createOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(endPointUrl)
+                .baseUrl(Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL))
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient)

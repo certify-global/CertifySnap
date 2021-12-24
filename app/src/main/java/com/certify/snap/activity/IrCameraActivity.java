@@ -916,7 +916,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetHomeScreen();
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
-            TemperatureController.getInstance().recordUserTemperature(  data, -1);
+            TemperatureController.getInstance().recordUserTemperature(data, -1);
             return;
         }
         if (!AppSettings.isTemperatureScanEnabled()) {
@@ -1549,8 +1549,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             if ((AppSettings.getTimeAndAttendance() == 1)) {
                 if (ApplicationController.getInstance().getTimeAttendance() == 1)
-                Toast.makeText(IrCameraActivity.this, getString(R.string.checked_in), Toast.LENGTH_SHORT).show();
-                else Toast.makeText(IrCameraActivity.this, getString(R.string.checked_out), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(IrCameraActivity.this, getString(R.string.checked_in), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(IrCameraActivity.this, getString(R.string.checked_out), Toast.LENGTH_SHORT).show();
                 return;
             }
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
@@ -1570,14 +1571,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             RegisteredMembers registeredMember = AccessCardController.getInstance().getCheckedInOutMember();
             if (registeredMember != null) {
-                String dateTimeCheckInOut = "";
+                String dateTimeCheckInOut = "", checkOut = "";
                 if (ApplicationController.getInstance().getTimeAttendance() == 1) {
-                    if(registeredMember.dateTimeCheckInOut.isEmpty())
-                    dateTimeCheckInOut = Util.getMMDDYYYYDate();
+                    if (registeredMember.dateTimeCheckInOut.isEmpty()) {
+                        dateTimeCheckInOut = Util.getMMDDYYYYDate();
+                        checkOut = "";
+                    }
                 } else if (ApplicationController.getInstance().getTimeAttendance() == 2) {
                     dateTimeCheckInOut = "";
+                    checkOut = Util.getMMDDYYYYDate();
                 }
                 registeredMember.dateTimeCheckInOut = dateTimeCheckInOut;
+                registeredMember.dateTimeCheckOut = checkOut;
                 DatabaseController.getInstance().updateMember(registeredMember);
                 AccessCardController.getInstance().setCheckedInOutMember(null);
                 ApplicationController.getInstance().setTimeAttendance(0);
@@ -1918,8 +1923,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 //        Intent intent = new Intent(this, DeviceHealthService.class);
 //        stopService(intent);
 //    }
-
-
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -2011,19 +2014,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
                 qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
-                if(guid.startsWith("shc:")){
-                    QrCodeController.getInstance().smartHealthCard(guid,this);
+                if (guid.startsWith("shc:")) {
+                    QrCodeController.getInstance().smartHealthCard(guid, this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
                     setCameraPreview();
                     return;
-                }else if(guid.startsWith("HC1:")){
-                    QrCodeController.getInstance().parseQrText(guid,this);
+                } else if (guid.startsWith("HC1:")) {
+                    QrCodeController.getInstance().parseQrText(guid, this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
                     setCameraPreview();
                     return;
-                }else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
+                } else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     tv_scan.setText(R.string.tv_qr_validating);
                     if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
                         CameraController.getInstance().setQrCodeId(guid);
@@ -2310,7 +2313,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 cameraSource.stop();
                 cameraSource.release();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

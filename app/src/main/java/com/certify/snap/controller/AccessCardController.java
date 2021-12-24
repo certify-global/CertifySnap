@@ -826,7 +826,7 @@ public class AccessCardController {
         boolean result = false;
         if (AppSettings.getTimeAndAttendance() == 1) {
             if ((ApplicationController.getInstance().getTimeAttendance() == 2) &&
-                    member.getDateTimeCheckInOut().isEmpty()) {
+                    !member.getDateTimeCheckOut().isEmpty()) {
                 result = true;
             }
         }

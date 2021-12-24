@@ -6,7 +6,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 
-@Entity(indices={@Index(value="primaryid", unique=true)})
+@Entity(indices = {@Index(value = "primaryid", unique = true)})
 public class RegisteredMembers {
 
     @PrimaryKey
@@ -34,6 +34,7 @@ public class RegisteredMembers {
     public boolean isDocument;
     public String image;
     public String dateTimeCheckInOut = "";
+    public String dateTimeCheckOut = "";
 
     public String getNetworkId() {
         return networkId;
@@ -50,6 +51,7 @@ public class RegisteredMembers {
     public void setPrimaryId(long primaryId) {
         this.primaryid = primaryId;
     }
+
     public String getFirstname() {
         return firstname;
     }
@@ -218,6 +220,11 @@ public class RegisteredMembers {
     public void setDateTimeCheckInOut(String dateTimeCheckInOut) {
         this.dateTimeCheckInOut = dateTimeCheckInOut;
     }
+
+    public String getDateTimeCheckOut() {
+        return dateTimeCheckOut;
+    }
+
     @Override
     public String toString() {
         return "Members{" +
@@ -227,10 +234,10 @@ public class RegisteredMembers {
                 ", status='" + status + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", email='" + email + '\'' +
-                ", accessid='"+ accessid +'\'' +
-                ", uniqueid='"+ uniqueid +'\'' +
+                ", accessid='" + accessid + '\'' +
+                ", uniqueid='" + uniqueid + '\'' +
                 ", image='" + image + '\'' +
-                ", feature='"+ features +'\'' +
+                ", feature='" + features + '\'' +
                 '}';
     }
 }
