@@ -35,6 +35,7 @@ public class RegisteredMembers {
     public String image;
     public String dateTimeCheckInOut = "";
     public String certifyUniversalGuid = "";
+    public String dateTimeCheckOut = "";
 
     public String getNetworkId() {
         return networkId;
@@ -51,6 +52,7 @@ public class RegisteredMembers {
     public void setPrimaryId(long primaryId) {
         this.primaryid = primaryId;
     }
+
     public String getFirstname() {
         return firstname;
     }
@@ -228,6 +230,10 @@ public class RegisteredMembers {
         this.certifyUniversalGuid = certifyUniversalGuid;
     }
 
+    public String getDateTimeCheckOut() {
+        return dateTimeCheckOut;
+    }
+
     @Override
     public String toString() {
         return "Members{" +
@@ -237,10 +243,10 @@ public class RegisteredMembers {
                 ", status='" + status + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", email='" + email + '\'' +
-                ", accessid='"+ accessid +'\'' +
-                ", uniqueid='"+ uniqueid +'\'' +
+                ", accessid='" + accessid + '\'' +
+                ", uniqueid='" + uniqueid + '\'' +
                 ", image='" + image + '\'' +
-                ", feature='"+ features +'\'' +
+                ", feature='" + features + '\'' +
                 '}';
     }
 }

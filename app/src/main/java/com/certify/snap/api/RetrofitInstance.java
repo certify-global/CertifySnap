@@ -39,7 +39,7 @@ public class RetrofitInstance {
         }
         OkHttpClient okHttpClient = createOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(endPointUrl)
+                .baseUrl(Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL))
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient)
