@@ -1,18 +1,15 @@
 package com.certify.snap.controller;
 
+import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
+
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import com.certify.snap.R;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothGattAttributes;
 import com.certify.snap.bluetooth.bleCommunication.BluetoothLeService;
 import com.certify.snap.bluetooth.data.DeviceInfoManager;
@@ -21,8 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static com.certify.snap.common.Constants.MEASURED_STATE_MASK;
 
 public class BLEController {
     private static final String TAG = BLEController.class.getSimpleName();
@@ -189,5 +184,19 @@ public class BLEController {
 
     private void  clearData(){
         mBluetoothLeService = null;
+    }
+
+    public void enableBluetooth() {
+        try {
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter == null) {
+                // Device does not support Bluetooth
+            } else if (!mBluetoothAdapter.isEnabled()) {
+                // Bluetooth is not enabled :)
+                mBluetoothAdapter.enable();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

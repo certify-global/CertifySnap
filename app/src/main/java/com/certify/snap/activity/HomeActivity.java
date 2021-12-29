@@ -37,6 +37,7 @@ import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.BlePeripheralController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
@@ -520,6 +521,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void startBleAdvertising() {
         if (sharedPreferences.getBoolean(GlobalParameters.MOBILE_ACCESS_CARD, false)) {
+            BLEController.getInstance().enableBluetooth();
             BlePeripheralController.getInstance().init(this);
             BlePeripheralController.getInstance().startAdvertising();
         }

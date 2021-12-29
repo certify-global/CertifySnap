@@ -518,8 +518,10 @@ public class AccessCardController {
                 if (AppSettings.getTimeAndAttendance() == 1) {
                     accessLogRequest.attendanceMode = ApplicationController.getInstance().getTimeAttendance();
                 }
-                if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
-                    accessLogRequest.allowAccess = getAllowAccessValue(data);
+                if ((isAccessSignalEnabled() || mAllowAnonymous)) {
+                    if (data != null)
+                        accessLogRequest.allowAccess = getAllowAccessValue(data);
+                    else if (isDoMemberMatch()) accessLogRequest.allowAccess = allowAccessValue;
                 }
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
@@ -851,7 +853,7 @@ public class AccessCardController {
                     if (listener != null) {
                         listener.onMemberDetailsReceived(memberData);
                     }
-                }
+                } else listener.onAccessDenied();
             }
 
             @Override
