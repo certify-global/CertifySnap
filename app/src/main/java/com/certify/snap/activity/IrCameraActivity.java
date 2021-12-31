@@ -2247,6 +2247,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     && isActivityResumed) {
                 isNfcFDispatchEnabled = true;
                 mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
+            } else{
+                Util.changeNfcEnabled(this, true);
             }
         }
     }

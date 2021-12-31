@@ -30,6 +30,7 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -118,6 +119,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.Inet4Address;
@@ -2565,4 +2567,57 @@ public class Util {
         }
         return "";
     }
+    public static boolean changeNfcEnabled(Context context, boolean enabled) {
+        // Turn NFC on/off
+        final boolean desiredState = enabled;
+        NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
+
+        if (mNfcAdapter == null) {
+            // NFC is not supported
+            return false;
+        }
+
+        new Thread("toggleNFC") {
+            public void run() {
+                Log.d(LOG, "Setting NFC enabled state to: " + desiredState);
+                boolean success = false;
+                Class<?> NfcManagerClass;
+                Method setNfcEnabled, setNfcDisabled;
+                boolean Nfc;
+                if (desiredState) {
+                    try {
+                        NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
+                        setNfcEnabled   = NfcManagerClass.getDeclaredMethod("enable");
+                        setNfcEnabled.setAccessible(true);
+                        Nfc             = (Boolean) setNfcEnabled.invoke(mNfcAdapter);
+                        success         = mNfcAdapter.isEnabled();
+                    } catch (ClassNotFoundException e) {
+                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
+                    }
+                } else {
+                    try {
+                        NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
+                        setNfcDisabled  = NfcManagerClass.getDeclaredMethod("disable");
+                        setNfcDisabled.setAccessible(true);
+                        Nfc             = (Boolean) setNfcDisabled.invoke(mNfcAdapter);
+                        success         = Nfc;
+                    } catch (ClassNotFoundException e) {
+                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
+                    }
+                }
+                if (success) {
+                    Log.d(LOG, "Successfully changed NFC enabled state to "+ desiredState);
+                } else {
+                    Log.w(LOG, "Error setting NFC enabled state to "+ desiredState);
+                }
+            }
+        }.start();
+        return false;
+    }//end method
 }

@@ -36,7 +36,7 @@ public class HIDService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         Log.d(TAG, "HID Service started");
-        while(readTerminal) {
+        while (readTerminal) {
             if (inputStream != null) {
                 int size = 0;
                 try {
@@ -73,6 +73,7 @@ public class HIDService extends IntentService {
             serial = new Serial("/dev/ttyS0", 9600, 0);
         } catch (DeviceAlreadyOpenException | IOException e) {
             Log.e(TAG, "HID Exception while instantiating Serial port");
+            Log.e(TAG, e.getMessage());
         }
         if (serial != null) {
             inputStream = serial.getInputStream();
