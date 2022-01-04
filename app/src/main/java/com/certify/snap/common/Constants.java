@@ -62,6 +62,8 @@ public class Constants {
     public static final String UUID_VALUE = "2531dcd3-861a-41a1-8525-6495e6059ee1";
     public static final UUID ACCESS_CARD_UUID = UUID.fromString(UUID_VALUE);
     public static final UUID ACCESS_CARD_CHARACTERISTIC_UUID = UUID.fromString("1e67bdac-a5c8-4d78-8e6a-7e6424b1ac7a");
+    public static final UUID ACCESS_CARD_CHARACTERISTIC_UUID_RESPONSE = UUID.fromString("065ba997-bbc1-4dfb-a114-11ea87f76504");
+    //public static final UUID ACCESS_CARD_CHARACTERISTIC_UUID_RESPONSE = UUID.fromString("42f0e001-4960-4d2b-a6c7-0397951dc7d2");
 
 
 }

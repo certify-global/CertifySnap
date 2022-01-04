@@ -72,8 +72,7 @@ public class HIDService extends IntentService {
         try {
             serial = new Serial("/dev/ttyS0", 9600, 0);
         } catch (DeviceAlreadyOpenException | IOException e) {
-            Log.e(TAG, "HID Exception while instantiating Serial port");
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, "HID Exception while instantiating Serial port " + e.getMessage());
         }
         if (serial != null) {
             inputStream = serial.getInputStream();

@@ -32,6 +32,7 @@ import java.util.Timer;
 import static android.app.AlarmManager.ELAPSED_REALTIME;
 import static android.os.SystemClock.elapsedRealtime;
 import static com.certify.snap.common.Constants.ACCESS_CARD_CHARACTERISTIC_UUID;
+import static com.certify.snap.common.Constants.ACCESS_CARD_CHARACTERISTIC_UUID_RESPONSE;
 import static com.certify.snap.common.Constants.ACCESS_CARD_UUID;
 
 public class BlePeripheralController {
@@ -57,7 +58,7 @@ public class BlePeripheralController {
 
     public interface BleCallbackListener {
         void onBleUpdateStatus(String status);
-        void onBleDataReceived(WritePacket writePacket);
+        void onBleDataReceived(String data);
     }
 
     public static BlePeripheralController getInstance() {
@@ -131,16 +132,19 @@ public class BlePeripheralController {
 
     private void setBluetoothService() {
         // create the Service
-        BluetoothGattService heartRateService = new BluetoothGattService(ACCESS_CARD_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        BluetoothGattService accessCardService = new BluetoothGattService(ACCESS_CARD_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
         mSampleCharacteristic = new BluetoothGattCharacteristic(ACCESS_CARD_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY | BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE);
-        heartRateService.addCharacteristic(mSampleCharacteristic);
+        accessCardService.addCharacteristic(mSampleCharacteristic);
+        /*mCharacteristic = new BluetoothGattCharacteristic(ACCESS_CARD_CHARACTERISTIC_UUID_RESPONSE, BluetoothGattCharacteristic.PROPERTY_NOTIFY | BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_READ | BluetoothGattCharacteristic.PERMISSION_WRITE);
+        accessCardService.addCharacteristic(mCharacteristic);*/
 
         // add the Service to the Server/Peripheral
         if (mBleGattServer != null) {
             byte[] data = getReadPacket();
             mSampleCharacteristic.setValue(data);
-            boolean value = mBleGattServer.addService(heartRateService);
+            //mCharacteristic.setValue("DataReceived");
+            boolean value = mBleGattServer.addService(accessCardService);
             Log.d(TAG, "Ble addService " + value);
         }
     }
@@ -210,14 +214,14 @@ public class BlePeripheralController {
             Log.d(TAG, "Ble Write packet data " + packet.getGuid());
 
             if (listener != null) {
-                listener.onBleDataReceived(packet);
+                listener.onBleDataReceived(packet.getGuid());
             }
 
-            /*String dataReceived = "DataReceived";
-            //mSampleCharacteristic.setValue(dataReceived);
+            String dataReceived = "DataReceived";
+            //mCharacteristic.setValue(dataReceived);
             if (responseNeeded) {
-                mBleGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null);
-            }*/
+                mBleGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, dataReceived.getBytes());
+            }
         }
 
         @Override

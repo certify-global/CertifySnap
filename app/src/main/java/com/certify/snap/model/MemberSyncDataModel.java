@@ -11,6 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.snap.api.response.MemberData;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.MemberUtilData;
@@ -1002,6 +1003,30 @@ public class MemberSyncDataModel {
             result = true;
         }
         return result;
+    }
+
+    public RegisteredMembers getRegisteredMember(MemberData memberData) {
+        RegisteredMembers registeredMember = new RegisteredMembers();
+        registeredMember.primaryid = memberData.primaryId;
+        registeredMember.firstname = memberData.firstName;
+        registeredMember.lastname = memberData.lastName;
+        registeredMember.uniqueid = memberData.uniqueId;
+        registeredMember.memberid = memberData.memberId;
+        registeredMember.memberType = memberData.memberType;
+        registeredMember.memberTypeName = memberData.memberTypeName;
+        registeredMember.groupId = memberData.groupId;
+        registeredMember.groupTypeName = memberData.groupTypeName;
+        registeredMember.networkId = memberData.networkId;
+        registeredMember.accessFromTime = memberData.accessFromDate;
+        registeredMember.accessToTime = memberData.accessToDate;
+        registeredMember.email = memberData.email;
+        registeredMember.mobile = memberData.phoneNumber;
+        registeredMember.image = MemberUtilData.getImagePath(memberData.faceTemplate);
+        registeredMember.certifyUniversalGuid = memberData.certifyUniversalGuid;
+        registeredMember.status = memberData.status;
+        registeredMember.setDateTime(Util.getUTCDate(""));
+        registeredMember.isDocument = Boolean.parseBoolean(memberData.isDocument);
+        return registeredMember;
     }
 
     /**

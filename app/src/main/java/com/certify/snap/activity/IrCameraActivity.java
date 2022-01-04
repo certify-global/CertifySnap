@@ -21,6 +21,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.hardware.Camera;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Build;
@@ -28,6 +30,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -712,7 +715,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (intent != null) {
-            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction()) ||
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) ||
                     NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())) {
                 mTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 if (mTag != null) {
@@ -728,6 +731,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     return;
                 }
                 showSnackBarMessage(getString(R.string.rfid_card_error));
+            } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+                Parcelable[] rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+                if (rawMessages != null) {
+                    NdefMessage message = (NdefMessage) rawMessages[0];
+                    NdefRecord[] ndefRecord = message.getRecords();
+                    String data = new String(ndefRecord[0].getPayload());
+                    onBleDataReceived(data);
+                }
             }
         }
     }
@@ -1594,9 +1605,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onMemberDetailsReceived(MemberData memberData) {
         runOnUiThread(() -> {
             if (memberData != null) {
+                AccessControlModel.getInstance().setCurrentScannedMember(MemberSyncDataModel.getInstance().getRegisteredMember(memberData));
                 onRfidScan(memberData.accessId);
             }
         });
+    }
+
+    @Override
+    public void onGetMemberDetailError() {
+        runOnUiThread(() -> Toast.makeText(IrCameraActivity.this, getString(R.string.error), Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -1623,21 +1640,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
-    public void onBleDataReceived(WritePacket writePacket) {
+    public void onBleDataReceived(String guid) {
         runOnUiThread(() -> {
             if (AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.RFID.getValue() ||
                     AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() ||
                     AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue() ||
                     AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) {
-                if (writePacket.getGuid() != null && !writePacket.getGuid().isEmpty()) {
-                    List<RegisteredMembers> registeredMembers = DatabaseController.getInstance().findMemberByGuid(writePacket.getGuid());
+                if (!guid.isEmpty()) {
+                    List<RegisteredMembers> registeredMembers = DatabaseController.getInstance().findMemberByGuid(guid);
                     if (registeredMembers != null && registeredMembers.size() > 0) {
                         RegisteredMembers member = registeredMembers.get(0);
                         onRfidScan(member.accessid);
                         return;
                     }
                     //Make API call and get AccessId
-                    AccessCardController.getInstance().getMemberDetailsByGuid(writePacket.getGuid());
+                    AccessCardController.getInstance().getMemberDetailsByGuid(guid);
                 }
             }
         });
@@ -2697,81 +2714,72 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().updateTriggerType(CameraController.triggerValue.ACCESSID.toString());
         AccessCardController accessCardController = AccessCardController.getInstance();
         accessCardController.setAccessCardId(cardId);
-        if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
-            RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-            if (accessCardController.isAccessTimeExpired(matchedMember)) {
-                onRfidNoMemberMatch(cardId);
-                return;
-            }
-            if (validateCheckInCheckOut(matchedMember)) {
-                return;
-            }
+        if (accessCardController.isDoMemberMatch()) {
+            accessCardController.setAccessCardId(cardId);
+            if (AccessControlModel.getInstance().isMemberMatch(cardId)) {
+                RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
+                if (accessCardController.isAccessTimeExpired(matchedMember)) {
+                    onRfidNoMemberMatch(cardId);
+                    return;
+                }
+                if (validateCheckInCheckOut(matchedMember)) {
+                    return;
+                }
+                registeredMemberslist = new ArrayList<>();
+                registeredMemberslist.add(matchedMember);
 
-//                if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(matchedMember.getDateTimeCheckInOut())) {
-//                    if (ApplicationController.getInstance().getTimeAttendance() == 1)
-//                        Toast.makeText(this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
-//                    if (ApplicationController.getInstance().getTimeAttendance() == 2)
-//                        Toast.makeText(this, getResources().getString(R.string.already_check_out), Toast.LENGTH_LONG).show();
-//                    if (isHomeViewEnabled) {
-//                        pauseCameraScan();
-//                    } else {
-//                        isReadyToScan = false;
-//                    }
-//                    resetHomeScreen();
-//                    return;
-//                }
-
-            registeredMemberslist = new ArrayList<>();
-            registeredMemberslist.add(matchedMember);
-            //launch the fragment
-            if (AppSettings.isAcknowledgementScreen()) {
-                if (accessCardController.getTapCount() == 0) {
+                //launch the fragment
+                if (AppSettings.isAcknowledgementScreen()) {
+                    if (accessCardController.getTapCount() == 0) {
+                        CameraController.getInstance().updateScanProcessState(matchedMember);
+                        accessCardController.setTapCount(1);
+                        launchAcknowledgementFragment();
+                        setCameraPreviewTimer(15);
+                        return;
+                    }
+                } else {
                     CameraController.getInstance().updateScanProcessState(matchedMember);
-                    accessCardController.setTapCount(1);
-                    launchAcknowledgementFragment();
-                    setCameraPreviewTimer(15);
-                    return;
+                    if (checkSecondaryIdentifier()) {
+                        disableNfc();
+                        initSecondaryScan();
+                        return;
+                    }
                 }
-            } else {
-                CameraController.getInstance().updateScanProcessState(matchedMember);
-                if (checkSecondaryIdentifier()) {
-                    disableNfc();
-                    initSecondaryScan();
-                    return;
-                }
-            }
-            if (AppSettings.isAcknowledgementScreen()) {
-                if (checkSecondaryIdentifier()) {
-                    initSecondaryScan();
+                if (AppSettings.isAcknowledgementScreen()) {
+                    if (checkSecondaryIdentifier()) {
+                        initSecondaryScan();
+                        new Handler().postDelayed(() -> {
+                            closeFragment(acknowledgementFragment);
+                            accessCardController.setTapCount(0);
+                        }, 1000);
+                        return;
+                    }
                     new Handler().postDelayed(() -> {
                         closeFragment(acknowledgementFragment);
                         accessCardController.setTapCount(0);
-                    }, 1000);
-                    return;
+                    }, 2000);
                 }
-                new Handler().postDelayed(() -> {
-                    closeFragment(acknowledgementFragment);
-                    accessCardController.setTapCount(0);
-                }, 2000);
+                if ((CameraController.getInstance().getScanProcessState()
+                        == CameraController.ScanProcessState.FIRST_SCAN) ||
+                        (CameraController.getInstance().getScanProcessState()
+                                == CameraController.ScanProcessState.FIRST_SCAN_COMPLETE)) {
+                    CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
+                }
+                if (AppSettings.isTemperatureScanEnabled()) {
+                    enableLedPower();
+                    showSnackBarMessage(getString(R.string.access_granted));
+                    setCameraPreview();
+                } else {
+                    UserExportedData userExportedData = new UserExportedData(rgbBitmap, irBitmap, registeredMemberslist.get(0), 0);
+                    CameraController.getInstance().setUserExportedData(userExportedData);
+                    onTemperatureScanDisabled();
+                }
+                return;
             }
-            if ((CameraController.getInstance().getScanProcessState()
-                    == CameraController.ScanProcessState.FIRST_SCAN) ||
-                    (CameraController.getInstance().getScanProcessState()
-                            == CameraController.ScanProcessState.FIRST_SCAN_COMPLETE)) {
-                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
-            }
-            if (AppSettings.isTemperatureScanEnabled()) {
-                enableLedPower();
-                showSnackBarMessage(getString(R.string.access_granted));
-                setCameraPreview();
-            } else {
-                UserExportedData userExportedData = new UserExportedData(rgbBitmap, irBitmap, registeredMemberslist.get(0), 0);
-                CameraController.getInstance().setUserExportedData(userExportedData);
-                onTemperatureScanDisabled();
-            }
+            onRfidNoMemberMatch(cardId);
             return;
-        } else if (accessCardController.isDoMemberMatch()) onRfidOnlyEnabled(cardId);
-        else onRfidNoMemberMatch(cardId);
+        }
+        onRfidOnlyEnabled(cardId);
     }
 
     private void showSnackBarMessage(String message) {
