@@ -6,7 +6,7 @@ import com.certify.snap.BuildConfig;
 public class EndPoints {
 
     public enum Mode {Prod, Demo}
-    public static final Mode deployment = Mode.Demo;
+    public static final Mode deployment = Mode.Prod;
     public static String prod_url = BuildConfig.ENDPOINT_URL;
     public static String dev_url = "https://api.certify.me";
 
