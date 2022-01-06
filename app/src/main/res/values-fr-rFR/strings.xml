@@ -734,5 +734,6 @@
     <string name="temperature_records">Enregistrements de température</string>
     <string name="access_log_records">Accéder aux enregistrements</string>
     <string name="mobile_access_card">Activer la carte d\'accès mobile</string>
+    <string name="access_id_msg">L\'ID d\'accès n\'existe pas</string>
 
 </resources>

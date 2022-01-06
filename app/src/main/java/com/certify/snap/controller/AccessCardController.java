@@ -853,7 +853,7 @@ public class AccessCardController {
                     if (listener != null) {
                         listener.onMemberDetailsReceived(memberData);
                     }
-                } else listener.onAccessDenied();
+                }
             }
 
             @Override

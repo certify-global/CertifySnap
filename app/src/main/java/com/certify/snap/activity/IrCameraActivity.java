@@ -1609,8 +1609,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     public void onMemberDetailsReceived(MemberData memberData) {
         runOnUiThread(() -> {
             if (memberData != null) {
-                AccessControlModel.getInstance().setCurrentScannedMember(MemberSyncDataModel.getInstance().getRegisteredMember(memberData));
-                onRfidScan(memberData.accessId);
+                if (memberData.accessId.isEmpty()) {
+                    Toast.makeText(this, getString(R.string.access_id_msg), Toast.LENGTH_LONG).show();
+                } else {
+                    AccessControlModel.getInstance().setCurrentScannedMember(MemberSyncDataModel.getInstance().getRegisteredMember(memberData));
+                    onRfidScan(memberData.accessId);
+                }
             }
         });
     }
@@ -1654,7 +1658,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     List<RegisteredMembers> registeredMembers = DatabaseController.getInstance().findMemberByGuid(guid);
                     if (registeredMembers != null && registeredMembers.size() > 0) {
                         RegisteredMembers member = registeredMembers.get(0);
-                        onRfidScan(member.accessid);
+                        if (member.accessid != null) {
+                            if (member.accessid.isEmpty()) {
+                                Toast.makeText(this, getString(R.string.access_id_msg), Toast.LENGTH_LONG).show();
+                            } else {
+                                onRfidScan(member.accessid);
+                            }
+                        }
                         return;
                     }
                     //Make API call and get AccessId
@@ -2268,8 +2278,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     && isActivityResumed) {
                 isNfcFDispatchEnabled = true;
                 mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-            } else{
-                Util.changeNfcEnabled(this, true);
             }
         }
     }
