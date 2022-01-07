@@ -232,7 +232,6 @@ public class ApplicationController {
     }
 
     public void getToken(Context context) {
-        checkTokenExpiry(context);
         ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
         GetTokenRequest tokenRequest = new GetTokenRequest();
         String serialNum = Util.getSerialNumber();
@@ -263,17 +262,16 @@ public class ApplicationController {
         });
     }
 
-    private void checkTokenExpiry(Context context) {
-        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        String expire_time = sharedPreferences.getString(GlobalParameters.EXPIRE_TIME, "");
-        if (expire_time != null && !expire_time.isEmpty()) {
-            String expireTime = Util.getUTCDate(expire_time);
-            String currentTime = Util.currentDate();
-            if (Util.isDateOneBigger(expireTime, currentTime)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Util.scheduleJobAccessToken(context);
-                }
-            }
+    public boolean checkTokenExpiry(Context context) {
+        boolean result = false;
+        String expireTime = Util.getSharedPreferences(context).getString(GlobalParameters.EXPIRE_TIME, "");
+        String currentTime = Util.currentDate();
+        String expiryTime = Util.getDate(expireTime);
+
+        Log.d(TAG, "Token expires " + expiryTime);
+        if (Util.getTokenDateTimeDifference(expiryTime, currentTime) < (60 * 60 * 1000)) {
+            result = true;
         }
+        return result;
     }
 }

@@ -246,10 +246,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 return;
             }
             cancelActivationTimer();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
-            }
-            startHealthCheckService();
+            Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
+
+            new Handler().postDelayed(() -> startHealthCheckService(), 1000);
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
