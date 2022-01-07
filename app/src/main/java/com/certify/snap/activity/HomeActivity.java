@@ -37,6 +37,7 @@ import com.certify.snap.common.License;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
+import com.certify.snap.controller.BLEController;
 import com.certify.snap.controller.BlePeripheralController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
@@ -245,10 +246,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 return;
             }
             cancelActivationTimer();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
-            }
-            startHealthCheckService();
+            Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
+
+            new Handler().postDelayed(() -> startHealthCheckService(), 1000);
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -520,6 +520,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void startBleAdvertising() {
         if (sharedPreferences.getBoolean(GlobalParameters.MOBILE_ACCESS_CARD, false)) {
+            BLEController.getInstance().enableBluetooth();
             BlePeripheralController.getInstance().init(this);
             BlePeripheralController.getInstance().startAdvertising();
         }

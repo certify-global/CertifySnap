@@ -34,8 +34,8 @@ public class RegisteredMembers {
     public boolean isDocument;
     public String image;
     public String dateTimeCheckInOut = "";
-    public String certifyUniversalGuid = "";
     public String dateTimeCheckOut = "";
+    public String certifyUniversalGuid = "";
 
     public String getNetworkId() {
         return networkId;

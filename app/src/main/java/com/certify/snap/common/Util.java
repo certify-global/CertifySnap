@@ -30,6 +30,7 @@ import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.nfc.NfcAdapter;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -118,6 +119,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.net.Inet4Address;
@@ -466,6 +468,20 @@ public class Util {
         return isBigger;
     }
 
+    public static long getTokenDateTimeDifference(String str1, String str2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date dt1 = null;
+        Date dt2 = null;
+        try {
+            dt1 = sdf.parse(str1);
+            dt2 = sdf.parse(str2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return (dt1.getTime() - dt2.getTime());
+    }
+
+
     /**
      * 隐藏软键盘(只适用于Activity，不适用于Fragment)
      */
@@ -578,6 +594,21 @@ public class Util {
         return "";
     }
 
+    public static String getDate(String str) {
+        try {
+            final SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            if (str.isEmpty()) {
+                return f.format(new Date());
+            } else {
+                Date localTime = new Date(str);
+                return f.format(localTime);
+            }
+        } catch (Exception e) {
+            Log.e(LOG, "Error in formatting the date " + e.getMessage());
+        }
+        return "";
+    }
+
     public static float FahrenheitToCelcius(float celcius) {
 
         return ((celcius * 9) / 5) + 32;
@@ -631,11 +662,12 @@ public class Util {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
+            Log.d(LOG, "Get Token");
             JSONObject obj = new JSONObject();
             //  obj.put("DeviceSN", Util.getSerialNumber());
             new AsyncJSONObjectSender(obj, callback, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.GenerateToken, context).execute();
 
-            String expire_time = sharedPreferences.getString(GlobalParameters.EXPIRE_TIME, "");
+            /*String expire_time = sharedPreferences.getString(GlobalParameters.EXPIRE_TIME, "");
             if (!expire_time.isEmpty() && expire_time != null) {
                 String expireTime = getUTCDate(expire_time);
                 String currentTime = currentDate();
@@ -644,7 +676,7 @@ public class Util {
                         scheduleJobAccessToken(context);
                     }
                 }
-            }
+            }*/
 
         } catch (Exception e) {
             Logger.error(LOG + "getToken(JSONObjectCallback callback, Context context) ", e.getMessage());
@@ -652,7 +684,6 @@ public class Util {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public static void scheduleJobAccessToken(Context context) {
         ComponentName componentName = new ComponentName(context, AccessTokenJobService.class);
         JobInfo jobInfo = new JobInfo.Builder(1, componentName)
@@ -1545,6 +1576,7 @@ public class Util {
                         && !institutionIdOld.equals(institutionId)) {
                     DatabaseController.getInstance().clearAll();
                 }
+                Log.d(LOG, "Get token success");
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
                 Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
@@ -2565,4 +2597,57 @@ public class Util {
         }
         return "";
     }
+    public static boolean changeNfcEnabled(Context context, boolean enabled) {
+        // Turn NFC on/off
+        final boolean desiredState = enabled;
+        NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(context);
+
+        if (mNfcAdapter == null) {
+            // NFC is not supported
+            return false;
+        }
+
+        new Thread("toggleNFC") {
+            public void run() {
+                Log.d(LOG, "Setting NFC enabled state to: " + desiredState);
+                boolean success = false;
+                Class<?> NfcManagerClass;
+                Method setNfcEnabled, setNfcDisabled;
+                boolean Nfc;
+                if (desiredState) {
+                    try {
+                        NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
+                        setNfcEnabled   = NfcManagerClass.getDeclaredMethod("enable");
+                        setNfcEnabled.setAccessible(true);
+                        Nfc             = (Boolean) setNfcEnabled.invoke(mNfcAdapter);
+                        success         = mNfcAdapter.isEnabled();
+                    } catch (ClassNotFoundException e) {
+                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
+                    }
+                } else {
+                    try {
+                        NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
+                        setNfcDisabled  = NfcManagerClass.getDeclaredMethod("disable");
+                        setNfcDisabled.setAccessible(true);
+                        Nfc             = (Boolean) setNfcDisabled.invoke(mNfcAdapter);
+                        success         = Nfc;
+                    } catch (ClassNotFoundException e) {
+                    } catch (NoSuchMethodException e) {
+                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalAccessException e) {
+                    } catch (InvocationTargetException e) {
+                    }
+                }
+                if (success) {
+                    Log.d(LOG, "Successfully changed NFC enabled state to "+ desiredState);
+                } else {
+                    Log.w(LOG, "Error setting NFC enabled state to "+ desiredState);
+                }
+            }
+        }.start();
+        return false;
+    }//end method
 }

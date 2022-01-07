@@ -97,6 +97,8 @@ public class AccessCardController {
         void onCheckInOutStatus();
 
         void onMemberDetailsReceived(MemberData memberData);
+
+        void onGetMemberDetailError();
     }
 
     public static AccessCardController getInstance() {
@@ -857,6 +859,9 @@ public class AccessCardController {
             @Override
             public void onFailure(Call<GetMemberGuidResponse> call, Throwable t) {
                 Log.e(TAG, "Error in GetMemberDetails " + t.getMessage());
+                if (listener != null) {
+                    listener.onGetMemberDetailError();
+                }
             }
         });
     }

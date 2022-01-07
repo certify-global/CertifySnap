@@ -33,10 +33,6 @@ public class RetrofitInstance {
     }
 
     public void createRetrofitInstance() {
-        String endPointUrl = BuildConfig.ENDPOINT_URL;
-        if (!ApplicationController.getInstance().getEndPointUrl().isEmpty()) {
-            endPointUrl = Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL);
-        }
         OkHttpClient okHttpClient = createOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL))

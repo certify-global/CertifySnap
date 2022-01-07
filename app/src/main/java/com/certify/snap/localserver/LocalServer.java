@@ -77,16 +77,16 @@ import static android.content.Context.WIFI_SERVICE;
 /**
  * Example of embedded HTTP/1.1 file server using classic I/O.
  */
-public class LocalServer implements LocalServerController.LocalServerCallbackListener{
+public class LocalServer implements LocalServerController.LocalServerCallbackListener {
     private HttpServer server;
-    private static String TAG = LocalServer.class.getSimpleName();;
+    private static String TAG = LocalServer.class.getSimpleName();
     private Context mContext;
     public HttpContext httpContext;
     public ClassicHttpResponse httpResponse;
     DhcpInfo dhcpInfo;
     WifiManager wifi;
 
-    public LocalServer(Context context){
+    public LocalServer(Context context) {
         mContext = context;
         LocalServerController.getInstance().setListener(this);
     }
@@ -144,7 +144,7 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
     public void startServer() {
         try {
             server.start();
-            Logger.verbose(TAG, "Start the server " , Constants.port);
+            Logger.verbose(TAG, "Start the server ", Constants.port);
         } catch (Exception e) {
             Logger.error(TAG, e.getMessage());
         }
@@ -153,8 +153,9 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
 
     public void stopServer() {
         try {
-            server.stop();
-            Logger.verbose(TAG, "Stop the server " , Constants.port);
+            if (server != null)
+                server.stop();
+            Logger.verbose(TAG, "Stop the server ", Constants.port);
         } catch (Exception e) {
             Logger.error(TAG, e.getMessage());
         }
@@ -183,9 +184,9 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
                     throw new MethodNotSupportedException(method + " method not supported");
                 } else {
                     String responseData = "";
-                    if (Method.GET.isSame(method)){
+                    if (Method.GET.isSame(method)) {
                         responseData = getResponseData(pingValue);
-                    } else if (Method.POST.isSame(method)){
+                    } else if (Method.POST.isSame(method)) {
                         InputStream inputStream = request.getEntity().getContent();
                         if (inputStream != null) {
                             String requestBody = streamToString(inputStream);
@@ -271,32 +272,32 @@ public class LocalServer implements LocalServerController.LocalServerCallbackLis
             }
         }
         stringBuilderData.append("\n]");
-        sendResponseData(httpContext,stringBuilderData.toString());
+        sendResponseData(httpContext, stringBuilderData.toString());
     }
 
-    public void sendResponseData(HttpContext context, String responseData){
+    public void sendResponseData(HttpContext context, String responseData) {
         final HttpCoreContext coreContext = HttpCoreContext.adapt(context);
         final EndpointDetails endpoint = coreContext.getEndpointDetails();
         httpResponse.setCode(HttpStatus.SC_OK);
         StringEntity stringEntity = new StringEntity(responseData, ContentType.APPLICATION_JSON);
         httpResponse.setEntity(stringEntity);
-                    //Logger.debug(TAG, response.toString());
+        //Logger.debug(TAG, response.toString());
     }
 
-    public void processGetRequest(String requestName){
-        if (requestName.equalsIgnoreCase("/GetMembers")){
+    public void processGetRequest(String requestName) {
+        if (requestName.equalsIgnoreCase("/GetMembers")) {
             LocalServerController.getInstance().findAllMembers();
         }
     }
 
     @SuppressWarnings("deprecation")
-    public String getIpAddress(Context context){
+    public String getIpAddress(Context context) {
         String ipAddress = "";
-        if (Util.isConnectedWifi(context)){
-            wifi= (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
-            dhcpInfo=wifi.getDhcpInfo();
+        if (Util.isConnectedWifi(context)) {
+            wifi = (WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE);
+            dhcpInfo = wifi.getDhcpInfo();
             ipAddress = String.valueOf(Formatter.formatIpAddress(dhcpInfo.ipAddress));
-        } else if (Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)){
+        } else if (Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)) {
             ipAddress = ConnectivityStatusActivity.getIPAddress(true);
         } else {
             ipAddress = "127.0.0.1";

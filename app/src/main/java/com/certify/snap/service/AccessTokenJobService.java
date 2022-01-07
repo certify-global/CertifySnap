@@ -3,9 +3,10 @@ package com.certify.snap.service;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.certify.callback.JSONObjectCallback;
-import com.certify.snap.common.Constants;
+import com.certify.snap.api.RetrofitInstance;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
@@ -13,10 +14,11 @@ import com.certify.snap.common.Util;
 import org.json.JSONObject;
 
 public class AccessTokenJobService extends JobService implements JSONObjectCallback {
-
+    public static String TAG = AccessTokenJobService.class.getSimpleName();
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        Log.d(TAG, "AccessTokenService Get token");
         Util.getToken(this, this);
         return true;
     }
@@ -49,11 +51,13 @@ public class AccessTokenJobService extends JobService implements JSONObjectCallb
                 // Util.activateApplication();
             }
 
+            Log.d(TAG, "AccessTokenService Get Token success");
             Util.writeString(sharedPreferences, GlobalParameters.ACCESS_TOKEN, access_token);
             Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, expire_time);
             Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
             Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
             Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
+            RetrofitInstance.getInstance().createRetrofitInstance();
 
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(this, true);

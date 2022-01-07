@@ -25,11 +25,12 @@ public class AccessControlModel {
         if (membersList != null && membersList.size() > 0) {
             currentScannedMember = membersList.get(0);
             result = true;
-        }
-        if (AppSettings.isMobileAccessCard()) {
+        } else if (AppSettings.isMobileAccessCard()) {
             List<RegisteredMembers> members = DatabaseController.getInstance().isUniqueIdExist(cardId);
             if (members != null && members.size() > 0) {
                 currentScannedMember = membersList.get(0);
+                result = true;
+            } else if (currentScannedMember != null) {
                 result = true;
             }
         }
@@ -38,6 +39,10 @@ public class AccessControlModel {
 
     public RegisteredMembers getRfidScanMatchedMember() {
         return currentScannedMember;
+    }
+
+    public void setCurrentScannedMember(RegisteredMembers member) {
+        currentScannedMember = member;
     }
 
     public void clearData() {

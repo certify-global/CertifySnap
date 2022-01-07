@@ -71,6 +71,11 @@ public class DeviceHealthService extends Service {
     }
 
     private void getDeviceHealthCheck() {
+        if (ApplicationController.getInstance().checkTokenExpiry(this)) {
+            Log.d(LOG, "Refresh the token");
+            ApplicationController.getInstance().getToken(this);
+            return;
+        }
         SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
         ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
         HealthCheckRequest healthCheckRequest = new HealthCheckRequest();
@@ -97,6 +102,7 @@ public class DeviceHealthService extends Service {
                             bringApplicationToForeground();
                     }
                     if (response.body().message.contains("Authorization has been denied for this request")) {
+                        Log.d(LOG, "DeviceHealthService Get Token");
                         ApplicationController.getInstance().getToken(getApplicationContext());
                     }
                 }
