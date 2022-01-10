@@ -3410,6 +3410,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetInvalidQrCode() {
+        qrCodeReceived = false;
         preview.stop();
         startCameraSource();
         Toast snackbar = Toast
@@ -4114,24 +4115,28 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mQRTimer.schedule(new TimerTask() {
             public void run() {
                 runOnUiThread(() -> {
-                    qrCodeReceived = false;
-                    Toast.makeText(IrCameraActivity.this, getString(R.string.qr_validation_msg), Toast.LENGTH_SHORT).show();
-                    CameraController.getInstance().setQrCodeId(guid);
-                    Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-                    clearQrCodePreview();
-                    if ((CameraController.getInstance().getScanProcessState()
-                            == CameraController.ScanProcessState.FIRST_SCAN) ||
-                            (CameraController.getInstance().getScanProcessState() ==
-                                    CameraController.ScanProcessState.FIRST_SCAN_COMPLETE)) {
-                        if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue()) ||
-                                (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue())) {
-                            setCameraPreview();
+                    if (AppSettings.isAnonymousQREnable()) {
+                        qrCodeReceived = false;
+                        Toast.makeText(IrCameraActivity.this, getString(R.string.qr_validation_msg), Toast.LENGTH_SHORT).show();
+                        CameraController.getInstance().setQrCodeId(guid);
+                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                        clearQrCodePreview();
+                        if ((CameraController.getInstance().getScanProcessState()
+                                == CameraController.ScanProcessState.FIRST_SCAN) ||
+                                (CameraController.getInstance().getScanProcessState() ==
+                                        CameraController.ScanProcessState.FIRST_SCAN_COMPLETE)) {
+                            if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue()) ||
+                                    (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.NONE.getValue())) {
+                                setCameraPreview();
+                            } else {
+                                initSecondaryScan();
+                            }
                         } else {
-                            initSecondaryScan();
+                            setCameraPreview();
                         }
-                    } else {
-                        setCameraPreview();
+                        return;
                     }
+                    resetInvalidQrCode();
                 });
                 this.cancel();
             }
