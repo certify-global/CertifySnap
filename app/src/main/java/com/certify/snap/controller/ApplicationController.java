@@ -268,7 +268,7 @@ public class ApplicationController {
         String currentTime = Util.currentDate();
         String expiryTime = Util.getDate(expireTime);
 
-        Log.d(TAG, "Token expires " + expiryTime);
+        Log.d(TAG, "Token expiry " + expiryTime);
         if (Util.getTokenDateTimeDifference(expiryTime, currentTime) < (60 * 60 * 1000)) {
             result = true;
         }

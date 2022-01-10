@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +39,7 @@ import androidx.annotation.Nullable;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.SettingCallback;
 import com.certify.snap.R;
+import com.certify.snap.async.AsyncDeviceLog;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.Constants;
@@ -54,6 +56,7 @@ import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -66,7 +69,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class DeviceSettingsActivity extends SettingsBaseActivity implements JSONObjectCallback, SettingCallback {
+public class DeviceSettingsActivity extends SettingsBaseActivity implements JSONObjectCallback, SettingCallback, LoggerUtil.LogMessagesCallback {
     private static final String TAG = DeviceSettingsActivity.class.getSimpleName();
     private EditText etEndUrl, etDeviceName, etPassword;
     private SharedPreferences sharedPreferences;
@@ -767,15 +770,16 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private void captureLogSetting() {
         saveLogButton.setOnClickListener(view -> {
             if (!Util.isOfflineMode(this)) {
-                Util.sendDeviceLogs(DeviceSettingsActivity.this);
+                LoggerUtil.getInstance().logMessagesToFile(this, "AppLog");
                 Toast.makeText(DeviceSettingsActivity.this, getString(R.string.logs_sent), Toast.LENGTH_LONG).show();
             } else {
-                LoggerUtil.logMessagesToFile(this, "AppLog");
+                LoggerUtil.getInstance().logMessagesToFile(this, "AppLog");
             }
         });
     }
 
     private void logOfflineDataSetting() {
+        LoggerUtil.getInstance().setListener(this);
         if (AppSettings.isLogOfflineDataEnabled()) {
             logOfflineDataYes.setChecked(true);
         } else {
@@ -933,5 +937,23 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
                 captureLogsLayout.setVisibility(View.GONE);
             }
         });
+    }
+
+    @Override
+    public void onLogMessagesToFile(String fileName) {
+        if (Util.isOfflineMode(this)) return;
+        JSONObject obj = new JSONObject();
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        try {
+            obj.put("deviceSN", Util.getSNCode(this));
+            String encodedData = Base64.encodeToString(Util.getBytesFromFile(fileName), Base64.NO_WRAP);
+            obj.put("deviceLog", encodedData);
+            obj.put("deviceData", Util.MobileDetails(this));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new AsyncDeviceLog(obj, null, sharedPreferences.getString(GlobalParameters.URL,
+                EndPoints.prod_url) + EndPoints.DeviceLogs, this).execute();
     }
 }
