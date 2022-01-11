@@ -2597,6 +2597,7 @@ public class Util {
         }
         return "";
     }
+
     public static boolean changeNfcEnabled(Context context, boolean enabled) {
         // Turn NFC on/off
         final boolean desiredState = enabled;
@@ -2617,10 +2618,10 @@ public class Util {
                 if (desiredState) {
                     try {
                         NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
-                        setNfcEnabled   = NfcManagerClass.getDeclaredMethod("enable");
+                        setNfcEnabled = NfcManagerClass.getDeclaredMethod("enable");
                         setNfcEnabled.setAccessible(true);
-                        Nfc             = (Boolean) setNfcEnabled.invoke(mNfcAdapter);
-                        success         = mNfcAdapter.isEnabled();
+                        Nfc = (Boolean) setNfcEnabled.invoke(mNfcAdapter);
+                        success = mNfcAdapter.isEnabled();
                     } catch (ClassNotFoundException e) {
                     } catch (NoSuchMethodException e) {
                     } catch (IllegalArgumentException e) {
@@ -2630,10 +2631,10 @@ public class Util {
                 } else {
                     try {
                         NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
-                        setNfcDisabled  = NfcManagerClass.getDeclaredMethod("disable");
+                        setNfcDisabled = NfcManagerClass.getDeclaredMethod("disable");
                         setNfcDisabled.setAccessible(true);
-                        Nfc             = (Boolean) setNfcDisabled.invoke(mNfcAdapter);
-                        success         = Nfc;
+                        Nfc = (Boolean) setNfcDisabled.invoke(mNfcAdapter);
+                        success = Nfc;
                     } catch (ClassNotFoundException e) {
                     } catch (NoSuchMethodException e) {
                     } catch (IllegalArgumentException e) {
@@ -2642,9 +2643,9 @@ public class Util {
                     }
                 }
                 if (success) {
-                    Log.d(LOG, "Successfully changed NFC enabled state to "+ desiredState);
+                    Log.d(LOG, "Successfully changed NFC enabled state to " + desiredState);
                 } else {
-                    Log.w(LOG, "Error setting NFC enabled state to "+ desiredState);
+                    Log.w(LOG, "Error setting NFC enabled state to " + desiredState);
                 }
             }
         }.start();

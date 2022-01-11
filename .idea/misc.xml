@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/qr_code_border.xml" value="0.189453125" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_eucode_demo.xml" value="0.16826923076923078" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_f10_ir.xml" value="0.1" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_ir.xml" value="0.11607992388201713" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

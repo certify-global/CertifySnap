@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:autofit="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/snack_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -179,6 +180,7 @@
                     android:layout_height="300dp"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
+                    android:visibility="gone"
                     android:gravity="center">
 
                     <com.certify.snap.qrscan.GraphicOverlay
@@ -186,9 +188,22 @@
                         android:layout_width="320dp"
                         android:layout_height="300dp"
                         android:layout_centerInParent="true"
-                        android:layout_gravity="center" />
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
                 </com.certify.snap.qrscan.CameraSourcePreview>
-
+                <com.budiyev.android.codescanner.CodeScannerView
+                    android:id="@+id/scanner_view"
+                    android:layout_width="320dp"
+                    android:layout_height="280dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    app:autoFocusButtonVisible="false"
+                    app:flashButtonVisible="false"
+                    app:frameAspectRatioHeight="1"
+                    app:frameAspectRatioWidth="1"
+                    app:frameColor="@color/colorWhite"
+                    app:frameThickness="2.5dp"
+                    app:maskColor="@color/grey_transparent" />
                 <RelativeLayout
                     android:id="@+id/qr_main"
                     android:layout_width="320dp"
