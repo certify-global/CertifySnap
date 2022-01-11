@@ -52,6 +52,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -73,6 +74,12 @@ import com.arcsoft.face.enums.DetectModel;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.budiyev.android.codescanner.AutoFocusMode;
+import com.budiyev.android.codescanner.CodeScanner;
+import com.budiyev.android.codescanner.CodeScannerView;
+import com.budiyev.android.codescanner.DecodeCallback;
+import com.budiyev.android.codescanner.ErrorCallback;
+import com.budiyev.android.codescanner.ScanMode;
 import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.PrintStatusCallback;
@@ -139,6 +146,8 @@ import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.HIDService;
 import com.certify.snap.service.OfflineRecordSyncService;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.Result;
 
 import org.json.JSONObject;
 
@@ -189,6 +198,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private View previewViewRgb;
     private View previewViewIr;
+    private CodeScanner mCodeScanner;
+    List<BarcodeFormat> barcodeFormatArrayList = new ArrayList<>();
 
     private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate, tvWaveMessage;
     private Button btWaveStart;
@@ -460,6 +471,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         try {
             QrCodeController.getInstance().resetQrCodeData(this);
             qr_main.setVisibility(View.VISIBLE);
+            CodeScannerView scannerView = findViewById(R.id.scanner_view);
+            barcodeFormatArrayList.add(BarcodeFormat.QR_CODE);
+            barcodeFormatArrayList.add(BarcodeFormat.DATA_MATRIX);
+//        barcodeFormatArrayList.add(BarcodeFormat.AZTEC);
+//        barcodeFormatArrayList.add(BarcodeFormat.PDF_417);
+//        barcodeFormatArrayList.add(BarcodeFormat.EAN_13);
+//        barcodeFormatArrayList.add(BarcodeFormat.EAN_8);
+//        barcodeFormatArrayList.add(BarcodeFormat.UPC_E);
+//        barcodeFormatArrayList.add(BarcodeFormat.UPC_A);
+//        barcodeFormatArrayList.add(BarcodeFormat.CODE_128);
+//        barcodeFormatArrayList.add(BarcodeFormat.CODE_93);
+//        barcodeFormatArrayList.add(BarcodeFormat.CODE_39);
+//        barcodeFormatArrayList.add(BarcodeFormat.CODABAR);
+//        barcodeFormatArrayList.add(BarcodeFormat.ITF);
             if (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
                 tv_scan.setText(R.string.tv_qr_bar_scan);
             } else {
@@ -473,8 +498,34 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (preview == null) {
                 Log.d(TAG, "Preview is null");
             }
-            preview.getDrawingCache(true);
-            createCameraSource(BARCODE_DETECTION);
+            preview.setVisibility(View.GONE);
+            mCodeScanner = new CodeScanner(this, scannerView);
+            if (Util.isDeviceF10())
+            mCodeScanner.setCamera(CodeScanner.CAMERA_BACK);
+            else mCodeScanner.setCamera(CodeScanner.CAMERA_FRONT);
+            mCodeScanner.setScanMode(ScanMode.CONTINUOUS);
+            mCodeScanner.setAutoFocusMode(AutoFocusMode.SAFE);
+            mCodeScanner.setAutoFocusEnabled(true);
+            mCodeScanner.setFormats(barcodeFormatArrayList);
+            mCodeScanner.setFlashEnabled(true);
+            mCodeScanner.setTouchFocusEnabled(false);
+            mCodeScanner.setDecodeCallback(new DecodeCallback() {
+                @Override
+                public void onDecoded(@NonNull Result result) {
+                    onBarcodeData(result.getText());
+                }
+            });
+            mCodeScanner.setErrorCallback(new ErrorCallback() {
+                @Override
+
+                public void onError(@NonNull Exception error) {
+                    Log.i("onError", error.getMessage());
+                }
+            });
+
+            mCodeScanner.startPreview();
+            //   preview.getDrawingCache(true);
+            //   createCameraSource(BARCODE_DETECTION);
             if (qrCodeEnable) {
                 //Move the logo to the top
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) img_logo.getLayoutParams();
@@ -770,13 +821,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             delayMilli = Long.parseLong(longVal);
         }
-        if (preview != null) {
-            try {
-                preview.start(cameraSource, graphicOverlay);
-            } catch (IOException e) {
-                Log.e(TAG, "Exception is camera preview");
-            }
-        }
+        if (mCodeScanner != null)
+            mCodeScanner.startPreview();
+//        if (preview != null) {
+//            try {
+//                preview.start(cameraSource, graphicOverlay);
+//            } catch (IOException e) {
+//                Log.e(TAG, "Exception is camera preview");
+//            }
+//        }
         DisplayTimeAttendance();
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
             clearLeftFace(null);
@@ -792,10 +845,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     protected void onPause() {
         Log.v(TAG, "onPause");
         super.onPause();
+        if (mCodeScanner != null)
+            mCodeScanner.releaseResources();
         isActivityResumed = false;
-        if (preview != null) {
-            preview.stop();
-        }
+//        if (preview != null) {
+//            preview.stop();
+//        }
         disableNfc();
         if (cameraHelper != null) {
             cameraHelper.stop();
@@ -811,6 +866,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             mMessageReceiver.clearAbortBroadcast();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         }
+
     }
 
     @Override
@@ -2063,18 +2119,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void startCameraSource() {
-        if (cameraSource != null) {
-            try {
-                if (preview == null) {
-                    Log.d(TAG, "resume: Preview is null");
-                }
-                preview.start(cameraSource, graphicOverlay);
-            } catch (IOException e) {
-                Log.e(TAG, "Unable to start camera source " + e.getMessage());
-                cameraSource.release();
-                cameraSource = null;
-            }
-        }
+        if (mCodeScanner != null)
+            mCodeScanner.startPreview();
+//        if (cameraSource != null) {
+//            try {
+//                if (preview == null) {
+//                    Log.d(TAG, "resume: Preview is null");
+//                }
+//               // preview.start(cameraSource, graphicOverlay);
+//                mCodeScanner.startPreview();
+//            } catch (IOException e) {
+//                Log.e(TAG, "Unable to start camera source " + e.getMessage());
+//                cameraSource.release();
+//                cameraSource = null;
+//            }
+//        }
     }
 
     @Override
@@ -2086,7 +2145,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (!qrCodeReceived) {
                 qrCodeReceived = true;
                 CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
-                preview.stop();
+                //  preview.stop();
                 frameLayout.setBackgroundColor(getResources().getColor(R.color.colorWhite));
                 tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
                 tv_scan.setTextColor(getResources().getColor(R.color.black));
@@ -2153,10 +2212,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     qrCodeReceived = false;
                     return;
                 }
-                tv_scan.setText(R.string.tv_qr_validating);
-                img_qr.setVisibility(View.VISIBLE);
-                img_qr.setBackgroundResource(R.drawable.qrimage);
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv_scan.setText(R.string.tv_qr_validating);
+                        img_qr.setVisibility(View.VISIBLE);
+                        img_qr.setBackgroundResource(R.drawable.qrimage);
+                    }
+                });
                 if (isInstitutionIdEmpty()) {
                     qrCodeReceived = false;
                     return;
@@ -2209,7 +2272,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN_COMPLETE);
                     }
                     Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                    preview.stop();
+                 //   preview.stop();
                     clearQrCodePreview();
                     if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
                         resetQrCode();
@@ -2392,17 +2455,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void clearQrCodePreview() {
         try {
-            if (graphicOverlay != null) {
-                graphicOverlay.clear();
+            if (mCodeScanner != null) {
+                mCodeScanner.stopPreview();
+                mCodeScanner.releaseResources();
             }
-            if (preview != null) {
-                preview.stop();
-                preview.release();
-            }
-            if (cameraSource != null) {
-                cameraSource.stop();
-                cameraSource.release();
-            }
+//            if (graphicOverlay != null) {
+//                graphicOverlay.clear();
+//            }
+//            if (preview != null) {
+//                preview.stop();
+//                preview.release();
+//            }
+//            if (cameraSource != null) {
+//                cameraSource.stop();
+//                cameraSource.release();
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -3431,11 +3498,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private void resetInvalidQrCode(String message) {
-        preview.stop();
+    private void resetInvalidQrCode() {
+       // preview.stop();
         startCameraSource();
         Toast snackbar = Toast
-                .makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+                .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
         snackbar.show();
         img_qr.setBackgroundResource(R.drawable.invalid_qr);
         imageqr.setBackgroundColor(getResources().getColor(R.color.colorRed));
@@ -3550,7 +3617,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     });
 
     public void skipQr(View view) {
-        preview.stop();
+        //preview.stop();
         clearQrCodePreview();
         setCameraPreview();
     }

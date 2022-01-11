@@ -1,11 +1,14 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
+import com.certify.snap.activity.QRCodeResultActivity;
+import com.certify.snap.activity.SmartHealthResultActivity;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -257,7 +260,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, smartHealthCardData.getDose2Date());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, smartHealthCardData.getDoseType());
 
-            //   Intent intent = new Intent(context, SmartHealthResultActivity.class);
+         //   Intent intent = new Intent(context, SmartHealthResultActivity.class);
 //            intent.putExtra("verification", true);
 //            intent.putExtra("smartHealthModel", smartHealthCardData);
 //            context.startActivity(intent);
