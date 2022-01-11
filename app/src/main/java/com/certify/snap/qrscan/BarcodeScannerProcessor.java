@@ -52,6 +52,10 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
         this.barcodeSendData=barcodeSendData;
     }
 
+    public void setListener (BarcodeSendData listener) {
+        barcodeSendData = listener;
+    }
+
     @Override
     public void stop() {
         super.stop();
@@ -71,7 +75,10 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
         }
         for (int i = 0; i < barcodes.size(); ++i) {
             Barcode barcode = barcodes.get(i);
-            barcodeSendData.onBarcodeData(barcode.getDisplayValue());
+            if (barcodeSendData != null) {
+                barcodeSendData.onBarcodeData(barcode.getDisplayValue());
+                barcodeSendData = null;     //Set to null to process the bar code only once
+            }
            // graphicOverlay.add(new BarcodeGraphic(graphicOverlay, barcode));
         }
     }

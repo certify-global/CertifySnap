@@ -673,6 +673,7 @@
     <string name="connect_light_device">Conexión a dispositivo de luz</string>
     <string name="move_center_msg">Muévase hacia el centro</string>
     <string name="qr_validation_msg">Validación QR no completado!</string>
+    <string name="qr_validation_message">Validación de QR no completada, comuníquese con el administrador.</string>
     <string name="gesture_launch_msg">Iniciando la pantalla de gestos, espere....</string>
     <string name="gesture_questions_failed">No se pudo obtener la pantalla Preguntas, gesto de cierre</string>
     <string name="gesture_fetch_questions">Obteniendo preguntas, espere....</string>

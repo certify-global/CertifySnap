@@ -322,6 +322,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isRecordNotSent = false;
     private boolean isFaceNotDetectedTimer = false;
     private Timer previewTimer;
+    private BarcodeScannerProcessor barcodeScannerProcessor;
 
     private void instanceStart() {
         try {
@@ -2043,7 +2044,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             switch (model) {
                 case BARCODE_DETECTION:
                     Log.i(TAG, "Using Custom Image Classifier Processor");
-                    cameraSource.setMachineLearningFrameProcessor(new BarcodeScannerProcessor(this, (BarcodeSendData) this));
+                    barcodeScannerProcessor = new BarcodeScannerProcessor(this, (BarcodeSendData) this);
+                    barcodeScannerProcessor.setListener(this);
+                    cameraSource.setMachineLearningFrameProcessor(barcodeScannerProcessor);
                     break;
                 default:
                     Log.e(TAG, "Unknown model: " + model);
@@ -2103,7 +2106,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         setCameraPreview();
                         SoundController.getInstance().playValidQrSound();
                     } else {
-                        resetInvalidQrCode();
+                        resetInvalidQrCode(getString(R.string.invalid_qr));
                         SoundController.getInstance().playInvalidQrSound();
                     }
                     qrCodeReceived = false;
@@ -2169,8 +2172,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         cancelQRTimer();
         try {
             if (reportInfo == null) {
-                resetInvalidQrCode();
-                Logger.debug(TAG, reportInfo.toString());
+                resetInvalidQrCode(getString(R.string.qr_validation_message));
+                SoundController.getInstance().playInvalidQrSound();
+                Logger.debug(TAG, "Qr code response null");
                 return;
             }
             if (reportInfo.has("responseCode") && reportInfo.getString("responseCode").equals("1")) {
@@ -2201,11 +2205,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 });
                 return;
             }
-            resetInvalidQrCode();
+            resetInvalidQrCode(getString(R.string.invalid_qr));
             SoundController.getInstance().playInvalidQrSound();
         } catch (Exception e) {
             Logger.error("QRCode Response processing error", e.getMessage());
-            resetInvalidQrCode();
+            resetInvalidQrCode(getString(R.string.invalid_qr));
+            SoundController.getInstance().playInvalidQrSound();
         }
     }
 
@@ -3409,12 +3414,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private void resetInvalidQrCode() {
-        qrCodeReceived = false;
+    private void resetInvalidQrCode(String message) {
         preview.stop();
         startCameraSource();
         Toast snackbar = Toast
-                .makeText(getApplicationContext(), R.string.invalid_qr, Toast.LENGTH_LONG);
+                .makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
         snackbar.show();
         img_qr.setBackgroundResource(R.drawable.invalid_qr);
         imageqr.setBackgroundColor(getResources().getColor(R.color.colorRed));
@@ -3427,7 +3431,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         AccessCardController.getInstance().sendAccessLogInvalid(this, new RegisteredMembers(), 0,
                 new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
-
+        qrCodeReceived = false;
+        CameraController.getInstance().setTriggerType(CameraController.triggerValue.CAMERA.toString());
+        new Handler().postDelayed(() -> {
+            if (barcodeScannerProcessor != null) {
+                barcodeScannerProcessor.setListener(this);
+            }
+        }, 500);
     }
 
     private void startHidService() {
@@ -4104,7 +4114,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Toast toastbar = Toast
                     .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
             toastbar.show();
-            resetInvalidQrCode();
+            resetInvalidQrCode(getString(R.string.qr_validation_message));
         }
         return result;
     }
@@ -4136,7 +4146,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         }
                         return;
                     }
-                    resetInvalidQrCode();
+                    resetInvalidQrCode(getString(R.string.qr_validation_message));
                 });
                 this.cancel();
             }

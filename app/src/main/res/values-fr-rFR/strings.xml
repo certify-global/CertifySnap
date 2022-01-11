@@ -667,6 +667,7 @@
     <string name="connect_light_device">Connexion à Light Device</string>
     <string name="move_center_msg">Veuillez vous déplacer vers le centre</string>
     <string name="qr_validation_msg">La validation QR n\'est pas terminée!</string>
+    <string name="qr_validation_message">La validation QR n\'est pas terminée, veuillez contacter l\'administrateur.</string>
     <string name="gesture_launch_msg">Lancement de l\'écran Gesture, veuillez patienter ...</string>
     <string name="gesture_questions_failed">Échec de l\'obtention de l\'écran Questions, geste de fermeture</string>
     <string name="gesture_fetch_questions">Récupération des questions, veuillez patienter ...</string>
