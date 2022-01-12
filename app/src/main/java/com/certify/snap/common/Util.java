@@ -1802,25 +1802,6 @@ public class Util {
         }
     }
 
-    public static void sendDeviceLogs(Context context) {
-        if (Util.isOfflineMode(context)) return;
-        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("deviceSN", Util.getSNCode(context));
-            String filePath = LoggerUtil.logMessagesToFile(context, "AppLog");
-            String encodedData = Base64.encodeToString(Util.getBytesFromFile(filePath), Base64.NO_WRAP);
-            obj.put("deviceLog", encodedData);
-            obj.put("deviceData", MobileDetails(context));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Log.d(LOG, "Logger API call");
-        new AsyncDeviceLog(obj, null, sharedPreferences.getString(GlobalParameters.URL,
-                EndPoints.prod_url) + EndPoints.DeviceLogs, context).execute();
-    }
-
     public static JSONObject getJSONObjectMemberList(JSONObject req, String url, String header, Context context, String device_sn) {
         try {
             String responseTemp = Requestor.requestJson(url, req, Util.getSNCode(context), context, "device_sn");
