@@ -72,6 +72,8 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
+
+        void onQRCodeScanSuccess();
     }
 
     public static QrCodeController getInstance() {
@@ -259,8 +261,9 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, smartHealthCardData.getDose1Date());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, smartHealthCardData.getDose2Date());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, smartHealthCardData.getDoseType());
-
-         //   Intent intent = new Intent(context, SmartHealthResultActivity.class);
+            if (listener != null)
+                listener.onQRCodeScanSuccess();
+            //            Intent intent = new Intent(context, SmartHealthResultActivity.class);
 //            intent.putExtra("verification", true);
 //            intent.putExtra("smartHealthModel", smartHealthCardData);
 //            context.startActivity(intent);
@@ -341,7 +344,8 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, certificateModel.getVaccinations().get(0).getDateOfVaccination());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, "");
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, certificateModel.getVaccinations().get(0).getManufacturer());
-
+            if (listener != null)
+                listener.onQRCodeScanSuccess();
 //            Intent intent = new Intent(context, QRCodeResultActivity.class);
 //            intent.putExtra("verification", true);
 //            intent.putExtra("certificateModel", certificateModel);

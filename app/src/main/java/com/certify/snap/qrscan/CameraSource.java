@@ -168,7 +168,7 @@ public class CameraSource {
         camera = createCamera();
         dummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
         camera.setPreviewTexture(dummySurfaceTexture);
-        usingSurfaceTexture = true;
+                usingSurfaceTexture = true;
         camera.startPreview();
 
         processingThread = new Thread(processingRunnable);
