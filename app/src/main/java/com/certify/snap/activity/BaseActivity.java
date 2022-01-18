@@ -40,6 +40,7 @@ public abstract class BaseActivity extends Activity {
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
     protected ImageView internetIndicatorImg;
+    protected boolean cameraError = false;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -103,6 +104,7 @@ public abstract class BaseActivity extends Activity {
         super.onDestroy();
         activityReceiver = null;
         offlineCheckReceiver = null;
+        cameraError = false;
     }
 
     private void initActivityReceiver() {
@@ -185,7 +187,7 @@ public abstract class BaseActivity extends Activity {
         runOnUiThread(() -> {
             int mode = CameraController.getInstance().getDeviceMode();
             Log.d(TAG, "Device mode " + mode);
-            if (mode == 0 || ApplicationController.getInstance().getTemperatureUtil() == null) {
+            if (mode == 0 || (ApplicationController.getInstance().getTemperatureUtil() == null) || cameraError) {
                 Toast.makeText(this, getString(R.string.app_restart_msg), Toast.LENGTH_SHORT).show();
                 finishAffinity();
                 restartApplication();

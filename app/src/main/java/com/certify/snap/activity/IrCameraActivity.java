@@ -1704,7 +1704,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         @Override
         public void onCameraError(Exception e) {
-            Logger.debug(TAG, "IrCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage());
+            cameraError = true;
+            Logger.debug(TAG, "IrCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage() + "camera error " + cameraError);
+            checkDeviceMode();
         }
 
         @Override
@@ -1768,8 +1770,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         @Override
         public void onCameraError(Exception e) {
-            Logger.debug(TAG, "onCameraError: " + e.getMessage());
+            cameraError = true;
             Logger.debug(TAG, "RgbCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage());
+            checkDeviceMode();
         }
 
         @Override
