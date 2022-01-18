@@ -2114,7 +2114,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     }
                     qrCodeReceived = false;
                     return;
-                } else if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
+                }
+                boolean isQrCodeWithPrefix = Util.isQRCodeWithPrefix(guid);
+                if ((Util.isNumeric(guid) || !isQrCodeWithPrefix) && AppSettings.isAnonymousQREnable()) {
                     tv_scan.setText(R.string.tv_bar_validating);
                     CameraController.getInstance().setQrCodeId(guid);
                     Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
@@ -2150,6 +2152,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     qrCodeReceived = false;
                     return;
                 }
+
+                guid = QrCodeController.getInstance().validateQrCode(guid, isQrCodeWithPrefix);
 
                 //Make API call
                 Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
