@@ -933,6 +933,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
             TemperatureController.getInstance().recordUserTemperature(data, -1);
+            CameraController.getInstance().setUserExportedData(data);
+            onTemperatureScanDisabled();
             return;
         }
         if (!AppSettings.isTemperatureScanEnabled()) {
