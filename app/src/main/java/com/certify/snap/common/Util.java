@@ -1070,7 +1070,9 @@ public class Util {
         options.inSampleSize = 3;
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         Matrix matrix = new Matrix();
-        matrix.postRotate(90);
+        if (isDeviceF10())
+            matrix.postRotate(270);
+        else matrix.postRotate(90);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
@@ -2598,10 +2600,10 @@ public class Util {
                 if (desiredState) {
                     try {
                         NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
-                        setNfcEnabled   = NfcManagerClass.getDeclaredMethod("enable");
+                        setNfcEnabled = NfcManagerClass.getDeclaredMethod("enable");
                         setNfcEnabled.setAccessible(true);
-                        Nfc             = (Boolean) setNfcEnabled.invoke(mNfcAdapter);
-                        success         = mNfcAdapter.isEnabled();
+                        Nfc = (Boolean) setNfcEnabled.invoke(mNfcAdapter);
+                        success = mNfcAdapter.isEnabled();
                     } catch (ClassNotFoundException e) {
                     } catch (NoSuchMethodException e) {
                     } catch (IllegalArgumentException e) {
@@ -2611,10 +2613,10 @@ public class Util {
                 } else {
                     try {
                         NfcManagerClass = Class.forName(mNfcAdapter.getClass().getName());
-                        setNfcDisabled  = NfcManagerClass.getDeclaredMethod("disable");
+                        setNfcDisabled = NfcManagerClass.getDeclaredMethod("disable");
                         setNfcDisabled.setAccessible(true);
-                        Nfc             = (Boolean) setNfcDisabled.invoke(mNfcAdapter);
-                        success         = Nfc;
+                        Nfc = (Boolean) setNfcDisabled.invoke(mNfcAdapter);
+                        success = Nfc;
                     } catch (ClassNotFoundException e) {
                     } catch (NoSuchMethodException e) {
                     } catch (IllegalArgumentException e) {
@@ -2623,9 +2625,9 @@ public class Util {
                     }
                 }
                 if (success) {
-                    Log.d(LOG, "Successfully changed NFC enabled state to "+ desiredState);
+                    Log.d(LOG, "Successfully changed NFC enabled state to " + desiredState);
                 } else {
-                    Log.w(LOG, "Error setting NFC enabled state to "+ desiredState);
+                    Log.w(LOG, "Error setting NFC enabled state to " + desiredState);
                 }
             }
         }.start();

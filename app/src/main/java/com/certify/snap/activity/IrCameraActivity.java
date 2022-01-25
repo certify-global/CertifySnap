@@ -4355,7 +4355,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void onTemperatureScanDisabled() {
         if (PrinterController.getInstance().isPrintScan(false) &&
-                CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
+                (CameraController.getInstance().isMemberIdentified(registeredMemberslist) || AccessCardController.getInstance().isAllowAnonymous())) {
             cancelImageTimer();
             updatePrinterParameters(false);
             PrinterController.getInstance().printOnNormalTemperature();
