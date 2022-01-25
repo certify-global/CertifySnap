@@ -1074,7 +1074,9 @@ public class Util {
         options.inSampleSize = 3;
         Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
         Matrix matrix = new Matrix();
-        matrix.postRotate(90);
+        if (isDeviceF10())
+            matrix.postRotate(270);
+        else matrix.postRotate(90);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
