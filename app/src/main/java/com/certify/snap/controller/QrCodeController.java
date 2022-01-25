@@ -67,6 +67,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     private QrCodeListener listener = null;
     private boolean memberCheckedIn = false;
     private Context mContext = null;
+    private static final int PASSID_QR_CODE_LENGTH = 32;
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
@@ -208,6 +209,14 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             result = true;
         }
         return result;
+    }
+
+    public String validateQrCode(String guid, boolean isQrCodeWithPrefix) {
+        String qrCode = guid;
+        if (!isQrCodeWithPrefix && (guid.length() == PASSID_QR_CODE_LENGTH)) {
+            qrCode = "PI" + guid;
+        }
+        return qrCode;
     }
 
     public void clearData() {

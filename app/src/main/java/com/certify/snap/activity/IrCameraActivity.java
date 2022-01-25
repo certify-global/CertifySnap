@@ -965,6 +965,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
             TemperatureController.getInstance().recordUserTemperature(data, -1);
+            CameraController.getInstance().setUserExportedData(data);
+            onTemperatureScanDisabled();
             return;
         }
         if (!AppSettings.isTemperatureScanEnabled()) {
@@ -1743,7 +1745,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         @Override
         public void onCameraError(Exception e) {
-            Logger.debug(TAG, "IrCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage());
+            cameraError = true;
+            Logger.debug(TAG, "IrCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage() + "camera error " + cameraError);
+            checkDeviceMode();
         }
 
         @Override
@@ -1807,8 +1811,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         @Override
         public void onCameraError(Exception e) {
-            Logger.debug(TAG, "onCameraError: " + e.getMessage());
+            cameraError = true;
             Logger.debug(TAG, "RgbCameraListener.onCameraError()", "Error occurred, exception = " + e.getMessage());
+            checkDeviceMode();
         }
 
         @Override
@@ -2098,7 +2103,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     }
                     qrCodeReceived = false;
                     return;
-                } else if ((Util.isNumeric(guid) || !Util.isQRCodeWithPrefix(guid)) && AppSettings.isAnonymousQREnable()) {
+                }
+                boolean isQrCodeWithPrefix = Util.isQRCodeWithPrefix(guid);
+                if ((Util.isNumeric(guid) || !isQrCodeWithPrefix) && AppSettings.isAnonymousQREnable()) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -2144,6 +2151,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     return;
                 }
 
+                guid = QrCodeController.getInstance().validateQrCode(guid, isQrCodeWithPrefix);
+
                 //Make API call
                 Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
                 CameraController.getInstance().setQrCodeId(guid);
@@ -2159,7 +2168,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             qrCodeReceived = false;
             cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -3442,11 +3450,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
         qrCodeReceived = false;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.CAMERA.toString());
-//        new Handler().postDelayed(() -> {
-//            if (barcodeScannerProcessor != null) {
-//                barcodeScannerProcessor.setListener(this);
-//            }
-//        }, 500);
     }
 
     private void startHidService() {
@@ -4355,7 +4358,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void onTemperatureScanDisabled() {
         if (PrinterController.getInstance().isPrintScan(false) &&
-                CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
+                (CameraController.getInstance().isMemberIdentified(registeredMemberslist) || AccessCardController.getInstance().isAllowAnonymous())) {
             cancelImageTimer();
             updatePrinterParameters(false);
             PrinterController.getInstance().printOnNormalTemperature();
