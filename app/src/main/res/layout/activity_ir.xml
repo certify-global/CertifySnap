@@ -174,10 +174,10 @@
                 android:background="#FFFFFF"
                 android:visibility="gone">
 
-                 <com.budiyev.android.codescanner.CodeScannerView
+                 <com.certify.snap.codescanner.CodeScannerView
                     android:id="@+id/scanner_view"
-                    android:layout_width="340dp"
-                    android:layout_height="290dp"
+                    android:layout_width="380dp"
+                    android:layout_height="340dp"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     app:autoFocusButtonVisible="false"
@@ -189,8 +189,8 @@
                     app:maskColor="@color/grey_transparent" />
                 <RelativeLayout
                     android:id="@+id/qr_main"
-                    android:layout_width="320dp"
-                    android:layout_height="300dp"
+                    android:layout_width="380dp"
+                    android:layout_height="330dp"
                     android:layout_gravity="center"
                     android:visibility="gone">
 
