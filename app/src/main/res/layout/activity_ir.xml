@@ -174,27 +174,10 @@
                 android:background="#FFFFFF"
                 android:visibility="gone">
 
-                <com.certify.snap.qrscan.CameraSourcePreview
-                    android:id="@+id/firePreview"
-                    android:layout_width="320dp"
-                    android:layout_height="300dp"
-                    android:layout_centerInParent="true"
-                    android:layout_gravity="center"
-                    android:visibility="gone"
-                    android:gravity="center">
-
-                    <com.certify.snap.qrscan.GraphicOverlay
-                        android:id="@+id/fireFaceOverlay"
-                        android:layout_width="320dp"
-                        android:layout_height="300dp"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center"
-                        android:visibility="gone"/>
-                </com.certify.snap.qrscan.CameraSourcePreview>
-                <com.budiyev.android.codescanner.CodeScannerView
+                 <com.certify.snap.codescanner.CodeScannerView
                     android:id="@+id/scanner_view"
-                    android:layout_width="340dp"
-                    android:layout_height="290dp"
+                    android:layout_width="380dp"
+                    android:layout_height="340dp"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     app:autoFocusButtonVisible="false"
@@ -206,8 +189,8 @@
                     app:maskColor="@color/grey_transparent" />
                 <RelativeLayout
                     android:id="@+id/qr_main"
-                    android:layout_width="320dp"
-                    android:layout_height="300dp"
+                    android:layout_width="380dp"
+                    android:layout_height="330dp"
                     android:layout_gravity="center"
                     android:visibility="gone">
 
@@ -217,7 +200,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="@dimen/size_10"
-                        android:layout_marginTop="@dimen/size_10"
                         android:layout_marginRight="@dimen/size_10"
                         android:layout_marginBottom="@dimen/size_10"
                         android:background="@drawable/textview_rectangle"
