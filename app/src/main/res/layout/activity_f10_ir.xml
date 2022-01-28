@@ -141,7 +141,7 @@
                 android:layout_width="300dp"
                 android:layout_height="150dp"
                 android:layout_below="@+id/tv_close_message_layout"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/colorWhite"
                 android:scaleType="fitCenter" />
 
@@ -151,7 +151,7 @@
                 android:layout_height="400dp"
                 android:layout_below="@+id/img_logo"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="40dp">
+                android:layout_marginTop="20dp">
 
                 <RelativeLayout
                     android:id="@+id/camera_preview_layout"
