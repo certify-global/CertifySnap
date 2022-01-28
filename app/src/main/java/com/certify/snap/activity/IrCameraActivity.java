@@ -955,7 +955,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         if (Util.isDeviceF10()) {
-            launchConfirmationFragment(String.valueOf(false));
             if (isHomeViewEnabled) {
                 pauseCameraScan();
             } else {
