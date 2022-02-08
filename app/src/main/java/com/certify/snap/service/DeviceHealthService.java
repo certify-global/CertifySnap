@@ -22,6 +22,7 @@ import com.certify.snap.api.response.HealthCheckResponse;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.ApplicationLifecycleHandler;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.google.gson.Gson;
@@ -71,52 +72,63 @@ public class DeviceHealthService extends Service {
     }
 
     private void getDeviceHealthCheck() {
-        if (ApplicationController.getInstance().checkTokenExpiry(this)) {
-            Log.d(LOG, "Refresh the token");
-            ApplicationController.getInstance().getToken(this);
-            return;
-        }
-        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
-        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
-        if (apiInterface != null) {
-            HealthCheckRequest healthCheckRequest = new HealthCheckRequest();
-            healthCheckRequest.appState = Util.getAppState();
-            healthCheckRequest.deviceSN = Util.getSNCode(this);
-            healthCheckRequest.deviceInfo = Util.getDeviceInfo(this);
-            healthCheckRequest.institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
-            healthCheckRequest.appState = Util.getAppState();
-            healthCheckRequest.appUpTime = Util.getAppUpTime(this);
-            healthCheckRequest.deviceUpTime = Util.getDeviceUpTime();
-            healthCheckRequest.lastUpdateDateTime = Util.getUTCDate("");
-            Util.sendOfflineServiceBroadcast(getApplicationContext());
+        try {
+            SharedPreferences sharedPreferences = null;
+            if (ApplicationController.getInstance().checkTokenExpiry(this)) {
+                Log.d(LOG, "Refresh the token");
+                ApplicationController.getInstance().getToken(this);
+                return;
+            }
+            try {
+                sharedPreferences = Util.getSharedPreferences(this);
+            } catch (Exception e) {
+                Logger.error(LOG, "getDeviceHealthCheck()", e.getMessage());
+            }
+            ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+            if (apiInterface != null) {
+                HealthCheckRequest healthCheckRequest = new HealthCheckRequest();
+                healthCheckRequest.appState = Util.getAppState();
+                healthCheckRequest.deviceSN = Util.getSNCode(this);
+                healthCheckRequest.deviceInfo = Util.getDeviceInfo(this);
+                healthCheckRequest.institutionId = sharedPreferences == null ? "" : sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+                healthCheckRequest.appState = Util.getAppState();
+                healthCheckRequest.appUpTime = Util.getAppUpTime(this);
+                healthCheckRequest.deviceUpTime = Util.getDeviceUpTime();
+                healthCheckRequest.lastUpdateDateTime = Util.getUTCDate("");
+                Util.sendOfflineServiceBroadcast(getApplicationContext());
 
-            Log.d(LOG, "Health check time " + Util.getMMDDYYYYDate());
-            Call<HealthCheckResponse> call = apiInterface.getDeviceHealthCheck(Util.getSNCode(this), healthCheckRequest);
-            call.enqueue(new Callback<HealthCheckResponse>() {
-                @Override
-                public void onResponse(Call<HealthCheckResponse> call, Response<HealthCheckResponse> response) {
-                    if (response.body() != null) {
-                        Log.d(LOG, "Health Response " + response.body().responseCode);
-                        if (response.body().responseCode == 1) {
-                            ApplicationController.getInstance().cancelHealthCheckTimer(getApplicationContext());
-                            if (ApplicationLifecycleHandler.isInBackground)
-                                bringApplicationToForeground();
+                Log.d(LOG, "Health check time " + Util.getMMDDYYYYDate());
+                Call<HealthCheckResponse> call = apiInterface.getDeviceHealthCheck(Util.getSNCode(this), healthCheckRequest);
+                call.enqueue(new Callback<HealthCheckResponse>() {
+                    @Override
+                    public void onResponse(Call<HealthCheckResponse> call, Response<HealthCheckResponse> response) {
+                        if (response.body() != null) {
+                            Log.d(LOG, "Health Response " + response.body().responseCode);
+                            if (response.body().responseCode == 1) {
+                                ApplicationController.getInstance().cancelHealthCheckTimer(getApplicationContext());
+                                if (ApplicationLifecycleHandler.isInBackground)
+                                    bringApplicationToForeground();
+                            }
+                            if (response.body().message.contains("Authorization has been denied for this request")) {
+                                Log.d(LOG, "DeviceHealthService Get Token");
+                                ApplicationController.getInstance().getToken(getApplicationContext());
+                            }
                         }
-                        if (response.body().message.contains("Authorization has been denied for this request")) {
-                            Log.d(LOG, "DeviceHealthService Get Token");
-                            ApplicationController.getInstance().getToken(getApplicationContext());
-                        }
+
                     }
-                }
 
-                @Override
-                public void onFailure(Call<HealthCheckResponse> call, Throwable t) {
-                    Log.e(LOG, "Health Error in device health check " + t.getMessage());
-                }
-            });
-            return;
+                    @Override
+                    public void onFailure(Call<HealthCheckResponse> call, Throwable t) {
+                        Log.e(LOG, "Health Error in device health check " + t.getMessage());
+                    }
+                });
+                return;
+            }
+            RetrofitInstance.getInstance().createRetrofitInstance();
+        } catch (Exception e) {
+            Logger.error(LOG, "getDeviceHealthCheck()", e.getMessage());
+
         }
-        RetrofitInstance.getInstance().createRetrofitInstance();
     }
 
     @Override

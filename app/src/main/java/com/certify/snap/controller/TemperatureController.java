@@ -713,7 +713,7 @@ public class TemperatureController {
         } else {
             data = CameraController.getInstance().getUserExportedData();
         }
-        AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
+            AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
     }
 
     /**
@@ -821,6 +821,7 @@ public class TemperatureController {
         TemperatureRecordRequest temperatureRecordRequest = new TemperatureRecordRequest();
         temperatureRecordRequest.deviceId = Util.getSerialNumber();
         temperatureRecordRequest.trigger = data.triggerType;
+        temperatureRecordRequest.enabledTemperature = AppSettings.isTemperatureScanEnabled() ? 1 : 0;
         temperatureRecordRequest.temperature = data.temperature;
         temperatureRecordRequest.institutionId = sp.getString(GlobalParameters.INSTITUTION_ID, "");
         temperatureRecordRequest.facilityId = 0;

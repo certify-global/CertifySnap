@@ -31,6 +31,7 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+import android.util.Log;
 
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.common.Constants;
