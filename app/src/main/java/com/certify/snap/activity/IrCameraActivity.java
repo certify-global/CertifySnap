@@ -355,8 +355,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             setContentView(R.layout.activity_ir);
         }
-
-        instanceStart();
+         instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
@@ -2100,6 +2099,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     return;
                 } else if (guid.startsWith("HC1:")) {
                     QrCodeController.getInstance().parseQrText(guid, this);
+                    clearQrCodePreview();
+                    qrCodeReceived = false;
+                    setCameraPreview();
+                    return;
+                } else if (guid.startsWith("VQC:")) {
+                    QrCodeController.getInstance().hlthQrText(guid, this);
                     clearQrCodePreview();
                     qrCodeReceived = false;
                     setCameraPreview();
