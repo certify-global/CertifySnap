@@ -2,7 +2,7 @@ package com.certify.snap.api;
 
 import android.content.Context;
 import android.util.Log;
-
+import com.certify.snap.common.Logger;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Util;
@@ -26,12 +26,20 @@ public class RetrofitInstance {
     }
 
     public static RetrofitInstance getInstance() {
+
+        return getInstance(null);
+    }
+    public static RetrofitInstance getInstance(Context context) {
+
         if (instance == null) {
             instance = new RetrofitInstance();
+            if(context != null){
+                instance.context = context;
+                instance.createRetrofitInstance();
+            }
         }
         return instance;
     }
-
     public void createRetrofitInstance() {
         OkHttpClient okHttpClient = createOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
@@ -44,6 +52,8 @@ public class RetrofitInstance {
     }
 
     public ApiInterface getApiInterface() {
+        if(apiInterface == null)
+            Logger.error(TAG, "apiInterface is null");
         return apiInterface;
     }
 

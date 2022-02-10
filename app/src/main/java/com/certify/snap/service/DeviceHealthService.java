@@ -42,6 +42,7 @@ public class DeviceHealthService extends Service {
     private PendingIntent restartServicePendingIntent;
     public static String HEALTH_CHECK_OFFLINE_ACTION = "com.action.health.offline";
     public static String HEALTH_CHECK_ONLINE_ACTION = "com.action.health.online";
+    public Context context;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -53,6 +54,8 @@ public class DeviceHealthService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
         try {
+            context = getApplicationContext();
+            Logger.debug(LOG,"onStartCommand(Intent intent, int flags, int startId)");
             //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
             restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, DeviceHealthService.class), PendingIntent.FLAG_ONE_SHOT);
             alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
@@ -72,33 +75,34 @@ public class DeviceHealthService extends Service {
     }
 
     private void getDeviceHealthCheck() {
+        Logger.verbose(LOG, "","getDeviceHealthCheck");
         try {
             SharedPreferences sharedPreferences = null;
-            if (ApplicationController.getInstance().checkTokenExpiry(this)) {
+            if (ApplicationController.getInstance().checkTokenExpiry(context)) {
                 Log.d(LOG, "Refresh the token");
-                ApplicationController.getInstance().getToken(this);
+                ApplicationController.getInstance().getToken(context);
                 return;
             }
             try {
-                sharedPreferences = Util.getSharedPreferences(this);
+                sharedPreferences = Util.getSharedPreferences(context);
             } catch (Exception e) {
-                Logger.error(LOG, "getDeviceHealthCheck()", e.getMessage());
+                Logger.error(LOG, "getDeviceHealthCheck() - sharedPreferences", e.getMessage());
             }
-            ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+            ApiInterface apiInterface = RetrofitInstance.getInstance(context).getApiInterface();
             if (apiInterface != null) {
                 HealthCheckRequest healthCheckRequest = new HealthCheckRequest();
                 healthCheckRequest.appState = Util.getAppState();
-                healthCheckRequest.deviceSN = Util.getSNCode(this);
-                healthCheckRequest.deviceInfo = Util.getDeviceInfo(this);
+                healthCheckRequest.deviceSN = Util.getSNCode(context);
+                healthCheckRequest.deviceInfo = Util.getDeviceInfo(context);
                 healthCheckRequest.institutionId = sharedPreferences == null ? "" : sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
                 healthCheckRequest.appState = Util.getAppState();
-                healthCheckRequest.appUpTime = Util.getAppUpTime(this);
+                healthCheckRequest.appUpTime = Util.getAppUpTime(context);
                 healthCheckRequest.deviceUpTime = Util.getDeviceUpTime();
                 healthCheckRequest.lastUpdateDateTime = Util.getUTCDate("");
                 Util.sendOfflineServiceBroadcast(getApplicationContext());
 
                 Log.d(LOG, "Health check time " + Util.getMMDDYYYYDate());
-                Call<HealthCheckResponse> call = apiInterface.getDeviceHealthCheck(Util.getSNCode(this), healthCheckRequest);
+                Call<HealthCheckResponse> call = apiInterface.getDeviceHealthCheck(Util.getSNCode(context), healthCheckRequest);
                 call.enqueue(new Callback<HealthCheckResponse>() {
                     @Override
                     public void onResponse(Call<HealthCheckResponse> call, Response<HealthCheckResponse> response) {

@@ -231,8 +231,8 @@ public class ApplicationController {
         Util.writeBoolean(sharedPreferences, GlobalParameters.HEALTH_CHECK_OFFLINE, false);
     }
 
-    public void getToken(Context context) {
-        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+    public void getToken(final Context context) {
+        ApiInterface apiInterface = RetrofitInstance.getInstance(context).getApiInterface();
         GetTokenRequest tokenRequest = new GetTokenRequest();
         String serialNum = Util.getSerialNumber();
         tokenRequest.deviceSN = serialNum;

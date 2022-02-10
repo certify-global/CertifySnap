@@ -90,7 +90,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
             mActivity = this;
             ApplicationController.getInstance().initThermalUtil(this);
-            RetrofitInstance.getInstance().init(this);
+            RetrofitInstance.getInstance(this);
             Application.getInstance().addActivity(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
