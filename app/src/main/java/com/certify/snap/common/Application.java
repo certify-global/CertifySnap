@@ -107,7 +107,7 @@ public class Application extends android.app.Application {
     }
 
     public static void StartService(Context context) {
-
+        Logger.debug(TAG, "StartService - AlarmReceiver");
         Intent myIntent = new Intent(context, AlarmReceiver.class);
         PendingIntent restartServicePendingIntent = PendingIntent.getBroadcast(context, 0, myIntent, 0);
         // PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 1, new Intent(this, BackgroundSyncService.class), PendingIntent.FLAG_ONE_SHOT);

@@ -42,7 +42,6 @@ public class DeviceHealthService extends Service {
     private PendingIntent restartServicePendingIntent;
     public static String HEALTH_CHECK_OFFLINE_ACTION = "com.action.health.offline";
     public static String HEALTH_CHECK_ONLINE_ACTION = "com.action.health.online";
-    public Context context;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -54,7 +53,6 @@ public class DeviceHealthService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
         try {
-            context = getApplicationContext();
             Logger.debug(LOG,"onStartCommand(Intent intent, int flags, int startId)");
             //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
             restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, DeviceHealthService.class), PendingIntent.FLAG_ONE_SHOT);
@@ -67,14 +65,14 @@ public class DeviceHealthService extends Service {
             long currTime = Util.getCurrentTimeLong();
             if (alarmService != null)
                 alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
-            getDeviceHealthCheck();
+            getDeviceHealthCheck(getApplicationContext());
         } catch (Exception e) {
             Log.e(LOG + "onStartCommand(Intent.)", e.getMessage());
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void getDeviceHealthCheck() {
+    private void getDeviceHealthCheck(Context context) {
         Logger.verbose(LOG, "","getDeviceHealthCheck");
         try {
             SharedPreferences sharedPreferences = null;
@@ -138,6 +136,7 @@ public class DeviceHealthService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("DeviceHealthService", "onDestroy");
         if (alarmService != null && restartServicePendingIntent != null) {
             alarmService.cancel(restartServicePendingIntent);
         }

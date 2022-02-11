@@ -18,7 +18,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         try {
-            sharedPreferences= Util.getSharedPreferences(context);
+            Logger.debug(LOG, "onReceive - AlarmReceiver");
+            sharedPreferences = Util.getSharedPreferences(context);
 //            if (Util.isServiceRunning(BeaconService.class, context))
 //                context.stopService(new Intent(context, BackgroundSyncService.class));
             context.startService(new Intent(context, DeviceHealthService.class));

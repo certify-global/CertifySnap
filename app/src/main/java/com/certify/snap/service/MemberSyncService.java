@@ -68,7 +68,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             if (!MemberSyncDataModel.getInstance().isSyncing()) {
-                sharedPreferences = Util.getSharedPreferences(this);
+                sharedPreferences = Util.getSharedPreferences(getApplicationContext());
                 //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
                 restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, MemberSyncService.class), PendingIntent.FLAG_ONE_SHOT);
                 alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
@@ -82,10 +82,10 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                     alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
                 }
                 resetCounters();
-                MemberSyncDataModel.getInstance().init(this);
+                MemberSyncDataModel.getInstance().init(getApplicationContext());
                 AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
                 taskExecutorService = executorService.getExecutorService();
-                Util.getmemberList(this, this);
+                Util.getmemberList(this, getApplicationContext());
             }
         } catch (Exception e) {
             Logger.error(TAG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
@@ -143,10 +143,10 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             obj.put("id", certifyId);
             if (taskExecutorService != null) {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                        EndPoints.prod_url) + EndPoints.GetMemberById, this).executeOnExecutor(taskExecutorService);
+                        EndPoints.prod_url) + EndPoints.GetMemberById, getApplicationContext()).executeOnExecutor(taskExecutorService);
             } else {
                 new AsyncGetMemberData(obj, this, sharedPreferences.getString(GlobalParameters.URL,
-                        EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
+                        EndPoints.prod_url) + EndPoints.GetMemberById, getApplicationContext()).execute();
             }
         } catch (Exception e) {
             Logger.error(" getMemberID()",e.getMessage());
