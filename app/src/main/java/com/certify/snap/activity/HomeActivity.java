@@ -266,7 +266,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                     /*ApplicationController.getInstance().cancelHealthCheckTimer(this);
                     ApplicationController.getInstance().startHealthCheckTimer(this);*/
                     startService(new Intent(this, DeviceHealthService.class));
-                    Application.StartService(this);
+                    Application.getInstance().runDeviceService(this);
+                   // Application.StartService(this);
                 }
         } catch (Exception e) {
             e.printStackTrace();
@@ -509,10 +510,12 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void startLoggerService() {
+
         if (!Util.isServiceRunning(LoggerService.class, this) &&
             sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, true)) {
             startService(new Intent(this, LoggerService.class));
-            Application.StartService(this);
+            Application.getInstance().runLoggerService(this);
+          //  Application.StartService(this);
             return;
         }
         Log.d(TAG, "Logger service");

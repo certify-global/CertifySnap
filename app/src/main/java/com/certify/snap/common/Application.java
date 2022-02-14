@@ -7,11 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
+import android.os.SystemClock;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.hilt.work.HiltWorkerFactory;
-import androidx.work.Configuration;
 
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
@@ -19,6 +16,8 @@ import com.certify.snap.bluetooth.data.SimplePreference;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.service.AlarmReceiver;
+import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.LoggerService;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
 import com.microsoft.appcenter.crashes.AbstractCrashesListener;
@@ -34,9 +33,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.HiltAndroidApp;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
@@ -58,7 +54,7 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        Logger.debug(TAG, "onCreate");
         sharedPreferences = Util.getSharedPreferences(this);
         if (sharedPreferences != null && !sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
             ApplicationController.getInstance().clearSharedPrefData(this);
@@ -128,6 +124,28 @@ public class Application extends android.app.Application {
             alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
     }
 
+    public void runDeviceService(Context context) {
+        Logger.debug(TAG, "runDeviceService");
+        Intent myIntent = new Intent(context, DeviceHealthService.class);
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
+        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmService == null) {
+            Logger.error(TAG, "AlarmManager not available");
+        }
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10 * 60 * 1000, restartServicePendingIntent);
+
+    }
+    public void runLoggerService(Context context) {
+        Logger.debug(TAG, "runLoggerService");
+      Intent myIntent = new Intent(context, LoggerService.class);
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
+        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmService == null) {
+            Logger.error(TAG, "AlarmManager not available runLoggerService");
+        }
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 64 * 60 * 1000, restartServicePendingIntent);
+
+    }
     private void initAppCenter() {
         setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
         AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",

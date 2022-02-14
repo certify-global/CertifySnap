@@ -54,17 +54,6 @@ public class DeviceHealthService extends Service {
         // Toast.makeText(this, "Service started by user.", Toast.LENGTH_LONG).show();
         try {
             Logger.debug(LOG,"onStartCommand(Intent intent, int flags, int startId)");
-            //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
-            restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, DeviceHealthService.class), PendingIntent.FLAG_ONE_SHOT);
-            alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            Calendar cal = Calendar.getInstance();
-            long sysTime = elapsedRealtime();
-            cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_10_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_10_MINUTES)));
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long currTime = Util.getCurrentTimeLong();
-            if (alarmService != null)
-                alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
             getDeviceHealthCheck(getApplicationContext());
         } catch (Exception e) {
             Log.e(LOG + "onStartCommand(Intent.)", e.getMessage());

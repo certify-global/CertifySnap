@@ -22,7 +22,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             sharedPreferences = Util.getSharedPreferences(context);
 //            if (Util.isServiceRunning(BeaconService.class, context))
 //                context.stopService(new Intent(context, BackgroundSyncService.class));
-            context.startService(new Intent(context, DeviceHealthService.class));
+ //           context.startService(new Intent(context, DeviceHealthService.class));
             if((AppSettings.isFacialDetect() || AppSettings.isRfidEnabled())
                     && sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS,false))
                 context.startService(new Intent(context, MemberSyncService.class));

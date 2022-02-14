@@ -44,16 +44,6 @@ public class LoggerService extends Service implements LoggerUtil.LogMessagesCall
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             Logger.debug(TAG, "onStartCommand()");
-            restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, LoggerService.class), PendingIntent.FLAG_ONE_SHOT);
-            alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            Calendar cal = Calendar.getInstance();
-            long sysTime = elapsedRealtime();
-            cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_MINUTES)));
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long currTime = Util.getCurrentTimeLong();
-            if (alarmService != null)
-                alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
             LoggerUtil.getInstance().setListener(this);
             sendDeviceLogs(getApplicationContext());
         } catch (Exception e) {
