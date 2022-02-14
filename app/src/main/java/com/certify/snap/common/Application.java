@@ -133,7 +133,7 @@ public class Application extends android.app.Application {
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available");
         }
-        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 5 * 60 * 1000, restartServicePendingIntent);
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10 * 60 * 1000, restartServicePendingIntent);
 
     }
 
