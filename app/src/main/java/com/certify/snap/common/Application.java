@@ -127,17 +127,20 @@ public class Application extends android.app.Application {
     public void runDeviceService(Context context) {
         Logger.debug(TAG, "runDeviceService");
         Intent myIntent = new Intent(context, DeviceHealthService.class);
+        startService(myIntent);
         PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
         AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available");
         }
-        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10 * 60 * 1000, restartServicePendingIntent);
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 5 * 60 * 1000, restartServicePendingIntent);
 
     }
+
     public void runLoggerService(Context context) {
         Logger.debug(TAG, "runLoggerService");
-      Intent myIntent = new Intent(context, LoggerService.class);
+        Intent myIntent = new Intent(context, LoggerService.class);
+        startService(myIntent);
         PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
         AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
@@ -146,6 +149,7 @@ public class Application extends android.app.Application {
         alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 64 * 60 * 1000, restartServicePendingIntent);
 
     }
+
     private void initAppCenter() {
         setAppCenterCrashListener(); //Listener should be set before calling AppCenter start
         AppCenter.start(this, "bb348a98-dbeb-407f-862d-3337632c4e0e",
