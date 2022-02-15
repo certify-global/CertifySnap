@@ -1586,9 +1586,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
-                RetrofitInstance.getInstance(context).createRetrofitInstance();
-
                 Util.getSettings((SettingCallback) context, context);
+                RetrofitInstance.getInstance().createRetrofitInstance();
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);

@@ -1,8 +1,12 @@
 package com.certify.snap.common;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +20,7 @@ import com.certify.snap.bluetooth.data.SimplePreference;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.service.AlarmReceiver;
+import com.certify.snap.service.DeviceHealthJobService;
 import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.LoggerService;
 import com.microsoft.appcenter.AppCenter;
@@ -41,11 +46,11 @@ import okhttp3.logging.HttpLoggingInterceptor;
 public class Application extends android.app.Application {
     private static final String TAG = Application.class.getSimpleName();
     private static Application mInstance;
+    public static int REQUEST_CODE_HEALTH = 111;
     private Novate novate;
     //    private MyOkHttp mMyOkHttp;
     // private DownloadMgr mDownloadMgr;
     public static boolean member = false;
-    private List<Activity> activityList = new LinkedList();
     private static SimplePreference preference;
     private int deviceMode = 0;
     WifiManager wifi;
@@ -82,6 +87,7 @@ public class Application extends android.app.Application {
         ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
         registerActivityLifecycleCallbacks(handler);
         registerComponentCallbacks(handler);
+        scheduleJobHealth();
     }
 
     public static SimplePreference getPreference() {
@@ -124,16 +130,32 @@ public class Application extends android.app.Application {
             alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
     }
 
-    public void runDeviceService(Context context) {
+    public void runDeviceService() {
         Logger.debug(TAG, "runDeviceService");
-        Intent myIntent = new Intent(context, DeviceHealthService.class);
+        Intent myIntent = new Intent(getApplicationContext(), DeviceHealthService.class);
         startService(myIntent);
-        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
-        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE_HEALTH, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available");
         }
         alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10 * 60 * 1000, restartServicePendingIntent);
+
+    }
+
+    public void scheduleJobHealth() {
+        try {
+            int timeDelay = 19 * 60 * 1000;
+            ComponentName componentName = new ComponentName(getApplicationContext(), DeviceHealthJobService.class);
+            @SuppressLint("MissingPermission") JobInfo jobInfo = new JobInfo.Builder(11, componentName)
+                    .setPersisted(true)
+                    .setPeriodic(20 * 60 * 1000, timeDelay)
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY).build();
+            JobScheduler jobScheduler = (JobScheduler) getApplicationContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            jobScheduler.schedule(jobInfo);
+        } catch (Exception e) {
+            Logger.error(TAG, "scheduleJobHealth" + e.getMessage());
+        }
 
     }
 

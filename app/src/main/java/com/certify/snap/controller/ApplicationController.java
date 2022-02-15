@@ -10,6 +10,7 @@ import com.certify.snap.api.ApiInterface;
 import com.certify.snap.api.RetrofitInstance;
 import com.certify.snap.api.request.GetTokenRequest;
 import com.certify.snap.api.response.GetTokenResponse;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
@@ -232,7 +233,7 @@ public class ApplicationController {
     }
 
     public void getToken(final Context context) {
-        ApiInterface apiInterface = RetrofitInstance.getInstance(context).getApiInterface();
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
         GetTokenRequest tokenRequest = new GetTokenRequest();
         String serialNum = Util.getSerialNumber();
         tokenRequest.deviceSN = serialNum;
@@ -251,6 +252,7 @@ public class ApplicationController {
                     Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, tokenResponse.institutionId);
                     Util.writeString(sharedPreferences, GlobalParameters.EXPIRE_TIME, tokenResponse.expiryTime);
                     Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, tokenResponse.command);
+                    AppSettings.getInstance().setSettingsInstitutionIdToken(context);
                     RetrofitInstance.getInstance().createRetrofitInstance();
                 }
             }

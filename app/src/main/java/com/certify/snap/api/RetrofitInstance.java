@@ -1,12 +1,7 @@
 package com.certify.snap.api;
 
-import android.content.Context;
-import android.util.Log;
+import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Logger;
-import com.certify.snap.BuildConfig;
-import com.certify.snap.common.GlobalParameters;
-import com.certify.snap.common.Util;
-import com.certify.snap.controller.ApplicationController;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,32 +13,25 @@ public class RetrofitInstance {
     private static final String TAG = RetrofitInstance.class.getSimpleName();
     private static RetrofitInstance instance = null;
     private ApiInterface apiInterface = null;
-    private Context context;
 
-    public void init (Context context) {
-        this.context = context;
+
+    public void init () {
         createRetrofitInstance();
     }
 
     public static RetrofitInstance getInstance() {
 
-        return getInstance(null);
-    }
-    public static RetrofitInstance getInstance(Context context) {
-
         if (instance == null) {
             instance = new RetrofitInstance();
-            if(context != null){
-                instance.context = context;
-                instance.createRetrofitInstance();
-            }
+            instance.createRetrofitInstance();
         }
         return instance;
     }
+
     public void createRetrofitInstance() {
         OkHttpClient okHttpClient = createOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Util.getSharedPreferences(context).getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL))
+                .baseUrl(AppSettings.getEndpointUrl())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClient)
@@ -64,7 +52,7 @@ public class RetrofitInstance {
             Request request = original.newBuilder()
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + Util.getSharedPreferences(context).getString(GlobalParameters.ACCESS_TOKEN, ""))
+                    .header("Authorization", "Bearer " + AppSettings.getAccessToken())
                     .method(original.method(), original.body())
                     .build();
             return chain.proceed(request);
