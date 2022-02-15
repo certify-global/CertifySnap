@@ -90,7 +90,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private RadioButton sync_member_radio_yes, sync_member_radio_no, logOfflineDataYes, logOfflineDataNo, multiLingualRbYes, multiLingualRbNo;
     private RadioGroup radio_group_local_server, debugModeRg;
     private RadioButton radio_yes_server, radio_no_server, debugModeRbYes, debugModeRbNo;
-    private TextView tvLocalServer, tvServerIp, tvLocaleSettings,additional_locale_settings, debugModeTv;
+    private TextView tvLocalServer, tvServerIp, tvLocaleSettings, additional_locale_settings, debugModeTv;
     private boolean proSettingValueSp = false;
     private boolean proSettingValue = false;
     private SeekBar seekBar;
@@ -103,11 +103,12 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     private boolean deviceOnlineSwitch = false;
     private Button saveLogButton;
     private LinearLayout logOfflineDataLayout, captureLogsLayout;
-    private Spinner spinnerLanguageSelector,additional_spinner_language_selector;
+    private Spinner spinnerLanguageSelector, additional_spinner_language_selector;
     private String currentlanguageCode = "";
     private Integer selectedLanguageId = 0;
     private String primaryLanguage = "";
     private String secondaryLanguage = "";
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -604,6 +605,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void closeApp() {
+        if (dialog != null) dialog.cancel();
         Toast.makeText(DeviceSettingsActivity.this, getString(R.string.app_restart), Toast.LENGTH_SHORT).show();
         stopMemberSyncService();
         finishAffinity();
@@ -796,7 +798,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
     }
 
     private void initiateCloseApp() {
-        ProgressDialog.show(this, "", getString(R.string.closing_app_msg));
+        dialog = ProgressDialog.show(this, "", getString(R.string.closing_app_msg));
         Observable
                 .create((ObservableOnSubscribe<Boolean>) emitter -> {
                     ApplicationController.getInstance().releaseThermalUtil();
@@ -863,7 +865,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE, "en");
         currentlanguageCode = languageCode;
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
-        spinnerLanguageSelector.setSelection(((ArrayAdapter<String>)spinnerLanguageSelector.getAdapter()).getPosition(languageName));
+        spinnerLanguageSelector.setSelection(((ArrayAdapter<String>) spinnerLanguageSelector.getAdapter()).getPosition(languageName));
     }
 
     private void additionalLanguageSetting() {
@@ -896,7 +898,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         String languageCode = sharedPreferences.getString(GlobalParameters.LANGUAGE_TYPE_SECONDARY, "es");
         currentlanguageCode = languageCode;
         String languageName = DeviceSettingsController.getInstance().getLanguageNameOnCode(languageCode);
-        additional_spinner_language_selector.setSelection(((ArrayAdapter<String>)additional_spinner_language_selector.getAdapter()).getPosition(languageName));
+        additional_spinner_language_selector.setSelection(((ArrayAdapter<String>) additional_spinner_language_selector.getAdapter()).getPosition(languageName));
     }
 
     private void multiLingualSetting() {

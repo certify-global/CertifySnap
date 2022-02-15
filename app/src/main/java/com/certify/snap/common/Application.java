@@ -45,7 +45,6 @@ public class Application extends android.app.Application {
     //    private MyOkHttp mMyOkHttp;
     // private DownloadMgr mDownloadMgr;
     public static boolean member = false;
-    private List<Activity> activityList = new LinkedList();
     private static SimplePreference preference;
     private int deviceMode = 0;
     WifiManager wifi;
@@ -124,16 +123,16 @@ public class Application extends android.app.Application {
             alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
     }
 
-    public void runDeviceService(Context context) {
+    public void runDeviceService() {
         Logger.debug(TAG, "runDeviceService");
-        Intent myIntent = new Intent(context, DeviceHealthService.class);
+        Intent myIntent = new Intent(getApplicationContext(), DeviceHealthService.class);
         startService(myIntent);
-        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
-        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 0, myIntent, 0);
+        AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available");
         }
-        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 5 * 60 * 1000, restartServicePendingIntent);
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10 * 60 * 1000, restartServicePendingIntent);
 
     }
 

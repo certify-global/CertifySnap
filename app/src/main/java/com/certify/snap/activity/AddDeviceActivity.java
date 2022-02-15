@@ -18,7 +18,6 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
-import com.certify.snap.service.DeviceHealthService;
 import com.certify.snap.service.MemberSyncService;
 
 import org.json.JSONObject;

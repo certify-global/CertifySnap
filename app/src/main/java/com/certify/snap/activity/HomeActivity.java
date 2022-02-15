@@ -90,7 +90,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
             mActivity = this;
             ApplicationController.getInstance().initThermalUtil(this);
-            RetrofitInstance.getInstance(this);
+            RetrofitInstance.getInstance().init();
             Application.getInstance().addActivity(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
@@ -265,7 +265,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
                     /*ApplicationController.getInstance().cancelHealthCheckTimer(this);
                     ApplicationController.getInstance().startHealthCheckTimer(this);*/
-                    Application.getInstance().runDeviceService(this);
+                    Application.getInstance().runDeviceService();
                    // Application.StartService(this);
                 }
         } catch (Exception e) {

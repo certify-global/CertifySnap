@@ -66,13 +66,13 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     private FaceEngine faceEngine = new FaceEngine();
     private SharedPreferences sharedPreferences;
     private RelativeLayout activate, init, updatelist, management, register, parameter, led, card, record, setting_temperature,
-                    setting_upload, setting_access_password, setting_endpoint, thermal_check_setting, scan_setting,
-                    confirmation_setting, guide_setting, qr_setting, audio_visual_setting, printer_settings_layout,touchless_interaction;
+            setting_upload, setting_access_password, setting_endpoint, thermal_check_setting, scan_setting,
+            confirmation_setting, guide_setting, qr_setting, audio_visual_setting, printer_settings_layout, touchless_interaction;
     RadioGroup rg_temperature;
     RadioButton rb_temp, rb_temp_face;
     TextView access_pwd, upload_logo, setTemp, parameter_setting, activate_tv, endpoint, tv_version, tv_thermal_setting,
             tv_scan_setting, tv_confirmation_setting, tv_serial_no, tv_guide_setting, tv_qr_setting, tv_member_management,
-            tv_visual_settings, printer_setting_text,touchless_interaction_setting;
+            tv_visual_settings, printer_setting_text, touchless_interaction_setting;
     Typeface rubiklight;
     private String userMail;
     private LinearLayout llSettings;
@@ -82,11 +82,12 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     Switch switch_activate;
     private RelativeLayout accessControl;
     private TextView accessControlTv, tvDeviceOnline, tvDeviceName, tvDeviceSettings, tvDeviceMode;
-    private View temperature_setting_view,upload_logo_setting_view, home_view_setting_view, scan_view_setting_view,
+    private View temperature_setting_view, upload_logo_setting_view, home_view_setting_view, scan_view_setting_view,
             confirmation_screen_setting_view, guide_setting_view, member_management_setting_view, audio_visual_setting_view,
             identification_setting_view, access_control_setting_view, printer_setting_view;
     private TextView mConnectivityStatus, tvRecord;
     private View recordDivider;
+    private ProgressDialog dialog;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -267,7 +268,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         tv_serial_no.setText(getString(R.string.serial_num) + Util.getSNCode(this));
         accessControlTv.setTypeface(rubiklight);
 
-        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>"+getString(R.string.connectivity_status)+"</a>";
+        String text = "<a style='text-decoration:underline' href='http://www.sample.com'>" + getString(R.string.connectivity_status) + "</a>";
         mConnectivityStatus.setTypeface(rubiklight);
         if (Build.VERSION.SDK_INT >= 24) {
             mConnectivityStatus.setText(Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY));
@@ -332,7 +333,8 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
             case R.id.setting_led:
                 break;
             case R.id.setting_record:
-                if (isopen) startActivity(new Intent(SettingsActivity.this, OfflineRecordsActivity.class));
+                if (isopen)
+                    startActivity(new Intent(SettingsActivity.this, OfflineRecordsActivity.class));
                 break;
             case R.id.setting_temperature:
                 //temperatureDialog();
@@ -565,7 +567,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
 
 
         } catch (Exception e) {
-            Logger.error(TAG,"onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListener(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -589,7 +591,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
             }
 
         } catch (Exception e) {
-            Logger.error(TAG,"onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
+            Logger.error(TAG, "onJSONObjectListenerSetting(String report, String status, JSONObject req)", e.getMessage());
         }
     }
 
@@ -612,7 +614,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         }
     }
 
-    private void proSettings(){
+    private void proSettings() {
         if (Util.isDeviceProModel()) {
             Log.d(TAG, "proSettings: true");
             if (AppSettings.isProSettings()) {
@@ -648,8 +650,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
                 audio_visual_setting_view.setVisibility(View.VISIBLE);
                 printer_setting_view.setVisibility(View.VISIBLE);
             }
-        }
-        else {
+        } else {
             Log.d(TAG, "proSettings: false");
             setting_upload.setVisibility(View.VISIBLE);
             thermal_check_setting.setVisibility(View.VISIBLE);
@@ -673,7 +674,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ProgressDialog.show(SettingsActivity.this, "", getString(R.string.launch_home_screen));
+                dialog = ProgressDialog.show(SettingsActivity.this, "", getString(R.string.launch_home_screen));
             }
         });
         Observable
@@ -713,6 +714,7 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
     }
 
     private void launchHomeScreen() {
+        if (dialog != null) dialog.cancel();
         if (Util.isDeviceProModel()) {
             if (!AppSettings.isProSettings()) {
                 startActivity(new Intent(this, IrCameraActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
