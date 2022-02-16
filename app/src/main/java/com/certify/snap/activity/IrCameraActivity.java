@@ -2086,6 +2086,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     QrCodeController.getInstance().parseQrText(guid, this);
                     ValidationQRCode();
                     return;
+                } else if (guid.startsWith("VQC:")) {
+                    QrCodeController.getInstance().hlthQrText(guid, this);
+                    ValidationQRCode();
+                    return;
                 } else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -2168,7 +2172,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             qrCodeReceived = false;
             cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -3451,11 +3454,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
         qrCodeReceived = false;
         CameraController.getInstance().setTriggerType(CameraController.triggerValue.CAMERA.toString());
-//        new Handler().postDelayed(() -> {
-//            if (barcodeScannerProcessor != null) {
-//                barcodeScannerProcessor.setListener(this);
-//            }
-//        }, 500);
     }
 
     private void startHidService() {
