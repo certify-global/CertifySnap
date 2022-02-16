@@ -168,8 +168,12 @@ public class Util {
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        return sharedPreferences;
+        try {
+            return context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        } catch (Exception e) {
+            Logger.error(LOG, "getSharedPreferences(Context context)", e.getMessage());
+        }
+        return null;
     }
 
     public static void clearAllSharedPreferences(SharedPreferences sp) {
@@ -1584,9 +1588,8 @@ public class Util {
                 Util.writeString(sharedPreferences, GlobalParameters.TOKEN_TYPE, token_type);
                 Util.writeString(sharedPreferences, GlobalParameters.INSTITUTION_ID, institutionId);
                 Util.writeString(sharedPreferences, GlobalParameters.Generate_Token_Command, command);
-                RetrofitInstance.getInstance().createRetrofitInstance();
-
                 Util.getSettings((SettingCallback) context, context);
+                RetrofitInstance.getInstance().createRetrofitInstance();
             }
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(context, true);

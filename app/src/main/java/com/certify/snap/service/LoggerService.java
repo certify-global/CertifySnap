@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 import com.certify.snap.async.AsyncDeviceLog;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.LoggerUtil;
 import com.certify.snap.common.Util;
 
@@ -29,7 +30,7 @@ import static android.os.SystemClock.elapsedRealtime;
 public class LoggerService extends Service implements LoggerUtil.LogMessagesCallback {
 
     private final String TAG = LoggerService.class.getSimpleName();
-    private final static int BACKGROUND_INTERVAL_MINUTES = 64;
+    private final static int BACKGROUND_INTERVAL_MINUTES = 60;
     private AlarmManager alarmService;
     private PendingIntent restartServicePendingIntent;
 
@@ -42,18 +43,9 @@ public class LoggerService extends Service implements LoggerUtil.LogMessagesCall
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, LoggerService.class), PendingIntent.FLAG_ONE_SHOT);
-            alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-            Calendar cal = Calendar.getInstance();
-            long sysTime = elapsedRealtime();
-            cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + (BACKGROUND_INTERVAL_MINUTES - (cal.get(Calendar.MINUTE) % BACKGROUND_INTERVAL_MINUTES)));
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            long currTime = Util.getCurrentTimeLong();
-            if (alarmService != null)
-                alarmService.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, sysTime + (cal.getTimeInMillis() - currTime), restartServicePendingIntent);
+            Logger.debug(TAG, "onStartCommand()");
             LoggerUtil.getInstance().setListener(this);
-            sendDeviceLogs(this);
+            sendDeviceLogs(getApplicationContext());
         } catch (Exception e) {
             Log.e(TAG, "onStartCommand(Intent.)" + e.getMessage());
         }
@@ -74,17 +66,17 @@ public class LoggerService extends Service implements LoggerUtil.LogMessagesCall
     @Override
     public void onLogMessagesToFile(String fileName) {
         JSONObject obj = new JSONObject();
-        SharedPreferences sharedPreferences = Util.getSharedPreferences(this);
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(getApplicationContext());
         try {
-            obj.put("deviceSN", Util.getSNCode(this));
+            obj.put("deviceSN", Util.getSNCode(getApplicationContext()));
             String encodedData = Base64.encodeToString(Util.getBytesFromFile(fileName), Base64.NO_WRAP);
             obj.put("deviceLog", encodedData);
-            obj.put("deviceData", Util.MobileDetails(this));
+            obj.put("deviceData", Util.MobileDetails(getApplicationContext()));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         new AsyncDeviceLog(obj, null, sharedPreferences.getString(GlobalParameters.URL,
-                EndPoints.prod_url) + EndPoints.DeviceLogs, this).execute();
+                EndPoints.prod_url) + EndPoints.DeviceLogs, getApplicationContext()).execute();
     }
 }

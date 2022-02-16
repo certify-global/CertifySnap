@@ -90,7 +90,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
             mActivity = this;
             ApplicationController.getInstance().initThermalUtil(this);
-            RetrofitInstance.getInstance().init(this);
+            RetrofitInstance.getInstance().init();
             Application.getInstance().addActivity(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
@@ -265,8 +265,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
                     /*ApplicationController.getInstance().cancelHealthCheckTimer(this);
                     ApplicationController.getInstance().startHealthCheckTimer(this);*/
-                    startService(new Intent(this, DeviceHealthService.class));
-                    Application.StartService(this);
+                    Application.getInstance().runDeviceService();
+                   // Application.StartService(this);
                 }
         } catch (Exception e) {
             e.printStackTrace();
@@ -509,13 +509,12 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     }
 
     private void startLoggerService() {
+
         if (!Util.isServiceRunning(LoggerService.class, this) &&
             sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, true)) {
-            startService(new Intent(this, LoggerService.class));
-            Application.StartService(this);
-            return;
+            Application.getInstance().runLoggerService(this);
+          //  Application.StartService(this);
         }
-        Log.d(TAG, "Logger service");
     }
 
     private void startBleAdvertising() {

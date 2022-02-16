@@ -23,6 +23,7 @@ import com.certify.snap.qrverification.JwtHelper;
 import com.certify.snap.qrverification.PersonModel;
 import com.certify.snap.qrverification.VaccinationModel;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -362,4 +363,20 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         Util.writeString(sharedPreferences, GlobalParameters.vaccineDocumentName, "");
     }
 
+    public void hlthQrText(String qrText, Context context) {
+        try {
+            String hlthVqc = qrText.substring(4);
+            String listHLTH[] = hlthVqc.split(";");
+            if (listHLTH.length > 3) { //
+               //  String id = listHLTH[0].substring(listHLTH[0].indexOf(":") + 1);
+                String firstName = listHLTH[1].substring(listHLTH[1].indexOf(":") + 1);
+                String lastName = listHLTH[2].substring(listHLTH[2].indexOf(":") + 1);
+                    Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, firstName);
+                    Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, lastName);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

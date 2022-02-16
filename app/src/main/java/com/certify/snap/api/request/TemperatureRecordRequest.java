@@ -105,4 +105,7 @@ public class TemperatureRecordRequest {
 
     @SerializedName("vaccinationStatus")
     public String vaccinationStatus;
+
+    @SerializedName("enabledTemperature")
+    public int enabledTemperature;
 }

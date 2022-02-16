@@ -365,6 +365,8 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         Log.e("refreshMemberList---", "start-" + memberlist.toString());
         datalist = memberlist;
         memberAdapter.refresh(datalist);
+        MemberSyncDataModel.getInstance().setSyncing(false);
+        mCountTv.setText(String.valueOf(datalist.size()));
     }
 
     ImageView mfaceimg;

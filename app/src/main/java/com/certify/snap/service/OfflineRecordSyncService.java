@@ -59,8 +59,8 @@ public class OfflineRecordSyncService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "OfflineRecord Service started");
-        context = this;
-        sp = Util.getSharedPreferences(this);
+        context = getApplicationContext();
+        sp = Util.getSharedPreferences(getApplicationContext());
         AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
         taskExecutorService = executorService.getExecutorService();
         if (DatabaseController.getInstance().isOfflineRecordTempExist()){

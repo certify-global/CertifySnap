@@ -114,7 +114,7 @@ public class LoggerUtil {
                         }
                         Util.writeToFile(file, file.length(), result.toString().getBytes());
                     } catch (IOException e) {
-                        Logger.error("LoggerUtil", "logMessagesToFile()","Error in writing to File");
+                        Logger.error("LoggerUtil", "logMessagesToFile()","Error in writing to File"+e.getMessage());
                     }
                     emitter.onNext(fileName);
                 })

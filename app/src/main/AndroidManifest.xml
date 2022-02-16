@@ -3,15 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.certify.snap">
 
+
     <uses-permission android:name="android.permission.NFC" />
-    <uses-permission
-        android:name="android.permission.WRITE_SECURE_SETTINGS"
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
-
-    <uses-feature
-        android:name="android.hardware.nfc"
-        android:required="false" />
-
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -197,8 +194,9 @@
             android:name=".service.LoggerService"
             android:stopWithTask="false" />
         <service
-            android:name=".service.AccessTokenJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:name=".service.DeviceHealthJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
@@ -211,10 +209,6 @@
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode,face,ocr,ica" />
-
-        <service
-            android:name=".service.DeviceHealthService"
-            android:stopWithTask="false" />
 
         <uses-library
             android:name="org.apache.http.legacy"

@@ -58,6 +58,7 @@ public class MemberSyncDataModel {
 
     public interface SyncDataCallBackListener {
         void onMemberAddedToDb(RegisteredMembers member);
+
         void onMemberDeletedFromDb(RegisteredMembers member);
     }
 
@@ -83,7 +84,8 @@ public class MemberSyncDataModel {
 
     /**
      * Method for initialization with parameter
-     * @param ctx context
+     *
+     * @param ctx  context
      * @param type database add type Serial or Scale
      */
     public void init(Context ctx, DatabaseAddType type) {
@@ -94,6 +96,7 @@ public class MemberSyncDataModel {
 
     /**
      * Method that processes the Json response from the API and adds the data to the local data model
+     *
      * @param memberList Member Info
      */
     public void createMemberDataAndAdd(JSONArray memberList) {
@@ -160,9 +163,9 @@ public class MemberSyncDataModel {
                                     emitter.onNext(member);
                                 }
                             } else {
-                                if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
+                                if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true)) {
                                     List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
-                                    if (members != null && members.size() > 0) {
+                                    if (members != null && members.size() > 0 && index == 0) {
                                         int size = members.size();
                                         index = size + 1;
                                     } else {
@@ -206,7 +209,7 @@ public class MemberSyncDataModel {
                         Log.d(TAG, "SnapXT Add API response Member added " + membersList.size());
 
                         //Add records fetched from server, add it to the database
-                        if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
+                        if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true)) {
                             addToDatabase();
                         } else {
                             setPrimaryIdAndAddToDb();
@@ -228,6 +231,7 @@ public class MemberSyncDataModel {
 
     /**
      * Method that processes the Json response from the API and updates the data to the local data model
+     *
      * @param memberList Member Info
      */
     public void createMemberDataAndUpdate(JSONArray memberList) {
@@ -293,7 +297,7 @@ public class MemberSyncDataModel {
                                 }
                             } else {
                                 List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
-                                if (members != null && members.size() > 0) {
+                                if (members != null && members.size() > 0 && index == 0) {
                                     int size = members.size();
                                     index = size + 1;
                                 } else {
@@ -421,51 +425,52 @@ public class MemberSyncDataModel {
      * @param context context
      */
     private void addToDatabase(Context context) {
-        Log.d(TAG, "SnapXT Add to database, number of records: " + membersList.size());
+        Log.d(TAG, "SnapXT Add to database, number of records: " + membersList);
         doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
         new Thread(() -> {
-                for (int i = 0; i < membersList.size(); i++) {
-                    doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
-                    RegisteredMembers member = membersList.get(i);
-                    if (member.getStatus().equalsIgnoreCase("true") ||
+            for (int i = 0; i < membersList.size(); i++) {
+                doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+                RegisteredMembers member = membersList.get(i);
+                if (member.getStatus().equalsIgnoreCase("true") ||
                         member.getStatus().equalsIgnoreCase("1")) {
-                        RegisteredMembers memberExist = isMemberExistsInDb(member.getPrimaryId());
-                        if (memberExist != null) {
-                            Log.d(TAG, "SnapXT Member already exist, delete and update " +i);
-                            boolean isMemberAccessed = memberExist.isMemberAccessed;
-                            deleteRecord(member.firstname, member.getPrimaryId());
-                            member.setMemberAccessed(isMemberAccessed);
-                            localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
-                                    member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                    member.getImage(), "sync", context, member, member.getPrimaryId());
-                        } else {
-                            Log.d(TAG, "SnapXT New member update " +i);
-                            localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
-                                    member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                    member.getImage(), "sync", context, member, member.getPrimaryId());
-                        }
+                    RegisteredMembers memberExist = isMemberExistsInDb(member.getPrimaryId());
+                    if (memberExist != null) {
+                        Log.d(TAG, "SnapXT Member already exist, delete and update " + i);
+                        boolean isMemberAccessed = memberExist.isMemberAccessed;
+                        deleteRecord(member.firstname, member.getPrimaryId());
+                        member.setMemberAccessed(isMemberAccessed);
+                        localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                                member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                                member.getImage(), "sync", context, member, member.getPrimaryId());
+                    } else {
+                        Log.d(TAG, "SnapXT New member update " + i);
+                        localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                                member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                                member.getImage(), "sync", context, member, member.getPrimaryId());
                     }
                 }
-                if (dbSyncErrorMemberList.isEmpty()) {
-                    updateSyncCompletion();
-                }
-                isSyncing = false;
+            }
+            if (dbSyncErrorMemberList.isEmpty()) {
+                updateSyncCompletion();
+            }
+            isSyncing = false;
         }).start();
     }
 
     /**
      * Method that initiates process of adding to the database
+     *
      * @param context context
      */
     private synchronized void addToDatabaseSerial(Context context) {
-        Log.d(TAG, "SnapXT Add to database Serial, number of records: " + membersList.size());
+        Log.d(TAG, "SnapXT Add to database Serial, number of records: " + membersList);
         for (int i = 0; i < membersList.size(); i++) {
             RegisteredMembers member = membersList.get(i);
             if (member.getStatus().equalsIgnoreCase("true") ||
                     member.getStatus().equalsIgnoreCase("1")) {
                 RegisteredMembers memberExist = isMemberExistsInDb(member.getPrimaryId());
                 if (memberExist != null) {
-                    Log.d(TAG, "SnapXT Member already exist, delete and update " +i);
+                    Log.d(TAG, "SnapXT Member already exist, delete and update " + i);
                     boolean isMemberAccessed = memberExist.isMemberAccessed;
                     deleteRecord(member.firstname, member.getPrimaryId());
                     member.setMemberAccessed(isMemberAccessed);
@@ -482,7 +487,7 @@ public class MemberSyncDataModel {
                     }
                     membersList.remove(member);
                 } else {
-                    Log.d(TAG, "SnapXT New member update " +i);
+                    Log.d(TAG, "SnapXT New member update " + i);
                     localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                             member.getImage(), "sync", context, member, member.getPrimaryId());
@@ -510,7 +515,7 @@ public class MemberSyncDataModel {
             for (int i = 0; i < membersList.size(); i++) {
                 doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
                 RegisteredMembers member = membersList.get(i);
-                Log.d(TAG, "SnapXT New member update " +i);
+                Log.d(TAG, "SnapXT New member update " + i);
                 localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
                         member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                         member.getImage(), "sync", context, member, member.getPrimaryId());
@@ -524,6 +529,7 @@ public class MemberSyncDataModel {
 
     /**
      * Method that checks if a member already exists in the database
+     *
      * @param primaryId Primary Id
      * @return true or false accordingly
      */
@@ -537,6 +543,7 @@ public class MemberSyncDataModel {
 
     /**
      * Method that checks if a member already exists in the database
+     *
      * @param certifyId
      * @return true or false accordingly
      */
@@ -551,28 +558,28 @@ public class MemberSyncDataModel {
     /**
      * Method that handles adding one record to the database
      * TODO: Can opitmize not send the individual porams
-     * @param firstname firstname
-     * @param lastname lastname
-     * @param mobile mobile
-     * @param memberId memberId
-     * @param email email
-     * @param accessid accessid
-     * @param uniqueid uniqueis
-     * @param imgpath imgpath
-     * @param sync sync
-     * @param context context
-     * @param member member
-     * @return true or false accordingly
      *
+     * @param firstname firstname
+     * @param lastname  lastname
+     * @param mobile    mobile
+     * @param memberId  memberId
+     * @param email     email
+     * @param accessid  accessid
+     * @param uniqueid  uniqueis
+     * @param imgpath   imgpath
+     * @param sync      sync
+     * @param context   context
+     * @param member    member
+     * @return true or false accordingly
      */
     private boolean localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid,
                                   String uniqueid, String imgpath, String sync, Context context, RegisteredMembers member, long primaryId) {
         boolean result = false;
         File imageFile = new File(imgpath);
-        if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId),context) || !imageFile.exists()) {
+        if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
-                                 member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
-                                member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
+                    member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
+                    member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
                 result = true;
                 updateDbSyncErrorMap(member);
@@ -603,13 +610,14 @@ public class MemberSyncDataModel {
 
     /**
      * Method that processes the image
-     * @param name name
-     * @param imgpath  path
-     * @param id id
+     *
+     * @param name    name
+     * @param imgpath path
+     * @param id      id
      * @param context context
      * @return true or false accordingly
      */
-    public boolean processImg(String name, String imgpath, String id,Context context) {
+    public boolean processImg(String name, String imgpath, String id, Context context) {
         if (imgpath.isEmpty()) return false;
         try {
             Bitmap bitmap = BitmapFactory.decodeFile(imgpath);
@@ -634,19 +642,20 @@ public class MemberSyncDataModel {
 
     /**
      * Method that add the record to the database
+     *
      * @param firstname firstname
-     * @param lastname lastname
-     * @param mobile mobile
-     * @param memberId memberId
-     * @param email email
-     * @param accessid accessid
-     * @param uniqueid uniqueid
-     * @param context context
-     * @param dateTime dateTime
+     * @param lastname  lastname
+     * @param mobile    mobile
+     * @param memberId  memberId
+     * @param email     email
+     * @param accessid  accessid
+     * @param uniqueid  uniqueid
+     * @param context   context
+     * @param dateTime  dateTime
      * @return true or false accordingly
      */
     public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
-                                    String dateTime, long primaryId, String memberType, String memberTypeName,String networkId, String accessFromTime, String accessToTime,
+                                    String dateTime, long primaryId, String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime,
                                     String groupId, boolean isMemberAccessed, String groupTypeName, boolean isDocument, String guid) {
         try {
             String username = firstname + "-" + primaryId;
@@ -689,6 +698,7 @@ public class MemberSyncDataModel {
 
     /**
      * Method that initiates adding the error records to the database
+     *
      * @param context context
      */
     public void syncDbErrorList(Context context) {
@@ -700,34 +710,35 @@ public class MemberSyncDataModel {
         dbSyncErrorMap.clear();
         doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
         new Thread(() -> {
-                Log.d(TAG, "SnapXT Error Sync members to db, Records: " + dbSyncErrorMemberList.size());
-                for (int i = 0; i < dbSyncErrorMemberList.size(); i++) {
-                    doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
-                    isSyncing = true;
-                    RegisteredMembers member = dbSyncErrorMemberList.get(i);
-                    RegisteredMembers memberExist = isMemberExistsInDb(member.primaryid);
-                    if (memberExist != null) {
-                        Log.d(TAG, "SnapXT Error Member already exist, delete and update " +i);
-                        boolean isMemberAccessed = memberExist.isMemberAccessed;
-                        deleteRecord(member.firstname, member.getPrimaryId());
-                        member.setMemberAccessed(isMemberAccessed);
-                        localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
-                                member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                member.getImage(), "sync", context, member, member.getPrimaryId());
-                    } else {
-                        Log.d(TAG, "SnapXT Error member update " +i);
-                        localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
-                                member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
-                                member.getImage(), "sync", context, member, member.getPrimaryId());
-                    }
+            Log.d(TAG, "SnapXT Error Sync members to db, Records: " + dbSyncErrorMemberList.size());
+            for (int i = 0; i < dbSyncErrorMemberList.size(); i++) {
+                doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+                isSyncing = true;
+                RegisteredMembers member = dbSyncErrorMemberList.get(i);
+                RegisteredMembers memberExist = isMemberExistsInDb(member.primaryid);
+                if (memberExist != null) {
+                    Log.d(TAG, "SnapXT Error Member already exist, delete and update " + i);
+                    boolean isMemberAccessed = memberExist.isMemberAccessed;
+                    deleteRecord(member.firstname, member.getPrimaryId());
+                    member.setMemberAccessed(isMemberAccessed);
+                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                            member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                            member.getImage(), "sync", context, member, member.getPrimaryId());
+                } else {
+                    Log.d(TAG, "SnapXT Error member update " + i);
+                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                            member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
+                            member.getImage(), "sync", context, member, member.getPrimaryId());
                 }
-                updateDbSyncErrorList();
-                isSyncing = false;
+            }
+            updateDbSyncErrorList();
+            isSyncing = false;
         }).start();
     }
 
     /**
      * Method that updates the Error map for the error database records sync
+     *
      * @param member RegisterMember
      */
     private void updateDbSyncErrorMap(RegisteredMembers member) {
@@ -739,16 +750,16 @@ public class MemberSyncDataModel {
      */
     private void updateDbSyncErrorList() {
         if (dbSyncErrorMemberList.isEmpty()) {
-            Log.d(TAG , "SnapXT Error Sync completed successfully");
+            Log.d(TAG, "SnapXT Error Sync completed successfully");
             updateSyncCompletion();
             clear();
             return;
         }
         for (Map.Entry<RegisteredMembers, Boolean> entry : dbSyncErrorMap.entrySet()) {
-             RegisteredMembers uniqueId = entry.getKey();
-             if (uniqueId != null) {
-                 dbSyncErrorMemberList.remove(uniqueId);
-             }
+            RegisteredMembers uniqueId = entry.getKey();
+            if (uniqueId != null) {
+                dbSyncErrorMemberList.remove(uniqueId);
+            }
         }
     }
 
@@ -762,7 +773,6 @@ public class MemberSyncDataModel {
     }
 
     /**
-     *
      * @param value
      */
     public void setNumOfRecords(int value) {
@@ -774,7 +784,7 @@ public class MemberSyncDataModel {
             case SCALE: {
                 if (membersList.size() == NUM_OF_RECORDS) {
                     if (isMemberSyncGroupIdEnabled()
-                        && !Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED,true)) {
+                            && !Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true)) {
                         checkDatabaseMembers();
                     } else {
                         addToDatabase(context);
@@ -792,6 +802,7 @@ public class MemberSyncDataModel {
 
     /**
      * Method that set the callback listner
+     *
      * @param callBackListener callbackListener
      */
     public void setListener(SyncDataCallBackListener callBackListener) {

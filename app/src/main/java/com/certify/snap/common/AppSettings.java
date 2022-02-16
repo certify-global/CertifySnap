@@ -3,7 +3,9 @@ package com.certify.snap.common;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.api.request.DeviceInfo;
 import com.certify.snap.controller.CameraController;
 
 public class AppSettings {
@@ -100,6 +102,11 @@ public class AppSettings {
     private static boolean debugModeEnabled = false;
     private static boolean accessIdTrimZeroes = false;
     private static boolean mobileAccessCard = false;
+    private static String sNCode = "";
+    private static DeviceInfo deviceInfo = null;
+    private static String institutionId = "";
+    private static String accessToken = "";
+    private static String endpointUrl = BuildConfig.ENDPOINT_URL;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -206,10 +213,38 @@ public class AppSettings {
             rfidEnabled = false;
         }
         timeAndAttendance = sharedPreferences.getInt(GlobalParameters.TimeAttendanceOption, 0);
-        showVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_VACCINATION_INDICATOR, false);
-        showNonVaccinationIndicator =  sharedPreferences.getBoolean(GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, false);
+        showVaccinationIndicator = sharedPreferences.getBoolean(GlobalParameters.SHOW_VACCINATION_INDICATOR, false);
+        showNonVaccinationIndicator = sharedPreferences.getBoolean(GlobalParameters.SHOW_NON_VACCINATION_INDICATOR, false);
         debugModeEnabled = sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, false);
         mobileAccessCard = sharedPreferences.getBoolean(GlobalParameters.MOBILE_ACCESS_CARD, false);
+        sNCode = Util.getSNCode(context);
+        deviceInfo = Util.getDeviceInfo(context);
+        endpointUrl = sharedPreferences.getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL);
+        institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+        accessToken = sharedPreferences.getString(GlobalParameters.ACCESS_TOKEN, "");
+    }
+   public void setSettingsInstitutionIdToken(Context context){
+       SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
+       institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
+       accessToken = sharedPreferences.getString(GlobalParameters.ACCESS_TOKEN, "");
+   }
+    public static String getAccessToken() {
+        return accessToken;
+    }
+    public static String getEndpointUrl() {
+        return endpointUrl;
+    }
+
+    public static String getSNCode() {
+        return sNCode;
+    }
+
+    public static String getInstitutionId() {
+        return institutionId;
+    }
+
+    public static DeviceInfo getDeviceInfo() {
+        return deviceInfo;
     }
 
     public static String getThermalScanTitle() {
@@ -343,15 +378,19 @@ public class AppSettings {
     public static boolean isEnableHandGesture() {
         return enableHandGesture;
     }
+
     public static boolean isEnableQuestions() {
         return enableQuestions;
     }
+
     public static boolean isEnableTouchMode() {
         return enableTouchMode;
     }
+
     public static String getTouchHomePageMsg() {
         return touchHomePageMsg;
     }
+
     public static String getMultiLanguageHomeMsg() {
         return multiLanguageHomeMsg;
     }

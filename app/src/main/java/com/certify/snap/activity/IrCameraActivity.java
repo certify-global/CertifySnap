@@ -363,8 +363,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             setContentView(R.layout.activity_ir);
         }
-
-        instanceStart();
+         instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
@@ -971,6 +970,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!AppSettings.isTemperatureScanEnabled()) {
             CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
+            if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()) && CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString())) {
+               if(data != null) data.temperature = "0";
+                TemperatureController.getInstance().recordUserTemperature(data, -1);
+            }
             return;
         }
         Log.d(TAG, "runTemperature");
@@ -2083,6 +2086,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     QrCodeController.getInstance().parseQrText(guid, this);
                     ValidationQRCode();
                     return;
+                } else if (guid.startsWith("VQC:")) {
+                    QrCodeController.getInstance().hlthQrText(guid, this);
+                    clearQrCodePreview();
+                    qrCodeReceived = false;
+                    setCameraPreview();
+                    return;
                 } else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -2320,7 +2329,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void setCameraPreview() {
         if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect() &&
-                !AppSettings.isPrintLabelFace()) {
+                !AppSettings.isPrintLabelFace() &&
+                !((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()) && CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) {
             onTemperatureScanDisabled();
             return;
         }
