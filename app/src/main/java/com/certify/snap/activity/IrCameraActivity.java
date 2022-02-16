@@ -2088,9 +2088,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     return;
                 } else if (guid.startsWith("VQC:")) {
                     QrCodeController.getInstance().hlthQrText(guid, this);
-                    clearQrCodePreview();
-                    qrCodeReceived = false;
-                    setCameraPreview();
+                    ValidationQRCode();
                     return;
                 } else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
                     runOnUiThread(new Runnable() {
