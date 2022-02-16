@@ -1,11 +1,14 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
+import com.certify.snap.activity.QRCodeResultActivity;
+import com.certify.snap.activity.SmartHealthResultActivity;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -69,6 +72,8 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
+
+        void onQRCodeScanSuccess();
     }
 
     public static QrCodeController getInstance() {
@@ -256,8 +261,9 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, smartHealthCardData.getDose1Date());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, smartHealthCardData.getDose2Date());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, smartHealthCardData.getDoseType());
-
-            //   Intent intent = new Intent(context, SmartHealthResultActivity.class);
+            if (listener != null)
+                listener.onQRCodeScanSuccess();
+            //            Intent intent = new Intent(context, SmartHealthResultActivity.class);
 //            intent.putExtra("verification", true);
 //            intent.putExtra("smartHealthModel", smartHealthCardData);
 //            context.startActivity(intent);
@@ -338,7 +344,8 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, certificateModel.getVaccinations().get(0).getDateOfVaccination());
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, "");
             Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, certificateModel.getVaccinations().get(0).getManufacturer());
-
+            if (listener != null)
+                listener.onQRCodeScanSuccess();
 //            Intent intent = new Intent(context, QRCodeResultActivity.class);
 //            intent.putExtra("verification", true);
 //            intent.putExtra("certificateModel", certificateModel);
@@ -360,14 +367,19 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         try {
             String hlthVqc = qrText.substring(4);
             String listHLTH[] = hlthVqc.split(";");
-            if (listHLTH.length > 3) { //
-               //  String id = listHLTH[0].substring(listHLTH[0].indexOf(":") + 1);
+            if (listHLTH.length >= 3) { //
+                //  String id = listHLTH[0].substring(listHLTH[0].indexOf(":") + 1);
                 String firstName = listHLTH[1].substring(listHLTH[1].indexOf(":") + 1);
                 String lastName = listHLTH[2].substring(listHLTH[2].indexOf(":") + 1);
-                    Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, firstName);
-                    Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, lastName);
+                Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, firstName);
+                Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, lastName);
 
+            } else if (listHLTH.length >= 2) {
+                String firstName = listHLTH[1].substring(listHLTH[1].indexOf(":") + 1);
+                Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, firstName);
             }
+            if (listener != null)
+                listener.onQRCodeScanSuccess();
         } catch (Exception e) {
             e.printStackTrace();
         }

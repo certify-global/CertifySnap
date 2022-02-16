@@ -30,43 +30,46 @@ public class JwtHelper {
     private String issuer;
     private String kid;
     public Payload payload;
-    public static List<QRCodeIssuer> qrCodeIssuers=null;
+    public static List<QRCodeIssuer> qrCodeIssuers = null;
+
     public static JwtHelper decode(String raw) throws DecodeException, IOException {
         JwtHelper instance = new JwtHelper();
         String truncated = raw.substring(5);
         String token = instance.convertHexToChar(truncated);
-        String[] headerPayloadSignature =instance.decodeJwtPayload(token);
+        String[] headerPayloadSignature = instance.decodeJwtPayload(token);
         Header header = Header.decode(headerPayloadSignature[0]);
         Payload payload = Payload.decode(headerPayloadSignature[1]);
 
         String issuer = payload.iss;
         String keysJson = instance.fetchKeys(issuer);
-         qrCodeIssuers=DatabaseController.getInstance().getIssuerKey();
-        Map<String, JsonWebKey> webKeyMap = JsonWebKey.Parse(keysJson);
-        JsonWebKey key = webKeyMap.get(header.kid);
-        Gson gson=new Gson();
-        for(Map.Entry entry:webKeyMap.entrySet()){
-            QRCodeIssuer qrCodeIssuer=new QRCodeIssuer();
-            qrCodeIssuer.setKeyID(entry.getKey().toString());
-            qrCodeIssuer.setIssuer(issuer);
-            qrCodeIssuer.setContentValue(gson.toJson(entry.getValue()));
-            if(!DatabaseController.getInstance().isuniqueKey(entry.getKey().toString())) {
-                DatabaseController.getInstance().insertQRCodeIssuer(qrCodeIssuer);
+        qrCodeIssuers = DatabaseController.getInstance().getIssuerKey();
+            Map<String, JsonWebKey> webKeyMap = JsonWebKey.Parse(keysJson);
+            JsonWebKey key = webKeyMap.get(header.kid);
+            Gson gson = new Gson();
+            for (Map.Entry entry : webKeyMap.entrySet()) {
+                QRCodeIssuer qrCodeIssuer = new QRCodeIssuer();
+                qrCodeIssuer.setKeyID(entry.getKey().toString());
+                qrCodeIssuer.setIssuer(issuer);
+                qrCodeIssuer.setContentValue(gson.toJson(entry.getValue()));
+                if (!DatabaseController.getInstance().isuniqueKey(entry.getKey().toString())) {
+                    DatabaseController.getInstance().insertQRCodeIssuer(qrCodeIssuer);
+                }
             }
-        }
-        instance.payload =payload;
+        instance.payload = payload;
         return instance;
     }
-    public boolean verify(){
+
+    public boolean verify() {
         return true;
     }
+
     private String fetchKeys(String issuer) {
 
-        String url = issuer+"/.well-known/jwks.json";
+        String url = issuer + "/.well-known/jwks.json";
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url).build();
-        try(Response response = client.newCall(request).execute()){
+        try (Response response = client.newCall(request).execute()) {
             String json = response.body().string();
             return json;
         } catch (IOException e) {
@@ -75,124 +78,140 @@ public class JwtHelper {
         }
     }
 
-    public static class DecodeException extends  Exception{
+    public static class DecodeException extends Exception {
         public DecodeException(String message) {
             super(message);
         }
     }
 
     private String[] decodeJwtPayload(String raw) throws DecodeException {
-        if(raw == null) throw new DecodeException("input is null");
+        if (raw == null) throw new DecodeException("input is null");
         String[] splitRaw = raw.split("\\.");
-        if(splitRaw.length != 3)
-            throw new DecodeException("invalid JWT, not in <header>.<payload>.<signature> format, length: "+splitRaw.length);
+        if (splitRaw.length != 3)
+            throw new DecodeException("invalid JWT, not in <header>.<payload>.<signature> format, length: " + splitRaw.length);
         String header = splitRaw[0];
         String payload = splitRaw[1];
         payload = payload.length() % 2 == 0 ?
                 payload.concat("==") : payload.concat("=");
-        payload = payload.replace('-', '+').replace('_','/');
+        payload = payload.replace('-', '+').replace('_', '/');
         splitRaw[1] = payload;
-        for(String el : splitRaw) {
-            el = el.length() %2 == 0 ? el +"==" : el + "=";
+        for (String el : splitRaw) {
+            el = el.length() % 2 == 0 ? el + "==" : el + "=";
         }
-        return  splitRaw;
+        return splitRaw;
     }
+
     private String convertHexToChar(String truncated) {
         char[] src = truncated.toCharArray();
-        char[] cb = new char[truncated.length()/2];
-        for(int i = 0; i < truncated.length(); i+=2){
-            try{
-                int num = Integer.parseInt(new String(new char[]{src[i], src[i+1]}));
-                cb[i/2] = (char)(num + 45);
-            }catch (Exception ex){
+        char[] cb = new char[truncated.length() / 2];
+        for (int i = 0; i < truncated.length(); i += 2) {
+            try {
+                int num = Integer.parseInt(new String(new char[]{src[i], src[i + 1]}));
+                cb[i / 2] = (char) (num + 45);
+            } catch (Exception ex) {
                 System.out.println(ex.toString());
             }
         }
 
         return new String(cb);
     }
-    public  static class Header{
+
+    public static class Header {
         public String zip;
-        public  String alg;
-        public  String kid;
-        public  static Header decode(String base64) throws JsonProcessingException {
-            byte[] data = android.util.Base64.decode(base64,0);
+        public String alg;
+        public String kid;
+
+        public static Header decode(String base64) throws JsonProcessingException {
+            byte[] data = android.util.Base64.decode(base64, 0);
             base64 = new String(data);
             Header h = new ObjectMapper().readValue(base64, Header.class);
             return h;
         }
     }
-    public static class Payload{
-        public  String iss;
-        public  float nbf;
-        public  VerifiableCredential vc;
+
+    public static class Payload {
+        public String iss;
+        public float nbf;
+        public VerifiableCredential vc;
+
         public static Payload decode(String raw) throws IOException, DecodeException {
             Payload instance = new Payload();
-            byte[] payloadDecoded =android.util.Base64.decode(raw,0);
-            String payloadJson = inflatePayload(payloadDecoded);
+            int len = raw.length();
+            int mod = len % 4;
+            if (mod != 0) raw = raw.substring(0, len - mod);
+            try {
+                byte[] payloadDecoded = android.util.Base64.decode(raw, 0);
+                String payloadJson = inflatePayload(payloadDecoded);
 
-            TokenStreamFactory jf = JsonFactory.builder().build();
-            JsonParser jp = jf.createParser(payloadJson.getBytes());
-            while(!jp.isClosed()){
-                JsonToken jt = jp.nextToken();
-                if(!JsonToken.FIELD_NAME.equals(jt)) continue;
-                String fn = jp.currentName();
-                if(fn == null) continue;
+                TokenStreamFactory jf = JsonFactory.builder().build();
+                JsonParser jp = jf.createParser(payloadJson.getBytes());
+                while (!jp.isClosed()) {
+                    JsonToken jt = jp.nextToken();
+                    if (!JsonToken.FIELD_NAME.equals(jt)) continue;
+                    String fn = jp.currentName();
+                    if (fn == null) continue;
 
-                jt = jp.nextToken();
+                    jt = jp.nextToken();
 
-                if(fn.equals("iss"))
-                    instance.iss = jp.getText();
-                else  if(fn.equals("nbf"))
-                    instance.nbf = jp.getFloatValue();
-                else if(fn.equals("vc")){
-                    ObjectNode node = new ObjectMapper().readTree(jp);
-                    instance.vc = VerifiableCredential.decode(node);
+                    if (fn.equals("iss"))
+                        instance.iss = jp.getText();
+                    else if (fn.equals("nbf"))
+                        instance.nbf = jp.getFloatValue();
+                    else if (fn.equals("vc")) {
+                        ObjectNode node = new ObjectMapper().readTree(jp);
+                        instance.vc = VerifiableCredential.decode(node);
+                    }
+
+
                 }
-
-
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return instance;
         }
+
         private static String inflatePayload(byte[] payloadDecoded) throws IOException {
             InflaterInputStream inflaterInputStream =
                     new InflaterInputStream(
                             new ByteArrayInputStream(payloadDecoded),
                             new Inflater(true));
             StringBuilder sb = new StringBuilder();
-            while(inflaterInputStream.available() != 0){
+            while (inflaterInputStream.available() != 0) {
                 byte[] buf = new byte[8 * 1024];
                 int read = inflaterInputStream.read(buf);
-                if(read <=0) break;
-                sb.append(new String(buf,0, read ));
+                if (read <= 0) break;
+                sb.append(new String(buf, 0, read));
             }
             String payload = sb.toString();
 
             return payload;
         }
     }
-    public  static class VerifiableCredential{
+
+    public static class VerifiableCredential {
         public List<Immunization> immunization = new ArrayList<>();
-        public  Patient patient;
-        public  static VerifiableCredential decode(ObjectNode node) throws IOException, DecodeException {
+        public Patient patient;
+
+        public static VerifiableCredential decode(ObjectNode node) throws IOException, DecodeException {
             VerifiableCredential vc = new VerifiableCredential();
 
             ArrayNode entries = (ArrayNode) node
                     .get("credentialSubject").get("fhirBundle").get("entry");
-            for (JsonNode entry: entries) {
+            for (JsonNode entry : entries) {
                 JsonNode resource = entry.get("resource");
                 String resourceType = resource.get("resourceType").asText();
-                if("Immunization".equals(resourceType)){
+                if ("Immunization".equals(resourceType)) {
                     vc.immunization.add(Immunization.decode(resource));
-                }else if("Patient".equals(resourceType)){
+                } else if ("Patient".equals(resourceType)) {
                     vc.patient = Patient.decode(resource);
-                }else {
-                    throw new DecodeException("Unknown fhir resourceTye: "+resourceType);
+                } else {
+                    throw new DecodeException("Unknown fhir resourceTye: " + resourceType);
                 }
             }
             return vc;
         }
-        public static class Immunization{
+
+        public static class Immunization {
             public String status;
             public String lotNumber;
             public String vaccinationCode;
@@ -203,28 +222,34 @@ public class JwtHelper {
                 Immunization im = new Immunization();
                 im.lotNumber = resource.get("lotNumber").asText();
                 im.occurrenceDateTime = resource.get("occurrenceDateTime").asText();
-                JsonNode performer = ((ArrayNode)resource.get("performer")).get(0);
+                JsonNode performer = ((ArrayNode) resource.get("performer")).get(0);
                 im.performer = performer.get("actor").get("display").asText();
                 im.status = resource.get("status").asText();
-                im.vaccinationCode = ((ArrayNode)resource.get("vaccineCode").get("coding")).get(0)
+                im.vaccinationCode = ((ArrayNode) resource.get("vaccineCode").get("coding")).get(0)
                         .get("code").asText();
                 return im;
             }
         }
-        public static class Patient{
+
+        public static class Patient {
             public String birthDate;
             public String name;
-            public static Patient decode(JsonNode resource){
+
+            public static Patient decode(JsonNode resource) {
                 Patient patient = new Patient();
                 JsonNode name = ((ArrayNode) resource.get("name")).get(0);
                 patient.birthDate = resource.get("birthDate").asText();
                 ArrayNode given = (ArrayNode) name.get("given");
-                patient.name = given.get(0).asText() +" "+ given.get(1).asText()+" " +name.get("family").asText();
+                //  patient.name = given.get(0).asText() +" "+ given.get(1).asText()+" " +name.get("family").asText();
+                patient.name = given.get(0).asText();
+                if (given.size() > 1) patient.name += " " + given.get(1).asText();
+                patient.name += " " + name.get("family").asText();
                 return patient;
             }
         }
     }
-    public static class JsonWebKey{
+
+    public static class JsonWebKey {
         public String alg;
         public String crv;
         public String kid;
@@ -233,6 +258,7 @@ public class JwtHelper {
         public String x;
         public String y;
         public String[] x5c;
+
         public static Map<String, JsonWebKey> Parse(String json) throws IOException {
             Map<String, JsonWebKey> map = new HashMap<>();
             JsonParser jp = JsonFactory.builder().build()
@@ -240,16 +266,16 @@ public class JwtHelper {
             ObjectNode tree = new ObjectMapper().readTree(jp);
             ArrayNode jn = (ArrayNode) tree.get("keys");
 
-            for(JsonNode k: jn){
-               JsonWebKey j = new JsonWebKey();
-               j.use = k.get("use").asText();
-               j.kty = k.get("kty").asText();
-               j.kid = k.get("kid").asText();
-               j.crv = k.get("crv").asText();
-               j.alg = k.get("alg").asText();
-               j.x = k.get("x").asText();
-               j.y = k.get("y").asText();
-               map.put(j.kid, j);
+            for (JsonNode k : jn) {
+                JsonWebKey j = new JsonWebKey();
+                j.use = k.get("use").asText();
+                j.kty = k.get("kty").asText();
+                j.kid = k.get("kid").asText();
+                j.crv = k.get("crv").asText();
+                j.alg = k.get("alg").asText();
+                j.x = k.get("x").asText();
+                j.y = k.get("y").asText();
+                map.put(j.kid, j);
             }
             return map;
         }
@@ -264,7 +290,7 @@ public class JwtHelper {
             this.y = jn.get("y").asText();
             ArrayNode an = jn.withArray("x5c");
             x5c = new String[an.size()];
-            for(int i = 0;i<an.size();i++){
+            for (int i = 0; i < an.size(); i++) {
                 x5c[i] = an.get(i).asText();
             }
         }
