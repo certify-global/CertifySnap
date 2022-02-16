@@ -144,7 +144,7 @@ public class Application extends android.app.Application {
     public void deviceHealthCheckWorkManager() {
         try {
             PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
-            WorkManager.getInstance().enqueue(periodicWork);
+            WorkManager.getInstance(getApplicationContext()).enqueue(periodicWork);
         } catch (Exception e) {
             Logger.error(TAG, "deviceHealthCheckWorkManager," + e.getMessage());
         }
