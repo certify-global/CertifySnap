@@ -131,7 +131,6 @@ public class Application extends android.app.Application {
     public void runDeviceService() {
         Logger.debug(TAG, "runDeviceService");
         Intent myIntent = new Intent(getApplicationContext(), DeviceHealthService.class);
-        startService(myIntent);
         PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE_HEALTH, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
@@ -154,7 +153,6 @@ public class Application extends android.app.Application {
     public void runLoggerService(Context context) {
         Logger.debug(TAG, "runLoggerService");
         Intent myIntent = new Intent(context, LoggerService.class);
-        startService(myIntent);
         PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
         AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
