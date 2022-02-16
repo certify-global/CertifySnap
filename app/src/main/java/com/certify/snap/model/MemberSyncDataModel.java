@@ -49,6 +49,7 @@ public class MemberSyncDataModel {
     private long index = 0;
     private int failedImageSyncCount = 0;
     private RegisteredMembers deletedMember = null;
+    private boolean isFace = false;
 
     public static final int SYNC_START = 1;
     public static final int SYNC_IN_PROGRESS = 2;
@@ -275,6 +276,9 @@ public class MemberSyncDataModel {
                             if (c.has("certifyUniversalGuid")) {
                                 member.setCertifyUniversalGuid(c.getString("certifyUniversalGuid"));
                             }
+                            if (c.has("isFace")) {
+                                isFace = c.getString("isFace").equals("1");
+                            }
                             member.setEmail(c.getString("email"));
                             member.setMobile(c.getString("phoneNumber"));
                             member.setImage(imagePath);
@@ -284,7 +288,10 @@ public class MemberSyncDataModel {
 
                             List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExist(certifyId);
                             if (membersList != null && membersList.size() > 0) {
-                                if (isMemberSyncGroupIdEnabled() && !isGroupIdExists(groupId)) {
+                                if (isFace) {
+                                    member.setPrimaryId(membersList.get(0).getPrimaryId());
+                                    emitter.onNext(member);
+                                } else if (isMemberSyncGroupIdEnabled() && !isGroupIdExists(groupId)) {
                                     if (deleteRecord(membersList.get(0).firstname, membersList.get(0).getPrimaryId())) {
                                         deletedMember = membersList.get(0);
                                     }
@@ -339,8 +346,12 @@ public class MemberSyncDataModel {
                             membersList.add(member);
                             Log.d(TAG, "SnapXT Add API response Member added to List " + membersList.size());
 
-                            //Add records fetched from server, add it to the database
-                            addToDatabase();
+                            if (isFace) {
+                                updateDatabase(member);
+                            } else {
+                                //Add records fetched from server, add it to the database
+                                addToDatabase();
+                            }
                         } else {
                             if (member.uniqueid.equals("-1")) {
                                 doSendBroadcast(SYNC_COMPLETED, 0, 0);
@@ -694,6 +705,21 @@ public class MemberSyncDataModel {
             Log.e(TAG, "SnapXT Exception while saving to Database");
         }
         return false;
+    }
+
+    private void updateDatabase(RegisteredMembers member) {
+        doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+        File imageFile = new File(member.image);
+        if (processImg(member.firstname + "-" + member.primaryid, member.image, String.valueOf(member.primaryid), context) || !imageFile.exists()) {
+            String username = member.firstname + "-" + member.primaryid;
+            String ROOT_PATH_STRING = context.getFilesDir().getAbsolutePath();
+            String image = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + username + FaceServer.IMG_SUFFIX;
+            String feature = ROOT_PATH_STRING + File.separator + FaceServer.SAVE_FEATURE_DIR + File.separator + username;
+            member.setImage(image);
+            member.setFeatures(feature);
+            DatabaseController.getInstance().updateMember(member);
+            doSendBroadcast(SYNC_COMPLETED, 0, 0);
+        }
     }
 
     /**
@@ -1051,5 +1077,6 @@ public class MemberSyncDataModel {
         dbAddType = DatabaseAddType.SCALE;
         index = 0;
         failedImageSyncCount = 0;
+        isFace = false;
     }
 }
