@@ -1,12 +1,8 @@
 package com.certify.snap.common;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,14 +10,17 @@ import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.certify.snap.BuildConfig;
 import com.certify.snap.activity.ConnectivityStatusActivity;
 import com.certify.snap.bluetooth.data.SimplePreference;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.service.AlarmReceiver;
-import com.certify.snap.service.DeviceHealthJobService;
 import com.certify.snap.service.DeviceHealthService;
+import com.certify.snap.service.DeviceHealthWorkManager;
 import com.certify.snap.service.LoggerService;
 import com.microsoft.appcenter.AppCenter;
 import com.microsoft.appcenter.analytics.Analytics;
@@ -35,8 +34,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -87,7 +85,7 @@ public class Application extends android.app.Application {
         ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
         registerActivityLifecycleCallbacks(handler);
         registerComponentCallbacks(handler);
-        scheduleJobHealth();
+
     }
 
     public static SimplePreference getPreference() {
@@ -143,18 +141,12 @@ public class Application extends android.app.Application {
 
     }
 
-    public void scheduleJobHealth() {
+    public void deviceHealthCheckWorkManager() {
         try {
-            int timeDelay = 19 * 60 * 1000;
-            ComponentName componentName = new ComponentName(getApplicationContext(), DeviceHealthJobService.class);
-            @SuppressLint("MissingPermission") JobInfo jobInfo = new JobInfo.Builder(11, componentName)
-                    .setPersisted(true)
-                    .setPeriodic(20 * 60 * 1000, timeDelay)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY).build();
-            JobScheduler jobScheduler = (JobScheduler) getApplicationContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
-            jobScheduler.schedule(jobInfo);
+            PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
+            WorkManager.getInstance().enqueue(periodicWork);
         } catch (Exception e) {
-            Logger.error(TAG, "scheduleJobHealth" + e.getMessage());
+            Logger.error(TAG, "deviceHealthCheckWorkManager," + e.getMessage());
         }
 
     }

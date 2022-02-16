@@ -144,11 +144,7 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".service.GuideService" />
-        <provider
-            android:name="androidx.work.impl.WorkManagerInitializer"
-            android:authorities="${applicationId}.workmanager-init"
-            android:exported="false"
-            tools:node="remove" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -190,10 +186,6 @@
         <service
             android:name=".service.LoggerService"
             android:stopWithTask="false" />
-        <service
-            android:name=".service.DeviceHealthJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
 
         <uses-library
             android:name="org.apache.http.legacy"
