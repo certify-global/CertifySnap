@@ -141,7 +141,6 @@ public class SettingsActivity extends SettingsBaseActivity implements JSONObject
             initView();
             //initOnlineModeSetting();
             Util.setTokenRequestName("");
-            Application.getInstance().addActivity(this);
 
             sharedPreferences = Util.getSharedPreferences(this);
             boolean activateStatus = sharedPreferences.getBoolean("activate", false);

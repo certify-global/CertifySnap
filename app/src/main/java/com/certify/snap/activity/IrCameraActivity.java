@@ -370,7 +370,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         homeIcon(path);
         getAppSettings();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Application.getInstance().addActivity(this);
+
         initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
         CameraController.getInstance().init(this);

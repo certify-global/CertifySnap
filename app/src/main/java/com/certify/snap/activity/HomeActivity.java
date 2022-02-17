@@ -85,37 +85,36 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            setContentView(R.layout.activity_home);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.activity_home);
 
-            mActivity = this;
-            ApplicationController.getInstance().initThermalUtil(this);
-            RetrofitInstance.getInstance().init();
-            Application.getInstance().addActivity(this);
-            Util.setTokenRequestName("");
-            sharedPreferences = Util.getSharedPreferences(this);
-            AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
-            taskExecutorService = executorService.getExecutorService();
-            TextView tvVersion = findViewById(R.id.tv_version_guide);
-            tvVersion.setText(Util.getVersionBuild());
+        mActivity = this;
+        ApplicationController.getInstance().initThermalUtil(this);
+        RetrofitInstance.getInstance().init();
+        Util.setTokenRequestName("");
+        sharedPreferences = Util.getSharedPreferences(this);
+        AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
+        taskExecutorService = executorService.getExecutorService();
+        TextView tvVersion = findViewById(R.id.tv_version_guide);
+        tvVersion.setText(Util.getVersionBuild());
 
-            Util.enableLedPower(0);
+        Util.enableLedPower(0);
 
-            Intent intent = getIntent();
-            String value = intent.getStringExtra("DEVICE_BOOT");
+        Intent intent = getIntent();
+        String value = intent.getStringExtra("DEVICE_BOOT");
 
-            //Delay of 1 second for the Thermal module to get initialized
-            new Handler().postDelayed(() -> {
-                CameraController.getInstance().initDeviceMode();
-                if (value != null && value.equals("BootCompleted")) {
-                    ApplicationController.getInstance().setDeviceBoot(true);
-                    if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
-                        startProDeviceInitTimer();
-                        return;
-                    }
+        //Delay of 1 second for the Thermal module to get initialized
+        new Handler().postDelayed(() -> {
+            CameraController.getInstance().initDeviceMode();
+            if (value != null && value.equals("BootCompleted")) {
+                ApplicationController.getInstance().setDeviceBoot(true);
+                if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
+                    startProDeviceInitTimer();
+                    return;
                 }
-                initApp();
-            }, 1000);
+            }
+            initApp();
+        }, 1000);
     }
 
     @Override
@@ -133,12 +132,12 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             startUpCountDownTimer = null;
         }
         ApplicationController.getInstance().releaseThermalUtil();
-        if (localServer == null){
+        if (localServer == null) {
             localServer = new LocalServer(this);
         }
         localServer.stopServer();
         ApplicationController.getInstance().setDeviceBoot(false);
-        if (resetOfflineDataReceiver != null){
+        if (resetOfflineDataReceiver != null) {
             this.unregisterReceiver(resetOfflineDataReceiver);
         }
         if (taskExecutorService != null) {
@@ -263,6 +262,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         try {
             if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
                 if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
+                    Logger.debug(TAG, "startHealthCheckService");
                     Application.getInstance().runDeviceService();
                     Application.getInstance().deviceHealthCheckWorkManager();
                 }
@@ -282,7 +282,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             @Override
             public void run() {
                 if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (AppSettings.isFacialDetect()
-                    || AppSettings.isRfidEnabled())) {
+                        || AppSettings.isRfidEnabled())) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
                         startService(new Intent(HomeActivity.this, MemberSyncService.class));
                         Application.StartService(HomeActivity.this);
@@ -345,7 +345,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         }
     }
 
-    private void initAppStatusInfo(){
+    private void initAppStatusInfo() {
         AppStatusInfo.getInstance().clear();
         updateAppStatusInfo("APPSTARTED", AppStatusInfo.APP_STARTED);
     }
@@ -355,7 +355,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             AppStatusInfo.getInstance().setAppStarted(message);
         else if (message.equals(AppStatusInfo.APP_CLOSED))
             AppStatusInfo.getInstance().setAppClosed(message);
-        else if(message.equals(AppStatusInfo.DEVICE_SETTINGS))
+        else if (message.equals(AppStatusInfo.DEVICE_SETTINGS))
             AppStatusInfo.getInstance().setDeviceSettings(message);
         Logger.debug(TAG, key, message);
     }
@@ -388,8 +388,8 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                     // Get new Instance ID token
                     String token = task.getResult().getToken();
                     ApplicationController.getInstance().setFcmPushToken(token);
-                    Util.writeString(sharedPreferences,GlobalParameters.Firebase_Token,token);
-                    Logger.verbose(TAG,"firebase token",token);
+                    Util.writeString(sharedPreferences, GlobalParameters.Firebase_Token, token);
+                    Logger.verbose(TAG, "firebase token", token);
 
                 }
             });
@@ -412,7 +412,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
             sendBroadcast(new Intent(statusBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
 
-            if (!Util.isNetworkOff(HomeActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)){
+            if (!Util.isNetworkOff(HomeActivity.this) && sharedPreferences.getBoolean(GlobalParameters.Internet_Indicator, true)) {
                 internetIndicatorImage.setVisibility(View.GONE);
             } else {
                 internetIndicatorImage.setVisibility(View.VISIBLE);
@@ -438,7 +438,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         startUpCountDownTimer = new CountDownTimer(Constants.PRO_SCANNER_INIT_TIME, Constants.PRO_SCANNER_INIT_INTERVAL) {
             @Override
             public void onTick(long remTime) {
-                remainingTime = ((remTime/1000)/60);
+                remainingTime = ((remTime / 1000) / 60);
                 progressDialog.setMessage(String.format(getString(R.string.scanner_time_msg), remainingTime));
             }
 
@@ -457,7 +457,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
     private void startLocalServer() {
         if (sharedPreferences.getBoolean(GlobalParameters.LOCAL_SERVER_SETTINGS, false)
-            && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                && !sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
             if (taskExecutorService != null) {
                 localServer = new LocalServer(this);
                 new LocalServerTask(localServer).executeOnExecutor(taskExecutorService);
@@ -509,9 +509,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
     private void startLoggerService() {
 
         if (!Util.isServiceRunning(LoggerService.class, this) &&
-            sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, true)) {
+                sharedPreferences.getBoolean(GlobalParameters.DEBUG_MODE, true)) {
             Application.getInstance().runLoggerService(this);
-          //  Application.StartService(this);
+            //  Application.StartService(this);
         }
     }
 
