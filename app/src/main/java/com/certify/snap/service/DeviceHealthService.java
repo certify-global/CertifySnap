@@ -74,7 +74,6 @@ public class DeviceHealthService extends Service {
             healthCheckRequest.lastUpdateDateTime = Util.getUTCDate("");
 
             Call<HealthCheckResponse> call = apiInterface.getDeviceHealthCheck(Util.getSNCode(context), healthCheckRequest);
-            Logger.debug(LOG, "Request " + call.request());
             call.enqueue(new Callback<HealthCheckResponse>() {
                 @Override
                 public void onResponse(Call<HealthCheckResponse> call, Response<HealthCheckResponse> response) {
