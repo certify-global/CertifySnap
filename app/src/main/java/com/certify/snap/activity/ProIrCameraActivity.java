@@ -232,7 +232,6 @@ public class ProIrCameraActivity extends BaseActivity implements ViewTreeObserve
         }*/
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        Application.getInstance().addActivity(this);
         FaceServer.getInstance().init(this);//init FaceServer;
         TemperatureController.getInstance().init(this);
 

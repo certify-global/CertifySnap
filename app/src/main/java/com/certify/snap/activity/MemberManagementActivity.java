@@ -152,7 +152,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         mCountTv = findViewById(R.id.count_tv);
         refresh = findViewById(R.id.refresh);
 
-        Application.getInstance().addActivity(this);
         sharedPreferences = Util.getSharedPreferences(this);
         initHidReceiver();
 
