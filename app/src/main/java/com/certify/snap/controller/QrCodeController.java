@@ -337,13 +337,14 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
                         v.getCertificateIssuer(), v.getCertificateIdentifier()
                 ));
             }
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             CertificateModel certificateModel = new CertificateModel(personModel,
                     greenCertificate.getDateOfBirth(), vaccinationModels, null, null);
-            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, certificateModel.getPerson().getGivenName());
-            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, certificateModel.getPerson().getFamilyName());
-            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate, certificateModel.getVaccinations().get(0).getDateOfVaccination());
-            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousVaccDate2, "");
-            Util.writeString(Util.getSharedPreferences(context), GlobalParameters.vaccineDocumentName, certificateModel.getVaccinations().get(0).getManufacturer());
+            Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, certificateModel.getPerson().getGivenName());
+            Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, certificateModel.getPerson().getFamilyName());
+            Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate, certificateModel.getVaccinations().get(0).getDateOfVaccination());
+            Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate2, "");
+            Util.writeString(sharedPreferences, GlobalParameters.vaccineDocumentName, certificateModel.getVaccinations().get(0).getManufacturer());
             if (listener != null)
                 listener.onQRCodeScanSuccess();
 //            Intent intent = new Intent(context, QRCodeResultActivity.class);
@@ -365,18 +366,19 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public void hlthQrText(String qrText, Context context) {
         try {
+            SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
             String hlthVqc = qrText.substring(4);
             String listHLTH[] = hlthVqc.split(";");
             if (listHLTH.length >= 3) { //
                 //  String id = listHLTH[0].substring(listHLTH[0].indexOf(":") + 1);
                 String firstName = listHLTH[1].substring(listHLTH[1].indexOf(":") + 1);
                 String lastName = listHLTH[2].substring(listHLTH[2].indexOf(":") + 1);
-                Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, firstName);
-                Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousLastName, lastName);
+                Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, firstName);
+                Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, lastName);
 
             } else if (listHLTH.length >= 2) {
                 String firstName = listHLTH[1].substring(listHLTH[1].indexOf(":") + 1);
-                Util.writeString(Util.getSharedPreferences(context), GlobalParameters.anonymousFirstName, firstName);
+                Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, firstName);
             }
             if (listener != null)
                 listener.onQRCodeScanSuccess();
