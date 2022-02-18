@@ -1168,7 +1168,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private synchronized void processPreviewData(byte[] rgbData) {
         if (!isHomeViewEnabled && !isReadyToScan) return;
-        if (rgbData != null && irData != null) {
+        if (rgbData != null && irData != null && faceHelperIr != null) {
             byte[] cloneNv21Rgb;
             if (scanMode == 1) {
                 cloneNv21Rgb = rgbData.clone();
@@ -1695,6 +1695,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
+            if (nv21 == null) return;
             irData = nv21;
             irBitmap = Util.convertYuvByteArrayToBitmap(nv21, cameraParameters);
         }
