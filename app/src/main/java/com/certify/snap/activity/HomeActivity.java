@@ -216,7 +216,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             }
             Util.activateApplication(HomeActivity.this, HomeActivity.this);
             startActivationTimer();
-            new Handler().postDelayed(() -> startHealthCheckService(), 2000);
+            startHealthCheckService();
         }
     }
 
@@ -250,7 +250,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             }
             cancelActivationTimer();
             Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
-
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -269,7 +268,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 Application.getInstance().deviceHealthCheckWorkManager();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }
