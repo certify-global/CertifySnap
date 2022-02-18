@@ -1,6 +1,6 @@
 package com.certify.snap.common;
 
-import android.app.Activity;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -53,7 +54,7 @@ public class Application extends android.app.Application {
     private int deviceMode = 0;
     WifiManager wifi;
     SharedPreferences sharedPreferences;
-
+    private PeriodicWorkRequest periodicWork;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -101,10 +102,7 @@ public class Application extends android.app.Application {
     }
 
 
-    // Activity
-    public void addActivity(Activity activity) {
-        // activityList.add(activity);
-    }
+
 
     public static void StartService(Context context) {
         Logger.debug(TAG, "StartService - AlarmReceiver");
@@ -131,7 +129,6 @@ public class Application extends android.app.Application {
     public void runDeviceService() {
         Logger.debug(TAG, "runDeviceService");
         Intent myIntent = new Intent(getApplicationContext(), DeviceHealthService.class);
-        startService(myIntent);
         PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE_HEALTH, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
@@ -143,8 +140,8 @@ public class Application extends android.app.Application {
 
     public void deviceHealthCheckWorkManager() {
         try {
-            PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
-            WorkManager.getInstance(getApplicationContext()).enqueue(periodicWork);
+            periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
+            WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork("deviceHealthCheckWork", ExistingPeriodicWorkPolicy.KEEP,periodicWork);
         } catch (Exception e) {
             Logger.error(TAG, "deviceHealthCheckWorkManager," + e.getMessage());
         }
@@ -154,7 +151,6 @@ public class Application extends android.app.Application {
     public void runLoggerService(Context context) {
         Logger.debug(TAG, "runLoggerService");
         Intent myIntent = new Intent(context, LoggerService.class);
-        startService(myIntent);
         PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
         AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
