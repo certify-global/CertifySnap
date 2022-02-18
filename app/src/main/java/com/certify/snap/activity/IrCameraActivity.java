@@ -74,13 +74,6 @@ import com.arcsoft.face.enums.DetectModel;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
-import com.certify.snap.codescanner.AutoFocusMode;
-import com.certify.snap.codescanner.CodeScanner;
-import com.certify.snap.codescanner.CodeScannerView;
-import com.certify.snap.codescanner.DecodeCallback;
-import com.certify.snap.codescanner.ErrorCallback;
-import com.certify.snap.codescanner.ScanMode;
-import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
@@ -144,12 +137,10 @@ import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.printer.usb.PrintExecuteTask;
 import com.certify.snap.printer.usb.util;
-import com.certify.snap.qrscan.BarcodeScannerProcessor;
-import com.certify.snap.qrscan.CameraSource;
-import com.certify.snap.qrscan.CameraSourcePreview;
-import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.HIDService;
 import com.certify.snap.service.OfflineRecordSyncService;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.Result;
 
 import org.json.JSONObject;
 
