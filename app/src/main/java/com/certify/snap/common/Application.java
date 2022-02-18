@@ -227,5 +227,4 @@ public class Application extends android.app.Application {
         return hex.toString();
     }
 
-
 }
