@@ -50,6 +50,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -397,6 +398,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_thermal = findViewById(R.id.tv_thermal);
         tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
         scannerView = findViewById(R.id.scanner_view);
+        if (barcodeFormatArrayList.size() > 0) barcodeFormatArrayList.clear();
         barcodeFormatArrayList.add(BarcodeFormat.QR_CODE);
         barcodeFormatArrayList.add(BarcodeFormat.DATA_MATRIX);
         tv_thermal.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan)));
@@ -466,23 +468,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         mCodeScanner.setScanMode(ScanMode.CONTINUOUS);
         mCodeScanner.setAutoFocusMode(AutoFocusMode.SAFE);
-        mCodeScanner.setAutoFocusEnabled(true);
+        //mCodeScanner.setAutoFocusEnabled(true);
         mCodeScanner.setFormats(barcodeFormatArrayList);
-        mCodeScanner.setFlashEnabled(true);
+        //  mCodeScanner.setFlashEnabled(true);
         mCodeScanner.setTouchFocusEnabled(false);
         mCodeScanner.setDecodeCallback(new DecodeCallback() {
             @Override
             public void onDecoded(@NonNull Result result) {
                 QrCodeController.getInstance().resetQrCodeData(IrCameraActivity.this);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!qrCodeReceived) {
-                            qrCodeReceived = true;
-                            onBarcodeData(result.getText());
-                        }
-                    }
-                });
+                Logger.debug(TAG, "onDecoded" + result.getText());
+                if (!qrCodeReceived) {
+                    qrCodeReceived = true;
+                    onBarcodeData(result.getText());
+                }
 
             }
         });
@@ -490,7 +488,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
 
             public void onError(@NonNull Exception error) {
-                Log.i("mCodeScanner : onError", error.getMessage());
+                Logger.error("mCodeScanner : onError", error.getMessage());
             }
         });
     }
@@ -720,11 +718,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }, 0, 1000);
 
         compareResultList = new ArrayList<>();
-        /*RecyclerView recyclerShowFaceInfo = findViewById(R.id.recycler_view_person);
-        adapter = new ShowFaceInfoAdapter(compareResultList, this);
-        recyclerShowFaceInfo.setAdapter(adapter);
-        recyclerShowFaceInfo.setLayoutManager(new MyGridLayoutManager(this, 1));
-        recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());*/
         if (isProDevice) {
             faceRectView.setVisibility(View.VISIBLE);
             outerCircle.setVisibility(View.GONE);
@@ -824,10 +817,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onPause");
         super.onPause();
         try {
-            if (mCodeScanner != null) {
-                mCodeScanner.releaseResources();
-            }
-
             isActivityResumed = false;
             disableNfc();
             if (cameraHelper != null) {
@@ -2066,7 +2055,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
                 return;
             CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
-            //  preview.stop();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -2337,7 +2325,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                qr_main.setVisibility(View.GONE);
+                frameLayout.setVisibility(View.GONE);
             }
         });
 
@@ -3324,62 +3312,66 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void resumeScan() {
-        if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
-            GestureController.getInstance().setLanguageUpdated(false);
-            GestureController.getInstance().setCallback(false);
-            if (AppSettings.isMultiLingualEnabled()) {
+        try {
+            if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
+                GestureController.getInstance().setLanguageUpdated(false);
+                GestureController.getInstance().setCallback(false);
+                if (AppSettings.isMultiLingualEnabled()) {
+                    resetGesture();
+                    return;
+                }
+            }
+            runOnUiThread(() -> {
+                img_qr.setVisibility(View.GONE);
+                frameLayout.setVisibility(View.GONE);
+                clearQrCodePreview();
+                if (temperature_image != null) {
+                    temperature_image.setVisibility(View.GONE);
+                }
+                if (tvErrorMessage != null) {
+                    tvErrorMessage.setVisibility(View.GONE);
+                }
+                tvFaceMessage.setVisibility(View.GONE);
+                DisplayTimeAttendance();
+            });
+            clearData();
+            if (AppSettings.getTimeAndAttendance() == 0) {
+                if (Util.isDeviceF10()) {
+                    resumeCameraScan();
+                    CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+                } else {
+                    // resumeCameraScan();
+                    initScan();
+                }
+            }
+            if (AppSettings.isEnableHandGesture()) {
+                if (Util.isGestureDeviceConnected(this)) {
+                    if (AppSettings.isMaskEnforced()) {
+                        resetMaskEnforceStatus();
+                    } else {
+                        isReadyToScan = false;
+                    }
+                    GestureController.getInstance().setLanguageUpdated(false);
+                }
                 resetGesture();
-                return;
             }
-        }
-        runOnUiThread(() -> {
-            img_qr.setVisibility(View.GONE);
-            frameLayout.setVisibility(View.GONE);
-            clearQrCodePreview();
-            if (temperature_image != null) {
-                temperature_image.setVisibility(View.GONE);
-            }
-            if (tvErrorMessage != null) {
-                tvErrorMessage.setVisibility(View.GONE);
-            }
-            tvFaceMessage.setVisibility(View.GONE);
-            DisplayTimeAttendance();
-        });
-        clearData();
-        if (AppSettings.getTimeAndAttendance() == 0) {
-            if (Util.isDeviceF10()) {
-                resumeCameraScan();
-                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
-            } else {
-                // resumeCameraScan();
-                initScan();
-            }
-        }
-        if (AppSettings.isEnableHandGesture()) {
-            if (Util.isGestureDeviceConnected(this)) {
+            if (AppSettings.isEnableTouchMode()) {
                 if (AppSettings.isMaskEnforced()) {
                     resetMaskEnforceStatus();
                 } else {
                     isReadyToScan = false;
                 }
                 GestureController.getInstance().setLanguageUpdated(false);
-            }
-            resetGesture();
-        }
-        if (AppSettings.isEnableTouchMode()) {
-            if (AppSettings.isMaskEnforced()) {
-                resetMaskEnforceStatus();
-            } else {
-                isReadyToScan = false;
-            }
-            GestureController.getInstance().setLanguageUpdated(false);
 
+            }
+            resetRfid();
+            if (!Util.isDeviceF10() && !qrCodeEnable) {
+                resetImageLogo();
+            }
+            if (!isHomeViewEnabled) isReadyToScan = true;
+        } catch (Exception e) {
+            Logger.error(TAG, e.getMessage());
         }
-        resetRfid();
-        if (!Util.isDeviceF10() && !qrCodeEnable) {
-            resetImageLogo();
-        }
-        if (!isHomeViewEnabled) isReadyToScan = true;
     }
 
     private void resetRfid() {
