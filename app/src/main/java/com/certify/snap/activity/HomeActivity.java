@@ -91,7 +91,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
 
             mActivity = this;
             ApplicationController.getInstance().initThermalUtil(this);
-            RetrofitInstance.getInstance().init();
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
             AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
@@ -217,6 +216,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             }
             Util.activateApplication(HomeActivity.this, HomeActivity.this);
             startActivationTimer();
+            startHealthCheckService();
         }
     }
 
@@ -250,8 +250,6 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             }
             cancelActivationTimer();
             Util.getTokenActivate(reportInfo, status, HomeActivity.this, "guide");
-
-            new Handler().postDelayed(() -> startHealthCheckService(), 1000);
         } catch (Exception e) {
             Util.switchRgbOrIrActivity(HomeActivity.this, true);
             Logger.error(TAG, "onJSONObjectListener()", "Exception occurred while processing API response callback with Token activate" + e.getMessage());
@@ -264,14 +262,12 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
      */
     private void startHealthCheckService() {
         try {
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true))
-                if (!Util.isServiceRunning(DeviceHealthService.class, this)) {
-                    Logger.debug(TAG, "startHealthCheckService");
-                    Application.getInstance().runDeviceService();
-                    Application.getInstance().deviceHealthCheckWorkManager();
-                }
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                Logger.debug(TAG, "startHealthCheckService");
+                Application.getInstance().runDeviceService();
+                Application.getInstance().deviceHealthCheckWorkManager();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
             Logger.error(TAG, "initHealthCheckService()", "Exception occurred in starting DeviceHealth Service" + e.getMessage());
         }
     }

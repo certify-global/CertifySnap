@@ -20,7 +20,6 @@ public class RetrofitInstance {
     }
 
     public static RetrofitInstance getInstance() {
-
         if (instance == null) {
             instance = new RetrofitInstance();
             instance.createRetrofitInstance();

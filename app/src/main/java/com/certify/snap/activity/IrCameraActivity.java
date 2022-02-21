@@ -50,7 +50,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -74,6 +73,7 @@ import com.arcsoft.face.enums.DetectModel;
 import com.arcsoft.imageutil.ArcSoftImageFormat;
 import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
+import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
@@ -1202,7 +1202,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private synchronized void processPreviewData(byte[] rgbData) {
         if (!isHomeViewEnabled && !isReadyToScan) return;
-        if (rgbData != null && irData != null) {
+        if (rgbData != null && irData != null && faceHelperIr != null) {
             byte[] cloneNv21Rgb;
             if (scanMode == 1) {
                 cloneNv21Rgb = rgbData.clone();
@@ -1736,6 +1736,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         @Override
         public void onPreview(final byte[] nv21, final Camera camera) {
+            if (nv21 == null) return;
             irData = nv21;
             irBitmap = Util.convertYuvByteArrayToBitmap(nv21, cameraParameters);
         }
@@ -3299,18 +3300,27 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetHomeScreen() {
-        cancelPreviewTimer();
-        if (tv_message != null) tv_message.setVisibility(View.GONE);
-        if (tvErrorMessage != null) tvErrorMessage.setVisibility(View.GONE);
-        tvFaceMessage.setVisibility(View.GONE);
-        if (temperature_image != null) temperature_image.setVisibility(View.GONE);
-        if (mask_message != null) mask_message.setVisibility(View.GONE);
-        if (outerCircle != null && !Util.isDeviceF10()) {
-            outerCircle.setBackgroundResource(R.drawable.border_shape);
+        try {
+            cancelPreviewTimer();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (tv_message != null) tv_message.setVisibility(View.GONE);
+                    if (tvErrorMessage != null) tvErrorMessage.setVisibility(View.GONE);
+                    tvFaceMessage.setVisibility(View.GONE);
+                    if (temperature_image != null) temperature_image.setVisibility(View.GONE);
+                    if (mask_message != null) mask_message.setVisibility(View.GONE);
+                    if (outerCircle != null && !Util.isDeviceF10()) {
+                        outerCircle.setBackgroundResource(R.drawable.border_shape);
+                    }
+                    retryButton.setVisibility(View.GONE);
+                }
+            });
+            cancelImageTimer();
+            DisplayTimeAttendance();
+        } catch (Exception e) {
+            Logger.error(TAG, e.getMessage());
         }
-        retryButton.setVisibility(View.GONE);
-        cancelImageTimer();
-        DisplayTimeAttendance();
     }
 
     public void resumeScan() {
@@ -4839,14 +4849,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void DisplayTimeAttendance() {
         try {
-            //updateHealthCheckUI();
             if (AppSettings.getTimeAndAttendance() == 1) {
-                relative_main.setVisibility(View.GONE);
-                time_attendance_layout.setVisibility(View.VISIBLE);
-                String currentTime = new SimpleDateFormat("HH:mm aaa", Locale.getDefault()).format(new Date());
-                tvTime.setText(currentTime);
-                String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
-                tvDate.setText(currentDate);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        relative_main.setVisibility(View.GONE);
+                        time_attendance_layout.setVisibility(View.VISIBLE);
+                        String currentTime = new SimpleDateFormat("HH:mm aaa", Locale.getDefault()).format(new Date());
+                        tvTime.setText(currentTime);
+                        String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
+                        tvDate.setText(currentDate);
+                    }
+                });
                 if (isHomeViewEnabled) {
                     pauseCameraScan();
                 } else {
@@ -4860,9 +4874,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             } else {
                 new Handler().postDelayed(() -> {
-                    //logo.setVisibility(View.GONE);
-                    relative_main.setVisibility(View.GONE);
-                    changeVerifyBackground(R.color.colorTransparency, true);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            relative_main.setVisibility(View.GONE);
+                            changeVerifyBackground(R.color.colorTransparency, true);
+                        }
+                    });
                 }, 150);
             }
         } catch (Exception e) {

@@ -54,7 +54,6 @@ public class Application extends android.app.Application {
     private int deviceMode = 0;
     WifiManager wifi;
     SharedPreferences sharedPreferences;
-    private PeriodicWorkRequest periodicWork;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -133,14 +132,15 @@ public class Application extends android.app.Application {
         AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available");
-        }
-        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 10 * 60 * 1000, restartServicePendingIntent);
+        }else
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (SystemClock.elapsedRealtime()+2000), 10 * 60 * 1000, restartServicePendingIntent);
 
     }
 
     public void deviceHealthCheckWorkManager() {
         try {
-            periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
+            Logger.debug(TAG, "deviceHealthCheckWorkManager");
+            PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
             WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork("deviceHealthCheckWork", ExistingPeriodicWorkPolicy.KEEP,periodicWork);
         } catch (Exception e) {
             Logger.error(TAG, "deviceHealthCheckWorkManager," + e.getMessage());
@@ -226,6 +226,5 @@ public class Application extends android.app.Application {
             hex.append(String.format("%02x", b & 0xFF));
         return hex.toString();
     }
-
 
 }
