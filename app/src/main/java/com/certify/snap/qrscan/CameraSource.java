@@ -35,6 +35,7 @@ import androidx.annotation.RequiresPermission;
 
 import com.certify.snap.controller.CameraController;
 import com.google.android.gms.common.images.Size;
+
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.nio.ByteBuffer;
@@ -168,7 +169,7 @@ public class CameraSource {
         camera = createCamera();
         dummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
         camera.setPreviewTexture(dummySurfaceTexture);
-                usingSurfaceTexture = true;
+        usingSurfaceTexture = true;
         camera.startPreview();
 
         processingThread = new Thread(processingRunnable);
@@ -224,23 +225,25 @@ public class CameraSource {
             }
             processingThread = null;
         }
-
-        if (camera != null) {
-            camera.stopPreview();
-            camera.setPreviewCallbackWithBuffer(null);
-            try {
-                if (usingSurfaceTexture) {
-                    camera.setPreviewTexture(null);
-                } else {
-                    camera.setPreviewDisplay(null);
+        try {
+            if (camera != null) {
+                camera.stopPreview();
+                camera.setPreviewCallbackWithBuffer(null);
+                try {
+                    if (usingSurfaceTexture) {
+                        camera.setPreviewTexture(null);
+                    } else {
+                        camera.setPreviewDisplay(null);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to clear camera preview: " + e);
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to clear camera preview: " + e);
+                camera.release();
+                camera = null;
             }
-            camera.release();
-            camera = null;
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
-
         // Release the reference to any image buffers, since these will no longer be in use.
         bytesToByteBuffer.clear();
     }

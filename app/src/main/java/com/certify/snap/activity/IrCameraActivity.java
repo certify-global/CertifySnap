@@ -275,7 +275,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private AlertDialog nfcDialog;
     Typeface rubiklight;
     private static final String BARCODE_DETECTION = "Barcode Detection";
-    FrameLayout frameLayout;
+    FrameLayout frameLayout, frameCameraLayout;
     ImageView img_qr;
     View imageqr;
     RelativeLayout qr_main;
@@ -521,6 +521,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 relative_main.setVisibility(View.VISIBLE);
                 scannerView.setVisibility(View.VISIBLE);
                 qr_main.setVisibility(View.VISIBLE);
+                frameCameraLayout.setVisibility(View.GONE);
                 //qrSkipButton.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
                 qrSkipButton.setText(sharedPreferences.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
@@ -670,6 +671,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tvVersionIr.setText(Util.getVersionBuild());
         tvVersionOnly.setText(Util.getVersionBuild());
         frameLayout = findViewById(R.id.barcode_scanner);
+        frameCameraLayout = findViewById(R.id.camera_frame_layout);
         imageqr = findViewById(R.id.imageView);
         tv_scan = findViewById(R.id.tv_scan);
         img_qr = findViewById(R.id.img_qr);
@@ -2043,10 +2045,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
-    private void startCameraSource() {
+    private void startQRCameraSource() {
         if (mCodeScanner != null)
             mCodeScanner.startPreview();
-
     }
 
     public void onBarcodeData(String guid) {
@@ -2326,6 +2327,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public void run() {
                 frameLayout.setVisibility(View.GONE);
+                frameCameraLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -2342,21 +2344,24 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().setCameraOnRfid(true);
         enableLedPower();
         isReadyToScan = true;
-        new Handler().postDelayed(() -> {
-            if (!Util.isDeviceF10()) {
-                if (outerCircle != null)
-                    outerCircle.setBackgroundResource(R.drawable.border_shape);
-                /*if (logo != null) {
-                    logo.setVisibility(View.GONE);
-                }*/
-                if (relative_main != null) {
-                    relative_main.setVisibility(View.GONE);
-                }
+        long finalDelay = delay;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                new Handler().postDelayed(() -> {
+                    if (!Util.isDeviceF10()) {
+                        if (outerCircle != null)
+                            outerCircle.setBackgroundResource(R.drawable.border_shape);
+                        if (relative_main != null) {
+                            relative_main.setVisibility(View.GONE);
+                        }
+                    }
+                    time_attendance_layout.setVisibility(View.GONE);
+                    changeVerifyBackground(R.color.colorTransparency, true);
+                    disableNfc();
+                }, finalDelay);
             }
-            time_attendance_layout.setVisibility(View.GONE);
-            changeVerifyBackground(R.color.colorTransparency, true);
-            disableNfc();
-        }, delay);
+        });
         setCameraPreviewTimer();
     }
 
@@ -3324,7 +3329,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runOnUiThread(() -> {
                 img_qr.setVisibility(View.GONE);
                 frameLayout.setVisibility(View.GONE);
-                clearQrCodePreview();
                 if (temperature_image != null) {
                     temperature_image.setVisibility(View.GONE);
                 }
@@ -3420,6 +3424,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (cameraHelperIr != null) {
                 cameraHelperIr.release();
             }
+
 //        new Handler().post(() -> {
             initRgbCamera();
             initIrCamera();
@@ -3431,18 +3436,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void resetQrCode() {
         if (qrCodeEnable) {
+            clearQrCodePreview();
             runOnUiThread(() -> {
                 img_qr.setVisibility(View.GONE);
-                clearQrCodePreview();
                 initQRCode();
-                startCameraSource();
             });
+            startQRCameraSource();
         }
     }
 
     private void resetInvalidQrCode(String message) {
         // preview.stop();
-        startCameraSource();
+        startQRCameraSource();
         Toast snackbar = Toast
                 .makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
         snackbar.show();
@@ -4131,7 +4136,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         boolean result = false;
         if (institutionId.isEmpty()) {
             result = true;
-            Logger.error(TAG, "onBarcodeData()", "Error! InsitutionId is empty");
+            Logger.error(TAG, "isInstitutionIdEmpty()", "Error! InsitutionId is empty");
             Toast toastbar = Toast
                     .makeText(getApplicationContext(), R.string.device_not_register, Toast.LENGTH_LONG);
             toastbar.show();
