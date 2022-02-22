@@ -362,6 +362,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         homeIcon(path);
         getAppSettings();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         initTemperature();
         FaceServer.getInstance().init(this);//init FaceServer;
         CameraController.getInstance().init(this);
@@ -455,6 +456,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void initQRCode() {
+        QrCodeController.getInstance().setListener(this);
         if (!isHomeViewEnabled) return;
         try {
             QrCodeController.getInstance().resetQrCodeData(this);
@@ -482,6 +484,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 params.setMargins(0, (int) Util.convertDpToPixel(20, this), 0, 0);
                 img_logo.setLayoutParams(params);
                 frameLayout.setVisibility(View.VISIBLE);
+                relative_main.setVisibility(View.VISIBLE);
+                qr_main.setVisibility(View.VISIBLE);
                 //qrSkipButton.setVisibility(View.VISIBLE);
                 imageqr.startAnimation(animation);
                 qrSkipButton.setText(sharedPreferences.getString(GlobalParameters.QR_BUTTON_TEXT, getString(R.string.qr_button_text)));
@@ -921,7 +925,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return;
         }
         if (Util.isDeviceF10()) {
-            launchConfirmationFragment(String.valueOf(false));
             if (isHomeViewEnabled) {
                 pauseCameraScan();
             } else {
@@ -931,15 +934,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
             TemperatureController.getInstance().recordUserTemperature(data, -1);
+            CameraController.getInstance().setUserExportedData(data);
+            onTemperatureScanDisabled();
             return;
         }
         if (!AppSettings.isTemperatureScanEnabled()) {
             CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
-            if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()) && CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString())) {
-                if (data != null) data.temperature = "0";
-                TemperatureController.getInstance().recordUserTemperature(data, -1);
-            }
             return;
         }
         Log.d(TAG, "runTemperature");
@@ -1644,6 +1645,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
+    public void onQRCodeScanSuccess() {
+        clearQrCodePreview();
+        qrCodeReceived = false;
+        setCameraPreview();
+    }
+
+    @Override
     public void onBleUpdateStatus(String status) {
         runOnUiThread(() -> {
             Log.d(TAG, "Ble Update Status " + status);
@@ -2077,58 +2085,64 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    @Override
     public void onBarcodeData(String guid) {
         try {
             if (isTopFragmentGesture() ||
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
                 return;
-            if (!qrCodeReceived) {
-                qrCodeReceived = true;
-                CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
-                preview.stop();
-                frameLayout.setBackgroundColor(getResources().getColor(R.color.colorWhite));
-                tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
-                tv_scan.setTextColor(getResources().getColor(R.color.black));
-                qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
-                if (guid.startsWith("shc:")) {
-                    QrCodeController.getInstance().smartHealthCard(guid, this);
-                    clearQrCodePreview();
-                    qrCodeReceived = false;
-                    setCameraPreview();
-                    return;
-                } else if (guid.startsWith("HC1:")) {
-                    QrCodeController.getInstance().parseQrText(guid, this);
-                    clearQrCodePreview();
-                    qrCodeReceived = false;
-                    setCameraPreview();
-                    return;
-                } else if (guid.startsWith("VQC:")) {
-                    QrCodeController.getInstance().hlthQrText(guid, this);
-                    clearQrCodePreview();
-                    qrCodeReceived = false;
-                    setCameraPreview();
-                    return;
-                } else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
-                    tv_scan.setText(R.string.tv_qr_validating);
-                    if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
-                        CameraController.getInstance().setQrCodeId(guid);
-                        Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
-                        clearQrCodePreview();
-                        setCameraPreview();
-                        SoundController.getInstance().playValidQrSound();
-                    } else {
-                        resetInvalidQrCode(getString(R.string.invalid_qr));
-                        SoundController.getInstance().playInvalidQrSound();
-                    }
-                    qrCodeReceived = false;
-                    return;
+            CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
+            //  preview.stop();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    frameLayout.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+                    tv_scan.setBackgroundColor(getResources().getColor(R.color.colorOrange));
+                    tv_scan.setTextColor(getResources().getColor(R.color.black));
+                    qr_main.setBackgroundColor(getResources().getColor(R.color.colorTransparency));
                 }
-                boolean isQrCodeWithPrefix = Util.isQRCodeWithPrefix(guid);
-                if ((Util.isNumeric(guid) || !isQrCodeWithPrefix) && AppSettings.isAnonymousQREnable()) {
-                    tv_scan.setText(R.string.tv_bar_validating);
+            });
+            if (guid.startsWith("shc:")) {
+                QrCodeController.getInstance().smartHealthCard(guid, this);
+                ValidationQRCode();
+                return;
+            } else if (guid.startsWith("HC1:")) {
+                QrCodeController.getInstance().parseQrText(guid, this);
+                ValidationQRCode();
+                return;
+            } else if (guid.startsWith("VQC:")) {
+                QrCodeController.getInstance().hlthQrText(guid, this);
+                ValidationQRCode();
+                return;
+            } else if (QrCodeController.getInstance().isQrCodeDated(guid)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv_scan.setText(R.string.tv_bar_validating);
+                    }
+                });
+                if (QrCodeController.getInstance().validateDatedQrCode(guid)) {
                     CameraController.getInstance().setQrCodeId(guid);
                     Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
+                    clearQrCodePreview();
+                    setCameraPreview();
+                    SoundController.getInstance().playValidQrSound();
+                } else {
+                    resetInvalidQrCode(getString(R.string.invalid_qr));
+                    SoundController.getInstance().playInvalidQrSound();
+                }
+                qrCodeReceived = false;
+                return;
+            }
+            boolean isQrCodeWithPrefix = Util.isQRCodeWithPrefix(guid);
+            if ((Util.isNumeric(guid) || !isQrCodeWithPrefix) && AppSettings.isAnonymousQREnable()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv_scan.setText(R.string.tv_bar_validating);
+                    }
+                });
+                CameraController.getInstance().setQrCodeId(guid);
+                Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                     /*if ((CameraController.getInstance().getScanProcessState()
                             == CameraController.ScanProcessState.FIRST_SCAN) ||
                             (CameraController.getInstance().getScanProcessState() ==
@@ -2138,47 +2152,67 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         clearQrCodePreview();
                         setCameraPreview();
                     }*/
-                    CameraController.ScanProcessState state = CameraController.getInstance().getScanProcessState();
-                    if (state == CameraController.ScanProcessState.SECOND_SCAN) {
-                        CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN_COMPLETE);
-                    }
-                    clearQrCodePreview();
-                    if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
-                        resetQrCode();
-                        initSecondaryScan();
-                    } else {
-                        setCameraPreview();
-                    }
-                    SoundController.getInstance().playValidQrSound();
-                    qrCodeReceived = false;
-                    return;
+                CameraController.ScanProcessState state = CameraController.getInstance().getScanProcessState();
+                if (state == CameraController.ScanProcessState.SECOND_SCAN) {
+                    CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN_COMPLETE);
                 }
-                tv_scan.setText(R.string.tv_qr_validating);
-                img_qr.setVisibility(View.VISIBLE);
-                img_qr.setBackgroundResource(R.drawable.qrimage);
-
-                if (isInstitutionIdEmpty()) {
-                    qrCodeReceived = false;
-                    return;
+                clearQrCodePreview();
+                if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
+                    resetQrCode();
+                    initSecondaryScan();
+                } else {
+                    setCameraPreview();
                 }
-
-                guid = QrCodeController.getInstance().validateQrCode(guid, isQrCodeWithPrefix);
-
-                //Make API call
-                Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
-                CameraController.getInstance().setQrCodeId(guid);
-                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                    startQRTimer(guid);
-                    JSONObject obj = new JSONObject();
-                    obj.put("qrCodeID", guid);
-                    obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                    new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
-                }
+                SoundController.getInstance().playValidQrSound();
+                qrCodeReceived = false;
+                return;
             }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tv_scan.setText(R.string.tv_qr_validating);
+                    img_qr.setVisibility(View.VISIBLE);
+                    img_qr.setBackgroundResource(R.drawable.qrimage);
+                }
+            });
+            if (isInstitutionIdEmpty()) {
+                qrCodeReceived = false;
+                return;
+            }
+
+            guid = QrCodeController.getInstance().validateQrCode(guid, isQrCodeWithPrefix);
+
+            //Make API call
+            Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
+            CameraController.getInstance().setQrCodeId(guid);
+            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                startQRTimer(guid);
+                JSONObject obj = new JSONObject();
+                obj.put("qrCodeID", guid);
+                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+            }
+
         } catch (Exception e) {
             qrCodeReceived = false;
             cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
+        }
+    }
+
+    public void ValidationQRCode() {
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    imageqr.clearAnimation();
+                    tv_scan.setText(R.string.tv_qr_validating);
+                    img_qr.setVisibility(View.VISIBLE);
+                    img_qr.setBackgroundResource(R.drawable.qrimage);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -2321,13 +2355,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void setCameraPreview() {
         if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isFacialDetect() &&
-                !AppSettings.isPrintLabelFace() &&
-                !((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()) && CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString()))) {
+                !AppSettings.isPrintLabelFace()) {
             onTemperatureScanDisabled();
             return;
         }
         long delay = 1000;
-        qr_main.setVisibility(View.GONE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                qr_main.setVisibility(View.GONE);
+            }
+        });
+
         if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue() ||
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
                 (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue())) {
@@ -3346,7 +3385,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 resumeCameraScan();
                 CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
             } else {
-                resumeCameraScan();
+                // resumeCameraScan();
                 initScan();
             }
         }
@@ -3397,7 +3436,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void pauseCameraScan() {
-        Log.d(TAG, "Pause camera scan");
         if (cameraHelper != null) {
             cameraHelper.stop();
         }
@@ -3417,16 +3455,20 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetCameraView() {
-        if (cameraHelper != null) {
-            cameraHelper.release();
-        }
-        if (cameraHelperIr != null) {
-            cameraHelperIr.release();
-        }
-        new Handler().post(() -> {
+        try {
+            if (cameraHelper != null) {
+                cameraHelper.release();
+            }
+            if (cameraHelperIr != null) {
+                cameraHelperIr.release();
+            }
+//        new Handler().post(() -> {
             initRgbCamera();
             initIrCamera();
-        });
+            // });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void resetQrCode() {
@@ -4372,7 +4414,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void onTemperatureScanDisabled() {
         if (PrinterController.getInstance().isPrintScan(false) &&
-                CameraController.getInstance().isMemberIdentified(registeredMemberslist)) {
+                (CameraController.getInstance().isMemberIdentified(registeredMemberslist) || AccessCardController.getInstance().isAllowAnonymous())) {
             cancelImageTimer();
             updatePrinterParameters(false);
             PrinterController.getInstance().printOnNormalTemperature();

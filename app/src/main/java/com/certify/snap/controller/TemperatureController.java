@@ -18,6 +18,7 @@ import com.certify.snap.arcface.util.DrawHelper;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.model.AccessControlModel;
@@ -713,7 +714,13 @@ public class TemperatureController {
         } else {
             data = CameraController.getInstance().getUserExportedData();
         }
-            AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
+        if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
+            UserExportedData dataQR = new UserExportedData();
+            dataQR.temperature = "0";
+            dataQR.triggerType = CameraController.getInstance().getTriggerType();
+            TemperatureController.getInstance().recordUserTemperature(dataQR, -1);
+        }
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
     }
 
     /**
@@ -835,7 +842,7 @@ public class TemperatureController {
             temperatureRecordRequest.rgbTemplate = data.rgb == null ? "" : Util.encodeToBase64(data.rgb);
             temperatureRecordRequest.thermalTemplate = data.thermal == null ? "" : Util.encodeToBase64(data.thermal);
         }
-        temperatureRecordRequest.deviceData = Util.getDeviceInfo(context);
+        temperatureRecordRequest.deviceData = AppSettings.getDeviceInfo();
         temperatureRecordRequest.deviceParameters = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
         temperatureRecordRequest.temperatureFormat = sp.getString(GlobalParameters.F_TO_C, "F");
         temperatureRecordRequest.exceedThreshold = data.exceedsThreshold;

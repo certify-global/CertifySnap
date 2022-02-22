@@ -593,7 +593,7 @@
     <string name="enable_pro_setting">Enable Pro Settings</string>
     <string name="led_brightness">LED Brightness:</string>
     <string name="enable_local_server">Enable Local Server:</string>
-    
+
     <string name="serial_number">SERIAL NUMBER:</string>
     <string name="imei_number">IMEI NUMBER:</string>
     <string name="close_button">Close</string>
