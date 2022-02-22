@@ -189,9 +189,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private View previewViewRgb;
     private View previewViewIr;
-    public CodeScanner mCodeScanner;
-    private CodeScannerView scannerView;
-    List<BarcodeFormat> barcodeFormatArrayList = new ArrayList<>();
     private TextView tv_display_time, tv_message, tvVersionIr, mask_message, tv_sync, tvDisplayTimeOnly, tvVersionOnly, tvTime, tvDate, tvWaveMessage;
     private Button btWaveStart;
     Timer tTimer, pTimer, imageTimer, lanchTimer;
@@ -272,6 +269,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private AlertDialog nfcDialog;
     Typeface rubiklight;
+    private CameraSource cameraSource = null;
+    private CameraSourcePreview preview;
+    private GraphicOverlay graphicOverlay;
     private static final String BARCODE_DETECTION = "Barcode Detection";
     FrameLayout frameLayout, frameCameraLayout;
     ImageView img_qr;
@@ -454,43 +454,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         });
     }
 
-    private void codeScannerInit() {
-        mCodeScanner = new CodeScanner(this, scannerView);
-        if (Util.isDeviceF10())
-            mCodeScanner.setCamera(CodeScanner.CAMERA_BACK);
-        else {
-            mCodeScanner.setCamera(CodeScanner.CAMERA_FRONT);
-        }
-        mCodeScanner.setScanMode(ScanMode.CONTINUOUS);
-        mCodeScanner.setAutoFocusMode(AutoFocusMode.SAFE);
-        mCodeScanner.setAutoFocusEnabled(true);
-        mCodeScanner.setFormats(barcodeFormatArrayList);
-        mCodeScanner.setFlashEnabled(true);
-        mCodeScanner.setTouchFocusEnabled(false);
-        mCodeScanner.setDecodeCallback(new DecodeCallback() {
-            @Override
-            public void onDecoded(@NonNull Result result) {
-                QrCodeController.getInstance().resetQrCodeData(IrCameraActivity.this);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!qrCodeReceived) {
-                            qrCodeReceived = true;
-                            onBarcodeData(result.getText());
-                        }
-                    }
-                });
-
-            }
-        });
-        mCodeScanner.setErrorCallback(new ErrorCallback() {
-            @Override
-
-            public void onError(@NonNull Exception error) {
-                Log.i("mCodeScanner : onError", error.getMessage());
-            }
-        });
-    }
 
     private void initQRCode() {
         QrCodeController.getInstance().setListener(this);
@@ -2064,11 +2027,46 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
-    private void startQRCameraSource() {
-        if (mCodeScanner != null)
-            mCodeScanner.startPreview();
-    }
 
+    private void createCameraSource(String model) {
+        // If there's no existing cameraSource, create one.
+        if (cameraSource == null) {
+            cameraSource = new CameraSource(this, graphicOverlay);
+        }
+        if (Util.isDeviceF10()) {
+            cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+        } else {
+            cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
+        }
+        try {
+            switch (model) {
+                case BARCODE_DETECTION:
+                    Log.i(TAG, "Using Custom Image Classifier Processor");
+                    barcodeScannerProcessor = new BarcodeScannerProcessor(this, (BarcodeSendData) this);
+                    barcodeScannerProcessor.setListener(this);
+                    cameraSource.setMachineLearningFrameProcessor(barcodeScannerProcessor);
+                    break;
+                default:
+                    Log.e(TAG, "Unknown model: " + model);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "can not create camera source: " + model);
+        }
+    }
+    private void startQRCameraSource() {
+        if (cameraSource != null) {
+            try {
+                if (preview == null) {
+                    Log.d(TAG, "resume: Preview is null");
+                }
+                preview.start(cameraSource, graphicOverlay);
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to start camera source " + e.getMessage());
+                cameraSource.release();
+                cameraSource = null;
+            }
+        }
+    }
     public void onBarcodeData(String guid) {
         try {
             if (isTopFragmentGesture() ||
@@ -3476,7 +3474,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void resetInvalidQrCode(String message) {
         preview.stop();
-       // startQRCameraSource();
+        startQRCameraSource();
         Toast snackbar = Toast
                 .makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
         snackbar.show();
