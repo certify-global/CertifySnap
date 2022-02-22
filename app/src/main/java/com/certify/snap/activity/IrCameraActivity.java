@@ -4834,7 +4834,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetToHomePage() {
-        runOnUiThread(() -> {
             resetAcknowledgementScreen();
             clearData();
             resetHomeScreen();
@@ -4843,7 +4842,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetGesture();
             initScan();
             DisplayTimeAttendance();
-        });
     }
 
     private void updateOnTemperatureScanDisabled() {

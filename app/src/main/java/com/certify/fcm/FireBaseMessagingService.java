@@ -73,7 +73,7 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
         try {
             JSONObject jsonObject = new JSONObject(messageBody);
             sharedPreferences=Util.getSharedPreferences(this);
-
+            Logger.debug(TAG, "sendNotification "+ jsonObject.toString());
             String command=jsonObject.isNull("command") ? "":jsonObject.getString("command");
             String certifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
             String commandGUID=jsonObject.isNull("commandGUID") ? "":jsonObject.getString("commandGUID");

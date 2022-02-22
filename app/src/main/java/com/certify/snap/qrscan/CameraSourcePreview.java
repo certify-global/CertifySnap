@@ -16,6 +16,7 @@
 
 package com.certify.snap.qrscan;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
@@ -85,6 +86,7 @@ public class CameraSourcePreview extends ViewGroup {
         surfaceView.getHolder().getSurface().release();
     }
 
+    @SuppressLint("MissingPermission")
     private void startIfReady() throws IOException, SecurityException {
         if (startRequested && surfaceAvailable && cameraSource != null) {
             if (PreferenceUtils.isCameraLiveViewportEnabled(context)) {

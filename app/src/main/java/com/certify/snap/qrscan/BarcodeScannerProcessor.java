@@ -26,6 +26,7 @@ import com.certify.callback.BarcodeSendData;
 import com.google.android.gms.tasks.Task;
 import com.google.mlkit.vision.barcode.Barcode;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.common.InputImage;
 
@@ -45,10 +46,15 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
         super(context);
         // Note that if you know which format of barcode your app is dealing with, detection will be
         // faster to specify the supported barcode formats one by one, e.g.
-        // new BarcodeScannerOptions.Builder()
-        //     .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-        //     .build();
-        barcodeScanner = BarcodeScanning.getClient();
+        BarcodeScannerOptions options =
+                new BarcodeScannerOptions.Builder()
+                        .setBarcodeFormats(
+                                Barcode.FORMAT_QR_CODE,
+                                Barcode.FORMAT_AZTEC,
+                                Barcode.FORMAT_DATA_MATRIX,
+                                Barcode.FORMAT_ALL_FORMATS)
+                        .build();
+        barcodeScanner = BarcodeScanning.getClient(options);
         this.barcodeSendData=barcodeSendData;
     }
 
