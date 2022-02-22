@@ -188,7 +188,7 @@
                     android:text="@string/retry"
                     android:textColor="@color/colorWhite"
                     android:textSize="28sp"
-                    android:visibility="gone"></Button>
+                    android:visibility="gone"/>
 
             </RelativeLayout>
 
@@ -220,7 +220,6 @@
                     android:id="@+id/scanner_view"
                     android:layout_width="360dp"
                     android:layout_height="340dp"
-                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     app:autoFocusButtonVisible="false"
                     app:flashButtonVisible="false"
@@ -273,7 +272,7 @@
                         <View
                             android:id="@+id/imageView"
                             android:layout_width="match_parent"
-                            android:layout_height="3dp"
+                            android:layout_height="2dp"
                             android:layout_margin="@dimen/size_20"
                             android:background="@color/colorWhite" />
                     </FrameLayout>

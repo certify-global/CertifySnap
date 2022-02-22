@@ -90,6 +90,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
             setContentView(R.layout.activity_home);
 
             mActivity = this;
+            if(!Util.isDeviceF10())
             ApplicationController.getInstance().initThermalUtil(this);
             Util.setTokenRequestName("");
             sharedPreferences = Util.getSharedPreferences(this);
