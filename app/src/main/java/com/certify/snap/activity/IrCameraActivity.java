@@ -2069,13 +2069,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
     public void onBarcodeData(String guid) {
         try {
-            if(qrCodeReceived) return;
-            qrCodeReceived = true;
             if (isTopFragmentGesture() ||
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
                 return;
+            if (qrCodeReceived) return;
+            qrCodeReceived = true;
             CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
-              preview.stop();
+            preview.stop();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -3372,7 +3372,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (AppSettings.getTimeAndAttendance() == 0) {
                 if (Util.isDeviceF10()) {
                     resetQrCode();
-                   // resumeCameraScan();
+                    // resumeCameraScan();
                     CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
                 } else {
                     // resumeCameraScan();
@@ -4838,14 +4838,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resetToHomePage() {
-            resetAcknowledgementScreen();
-            clearData();
-            resetHomeScreen();
-            resetRfid();
-            clearQrCode();
-            resetGesture();
-            initScan();
-            DisplayTimeAttendance();
+        resetAcknowledgementScreen();
+        clearData();
+        resetHomeScreen();
+        resetRfid();
+        clearQrCode();
+        resetGesture();
+        initScan();
+        DisplayTimeAttendance();
     }
 
     private void updateOnTemperatureScanDisabled() {
