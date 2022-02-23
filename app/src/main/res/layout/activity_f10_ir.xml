@@ -271,7 +271,7 @@
                         </ImageView>
                         <View
                             android:layout_width="match_parent"
-                            android:layout_height="5dp"
+                            android:layout_height="3dp"
                             android:id="@+id/imageView"
                             android:background="@color/colorWhite"
                             android:layout_margin="@dimen/size_20"/>
