@@ -933,13 +933,15 @@ public class TemperatureController {
         if (Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
             temperatureRecordRequest.firstName = data.member.getFirstname();
             temperatureRecordRequest.lastName = data.member.getLastname();
+            temperatureRecordRequest.memberId = data.member.getMemberid();
         } else {
             temperatureRecordRequest.firstName = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "");
             temperatureRecordRequest.lastName = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousLastName, "");
             temperatureRecordRequest.vaccineDocumentName = String.format("%s_%s", Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "").replace(" ", ""), Util.getUTCDateMMDDYYYYHHMMSS());
             temperatureRecordRequest.vaccinationStatus = "1";
+            temperatureRecordRequest.memberId = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousId, "");;
         }
-        temperatureRecordRequest.memberId = data.member.getMemberid();
+
         temperatureRecordRequest.memberTypeId = data.member.getMemberType();
         temperatureRecordRequest.memberTypeName = data.member.getMemberTypeName();
         temperatureRecordRequest.trqStatus = "";

@@ -362,6 +362,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate, "");
         Util.writeString(sharedPreferences, GlobalParameters.anonymousVaccDate2, "");
         Util.writeString(sharedPreferences, GlobalParameters.vaccineDocumentName, "");
+        Util.writeString(sharedPreferences, GlobalParameters.anonymousId, "");
     }
 
     public void hlthQrText(String qrText, Context context) {
@@ -370,9 +371,10 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             String hlthVqc = qrText.substring(4);
             String listHLTH[] = hlthVqc.split(";");
             if (listHLTH.length >= 3) { //
-                //  String id = listHLTH[0].substring(listHLTH[0].indexOf(":") + 1);
+                String id = listHLTH[0].substring(listHLTH[0].indexOf(":") + 1);
                 String firstName = listHLTH[1].substring(listHLTH[1].indexOf(":") + 1);
                 String lastName = listHLTH[2].substring(listHLTH[2].indexOf(":") + 1);
+                Util.writeString(sharedPreferences, GlobalParameters.anonymousId, id);
                 Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, firstName);
                 Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, lastName);
 

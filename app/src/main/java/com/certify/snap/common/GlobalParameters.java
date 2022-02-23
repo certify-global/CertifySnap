@@ -56,6 +56,7 @@ public class GlobalParameters {
     public static final String anonymousVaccDate = "anonymous_vacc_date";
     public static final String anonymousVaccDate2 = "anonymous_vacc_date2";
     public static final String vaccineDocumentName = "vaccineDocumentName";
+    public static final String anonymousId = "anonymous_id";
 
     public static String Access_token = "";
     public static String channelID = "";

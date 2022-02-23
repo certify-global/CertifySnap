@@ -414,19 +414,19 @@ public class AccessCardController {
     public void sendAccessLogValid(Context context, float temperature, UserExportedData data) {
         if (!Util.isInstitutionIdValid(context)) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
-        String firstNameAnon, lastNameAnon = "";
+        String firstNameAnon, lastNameAnon = "", anonymousId = "";
         if (sharedPreferences.getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
             firstNameAnon = "Anonymous";
 
         } else {
             firstNameAnon = sharedPreferences.getString(GlobalParameters.anonymousFirstName, "");
             lastNameAnon = sharedPreferences.getString(GlobalParameters.anonymousLastName, "");
+            anonymousId = sharedPreferences.getString(GlobalParameters.anonymousId, "");
         }
         RegisteredMembers registeredMember = new RegisteredMembers();
         if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()) {
             try {
                 String qrCodeId = "";
-                String accessId = "";
                 accessLogRequest = new AccessLogRequest();
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
@@ -446,7 +446,7 @@ public class AccessCardController {
                         accessLogRequest.accessId = "";
                         accessLogRequest.firstName = firstNameAnon;
                         accessLogRequest.lastName = lastNameAnon;
-                        accessLogRequest.memberId = "";
+                        accessLogRequest.memberId = anonymousId;
                         accessLogRequest.memberTypeId = "";
                         accessLogRequest.memberTypeName = "";
                     }
@@ -460,6 +460,7 @@ public class AccessCardController {
                     } else {
                         registeredMember.setFirstname(firstNameAnon);
                         registeredMember.setLastname(lastNameAnon);
+                        registeredMember.setMemberid(anonymousId);
                         registeredMember.setAccessid(mAccessCardID);
                     }
                     accessLogRequest.id = "0";
@@ -484,6 +485,7 @@ public class AccessCardController {
                     } else {
                         accessLogRequest.firstName = firstNameAnon;
                         accessLogRequest.lastName = lastNameAnon;
+                        accessLogRequest.memberId = anonymousId;
                     }
                 } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                     registeredMember = data.member;
@@ -499,10 +501,12 @@ public class AccessCardController {
                     } else {
                         accessLogRequest.firstName = firstNameAnon;
                         accessLogRequest.lastName = lastNameAnon;
+                        accessLogRequest.memberId = anonymousId;
                     }
                 } else {
                     accessLogRequest.firstName = firstNameAnon;
                     accessLogRequest.lastName = lastNameAnon;
+                    accessLogRequest.memberId = anonymousId;
                 }
                 accessLogRequest.temperature = temperature;
                 accessLogRequest.qrCodeId = qrCodeId;
@@ -529,7 +533,8 @@ public class AccessCardController {
                 }
                 if ((isAccessSignalEnabled() || mAllowAnonymous) && data != null) {
                     accessLogRequest.allowAccess = getAllowAccessValue(data);
-                }
+                } else if (isAccessSignalEnabled() || mAllowAnonymous)
+                    accessLogRequest.allowAccess = true;
                 int syncStatus = -1;
                 if (Util.isOfflineMode(context)) {
                     if ((AppSettings.getTimeAndAttendance() == 1) && listener != null) {
