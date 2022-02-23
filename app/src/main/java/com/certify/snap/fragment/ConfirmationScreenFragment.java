@@ -93,11 +93,13 @@ public class ConfirmationScreenFragment extends Fragment {
                 showVaccinationIndicator(firstScanMember, 2);
             }
         }
-        if (AppSettings.getShowVaccinationIndicator() && !Util.getSharedPreferences(getContext()).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+        if (!Util.getSharedPreferences(getContext()).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
             user_name.setText(Util.getSharedPreferences(getContext()).getString(GlobalParameters.anonymousFirstName, ""));
-            confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
             user_name.setVisibility(View.VISIBLE);
-            confirmation_screen_layout.setVisibility(View.VISIBLE);
+            if (AppSettings.getShowVaccinationIndicator() && !Util.getSharedPreferences(getContext()).getString(GlobalParameters.anonymousVaccDate, "").isEmpty()) {
+                confirmation_screen_layout.setBackgroundResource(R.drawable.green_border);
+                confirmation_screen_layout.setVisibility(View.VISIBLE);
+            }
         }
         if (value != null) {
             if (value.equals("high")) {

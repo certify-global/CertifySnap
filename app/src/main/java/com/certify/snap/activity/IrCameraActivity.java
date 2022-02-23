@@ -2069,6 +2069,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
     public void onBarcodeData(String guid) {
         try {
+            if(qrCodeReceived) return;
+            qrCodeReceived = true;
             if (isTopFragmentGesture() ||
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
                 return;
@@ -3363,12 +3365,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tvErrorMessage.setVisibility(View.GONE);
                 }
                 tvFaceMessage.setVisibility(View.GONE);
-                DisplayTimeAttendance();
+
             });
+            DisplayTimeAttendance();
             clearData();
             if (AppSettings.getTimeAndAttendance() == 0) {
                 if (Util.isDeviceF10()) {
-                    resumeCameraScan();
+                    resetQrCode();
+                   // resumeCameraScan();
                     CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
                 } else {
                     // resumeCameraScan();
