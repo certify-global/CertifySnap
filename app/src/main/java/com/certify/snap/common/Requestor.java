@@ -38,7 +38,6 @@ public class Requestor {
         try {
             if (EndPoints.deployment == EndPoints.Mode.Demo)
                 Logger.debug("urlStr", urlStr);
-
             Logger.debug("urlSreq", reqPing.toString());
 
             URL url = new URL(urlStr);

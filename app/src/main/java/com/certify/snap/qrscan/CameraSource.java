@@ -193,6 +193,7 @@ public class CameraSource {
 
         camera = createCamera();
         camera.setPreviewDisplay(surfaceHolder);
+        camera.startSmoothZoom(10);
         camera.startPreview();
 
         processingThread = new Thread(processingRunnable);
