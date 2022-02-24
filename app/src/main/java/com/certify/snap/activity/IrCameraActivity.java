@@ -2920,6 +2920,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void homeDisplayView() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
         time_attendance_layout.setVisibility(View.GONE);
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
             relative_main.setVisibility(View.GONE);
@@ -2931,6 +2935,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             HomeTextOnlyText();
             rl_header.setVisibility(View.VISIBLE);
         }
+            }
+        });
         if (isProDevice) {
             long scannerRemainingTime = CameraController.getInstance().getScannerRemainingTime();
             if (scannerRemainingTime > 0) {
@@ -3370,12 +3376,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             DisplayTimeAttendance();
             clearData();
             if (AppSettings.getTimeAndAttendance() == 0) {
+                resetQrCode();
                 if (Util.isDeviceF10()) {
-                    resetQrCode();
-                    // resumeCameraScan();
                     CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
                 } else {
-                    // resumeCameraScan();
                     initScan();
                 }
             }

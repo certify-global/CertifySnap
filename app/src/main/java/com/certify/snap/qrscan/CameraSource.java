@@ -57,8 +57,8 @@ public class CameraSource {
     public static final int CAMERA_FACING_FRONT = CameraInfo.CAMERA_FACING_FRONT;
 
     public static final int IMAGE_FORMAT = ImageFormat.NV21;
-    public static final int DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH = 1280;
-    public static final int DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT = 720;
+    public static final int DEFAULT_REQUESTED_CAMERA_PREVIEW_WIDTH = 480;
+    public static final int DEFAULT_REQUESTED_CAMERA_PREVIEW_HEIGHT = 360;
 
     private static final String TAG = "MIDemoApp:CameraSource";
 
@@ -302,7 +302,6 @@ public class CameraSource {
 
         previewSize = sizePair.preview;
         Log.v(TAG, "Camera preview size: " + previewSize);
-
         int[] previewFpsRange = selectPreviewFpsRange(camera, requestedFps);
         if (previewFpsRange == null) {
             throw new IOException("Could not find suitable preview frames per second range.");

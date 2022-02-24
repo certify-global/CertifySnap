@@ -4,7 +4,13 @@
     android:id="@+id/snack_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <FrameLayout
+        android:id="@+id/camera_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/img_logo">
     <TextureView
         android:id="@+id/texture_preview_ir"
         android:layout_width="match_parent"
@@ -14,7 +20,7 @@
         android:id="@+id/texture_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
+    </FrameLayout>
 
     <!--<androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_person"
