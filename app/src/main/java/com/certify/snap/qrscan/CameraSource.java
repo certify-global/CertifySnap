@@ -199,7 +199,6 @@ public class CameraSource {
         processingThread = new Thread(processingRunnable);
         processingRunnable.setActive(true);
         processingThread.start();
-
         usingSurfaceTexture = false;
         return this;
     }

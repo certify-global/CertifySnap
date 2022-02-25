@@ -49,7 +49,8 @@ public class BarcodeScannerProcessor extends VisionProcessorBase<List<Barcode>> 
         BarcodeScannerOptions options =
                 new BarcodeScannerOptions.Builder()
                         .setBarcodeFormats(
-                                Barcode.FORMAT_CODE_39)
+                                Barcode.FORMAT_QR_CODE,
+                                Barcode.FORMAT_DATA_MATRIX)
                         .build();
         barcodeScanner = BarcodeScanning.getClient(options);
         this.barcodeSendData=barcodeSendData;
