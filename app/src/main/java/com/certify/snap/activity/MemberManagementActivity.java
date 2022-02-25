@@ -135,7 +135,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     private SharedPreferences sharedPreferences;
     private RelativeLayout relative_management;
     int listPosition;
-    int count=0;
+    int count = 0;
     private BroadcastReceiver hidReceiver, mMessageReceiver;
     private int activeMemberCount = 0;
     private int totalMemberCount = 0;
@@ -169,7 +169,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().equals("\n")){
+                if (s.toString().equals("\n")) {
                     msearch.setSingleLine(true);
                 } else {
                     msearch.setSingleLine(false);
@@ -249,7 +249,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             case R.id.refresh:
                 if (memberAdapter != null || memberfailedAdapter != null) {
                     //refresh();
-                    if(sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)&& sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS,false)) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true) && sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
 
                         count = 0;
                         testCount = 1;
@@ -516,7 +516,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 Bitmap bitmap1 = BitmapFactory.decodeFile(updateimagePath);
                                 isUpdate = true;
                                 JSONObject obj = new JSONObject();
-                                obj.put("uniqueId", uniquestr);
+                                obj.put("id", uniquestr);
                                 obj.put("firstName", firstnamestr);
                                 obj.put("lastname", lastnamestr);
                                 obj.put("email", emailstr);
@@ -529,7 +529,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 obj.put("memberTypeName", member.getMemberTypeName());
                                 obj.put("networkId", member.getNetworkId());
                                 if ((member.getAccessFromTime() != null && member.getAccessToTime() != null)
-                                    && !member.getAccessFromTime().isEmpty() && !member.getAccessToTime().isEmpty()) {
+                                        && !member.getAccessFromTime().isEmpty() && !member.getAccessToTime().isEmpty()) {
                                     obj.put("activeCheckbox", true);
                                     obj.put("fromDate", member.getAccessFromTime());
                                     obj.put("toDate", member.getAccessToTime());
@@ -541,7 +541,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
-                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "","", "", "", "", "");
+                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "", "", "", "", "", "");
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError(getString(R.string.member_empty_msg));
@@ -851,7 +851,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "","", "", "", "", "");
+                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "", "", "", "", "", "");
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -880,7 +880,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
             if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId,
-                                                                   memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false, "", false, guid)) {
+                    memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false, "", false, guid)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
                 handler.obtainMessage(REGISTER).sendToTarget();
@@ -1084,22 +1084,27 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     private void takefacephoto() {
-        File outputImage = new File(getExternalCacheDir(), "update.jpg");
-        if (outputImage.exists()) outputImage.delete();
         try {
-            outputImage.createNewFile();
-            Log.e("updatepath----", outputImage.getPath() + "\n" + updateimagePath);
-        } catch (IOException e) {
-            e.printStackTrace();
+            File outputImage = new File(getExternalCacheDir(), "update.jpg");
+            if (outputImage.exists()) outputImage.delete();
+            try {
+                outputImage.createNewFile();
+                Log.e("updatepath----", outputImage.getPath() + "\n" + updateimagePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (Build.VERSION.SDK_INT >= 24) {
+                updateUri = FileProvider.getUriForFile(MemberManagementActivity.this, "com.certify.snap.fileprovider", outputImage);
+            } else {
+                updateUri = Uri.fromFile(outputImage);
+            }
+            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, updateUri);
+            startActivityForResult(intent, UPDATE_PHOTO);
+        } catch (Exception e) {
+            Toast.makeText(this, "Camera error", Toast.LENGTH_SHORT).show();
+            Logger.error(TAG + ",takefacephoto ->", e.getMessage());
         }
-        if (Build.VERSION.SDK_INT >= 24) {
-            updateUri = FileProvider.getUriForFile(MemberManagementActivity.this, "com.certify.snap.fileprovider", outputImage);
-        } else {
-            updateUri = Uri.fromFile(outputImage);
-        }
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, updateUri);
-        startActivityForResult(intent, UPDATE_PHOTO);
     }
 
     @Override
@@ -1278,6 +1283,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     String accessFromTime = "";
                     String accessToTime = "";
                     String groupTypeName = "";
+                    String id = json.getString("id");
                     String certifyUniversalGuid = "";
                     if (responseData.has("memberType")) {
                         memberType = responseData.getString("memberType");
@@ -1293,7 +1299,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         groupTypeName = responseData.getString("groupTypeName");
                     }
                     String accessstr = responseData.getString("accessId");
-                    String uniquestr = responseData.getString("uniqueId");
+                    String uniquestr = responseData.getString("id");
+                    if (uniquestr.isEmpty())
+                        uniquestr = id;
                     String image = responseData.getString("faceTemplate");
                     String statusStr = responseData.getString("status");
                     if (responseData.has("networkId")) {
@@ -1312,7 +1320,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
                         localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId(),
-                                    memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, groupTypeName);
+                                memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, groupTypeName);
                     } else if (isDeleted) {
                         RegisteredMembers members = new RegisteredMembers();
                         members.setFirstname(firstnamestr);
@@ -1347,17 +1355,17 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                     if (isDeleted) {
                         deletionFailed();
                     } else {
-                        if (isUpdate){
+                        if (isUpdate) {
                             showResult(getString(R.string.update_failed));
                             isUpdate = false;
-                        }else {
+                        } else {
                             showResult(getString(R.string.register_failed));
                         }
                     }
                 }
 
             } catch (Exception e) {
-                if (isDeleted){
+                if (isDeleted) {
                     deletionFailed();
                 } else {
                     DismissProgressDialog(mprogressDialog);
@@ -1370,9 +1378,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     private void deletionFailed() {
+        DismissProgressDialog(mdeleteprogressDialog);
         if (isDeleted) {
             showResult(getString(R.string.deletion_failed));
-            DismissProgressDialog(mdeleteprogressDialog);
             isDeleted = false;
         }
     }
@@ -1398,7 +1406,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 }
                 totalMemberCount = activeMemberCount;
                 MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-            } else if(response.responseSubCode.equals("101")){
+            } else if (response.responseSubCode.equals("101")) {
                 DismissProgressDialog(mloadingprogress);
                 refresh();
                 MemberSyncDataModel.getInstance().setSyncing(false);
@@ -1420,11 +1428,12 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         EndPoints.prod_url) + EndPoints.GetMemberById, this).execute();
             }
         } catch (Exception e) {
-            Logger.error(TAG, " getMemberID()",e.getMessage());
+            Logger.error(TAG, " getMemberID()", e.getMessage());
         }
     }
 
-    private int testCount=0;
+    private int testCount = 0;
+
     public void onJSONObjectListenerMemberID(final JSONObject reportInfo, String status, JSONObject req) {
         if (reportInfo != null) {
             try {
@@ -1445,9 +1454,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     public void onRfidScan(String cardId) {
-        if(updateMember != null) updateMember.setAccessid(cardId);
+        if (updateMember != null) updateMember.setAccessid(cardId);
         String finalCardId = cardId;
-        runOnUiThread(()->{
+        runOnUiThread(() -> {
             if (updateMember != null && maccessid != null) {
                 maccessid.setText(finalCardId);
             } else {

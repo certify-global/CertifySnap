@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
+
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -149,12 +151,13 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                         EndPoints.prod_url) + EndPoints.GetMemberById, getApplicationContext()).execute();
             }
         } catch (Exception e) {
-            Logger.error(" getMemberID()",e.getMessage());
+            Logger.error(" getMemberID()", e.getMessage());
         }
     }
 
     @Override
     public void onJSONObjectListenerMemberID(JSONObject reportInfo, String status, JSONObject req) {
+        Logger.debug(TAG, "reportInfo: " + reportInfo + ", req" + req);
         if (reportInfo == null) {
             onMemberIdErrorResponse(req);
             Logger.error(TAG, "onJSONObjectListenerMemberID reportInfo nul");
@@ -162,7 +165,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
 
         try {
-            if (reportInfo.isNull("responseCode"))  {
+            if (reportInfo.isNull("responseCode")) {
                 onMemberIdErrorResponse(req);
                 return;
             }
@@ -180,7 +183,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
         }
     }
 
-    private void doSendBroadcast(int actionCode,int memberCount,int count) {
+    private void doSendBroadcast(int actionCode, int memberCount, int count) {
         Intent event_snackbar = new Intent("EVENT_SNACKBAR");
 
         event_snackbar.putExtra("actionCode", actionCode);

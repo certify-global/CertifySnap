@@ -94,7 +94,8 @@ public class Requestor {
                 }
                 responseStr = stringBuilder.toString();
             }
-
+            if (EndPoints.deployment == EndPoints.Mode.Demo)
+                Logger.debug("responseStr", responseStr);
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
