@@ -391,11 +391,14 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     }
 
     public void handleOfflineQrCode(String guid) {
-        long primaryId = DatabaseController.getInstance().getQrCodeDataLastPrimaryId();
-        QrCodeStore qrCodeStore = new QrCodeStore();
-        qrCodeStore.primaryId = primaryId + 1;
-        qrCodeStore.guid = guid;
-        qrCodeStore.dateTime = Util.getMMDDYYYYDate();
-        DatabaseController.getInstance().insertOfflineQrCodeData(qrCodeStore);
+        SharedPreferences sharedPreferences = Util.getSharedPreferences(mContext);
+        if (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.OFFLINE_QR_CODE, false)) {
+            long primaryId = DatabaseController.getInstance().getQrCodeDataLastPrimaryId();
+            QrCodeStore qrCodeStore = new QrCodeStore();
+            qrCodeStore.primaryId = primaryId + 1;
+            qrCodeStore.guid = guid;
+            qrCodeStore.dateTime = Util.getMMDDYYYYDate();
+            DatabaseController.getInstance().insertOfflineQrCodeData(qrCodeStore);
+        }
     }
 }

@@ -236,5 +236,6 @@ public class GlobalParameters {
     public static final String MEMBER_DELTA_SYNC_ENABLED = "MemberDeltaSyncEnabled";
     public static final String ACCESSID_TRIM_ZEROES = "AccessIdTrimZeroes";
     public static final String MOBILE_ACCESS_CARD = "MobileAccessCard";
+    public static final String OFFLINE_QR_CODE = "OfflineQrCode";
 
 }

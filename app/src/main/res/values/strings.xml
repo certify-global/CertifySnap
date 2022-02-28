@@ -777,5 +777,6 @@
     <string name="access_log_records">Access Log records</string>
     <string name="mobile_access_card">Enable Mobile Access Card</string>
     <string name="access_id_msg">Access Id does not exist</string>
+    <string name="enable_offline_qrcode">Enable Offline QR Code</string>
 
 </resources>

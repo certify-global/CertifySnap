@@ -61,6 +61,9 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private boolean isHomeScreenTextOnlyEnabled;
     private LinearLayout acknowledgmentLayout;
     private IdentificationSettings identificationSettings = null;
+    private TextView offlineQrCode;
+    private RadioGroup offlineQrCodeRg;
+    private RadioButton offlineQrCodeYes, offlineQrCodeNo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +140,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             display_image_layout = findViewById(R.id.display_image_layout);
             qr_skip_button_enable_text = findViewById(R.id.qr_skip_button_enable_text);
             qr_skip_button_enable_text.setTypeface(rubiklight);
+            offlineQrCode = findViewById(R.id.offline_qrcode_tv);
+            offlineQrCode.setTypeface(rubiklight);
+            offlineQrCodeRg = findViewById(R.id.offline_qr_code_rg);
+            offlineQrCodeYes = findViewById(R.id.offline_qr_code_rb_yes);
+            offlineQrCodeNo = findViewById(R.id.offline_qr_code_rb_no);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextAcknowledge.setText(sp.getString(GlobalParameters.ACKNOWLEDGEMENT_TEXT, "All the acknowledge"));
@@ -154,6 +162,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
 
             setPrimaryIdentifierListener();
             setSecondaryIdentifierListener();
+            setOfflineQrCodeListener();
 
             if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 radio_yes_display.setChecked(true);
@@ -511,6 +520,25 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             } else if (id == R.id.none_secondary) {
                 rbNoneSecondary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "5");
+            }
+        });
+    }
+
+    private void setOfflineQrCodeListener() {
+        if (sp.getBoolean(GlobalParameters.OFFLINE_QR_CODE, false)) {
+            offlineQrCodeYes.setChecked(true);
+        } else {
+            offlineQrCodeNo.setChecked(true);
+        }
+
+        offlineQrCodeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.offline_qr_code_rb_yes) {
+                    Util.writeBoolean(sp, GlobalParameters.OFFLINE_QR_CODE, true);
+                } else {
+                    Util.writeBoolean(sp, GlobalParameters.OFFLINE_QR_CODE, false);
+                }
             }
         });
     }

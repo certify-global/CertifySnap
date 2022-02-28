@@ -742,5 +742,6 @@
     <string name="access_log_records">Registros de registro de acceso</string>
     <string name="mobile_access_card">Habilitar la tarjeta de acceso móvil</string>
     <string name="access_id_msg">El ID de acceso no existe</string>
+    <string name="enable_offline_qrcode">Habilitar código QR sin conexión</string>
 
 </resources>
