@@ -20,6 +20,7 @@ import com.certify.snap.common.Util;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
+import com.certify.snap.model.QrCodeStore;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class OfflineRecordSyncService extends Service {
     private static final String TAG = OfflineRecordSyncService.class.getSimpleName();
     private List<OfflineRecordTemperatureMembers> datalist = new ArrayList<>();
     private List<AccessLogOfflineRecord> accessLogDatalist = new ArrayList<>();
+    private List<QrCodeStore> qrCodeStoreList = new ArrayList<>();
     public ExecutorService taskExecutorService;
     private SharedPreferences sp;
     private final Object obj = new Object();
@@ -49,6 +51,7 @@ public class OfflineRecordSyncService extends Service {
     private Long primaryid;
     private int index = 0;
     private int logIndex = 0;
+    private int qrCodeIndex = 0;
 
     @Nullable
     @Override
@@ -67,6 +70,8 @@ public class OfflineRecordSyncService extends Service {
             findAllOfflineTempRecord();
         } else if (DatabaseController.getInstance().isOfflineAccessLogExist()){
             findAllOfflineAccessLogRecord();
+        } else if (DatabaseController.getInstance().isOfflineQrCodeDataExist()) {
+            findAllOfflineQrCodeData();
         } else {
             stopService(new Intent(context, OfflineRecordSyncService.class));
         }
@@ -137,6 +142,47 @@ public class OfflineRecordSyncService extends Service {
                             accessLogDatalist = list;
                             if (accessLogDatalist != null && accessLogDatalist.size() > 0) {
                                 uploadAccessLogData(accessLogDatalist, logIndex);
+                            }
+                            disposable.dispose();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.e(TAG, "Error in adding the member to data model from database");
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            disposable.dispose();
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void findAllOfflineQrCodeData() {
+        try {
+            Observable.create(new ObservableOnSubscribe<List<QrCodeStore>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<QrCodeStore>> emitter) throws Exception {
+                    List<QrCodeStore> qrCodeStoreList = DatabaseController.getInstance().findAllOfflineQrCodeRecord();
+                    emitter.onNext(qrCodeStoreList);
+                }
+            }).subscribeOn(Schedulers.computation())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<QrCodeStore>>() {
+                        Disposable disposable;
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
+                        }
+
+                        @Override
+                        public void onNext(List<QrCodeStore> list) {
+                            qrCodeStoreList = list;
+                            if (qrCodeStoreList != null && qrCodeStoreList.size() > 0) {
+                                uploadQrCodeData(qrCodeStoreList, qrCodeIndex);
                             }
                             disposable.dispose();
                         }
@@ -239,6 +285,42 @@ public class OfflineRecordSyncService extends Service {
             @Override
             public void onFailure(Call<AccessLogResponse> call, Throwable t) {
                 Log.e(TAG, "Error in sending the access logs " + t.getMessage());
+            }
+        });
+    }
+
+    private void uploadQrCodeData(List<QrCodeStore> qrCodeList, int i) {
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        AccessLogRequest accessLogRequest = new AccessLogRequest();
+        accessLogRequest.guid = qrCodeList.get(i).guid;
+        accessLogRequest.deviceTime = qrCodeList.get(i).dateTime;
+        primaryid = qrCodeList.get(i).primaryId;
+        Call<AccessLogResponse> call = apiInterface.sendAccessLog(accessLogRequest);
+        call.enqueue(new Callback<AccessLogResponse>() {
+            @Override
+            public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
+                if (response.body() != null) {
+                    if (response.body().responseCode == 1) {
+                        QrCodeStore firstQrLogData = DatabaseController.getInstance().getFirstQrCodeData();
+                        if (firstQrLogData != null) {
+                            Log.d(TAG, "OfflineRecord successfully sent with id " + primaryid);
+                            DatabaseController.getInstance().deleteOfflineQrCodeData(primaryid);
+                        } else {
+                            stopService(new Intent(context, OfflineRecordSyncService.class));
+                        }
+                    }
+                    qrCodeIndex++;
+                    if(qrCodeIndex < qrCodeList.size()) {
+                        uploadQrCodeData(qrCodeList, qrCodeIndex);
+                    } else {
+                        stopService(new Intent(context, OfflineRecordSyncService.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AccessLogResponse> call, Throwable t) {
+                Log.e(TAG, "Error in sending the qr access logs " + t.getMessage());
             }
         });
     }

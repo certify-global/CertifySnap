@@ -2169,12 +2169,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             //Make API call
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             CameraController.getInstance().setQrCodeId(guid);
-            if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
-                startQRTimer(guid);
-                JSONObject obj = new JSONObject();
-                obj.put("qrCodeID", guid);
-                obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+            if (Util.isOfflineMode(this)) {
+                QrCodeController.getInstance().handleOfflineQrCode(guid);
+            } else {
+                if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
+                    startQRTimer(guid);
+                    JSONObject obj = new JSONObject();
+                    obj.put("qrCodeID", guid);
+                    obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                    new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                }
             }
 
         } catch (Exception e) {

@@ -16,6 +16,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.model.QrCodeStore;
 import com.certify.snap.model.SmartHealthCardData;
 import com.certify.snap.qrverification.CertificateModel;
 import com.certify.snap.qrverification.DiseaseType;
@@ -387,5 +388,14 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void handleOfflineQrCode(String guid) {
+        long primaryId = DatabaseController.getInstance().getQrCodeDataLastPrimaryId();
+        QrCodeStore qrCodeStore = new QrCodeStore();
+        qrCodeStore.primaryId = primaryId + 1;
+        qrCodeStore.guid = guid;
+        qrCodeStore.dateTime = Util.getMMDDYYYYDate();
+        DatabaseController.getInstance().insertOfflineQrCodeData(qrCodeStore);
     }
 }

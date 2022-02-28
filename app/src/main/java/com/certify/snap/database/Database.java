@@ -25,6 +25,7 @@ import com.certify.snap.database.secureDB.SafeHelperFactory;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
+import com.certify.snap.model.QrCodeStore;
 import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -38,7 +39,8 @@ import com.certify.snap.model.RegisteredMembers;
         DeviceKeySettings.class, QuestionDataDb.class, LanguageData.class, DeviceSettingsData.class,
         AccessControlSettings.class, AudioVisualSettings.class, ConfirmationViewSettings.class,
         GuideSettings.class, HomePageSettings.class, IdentificationSettings.class,
-        PrinterSettings.class, ScanViewSettings.class, TouchlessSettings.class, GestureQuestionsDb.class, WaveSkipDb.class,QRCodeIssuer.class}, version = DatabaseController.DB_VERSION, exportSchema = false)
+        PrinterSettings.class, ScanViewSettings.class, TouchlessSettings.class,
+        GestureQuestionsDb.class, WaveSkipDb.class,QRCodeIssuer.class, QrCodeStore.class}, version = DatabaseController.DB_VERSION, exportSchema = false)
 @TypeConverters({DateTypeConverter.class})
 public abstract class Database extends RoomDatabase {
     public abstract DatabaseStore databaseStore();

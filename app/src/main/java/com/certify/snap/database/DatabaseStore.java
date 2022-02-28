@@ -22,6 +22,7 @@ import com.certify.snap.bean.QRCodeIssuer;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
 import com.certify.snap.model.GuestMembers;
+import com.certify.snap.model.QrCodeStore;
 import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.OfflineGuestMembers;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -100,6 +101,9 @@ public interface DatabaseStore {
     @Insert
     void  insertQRIssuer(QRCodeIssuer qrIssuer);
 
+    @Insert
+    void insertQrCodeData(QrCodeStore qrCodeData);
+
     @Query("SELECT * FROM QRCodeIssuer WHERE keyID=:issuerKey")
     List<QRCodeIssuer> findissuerKey(String issuerKey);
 
@@ -155,6 +159,12 @@ public interface DatabaseStore {
     @Query("SELECT * FROM OfflineRecordTemperatureMembers ORDER BY primaryid ASC LIMIT 10")
     List<OfflineRecordTemperatureMembers> LastTenOfflineTempRecord();
 
+    @Query("SELECT * FROM QrCodeStore ORDER BY primaryId ASC LIMIT 1")
+    QrCodeStore getFirstQrCodeData();
+
+    @Query("SELECT * FROM QrCodeStore ORDER BY primaryid DESC LIMIT 1")
+    QrCodeStore qrCodeGetLastPrimaryId();
+
     @Query("DELETE FROM OfflineRecordTemperatureMembers WHERE primaryid =:primaryId")
     void deleteOfflineRecord(long primaryId);
 
@@ -182,6 +192,9 @@ public interface DatabaseStore {
     @Query("DELETE FROM AccessLogOfflineRecord WHERE primaryid =:primaryId")
     void deleteOfflineAccessLogRecord(long primaryId);
 
+    @Query("DELETE FROM QrCodeStore WHERE primaryId =:primaryId")
+    void deleteOfflineQrCodeRecord(long primaryId);
+
     @Query("SELECT * FROM AccessLogOfflineRecord ORDER BY primaryId DESC LIMIT 1")
     AccessLogOfflineRecord OfflineAccessLogRecord();
 
@@ -203,6 +216,9 @@ public interface DatabaseStore {
     @Transaction
     @Query("SELECT * FROM DeviceKeySettings WHERE settingName=:settingName")
     DeviceKeySettings findDeviceSettingByName(String settingName);
+
+    @Query("SELECT * FROM QrCodeStore")
+    List<QrCodeStore> findAllOfflineQrCodeData();
 
     @Update
     void updateSetting(DeviceKeySettings deviceKeySettings);

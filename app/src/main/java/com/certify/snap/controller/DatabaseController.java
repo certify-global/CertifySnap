@@ -29,6 +29,7 @@ import com.certify.snap.database.secureDB.SQLCipherUtils;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.AccessLogOfflineRecord;
 import com.certify.snap.model.DeviceKeySettings;
+import com.certify.snap.model.QrCodeStore;
 import com.certify.snap.model.WaveSkipDb;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.model.OfflineRecordTemperatureMembers;
@@ -359,6 +360,16 @@ public class DatabaseController {
         }
     }
 
+    public void deleteOfflineQrCodeData(long primaryId){
+        try {
+            if (databaseStore != null){
+                databaseStore.deleteOfflineQrCodeRecord(primaryId);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
     public AccessLogOfflineRecord getLastAccessLogPrimaryId() {
         try {
             if (databaseStore != null) {
@@ -470,6 +481,41 @@ public class DatabaseController {
         } catch (SQLiteException e){
             handleDBException(e);
         }
+    }
+
+    public boolean isOfflineQrCodeDataExist() {
+        boolean result = false;
+        try {
+            QrCodeStore firstOfflineQrCode = databaseStore.getFirstQrCodeData();
+            if (firstOfflineQrCode != null){
+                result = true;
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return result;
+    }
+
+    public List<QrCodeStore> findAllOfflineQrCodeRecord() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.findAllOfflineQrCodeData();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return new ArrayList<>();
+    }
+
+    public QrCodeStore getFirstQrCodeData() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.getFirstQrCodeData();
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+        return null;
     }
 
    /* public void insertQuestionsToDB(QuestionDataDb questionData) {
@@ -1010,6 +1056,27 @@ public class DatabaseController {
         } catch (SQLiteException e){
             handleDBException(e);
         }
+    }
+
+    public void insertOfflineQrCodeData(QrCodeStore qrCodeData) {
+        try {
+            if (databaseStore != null) {
+                databaseStore.insertQrCodeData(qrCodeData);
+            }
+        } catch (SQLiteException e){
+            handleDBException(e);
+        }
+    }
+
+    public long getQrCodeDataLastPrimaryId() {
+        try {
+            if (databaseStore != null) {
+                return databaseStore.qrCodeGetLastPrimaryId().primaryId;
+            }
+        } catch (SQLiteException e) {
+            handleDBException(e);
+        }
+        return 0L;
     }
 
     public void insertQRCodeIssuer(QRCodeIssuer qrCodeIssuer) {
