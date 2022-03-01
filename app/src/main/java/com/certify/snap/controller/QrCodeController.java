@@ -398,6 +398,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             qrCodeStore.primaryId = primaryId + 1;
             qrCodeStore.guid = guid;
             qrCodeStore.dateTime = Util.getMMDDYYYYDate();
+            qrCodeStore.utcRecordDate = Util.getUTCDate("");
             DatabaseController.getInstance().insertOfflineQrCodeData(qrCodeStore);
         }
     }

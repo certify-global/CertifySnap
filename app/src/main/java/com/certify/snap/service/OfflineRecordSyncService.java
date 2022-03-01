@@ -293,7 +293,10 @@ public class OfflineRecordSyncService extends Service {
         ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
         AccessLogRequest accessLogRequest = new AccessLogRequest();
         accessLogRequest.guid = qrCodeList.get(i).guid;
+        accessLogRequest.offlineSync = 1;
         accessLogRequest.deviceTime = qrCodeList.get(i).dateTime;
+        accessLogRequest.utcOfflineDateTime = qrCodeList.get(i).utcRecordDate;
+        accessLogRequest.utcRecordDate = qrCodeList.get(i).utcRecordDate;
         primaryid = qrCodeList.get(i).primaryId;
         Call<AccessLogResponse> call = apiInterface.sendAccessLog(accessLogRequest);
         call.enqueue(new Callback<AccessLogResponse>() {

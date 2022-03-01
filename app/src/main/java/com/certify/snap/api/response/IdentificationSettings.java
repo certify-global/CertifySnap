@@ -69,4 +69,7 @@ public class IdentificationSettings {
     @SerializedName("enabledSecondary")
     public String enabledSecondary;
 
+    @SerializedName("enableOfflineQRCode")
+    public String enableOfflineQRCode;
+
 }

@@ -12,4 +12,5 @@ public class QrCodeStore {
     public long primaryId;
     public String guid;
     public String dateTime;
+    public String utcRecordDate;
 }
