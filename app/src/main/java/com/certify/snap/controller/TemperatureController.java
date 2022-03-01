@@ -718,7 +718,11 @@ public class TemperatureController {
             UserExportedData dataQR = new UserExportedData();
             dataQR.temperature = "0";
             dataQR.triggerType = CameraController.getInstance().getTriggerType();
-            TemperatureController.getInstance().recordUserTemperature(dataQR, -1);
+            int syncStatus = -1;
+            if (Util.isOfflineMode(context)) {
+                syncStatus = 1;
+            }
+            TemperatureController.getInstance().recordUserTemperature(dataQR, syncStatus);
         }
         AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
     }
