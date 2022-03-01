@@ -935,7 +935,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             resetHomeScreen();
             disableLedPower();
             CameraController.getInstance().updateControllers(registeredMemberslist, data);
-            TemperatureController.getInstance().recordUserTemperature(data, -1);
+            if (((AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) && (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.QR_CODE.getValue()))) {
+                TemperatureController.getInstance().recordUserTemperature(data, -1);
+            }
             CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
             return;
@@ -2170,6 +2172,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, guid);
             CameraController.getInstance().setQrCodeId(guid);
             if (Util.isOfflineMode(this)) {
+                scanOnQrCode();
                 QrCodeController.getInstance().handleOfflineQrCode(guid);
             } else {
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
@@ -5100,5 +5103,31 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, true)) {
             tvVersionOnly.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void scanOnQrCode() {
+        runOnUiThread(() -> {
+            if (isReadyToScan) return;
+            if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())
+                    && !AppSettings.isAskQrCodeAlwaysEnabled()) {
+                RegisteredMembers registeredMember = registeredMemberslist.get(0);
+                if (registeredMember != null) {
+                    registeredMember.isMemberAccessed = true;
+                    DatabaseController.getInstance().updateMember(registeredMember);
+                }
+            }
+            CameraController.ScanProcessState state = CameraController.getInstance().getScanProcessState();
+            if (state == CameraController.ScanProcessState.SECOND_SCAN) {
+                CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN_COMPLETE);
+            }
+            preview.stop();
+            clearQrCodePreview();
+            if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
+                resetQrCode();
+                initSecondaryScan();
+            } else {
+                setCameraPreview();
+            }
+        });
     }
 }
