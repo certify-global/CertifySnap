@@ -3455,10 +3455,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
 
 //        new Handler().post(() -> {
-            isFaceIdentified = false;
             // initRgbCamera();
             //initIrCamera();
-            enableRfidScan();
             enableFaceScan();
             isReadyToScan = true;
 
