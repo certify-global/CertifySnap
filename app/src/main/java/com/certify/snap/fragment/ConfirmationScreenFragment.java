@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -205,8 +206,7 @@ public class ConfirmationScreenFragment extends Fragment {
     }
 
     private void setHomeScreenTimer() {
-        Timer time = new Timer();
-        time.schedule(new TimerTask() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (getActivity() != null) {

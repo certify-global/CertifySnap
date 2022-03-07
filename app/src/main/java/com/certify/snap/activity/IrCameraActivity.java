@@ -368,6 +368,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         CameraController.getInstance().startProDeviceInitTimer(this);
         ApplicationController.getInstance().setListener(this);
         QrCodeController.getInstance().init(this);
+        QrCodeController.getInstance().setListener(this);
         //initAccessControl();
         initNfc();
         initGesture();
@@ -456,7 +457,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
 
     private void initQRCode() {
-        QrCodeController.getInstance().setListener(this);
         if (!isHomeViewEnabled) return;
         try {
             QrCodeController.getInstance().resetQrCodeData(this);
@@ -748,7 +748,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         Log.v(TAG, "onResume");
         super.onResume();
         isActivityResumed = true;
-        resumeCameraScan();
+        //  resumeCameraScan();
         if (mMessageReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
         }
@@ -1973,13 +1973,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         if (confirmAboveScreen || confirmBelowScreen) {
                             runOnUiThread(() -> {
                                 if (isDestroyed()) return;
-//                                if (userData != null && userData.member.firstname != null) {
-//                                    if ((AppSettings.getTimeAndAttendance() == 1) && Util.isAlreadyChecked(userData.member.getDateTimeCheckInOut())) {
-//                                        isAlreadyCheckEdOut();
-//                                        return;
-//                                    }
-//
-//                                }
+
                                 launchConfirmationFragment(String.valueOf(aboveThreshold));
                                 if (isHomeViewEnabled) {
                                     pauseCameraScan();
@@ -2079,11 +2073,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
     public void onBarcodeData(String guid) {
         try {
+            isReadyToScan = false;
             if (isTopFragmentGesture() ||
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
                 return;
             if (qrCodeReceived) return;
             qrCodeReceived = true;
+            imageqr.clearAnimation();
             CameraController.getInstance().updateTriggerType(CameraController.triggerValue.CODEID.toString());
             preview.stop();
             runOnUiThread(new Runnable() {
@@ -2227,31 +2223,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             if (reportInfo.has("responseCode") && reportInfo.getString("responseCode").equals("1")) {
-                runOnUiThread(() -> {
-                    if (isReadyToScan) return;
-                    if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())
-                            && !AppSettings.isAskQrCodeAlwaysEnabled()) {
-                        RegisteredMembers registeredMember = registeredMemberslist.get(0);
-                        if (registeredMember != null) {
-                            registeredMember.isMemberAccessed = true;
-                            DatabaseController.getInstance().updateMember(registeredMember);
-                        }
-                    }
-                    CameraController.ScanProcessState state = CameraController.getInstance().getScanProcessState();
-                    if (state == CameraController.ScanProcessState.SECOND_SCAN) {
-                        CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN_COMPLETE);
-                    }
-                    Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
-                    preview.stop();
-                    clearQrCodePreview();
-                    if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
-                        resetQrCode();
-                        initSecondaryScan();
-                    } else {
-                        setCameraPreview();
-                    }
-                    SoundController.getInstance().playValidQrSound();
-                });
+                scanOnQrCode();
+                SoundController.getInstance().playValidQrSound();
                 return;
             }
             resetInvalidQrCode(getString(R.string.invalid_qr));
@@ -2939,17 +2912,17 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public void run() {
 
-        time_attendance_layout.setVisibility(View.GONE);
-        if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
-            relative_main.setVisibility(View.GONE);
-            // rl_header.setVisibility(View.GONE);
-        } else {
-            temperature_image.setVisibility(View.GONE);
-            mask_message.setVisibility(View.GONE);
-            relative_main.setVisibility(View.VISIBLE);
-            HomeTextOnlyText();
-            rl_header.setVisibility(View.VISIBLE);
-        }
+                time_attendance_layout.setVisibility(View.GONE);
+                if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
+                    relative_main.setVisibility(View.GONE);
+                    // rl_header.setVisibility(View.GONE);
+                } else {
+                    temperature_image.setVisibility(View.GONE);
+                    mask_message.setVisibility(View.GONE);
+                    relative_main.setVisibility(View.VISIBLE);
+                    HomeTextOnlyText();
+                    rl_header.setVisibility(View.VISIBLE);
+                }
             }
         });
         if (isProDevice) {
@@ -3440,8 +3413,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void clearQrCode() {
         if (qrCodeEnable) {
-            frameLayout.setVisibility(View.GONE);
-            img_qr.setVisibility(View.GONE);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    frameLayout.setVisibility(View.GONE);
+                    img_qr.setVisibility(View.GONE);
+                }
+            });
+
             resetImageLogo();
             clearQrCodePreview();
         }
@@ -3476,8 +3455,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
 
 //        new Handler().post(() -> {
-            initRgbCamera();
-            initIrCamera();
+            isFaceIdentified = false;
+            // initRgbCamera();
+            //initIrCamera();
+            enableRfidScan();
+            enableFaceScan();
+            isReadyToScan = true;
+
             // });
         } catch (Exception e) {
             e.printStackTrace();
@@ -3502,7 +3486,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 .makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
         snackbar.show();
         img_qr.setBackgroundResource(R.drawable.invalid_qr);
-        imageqr.setBackgroundColor(getResources().getColor(R.color.colorRed));
         img_qr.setVisibility(View.GONE);
         tv_scan.setText(R.string.tv_qr_scan);
         tv_scan.setBackgroundColor(getResources().getColor(R.color.colorWhite));
@@ -5128,7 +5111,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (state == CameraController.ScanProcessState.SECOND_SCAN) {
                 CameraController.getInstance().updateScanState(CameraController.ScanProcessState.SECOND_SCAN_COMPLETE);
             }
-            preview.stop();
             clearQrCodePreview();
             if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.RFID.getValue()) {
                 resetQrCode();
