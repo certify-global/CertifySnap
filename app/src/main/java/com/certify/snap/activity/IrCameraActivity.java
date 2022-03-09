@@ -2057,6 +2057,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Log.e(TAG, "can not create camera source: " + model);
         }
     }
+
     private void startQRCameraSource() {
         if (cameraSource != null) {
             try {
@@ -2071,6 +2072,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
         }
     }
+
     public void onBarcodeData(String guid) {
         try {
             isReadyToScan = false;
@@ -2223,6 +2225,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             if (reportInfo.has("responseCode") && reportInfo.getString("responseCode").equals("1")) {
+                Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
                 scanOnQrCode();
                 SoundController.getInstance().playValidQrSound();
                 return;
@@ -3364,12 +3367,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             DisplayTimeAttendance();
             clearData();
             if (AppSettings.getTimeAndAttendance() == 0) {
-                resetQrCode();
-                if (Util.isDeviceF10()) {
-                    CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
-                } else {
+               // resetQrCode();
+//                if (Util.isDeviceF10()) {
+//                    CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+//                } else {
                     initScan();
-                }
+               // }
             }
             if (AppSettings.isEnableHandGesture()) {
                 if (Util.isGestureDeviceConnected(this)) {
