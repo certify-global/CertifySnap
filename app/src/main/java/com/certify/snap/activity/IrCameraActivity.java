@@ -415,7 +415,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         //template_view = findViewById(R.id.template_view);
         temperature_image = findViewById(R.id.temperature_image);
 
-        initHidReceiver();
+        //initHidReceiver();
         initRecordUserTempService();
         initBluetoothPrinter();
         startBLEService();
@@ -753,9 +753,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter("EVENT_SNACKBAR"));
         }
         if (hidReceiver != null) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
-        } else {
-            initHidReceiver();
             LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         }
         if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
@@ -2287,6 +2284,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
      * Method that initializes the access control & Nfc related members
      */
     private void initAccessControl() {
+        initHidReceiver();
+        LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         AccessCardController.getInstance().init(this);
         AccessCardController.getInstance().setCallbackListener(this);
         /*if (!faceDetectEnabled) {
@@ -2822,6 +2821,16 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     showSnackBarMessage(getString(R.string.access_granted));
                     setCameraPreview();
                 } else {
+                    if (AppSettings.getSecondaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue() && (CameraController.getInstance().getScanProcessState() == CameraController.ScanProcessState.SECOND_SCAN) && !CameraController.getInstance().isPrimarySecondaryMemberMatch()) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(IrCameraActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                            new Handler().postDelayed(() -> {
+                                disableLedPower();
+                                resetToHomePage();
+                            }, 1000);
+                        });
+                        return;
+                    }
                     UserExportedData userExportedData = new UserExportedData(rgbBitmap, irBitmap, registeredMemberslist.get(0), 0);
                     CameraController.getInstance().setUserExportedData(userExportedData);
                     onTemperatureScanDisabled();
@@ -3261,6 +3270,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         //GestureController.getInstance().setLanguageUpdated(false);
         QrCodeController.getInstance().clearData();
         //   ApplicationController.getInstance().setTimeAttendance(0);
+        if (hidReceiver != null) {
+            hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+        }
     }
 
     private void setPreviewIdleTimer() {
@@ -3367,12 +3380,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             DisplayTimeAttendance();
             clearData();
             if (AppSettings.getTimeAndAttendance() == 0) {
-               // resetQrCode();
+                // resetQrCode();
 //                if (Util.isDeviceF10()) {
 //                    CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
 //                } else {
-                    initScan();
-               // }
+                initScan();
+                // }
             }
             if (AppSettings.isEnableHandGesture()) {
                 if (Util.isGestureDeviceConnected(this)) {
