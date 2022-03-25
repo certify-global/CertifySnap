@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.CompareResult;
