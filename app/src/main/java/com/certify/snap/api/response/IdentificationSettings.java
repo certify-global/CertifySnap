@@ -72,4 +72,6 @@ public class IdentificationSettings {
     @SerializedName("enableOfflineQRCode")
     public String enableOfflineQRCode;
 
+    @SerializedName("enableVendorQR")
+    public String enableVendorQR = "0";
 }

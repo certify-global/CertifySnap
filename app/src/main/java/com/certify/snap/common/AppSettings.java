@@ -106,6 +106,7 @@ public class AppSettings {
     private static DeviceInfo deviceInfo = null;
     private static String institutionId = "";
     private static String accessToken = "";
+    private static boolean enableVendorQR = false;
     private static String endpointUrl = BuildConfig.ENDPOINT_URL;
 
     public static AppSettings getInstance() {
@@ -183,6 +184,7 @@ public class AppSettings {
         askQrCodeAlways = sharedPreferences.getBoolean(GlobalParameters.ASK_QR_CODE_ALWAYS, false);
         qrCodeMemberTypes = sharedPreferences.getString(GlobalParameters.QR_CODE_MEMBER_TYPE, "");
         faceQrCode = sharedPreferences.getBoolean(GlobalParameters.FACE_QR_CODE, false);
+        enableVendorQR = sharedPreferences.getBoolean(GlobalParameters.ENABLE_VENDOR_QR, false);
         String primaryValue = sharedPreferences.getString(GlobalParameters.PRIMARY_IDENTIFIER, "1");
         primaryIdentifier = Integer.parseInt(primaryValue);
         String secondaryValue = sharedPreferences.getString(GlobalParameters.SECONDARY_IDENTIFIER, "0");
@@ -582,7 +584,9 @@ public class AppSettings {
     public static boolean isFaceQrCode() {
         return faceQrCode;
     }
-
+    public static boolean isEnableVendorQR() {
+        return enableVendorQR;
+    }
     public static int getPrimaryIdentifier() {
         return primaryIdentifier;
     }

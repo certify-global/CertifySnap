@@ -1422,6 +1422,7 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.QR_CODE_MEMBER_TYPE, identificationSettings.memberTypeId);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.FACE_QR_CODE, identificationSettings.enableFaceIdentification.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.OFFLINE_QR_CODE, identificationSettings.enableOfflineQRCode.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_VENDOR_QR, identificationSettings.enableVendorQR.equals("1"));
                     }
 
                     //AccessControl Settings

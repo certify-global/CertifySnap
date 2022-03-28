@@ -79,6 +79,11 @@ import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.VendorQRRequest;
+import com.certify.snap.api.response.AccessLogResponse;
+import com.certify.snap.api.response.ApiResponse;
 import com.certify.snap.api.response.MemberData;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.model.FacePreviewInfo;
@@ -153,6 +158,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -167,6 +173,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.grantland.widget.AutofitTextView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
@@ -2178,10 +2187,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     startQRTimer(guid);
-                    JSONObject obj = new JSONObject();
-                    obj.put("qrCodeID", guid);
-                    obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
-                    new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                    if (AppSettings.isEnableVendorQR() && guid.startsWith("vn_")) {
+                          validateVendorQR(guid);
+                    } else {
+                        JSONObject obj = new JSONObject();
+                        obj.put("qrCodeID", guid);
+                        obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                        new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
+                    }
                 }
             }
 
@@ -2190,6 +2203,39 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cancelQRTimer();
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
+    }
+// this method to move in QR Controller
+    private void validateVendorQR(String guid) {
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        VendorQRRequest vendQR = new VendorQRRequest();
+        vendQR.vendorGuid = guid;
+        Call<ApiResponse> call = apiInterface.getValidateVendor(vendQR);
+        call.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                qrCodeReceived = false;
+                cancelQRTimer();
+                if (response.body() != null && response.body().responseCode == 1) {
+                    Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, "VendorUser");
+                    Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, "");
+                    scanOnQrCode();
+                    SoundController.getInstance().playValidQrSound();
+
+                } else {
+                    resetInvalidQrCode(getString(R.string.qr_validation_message));
+                    SoundController.getInstance().playInvalidQrSound();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                qrCodeReceived = false;
+                cancelQRTimer();
+                resetInvalidQrCode(getString(R.string.qr_validation_message));
+                SoundController.getInstance().playInvalidQrSound();
+                Logger.error(TAG, t.toString());
+            }
+        });
     }
 
     public void ValidationQRCode() {
@@ -3505,6 +3551,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_scan.setBackgroundColor(getResources().getColor(R.color.colorWhite));
         tv_scan.setTextColor(getResources().getColor(R.color.black));
         imageqr.setBackgroundColor(getResources().getColor(R.color.colorWhite));
+        Animation animation =
+                AnimationUtils.loadAnimation(getApplicationContext(), R.anim.qr_line_anim);
+        imageqr.startAnimation(animation);
         Util.writeString(sharedPreferences, GlobalParameters.QRCODE_ID, "");
 
         AccessCardController.getInstance().sendAccessLogInvalid(this, new RegisteredMembers(), 0,

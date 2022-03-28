@@ -5,14 +5,12 @@ import com.certify.snap.api.request.GetMemberDetailsGuidRequest;
 import com.certify.snap.api.request.GetTokenRequest;
 import com.certify.snap.api.request.HealthCheckRequest;
 import com.certify.snap.api.request.TemperatureRecordRequest;
+import com.certify.snap.api.request.VendorQRRequest;
 import com.certify.snap.api.response.AccessLogResponse;
 import com.certify.snap.api.response.ApiResponse;
 import com.certify.snap.api.response.GetMemberGuidResponse;
-import com.certify.snap.api.response.GetTokenResponse;
 import com.certify.snap.api.response.HealthCheckResponse;
-import com.certify.snap.api.response.MemberListResponse;
 import com.certify.snap.api.response.TemperatureRecordResponse;
-import com.certify.snap.model.RegisteredMembers;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -37,6 +35,9 @@ public interface ApiInterface {
 
     @POST("GetMemberDetailsByGuid")
     Call<GetMemberGuidResponse> getMemberDetailsByGuid(@Header("device_sn") String deviceSN, @Body GetMemberDetailsGuidRequest request);
+
+    @POST("validateVendor")
+    Call<ApiResponse> getValidateVendor(@Body VendorQRRequest guId);
 
     /*@GET("GetFaceLicenceInfo")
     Call<LicenseResponse> getLicenseRemote(@Query("deviceSN") String deviceSerialNum);
