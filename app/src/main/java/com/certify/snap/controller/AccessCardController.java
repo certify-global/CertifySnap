@@ -412,7 +412,7 @@ public class AccessCardController {
     }
 
     public void sendAccessLogValid(Context context, float temperature, UserExportedData data) {
-        if (!Util.isInstitutionIdValid(context)) return;
+        if (!Util.isInstitutionIdValid(context) || !AppSettings.isAccessLogEnabled()) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         String firstNameAnon, lastNameAnon = "", anonymousId = "";
         if (sharedPreferences.getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
@@ -609,7 +609,7 @@ public class AccessCardController {
     }
 
     public void sendAccessLogInvalid(Context context, RegisteredMembers registeredMembers, float temperature, UserExportedData data) {
-        if (!Util.isInstitutionIdValid(context)) return;
+        if (!Util.isInstitutionIdValid(context) || !AppSettings.isAccessLogEnabled()) return;
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
         if (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.NONE.getValue()) {

@@ -74,7 +74,7 @@ public class ConfirmationScreenFragment extends Fragment {
         } else if (CameraController.getInstance().isFaceNotMatchedOnRetry() && !Util.isDeviceF10()) {
             showSnackBarMessage(getString(R.string.face_not_matched_msg));
         } else {
-            onAccessCardMatch();
+            onAccessCardQrCodeMemberMatch();
         }
 
         if (AppSettings.getShowVaccinationIndicator()) {
@@ -164,7 +164,7 @@ public class ConfirmationScreenFragment extends Fragment {
         }
     }
 
-    private void onAccessCardMatch() {
+    private void onAccessCardQrCodeMemberMatch() {
         RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
         if (matchedMember != null) {
             if (!matchedMember.getImage().isEmpty()) {
@@ -178,6 +178,9 @@ public class ConfirmationScreenFragment extends Fragment {
                 }
             }
             user_name.setText(matchedMember.getFirstname());
+        } else if (CameraController.getInstance().getQrCodeData() != null) {
+            user_name.setVisibility(View.VISIBLE);
+            user_name.setText(CameraController.getInstance().getQrCodeData().getFirstName());
         } else {
             user_img.setVisibility(View.GONE);
             user_name.setVisibility(View.GONE);

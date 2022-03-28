@@ -2157,7 +2157,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     resetQrCode();
                     initSecondaryScan();
                 } else {
-                    setCameraPreview();
+                    if (!AppSettings.isTemperatureScanEnabled() &&
+                            (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
+                        onTemperatureScanDisabled();
+                    } else {
+                        setCameraPreview();
+                    }
                 }
                 SoundController.getInstance().playValidQrSound();
                 qrCodeReceived = false;
@@ -3235,12 +3240,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 (GestureController.getInstance().isGestureWithMaskEnforceEnabled())) {
             return;
         }
-        if ((CameraController.getInstance().getScanProcessState()
+        //Enable camera preview if primary identifier is Face
+        /*if ((CameraController.getInstance().getScanProcessState()
                 != CameraController.ScanProcessState.SECOND_SCAN) &&
                 (CameraController.getInstance().getScanProcessState() != CameraController.ScanProcessState.IDLE) &&
                 (AppSettings.getSecondaryIdentifier() != CameraController.SecondaryIdentification.NONE.getValue())) {
             return;
-        }
+        }*/
         displayCameraPreview(faceFeature, requestId, rgbBitmap, irBitmap);
     }
 
@@ -3414,6 +3420,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             runOnUiThread(() -> {
                 img_qr.setVisibility(View.GONE);
                 frameLayout.setVisibility(View.GONE);
+                frameCameraLayout.setVisibility(View.VISIBLE);
                 if (temperature_image != null) {
                     temperature_image.setVisibility(View.GONE);
                 }
@@ -3479,6 +3486,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 @Override
                 public void run() {
                     frameLayout.setVisibility(View.GONE);
+                    frameCameraLayout.setVisibility(View.VISIBLE);
                     img_qr.setVisibility(View.GONE);
                 }
             });
@@ -5182,7 +5190,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.FACE.getValue()) {
                 CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
                 setCameraPreview();
-            } else setCameraPreview();
+            } else {
+                if (!AppSettings.isTemperatureScanEnabled() &&
+                        (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
+                    onTemperatureScanDisabled();
+                } else {
+                    setCameraPreview();
+                }
+            }
 
         });
     }
