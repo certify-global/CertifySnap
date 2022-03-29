@@ -2193,11 +2193,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     startQRTimer(guid);
                     if (AppSettings.isEnableVendorQR() && guid.startsWith("vn_")) {
-                          validateVendorQR(guid);
+                        QrCodeController.getInstance().validateVendorQR(guid);
                     } else {
                         JSONObject obj = new JSONObject();
                         obj.put("qrCodeID", guid);
                         obj.put("institutionId", sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, ""));
+                        obj.put("deviceSN",Util.getSerialNumber());
                         new AsyncJSONObjectQRCode(obj, this, sharedPreferences.getString(GlobalParameters.URL, EndPoints.prod_url) + EndPoints.ValidateQRCode, this).execute();
                     }
                 }
@@ -2209,39 +2210,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             Log.e(TAG + "onBarCodeData", e.getMessage());
         }
     }
-// this method to move in QR Controller
-    private void validateVendorQR(String guid) {
-        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
-        VendorQRRequest vendQR = new VendorQRRequest();
-        vendQR.vendorGuid = guid;
-        Call<ApiResponse> call = apiInterface.getValidateVendor(vendQR);
-        call.enqueue(new Callback<ApiResponse>() {
-            @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+
+    @Override
+    public void onVendorQRCodeScan(boolean isSuccess) {
                 qrCodeReceived = false;
                 cancelQRTimer();
-                if (response.body() != null && response.body().responseCode == 1) {
+                if (isSuccess) {
                     Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, "VendorUser");
                     Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, "");
                     scanOnQrCode();
                     SoundController.getInstance().playValidQrSound();
-
                 } else {
                     resetInvalidQrCode(getString(R.string.qr_validation_message));
                     SoundController.getInstance().playInvalidQrSound();
                 }
             }
-
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                qrCodeReceived = false;
-                cancelQRTimer();
-                resetInvalidQrCode(getString(R.string.qr_validation_message));
-                SoundController.getInstance().playInvalidQrSound();
-                Logger.error(TAG, t.toString());
-            }
-        });
-    }
 
     public void ValidationQRCode() {
         try {

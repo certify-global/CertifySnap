@@ -7,8 +7,13 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
+import com.certify.snap.R;
 import com.certify.snap.activity.QRCodeResultActivity;
 import com.certify.snap.activity.SmartHealthResultActivity;
+import com.certify.snap.api.ApiInterface;
+import com.certify.snap.api.RetrofitInstance;
+import com.certify.snap.api.request.VendorQRRequest;
+import com.certify.snap.api.response.ApiResponse;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -56,6 +61,9 @@ import dgca.verifier.app.decoder.model.VerificationResult;
 import dgca.verifier.app.decoder.prefixvalidation.DefaultPrefixValidationService;
 import dgca.verifier.app.decoder.schema.DefaultSchemaValidator;
 import dgca.verifier.app.decoder.services.X509;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class QrCodeController implements GetLastCheckinTimeCallback {
     private final String TAG = QrCodeController.class.getSimpleName();
@@ -75,6 +83,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         void onGetLastCheckInTime(boolean checkedIn);
 
         void onQRCodeScanSuccess();
+        void onVendorQRCodeScan(boolean isSuccess);
     }
 
     public static QrCodeController getInstance() {
@@ -401,5 +410,28 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             qrCodeStore.utcRecordDate = Util.getUTCDate("");
             DatabaseController.getInstance().insertOfflineQrCodeData(qrCodeStore);
         }
+    }
+    public void validateVendorQR(String guid) {
+        ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
+        VendorQRRequest vendQR = new VendorQRRequest();
+        vendQR.vendorGuid = guid;
+        Call<ApiResponse> call = apiInterface.getValidateVendor(vendQR);
+        call.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                if(listener==null) return;
+                if (response.body() != null && response.body().responseCode == 1) {
+                     listener.onVendorQRCodeScan(true);
+                } else {
+                    listener.onVendorQRCodeScan(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                listener.onVendorQRCodeScan(false);
+                Logger.error(TAG, t.toString());
+            }
+        });
     }
 }
