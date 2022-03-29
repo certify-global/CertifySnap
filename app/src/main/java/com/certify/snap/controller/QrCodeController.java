@@ -1,15 +1,13 @@
 package com.certify.snap.controller;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
 import com.certify.callback.GetLastCheckinTimeCallback;
-import com.certify.snap.R;
-import com.certify.snap.activity.QRCodeResultActivity;
-import com.certify.snap.activity.SmartHealthResultActivity;
 import com.certify.snap.api.ApiInterface;
 import com.certify.snap.api.RetrofitInstance;
 import com.certify.snap.api.request.VendorQRRequest;
@@ -21,6 +19,7 @@ import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
+import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.QrCodeStore;
 import com.certify.snap.model.SmartHealthCardData;
 import com.certify.snap.qrverification.CertificateModel;
@@ -29,7 +28,6 @@ import com.certify.snap.qrverification.JwtHelper;
 import com.certify.snap.qrverification.PersonModel;
 import com.certify.snap.qrverification.VaccinationModel;
 
-import org.apache.poi.ss.formula.functions.T;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -78,6 +76,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     private boolean memberCheckedIn = false;
     private Context mContext = null;
     private static final int PASSID_QR_CODE_LENGTH = 32;
+    private boolean isGlobalMember = false;
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
@@ -150,6 +149,10 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         return result;
     }
 
+    public boolean isQrCodeMemberMatch() {
+        return isQrCodeMemberMatch;
+    }
+
     public void setQrCodeMemberMatch(boolean value) {
         isQrCodeMemberMatch = value;
     }
@@ -164,6 +167,14 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public void setData(UserExportedData data) {
         this.data = data;
+    }
+
+    public boolean isGlobalMember() {
+        return isGlobalMember;
+    }
+
+    public void setGlobalMember(boolean globalMember) {
+        isGlobalMember = globalMember;
     }
 
     public void getLastCheckInTime(Context context, String certifyId) {
@@ -235,6 +246,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         isQrCodeMemberMatch = false;
         memberCheckedIn = false;
         resetQrCodeData(mContext);
+        isGlobalMember = false;
     }
 
     public void smartHealthCard(String qrText, Context context) {
@@ -411,6 +423,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             DatabaseController.getInstance().insertOfflineQrCodeData(qrCodeStore);
         }
     }
+
     public void validateVendorQR(String guid) {
         ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
         VendorQRRequest vendQR = new VendorQRRequest();
@@ -433,5 +446,16 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
                 Logger.error(TAG, t.toString());
             }
         });
+    }
+
+    public void registerFace(String faceTemplate, String name) {
+        try {
+            byte[] data = Base64.decode(faceTemplate, 0);
+            if (data != null) {
+                FaceServer.getInstance().registerFace(data, name);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in decoding the face image");
+        }
     }
 }

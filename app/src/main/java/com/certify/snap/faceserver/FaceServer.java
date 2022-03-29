@@ -769,5 +769,11 @@ public class FaceServer {
 
     }
 
-
+    public void registerFace(byte[] faceData, String name) {
+        if (faceRegisterInfoList == null) {
+            faceRegisterInfoList = new ArrayList<>();
+        }
+        FaceRegisterInfo faceRegisterInfo = new FaceRegisterInfo(faceData, name);
+        faceRegisterInfoList.add(faceRegisterInfo);
+    }
 }

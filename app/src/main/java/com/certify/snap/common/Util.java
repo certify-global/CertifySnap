@@ -91,6 +91,7 @@ import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
+import com.certify.snap.controller.QrCodeController;
 import com.certify.snap.controller.SoundController;
 import com.certify.snap.model.AppStatusInfo;
 import com.certify.snap.model.FaceParameters;
@@ -1610,6 +1611,7 @@ public class Util {
             int memberTypeId = responseData.isNull("memberTypeId") ? 0 : responseData.getInt("memberTypeId");
             String memberTypeName = responseData.getString("memberTypeName") == null ? "" : responseData.getString("memberTypeName");
             String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
+            String faceTemplate = responseData.getString("faceTemplate") == null ? "" : responseData.getString("faceTemplate");
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);
@@ -1620,6 +1622,11 @@ public class Util {
             qrCodeData.setAccessId(qrAccessid);
             qrCodeData.setMemberTypeId(memberTypeId);
             qrCodeData.setMemberTypeName(memberTypeName);
+            qrCodeData.setFaceTemplate(faceTemplate);
+            if (!faceTemplate.isEmpty()) {
+                QrCodeController.getInstance().setGlobalMember(true);
+                QrCodeController.getInstance().registerFace(faceTemplate, firstName);
+            }
             CameraController.getInstance().setQrCodeData(qrCodeData);
         } catch (Exception e) {
             Logger.error("getQRCode(JSONObject reportInfo, String status, Context context, String toast) ", e.getMessage());

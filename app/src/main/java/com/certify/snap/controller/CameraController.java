@@ -318,13 +318,17 @@ public class CameraController {
         }
         boolean result = false;
         if (qrCodeData != null) {
-            if (firstScanMember != null) {
-                if (firstScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
-                    result = true;
-                }
-            } else if (secondScanMember != null) {
-                if (secondScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
-                    result = true;
+            if (QrCodeController.getInstance().isQrCodeMemberMatch()) {
+                result = true;
+            } else {
+                if (firstScanMember != null) {
+                    if (firstScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
+                        result = true;
+                    }
+                } else if (secondScanMember != null) {
+                    if (secondScanMember.uniqueid.equals(qrCodeData.getUniqueId())) {
+                        result = true;
+                    }
                 }
             }
         } else {

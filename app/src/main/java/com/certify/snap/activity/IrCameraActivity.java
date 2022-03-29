@@ -2650,20 +2650,21 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     //adapter.notifyItemRemoved(0);
                                 }
 
-                                String[] split = compareResult.getUserName().split("-");
-                                String id = "";
-                                if (split != null && split.length > 1) id = split[split.length - 1];
+                                String cpmpareTime = "";
+                                if (!QrCodeController.getInstance().isGlobalMember()) {
+                                    String[] split = compareResult.getUserName().split("-");
+                                    String id = "";
+                                    if (split != null && split.length > 1) id = split[split.length - 1];
 
-                                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                Date curDate = new Date(System.currentTimeMillis());
-                                String verify_time = formatter.format(curDate);
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                                String cpmpareTime = simpleDateFormat.format(curDate);
+                                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                    Date curDate = new Date(System.currentTimeMillis());
+                                    String verify_time = formatter.format(curDate);
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                                    cpmpareTime = simpleDateFormat.format(curDate);
+                                    registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length - 1]));
+                                }
 
-                                //registeredMemberslist = LitePal.where("memberid = ?", split[1]).find(RegisteredMembers.class);
-                                registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length - 1]));
-
-                                if (registeredMemberslist.size() > 0) {
+                                if (registeredMemberslist != null && registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
                                     if (validateCheckInCheckOut(registeredMembers)) {
@@ -2709,6 +2710,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                         showResult(compareResult, requestId, name, memberId, formattedSimilarityScore, false);
                                     }
                                     runTemperature(requestId, data);   //TODO1: Optimize
+                                } else if (QrCodeController.getInstance().isGlobalMember()) {
+                                    CameraController.getInstance().setFaceVisible(true);
+                                    QrCodeController.getInstance().setQrCodeMemberMatch(true);
+                                    UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
+                                    data.faceScore = (int) similarValue;
+
+                                    runTemperature(requestId, data);
                                 } else {
                                     //showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
                                     displayCameraPreview(frFace, requestId, rgbBitmap, irBitmap);

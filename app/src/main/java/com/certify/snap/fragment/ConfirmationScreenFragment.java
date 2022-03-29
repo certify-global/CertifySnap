@@ -2,6 +2,7 @@ package com.certify.snap.fragment;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -181,6 +182,13 @@ public class ConfirmationScreenFragment extends Fragment {
         } else if (CameraController.getInstance().getQrCodeData() != null) {
             user_name.setVisibility(View.VISIBLE);
             user_name.setText(CameraController.getInstance().getQrCodeData().getFirstName());
+            if (CameraController.getInstance().getQrCodeData().getFaceTemplate() != null) {
+                Bitmap bitmap = Util.decodeToBase64(CameraController.getInstance().getQrCodeData().getFaceTemplate());
+                if (bitmap != null) {
+                    user_img.setVisibility(View.VISIBLE);
+                    user_img.setImageBitmap(bitmap);
+                }
+            }
         } else {
             user_img.setVisibility(View.GONE);
             user_name.setVisibility(View.GONE);

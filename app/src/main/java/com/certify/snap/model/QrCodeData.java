@@ -10,6 +10,7 @@ public class QrCodeData {
     private String qrCodeId;
     private int memberTypeId;
     private String memberTypeName;
+    private String faceTemplate;
 
     public String getUniqueId() {
         return uniqueId;
@@ -82,4 +83,13 @@ public class QrCodeData {
     public void setMemberTypeName(String memberTypeName) {
         this.memberTypeName = memberTypeName;
     }
+
+    public String getFaceTemplate() {
+        return faceTemplate;
+    }
+
+    public void setFaceTemplate(String faceTemplate) {
+        this.faceTemplate = faceTemplate;
+    }
+
 }
