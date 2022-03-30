@@ -126,6 +126,8 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_SHOW_NAVIGATIONBAR : GlobalParameters.ACTION_HIDE_NAVIGATIONBAR));
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
                 Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
+            } else if (command.equals("DELETE")) {
+                MemberSyncDataModel.getInstance().deleteMember(certifyId);
             }
             if (!command.equals("RESET") && !command.equals("DEACTIVATE")) {
                 Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);

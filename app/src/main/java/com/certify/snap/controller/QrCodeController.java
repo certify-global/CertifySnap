@@ -246,6 +246,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         isQrCodeMemberMatch = false;
         memberCheckedIn = false;
         resetQrCodeData(mContext);
+        FaceServer.getInstance().deleteRegisteredFace();
         isGlobalMember = false;
     }
 

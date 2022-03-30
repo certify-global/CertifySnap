@@ -35,8 +35,10 @@ public class FaceServer {
     public static final String IMG_SUFFIX = ".jpg";
     private static FaceEngine faceEngine = null;
     private static FaceServer faceServer = null;
-    private static List<FaceRegisterInfo> faceRegisterInfoList;
+    private static ArrayList<FaceRegisterInfo> faceRegisterInfoList;
     public static String ROOT_PATH;
+    private FaceRegisterInfo faceRegisterInfo = null;
+
     /**
      * 存放注册图的目录
      */
@@ -773,7 +775,21 @@ public class FaceServer {
         if (faceRegisterInfoList == null) {
             faceRegisterInfoList = new ArrayList<>();
         }
-        FaceRegisterInfo faceRegisterInfo = new FaceRegisterInfo(faceData, name);
+        faceRegisterInfo = new FaceRegisterInfo(faceData, name);
         faceRegisterInfoList.add(faceRegisterInfo);
+    }
+
+    public void deleteRegisteredFace() {
+        if (faceRegisterInfoList != null && faceRegisterInfoList.size() > 0) {
+            faceRegisterInfoList.remove(faceRegisterInfo);
+        }
+    }
+
+    public long getCompareResultId(CompareResult compareResult) {
+        if (compareResult.getUserName() != null && compareResult.getUserName().contains("-")) {
+            String[] split = compareResult.getUserName().split("-");
+            return Long.parseLong(split[split.length - 1]);
+        }
+        return -1;
     }
 }

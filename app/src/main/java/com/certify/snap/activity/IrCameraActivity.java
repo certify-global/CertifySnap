@@ -2157,9 +2157,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     resetQrCode();
                     initSecondaryScan();
                 } else {
-                    if (!AppSettings.isTemperatureScanEnabled() &&
+                    if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isPrintLabelFace() &&
                             (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
-                        onTemperatureScanDisabled();
+                        runTemperature(CameraController.getInstance().getRequestId(), CameraController.getInstance().getData());
                     } else {
                         setCameraPreview();
                     }
@@ -2652,16 +2652,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                                 String cpmpareTime = "";
                                 if (!QrCodeController.getInstance().isGlobalMember()) {
-                                    String[] split = compareResult.getUserName().split("-");
-                                    String id = "";
-                                    if (split != null && split.length > 1) id = split[split.length - 1];
+                                    long primaryId = FaceServer.getInstance().getCompareResultId(compareResult);
 
-                                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                    Date curDate = new Date(System.currentTimeMillis());
-                                    String verify_time = formatter.format(curDate);
-                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                                    cpmpareTime = simpleDateFormat.format(curDate);
-                                    registeredMemberslist = DatabaseController.getInstance().findMember(Long.parseLong(split[split.length - 1]));
+                                    if (primaryId != -1) {
+                                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                        Date curDate = new Date(System.currentTimeMillis());
+                                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                                        cpmpareTime = simpleDateFormat.format(curDate);
+                                        registeredMemberslist = DatabaseController.getInstance().findMember(primaryId);
+                                    }
                                 }
 
                                 if (registeredMemberslist != null && registeredMemberslist.size() > 0) {
@@ -2711,14 +2710,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     }
                                     runTemperature(requestId, data);   //TODO1: Optimize
                                 } else if (QrCodeController.getInstance().isGlobalMember()) {
+                                    long primaryId = FaceServer.getInstance().getCompareResultId(compareResult);
+                                    boolean memberMatch = false;
+
+                                    if (primaryId != -1) {
+                                        List<RegisteredMembers> membersList = DatabaseController.getInstance().findMember(primaryId);
+                                        if (membersList != null && membersList.size() > 0) {
+                                            RegisteredMembers member = membersList.get(0);
+                                            if (member.getUniqueid().equals(CameraController.getInstance().getQrCodeData().getUniqueId())) {
+                                                memberMatch = true;
+                                            }
+                                        }
+                                    } else {
+                                        memberMatch = true;
+                                    }
+                                    if (memberMatch) {
+                                        QrCodeController.getInstance().setQrCodeMemberMatch(true);
+                                    }
                                     CameraController.getInstance().setFaceVisible(true);
-                                    QrCodeController.getInstance().setQrCodeMemberMatch(true);
+
                                     UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
                                     data.faceScore = (int) similarValue;
-
                                     runTemperature(requestId, data);
                                 } else {
-                                    //showCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
                                     displayCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
                                     Log.e(TAG, "Snap Compare result database no match " + isAdded);
                                     if (AppSettings.getAccessControlScanMode() == AccessCardController.AccessControlScanMode.FACE_ONLY.getValue()) {
@@ -5182,9 +5196,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
                 setCameraPreview();
             } else {
-                if (!AppSettings.isTemperatureScanEnabled() &&
+                if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isPrintLabelFace() &&
                         (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
-                    onTemperatureScanDisabled();
+                    runTemperature(CameraController.getInstance().getRequestId(), CameraController.getInstance().getData());
                 } else {
                     setCameraPreview();
                 }

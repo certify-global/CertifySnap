@@ -1611,7 +1611,7 @@ public class Util {
             int memberTypeId = responseData.isNull("memberTypeId") ? 0 : responseData.getInt("memberTypeId");
             String memberTypeName = responseData.getString("memberTypeName") == null ? "" : responseData.getString("memberTypeName");
             String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
-            String faceTemplate = responseData.getString("faceTemplate") == null ? "" : responseData.getString("faceTemplate");
+            String faceTemplate = responseData.isNull("faceTemplate") ? "" : responseData.getString("faceTemplate");
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);

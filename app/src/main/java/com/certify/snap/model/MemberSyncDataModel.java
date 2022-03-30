@@ -1041,6 +1041,19 @@ public class MemberSyncDataModel {
     }
 
     /**
+     * Method that deletes the member from the database
+     * @param certifyId CertifyId
+     */
+    public void deleteMember(String certifyId) {
+        doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
+        List<RegisteredMembers> memberList = DatabaseController.getInstance().isUniqueIdExist(certifyId);
+        if (memberList != null && memberList.size() > 0) {
+            DatabaseController.getInstance().deleteMember(memberList.get(0).primaryid);
+            doSendBroadcast(SYNC_COMPLETED, 0, 0);
+        }
+    }
+
+    /**
      * Method that clears the data model
      */
     public void clear() {
