@@ -79,11 +79,6 @@ import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
-import com.certify.snap.api.ApiInterface;
-import com.certify.snap.api.RetrofitInstance;
-import com.certify.snap.api.request.VendorQRRequest;
-import com.certify.snap.api.response.AccessLogResponse;
-import com.certify.snap.api.response.ApiResponse;
 import com.certify.snap.api.response.MemberData;
 import com.certify.snap.arcface.model.DrawInfo;
 import com.certify.snap.arcface.model.FacePreviewInfo;
@@ -158,7 +153,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -173,9 +167,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import me.grantland.widget.AutofitTextView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, BarcodeSendData,
         JSONObjectCallback, QRCodeCallback, TemperatureController.TemperatureCallbackListener, PrinterController.PrinterCallbackListener,
@@ -1013,7 +1004,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (!AppSettings.isMaskEnforced()) {
                                     changeVerifyBackground(R.color.colorTransparency, true);
                                     relative_main.setVisibility(View.GONE);
-                                    startCameraPreviewTimer();
+                                    if (AppSettings.isRetryScanEnabled()) {
+                                        if (!isFaceIdentified) {
+                                            initPreviewTimer();
+                                        }
+                                    } else {
+                                        startCameraPreviewTimer();
+                                    }
                                 }
                             });
                         }
@@ -3278,11 +3275,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             // rl_header.setVisibility(View.GONE);
             //logo.setVisibility(View.GONE);
-            //setCameraPreviewTimer();
             if (AppSettings.isRetryScanEnabled()) {
                 if (!isFaceIdentified) {
                     initPreviewTimer();
                 }
+            } else {
+                setCameraPreviewTimer();
             }
         });
     }
@@ -3317,6 +3315,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         temperatureBitmap = null;
         qrCodeReceived = false;
         registeredMemberslist = null;
+        isFaceNotDetectedTimer = false;
 
         if (isDisconnected) {
             runOnUiThread(() -> Toast.makeText(getBaseContext(), getString(R.string.connect_light_device), Toast.LENGTH_SHORT).show());
@@ -5198,6 +5197,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isPrintLabelFace() &&
                         (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
+                    CameraController.getInstance().setFaceVisible(true); //TODO Optimize
                     runTemperature(CameraController.getInstance().getRequestId(), CameraController.getInstance().getData());
                 } else {
                     setCameraPreview();

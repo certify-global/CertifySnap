@@ -737,5 +737,6 @@
     <string name="mobile_access_card">Activer la carte d\'accès mobile</string>
     <string name="access_id_msg">L\'ID d\'accès n\'existe pas</string>
     <string name="enable_offline_qrcode">Activer le code QR hors ligne</string>
+    <string name="enable_vendor_qrcode">Activer le code QR du fournisseur</string>
 
 </resources>

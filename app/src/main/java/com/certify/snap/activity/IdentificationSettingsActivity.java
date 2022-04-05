@@ -61,9 +61,9 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private boolean isHomeScreenTextOnlyEnabled;
     private LinearLayout acknowledgmentLayout;
     private IdentificationSettings identificationSettings = null;
-    private TextView offlineQrCode;
-    private RadioGroup offlineQrCodeRg;
-    private RadioButton offlineQrCodeYes, offlineQrCodeNo;
+    private TextView offlineQrCode, vendorQrCode;
+    private RadioGroup offlineQrCodeRg, vendorQrCodeRg;
+    private RadioButton offlineQrCodeYes, offlineQrCodeNo, vendorQrCodeYes, vendorQrCodeNo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -145,6 +145,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             offlineQrCodeRg = findViewById(R.id.offline_qr_code_rg);
             offlineQrCodeYes = findViewById(R.id.offline_qr_code_rb_yes);
             offlineQrCodeNo = findViewById(R.id.offline_qr_code_rb_no);
+            vendorQrCode = findViewById(R.id.vendor_title_tv);
+            vendorQrCode.setTypeface(rubiklight);
+            vendorQrCodeRg = findViewById(R.id.vendor_qr_rg);
+            vendorQrCodeYes = findViewById(R.id.vendor_qr_rb_yes);
+            vendorQrCodeNo = findViewById(R.id.vendor_qr_rb_no);
 
             editTextDialogTimeout.setText(sp.getString(GlobalParameters.Timeout, "5"));
             editTextAcknowledge.setText(sp.getString(GlobalParameters.ACKNOWLEDGEMENT_TEXT, "All the acknowledge"));
@@ -163,6 +168,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             setPrimaryIdentifierListener();
             setSecondaryIdentifierListener();
             setOfflineQrCodeListener();
+            setVendorQrCodeListener();
 
             if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 radio_yes_display.setChecked(true);
@@ -541,5 +547,17 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 }
             }
         });
+    }
+
+    private void setVendorQrCodeListener() {
+        if (sp.getBoolean(GlobalParameters.ENABLE_VENDOR_QR, false)) {
+            vendorQrCodeYes.setChecked(true);
+            vendorQrCodeNo.setChecked(false);
+        } else {
+            vendorQrCodeNo.setChecked(true);
+            vendorQrCodeYes.setChecked(false);
+        }
+
+        vendorQrCodeRg.setOnCheckedChangeListener((group, checkedId) -> Util.writeBoolean(sp, GlobalParameters.ENABLE_VENDOR_QR, checkedId == R.id.vendor_qr_rb_yes));
     }
 }

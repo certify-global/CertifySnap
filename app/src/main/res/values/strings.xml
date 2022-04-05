@@ -778,5 +778,6 @@
     <string name="mobile_access_card">Enable Mobile Access Card</string>
     <string name="access_id_msg">Access Id does not exist</string>
     <string name="enable_offline_qrcode">Enable Offline QR Code</string>
+    <string name="enable_vendor_qrcode">Enable Vendor QR Code</string>
 
 </resources>
