@@ -2156,6 +2156,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 } else {
                     if (!AppSettings.isTemperatureScanEnabled() && !AppSettings.isPrintLabelFace() &&
                             (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue())) {
+                        CameraController.getInstance().setFaceVisible(true); //TODO Optimize
                         runTemperature(CameraController.getInstance().getRequestId(), CameraController.getInstance().getData());
                     } else {
                         setCameraPreview();
