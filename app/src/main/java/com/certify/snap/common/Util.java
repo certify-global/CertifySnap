@@ -862,8 +862,10 @@ public class Util {
         if (AppSettings.isFacialDetect()) {
             String thresholdFacialPreference = sp.getString(GlobalParameters.FACIAL_THRESHOLD, String.valueOf(Constants.FACIAL_DETECT_THRESHOLD));
             int thresholdvalue = Integer.parseInt(thresholdFacialPreference);
-            value = "thresholdValue:" + thresholdvalue + ", " +
-                    "faceScore:" + data.faceScore;
+            if (data != null) {
+                value = "thresholdValue:" + thresholdvalue + ", " +
+                        "faceScore:" + data.faceScore;
+            }
             FaceParameters faceParameters = CameraController.getInstance().getFaceParameters();
             if (faceParameters != null) {
                 value = value + ", " + "age:" + faceParameters.age + ", " +
