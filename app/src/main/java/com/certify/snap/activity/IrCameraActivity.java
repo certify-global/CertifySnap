@@ -944,14 +944,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!AppSettings.isTemperatureScanEnabled()) {
             CameraController.getInstance().setUserExportedData(data);
             onTemperatureScanDisabled();
-            if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue() || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()) && CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.CODEID.toString())) {
-                if (data != null) data.temperature = "0";
-                int syncStatus = -1;
-                if (Util.isOfflineMode(IrCameraActivity.this)) {
-                    syncStatus = 1;
-                }
-                TemperatureController.getInstance().recordUserTemperature(data, syncStatus);
-            }
             return;
         }
         Log.d(TAG, "runTemperature");
@@ -3578,6 +3570,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 barcodeScannerProcessor.setListener(this);
             }
         }, 500);
+        if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
+            AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) {
+            initScan();
+        }
     }
 
     private void startHidService() {

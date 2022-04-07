@@ -127,9 +127,11 @@ public class CameraController {
     }
 
     public void setQrCodeId(String qrCodeId) {
-        if (scanProcessState == ScanProcessState.FIRST_SCAN) {
+        //Set QrCodeId for primary or secondary scan as data should be displayed in
+        //dashboard and check in report
+        //if (scanProcessState == ScanProcessState.FIRST_SCAN) {
             this.qrCodeId = qrCodeId;
-        }
+        //}
     }
 
     public boolean isFaceVisible() {
