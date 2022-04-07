@@ -2119,13 +2119,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 return;
             }
             boolean isQrCodeWithPrefix = Util.isQRCodeWithPrefix(guid);
-            if ((Util.isNumeric(guid) || !isQrCodeWithPrefix) && AppSettings.isAnonymousQREnable()) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        tv_scan.setText(R.string.tv_bar_validating);
-                    }
-                });
+            if ((Util.isNumeric(guid) || (!isQrCodeWithPrefix && !guid.toLowerCase().startsWith("pi"))) && AppSettings.isAnonymousQREnable()) {
+                runOnUiThread(() -> tv_scan.setText(R.string.tv_bar_validating));
                 CameraController.getInstance().setQrCodeId(guid);
                 Util.writeString(sharedPreferences, GlobalParameters.ACCESS_ID, guid);
                     /*if ((CameraController.getInstance().getScanProcessState()
