@@ -722,7 +722,7 @@ public class TemperatureController {
             if (dataQR == null) {
                 dataQR = new UserExportedData();
             }
-            //On myPassID QrCode,
+            //On myPassID QrCode, do not send temperature record
             if (!CameraController.getInstance().getQrCodeId().startsWith("PI")) {
                 dataQR.temperature = "0";
                 dataQR.triggerType = CameraController.getInstance().getTriggerType();
