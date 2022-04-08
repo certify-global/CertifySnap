@@ -1573,15 +1573,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onAccessGranted() {
-        SoundController.getInstance().playAccessGrantedSound();
+
         runOnUiThread(() -> {
             if ((AppSettings.getTimeAndAttendance() == 1)) {
-                if (ApplicationController.getInstance().getTimeAttendance() == 1)
+                if (ApplicationController.getInstance().getTimeAttendance() == 1) {
+                    SoundController.getInstance().playCheckInOutSound("checkIn");
                     Toast.makeText(IrCameraActivity.this, getString(R.string.checked_in), Toast.LENGTH_SHORT).show();
-                else
+                }else {
+                    SoundController.getInstance().playCheckInOutSound("checkOut");
                     Toast.makeText(IrCameraActivity.this, getString(R.string.checked_out), Toast.LENGTH_SHORT).show();
+                }
                 return;
             }
+            SoundController.getInstance().playAccessGrantedSound();
             Toast.makeText(IrCameraActivity.this, getString(R.string.access_control_granted), Toast.LENGTH_SHORT).show();
         });
     }
@@ -5120,6 +5124,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean validateCheckInCheckOut(RegisteredMembers matchedMember) {
         if (AccessCardController.getInstance().isCheckedIn(matchedMember)) {
             runOnUiThread(() -> {
+                SoundController.getInstance().playCheckInOutSound("checkInAlready");
                 Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
                 disableLedPower();
                 resetToHomePage();
@@ -5128,6 +5133,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
         if (AccessCardController.getInstance().isCheckedOut(matchedMember)) {
             runOnUiThread(() -> {
+                SoundController.getInstance().playCheckInOutSound("checkOutAlready");
                 Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_out), Toast.LENGTH_LONG).show();
                 disableLedPower();
                 resetToHomePage();

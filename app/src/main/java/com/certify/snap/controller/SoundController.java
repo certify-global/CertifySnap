@@ -191,6 +191,27 @@ public class SoundController {
         }
     }
 
+    public void playCheckInOutSound(String type) {
+        if (soundPool == null) return;
+        try {
+            File file = new File(Environment.getExternalStorageDirectory() + "/Audio/" + type + ".mp3");
+            if(file.exists()) {
+                soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/" + type + ".mp3", 1);
+                soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                    int lastStreamId = -1;
+                    @Override
+                    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                        //soundPool.release();
+                        lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "soundPoolCheckInOut error in "+ e.getMessage());
+        }
+
+    }
+
     /**
      * Method that clears the Sound parameters
      */
