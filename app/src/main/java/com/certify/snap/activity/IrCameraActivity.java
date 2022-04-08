@@ -742,6 +742,12 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        DisplayTimeAttendance();
+    }
+
+    @Override
     protected void onResume() {
         Log.v(TAG, "onResume");
         super.onResume();
@@ -772,7 +778,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 Log.e(TAG, "Exception is camera preview");
             }
         }
-        DisplayTimeAttendance();
         if (!sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false) && !sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_ONLY_IS_ENABLE, false)) {
             clearLeftFace(null);
         }
@@ -849,11 +854,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cameraHelperIr.release();
             cameraHelperIr = null;
         }
-        if (hidReceiver != null) {
-            hidReceiver.clearAbortBroadcast();
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
-            hidReceiver = null;
-        }
+        unregisterHIDReceiver();
         if (mMessageReceiver != null) {
             mMessageReceiver.clearAbortBroadcast();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
@@ -2301,6 +2302,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
      * Method that initializes the access control & Nfc related members
      */
     private void initAccessControl() {
+        unregisterHIDReceiver();
         initHidReceiver();
         LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         AccessCardController.getInstance().init(this);
@@ -5197,5 +5199,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
 
         });
+    }
+
+    private void unregisterHIDReceiver() {
+        if (hidReceiver != null) {
+            hidReceiver.clearAbortBroadcast();
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
+            hidReceiver = null;
+        }
     }
 }

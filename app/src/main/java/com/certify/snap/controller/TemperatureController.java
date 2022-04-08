@@ -1011,7 +1011,10 @@ public class TemperatureController {
                 @Override
                 public void onResponse(Call<TemperatureRecordResponse> call, Response<TemperatureRecordResponse> response) {
                     if (response.body() != null) {
-                        if (response.body().responseCode != 1) {
+                        if (response.body().responseCode == 1) {
+                            Log.d(TAG, "Send Temperature record success");
+                        } else {
+                            Log.d(TAG, "Send Temperature record failed");
                             temperatureRecordRequest.offlineSync = 1;
                             temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
                             saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
