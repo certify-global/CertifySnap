@@ -166,8 +166,8 @@ public class MemberSyncDataModel {
                                 if (Util.getSharedPreferences(context).getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true)) {
                                     List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
                                     if (members != null && members.size() > 0 && index == 0) {
-                                        int size = members.size();
-                                        index = size + 1;
+                                        RegisteredMembers lastMember = DatabaseController.getInstance().getLastPrimaryIdOnMember();
+                                        index = lastMember.getPrimaryId() + 1;
                                     } else {
                                         index = index + 1;
                                     }
@@ -298,8 +298,8 @@ public class MemberSyncDataModel {
                             } else {
                                 List<RegisteredMembers> members = DatabaseController.getInstance().findAll();
                                 if (members != null && members.size() > 0 && index == 0) {
-                                    int size = members.size();
-                                    index = size + 1;
+                                    RegisteredMembers lastMember = DatabaseController.getInstance().getLastPrimaryIdOnMember();
+                                    index = lastMember.getPrimaryId() + 1;
                                 } else {
                                     index = index + 1;
                                 }
@@ -1048,7 +1048,7 @@ public class MemberSyncDataModel {
         doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
         List<RegisteredMembers> memberList = DatabaseController.getInstance().isUniqueIdExist(certifyId);
         if (memberList != null && memberList.size() > 0) {
-            DatabaseController.getInstance().deleteMember(memberList.get(0).primaryid);
+            deleteRecord(memberList.get(0).firstname, memberList.get(0).primaryid);
             doSendBroadcast(SYNC_COMPLETED, 0, 0);
         }
     }

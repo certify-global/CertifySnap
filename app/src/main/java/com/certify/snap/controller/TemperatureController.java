@@ -884,12 +884,10 @@ public class TemperatureController {
             temperatureRecordRequest.memberId = qrCodeData.getMemberId();
             temperatureRecordRequest.memberTypeId = String.valueOf(qrCodeData.getMemberTypeId());
             temperatureRecordRequest.memberTypeName = qrCodeData.getMemberTypeName();
-            temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
         } else if ((Util.isNumeric(CameraController.getInstance().getQrCodeId()) ||
                 !Util.isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId())) && data.triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
             temperatureRecordRequest.accessId = CameraController.getInstance().getQrCodeId();
             updateFaceMemberValues(temperatureRecordRequest, data);
-            temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
         } else {
             temperatureRecordRequest.accessId = data.member.getAccessid();
             updateFaceMemberValues(temperatureRecordRequest, data);
@@ -900,8 +898,8 @@ public class TemperatureController {
             } else {
                 temperatureRecordRequest.trqStatus = "1";
             }
-            temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
         }
+        temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
         temperatureRecordRequest.maskStatus = data.maskStatus;
         temperatureRecordRequest.faceScore = data.faceScore;
         temperatureRecordRequest.faceParameters = Util.FaceParameters(context, data);
