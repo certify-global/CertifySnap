@@ -21,6 +21,7 @@ import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.model.QrCodeStore;
+import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.model.SmartHealthCardData;
 import com.certify.snap.qrverification.CertificateModel;
 import com.certify.snap.qrverification.DiseaseType;
@@ -155,6 +156,15 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public void setQrCodeMemberMatch(boolean value) {
         isQrCodeMemberMatch = value;
+    }
+
+    public RegisteredMembers isQrCodeMatchingMember(String uniqueId) {
+        List<RegisteredMembers> memberList =
+                DatabaseController.getInstance().isUniqueIdExist(uniqueId);
+        if (memberList != null && memberList.size() > 0) {
+            return memberList.get(0);
+        }
+        return null;
     }
 
     /*public boolean isFaceSearchedOnQrCode() {

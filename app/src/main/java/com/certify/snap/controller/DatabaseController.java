@@ -215,7 +215,7 @@ public class DatabaseController {
         return null;
     }
 
-    private RegisteredMembers getLastPrimaryIdOnMember() {
+    public RegisteredMembers getLastPrimaryIdOnMember() {
         try {
             if (databaseStore != null) {
                 return databaseStore.getLastMember();

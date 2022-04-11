@@ -359,10 +359,17 @@ public class CameraController {
                 (AppSettings.isAnonymousQREnable()) ||
                 (AccessCardController.getInstance().isEnableWiegandPt()) ||
                 (AccessCardController.getInstance().isAllowAnonymous()) ||
-                (GestureController.getInstance().isGestureEnabledAndDeviceConnected())) {
+                (GestureController.getInstance().isGestureEnabledAndDeviceConnected()) ||
+                (onCheckOut())) {
             result = false;
         }
         return result;
+    }
+
+    public boolean onCheckOut() {
+        return ((ApplicationController.getInstance().getTimeAttendance() == 2) &&
+                ((AppSettings.getPrimaryIdentifier() == PrimaryIdentification.QR_CODE.value) ||
+                 (AppSettings.getPrimaryIdentifier() == PrimaryIdentification.QRCODE_OR_RFID.value)));
     }
 
     /*public boolean validateAnonymousQrCode() {

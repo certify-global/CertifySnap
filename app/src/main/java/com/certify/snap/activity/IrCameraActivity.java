@@ -2245,6 +2245,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             if (reportInfo.has("responseCode") && reportInfo.getString("responseCode").equals("1")) {
                 Util.getQRCode(reportInfo, status, IrCameraActivity.this, "QRCode");
+                QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+                RegisteredMembers member = QrCodeController.getInstance().isQrCodeMatchingMember(qrCodeData.getUniqueId());
+                if (member != null) {
+                    if (validateCheckInCheckOut(member)) {
+                        return;
+                    }
+                }
                 scanOnQrCode();
                 SoundController.getInstance().playValidQrSound();
                 return;
@@ -3504,7 +3511,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void resumeCameraScan() {
-        resetQrCode();
         if (cameraHelper != null && cameraHelper.isStopped()) {
             cameraHelper.start();
         }
@@ -3522,13 +3528,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 cameraHelperIr.release();
             }
 
-//        new Handler().post(() -> {
+        new Handler().post(() -> {
             // initRgbCamera();
             //initIrCamera();
             enableFaceScan();
             isReadyToScan = true;
 
-            // });
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -5020,17 +5026,37 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         homeDisplayView();
         faceEngineHelper.initEngine(this);
         int primaryIdentifier = AppSettings.getPrimaryIdentifier();
-        if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
-            clearQrCode();
-            enableFaceScan();
-            isReadyToScan = true;
-            CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
-        } else if (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) {
+        if ((primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
+            int secondaryIdentifier = AppSettings.getSecondaryIdentifier();
             clearQrCode();
             enableRfidScan();
             enableFaceScan();
-            isReadyToScan = true;
-            CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+            isReadyToScan = false;
+            if ((secondaryIdentifier == CameraController.SecondaryIdentification.RFID.getValue()) ||
+                    (secondaryIdentifier == CameraController.SecondaryIdentification.FACE.getValue())) {
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
+            } else {
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+            }
+        } else if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue())) {
+            int secondaryIdentifier = AppSettings.getSecondaryIdentifier();
+            if (secondaryIdentifier == CameraController.SecondaryIdentification.RFID.getValue()) {
+                clearQrCode();
+                enableRfidScan();
+                enableFaceScan();
+                isReadyToScan = false;
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
+            } else if (secondaryIdentifier == CameraController.SecondaryIdentification.FACE.getValue()) {
+                clearQrCode();
+                enableFaceScan();
+                isReadyToScan = true;
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
+            } else {
+                clearQrCode();
+                enableFaceScan();
+                isReadyToScan = true;
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+            }
         } else {
             initScan();
         }
