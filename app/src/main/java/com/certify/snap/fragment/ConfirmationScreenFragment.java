@@ -46,9 +46,7 @@ public class ConfirmationScreenFragment extends Fragment {
     private String confirm_title = "";
     private String confirm_subtitle = "";
     private LinearLayout confirmation_screen_layout;
-    private int count = 1;
-    private static final int VACCINATED = 1;
-    private static final int NON_VACCINATED = 2;
+    private boolean isDisplayImageName = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,8 +66,9 @@ public class ConfirmationScreenFragment extends Fragment {
         if (bundle != null) {
             value = bundle.getString("tempVal");
         }
+        isDisplayImageName = sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false);
         compareResultValues = CameraController.getInstance().getCompareResult();
-        if (compareResultValues != null && sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
+        if (compareResultValues != null && isDisplayImageName) {
             user_img.setVisibility(View.VISIBLE);
             compareResult();
         } else if (CameraController.getInstance().isFaceNotMatchedOnRetry() && !Util.isDeviceF10()) {
@@ -167,7 +166,7 @@ public class ConfirmationScreenFragment extends Fragment {
 
     private void onAccessCardQrCodeMemberMatch() {
         RegisteredMembers matchedMember = AccessControlModel.getInstance().getRfidScanMatchedMember();
-        if (matchedMember != null) {
+        if (matchedMember != null && isDisplayImageName) {
             if (!matchedMember.getImage().isEmpty()) {
                 File file = new File(matchedMember.getImage());
                 if (file.exists()) {
@@ -179,7 +178,7 @@ public class ConfirmationScreenFragment extends Fragment {
                 }
             }
             user_name.setText(matchedMember.getFirstname());
-        } else if (CameraController.getInstance().getQrCodeData() != null) {
+        } else if ((CameraController.getInstance().getQrCodeData() != null) && isDisplayImageName) {
             user_name.setVisibility(View.VISIBLE);
             user_name.setText(CameraController.getInstance().getQrCodeData().getFirstName());
             if (CameraController.getInstance().getQrCodeData().getFaceTemplate() != null) {

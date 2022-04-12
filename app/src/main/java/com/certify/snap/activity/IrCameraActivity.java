@@ -5045,12 +5045,15 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 enableRfidScan();
                 enableFaceScan();
                 isReadyToScan = false;
+                CameraController.getInstance().setTriggerType(CameraController.triggerValue.ACCESSID.toString());
                 CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
             } else if (secondaryIdentifier == CameraController.SecondaryIdentification.FACE.getValue()) {
                 clearQrCode();
                 enableFaceScan();
                 isReadyToScan = true;
-                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
+                CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
+            } else if (secondaryIdentifier == CameraController.SecondaryIdentification.NONE.getValue()) {
+                initScan();
             } else {
                 clearQrCode();
                 enableFaceScan();
