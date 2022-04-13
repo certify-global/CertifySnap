@@ -1578,10 +1578,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(() -> {
             if ((AppSettings.getTimeAndAttendance() == 1)) {
                 if (ApplicationController.getInstance().getTimeAttendance() == 1) {
-                    SoundController.getInstance().playCheckInOutSound("checkIn");
+                    SoundController.getInstance().onCheckInOutSound("checkIn");
                     Toast.makeText(IrCameraActivity.this, getString(R.string.checked_in), Toast.LENGTH_SHORT).show();
                 }else {
-                    SoundController.getInstance().playCheckInOutSound("checkOut");
+                    SoundController.getInstance().onCheckInOutSound("checkOut");
                     Toast.makeText(IrCameraActivity.this, getString(R.string.checked_out), Toast.LENGTH_SHORT).show();
                 }
                 return;

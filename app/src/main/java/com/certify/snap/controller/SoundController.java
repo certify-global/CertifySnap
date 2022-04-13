@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 
 import com.certify.snap.common.AppSettings;
@@ -188,6 +189,16 @@ public class SoundController {
                 boolean result = file.delete();
                 Log.i(TAG, String.valueOf(result));
             }
+        }
+    }
+
+    public void onCheckInOutSound(String type) {
+        if ((!AppSettings.isTemperatureScanEnabled() &&
+                ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
+                        (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue())))) {
+            new Handler().postDelayed(() -> playCheckInOutSound(type), 2 * 1000);
+        } else {
+            playCheckInOutSound(type);
         }
     }
 
