@@ -95,10 +95,15 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                     }
                 }
             }else if(command.equals("MEMBER")){
-                String CertifyId=jsonObject.isNull("certifyId") ? "":jsonObject.getString("certifyId");
-                String memberStatus = jsonObject.isNull("memberStatus") ? "":jsonObject.getString("memberStatus");
-                if (!MemberSyncDataModel.getInstance().isMemberInactive(CertifyId, memberStatus)) {
-                    Util.getMemberID(this, CertifyId);
+                if (sharedPreferences != null && (AppSettings.isFacialDetect()
+                        || AppSettings.isRfidEnabled())) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        String CertifyId = jsonObject.isNull("certifyId") ? "" : jsonObject.getString("certifyId");
+                        String memberStatus = jsonObject.isNull("memberStatus") ? "" : jsonObject.getString("memberStatus");
+                        if (!MemberSyncDataModel.getInstance().isMemberInactive(CertifyId, memberStatus)) {
+                            Util.getMemberID(this, CertifyId);
+                        }
+                    }
                 }
             }else if(command.equals("RESET")){
                 Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
@@ -127,7 +132,12 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 sendBroadcast(new Intent(navigationBar ? GlobalParameters.ACTION_OPEN_STATUSBAR : GlobalParameters.ACTION_CLOSE_STATUSBAR));
                 Util.writeBoolean(sharedPreferences,GlobalParameters.NavigationBar,false);
             } else if (command.equals("DELETE")) {
-                MemberSyncDataModel.getInstance().deleteMember(certifyId);
+                if (sharedPreferences != null && (AppSettings.isFacialDetect()
+                        || AppSettings.isRfidEnabled())) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
+                        MemberSyncDataModel.getInstance().deleteMember(certifyId);
+                    }
+                }
             }
             if (!command.equals("RESET") && !command.equals("DEACTIVATE")) {
                 Util.getPushresponse(this,this,commandGUID,uniqueDeviceId,command,eventTypeId);
