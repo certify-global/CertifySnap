@@ -447,6 +447,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void setClickListener() {
         retryButton.setOnClickListener(view -> {
+            cancelPreviewTimer();
             TemperatureController.getInstance().setTemperatureListener(null);
             retryButton.setVisibility(View.GONE);
             resetHomePage();
@@ -1243,6 +1244,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!isFaceNotDetectedTimer) {
             cancelImageTimer();
             isFaceNotDetectedTimer = true;
+            if (previewTimer != null) {
+                previewTimer.cancel();
+            }
             previewTimer = new Timer();
             previewTimer.schedule(new TimerTask() {
                 @Override
@@ -4915,6 +4919,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         homeDisplayView();
         mask_message.setText("");
         mask_message.setVisibility(View.GONE);
+        retryButton.setVisibility(View.GONE);
         disableLedPower();
         resetToHomePage();
     }
@@ -4962,6 +4967,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void DisplayTimeAttendance() {
         try {
+            retryButton.setVisibility(View.GONE);
             if (AppSettings.getTimeAndAttendance() == 1) {
                 runOnUiThread(new Runnable() {
                     @Override
