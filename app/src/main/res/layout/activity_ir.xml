@@ -452,9 +452,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:gravity="center_horizontal"
-        android:layout_above="@id/tv_error_message">
+        android:layout_marginBottom="@dimen/size_120"
+        android:gravity="center_horizontal">
 
         <Button
             android:id="@+id/button_retry"

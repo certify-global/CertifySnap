@@ -29,6 +29,6 @@
     <dimen name="margin_30">30</dimen>
     <dimen name="font_20">20</dimen>
     <dimen name="size_100">100dp</dimen>
-
+    <dimen name="size_120">120dp</dimen>
 
 </resources>

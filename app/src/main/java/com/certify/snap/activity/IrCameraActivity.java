@@ -1257,10 +1257,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                             retryButton.setVisibility(View.VISIBLE);
                             tv_thermal.setVisibility(View.GONE);
                             Toast.makeText(IrCameraActivity.this, getString(R.string.face_not_detected), Toast.LENGTH_LONG).show();
+                            setCameraPreviewTimer(10);
                         }
                     });
                 }
-            }, 15 * 1000);
+            }, 5 * 1000);
         }
     }
 
