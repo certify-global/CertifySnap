@@ -730,7 +730,7 @@ public class TemperatureController {
                 if (Util.isOfflineMode(context)) {
                     syncStatus = 1;
                 }
-                TemperatureController.getInstance().sendOnTemperatureScanDisabled(dataQR, syncStatus);
+                TemperatureController.getInstance().recordUserTemperature(dataQR, syncStatus);
             }
         }
         AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
@@ -932,100 +932,7 @@ public class TemperatureController {
 
                 @Override
                 public void onFailure(Call<TemperatureRecordResponse> call, Throwable t) {
-                    temperatureRecordRequest.offlineSync = 1;
-                    temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
-                    saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
-                }
-            });
-        }
-    }
-
-    public void sendOnTemperatureScanDisabled(UserExportedData data, int offlineSyncStatus) {
-        if (!Util.isDeviceF10()) {
-            if ((data.temperature == null || data.temperature.isEmpty())) {
-                Log.e(TAG, "recordUserTemperature temperature empty, abort send to server");
-                return;
-            }
-        }
-        if (!Util.isInstitutionIdValid(context)) return;
-
-        SharedPreferences sp = Util.getSharedPreferences(context);
-        TemperatureRecordRequest temperatureRecordRequest = new TemperatureRecordRequest();
-        temperatureRecordRequest.deviceId = Util.getSerialNumber();
-        temperatureRecordRequest.trigger = data.triggerType;
-        temperatureRecordRequest.enabledTemperature = AppSettings.isTemperatureScanEnabled() ? 1 : 0;
-        temperatureRecordRequest.temperature = data.temperature;
-        temperatureRecordRequest.institutionId = sp.getString(GlobalParameters.INSTITUTION_ID, "");
-        temperatureRecordRequest.facilityId = 0;
-        temperatureRecordRequest.locationId = 0;
-        temperatureRecordRequest.deviceTime = Util.getMMDDYYYYDate();
-        temperatureRecordRequest.machineTemperature = data.machineTemperature;
-        temperatureRecordRequest.ambientTemperature = data.ambientTemperature;
-
-        if (data.sendImages) {
-            temperatureRecordRequest.irTemplate = data.ir == null ? "" : Util.encodeToBase64(data.ir);
-            temperatureRecordRequest.rgbTemplate = data.rgb == null ? "" : Util.encodeToBase64(data.rgb);
-            temperatureRecordRequest.thermalTemplate = data.thermal == null ? "" : Util.encodeToBase64(data.thermal);
-        }
-        temperatureRecordRequest.deviceData = AppSettings.getDeviceInfo();
-        temperatureRecordRequest.deviceParameters = "temperatureCompensationValue:" + sp.getFloat(GlobalParameters.COMPENSATION, 0);
-        temperatureRecordRequest.temperatureFormat = sp.getString(GlobalParameters.F_TO_C, "F");
-        temperatureRecordRequest.exceedThreshold = data.exceedsThreshold;
-
-        QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-        if (qrCodeData != null) {
-            temperatureRecordRequest.id = qrCodeData.getUniqueId();
-            temperatureRecordRequest.accessId = qrCodeData.getAccessId();
-            temperatureRecordRequest.firstName = qrCodeData.getFirstName();
-            temperatureRecordRequest.lastName = qrCodeData.getLastName();
-            temperatureRecordRequest.memberId = qrCodeData.getMemberId();
-            temperatureRecordRequest.memberTypeId = String.valueOf(qrCodeData.getMemberTypeId());
-            temperatureRecordRequest.memberTypeName = qrCodeData.getMemberTypeName();
-            temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
-        } else if ((Util.isNumeric(CameraController.getInstance().getQrCodeId()) ||
-                !Util.isQRCodeWithPrefix(CameraController.getInstance().getQrCodeId()))) {
-            temperatureRecordRequest.accessId = CameraController.getInstance().getQrCodeId();
-            temperatureRecordRequest.qrCodeId = CameraController.getInstance().getQrCodeId();
-            updateFaceMemberValues(temperatureRecordRequest, data);
-        } else {
-            temperatureRecordRequest.accessId = data.member.getAccessid();
-            updateFaceMemberValues(temperatureRecordRequest, data);
-        }
-        temperatureRecordRequest.maskStatus = data.maskStatus;
-        temperatureRecordRequest.faceScore = data.faceScore;
-        temperatureRecordRequest.faceParameters = Util.FaceParameters(context, data);
-        temperatureRecordRequest.utcTime = Util.getUTCDate("");
-
-        if (Util.isOfflineMode(context) || offlineSyncStatus == 0 || offlineSyncStatus == 1) {
-            if (offlineSyncStatus == 1) {
-                temperatureRecordRequest.offlineSync = offlineSyncStatus;
-                temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
-            }
-            saveOfflineTempRecord(context, temperatureRecordRequest, data, offlineSyncStatus);
-        } else {
-            ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
-            Call<TemperatureRecordResponse> call = apiInterface.recordUserTemperature(temperatureRecordRequest);
-            call.enqueue(new Callback<TemperatureRecordResponse>() {
-                @Override
-                public void onResponse(Call<TemperatureRecordResponse> call, Response<TemperatureRecordResponse> response) {
-                    if (response.body() != null) {
-                        if (response.body().responseCode == 1) {
-                            Log.d(TAG, "Send Temperature record success");
-                        } else {
-                            Log.d(TAG, "Send Temperature record failed");
-                            temperatureRecordRequest.offlineSync = 1;
-                            temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
-                            saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
-                        }
-                    } else {
-                        temperatureRecordRequest.offlineSync = 1;
-                        temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
-                        saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<TemperatureRecordResponse> call, Throwable t) {
+                    Log.d(TAG, "Temperature scan api error");
                     temperatureRecordRequest.offlineSync = 1;
                     temperatureRecordRequest.utcOfflineDateTime = temperatureRecordRequest.utcTime;
                     saveOfflineTempRecord(context, temperatureRecordRequest, data, 1);

@@ -746,6 +746,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     protected void onStart() {
         super.onStart();
         DisplayTimeAttendance();
+        resumeCameraScan();
     }
 
     @Override
@@ -760,7 +761,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         }
-        if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) {
+        if (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue() ||
+                (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.RFID.getValue() &&
+            AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
             disableNfc();
         } else {
             enableNfc();

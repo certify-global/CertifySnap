@@ -50,6 +50,12 @@ public class PeripheralAdvertiseService extends Service {
     }
 
     @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        stopSelf();
+    }
+
+    @Override
     public void onDestroy() {
         Log.d(TAG, "CertME Stop advertising");
         /**
