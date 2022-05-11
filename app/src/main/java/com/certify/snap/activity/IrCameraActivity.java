@@ -2190,7 +2190,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     startQRTimer(guid);
-                    if (AppSettings.isEnableVendorQR() && guid.startsWith("vn_")) {
+                    if (AppSettings.isEnableVendorQR() && guid.contains("vn_")) {
                         QrCodeController.getInstance().validateVendorQR(guid);
                     } else {
                         JSONObject obj = new JSONObject();
@@ -5042,8 +5042,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             enableRfidScan();
             enableFaceScan();
             isReadyToScan = false;
-            if ((secondaryIdentifier == CameraController.SecondaryIdentification.RFID.getValue()) ||
-                    (secondaryIdentifier == CameraController.SecondaryIdentification.FACE.getValue())) {
+            if ((secondaryIdentifier == CameraController.SecondaryIdentification.RFID.getValue())) {
                 CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.SECOND_SCAN);
             } else {
                 CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);

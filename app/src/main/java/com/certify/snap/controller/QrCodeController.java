@@ -436,9 +436,13 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     }
 
     public void validateVendorQR(String guid) {
+        String qrCode = guid;
+        if (qrCode.contains("/")) {
+            qrCode = guid.substring(guid.lastIndexOf("/") + 1);
+        }
         ApiInterface apiInterface = RetrofitInstance.getInstance().getApiInterface();
         VendorQRRequest vendQR = new VendorQRRequest();
-        vendQR.vendorGuid = guid;
+        vendQR.vendorGuid = qrCode;
         Call<ApiResponse> call = apiInterface.getValidateVendor(vendQR);
         call.enqueue(new Callback<ApiResponse>() {
             @Override
