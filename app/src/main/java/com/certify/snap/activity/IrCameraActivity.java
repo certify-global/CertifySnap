@@ -2194,6 +2194,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 if (sharedPreferences.getBoolean(GlobalParameters.ONLINE_MODE, true)) {
                     startQRTimer(guid);
                     if (AppSettings.isEnableVendorQR() && guid.contains("vn_")) {
+                        String vendorQrCode = QrCodeController.getInstance().getVendorQrCode(guid);
+                        CameraController.getInstance().setQrCodeId(vendorQrCode);
                         QrCodeController.getInstance().validateVendorQR(guid);
                     } else {
                         JSONObject obj = new JSONObject();
