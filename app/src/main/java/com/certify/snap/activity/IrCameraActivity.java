@@ -939,6 +939,9 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (Util.isOfflineMode(IrCameraActivity.this)) {
                 syncStatus = 1;
             }
+            if (data != null) {
+                data.sendImages = AppSettings.isCaptureImagesAll();
+            }
             if (((AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) && (AppSettings.getPrimaryIdentifier() != CameraController.PrimaryIdentification.QR_CODE.getValue()))) {
                 TemperatureController.getInstance().recordUserTemperature(data, syncStatus);
             }
