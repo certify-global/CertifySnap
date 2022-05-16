@@ -6,4 +6,7 @@ public class VendorQRRequest {
 
     @SerializedName("vendorGuid")
     public String vendorGuid;
+
+    @SerializedName("deviceSNo")
+    public String deviceSNo;
 }
