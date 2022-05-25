@@ -108,6 +108,7 @@ public class AppSettings {
     private static String accessToken = "";
     private static boolean enableVendorQR = false;
     private static String endpointUrl = BuildConfig.ENDPOINT_URL;
+    private static boolean captureLowTempImages = false;
 
     public static AppSettings getInstance() {
         if (instance == null) {
@@ -224,6 +225,7 @@ public class AppSettings {
         endpointUrl = sharedPreferences.getString(GlobalParameters.URL, BuildConfig.ENDPOINT_URL);
         institutionId = sharedPreferences.getString(GlobalParameters.INSTITUTION_ID, "");
         accessToken = sharedPreferences.getString(GlobalParameters.ACCESS_TOKEN, "");
+        captureLowTempImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_LOW_TEMP_IMAGES, false);
     }
    public void setSettingsInstitutionIdToken(Context context){
        SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
@@ -662,5 +664,9 @@ public class AppSettings {
 
     public static boolean isMobileAccessCard() {
         return mobileAccessCard;
+    }
+
+    public static boolean isCaptureLowTempImages() {
+        return captureLowTempImages;
     }
 }

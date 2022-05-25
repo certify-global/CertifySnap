@@ -1934,10 +1934,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                 showMaskStatus();
                 boolean sendAboveThreshold = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ABOVE, true) && aboveThreshold;
+                boolean sendLowThreshold = AppSettings.isCaptureLowTempImages() && isLowTempRead;
                 if (data != null) {
                     data.exceedsThreshold = aboveThreshold;
                     data.temperature = tempValue;
-                    data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold;
+                    data.sendImages = sharedPreferences.getBoolean(GlobalParameters.CAPTURE_IMAGES_ALL, false) || sendAboveThreshold || sendLowThreshold;
                     data.thermal = temperatureBitmap;
                     if (maskEnabled) {
                         data.maskStatus = String.valueOf(maskStatus);

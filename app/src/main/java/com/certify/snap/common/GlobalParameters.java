@@ -238,5 +238,6 @@ public class GlobalParameters {
     public static final String MOBILE_ACCESS_CARD = "MobileAccessCard";
     public static final String OFFLINE_QR_CODE = "OfflineQrCode";
     public static final String ENABLE_VENDOR_QR = "enableVendorQR";
+    public static final String CAPTURE_LOW_TEMP_IMAGES = "CaptureLowTempImages";
 
 }

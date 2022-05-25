@@ -343,6 +343,45 @@
 
                 </RadioGroup>
 
+                <TextView
+                    android:id="@+id/low_threshold_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_08"
+                    android:layout_marginEnd="@dimen/size_20"
+                    android:text="@string/capture_low_threshold_images"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_18" />
+
+                <RadioGroup
+                    android:id="@+id/low_threshold_images_rg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/size_20"
+                    android:layout_marginTop="@dimen/size_05"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/low_threshold_images_rb_y"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_30"
+                        android:text="@string/living_type_1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                    <RadioButton
+                        android:id="@+id/low_threshold_images_rb_n"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/living_type_0"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_size_14"
+                        android:theme="@style/MyCheckBox" />
+
+                </RadioGroup>
 
                 <TextView
                     android:id="@+id/tv_mask"

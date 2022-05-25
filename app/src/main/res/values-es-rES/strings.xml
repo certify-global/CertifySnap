@@ -744,5 +744,6 @@
     <string name="access_id_msg">El ID de acceso no existe</string>
     <string name="enable_offline_qrcode">Habilitar código QR sin conexión</string>
     <string name="enable_vendor_qrcode">Habilitar código QR de proveedor</string>
+    <string name="capture_low_threshold_images">Captura de imágenes para baja temperatura</string>
 
 </resources>
