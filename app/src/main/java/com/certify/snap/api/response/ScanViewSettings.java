@@ -100,4 +100,8 @@ public class ScanViewSettings {
     @Ignore
     @SerializedName("retryOptionFaceScan")
     public String retryOptionFaceScan = "";
+
+    @Ignore
+    @SerializedName("captureUserImageForLowTemperature")
+    public String captureUserImageForLowTemperature = "0";
 }

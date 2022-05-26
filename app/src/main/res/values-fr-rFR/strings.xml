@@ -738,6 +738,6 @@
     <string name="access_id_msg">L\'ID d\'accès n\'existe pas</string>
     <string name="enable_offline_qrcode">Activer le code QR hors ligne</string>
     <string name="enable_vendor_qrcode">Activer le code QR du fournisseur</string>
-    <string name="capture_low_threshold_images">Capturez des images à basse température</string>
+    <string name="capture_low_threshold_images">Capturez des images d’utilisateurs à basse température</string>
 
 </resources>
