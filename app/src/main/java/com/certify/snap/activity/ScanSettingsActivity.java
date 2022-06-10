@@ -48,6 +48,9 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
     private RadioGroup livenessRg;
     private RadioButton livenessYes, livenessNo;
     private ScanViewSettings scanViewSettings = null;
+    private TextView lowTempImageTv;
+    private RadioGroup lowTempImageRg;
+    private RadioButton lowTempImageRbYes, lowTempImageRbNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,7 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
             setDefaultLiveness();
             setLivenessClickListener();
             setRetryScanSettings();
+            setCaptureLowTempImages();
 
             rgCapture.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
@@ -450,5 +454,33 @@ public class ScanSettingsActivity extends SettingsBaseActivity {
 
     private void saveRetryScan() {
         Util.writeBoolean(sp, GlobalParameters.RETRY_SCAN, retryScanRbYes.isChecked());
+    }
+
+    private void setCaptureLowTempImages() {
+        lowTempImageTv = findViewById(R.id.low_threshold_tv);
+        lowTempImageRg = findViewById(R.id.low_threshold_images_rg);
+        lowTempImageRbYes = findViewById(R.id.low_threshold_images_rb_y);
+        lowTempImageRbNo = findViewById(R.id.low_threshold_images_rb_n);
+        lowTempImageTv.setTypeface(rubiklight);
+
+        if (sp.getBoolean(GlobalParameters.CAPTURE_LOW_TEMP_IMAGES, false)) {
+            lowTempImageRbYes.setChecked(true);
+            lowTempImageRbNo.setChecked(false);
+        } else {
+            lowTempImageRbNo.setChecked(true);
+            lowTempImageRbYes.setChecked(false);
+        }
+
+        lowTempImageRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.low_threshold_images_rb_y) {
+                lowTempImageRbYes.setChecked(true);
+                lowTempImageRbNo.setChecked(false);
+                Util.writeBoolean(sp, GlobalParameters.CAPTURE_LOW_TEMP_IMAGES, true);
+            } else if (checkedId == R.id.low_threshold_images_rb_n) {
+                lowTempImageRbNo.setChecked(true);
+                lowTempImageRbYes.setChecked(false);
+                Util.writeBoolean(sp, GlobalParameters.CAPTURE_LOW_TEMP_IMAGES, false);
+            }
+        });
     }
 }

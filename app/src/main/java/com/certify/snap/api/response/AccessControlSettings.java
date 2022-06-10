@@ -34,7 +34,7 @@ public class AccessControlSettings {
     public int accessControllerCardFormat = 26;
 
     @SerializedName("loggingMode")
-    public int loggingMode = 0;
+    public int loggingMode = 3;
 
     @SerializedName("validAccessOption")
     public int validAccessOption = 4;
