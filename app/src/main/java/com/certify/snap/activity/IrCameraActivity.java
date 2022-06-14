@@ -3331,6 +3331,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         qrCodeReceived = false;
         registeredMemberslist = null;
         isFaceNotDetectedTimer = false;
+        isLowTempRead = false;
 
         if (isDisconnected) {
             runOnUiThread(() -> Toast.makeText(getBaseContext(), getString(R.string.connect_light_device), Toast.LENGTH_SHORT).show());
@@ -3762,7 +3763,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             text = AppSettings.getTempResultBarNormal() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
-        isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
             if (AppSettings.isCaptureTemperature()) {
                 text = AppSettings.getTempResultBarHigh() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
@@ -4128,7 +4128,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         } else {
             text = AppSettings.getTempResultBarNormal() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
         }
-        isLowTempRead = false;
         if (TemperatureController.getInstance().isTemperatureAboveThreshold(temperature)) {
             if (AppSettings.isCaptureTemperature()) {
                 text = AppSettings.getTempResultBarHigh() + ": " + tempString + TemperatureController.getInstance().getTemperatureUnit();
