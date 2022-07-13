@@ -1,10 +1,12 @@
 package com.certify.snap.api;
 
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.Logger;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -15,7 +17,7 @@ public class RetrofitInstance {
     private ApiInterface apiInterface = null;
 
 
-    public void init () {
+    public void init() {
         createRetrofitInstance();
     }
 
@@ -39,7 +41,7 @@ public class RetrofitInstance {
     }
 
     public ApiInterface getApiInterface() {
-        if(apiInterface == null)
+        if (apiInterface == null)
             Logger.error(TAG, "apiInterface is null");
         return apiInterface;
     }
@@ -56,6 +58,11 @@ public class RetrofitInstance {
                     .build();
             return chain.proceed(request);
         });
+        if (EndPoints.deployment == EndPoints.Mode.Demo) {
+            HttpLoggingInterceptor logHttp = new HttpLoggingInterceptor();
+            logHttp.setLevel(HttpLoggingInterceptor.Level.BODY);
+            httpClient.addInterceptor(logHttp);
+        }
         return httpClient.build();
     }
 }
