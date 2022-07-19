@@ -430,6 +430,8 @@ public class AccessCardController {
                 accessLogRequest = new AccessLogRequest();
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
+                if (CameraController.getInstance().getQrCodeData() != null)
+                    qrCodeId = CameraController.getInstance().getQrCodeId();
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
@@ -536,6 +538,7 @@ public class AccessCardController {
                 } else if (isAccessSignalEnabled() || mAllowAnonymous)
                     accessLogRequest.allowAccess = true;
                 int syncStatus = -1;
+
                 if (Util.isOfflineMode(context)) {
                     if ((AppSettings.getTimeAndAttendance() == 1) && listener != null) {
                         listener.onCheckInOutStatus();
