@@ -205,6 +205,10 @@ public class AccessCardController {
         return result;
     }
 
+    /**
+     * Method that sets the card Id
+     * @param cardId cardId
+     */
     public void setAccessCardId(String cardId) {
         mAccessCardID = cardId;
     }
