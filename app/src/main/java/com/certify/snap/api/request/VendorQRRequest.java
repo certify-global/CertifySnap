@@ -1,6 +1,5 @@
 package com.certify.snap.api.request;
 
-import com.certify.snap.common.Util;
 import com.google.gson.annotations.SerializedName;
 
 public class VendorQRRequest {
@@ -10,5 +9,4 @@ public class VendorQRRequest {
 
     @SerializedName("deviceSNo")
     public String deviceSNo;
-
 }
