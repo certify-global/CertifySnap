@@ -111,16 +111,16 @@ android {
         pickFirst 'META-INF/LGPL-3.0.txt'
     }
 }
-android.applicationVariants.all { variant ->
-    def buildType = variant.buildType.buildType.name
-    variant.outputs.all { output ->
-
-        //def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
-        def suffix = ""
-        version = buildType == "release" ? "${versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
-        output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
-    }
-}
+//android.applicationVariants.all { variant ->
+//    def buildType = variant.buildType.buildType.name
+//    variant.outputs.all { output ->
+//
+//        //def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
+//        def suffix = ""
+//        version = buildType == "release" ? "${versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
+//        output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
+//    }
+//}
 
 def room_version="2.2.5"
 dependencies {
