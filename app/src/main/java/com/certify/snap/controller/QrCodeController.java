@@ -83,6 +83,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         void onGetLastCheckInTime(boolean checkedIn);
 
         void onQRCodeScanSuccess();
+
         void onVendorQRCodeScan(boolean isSuccess);
     }
 
@@ -452,9 +453,9 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         call.enqueue(new Callback<ApiResponse>() {
             @Override
             public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                if(listener==null) return;
+                if (listener == null) return;
                 if (response.body() != null && response.body().responseCode == 1) {
-                     listener.onVendorQRCodeScan(true);
+                    listener.onVendorQRCodeScan(true);
                 } else {
                     listener.onVendorQRCodeScan(false);
                 }

@@ -21,9 +21,9 @@ public class EndPoints {
         return (deployment == Mode.Demo ? dev_url : prod_url);
     }
 
-    public static String domainUrl =  "/";
-    public static final String  GenerateToken = domainUrl+"GenerateToken";
-    public static final String  RecordTemperature = domainUrl+"RecordMemberTemperature";
+    public static String domainUrl = "/";
+    public static final String GenerateToken = domainUrl + "GenerateToken";
+    public static final String RecordTemperature = domainUrl + "RecordMemberTemperature";
     public static final String ActivateApplication = domainUrl + "ActivateApplication";
     public static final String DEVICEHEALTHCHECK = domainUrl + "DeviceHealthCheck";
     public static final String DEVICESETTING = domainUrl + "GetDeviceConfiguration";

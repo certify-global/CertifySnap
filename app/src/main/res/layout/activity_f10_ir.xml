@@ -124,6 +124,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginTop="@dimen/size_10"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/tv_close_message"
                     android:layout_width="match_parent"
@@ -132,15 +133,15 @@
                     android:gravity="center"
                     android:textColor="@color/colorWhite"
                     android:textSize="28sp"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/img_logo"
                 android:layout_width="300dp"
-                android:layout_below="@+id/tv_close_message_layout"
                 android:layout_height="150dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/size_50"
+                android:layout_centerHorizontal="true"
                 android:background="@color/colorWhite"
                 android:scaleType="fitCenter" />
 
@@ -148,15 +149,15 @@
                 android:id="@+id/camera_frame_layout"
                 android:layout_width="400dp"
                 android:layout_height="400dp"
+                android:layout_below="@+id/img_logo"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="40dp"
-                android:layout_below="@+id/img_logo">
+                android:layout_marginTop="40dp">
 
                 <RelativeLayout
                     android:id="@+id/camera_preview_layout"
                     android:layout_width="match_parent"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal">
 
                     <TextureView
                         android:id="@+id/texture_preview_ir"
@@ -175,21 +176,20 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/size_20"
                 android:layout_below="@+id/camera_frame_layout"
+                android:layout_marginTop="@dimen/size_20"
                 android:gravity="center_horizontal">
 
                 <Button
                     android:id="@+id/button_retry"
                     android:layout_width="180dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/retry"
-                    android:textSize="28sp"
-                    android:padding="@dimen/size_15"
-                    android:textColor="@color/colorWhite"
                     android:background="@color/colorBlue"
-                    android:visibility="gone">
-                </Button>
+                    android:padding="@dimen/size_15"
+                    android:text="@string/retry"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="28sp"
+                    android:visibility="gone"/>
 
             </RelativeLayout>
 
@@ -235,14 +235,13 @@
                     android:id="@+id/qr_main"
                     android:layout_width="350dp"
                     android:layout_height="300dp"
-                    android:visibility="gone"
-                    android:layout_gravity="center">
+                    android:layout_gravity="center"
+                    android:visibility="gone">
+
                     <TextView
                         android:id="@+id/tv_scan"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="@dimen/size_10"
                         android:layout_marginTop="@dimen/size_10"
@@ -250,18 +249,21 @@
                         android:layout_marginBottom="@dimen/size_10"
                         android:background="@drawable/textview_rectangle"
                         android:gravity="center"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
                         android:text="@string/tv_qr_scan"
                         android:textSize="@dimen/size_20" />
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center"
                         android:layout_below="@+id/tv_scan"
+                        android:layout_gravity="center"
                         android:layout_marginLeft="@dimen/size_50"
                         android:layout_marginRight="@dimen/size_50"
                         android:layout_marginBottom="@dimen/size_50"
                         android:background="@drawable/qr_code_border">
+
                         <ImageView
                             android:id="@+id/img_qr"
                             android:layout_width="match_parent"
@@ -270,65 +272,69 @@
                             android:visibility="gone">
 
                         </ImageView>
+
                         <View
+                            android:id="@+id/imageView"
                             android:layout_width="match_parent"
                             android:layout_height="3dp"
-                            android:id="@+id/imageView"
-                            android:background="@color/colorWhite"
-                            android:layout_margin="@dimen/size_20"/>
+                            android:layout_margin="@dimen/size_20"
+                            android:background="@color/colorWhite" />
                     </FrameLayout>
 
                 </RelativeLayout>
             </FrameLayout>
+
             <Button
                 android:id="@+id/qr_skip_button"
                 android:layout_width="320dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_below="@+id/barcode_scanner"
                 android:layout_centerHorizontal="true"
+                android:layout_marginTop="-55dp"
+                android:background="@drawable/btn_shape"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:freezesText="true"
+                android:gravity="center"
                 android:marqueeRepeatLimit="marquee_forever"
+                android:onClick="skipQr"
                 android:paddingLeft="15dip"
                 android:paddingRight="15dip"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/ir_text"
-                android:layout_marginTop="-55dp"
-                android:background="@drawable/btn_shape"
-                android:layout_below="@+id/barcode_scanner"
-                android:onClick="skipQr"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_thermal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="130dp"
+                android:layout_above="@+id/tv_thermal_subtitle"
+                android:layout_marginLeft="@dimen/text_size_10"
+                android:layout_marginRight="@dimen/text_size_10"
+                android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:text="@string/thermal_scan"
+                android:textAlignment="center"
                 android:textColor="@color/black"
                 android:textSize="@dimen/size_40"
-                android:visibility="visible"
-                android:layout_marginRight="@dimen/text_size_10"
-                android:layout_marginLeft="@dimen/text_size_10"
-                android:textAlignment="center"/>
+                android:visibility="visible" />
+
             <me.grantland.widget.AutofitTextView
                 android:id="@+id/tv_only_text"
-                android:padding="@dimen/size_15"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/ir_ques_text"
                 android:layout_centerVertical="true"
-                android:textColor="@color/black"
-                android:textSize="32sp"
-                autofit:minTextSize="8sp"
                 android:layout_marginTop="@dimen/size_38"
                 android:layout_marginBottom="@dimen/size_50"
-                android:visibility="gone" />
+                android:padding="@dimen/size_15"
+                android:text="@string/ir_ques_text"
+                android:textColor="@color/black"
+                android:textSize="32sp"
+                android:visibility="gone"
+                autofit:minTextSize="8sp" />
+
             <TextView
                 android:id="@+id/tv_thermal_subtitle"
                 android:layout_width="match_parent"
@@ -363,8 +369,7 @@
                 android:layout_marginStart="@dimen/size_20"
                 android:layout_marginEnd="@dimen/size_20"
                 android:layout_marginBottom="@dimen/size_40"
-                android:background="@drawable/btn_shape"
-                />
+                android:background="@drawable/btn_shape" />
 
             <TextView
                 android:id="@+id/tv_message_wave"
@@ -394,44 +399,46 @@
                 android:paddingBottom="2dp"
                 android:text="@string/app_version"
                 android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tv_display_time_only"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
                 android:layout_marginStart="@dimen/size_15"
+                android:layout_marginBottom="10dp"
                 android:textColor="#85898D"
                 android:textSize="24sp"
-                android:layout_marginBottom="10dp"
                 android:visibility="visible" />
 
             <TextView
                 android:id="@+id/tv_version_ir_only"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="@dimen/size_15"
                 android:layout_marginRight="2dp"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:paddingRight="2dp"
                 android:paddingBottom="2dp"
-                android:layout_marginEnd="@dimen/size_15"
                 android:text="@string/app_version"
                 android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/tv_sync"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="@dimen/size_10"
                 android:layout_marginBottom="10dp"
+                android:gravity="right"
                 android:textColor="#85898D"
                 android:textSize="16sp"
-                android:visibility="visible"
-                android:gravity="right"
-                android:layout_marginRight="@dimen/size_10" />
+                android:visibility="visible" />
         </RelativeLayout>
 
     </RelativeLayout>
