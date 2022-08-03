@@ -69,11 +69,11 @@
 
             <ImageView
                 android:id="@+id/certify_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="120dp"
-                android:background="@drawable/final_logo"
+                android:src="@drawable/final_logo"
                 android:scaleType="fitCenter" />
 
             <TextView

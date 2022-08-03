@@ -241,7 +241,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     };
 
     private int relaytimenumber = 5;
-    ImageView img_guest, temperature_image, img_logo;
+    ImageView img_guest, temperature_image, img_logo,manual_check_in_logo;
     TextView txt_guest;
     private Button retryButton;
 
@@ -355,6 +355,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         instanceStart();
         sharedPreferences = Util.getSharedPreferences(this);
         img_logo = findViewById(R.id.img_logo);
+        manual_check_in_logo = findViewById(R.id.certify_logo);
         String path = sharedPreferences.getString(GlobalParameters.IMAGE_ICON, "");
         homeIcon(path);
         getAppSettings();
@@ -510,6 +511,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             if (!path.isEmpty()) {
                 Bitmap bitmap = Util.decodeToBase64(path);
                 img_logo.setImageBitmap(bitmap);
+                manual_check_in_logo.setImageBitmap(bitmap);
             } else {
                 img_logo.setBackgroundResource(R.drawable.final_logo);
             }
@@ -668,7 +670,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public void run() {
                 SimpleDateFormat formatter = new SimpleDateFormat("MMMM dd, yyyy hh:mm:ss a", Locale.getDefault()); //yyyy-MM-dd HH:mm:ss
-                String currentTime = new SimpleDateFormat("HH:mm aaa", Locale.getDefault()).format(new Date());
+                String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
                 Date curDate = new Date(System.currentTimeMillis());
                 final String str = formatter.format(curDate);
                 runOnUiThread(new Runnable() {
@@ -4997,7 +4999,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     public void run() {
                         relative_main.setVisibility(View.GONE);
                         time_attendance_layout.setVisibility(View.VISIBLE);
-                        String currentTime = new SimpleDateFormat("HH:mm aaa", Locale.getDefault()).format(new Date());
+                        String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
                         tvTime.setText(currentTime);
                         String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
                         tvDate.setText(currentDate);

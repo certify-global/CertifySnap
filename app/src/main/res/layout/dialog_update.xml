@@ -15,8 +15,8 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_margin="10dp"
-            android:visibility="invisible"
-            android:background="@mipmap/edit_black" />
+            android:background="@mipmap/edit_black"
+            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -141,6 +141,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/first_name"
+                android:inputType="textPersonName"
                 android:paddingLeft="05dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -159,6 +160,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/last_name"
+                android:inputType="textPersonName"
                 android:paddingLeft="05dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -176,7 +178,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/edittextbackground"
                 android:hint="@string/member_id"
-
+                android:inputType="text"
                 android:paddingLeft="05dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -238,6 +240,7 @@
                     android:layout_weight=".75"
                     android:background="@drawable/edittextbackground"
                     android:hint="@string/access_id"
+                    android:inputType="number|text"
                     android:paddingLeft="05dp" />
 
                 <Button
