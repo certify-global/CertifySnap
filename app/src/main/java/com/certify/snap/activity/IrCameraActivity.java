@@ -241,7 +241,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     };
 
     private int relaytimenumber = 5;
-    ImageView img_guest, temperature_image, img_logo,manual_check_in_logo;
+    ImageView img_guest, temperature_image, img_logo, manual_check_in_logo;
     TextView txt_guest;
     private Button retryButton;
 
@@ -250,7 +250,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private Bitmap rgbBitmap;
     private Bitmap temperatureBitmap = null;
     RelativeLayout relative_main;
-    TextView tv_thermal, tv_thermal_subtitle;
+    TextView tv_thermal, tv_thermal_subtitle, tvManualTitle;
     private long delayMilli = 0;
     private String delayMilliTimeOut = "";
     private TextView tvErrorMessage, tv_scan, tvFaceMessage;
@@ -396,11 +396,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         tv_thermal = findViewById(R.id.tv_thermal);
         tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
+        tvManualTitle = findViewById(R.id.tv_manual_title);
         tv_thermal.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan)));
         tv_thermal_subtitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, ""));
         tv_thermal.setTypeface(rubiklight);
         tv_thermal_subtitle.setTypeface(rubiklight);
-
+       // tvManualTitle.setTypeface(rubiklight);
+        tvManualTitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, ""));
         initView();
         setClickListener();
         resetImageLogo();
@@ -4999,6 +5001,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     public void run() {
                         relative_main.setVisibility(View.GONE);
                         time_attendance_layout.setVisibility(View.VISIBLE);
+                        button_checkOut.setEnabled(true);
+                        button_checkIn.setEnabled(true);
                         String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
                         tvTime.setText(currentTime);
                         String currentDate = new SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(new Date());
@@ -5009,6 +5013,19 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     pauseCameraScan();
                 } else {
                     isReadyToScan = false;
+                }
+                if (sharedPreferences.getBoolean(GlobalParameters.ENABLE_VISITOR_QR, false)) {
+                    if (sharedPreferences.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, false)) {
+                        if (sharedPreferences.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_CHECK_OUT, false)) {
+                            button_checkOut.setVisibility(View.VISIBLE);
+                        } else button_checkOut.setVisibility(View.GONE);
+                    } else {
+                        if (Util.isDeviceF10()) {
+                            updateUI();
+                        } else {
+                            homeDisplayView();
+                        }
+                    }
                 }
             } else if (AppSettings.getTimeAndAttendance() == 0) {
                 if (Util.isDeviceF10()) {
@@ -5033,9 +5050,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onCheckInClick(View view) {
+        button_checkIn.setEnabled(false);
+        time_attendance_layout.setVisibility(View.GONE);
         ApplicationController.getInstance().setTimeAttendance(1);
         AccessCardController.getInstance().setCheckInResponseCode(-1);
-        time_attendance_layout.setVisibility(View.GONE);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
         if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() || AppSettings.isEnableTouchMode()) {
@@ -5051,6 +5069,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onCheckOutClick(View view) {
+        button_checkOut.setEnabled(false);
         GestureController.getInstance().setCallback(true);
         ApplicationController.getInstance().setTimeAttendance(2);
         time_attendance_layout.setVisibility(View.GONE);

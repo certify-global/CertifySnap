@@ -14,7 +14,7 @@ public class GlobalParameters {
     public static String UpdateOnlineURL = "device/updateOnline";
     public static String UpdateUserListURL = "member/syncUserUpdate";
     public static String DeleteUserListURL = "member/syncUserDelete";
-    public static String OfflineVerify="detect/offlineVerify";
+    public static String OfflineVerify = "detect/offlineVerify";
     public static String GuestlistURL = "member/guest";
 
     public static String SN = "";//Util.getSNCode();
@@ -61,7 +61,7 @@ public class GlobalParameters {
     public static String Access_token = "";
     public static String channelID = "";
 
-    public static boolean livenessDetect=false;
+    public static boolean livenessDetect = false;
 
     public static final String ACTION_SHOW_NAVIGATIONBAR = "com.android.internal.policy.impl.showNavigationBar";
     public static final String ACTION_HIDE_NAVIGATIONBAR = "com.android.internal.policy.impl.hideNavigationBar";
@@ -104,12 +104,12 @@ public class GlobalParameters {
     public static final String MASK_DETECT = "mask_detect";
     public static final String FACIAL_DETECT = "facial_detect";
     public static final String ALLOW_ALL = "allow_all";
-    public static final String DELAY_VALUE="delay_value";
-    public static final String DELAY_VALUE_CONFIRM_BELOW="delay_value_confirm";
-    public static final String CONFIRM_SCREEN_BELOW="confirm_screen";
-    public static final String CONFIRM_SCREEN_ABOVE="confirm_screen_above";
-    public static final String SHOW_VACCINATION_INDICATOR="show_vaccination_indicator";
-    public static final String SHOW_NON_VACCINATION_INDICATOR="show_non_vaccination_indicator";
+    public static final String DELAY_VALUE = "delay_value";
+    public static final String DELAY_VALUE_CONFIRM_BELOW = "delay_value_confirm";
+    public static final String CONFIRM_SCREEN_BELOW = "confirm_screen";
+    public static final String CONFIRM_SCREEN_ABOVE = "confirm_screen_above";
+    public static final String SHOW_VACCINATION_INDICATOR = "show_vaccination_indicator";
+    public static final String SHOW_NON_VACCINATION_INDICATOR = "show_non_vaccination_indicator";
     public static final String DELAY_VALUE_CONFIRM_ABOVE = "delay_value_confirm_above";
     public static final String Confirm_title_below = "Confirm_title_below";
     public static final String Confirm_subtitle_below = "Confirm_subtitle_below";
@@ -142,19 +142,19 @@ public class GlobalParameters {
     public static final String MASK_VALUE = "mask_value";
     public static final String FACE_SCORE = "face_score";
     public static final String ANONYMOUS_ENABLE = "anonymous_enable";
-    public static final String HOME_TEXT_ONLY ="home_text_only";
-    public static final String HOME_TEXT_ONLY_MESSAGE ="home_text_only_message";
-    public static final String HOME_DISPLAY_TIME ="home_display_time";
-    public static final String HOME_TEXT_ONLY_IS_ENABLE ="home_text_only_is_enable";
-    public static final String HOME_TEXT_IS_ENABLE ="home_display_is_enable";
+    public static final String HOME_TEXT_ONLY = "home_text_only";
+    public static final String HOME_TEXT_ONLY_MESSAGE = "home_text_only_message";
+    public static final String HOME_DISPLAY_TIME = "home_display_time";
+    public static final String HOME_TEXT_ONLY_IS_ENABLE = "home_text_only_is_enable";
+    public static final String HOME_TEXT_IS_ENABLE = "home_display_is_enable";
     public static final String Firebase_Command = "firebase_command";
     public static final String Firebase_Value = "firebase_value";
     public static final String COMPENSATION = "compensation";
     public static final String Firebase_Token = "firebase_token";
     public static final String Generate_Token_Command = "generate_token_command";
-    public static final String SYNC_ONLINE_MEMBERS ="sync_online_members";
-    public static final String Internet_Indicator ="internet_indicator";
-    public static final String Admin_InstitutionID ="Admin_InstitutionID";
+    public static final String SYNC_ONLINE_MEMBERS = "sync_online_members";
+    public static final String Internet_Indicator = "internet_indicator";
+    public static final String Admin_InstitutionID = "Admin_InstitutionID";
     public static final String Temp_ACCESS_TOKEN = "Temp_access_token";
     public static final String QR_BUTTON_TEXT = "QR_button_text";
     public static final String QR_SKIP_BUTTON_ENABLE_DISABLE = "QR_skip_button_enable";
@@ -239,5 +239,8 @@ public class GlobalParameters {
     public static final String OFFLINE_QR_CODE = "OfflineQrCode";
     public static final String ENABLE_VENDOR_QR = "enableVendorQR";
     public static final String CAPTURE_LOW_TEMP_IMAGES = "CaptureLowTempImages";
+    public static final String ENABLE_VISITOR_QR = "enableVisitorQR";
+    public static final String ENABLE_VISITOR_MODE_MANUAL = "VisitorModemanual";
+    public static final String ENABLE_VISITOR_MODE_CHECK_OUT = "VisitorModeCheckOut";
 
 }

@@ -780,5 +780,10 @@
     <string name="enable_offline_qrcode">Enable Offline QR Code</string>
     <string name="enable_vendor_qrcode">Enable Vendor QR Code</string>
     <string name="capture_low_threshold_images">Capture images of Users for Low Temperature</string>
-
+    <string name="enable_visitor_qrcode">Enable Visitor QR Code</string>
+    <string name="enable_visitor_mode">Visitor Mode</string>
+    <string name="enable_visitor_check_out">Enable Check-out</string>
+<!--
+    <string name="enable_vendor_qrcode">Enable Vendor QR Code</string>
+-->
 </resources>
