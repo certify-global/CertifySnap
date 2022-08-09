@@ -5181,25 +5181,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
-    private void isAlreadyCheckEdOut() {
-        if (AccessCardController.getInstance().getCheckInResponseCode() == AccessCardController.AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue())
-            Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.please_try_again), Toast.LENGTH_LONG).show();
-        else if (ApplicationController.getInstance().getTimeAttendance() == 1)
-            Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_in), Toast.LENGTH_LONG).show();
-        else if (ApplicationController.getInstance().getTimeAttendance() == 2)
-            Toast.makeText(IrCameraActivity.this, getResources().getString(R.string.already_check_out), Toast.LENGTH_LONG).show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isHomeViewEnabled) {
-                    pauseCameraScan();
-                } else {
-                    isReadyToScan = false;
-                }
-                resetHomeScreen();
-            }
-        }, 3000);
-    }
 
     private boolean validateCheckInCheckOut(RegisteredMembers matchedMember) {
         if (AccessCardController.getInstance().isCheckedIn(matchedMember)) {

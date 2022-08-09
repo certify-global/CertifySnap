@@ -164,23 +164,25 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             return;
         }
 
-        try {
-            if (reportInfo.isNull("responseCode")) {
-                onMemberIdErrorResponse(req);
-                return;
-            }
-            if (reportInfo.getString("responseCode").equals("1")) {
-                JSONArray memberList = reportInfo.getJSONArray("responseData");
-                if (memberList != null) {
-                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                    doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count++);
+            try {
+                if (reportInfo.isNull("responseCode")) {
+                    onMemberIdErrorResponse(req);
+                    return;
                 }
-            } else {
-                onMemberIdErrorResponse(req);
-            }
-        } catch (JSONException e) {
+                if (reportInfo.getString("responseCode").equals("1")) {
 
-        }
+                    JSONArray memberList = reportInfo.getJSONArray("responseData");
+                    if (memberList != null) {
+                        MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
+                        doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count++);
+                    }
+                } else {
+                    onMemberIdErrorResponse(req);
+                }
+            } catch (JSONException e) {
+                Logger.error(TAG, "onJSONObjectListenerMemberID ->" + e.getMessage());
+            }
+
     }
 
     private void doSendBroadcast(int actionCode, int memberCount, int count) {
