@@ -392,8 +392,8 @@ public class MemberSyncDataModel {
                                 deleteRecord(member.firstname, member.getPrimaryId());
                                 member.setMemberAccessed(isMemberAccessed);
                             }
-                            index = index + 1;
-                            member.setPrimaryId(index);
+                            //index = index + 1;
+                            member.setPrimaryId(index = index + 1);
                             Logger.debug(TAG, "setPrimaryIdAndAddToDb  -> member.setPrimaryId()= " + index);
                         }
                     }

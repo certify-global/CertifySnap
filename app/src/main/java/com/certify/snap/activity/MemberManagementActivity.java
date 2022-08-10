@@ -258,7 +258,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         activeMemberCount = totalMemberCount = 0;
                         mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
                         MemberSyncDataModel.getInstance().setSyncing(true);
-                        Util.getmemberList(this, this);
+                        Util.getmemberList(this, this, false);
                     }
                 }
 

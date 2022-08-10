@@ -20,6 +20,7 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.StringConstants;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.ApplicationController;
 import com.certify.snap.model.MemberSyncDataModel;
@@ -90,7 +91,9 @@ public class FireBaseMessagingService extends FirebaseMessagingService implement
                 if (sharedPreferences != null && (AppSettings.isFacialDetect()
                         || AppSettings.isRfidEnabled())) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        startService(new Intent(this, MemberSyncService.class));
+                        Intent memberService = new Intent(this, MemberSyncService.class);
+                        memberService.putExtra(StringConstants.IS_ALL_SYNC,true);
+                        startService(memberService);
                         Application.StartService(this);
                     }
                 }

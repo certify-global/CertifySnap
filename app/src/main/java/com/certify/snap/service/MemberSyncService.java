@@ -26,6 +26,7 @@ import com.certify.snap.common.ContextUtils;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.GlobalParameters;
 import com.certify.snap.common.Logger;
+import com.certify.snap.common.StringConstants;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.model.MemberSyncDataModel;
@@ -70,6 +71,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             if (!MemberSyncDataModel.getInstance().isSyncing()) {
+                boolean isAllSync = intent.getBooleanExtra(StringConstants.IS_ALL_SYNC, false);
                 sharedPreferences = Util.getSharedPreferences(getApplicationContext());
                 //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
                 restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, MemberSyncService.class), PendingIntent.FLAG_ONE_SHOT);
@@ -87,7 +89,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 MemberSyncDataModel.getInstance().init(getApplicationContext());
                 AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
                 taskExecutorService = executorService.getExecutorService();
-                Util.getmemberList(this, getApplicationContext());
+                Util.getmemberList(this, getApplicationContext(), isAllSync);
             }
         } catch (Exception e) {
             Logger.error(TAG + "onStartCommand(Intent intent, int flags, int startId)", e.getMessage());
@@ -164,24 +166,24 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
             return;
         }
 
-            try {
-                if (reportInfo.isNull("responseCode")) {
-                    onMemberIdErrorResponse(req);
-                    return;
-                }
-                if (reportInfo.getString("responseCode").equals("1")) {
-
-                    JSONArray memberList = reportInfo.getJSONArray("responseData");
-                    if (memberList != null) {
-                        MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
-                        doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count++);
-                    }
-                } else {
-                    onMemberIdErrorResponse(req);
-                }
-            } catch (JSONException e) {
-                Logger.error(TAG, "onJSONObjectListenerMemberID ->" + e.getMessage());
+        try {
+            if (reportInfo.isNull("responseCode")) {
+                onMemberIdErrorResponse(req);
+                return;
             }
+            if (reportInfo.getString("responseCode").equals("1")) {
+
+                JSONArray memberList = reportInfo.getJSONArray("responseData");
+                if (memberList != null) {
+                    MemberSyncDataModel.getInstance().createMemberDataAndAdd(memberList);
+                    doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count++);
+                }
+            } else {
+                onMemberIdErrorResponse(req);
+            }
+        } catch (JSONException e) {
+            Logger.error(TAG, "onJSONObjectListenerMemberID ->" + e.getMessage());
+        }
 
     }
 
