@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 
 import com.google.gson.annotations.SerializedName;
 
-@Entity(indices={@Index(value="primaryId", unique=true)})
+@Entity(indices = {@Index(value = "primaryId", unique = true)})
 public class IdentificationSettings {
 
     @PrimaryKey
@@ -76,4 +76,15 @@ public class IdentificationSettings {
     @Ignore
     @SerializedName("enableVendorQR")
     public String enableVendorQR = "0";
+
+    @SerializedName("enableVisitorQR")
+    public String enableVisitorQR = "0";
+
+    @Ignore
+    @SerializedName("visitorMode")
+    public String visitorMode = "1"; // one is auto
+
+    @Ignore
+    @SerializedName("enableVisitorCheckout")
+    public String enableVisitorCheckout = "0";
 }

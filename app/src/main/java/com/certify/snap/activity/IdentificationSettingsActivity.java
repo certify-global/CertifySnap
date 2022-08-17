@@ -581,6 +581,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             } else {
                 visitorQrNo.setChecked(true);
                 llVisitorMode.setVisibility(View.GONE);
+                llVisitorCheckOut.setVisibility(View.GONE);
             }
             if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, false)) {
                 visitorQrManual.setChecked(true);
@@ -588,6 +589,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             } else {
                 visitorModeAuto.setChecked(true);
                 llVisitorCheckOut.setVisibility(View.GONE);
+
             }
             if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_CHECK_OUT, false))
                 visitorCheckYes.setChecked(true);
@@ -598,9 +600,14 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                     if (checkedId == R.id.visitor_qr_rb_yes) {
                         Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_QR, true);
                         llVisitorMode.setVisibility(View.VISIBLE);
+                        if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, false))
+                            llVisitorCheckOut.setVisibility(View.VISIBLE);
+                        else llVisitorCheckOut.setVisibility(View.GONE);
+
                     } else {
                         Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_QR, false);
                         llVisitorMode.setVisibility(View.GONE);
+                        llVisitorCheckOut.setVisibility(View.GONE);
                     }
                 }
             });

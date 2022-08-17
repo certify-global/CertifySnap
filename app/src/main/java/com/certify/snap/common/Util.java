@@ -1426,6 +1426,9 @@ public class Util {
                         Util.writeBoolean(sharedPreferences, GlobalParameters.FACE_QR_CODE, identificationSettings.enableFaceIdentification.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.OFFLINE_QR_CODE, identificationSettings.enableOfflineQRCode.equals("1"));
                         Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_VENDOR_QR, identificationSettings.enableVendorQR.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_VISITOR_QR, identificationSettings.enableVisitorQR.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, identificationSettings.visitorMode.equals("0"));// MODE_MANUA is 0
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.ENABLE_VISITOR_MODE_CHECK_OUT, identificationSettings.enableVisitorCheckout.equals("1"));
                     }
 
                     //AccessControl Settings
