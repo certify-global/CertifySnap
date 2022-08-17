@@ -36,10 +36,10 @@ public class Requestor {
         String[] endPoint = urlStr.split(".me/");
         SharedPreferences sp = Util.getSharedPreferences(context);
         try {
-            if (EndPoints.deployment == EndPoints.Mode.Demo)
+            if (EndPoints.deployment == EndPoints.Mode.Demo) {
                 Logger.debug("urlStr", urlStr);
-            Logger.debug("urlSreq", reqPing.toString());
-
+                Logger.debug("urlSreq", reqPing.toString());
+            }
             URL url = new URL(urlStr);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

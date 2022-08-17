@@ -121,7 +121,6 @@ android.applicationVariants.all { variant ->
         output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
-
 def room_version="2.2.5"
 dependencies {
 

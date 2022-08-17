@@ -31,12 +31,14 @@ import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.model.MemberSyncDataModel;
 import com.certify.snap.service.HIDService;
 import com.google.android.material.textfield.TextInputLayout;
+
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -256,7 +258,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         activeMemberCount = totalMemberCount = 0;
                         mloadingprogress = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.loading), getString(R.string.loading_wait));
                         MemberSyncDataModel.getInstance().setSyncing(true);
-                        Util.getmemberList(this, this);
+                        Util.getmemberList(this, this, false);
                     }
                 }
 
@@ -294,15 +296,16 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     private void initData(final boolean isNeedInit) {
         try {
             Observable.create(new ObservableOnSubscribe<List<RegisteredMembers>>() {
-                @Override
-                public void subscribe(ObservableEmitter<List<RegisteredMembers>> emitter) throws Exception {
-                    List<RegisteredMembers> membersList = DatabaseController.getInstance().findAll();
-                    emitter.onNext(membersList);
-                }
-            }).subscribeOn(Schedulers.computation())
+                        @Override
+                        public void subscribe(ObservableEmitter<List<RegisteredMembers>> emitter) throws Exception {
+                            List<RegisteredMembers> membersList = DatabaseController.getInstance().findAll();
+                            emitter.onNext(membersList);
+                        }
+                    }).subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<List<RegisteredMembers>>() {
                         Disposable disposable;
+
                         @Override
                         public void onSubscribe(Disposable d) {
                             disposable = d;
@@ -436,7 +439,23 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 }
             });
             //mtimetext.setText(member.getExpire_time());
+            mmemberid.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (s.length() > 1)
+                        text_input_member_id.setError(null);
+                }
+            });
             mfaceimg = view.findViewById(R.id.dialog_faceimg);
             Bitmap bitmap = BitmapFactory.decodeFile(member.getImage());
             if (bitmap != null) {
@@ -760,7 +779,23 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         musephoto = view.findViewById(R.id.popup_use_photo);
         mtakephoto = view.findViewById(R.id.popup_take_photo);
         popupEnrollBtn = view.findViewById(R.id.popup_btn_enroll);
+        mmemberid.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 1)
+                    text_input_member_id.setError(null);
+            }
+        });
 /*        mregisterfaceimg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -796,6 +831,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         popupEnrollBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Util.hideSoftKeyboard(MemberManagementActivity.this);
                 Toast.makeText(getApplicationContext(), getString(R.string.scan_card_msg), Toast.LENGTH_LONG).show();
             }
         });
@@ -817,6 +853,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
 
                 Log.e("info---", firstnamestr + "-" + lastnamestr + "-" + mobilestr + "-" + memberidstr + "-" + emailstr + accessstr + "-" + uniquestr);
                 if (!TextUtils.isEmpty(memberidstr)) {
+                    text_input_member_id.setError(null);
                     if (DatabaseController.getInstance().isMemberIdExist(memberidstr)) {
                         Toast.makeText(MemberManagementActivity.this, getString(R.string.toast_manage_member_exist), Toast.LENGTH_SHORT).show();
                         return;
@@ -825,7 +862,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         Toast.makeText(MemberManagementActivity.this, getString(R.string.toast_manage_access_exist), Toast.LENGTH_SHORT).show();
                         return;
                     }
-
+                    text_input_access_id.setError(null);
                     mprogressDialog = ProgressDialog.show(MemberManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
 //                        if(isValidDate(timestr,"yyyy-MM-dd HH:mm:ss")) {
 //                            mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));

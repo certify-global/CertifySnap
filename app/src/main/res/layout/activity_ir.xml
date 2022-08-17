@@ -69,18 +69,26 @@
 
             <ImageView
                 android:id="@+id/certify_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="120dp"
-                android:background="@drawable/final_logo"
+                android:src="@drawable/final_logo"
                 android:scaleType="fitCenter" />
-
+            <TextView
+                android:id="@+id/tv_manual_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:gravity="center"
+                android:textColor="@color/colorBlack"
+                android:textSize="30sp"
+                android:textStyle="bold" />
             <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="120dp"
+                android:layout_marginTop="60dp"
                 android:gravity="center"
                 android:text="04:26 PM"
                 android:textColor="@color/colorBlack"
@@ -114,7 +122,6 @@
 
             <Button
                 android:id="@+id/btn_check_out"
-                android:layout_below="@id/btn_check_in"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginRight="40dp"

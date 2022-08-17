@@ -75,17 +75,18 @@
         android:layout_marginLeft="22dp"
         android:layout_marginRight="20dp">
     </TextView>
-        <EditText
-            android:id="@+id/edittext_login"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/edittextbackground"
-            android:inputType="numberPassword"
-            android:paddingLeft="@dimen/size_05"
-            android:layout_below="@+id/textview_name"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="20dp"/>
+
+    <EditText
+        android:id="@+id/edittext_login"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/textview_name"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edittextbackground"
+        android:inputType="numberPassword"
+        android:paddingLeft="@dimen/size_05" />
     <TextView
         android:id="@+id/text_input_login"
         android:layout_width="match_parent"

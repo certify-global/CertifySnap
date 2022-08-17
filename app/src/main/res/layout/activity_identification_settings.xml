@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:fadeScrollbars="true"
     android:scrollbars="vertical">
+
     <LinearLayout
         android:id="@+id/parent_view_layout"
         android:layout_width="match_parent"
@@ -238,13 +239,159 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/visitor_qr_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/visitor_title_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/enable_visitor_qrcode"
+                android:textColor="@color/black"
+                android:textSize="@dimen/size_20" />
+
+            <RadioGroup
+                android:id="@+id/visitor_qr_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_10"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/visitor_qr_rb_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_30"
+                    android:checked="false"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/visitor_qr_rb_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/visitor_mode_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/visitor_mode_title_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/enable_visitor_mode"
+                android:textColor="@color/black"
+                android:textSize="@dimen/size_20" />
+
+            <RadioGroup
+                android:id="@+id/visitor_mode_qr_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_10"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/visitor_mode_qr_rb_auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_30"
+                    android:checked="false"
+                    android:text="@string/auto_mode"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/visitor_mode_qr_rb_manual_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manual_mode"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/visitor_check_out_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/visitor_check_out_title_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/enable_visitor_check_out"
+                android:textColor="@color/black"
+                android:textSize="@dimen/size_20" />
+
+            <RadioGroup
+                android:id="@+id/visitor_check_out_qr_rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_10"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/visitor_check_out_qr_rb_yes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_30"
+                    android:checked="false"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+                <RadioButton
+                    android:id="@+id/visitor_check_out_qr_rb_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
+
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/qr_skip_button_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:paddingTop="10dp">
+            android:paddingTop="10dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/qr_skip_button_enable_text"
@@ -378,6 +525,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/tv_acknowledge"
                 android:layout_width="match_parent"
@@ -454,50 +602,50 @@
             android:layout_marginTop="@dimen/size_05"
             android:orientation="horizontal">
 
-                <RadioButton
-                    android:id="@+id/face_id_rb_primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/face_or_rfid"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_14"
-                    android:theme="@style/MyCheckBox" />
+            <RadioButton
+                android:id="@+id/face_id_rb_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/face_or_rfid"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
 
-                <RadioButton
-                    android:id="@+id/qr_code_rfid_rb_primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/qr_code_or_rfid"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_14"
-                    android:theme="@style/MyCheckBox" />
+            <RadioButton
+                android:id="@+id/qr_code_rfid_rb_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/qr_code_or_rfid"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
 
-                <RadioButton
-                    android:id="@+id/face_rb_primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/face"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_14"
-                    android:theme="@style/MyCheckBox" />
+            <RadioButton
+                android:id="@+id/face_rb_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/face"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
 
-                <RadioButton
-                    android:id="@+id/rfid_rb_primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rfid"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_14"
-                    android:theme="@style/MyCheckBox" />
+            <RadioButton
+                android:id="@+id/rfid_rb_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rfid"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
 
-                <RadioButton
-                    android:id="@+id/qrcode_rb_primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/qr_code"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size_14"
-                    android:theme="@style/MyCheckBox" />
+            <RadioButton
+                android:id="@+id/qrcode_rb_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/qr_code"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14"
+                android:theme="@style/MyCheckBox" />
 
             <RadioButton
                 android:id="@+id/none_primary"
@@ -579,10 +727,10 @@
             android:id="@+id/tv_scan_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/scan_mode"
-            android:textColor="@color/black"
             android:layout_marginStart="@dimen/size_10"
             android:layout_marginTop="@dimen/text_size_10"
+            android:text="@string/scan_mode"
+            android:textColor="@color/black"
             android:textSize="@dimen/size_20" />
 
         <RadioGroup
@@ -642,41 +790,41 @@
             android:paddingTop="10dp">
 
             <TextView
-            android:id="@+id/tv_display"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/display"
-            android:textColor="@color/black"
-            android:textSize="@dimen/size_20" />
+                android:id="@+id/tv_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/display"
+                android:textColor="@color/black"
+                android:textSize="@dimen/size_20" />
 
             <RadioGroup
-            android:id="@+id/radio_group_display"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/size_20"
-            android:layout_marginTop="@dimen/size_05"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radio_yes_display"
-                android:layout_width="wrap_content"
+                android:id="@+id/radio_group_display"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/size_30"
-                android:text="@string/living_type_1"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_14"
-                android:theme="@style/MyCheckBox" />
+                android:layout_marginLeft="@dimen/size_20"
+                android:layout_marginTop="@dimen/size_05"
+                android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/radio_no_display"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/living_type_0"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_14"
-                android:theme="@style/MyCheckBox" />
+                <RadioButton
+                    android:id="@+id/radio_yes_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/size_30"
+                    android:text="@string/living_type_1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
 
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/radio_no_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/living_type_0"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_14"
+                    android:theme="@style/MyCheckBox" />
+
+            </RadioGroup>
         </LinearLayout>
     </LinearLayout>
 

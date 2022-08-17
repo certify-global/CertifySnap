@@ -22,6 +22,7 @@ import com.certify.snap.api.response.IdentificationSettings;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Constants;
 import com.certify.snap.common.GlobalParameters;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
@@ -38,20 +39,20 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private RadioButton rfidYesRb;
     private RadioButton rfidNoRb;
     EditText editTextDialogTimeout;
-    RadioGroup radio_group_primary,radio_group_display, radio_group_anonymous, secIdentityRg;
+    RadioGroup radio_group_primary, radio_group_display, radio_group_anonymous, secIdentityRg;
     RadioButton rAnonymousYesRb;
     RadioButton rAnonymousNoRb;
-    RadioButton rbguideyes,radio_yes_display,radio_no_display;
+    RadioButton rbguideyes, radio_yes_display, radio_no_display;
     RadioButton rbguideno;
     RadioButton rbFaceRfidPrimary, rbQrCodeRfidPrimary, rbFacePrimary, rbQrCodePrimary, rbRfidPrimary, rbNonePrimary;
     RadioButton rbQrCodeRfidSecondary, rbFaceSecondary, rbQrCodeSecondary, rbRfidSecondary, rbNoneSecondary;
-    EditText editTextDialogUserInput, editTextQRButton,editTextAcknowledge;
+    EditText editTextDialogUserInput, editTextQRButton, editTextAcknowledge;
     TextView tv_display;
-    TextView mAnonymousTv, qr_skip_button_enable_text,tv_acknowledge;
-    TextInputLayout text_input_timeout, text_input_qr_button,text_input_acknowledge;
+    TextView mAnonymousTv, qr_skip_button_enable_text, tv_acknowledge;
+    TextInputLayout text_input_timeout, text_input_qr_button, text_input_acknowledge;
     private LinearLayout anonymous_qr_bar_code_layout, display_image_layout;
     private TextView scanMode;
-    private RadioGroup scanModeRg,radio_group_acknowledge;
+    private RadioGroup scanModeRg, radio_group_acknowledge;
     private RadioButton scanModeRbEasy;
     private RadioButton scanModeRbFirm;
     private RadioButton radio_no_acknowledge;
@@ -119,10 +120,10 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             scanModeRg = findViewById(R.id.radio_group_scan_mode);
             scanModeRbEasy = findViewById(R.id.radio_scanmode_easy);
             scanModeRbFirm = findViewById(R.id.radio_scanmode_strict);
-            tv_acknowledge =findViewById(R.id.tv_acknowledge);
-            radio_yes_acknowledge =findViewById(R.id.radio_yes_acknowledge);
-            radio_no_acknowledge =findViewById(R.id.radio_no_acknowledge);
-            radio_group_acknowledge =findViewById(R.id.radio_group_acknowledge);
+            tv_acknowledge = findViewById(R.id.tv_acknowledge);
+            radio_yes_acknowledge = findViewById(R.id.radio_yes_acknowledge);
+            radio_no_acknowledge = findViewById(R.id.radio_no_acknowledge);
+            radio_group_acknowledge = findViewById(R.id.radio_group_acknowledge);
             acknowledgmentLayout = findViewById(R.id.acknowledgement_layout);
             mAnonymousTv.setTypeface(rubiklight);
             tv_facial.setTypeface(rubiklight);
@@ -169,7 +170,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             setSecondaryIdentifierListener();
             setOfflineQrCodeListener();
             setVendorQrCodeListener();
-
+            visitorValidations();
             if (sp.getBoolean(GlobalParameters.DISPLAY_IMAGE_CONFIRMATION, false)) {
                 radio_yes_display.setChecked(true);
             } else {
@@ -293,7 +294,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
     private void saveScanModeSetting() {
         if (scanModeRbEasy.isChecked()) {
             Util.writeInt(sp, GlobalParameters.ScanMode, 1);
-        } else if(scanModeRbFirm.isChecked()) {
+        } else if (scanModeRbFirm.isChecked()) {
             Util.writeInt(sp, GlobalParameters.ScanMode, 2);
         }
     }
@@ -317,14 +318,14 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try {
-                if (charSequence.toString().isEmpty()) {
-                    text_input_timeout.setError("");
-                    return;
-                }
-                if (Integer.parseInt(charSequence.toString()) < 5) {
-                    text_input_timeout.setError(getResources().getString(R.string.screen_timeout_msg));
-                }
-                } catch(NumberFormatException ex){
+                    if (charSequence.toString().isEmpty()) {
+                        text_input_timeout.setError("");
+                        return;
+                    }
+                    if (Integer.parseInt(charSequence.toString()) < 5) {
+                        text_input_timeout.setError(getResources().getString(R.string.screen_timeout_msg));
+                    }
+                } catch (NumberFormatException ex) {
                     Log.d(TAG, ex.getMessage());
                 }
             }
@@ -365,7 +366,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
         });
     }
 
-    private void proIdentificationSettings(){
+    private void proIdentificationSettings() {
         if (Util.isDeviceProModel()) {
             if (AppSettings.isProSettings()) {
                 Log.d(TAG, "proSettings: true");
@@ -376,7 +377,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
                 text_input_timeout.setVisibility(View.VISIBLE);
             }
-        }else {
+        } else {
             anonymous_qr_bar_code_layout.setVisibility(View.VISIBLE);
             text_input_timeout.setVisibility(View.VISIBLE);
         }
@@ -559,5 +560,76 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
         }
 
         vendorQrCodeRg.setOnCheckedChangeListener((group, checkedId) -> Util.writeBoolean(sp, GlobalParameters.ENABLE_VENDOR_QR, checkedId == R.id.vendor_qr_rb_yes));
+    }
+
+    private void visitorValidations() {
+        try {
+            RadioGroup rgVisitor = findViewById(R.id.visitor_qr_rg);
+            LinearLayout llVisitorMode = findViewById(R.id.visitor_mode_layout);
+            LinearLayout llVisitorCheckOut = findViewById(R.id.visitor_check_out_layout);
+            RadioGroup rgVisitorMode = findViewById(R.id.visitor_mode_qr_rg);
+            RadioGroup rgVisitorCheck = findViewById(R.id.visitor_check_out_qr_rg);
+            RadioButton visitorQrYes = findViewById(R.id.visitor_qr_rb_yes);
+            RadioButton visitorQrNo = findViewById(R.id.visitor_qr_rb_no);
+            RadioButton visitorModeAuto = findViewById(R.id.visitor_mode_qr_rb_auto);
+            RadioButton visitorQrManual = findViewById(R.id.visitor_mode_qr_rb_manual_mode);
+            RadioButton visitorCheckYes = findViewById(R.id.visitor_check_out_qr_rb_yes);
+            RadioButton visitorCheckNo = findViewById(R.id.visitor_check_out_qr_rb_no);
+            if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_QR, false)) {
+                visitorQrYes.setChecked(true);
+                llVisitorMode.setVisibility(View.VISIBLE);
+            } else {
+                visitorQrNo.setChecked(true);
+                llVisitorMode.setVisibility(View.GONE);
+            }
+            if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, false)) {
+                visitorQrManual.setChecked(true);
+                llVisitorCheckOut.setVisibility(View.VISIBLE);
+            } else {
+                visitorModeAuto.setChecked(true);
+                llVisitorCheckOut.setVisibility(View.GONE);
+            }
+            if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_CHECK_OUT, false))
+                visitorCheckYes.setChecked(true);
+            else visitorCheckNo.setChecked(true);
+            rgVisitor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.visitor_qr_rb_yes) {
+                        Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_QR, true);
+                        llVisitorMode.setVisibility(View.VISIBLE);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_QR, false);
+                        llVisitorMode.setVisibility(View.GONE);
+                    }
+                }
+            });
+            rgVisitorMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.visitor_mode_qr_rb_manual_mode) {
+                        Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, true);
+                        llVisitorCheckOut.setVisibility(View.VISIBLE);
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, false);
+                        llVisitorCheckOut.setVisibility(View.GONE);
+                    }
+                }
+            });
+            rgVisitorCheck.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (checkedId == R.id.visitor_check_out_qr_rb_yes) {
+                        Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_MODE_CHECK_OUT, true);
+
+                    } else {
+                        Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_MODE_CHECK_OUT, false);
+
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Logger.error(TAG, e.getMessage());
+        }
     }
 }

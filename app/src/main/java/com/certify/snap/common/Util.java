@@ -1340,7 +1340,7 @@ public class Util {
                         Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_NORMAL, scanViewSettings.temperatureNormal);
                         Util.writeString(sharedPreferences, GlobalParameters.RESULT_BAR_HIGH, scanViewSettings.temperatureHigh);
                         Util.writeBoolean(sharedPreferences, GlobalParameters.RETRY_SCAN, scanViewSettings.retryOptionFaceScan.equals("1"));
-                        Util.writeBoolean(sharedPreferences,GlobalParameters.CAPTURE_LOW_TEMP_IMAGES,scanViewSettings.captureUserImageForLowTemperature.equals("1"));
+                        Util.writeBoolean(sharedPreferences, GlobalParameters.CAPTURE_LOW_TEMP_IMAGES, scanViewSettings.captureUserImageForLowTemperature.equals("1"));
                         if (scanViewSettings.audioForNormalTemperature != null && !scanViewSettings.audioForNormalTemperature.isEmpty()) {
                             SoundController.getInstance().saveAudioFile(scanViewSettings.audioForNormalTemperature, "Normal.mp3");
                         } else {
@@ -1793,7 +1793,7 @@ public class Util {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public static void getmemberList(MemberListCallback callback, Context context) {
+    public static void getmemberList(MemberListCallback callback, Context context, boolean isAllSync) {
         try {
             SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
 
@@ -1803,7 +1803,7 @@ public class Util {
             } else {
                 obj.put("groupId", "0");
             }
-            if (sharedPreferences.getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true)) {
+            if (sharedPreferences.getBoolean(GlobalParameters.MEMBER_DELTA_SYNC_ENABLED, true) && !isAllSync) {
                 RegisteredMembers registeredMember = DatabaseController.getInstance().getLastMemberSyncDateTime();
                 if (registeredMember != null) {
                     obj.put("fromDate", registeredMember.dateTime);
