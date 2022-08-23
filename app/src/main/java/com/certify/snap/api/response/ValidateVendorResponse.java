@@ -2,7 +2,7 @@ package com.certify.snap.api.response;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ApiResponse {
+public class ValidateVendorResponse {
 
     @SerializedName("responseCode")
     public int responseCode;
@@ -14,6 +14,6 @@ public class ApiResponse {
     public String responseMessage;
 
     @SerializedName("responseData")
-    public String responseData;
+    public VendorResponseData VendorResponseData;
 
 }

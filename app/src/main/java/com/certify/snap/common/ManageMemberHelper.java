@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+
 import android.util.Log;
 
 import com.arcsoft.imageutil.ArcSoftImageFormat;
@@ -33,6 +34,7 @@ public class ManageMemberHelper {
     private SnapService snapService;
     private Map<String, String> headers;
     private static String ROOT_PATH_STRING = "";
+
     public ManageMemberHelper() {
     }
 
@@ -103,6 +105,7 @@ public class ManageMemberHelper {
                 bitmap.getHeight(), name, id);
         return success;
     }
+
     private static boolean registerDatabase(MemberResponse member) {
         try {
             String username = member.firstName + "-" + member.id;
@@ -124,8 +127,8 @@ public class ManageMemberHelper {
             registeredMembers.setFeatures(feature);
 //            boolean result = registeredMembers.save();
             return true;
-        }catch (Exception e){
-            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {",e.getMessage());
+        } catch (Exception e) {
+            Logger.debug("boolean registerDatabase(String firstname, String lastname, String mobile, String id, String email, String accessid, String uniqueid) {", e.getMessage());
         }
         return false;
     }
@@ -135,8 +138,7 @@ public class ManageMemberHelper {
         File imageFile = new File(imgpath);
         if (processImg(member.firstName + "-" + member.id, imgpath, String.valueOf(member.id)) || !imageFile.exists()) {
             if (registerDatabase(member)) {
-
-                    File file = new File(imgpath);
+                File file = new File(imgpath);
                 if (file.exists()) {
                     file.delete();
 //                    registerpath = "";
@@ -148,6 +150,7 @@ public class ManageMemberHelper {
             Log.e("tag", "fail to process bitmap");
         }
     }
+
     private static boolean isCertifyIdExist(String uniqueID) {
 //        List<RegisteredMembers> membersList = LitePal.where("uniqueid = ?", uniqueID).find(RegisteredMembers.class);
         List<RegisteredMembers> membersList = DatabaseController.getInstance().isUniqueIdExist(uniqueID);
@@ -156,6 +159,7 @@ public class ManageMemberHelper {
         }
         return false;
     }
+
     public static boolean deleteDatabaseCertifyId(String name, String certifyId) {
         //List<RegisteredMembers> list = LitePal.where("uniqueid = ?", certifyId).find(RegisteredMembers.class);
         List<RegisteredMembers> list = DatabaseController.getInstance().isUniqueIdExist(certifyId);
@@ -185,33 +189,34 @@ public class ManageMemberHelper {
         }
         return false;
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public static void loadMembers(String accessToken, String serialNumber, String path){
-Log.v(LOG, "loadMembers");
+    public static void loadMembers(String accessToken, String serialNumber, String path) {
+        Log.v(LOG, "loadMembers");
         try {
             ROOT_PATH_STRING = path;
             ManageMemberHelper.GetMemberListResponse memberListResponse = new ManageMemberHelper(accessToken, serialNumber).getMemberList();
-            if(memberListResponse == null) memberListResponse = new ManageMemberHelper.GetMemberListResponse();
-            if(memberListResponse.responseCode != 1){
+            if (memberListResponse == null) memberListResponse = new ManageMemberHelper.GetMemberListResponse();
+            if (memberListResponse.responseCode != 1) {
                 Log.e(LOG, String.format("loadMembers failed: ", memberListResponse.responseSubCode, memberListResponse.responseMessage));
                 return;
             }
             List<ManageMemberHelper.MemberResponse> memberList = memberListResponse.responseData;
-            for(ManageMemberHelper.MemberResponse member : memberList){
+            for (ManageMemberHelper.MemberResponse member : memberList) {
                 String imagePath = getImagePath(member.faceTemplate);
-                Log.v(LOG, "loadMembers member: "+member);
+                Log.v(LOG, "loadMembers member: " + member);
                 if (member.status)
                     if (isCertifyIdExist(String.valueOf(member.id))) {
-                        deleteDatabaseCertifyId(member.firstName,String.valueOf(member.id));
+                        deleteDatabaseCertifyId(member.firstName, String.valueOf(member.id));
                         localRegister(member, imagePath, "sync");
                     } else {
-                        deleteDatabaseCertifyId(member.firstName,String.valueOf(member.id));
+                        deleteDatabaseCertifyId(member.firstName, String.valueOf(member.id));
                         localRegister(member, imagePath, "sync");
                     }
             }
 
         } catch (IOException e) {
-            Log.e(LOG, "loadMembers:"+e.getMessage());
+            Log.e(LOG, "loadMembers:" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -259,12 +264,15 @@ Log.v(LOG, "loadMembers");
                     '}';
         }
     }
-    public  class GetMemberByIdRequest{
+
+    public class GetMemberByIdRequest {
         public long id;
-        public GetMemberByIdRequest(long id){
+
+        public GetMemberByIdRequest(long id) {
             this.id = id;
         }
     }
+
     public static class GetMemberListResponse extends SnapResponse {
         public List<MemberResponse> responseData = new ArrayList<>();
     }

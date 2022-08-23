@@ -4,6 +4,8 @@ import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
 import com.certify.snap.common.Logger;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -58,6 +60,7 @@ public class RetrofitInstance {
                     .build();
             return chain.proceed(request);
         });
+        httpClient.connectTimeout(2, TimeUnit.MINUTES).writeTimeout(2, TimeUnit.MINUTES).readTimeout(2, TimeUnit.MINUTES);
         if (EndPoints.deployment == EndPoints.Mode.Demo) {
             HttpLoggingInterceptor logHttp = new HttpLoggingInterceptor();
             logHttp.setLevel(HttpLoggingInterceptor.Level.BODY);

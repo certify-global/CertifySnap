@@ -7,11 +7,13 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
+import com.arcsoft.imageutil.ArcSoftImageFormat;
+import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.certify.callback.GetLastCheckinTimeCallback;
 import com.certify.snap.api.ApiInterface;
 import com.certify.snap.api.RetrofitInstance;
 import com.certify.snap.api.request.VendorQRRequest;
-import com.certify.snap.api.response.ApiResponse;
+import com.certify.snap.api.response.ValidateVendorResponse;
 import com.certify.snap.async.AsyncGetLastCheckinTime;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.EndPoints;
@@ -20,6 +22,7 @@ import com.certify.snap.common.Logger;
 import com.certify.snap.common.UserExportedData;
 import com.certify.snap.common.Util;
 import com.certify.snap.faceserver.FaceServer;
+import com.certify.snap.model.QrCodeData;
 import com.certify.snap.model.QrCodeStore;
 import com.certify.snap.model.RegisteredMembers;
 import com.certify.snap.model.SmartHealthCardData;
@@ -78,6 +81,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
     private Context mContext = null;
     private static final int PASSID_QR_CODE_LENGTH = 32;
     private boolean isGlobalMember = false;
+    private boolean isVendor = false;
 
     public interface QrCodeListener {
         void onGetLastCheckInTime(boolean checkedIn);
@@ -188,6 +192,14 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         isGlobalMember = globalMember;
     }
 
+    public boolean isVendor() {
+        return isVendor;
+    }
+
+    public void setVendor(boolean vendor) {
+        isVendor = vendor;
+    }
+
     public void getLastCheckInTime(Context context, String certifyId) {
         SharedPreferences sharedPreferences = Util.getSharedPreferences(context);
         try {
@@ -258,6 +270,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         memberCheckedIn = false;
         resetQrCodeData(mContext);
         FaceServer.getInstance().deleteRegisteredFace();
+        isVendor = false;
         isGlobalMember = false;
     }
 
@@ -449,20 +462,40 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
         VendorQRRequest vendQR = new VendorQRRequest();
         vendQR.vendorGuid = guid;
         vendQR.deviceSNo = Util.getSerialNumber();
-        Call<ApiResponse> call = apiInterface.getValidateVendor(vendQR);
-        call.enqueue(new Callback<ApiResponse>() {
+        Call<ValidateVendorResponse> call = apiInterface.getValidateVendor(vendQR);
+        call.enqueue(new Callback<ValidateVendorResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+            public void onResponse(Call<ValidateVendorResponse> call, Response<ValidateVendorResponse> response) {
                 if (listener == null) return;
                 if (response.body() != null && response.body().responseCode == 1) {
                     listener.onVendorQRCodeScan(true);
+                    if (!response.body().VendorResponseData.vendorImage.isEmpty()) {
+                        QrCodeController.getInstance().setVendor(true);
+                        QrCodeData qrCodeData = new QrCodeData();
+                        qrCodeData.setUniqueId("");
+                        qrCodeData.setFirstName("VendorUser");
+                        qrCodeData.setLastName("");
+//                        qrCodeData.setTrqStatus(trqStatus);
+//                        qrCodeData.setMemberId(memberId);
+//                        qrCodeData.setAccessId(qrAccessid);
+//                        qrCodeData.setMemberTypeId(memberTypeId);
+//                        qrCodeData.setMemberTypeName(memberTypeName);
+                        qrCodeData.setFaceTemplate(response.body().VendorResponseData.vendorImage);
+                        if (!response.body().VendorResponseData.vendorImage.isEmpty()) {
+                            QrCodeController.getInstance().setGlobalMember(true);
+                            QrCodeController.getInstance().registerFace(response.body().VendorResponseData.vendorImage, "VendorUser");
+                        }
+                        CameraController.getInstance().setQrCodeData(qrCodeData);
+                        registerFace(response.body().VendorResponseData.vendorImage, "VendorUser BNR");
+                    }
+
                 } else {
                     listener.onVendorQRCodeScan(false);
                 }
             }
 
             @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
+            public void onFailure(Call<ValidateVendorResponse> call, Throwable t) {
                 listener.onVendorQRCodeScan(false);
                 Logger.error(TAG, t.toString());
             }
@@ -471,10 +504,19 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
     public void registerFace(String faceTemplate, String name) {
         try {
-            byte[] data = Base64.decode(faceTemplate, 0);
-            if (data != null) {
-                FaceServer.getInstance().registerFace(data, name);
+            byte[] decodedByte = Base64.decode(faceTemplate, 0);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+            bitmap = ArcSoftImageUtil.getAlignedBitmap(bitmap, true);
+            if (bitmap == null) {
+                Log.e("tag", "fail to translate bitmap");
+//            showResult(getString(R.string.toast_translateBitmapfail));
             }
+            byte[] bgr24 = ArcSoftImageUtil.createImageData(bitmap.getWidth(), bitmap.getHeight(), ArcSoftImageFormat.BGR24);
+            int transformCode = ArcSoftImageUtil.bitmapToImageData(bitmap, bgr24, ArcSoftImageFormat.BGR24);
+
+            // if (data != null) {
+            FaceServer.getInstance().registerFace(bgr24, bitmap.getWidth(), bitmap.getHeight(), name);
+            // }
         } catch (Exception e) {
             Log.e(TAG, "Error in decoding the face image");
         }

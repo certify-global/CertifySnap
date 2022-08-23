@@ -17,6 +17,7 @@ import com.arcsoft.imageutil.ArcSoftImageUtil;
 import com.arcsoft.imageutil.ArcSoftImageUtilError;
 import com.arcsoft.imageutil.ArcSoftRotateDegree;
 import com.certify.snap.arcface.model.FaceRegisterInfo;
+import com.certify.snap.common.Logger;
 import com.certify.snap.common.Util;
 
 import java.io.File;
@@ -306,7 +307,7 @@ public class FaceServer {
     public boolean registerBgr24(Context context, byte[] bgr24, int width, int height, String name) {
         synchronized (this) {
             if (faceEngine == null || context == null || bgr24 == null || width % 4 != 0 || bgr24.length != width * height * 3) {
-                Log.e(TAG, "registerBgr24:  invalid params"+(faceEngine == null));
+                Log.e(TAG, "registerBgr24:  invalid params" + (faceEngine == null));
                 return false;
             }
 
@@ -350,22 +351,22 @@ public class FaceServer {
                         cropRect.bottom &= ~3;
 
                         //保存前删除已经存在的图片与特征数据
-                        String id = userName.substring(userName.indexOf("-")+1);
-                        Log.e("tag","id---"+id);
+                        String id = userName.substring(userName.indexOf("-") + 1);
+                        Log.e("tag", "id---" + id);
                         File[] files = imgDir.listFiles();
-                        for (File file:files){
-                            if(file.getName().contains(id)){
+                        for (File file : files) {
+                            if (file.getName().contains(id)) {
                                 if (file.delete()) {
-                                    Log.e("tag","delete exist image");
+                                    Log.e("tag", "delete exist image");
                                 }
                                 break;
                             }
                         }
                         File[] featureFiles = featureDir.listFiles();
-                        for(File file:featureFiles){
-                            if(file.getName().contains(id)){
-                                if(file.delete()){
-                                    Log.e("tag","delete exist feature");
+                        for (File file : featureFiles) {
+                            if (file.getName().contains(id)) {
+                                if (file.delete()) {
+                                    Log.e("tag", "delete exist feature");
                                 }
                                 break;
                             }
@@ -393,9 +394,9 @@ public class FaceServer {
                         //添加人脸信息时把已存在的人脸对象删除
                         FaceRegisterInfo faceRegisterInfo;
                         ListIterator iterator = faceRegisterInfoList.listIterator();
-                        while (iterator.hasNext()){
+                        while (iterator.hasNext()) {
                             faceRegisterInfo = (FaceRegisterInfo) iterator.next();
-                            if(faceRegisterInfo.getName().contains(id)){
+                            if (faceRegisterInfo.getName().contains(id)) {
                                 iterator.remove();
                                 break;
                             }
@@ -428,10 +429,10 @@ public class FaceServer {
      * @param name    保存的名字，若为空则使用时间戳
      * @return 是否注册成功
      */
-    public boolean registerBgr24(Context context, byte[] bgr24, int width, int height, String name,String id) {
+    public boolean registerBgr24(Context context, byte[] bgr24, int width, int height, String name, String id) {
         synchronized (this) {
             if (faceEngine == null || context == null || bgr24 == null || width % 4 != 0 || bgr24.length != width * height * 3) {
-                Log.e(TAG, "registerBgr24:  invalid params"+(faceEngine == null));
+                Log.e(TAG, "registerBgr24:  invalid params" + (faceEngine == null));
                 return false;
             }
 
@@ -476,21 +477,21 @@ public class FaceServer {
 
                         //保存前删除已经存在的图片与特征数据
                         // String id = userName.substring(userName.indexOf("-")+1);
-                        Log.e("tag","id---"+id);
+                        Log.e("tag", "id---" + id);
                         File[] files = imgDir.listFiles();
-                        for (File file:files){
-                            if(file.getName().contains(id)){
+                        for (File file : files) {
+                            if (file.getName().contains(id)) {
                                 if (file.delete()) {
-                                    Log.e("tag","delete exist image");
+                                    Log.e("tag", "delete exist image");
                                 }
                                 break;
                             }
                         }
                         File[] featureFiles = featureDir.listFiles();
-                        for(File file:featureFiles){
-                            if(file.getName().contains(id)){
-                                if(file.delete()){
-                                    Log.e("tag","delete exist feature");
+                        for (File file : featureFiles) {
+                            if (file.getName().contains(id)) {
+                                if (file.delete()) {
+                                    Log.e("tag", "delete exist feature");
                                     deleteInfo(file.getName());
                                 }
                                 break;
@@ -519,9 +520,9 @@ public class FaceServer {
                         //添加人脸信息时把已存在的人脸对象删除
                         FaceRegisterInfo faceRegisterInfo;
                         ListIterator iterator = faceRegisterInfoList.listIterator();
-                        while (iterator.hasNext()){
+                        while (iterator.hasNext()) {
                             faceRegisterInfo = (FaceRegisterInfo) iterator.next();
-                            if(faceRegisterInfo.getName().contains(id)){
+                            if (faceRegisterInfo.getName().contains(id)) {
                                 iterator.remove();
                                 break;
                             }
@@ -637,7 +638,7 @@ public class FaceServer {
                 break;
         }
         // 非0度的情况，旋转图像
-        if (rotateDegree != null){
+        if (rotateDegree != null) {
             rotateHeadImageData = new byte[headImageData.length];
             rotateCode = ArcSoftImageUtil.rotateImage(headImageData, rotateHeadImageData, cropRect.width(), cropRect.height(), rotateDegree, imageFormat);
             if (rotateCode != ArcSoftImageUtilError.CODE_SUCCESS) {
@@ -662,12 +663,14 @@ public class FaceServer {
         if (faceEngine == null || isProcessing || faceFeature == null || faceRegisterInfoList == null || faceRegisterInfoList.size() == 0) {
             return null;
         }
+        Logger.debug(TAG, "getTopOfFaceLib -> faceRegisterInfoList =" + faceRegisterInfoList.size() + ", faceEngine =");
         FaceFeature tempFaceFeature = new FaceFeature();
         FaceSimilar faceSimilar = new FaceSimilar();
         float maxSimilar = 0;
         int maxSimilarIndex = -1;
         isProcessing = true;
         for (int i = 0; i < faceRegisterInfoList.size(); i++) {
+            Logger.debug(TAG, "getTopOfFaceLib 222-> faceRegisterInfoList  getName =" + faceRegisterInfoList.get(i).getName());
             tempFaceFeature.setFeatureData(faceRegisterInfoList.get(i).getFeatureData());
             faceEngine.compareFaceFeature(faceFeature, tempFaceFeature, faceSimilar);
             if (faceSimilar.getScore() > maxSimilar) {
@@ -675,6 +678,7 @@ public class FaceServer {
                 maxSimilarIndex = i;
             }
         }
+        Logger.debug(TAG, "getTopOfFaceLib 222-> faceRegisterInfoList =" + faceRegisterInfoList.size());
         isProcessing = false;
         if (maxSimilarIndex != -1) {
             return new CompareResult(faceRegisterInfoList.get(maxSimilarIndex).getName(), maxSimilar);
@@ -715,13 +719,13 @@ public class FaceServer {
     }
 
     //删除数据的同时删除内存缓存中的人脸对象
-    public void deleteInfo(String name){
+    public void deleteInfo(String name) {
         FaceRegisterInfo faceRegisterInfo;
-        if(faceRegisterInfoList!=null&&faceRegisterInfoList.size()!=0){
+        if (faceRegisterInfoList != null && faceRegisterInfoList.size() != 0) {
             ListIterator iterator = faceRegisterInfoList.listIterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 faceRegisterInfo = (FaceRegisterInfo) iterator.next();
-                if(faceRegisterInfo.getName().equals(name)){
+                if (faceRegisterInfo.getName().equals(name)) {
                     iterator.remove();
                     break;
                 }
@@ -730,11 +734,11 @@ public class FaceServer {
     }
 
     //删除数据的同时删除内存缓存中所有的人脸对象
-    public void deleteAllInfo(){
+    public void deleteAllInfo() {
         FaceRegisterInfo faceRegisterInfo;
-        if(faceRegisterInfoList!=null&&faceRegisterInfoList.size()!=0){
+        if (faceRegisterInfoList != null && faceRegisterInfoList.size() != 0) {
             ListIterator iterator = faceRegisterInfoList.listIterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 iterator.next();
                 iterator.remove();
             }
@@ -742,7 +746,7 @@ public class FaceServer {
     }
 
     //保存前删除已经存在的图片与特征数据
-    public void deleteImgFeature(Context context,String name){
+    public void deleteImgFeature(Context context, String name) {
         try {
             Log.e("tag", "deleteImgFeature---" + name);
             if (ROOT_PATH == null) ROOT_PATH = context.getFilesDir().getAbsolutePath();
@@ -765,18 +769,31 @@ public class FaceServer {
                 featurefile.delete();
                 deleteInfo(featurefile.getName());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public void registerFace(byte[] faceData, String name) {
-        if (faceRegisterInfoList == null) {
-            faceRegisterInfoList = new ArrayList<>();
+    public void registerFace(byte[] bgr24, int width, int height, String name) {
+        synchronized (this) {
+            List<FaceInfo> faceInfoList2 = new ArrayList<>();
+            int code = faceEngine.detectFaces(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList2);
+
+            if (code == ErrorInfo.MOK && faceInfoList2.size() > 0) {
+                Log.i(TAG, "registerFace ");
+                FaceFeature faceFeature = new FaceFeature();
+                //特征提取
+                code = faceEngine.extractFaceFeature(bgr24, width, height, FaceEngine.CP_PAF_BGR24, faceInfoList2.get(0), faceFeature);
+
+                if (faceRegisterInfoList == null) {
+                    faceRegisterInfoList = new ArrayList<>();
+                }
+                faceRegisterInfo = new FaceRegisterInfo(faceFeature.getFeatureData(), name);
+                faceRegisterInfoList.add(faceRegisterInfo);
+            }
+            Log.i(TAG, "registerFace code = " + code + ", faceInfoList.size() =" + faceInfoList2.size());
         }
-        faceRegisterInfo = new FaceRegisterInfo(faceData, name);
-        faceRegisterInfoList.add(faceRegisterInfo);
     }
 
     public void deleteRegisteredFace() {

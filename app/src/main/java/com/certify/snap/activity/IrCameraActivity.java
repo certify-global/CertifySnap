@@ -1,6 +1,7 @@
 package com.certify.snap.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -401,7 +402,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_thermal_subtitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, ""));
         tv_thermal.setTypeface(rubiklight);
         tv_thermal_subtitle.setTypeface(rubiklight);
-       // tvManualTitle.setTypeface(rubiklight);
+        // tvManualTitle.setTypeface(rubiklight);
         tvManualTitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, ""));
         initView();
         setClickListener();
@@ -1475,6 +1476,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     }
 
+    @SuppressLint("StringFormatInvalid")
     private void showSnackbar(int actionCode) {
         tv_sync.setTypeface(rubiklight);
         if (actionCode == MemberSyncDataModel.SYNC_START) {
@@ -1845,6 +1847,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             return frEngine;
         }
 
+        @SuppressLint("StringFormatInvalid")
         public void initEngine(Context context) {
             ftEngine = new FaceEngine();
             ftInitCode = ftEngine.init(context, DetectMode.ASF_DETECT_MODE_VIDEO, ConfigUtil.getFtOrient(context),
@@ -2753,6 +2756,29 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                     UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
                                     data.faceScore = (int) similarValue;
                                     runTemperature(requestId, data);
+                                } else if (QrCodeController.getInstance().isVendor()) {
+//                                    long primaryId = FaceServer.getInstance().getCompareResultId(compareResult);
+//                                    boolean memberMatch = false;
+//                                    Log.d(TAG, "primaryId isGlobalMember" + primaryId);
+//                                    if (primaryId != -1) {
+//                                        List<RegisteredMembers> membersList = DatabaseController.getInstance().findMember(primaryId);
+//                                        if (membersList != null && membersList.size() > 0) {
+//                                            RegisteredMembers member = membersList.get(0);
+//                                            if (member.getUniqueid().equals(CameraController.getInstance().getQrCodeData().getUniqueId())) {
+//                                                memberMatch = true;
+//                                            }
+//                                        }
+//                                    } else {
+                                      //  memberMatch = true;
+                                 //   }
+                                   // if (memberMatch) {
+                                        QrCodeController.getInstance().setQrCodeMemberMatch(true);
+                                  //  }
+                                    CameraController.getInstance().setFaceVisible(true);
+
+                                    UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
+                                    data.faceScore = (int) similarValue;
+                                    runTemperature(requestId, data);
                                 } else {
                                     displayCameraPreview(frFace, requestId, rgbBitmap, irBitmap);
                                     Log.e(TAG, "Snap Compare result database no match " + isAdded);
@@ -2799,7 +2825,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "Snap Compare result Error ");
+                        Log.d(TAG, "Snap Compare result Error " + e.getMessage());
                         runTemperature(requestId, new UserExportedData(rgb, ir, new RegisteredMembers(), (int) 0)); // Register member photo is not there, Still find temperature
                         /*if (faceHelperIr != null) {
                             faceHelperIr.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
@@ -3004,6 +3030,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         }
     }
 
+    @SuppressLint("StringFormatInvalid")
     public void homeDisplayView() {
         runOnUiThread(new Runnable() {
             @Override
@@ -4319,7 +4346,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                         }
                         return;
                     }
-                    resetInvalidQrCode(getString(R.string.qr_validation_message));
+                    if (!AppSettings.isEnableVendorQR())
+                        resetInvalidQrCode(getString(R.string.qr_validation_message));
                 });
                 this.cancel();
             }

@@ -24,7 +24,9 @@ public class CameraController {
     private QrCodeData qrCodeData = null;
     private String qrCodeId = ""; //Optimize to use in QrCodeData
     private boolean isFaceVisible = false; //flag to let know when the face is detected
+
     public enum triggerValue {FACE, ACCESSID, CODEID, CAMERA, WAVE, MULTIUSER}
+
     private CompareResult compareResult = null;
     private boolean isFaceNotMatchedOnRetry = false;
     private boolean isScanCloseProximityEnabled = false;
@@ -34,7 +36,7 @@ public class CameraController {
     private boolean isAppExitTriggered = false;
     public static int IMAGE_PROCESS_COMPLETE = 1;
     public ScanState scanState = ScanState.IDLE;
-    private  int deviceMode =0;
+    private int deviceMode = 0;
     private long scannerRemainingTime = 0;
     private String mTriggerType = CameraController.triggerValue.CAMERA.toString();
     private RegisteredMembers firstScanMember = null;
@@ -54,9 +56,9 @@ public class CameraController {
     }
 
     public enum PrimaryIdentification {
-        FACE_OR_RFID (1),
+        FACE_OR_RFID(1),
         QRCODE_OR_RFID(2),
-        FACE (3),
+        FACE(3),
         RFID(4),
         QR_CODE(5),
         NONE(6);
@@ -73,9 +75,9 @@ public class CameraController {
     }
 
     public enum SecondaryIdentification {
-        QRCODE_OR_RFID (1),
+        QRCODE_OR_RFID(1),
         FACE(2),
-        RFID (3),
+        RFID(3),
         QR_CODE(4),
         NONE(5);
 
@@ -130,7 +132,7 @@ public class CameraController {
         //Set QrCodeId for primary or secondary scan as data should be displayed in
         //dashboard and check in report
         //if (scanProcessState == ScanProcessState.FIRST_SCAN) {
-            this.qrCodeId = qrCodeId;
+        this.qrCodeId = qrCodeId;
         //}
     }
 
@@ -235,7 +237,7 @@ public class CameraController {
             new CountDownTimer(timeDuration, Constants.PRO_SCANNER_INIT_INTERVAL) {
                 @Override
                 public void onTick(long remTime) {
-                    scannerRemainingTime = ((remTime/1000)/60);
+                    scannerRemainingTime = ((remTime / 1000) / 60);
                 }
 
                 @Override
@@ -318,6 +320,9 @@ public class CameraController {
         if (!isPerformMemberMatch()) {
             return true;
         }
+        if (QrCodeController.getInstance().isVendor() && QrCodeController.getInstance().isQrCodeMemberMatch()) {
+            return true;
+        }
         boolean result = false;
         if (qrCodeData != null) {
             if (QrCodeController.getInstance().isQrCodeMemberMatch()) {
@@ -352,7 +357,7 @@ public class CameraController {
     }
 
     public boolean isPerformMemberMatch() {
-        boolean result = true;
+        boolean result = true; //(QrCodeController.getInstance().isVendor())||
         if ((scanProcessState == ScanProcessState.IDLE) ||
                 (AppSettings.getSecondaryIdentifier() == SecondaryIdentification.NONE.getValue()) ||
                 (QrCodeController.getInstance().isMemberCheckedIn()) ||
@@ -369,7 +374,7 @@ public class CameraController {
     public boolean onCheckOut() {
         return ((ApplicationController.getInstance().getTimeAttendance() == 2) &&
                 ((AppSettings.getPrimaryIdentifier() == PrimaryIdentification.QR_CODE.value) ||
-                 (AppSettings.getPrimaryIdentifier() == PrimaryIdentification.QRCODE_OR_RFID.value)));
+                        (AppSettings.getPrimaryIdentifier() == PrimaryIdentification.QRCODE_OR_RFID.value)));
     }
 
     /*public boolean validateAnonymousQrCode() {
