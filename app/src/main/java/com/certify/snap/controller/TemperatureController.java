@@ -835,6 +835,7 @@ public class TemperatureController {
                 return;
             }
         }
+        Logger.debug(TAG, "recordUserTemperature -> data.triggerType=" + data.triggerType);
         if (!Util.isInstitutionIdValid(context)) return;
 
         SharedPreferences sp = Util.getSharedPreferences(context);
@@ -953,7 +954,7 @@ public class TemperatureController {
             temperatureRecordRequest.lastName = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousLastName, "");
             temperatureRecordRequest.vaccineDocumentName = String.format("%s_%s", Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "").replace(" ", ""), Util.getUTCDateMMDDYYYYHHMMSS());
             temperatureRecordRequest.vaccinationStatus = "1";
-            temperatureRecordRequest.memberId = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousId, "");;
+            temperatureRecordRequest.memberId = Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousId, "");
         }
 
         temperatureRecordRequest.memberTypeId = data.member.getMemberType();

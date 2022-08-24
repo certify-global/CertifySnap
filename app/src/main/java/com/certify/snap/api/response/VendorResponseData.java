@@ -7,5 +7,8 @@ public class VendorResponseData {
     @SerializedName("vendorImage")
     public String vendorImage;
 
+    @SerializedName("vendorName")
+    public String vendorName;
+
 
 }

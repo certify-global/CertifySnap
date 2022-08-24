@@ -207,6 +207,7 @@ public class AccessCardController {
 
     /**
      * Method that sets the card Id
+     *
      * @param cardId cardId
      */
     public void setAccessCardId(String cardId) {
@@ -434,8 +435,10 @@ public class AccessCardController {
                 accessLogRequest = new AccessLogRequest();
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
-                if (CameraController.getInstance().getQrCodeData() != null)
+                if (CameraController.getInstance().getQrCodeData() != null) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
+               //     firstNameAnon = CameraController.getInstance().getQrCodeData().getFirstName();
+                }
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
                         qrCodeId = CameraController.getInstance().getQrCodeId();

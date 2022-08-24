@@ -88,7 +88,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
 
         void onQRCodeScanSuccess();
 
-        void onVendorQRCodeScan(boolean isSuccess);
+        void onVendorQRCodeScan(boolean isSuccess, String name);
     }
 
     public static QrCodeController getInstance() {
@@ -468,35 +468,37 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             public void onResponse(Call<ValidateVendorResponse> call, Response<ValidateVendorResponse> response) {
                 if (listener == null) return;
                 if (response.body() != null && response.body().responseCode == 1) {
-                    listener.onVendorQRCodeScan(true);
+                    String name = "VendorUser";
                     if (!response.body().VendorResponseData.vendorImage.isEmpty()) {
+
+                        name = response.body().VendorResponseData.vendorName;
                         QrCodeController.getInstance().setVendor(true);
                         QrCodeData qrCodeData = new QrCodeData();
                         qrCodeData.setUniqueId("");
-                        qrCodeData.setFirstName("VendorUser");
+                        qrCodeData.setFirstName(name);
                         qrCodeData.setLastName("");
 //                        qrCodeData.setTrqStatus(trqStatus);
 //                        qrCodeData.setMemberId(memberId);
-//                        qrCodeData.setAccessId(qrAccessid);
+                       // qrCodeData.setAccessId(guid);
 //                        qrCodeData.setMemberTypeId(memberTypeId);
 //                        qrCodeData.setMemberTypeName(memberTypeName);
                         qrCodeData.setFaceTemplate(response.body().VendorResponseData.vendorImage);
                         if (!response.body().VendorResponseData.vendorImage.isEmpty()) {
-                            QrCodeController.getInstance().setGlobalMember(true);
-                            QrCodeController.getInstance().registerFace(response.body().VendorResponseData.vendorImage, "VendorUser");
+                            setGlobalMember(true);
+                            registerFace(response.body().VendorResponseData.vendorImage, name);
+
                         }
                         CameraController.getInstance().setQrCodeData(qrCodeData);
-                        registerFace(response.body().VendorResponseData.vendorImage, "VendorUser BNR");
                     }
-
+                    listener.onVendorQRCodeScan(true, name);
                 } else {
-                    listener.onVendorQRCodeScan(false);
+                    listener.onVendorQRCodeScan(false, "");
                 }
             }
 
             @Override
             public void onFailure(Call<ValidateVendorResponse> call, Throwable t) {
-                listener.onVendorQRCodeScan(false);
+                listener.onVendorQRCodeScan(false, "");
                 Logger.error(TAG, t.toString());
             }
         });

@@ -2092,6 +2092,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void onBarcodeData(String guid) {
         try {
+            if (imageTimer != null) {
+                imageTimer.cancel();
+                imageTimer = null;
+            }
             isReadyToScan = false;
             if (isTopFragmentGesture() ||
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
@@ -2223,11 +2227,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     @Override
-    public void onVendorQRCodeScan(boolean isSuccess) {
+    public void onVendorQRCodeScan(boolean isSuccess, String name) {
         qrCodeReceived = false;
         cancelQRTimer();
         if (isSuccess) {
-            Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, "VendorUser");
+            Util.writeString(sharedPreferences, GlobalParameters.anonymousFirstName, name);
             Util.writeString(sharedPreferences, GlobalParameters.anonymousLastName, "");
             scanOnQrCode();
             SoundController.getInstance().playValidQrSound();
@@ -2769,11 +2773,11 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 //                                            }
 //                                        }
 //                                    } else {
-                                      //  memberMatch = true;
-                                 //   }
-                                   // if (memberMatch) {
-                                        QrCodeController.getInstance().setQrCodeMemberMatch(true);
-                                  //  }
+                                    //  memberMatch = true;
+                                    //   }
+                                    // if (memberMatch) {
+                                    QrCodeController.getInstance().setQrCodeMemberMatch(true);
+                                    //  }
                                     CameraController.getInstance().setFaceVisible(true);
 
                                     UserExportedData data = new UserExportedData(rgb, ir, new RegisteredMembers(), (int) similarValue);
@@ -3554,7 +3558,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     img_qr.setVisibility(View.GONE);
                 }
             });
-
             resetImageLogo();
             clearQrCodePreview();
         }
@@ -3639,7 +3642,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
                 AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) {
             initScan();
-        }
+        } else resetToHomePage();
     }
 
     private void startHidService() {
@@ -4884,6 +4887,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void enableQrCodeScan() {
+        if ((AppSettings.getTimeAndAttendance() == 1))
+            setCameraPreviewTimer(15);
         clearLeftFace(null);
         resetQrCode();
     }
