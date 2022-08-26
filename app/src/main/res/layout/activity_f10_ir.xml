@@ -59,6 +59,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginStart="@dimen/size_20"
+                android:layout_marginEnd="@dimen/size_20"
                 android:layout_marginTop="120dp"
                 android:src="@drawable/final_logo"
                 android:scaleType="fitCenter" />

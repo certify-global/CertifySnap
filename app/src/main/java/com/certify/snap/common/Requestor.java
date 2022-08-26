@@ -208,6 +208,8 @@ public class Requestor {
                 }
                 responseStr = stringBuilder.toString();
             }
+            if (EndPoints.deployment == EndPoints.Mode.Demo)
+                Logger.debug("responseStr", responseStr);
         } catch (Exception e) {
             e.printStackTrace();
             Map<String, String> properties = new HashMap<>();
@@ -224,7 +226,7 @@ public class Requestor {
         return responseStr;
     }
 
-    public static String postJsonLogin(String urlStr, String reqPing,String header) {
+    public static String postJsonLogin(String urlStr, String reqPing, String header) {
         String responseStr = null;
         String[] endPoint = urlStr.split(".me/");
         try {
@@ -271,7 +273,7 @@ public class Requestor {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.error("postJsonLogin",e.getMessage());
+            Logger.error("postJsonLogin", e.getMessage());
         }
         return responseStr;
     }

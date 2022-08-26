@@ -2029,10 +2029,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     /**
      * Method that stop the HealthCheck service
      */
-//    private void stopHealthCheckService() {
-//        Intent intent = new Intent(this, DeviceHealthService.class);
-//        stopService(intent);
-//    }
+
     @Override
     public void onJSONObjectListener(String reportInfo, String status, JSONObject req) {
         try {
@@ -2092,10 +2089,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void onBarcodeData(String guid) {
         try {
-            if (imageTimer != null) {
-                imageTimer.cancel();
-                imageTimer = null;
-            }
+            cancelImageTimer();
             isReadyToScan = false;
             if (isTopFragmentGesture() ||
                     CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
@@ -2398,7 +2392,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tv_thermal_subtitle.setVisibility(View.GONE);
                     tv_display_time.setVisibility(View.GONE);
                 }
-                frameCameraLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -2419,6 +2412,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                frameCameraLayout.setVisibility(View.VISIBLE);
                 new Handler().postDelayed(() -> {
                     if (!Util.isDeviceF10()) {
                         if (outerCircle != null)
@@ -2855,6 +2849,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     public void onRfidScan(String cardId) {
+        cancelImageTimer();
         Log.v(TAG, "onRfidScan cardId: " + cardId);
         if (cardId.isEmpty() || isTopFragmentGesture())
             return;
@@ -3590,13 +3585,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 cameraHelperIr.release();
             }
 
-            new Handler().post(() -> {
-                // initRgbCamera();
-                //initIrCamera();
-                enableFaceScan();
-                isReadyToScan = true;
+            // new Handler().post(() -> {
+            // initRgbCamera();
+            //initIrCamera();
+            enableFaceScan();
+            isReadyToScan = true;
 
-            });
+            //   });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -4823,6 +4818,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 enableQrCodeScan();
                 isReadyToScan = false;
             }
+            if (AppSettings.getTimeAndAttendance() == 1)
+                setCameraPreviewTimer(10);
             CameraController.getInstance().setScanProcessState(CameraController.ScanProcessState.FIRST_SCAN);
         } else {
             enableFaceScan();
@@ -4887,8 +4884,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void enableQrCodeScan() {
-        if ((AppSettings.getTimeAndAttendance() == 1))
-            setCameraPreviewTimer(15);
         clearLeftFace(null);
         resetQrCode();
     }
@@ -5089,15 +5084,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().setCheckInResponseCode(-1);
         homeDisplayView();
         faceEngineHelper.initEngine(this);
-        if (GestureController.getInstance().isGestureEnabledAndDeviceConnected() || AppSettings.isEnableTouchMode()) {
-            int primaryIdentifier = AppSettings.getPrimaryIdentifier();
-            if ((primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
-                    (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue())) {
-                initScan();
-            }
-        } else {
-            initScan();
-        }
+        initScan();
         GestureController.getInstance().setCallback(false);
     }
 
