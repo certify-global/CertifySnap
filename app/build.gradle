@@ -1,6 +1,5 @@
 //apply plugin: 'com.android.application'
 //apply plugin: 'com.palantir.git-version'
-import com.android.build.OutputFile
 
 plugins {
     id 'com.android.application'
@@ -117,7 +116,7 @@ android.applicationVariants.all { variant ->
 
         //def suffix = output.apkData.fullName == "snapEntRelease" ? "-ent" : ""
         def suffix = ""
-        version = buildType == "release" ? "${versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}";
+        version = buildType == "release" ? "${versionName}.${output.versionCode}" : "${'git rev-parse --short HEAD'.execute().text.replace('\n', '')}"
         output.outputFileName = "$baseFileName$suffix-${buildType}-${version}.apk"
     }
 }
