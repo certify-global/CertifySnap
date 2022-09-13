@@ -31,6 +31,7 @@ import com.certify.snap.qrverification.DiseaseType;
 import com.certify.snap.qrverification.JwtHelper;
 import com.certify.snap.qrverification.PersonModel;
 import com.certify.snap.qrverification.VaccinationModel;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -469,26 +470,34 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
                 if (listener == null) return;
                 if (response.body() != null && response.body().responseCode == 1) {
                     String name = "VendorUser";
-                    if (!response.body().VendorResponseData.vendorImage.isEmpty()) {
-
-                        name = response.body().VendorResponseData.vendorName;
-                        QrCodeController.getInstance().setVendor(true);
-                        QrCodeData qrCodeData = new QrCodeData();
-                        qrCodeData.setUniqueId("");
-                        qrCodeData.setFirstName(name);
-                        qrCodeData.setLastName("");
+                    String vendorImage = "";
+                    if (response.body().VendorResponseData == null) {
+                        listener.onVendorQRCodeScan(false, "");
+                    } else {
+                        try {
+                            String str =  new Gson().toJson(response.body().VendorResponseData);
+                            JSONObject obj = new JSONObject(str);
+                            name = obj.getString("vendorName");
+                            vendorImage = obj.getString("vendorImage");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        if (!vendorImage.isEmpty()) {
+                            QrCodeController.getInstance().setVendor(true);
+                            QrCodeData qrCodeData = new QrCodeData();
+                            qrCodeData.setUniqueId("");
+                            qrCodeData.setFirstName(name);
+                            qrCodeData.setLastName("");
 //                        qrCodeData.setTrqStatus(trqStatus);
 //                        qrCodeData.setMemberId(memberId);
-                       // qrCodeData.setAccessId(guid);
+                            // qrCodeData.setAccessId(guid);
 //                        qrCodeData.setMemberTypeId(memberTypeId);
 //                        qrCodeData.setMemberTypeName(memberTypeName);
-                        qrCodeData.setFaceTemplate(response.body().VendorResponseData.vendorImage);
-                        if (!response.body().VendorResponseData.vendorImage.isEmpty()) {
+                            qrCodeData.setFaceTemplate(vendorImage);
                             setGlobalMember(true);
-                            registerFace(response.body().VendorResponseData.vendorImage, name);
-
+                            registerFace(vendorImage, name);
+                            CameraController.getInstance().setQrCodeData(qrCodeData);
                         }
-                        CameraController.getInstance().setQrCodeData(qrCodeData);
                     }
                     listener.onVendorQRCodeScan(true, name);
                 } else {
@@ -499,7 +508,7 @@ public class QrCodeController implements GetLastCheckinTimeCallback {
             @Override
             public void onFailure(Call<ValidateVendorResponse> call, Throwable t) {
                 listener.onVendorQRCodeScan(false, "");
-                Logger.error(TAG, t.toString());
+                Logger.error(TAG, "validateVendorQR ->" + t.toString());
             }
         });
     }

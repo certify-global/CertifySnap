@@ -14,6 +14,6 @@ public class ValidateVendorResponse {
     public String responseMessage;
 
     @SerializedName("responseData")
-    public VendorResponseData VendorResponseData;
+    public Object VendorResponseData;
 
 }
