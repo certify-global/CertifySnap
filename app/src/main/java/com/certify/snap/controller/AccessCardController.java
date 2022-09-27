@@ -183,15 +183,6 @@ public class AccessCardController {
         isAccessFaceNotMatch = accessFaceNotMatch;
     }
 
-    public boolean isACFaceSearchDisabled() {
-        boolean result = false;
-        if (AppSettings.isRfidEnabled() && isAccessSignalEnabled() &&
-                (AppSettings.getAccessControlScanMode() == AccessControlScanMode.ID_ONLY.getValue())) {
-            result = true;
-        }
-        return result;
-    }
-
     public void setCallbackListener(AccessCallbackListener listener) {
         this.listener = listener;
     }
@@ -377,7 +368,7 @@ public class AccessCardController {
                         allowAccess();
                     }
                 } else {
-                    if (isEnableWiegandPt()) {
+                    if (isEnableWiegandPt() || QrCodeController.getInstance().isVendor()) {
                         allowAccess();
                     } else {
                         denyAccess();
@@ -406,7 +397,7 @@ public class AccessCardController {
                         allowAccess();
                     }
                 } else {
-                    if (isEnableWiegandPt() && !isBlockAccessOnHighTempEnabled()) {
+                    if ((isEnableWiegandPt() || QrCodeController.getInstance().isVendor()) && !isBlockAccessOnHighTempEnabled()) {
                         allowAccess();
                     } else {
                         denyAccess();
@@ -437,7 +428,7 @@ public class AccessCardController {
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
                 if (CameraController.getInstance().getQrCodeData() != null) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
-               //     firstNameAnon = CameraController.getInstance().getQrCodeData().getFirstName();
+                    //     firstNameAnon = CameraController.getInstance().getQrCodeData().getFirstName();
                 }
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {

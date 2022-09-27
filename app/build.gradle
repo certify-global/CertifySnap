@@ -73,7 +73,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "ENDPOINT_URL", "\"https://api.certify.me\""
+            buildConfigField "String", "ENDPOINT_URL", "\"https://api.certify.me\""   //https://apiw.certify.me
         }
         qa {
             minifyEnabled false
