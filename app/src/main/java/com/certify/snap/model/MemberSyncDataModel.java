@@ -225,7 +225,7 @@ public class MemberSyncDataModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error in adding the member to data model from server");
+                        Log.e(TAG, "createMemberDataAndAdd ->" + e.getMessage());
                     }
 
                     @Override
@@ -363,7 +363,7 @@ public class MemberSyncDataModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error in adding the member to data model from server");
+                        Log.e(TAG, "Error in adding the member to data model from server" + e.getMessage());
                     }
 
                     @Override
@@ -416,7 +416,7 @@ public class MemberSyncDataModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error in adding the member to data model from server");
+                        Log.e(TAG, "setPrimaryIdAndAddToDb -> " + e.getMessage());
                     }
 
                     @Override
@@ -936,7 +936,7 @@ public class MemberSyncDataModel {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, "Error in adding the member to data model from server");
+                        Log.e(TAG, "checkDatabaseMembers -> " + e.getMessage());
                     }
 
                     @Override
@@ -970,30 +970,35 @@ public class MemberSyncDataModel {
 
     private boolean isGroupIdExists(String groupId) {
         boolean result = false;
-        if (groupId.isEmpty()) {
-            return false;
-        }
-        String groupIdSetting = AppSettings.getMemberSyncGroupId();
-        if (groupId.contains(",")) {
-            String[] groupIds = groupId.split(",");
-            if (groupIdSetting.contains(",")) {
-                for (String grpId : groupIds) {
-                    if (groupIdSetting.contains(grpId)) {
+        try {
+            if (groupId.isEmpty()) {
+                return false;
+            }
+            String groupIdSetting = AppSettings.getMemberSyncGroupId();
+            Log.d(TAG, "isGroupIdExists ->  groupIdSetting= " + groupIdSetting + ",groupId = " + groupId);
+            if (groupId.contains(",")) {
+                String[] groupIds = groupId.replace(" ", "").split(",");
+                if (groupIdSetting.contains(",")) {
+                    for (String grpId : groupIds) {
+                        if (groupIdSetting.contains(grpId)) {
+                            result = true;
+                            break;
+                        }
+                    }
+                } else {
+                    result = groupId.contains(groupIdSetting);
+                }
+            } else {
+                if (groupIdSetting.contains(",")) {
+                    result = groupIdSetting.contains(groupId);
+                } else {
+                    if (groupIdSetting.equals(groupId)) {
                         result = true;
-                        break;
                     }
                 }
-            } else {
-                result = groupId.contains(groupIdSetting);
             }
-        } else {
-            if (groupIdSetting.contains(",")) {
-                result = groupIdSetting.contains(groupId);
-            } else {
-                if (groupIdSetting.equals(groupId)) {
-                    result = true;
-                }
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
