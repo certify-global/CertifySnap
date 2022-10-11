@@ -54,6 +54,7 @@ public class Application extends android.app.Application {
     private int deviceMode = 0;
     WifiManager wifi;
     SharedPreferences sharedPreferences;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -101,8 +102,6 @@ public class Application extends android.app.Application {
     }
 
 
-
-
     public static void StartService(Context context) {
         Logger.debug(TAG, "StartService - AlarmReceiver");
         Intent myIntent = new Intent(context, AlarmReceiver.class);
@@ -132,8 +131,8 @@ public class Application extends android.app.Application {
         AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available");
-        }else
-        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (SystemClock.elapsedRealtime()+2000), 10 * 60 * 1000, restartServicePendingIntent);
+        } else
+            alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (SystemClock.elapsedRealtime() + 2000), 10 * 60 * 1000, restartServicePendingIntent);
 
     }
 
@@ -141,7 +140,7 @@ public class Application extends android.app.Application {
         try {
             Logger.debug(TAG, "deviceHealthCheckWorkManager");
             PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(DeviceHealthWorkManager.class, 20, TimeUnit.MINUTES).build();
-            WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork("deviceHealthCheckWork", ExistingPeriodicWorkPolicy.KEEP,periodicWork);
+            WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork("deviceHealthCheckWork", ExistingPeriodicWorkPolicy.KEEP, periodicWork);
         } catch (Exception e) {
             Logger.error(TAG, "deviceHealthCheckWorkManager," + e.getMessage());
         }
@@ -151,12 +150,12 @@ public class Application extends android.app.Application {
     public void runLoggerService(Context context) {
         Logger.debug(TAG, "runLoggerService");
         Intent myIntent = new Intent(context, LoggerService.class);
-        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 0, myIntent, 0);
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 2, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available runLoggerService");
         }
-        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 64 * 60 * 1000, restartServicePendingIntent);
+        alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 61 * 60 * 1000, restartServicePendingIntent);
 
     }
 

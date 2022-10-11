@@ -43,8 +43,10 @@ public class RetrofitInstance {
     }
 
     public ApiInterface getApiInterface() {
-        if (apiInterface == null)
+        if (apiInterface == null) {
+            createRetrofitInstance();
             Logger.error(TAG, "apiInterface is null");
+        }
         return apiInterface;
     }
 
@@ -61,7 +63,7 @@ public class RetrofitInstance {
             return chain.proceed(request);
         });
         httpClient.connectTimeout(2, TimeUnit.MINUTES).writeTimeout(2, TimeUnit.MINUTES).readTimeout(2, TimeUnit.MINUTES);
-        if (EndPoints.deployment == EndPoints.Mode.Demo) {
+        if (AppSettings.isDebugModeEnabled()) {
             HttpLoggingInterceptor logHttp = new HttpLoggingInterceptor();
             logHttp.setLevel(HttpLoggingInterceptor.Level.BODY);
             httpClient.addInterceptor(logHttp);
