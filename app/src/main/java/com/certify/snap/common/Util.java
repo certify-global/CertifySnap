@@ -1615,6 +1615,7 @@ public class Util {
             String memberTypeName = responseData.getString("memberTypeName") == null ? "" : responseData.getString("memberTypeName");
             String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
             String faceTemplate = responseData.isNull("faceTemplate") ? "" : responseData.getString("faceTemplate");
+            String isVisitor = responseData.isNull("isVisitor") ? "0" : responseData.getString("isVisitor");
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);
@@ -1626,6 +1627,7 @@ public class Util {
             qrCodeData.setMemberTypeId(memberTypeId);
             qrCodeData.setMemberTypeName(memberTypeName);
             qrCodeData.setFaceTemplate(faceTemplate);
+            qrCodeData.setIsVisitor(isVisitor);
             if (!faceTemplate.isEmpty()) {
                 QrCodeController.getInstance().setGlobalMember(true);
                 QrCodeController.getInstance().registerFace(faceTemplate, firstName);

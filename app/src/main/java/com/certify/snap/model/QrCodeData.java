@@ -11,6 +11,15 @@ public class QrCodeData {
     private int memberTypeId;
     private String memberTypeName;
     private String faceTemplate;
+    private String isVisitor = "0";
+
+    public String getIsVisitor() {
+        return isVisitor;
+    }
+
+    public void setIsVisitor(String isVisitor) {
+        this.isVisitor = isVisitor;
+    }
 
     public String getUniqueId() {
         return uniqueId;

@@ -440,6 +440,8 @@ public class AccessCardController {
                         accessLogRequest.memberId = qrCodeData.getMemberId();
                         accessLogRequest.memberTypeId = String.valueOf(qrCodeData.getMemberTypeId());
                         accessLogRequest.memberTypeName = qrCodeData.getMemberTypeName();
+                        accessLogRequest.isVisitor = qrCodeData.getIsVisitor();
+
                     } else {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
                         accessLogRequest.id = "0";

@@ -99,4 +99,7 @@ public class AccessLogRequest {
     @SerializedName("utcOfflineDateTime")
     public String utcOfflineDateTime;
 
+    @SerializedName("isVisitor")
+    public String isVisitor = "0";
+
 }
