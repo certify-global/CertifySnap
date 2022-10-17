@@ -337,30 +337,35 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     }
 
     private void initMember() {
-        mCountTv.setText(String.valueOf(datalist.size()));
-        if (memberAdapter == null) {
-            memberAdapter = new MemberAdapter(MemberManagementActivity.this, datalist);
-        }
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(memberAdapter);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        try {
+            mCountTv.setText(String.valueOf(datalist.size()));
+            if (memberAdapter == null) {
+                memberAdapter = new MemberAdapter(MemberManagementActivity.this, datalist);
+            }
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.setAdapter(memberAdapter);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        memberAdapter.notifyDataSetChanged();
-        memberAdapter.setOnItemClickListener(new MemberAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(RegisteredMembers member) {
-                clickMember = member;
-                showUpdateDialog(member);
-                //listPosition = position;
-            }
-        });
-        memberAdapter.setOnItemLongClickListener(new MemberAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(RegisteredMembers member) {
-                clickMember = member;
-                showDeleteDialog(member);
-            }
-        });
+            memberAdapter.notifyDataSetChanged();
+            memberAdapter.setOnItemClickListener(new MemberAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(RegisteredMembers member) {
+                    clickMember = member;
+                    showUpdateDialog(member);
+                    //listPosition = position;
+                }
+            });
+            memberAdapter.setOnItemLongClickListener(new MemberAdapter.OnItemLongClickListener() {
+                @Override
+                public void onItemLongClick(RegisteredMembers member) {
+                    clickMember = member;
+                    showDeleteDialog(member);
+                }
+            });
+        } catch (Exception e) {
+            Logger.error(TAG, "initMember", e.getMessage());
+
+        }
     }
 
     private void refreshMemberList(List<RegisteredMembers> memberlist) {
@@ -1443,7 +1448,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                 }
                 totalMemberCount = activeMemberCount;
                 MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
-            } else if (response.responseSubCode.equals("101")) {
+            } else if (response.responseSubCode != null && response.responseSubCode.equals("101")) {
                 DismissProgressDialog(mloadingprogress);
                 refresh();
                 MemberSyncDataModel.getInstance().setSyncing(false);

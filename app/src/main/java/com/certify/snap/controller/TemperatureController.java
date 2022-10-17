@@ -765,18 +765,22 @@ public class TemperatureController {
      * Method that starts the Guide Temperature timer
      */
     private void startGuideTemperatureTimer() {
-        if (guideTempTimer != null) {
-            Log.d(TAG, "Temp Cancel Guide Temperature timer");
-            guideTempTimer.cancel();
-            guideTempTimer = null;
-        }
-        guideTempTimer = new Timer();
-        guideTempTimer.schedule(new TimerTask() {
-            public void run() {
-                this.cancel();
-                resetGuideThermal();
+        try {
+            if (guideTempTimer != null) {
+                Log.d(TAG, "Temp Cancel Guide Temperature timer");
+                guideTempTimer.cancel();
+                guideTempTimer = null;
             }
-        }, 5 * 1000);
+            guideTempTimer = new Timer();
+            guideTempTimer.schedule(new TimerTask() {
+                public void run() {
+                    this.cancel();
+                    resetGuideThermal();
+                }
+            }, 5 * 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
