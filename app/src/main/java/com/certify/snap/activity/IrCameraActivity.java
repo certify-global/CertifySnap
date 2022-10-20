@@ -22,6 +22,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.hardware.Camera;
+import android.net.ConnectivityManager;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -137,6 +138,7 @@ import com.certify.snap.qrscan.CameraSource;
 import com.certify.snap.qrscan.CameraSourcePreview;
 import com.certify.snap.qrscan.GraphicOverlay;
 import com.certify.snap.service.HIDService;
+import com.certify.snap.service.NetworkReceiver;
 import com.certify.snap.service.OfflineRecordSyncService;
 
 import org.json.JSONObject;
@@ -307,6 +309,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private boolean isFaceNotDetectedTimer = false;
     private Timer previewTimer;
     private BarcodeScannerProcessor barcodeScannerProcessor;
+    private BroadcastReceiver mNetworkReceiver;
 
     private void instanceStart() {
         try {
@@ -432,6 +435,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
             }
         });
+        mNetworkReceiver = new NetworkReceiver();
     }
 
     private void setClickListener() {
@@ -602,7 +606,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
         previewViewRgb = findViewById(R.id.texture_preview);
         previewViewIr = findViewById(R.id.texture_preview_ir);
-
         relative_main = findViewById(R.id.relative_layout);
         tvOnlyText = findViewById(R.id.tv_only_text);
         relativeLayout = findViewById(R.id.rl_verify);
@@ -615,7 +618,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         mask_message.setTypeface(rubiklight);
         tv_sync = findViewById(R.id.tv_sync);
         graphicOverlay = findViewById(R.id.fireFaceOverlay);
-
         tv_display_time = findViewById(R.id.tv_display_time);
         tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
         btWaveStart = findViewById(R.id.bt_wave_start);
@@ -734,6 +736,18 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         resumeCameraScan();
     }
 
+    public static void isNextWorkStatis(boolean isNetwork) {
+        try {
+            if (isNetwork) {
+                internetIndicatorImg.setVisibility(View.GONE);
+            } else {
+                internetIndicatorImg.setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "isNextWorkStatis ->" + e.getMessage());
+        }
+    }
+
     @Override
     protected void onResume() {
         Log.v(TAG, "onResume");
@@ -774,6 +788,14 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             ApplicationController.getInstance().setDeviceBoot(false);
         }
         updateGestureOnLanguageChange();
+        try {
+            if (mNetworkReceiver != null) {
+                registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "onResume registerReceiver " + e.getMessage());
+        }
+
     }
 
     @Override
@@ -862,7 +884,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             faceHelperIr.release();
             faceHelperIr = null;
         }
-
+        if (mNetworkReceiver != null) {
+            try {
+                unregisterReceiver(mNetworkReceiver);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, " onDestroy unregisterReceiver " + e.getMessage());
+            }
+        }
         //FaceServer.getInstance().unInit();
         temperatureBitmap = null;
         clearQrCodePreview();
@@ -1414,7 +1442,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void showSnackbar(int actionCode) {
         tv_sync.setTypeface(rubiklight);
         if (actionCode == MemberSyncDataModel.SYNC_START) {
-            tv_sync.setText(totalCount++ + " " + getString(R.string.out_of) + " " + memberCount);
+            tv_sync.setText(String.format("%s %s %s ",(totalCount++) , getString(R.string.out_of), memberCount));
         } else if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
             tv_sync.setText(getString(R.string.sync_completed));
             new Handler().postDelayed(new Runnable() {
@@ -1427,7 +1455,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             String message = String.format(getString(R.string.image_sync_failed_msg), memberCount);
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         } else if (actionCode == MemberSyncDataModel.SYNC_GROUP_ID_NOT_EXIST) {
-            //  Toast.makeText(this, getString(R.string.sync_failed), Toast.LENGTH_LONG).show();
+            tv_sync.setText("");  //  Toast.makeText(this, getString(R.string.sync_failed), Toast.LENGTH_LONG).show();
         } else {
             tv_sync.setText(getString(R.string.syncing));
         }

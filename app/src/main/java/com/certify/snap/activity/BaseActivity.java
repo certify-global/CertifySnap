@@ -9,7 +9,6 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,7 +38,7 @@ public abstract class BaseActivity extends Activity {
     private final String TAG = BaseActivity.this.getClass().getSimpleName();
     protected boolean isDisconnected = false;
     private IntentFilter activityReceiverFilter;
-    protected ImageView internetIndicatorImg;
+    public static ImageView internetIndicatorImg;
     protected boolean cameraError = false;
 
     @Override
@@ -206,7 +205,7 @@ public abstract class BaseActivity extends Activity {
                 startService(new Intent(this, OfflineRecordSyncService.class));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error in starting offline sync service " +e.getMessage());
+            Log.e(TAG, "Error in starting offline sync service " + e.getMessage());
         }
     }
 

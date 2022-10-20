@@ -168,7 +168,6 @@
     <string name="access_denied">Access denied!</string>
     <string name="automatic_door_access">Enable Relay</string>
     <string name="allow_anonymous">Allow Anonymous</string>
-    <string name="trim_leading_zeroes">Trim leading zeroes from accessId</string>
     <string name="relay_timeout">Relay Timeout:</string>
     <string name="normal_mode">
         <font size="16">Normal Mode</font><font size="14"> (Operate Access for every scan)</font>
@@ -510,15 +509,6 @@
     <string name="send_logs">Send Logs</string>
     <string name="wave_instructions">Enter wave indicator instructions</string>
     <string name="mask_enforce_instructions">Enter mask enforce text</string>
-    <string name="multi_language_home_msg">Wave to continue with gesture or click below to select the language for touch flow</string>
-    <string name="touch_home_page_msg">Wave to continue with gesture or press below button to Start the questionnaire</string>
-    <string name="touch_flow">Touch Flow</string>
-    <string name="Start">Start</string>
-    <string name="continue_str">continue</string>
-    <string name="lang_wave_message">Launch the questionnaire</string>
-    <string name="lang_choose_your">Choose your Preferred Language</string>
-    <string name="lang_instructions">Enter the Message for Multilanguage Flow</string>
-    <string name="touch_instructions">Text for Home Page</string>
     <string name="wave_yes" translatable="false">&lt; YES </string>
     <string name="wave_no" translatable="false"> NO &gt; </string>
     <string name="wave_yes_en" translatable="false">&lt; YES </string>
@@ -783,6 +773,16 @@
     <string name="enable_visitor_qrcode">Enable Visitor QR Code</string>
     <string name="enable_visitor_mode">Visitor Mode</string>
     <string name="enable_visitor_check_out">Enable Check-out</string>
+    <string name="trim_leading_zeroes">Trim leading zeroes from accessId</string>
+    <string name="multi_language_home_msg">Wave to continue with gesture or click below to select the language for touch flow</string>
+    <string name="touch_home_page_msg">Wave to continue with gesture or press below button to Start the questionnaire</string>
+    <string name="touch_flow">Touch Flow</string>
+    <string name="Start">Start</string>
+    <string name="continue_str">continue</string>
+    <string name="lang_wave_message">Launch the questionnaire</string>
+    <string name="lang_choose_your">Choose your Preferred Language</string>
+    <string name="lang_instructions">Enter the Message for Multilanguage Flow</string>
+    <string name="touch_instructions">Text for Home Page</string>
 <!--
     <string name="enable_vendor_qrcode">Enable Vendor QR Code</string>
 -->

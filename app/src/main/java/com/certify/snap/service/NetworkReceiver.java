@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.certify.snap.activity.IrCameraActivity;
 import com.certify.snap.common.AppSettings;
 import com.certify.snap.common.Application;
 import com.certify.snap.common.GlobalParameters;
@@ -20,14 +21,12 @@ public class NetworkReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         sharedPreferences = Util.getSharedPreferences(context);
-
-        if (("android.net.wifi.WIFI_STATE_CHANGED".equals(intent.getAction())) || ("android.net.conn.CONNECTIVITY_CHANGE".equals(intent.getAction()))) {
             if (Util.isConnectedWifi(context) || Util.isConnectedEthernet(context) || Util.isConnectedMobile(context)) {
+                IrCameraActivity.isNextWorkStatis(true);
                 updateHealthService(context);
                 updateMemberSyncService(context);
                 updateOfflineService(context);
-            }
-        }
+            } else IrCameraActivity.isNextWorkStatis(false);
     }
 
     private void updateMemberSyncService(Context context) {
@@ -42,7 +41,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error in starting Member sync service " +e.getMessage());
+            Log.e(TAG, "Error in starting Member sync service " + e.getMessage());
         }
     }
 
@@ -53,7 +52,7 @@ public class NetworkReceiver extends BroadcastReceiver {
                 context.startService(new Intent(context, OfflineRecordSyncService.class));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error in starting offline sync service " +e.getMessage());
+            Log.e(TAG, "Error in starting offline sync service " + e.getMessage());
         }
     }
 
