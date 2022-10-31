@@ -156,11 +156,11 @@ public class Requestor {
         String[] endPoint = urlStr.split(".me/");
         SharedPreferences sp = Util.getSharedPreferences(context);
         try {
-            if (EndPoints.deployment == EndPoints.Mode.Demo)
+            if (AppSettings.isDebugModeEnabled()) {
                 Logger.debug("urlStr", urlStr);
-
+                Logger.debug("reqPing", reqPing.toString());
+            }
             URL url = new URL(urlStr);
-
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-type", "application/json");
@@ -208,7 +208,7 @@ public class Requestor {
                 }
                 responseStr = stringBuilder.toString();
             }
-            if (EndPoints.deployment == EndPoints.Mode.Demo)
+            if (AppSettings.isDebugModeEnabled())
                 Logger.debug("responseStr", responseStr);
         } catch (Exception e) {
             e.printStackTrace();

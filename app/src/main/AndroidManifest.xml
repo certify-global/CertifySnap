@@ -79,18 +79,6 @@
             android:name=".activity.ConfirmationSettingsActivity"
             android:launchMode="singleInstance" />
         <activity
-            android:name=".activity.QrCodeScannerActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation">
-
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
-        <activity
             android:name=".activity.ScanSettingsActivity"
             android:screenOrientation="portrait" />
         <activity

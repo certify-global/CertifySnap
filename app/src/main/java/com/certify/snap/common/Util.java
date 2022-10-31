@@ -2106,7 +2106,7 @@ public class Util {
             obj.put("deviceUUID", uniqueID);
             obj.put("eventType", eventType);
             obj.put("response", response_msg + " push success");
-            if (guid == null) {
+            if (guid == null || guid.equals("")) {
                 obj.put("APPSTARTED", AppStatusInfo.getInstance().getAppStarted());
                 obj.put("APPCLOSED", AppStatusInfo.getInstance().getAppClosed());
                 obj.put("LOGINSUCCESS", AppStatusInfo.getInstance().getLoginSuccess());
