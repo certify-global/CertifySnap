@@ -419,7 +419,7 @@ public class CameraController {
     public void updateControllers(List<RegisteredMembers> member, UserExportedData data) {
         CameraController.getInstance().setScanState(CameraController.ScanState.COMPLETE);
         AccessCardController.getInstance().processUnlockDoor(member);
-        AccessCardController.getInstance().sendAccessLogValid(context, 0.0f, data);
+       // AccessCardController.getInstance().sendAccessLogValid(context, 0.0f, data);
     }
 
     public void clearData() {
