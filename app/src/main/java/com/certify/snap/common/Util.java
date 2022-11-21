@@ -177,41 +177,41 @@ public class Util {
 
     public static void clearAllSharedPreferences(SharedPreferences sp) {
         SharedPreferences.Editor edit = sp.edit();
-        edit.clear().commit();
+        edit.clear().apply();
     }
 
     //sp写入string
     public static void writeString(SharedPreferences sp, String key, String value) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putString(key, value);
-        edit.commit();
+        edit.apply();
     }
 
     //sp写入int
     public static void writeInt(SharedPreferences sp, String key, int value) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putInt(key, value);
-        edit.commit();
+        edit.apply();
     }
 
     public static void writeFloat(SharedPreferences sp, String key, Float value) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putFloat(key, value);
-        edit.commit();
+        edit.apply();
     }
 
     //sp写入boolean
     public static void writeBoolean(SharedPreferences sp, String key, Boolean value) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putBoolean(key, value);
-        edit.commit();
+        edit.apply();
     }
 
     //sp写入int
     public static void writeBoolean(SharedPreferences sp, String key, boolean value) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putBoolean(key, value);
-        edit.commit();
+        edit.apply();
     }
 
     public static void switchRgbOrIrActivity(Context context, Boolean isActivity) {
@@ -1052,6 +1052,7 @@ public class Util {
 
     public static Bitmap convertYuvByteArrayToBitmap(byte[] data, Camera camera) {
         try {
+            if (data == null) return null;
             Camera.Parameters parameters = camera.getParameters();
             return convertYuvByteArrayToBitmap(data, parameters);
         } catch (Exception e) {
@@ -1606,14 +1607,14 @@ public class Util {
     public static void getQRCode(JSONObject reportInfo, String status, Context context, String toast) {
         try {
             JSONObject responseData = reportInfo.getJSONObject("responseData");
-            String id = responseData.getString("id") == null ? "" : responseData.getString("id");
-            String firstName = responseData.getString("firstName") == null ? "" : responseData.getString("firstName");
-            String lastName = responseData.getString("lastName") == null ? "" : responseData.getString("lastName");
-            String trqStatus = responseData.getString("trqStatus") == null ? "" : responseData.getString("trqStatus");
-            String memberId = responseData.getString("memberId") == null ? "" : responseData.getString("memberId");
+            String id = responseData.isNull("id") ? "" : responseData.getString("id");
+            String firstName = responseData.isNull("firstName") ? "" : responseData.getString("firstName");
+            String lastName = responseData.isNull("lastName") ? "" : responseData.getString("lastName");
+            String trqStatus = responseData.isNull("trqStatus") ? "" : responseData.getString("trqStatus");
+            String memberId = responseData.isNull("memberId") ? "" : responseData.getString("memberId");
             int memberTypeId = responseData.isNull("memberTypeId") ? 0 : responseData.getInt("memberTypeId");
-            String memberTypeName = responseData.getString("memberTypeName") == null ? "" : responseData.getString("memberTypeName");
-            String qrAccessid = responseData.getString("accessId") == null ? "" : responseData.getString("accessId");
+            String memberTypeName = responseData.isNull("memberTypeName") ? "" : responseData.getString("memberTypeName");
+            String qrAccessid = responseData.isNull("accessId") ? "" : responseData.getString("accessId");
             String faceTemplate = responseData.isNull("faceTemplate") ? "" : responseData.getString("faceTemplate");
             String isVisitor = responseData.isNull("isVisitor") ? "0" : responseData.getString("isVisitor");
 
@@ -2305,10 +2306,15 @@ public class Util {
     }
 
     public static Object getKeyOnValue(Map hm, Object value) {
-        for (Object o : hm.keySet()) {
-            if (hm.get(o).equals(value)) {
-                return o;
+        try {
+            for (Object o : hm.keySet()) {
+                if (hm.get(o).equals(value)) {
+                    return o;
+                }
             }
+        } catch (Exception e) {
+            Logger.error(LOG + "getKeyOnValue ->", e.getMessage());
+            return null;
         }
         return null;
     }

@@ -79,6 +79,7 @@ import com.certify.callback.BarcodeSendData;
 import com.certify.callback.JSONObjectCallback;
 import com.certify.callback.PrintStatusCallback;
 import com.certify.callback.QRCodeCallback;
+import com.certify.fcm.FireBaseMessagingService;
 import com.certify.snap.BuildConfig;
 import com.certify.snap.R;
 import com.certify.snap.api.response.MemberData;
@@ -234,7 +235,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     };
 
     private int relaytimenumber = 5;
-    ImageView img_guest, temperature_image, img_logo, manual_check_in_logo;
+    ImageView img_guest, temperature_image, img_logo, manual_check_in_logo, imgRetryView;
     TextView txt_guest;
     private Button retryButton;
 
@@ -386,10 +387,6 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_thermal = findViewById(R.id.tv_thermal);
         tv_thermal_subtitle = findViewById(R.id.tv_thermal_subtitle);
         tvManualTitle = findViewById(R.id.tv_manual_title);
-        tv_thermal.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan)));
-        tv_thermal_subtitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, ""));
-        tv_thermal.setTypeface(rubiklight);
-        tv_thermal_subtitle.setTypeface(rubiklight);
         // tvManualTitle.setTypeface(rubiklight);
         tvManualTitle.setText(sharedPreferences.getString(GlobalParameters.Thermalscan_title, ""));
         initView();
@@ -444,6 +441,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             TemperatureController.getInstance().setTemperatureListener(null);
             retryButton.setVisibility(View.GONE);
             resetHomePage();
+        });
+        imgRetryView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendBroadcastMessage();
+                Util.restartApp(IrCameraActivity.this);
+            }
         });
     }
 
@@ -619,6 +623,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         tv_sync = findViewById(R.id.tv_sync);
         graphicOverlay = findViewById(R.id.fireFaceOverlay);
         tv_display_time = findViewById(R.id.tv_display_time);
+        imgRetryView = findViewById(R.id.img_retry_view);
         tvDisplayTimeOnly = findViewById(R.id.tv_display_time_only);
         btWaveStart = findViewById(R.id.bt_wave_start);
         tvVersionOnly = findViewById(R.id.tv_version_ir_only);
@@ -1442,7 +1447,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     private void showSnackbar(int actionCode) {
         tv_sync.setTypeface(rubiklight);
         if (actionCode == MemberSyncDataModel.SYNC_START) {
-            tv_sync.setText(String.format("%s %s %s ",(totalCount++) , getString(R.string.out_of), memberCount));
+            tv_sync.setText(String.format("%s %s %s ", (totalCount++), getString(R.string.out_of), memberCount));
         } else if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
             tv_sync.setText(getString(R.string.sync_completed));
             new Handler().postDelayed(new Runnable() {
@@ -2334,6 +2339,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tv_thermal.setVisibility(View.GONE);
                     tv_thermal_subtitle.setVisibility(View.GONE);
                     tv_display_time.setVisibility(View.GONE);
+                    imgRetryView.setVisibility(View.GONE);
                 }
             }
         });
@@ -2895,6 +2901,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 tvDisplayTimeOnly.setVisibility(View.VISIBLE);
                 tvVersionOnly.setVisibility(View.VISIBLE);
                 tv_display_time.setVisibility(View.GONE);
+                imgRetryView.setVisibility(View.GONE);
                 tvVersionIr.setVisibility(View.GONE);
             } else if (sharedPreferences.getBoolean(GlobalParameters.HOME_TEXT_IS_ENABLE, true)) {
                 String text = tv_thermal.getText().toString();
@@ -2909,8 +2916,23 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                     tv_thermal.setVisibility(View.GONE);
                     tv_thermal_subtitle.setVisibility(View.GONE);
                 } else {
-                    tv_thermal.setVisibility(View.VISIBLE);
-                    tv_thermal_subtitle.setVisibility(View.VISIBLE);
+                    String thermalMessage = sharedPreferences.getString(GlobalParameters.Thermalscan_title, getString(R.string.thermal_scan));
+                    String thermalScanSub = sharedPreferences.getString(GlobalParameters.Thermalscan_subtitle, "");
+                    if (thermalMessage.isEmpty())
+                        tv_thermal.setVisibility(View.GONE);
+                    else {
+                        tv_thermal.setText(thermalMessage);
+                        tv_thermal.setTypeface(rubiklight);
+                        tv_thermal.setVisibility(View.VISIBLE);
+                    }
+                    if (thermalScanSub.isEmpty())
+                        tv_thermal_subtitle.setVisibility(View.GONE);
+                    else {
+                        tv_thermal_subtitle.setText(thermalScanSub);
+                        tv_thermal_subtitle.setTypeface(rubiklight);
+                        tv_thermal_subtitle.setVisibility(View.VISIBLE);
+                    }
+                    imgRetryView.setVisibility(View.VISIBLE);
                 }
                 tvOnlyText.setVisibility(View.GONE);
                 img_logo.setVisibility(View.VISIBLE);
@@ -4521,18 +4543,22 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
     }
 
     private void updateUIOnPrint(boolean displayCScreen, boolean aboveThreshold) {
-        if (displayCScreen) {
-            if (isDestroyed()) return;
-            launchConfirmationFragment(String.valueOf(aboveThreshold));
-            if (isHomeViewEnabled) {
-                pauseCameraScan();
+        try {
+            if (displayCScreen) {
+                if (isDestroyed()) return;
+                launchConfirmationFragment(String.valueOf(aboveThreshold));
+                if (isHomeViewEnabled) {
+                    pauseCameraScan();
+                } else {
+                    isReadyToScan = false;
+                }
+                resetHomeScreen();
+                compareResultList.clear();
             } else {
-                isReadyToScan = false;
+                ShowLauncherView();
             }
-            resetHomeScreen();
-            compareResultList.clear();
-        } else {
-            ShowLauncherView();
+        } catch (Exception e) {
+            return;
         }
     }
 
@@ -5106,5 +5132,10 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
             hidReceiver = null;
         }
+    }
+    private void sendBroadcastMessage() {
+        Intent intent = new Intent();
+        intent.setAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
     }
 }

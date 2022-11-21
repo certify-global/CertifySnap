@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable-anydpi/ic_retry_view.xml" value="0.248" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable-v24/qr_code_border_only_action.xml" value="0.18684895833333334" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/qr_code_border.xml" value="0.189453125" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/qr_code_border_action.xml" value="0.18684895833333334" />
@@ -10,7 +11,7 @@
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_code_reader.xml" value="0.1657051282051282" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_eucode_demo.xml" value="0.16826923076923078" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_f10_ir.xml" value="0.1" />
-        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_ir.xml" value="0.176" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_ir.xml" value="0.30453879941434847" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_qrcode_result.xml" value="0.11607992388201713" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_acknowledge.xml" value="0.1" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/print_layout.xml" value="0.34375" />
