@@ -2389,7 +2389,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             public void run() {
                 disableLedPower();
                 runOnUiThread(() -> resetToHomePage());
-                this.cancel();
+                if (imageTimer != null)
+                    this.cancel();
             }
         }, Long.parseLong(delayMilliTimeOut) * 1000); //wait 10 seconds for the temperature to be captured, go to home otherwise
 
@@ -2405,7 +2406,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             public void run() {
                 disableLedPower();
                 runOnUiThread(() -> resetToHomePage());
-                this.cancel();
+                if (imageTimer != null)
+                    this.cancel();
             }
         }, timeInSeconds * 1000); //wait in seconds for the temperature to be captured, go to home otherwise
     }
@@ -5133,6 +5135,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             hidReceiver = null;
         }
     }
+
     private void sendBroadcastMessage() {
         Intent intent = new Intent();
         intent.setAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
