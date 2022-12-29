@@ -359,7 +359,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         ApplicationController.getInstance().setListener(this);
         QrCodeController.getInstance().init(this);
         QrCodeController.getInstance().setListener(this);
-        initNfc();
+        //initNfc();
         initGesture();
         SoundController.getInstance().init(this);
         BlePeripheralController.getInstance().setBleListener(this);
@@ -1122,7 +1122,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         try {
             cameraHelper.start();
         } catch (RuntimeException e) {
-            Logger.error(TAG, "Error in opening Rgb camera");
+            e.printStackTrace();
+            Logger.error(TAG, "Error in opening Rgb camera = "+e.getMessage());
         }
     }
 
@@ -2289,13 +2290,13 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().init(this);
         AccessCardController.getInstance().setCallbackListener(this);
         AccessCardController.getInstance().lockStandAloneDoor();  //by default lock the door when the Home page is displayed
-        enableNfc();
+       // enableNfc();
     }
 
     private void initNfc() {
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | PendingIntent.FLAG_MUTABLE), 0);
     }
 
     private void enableNfc() {
@@ -4735,7 +4736,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     private void enableFaceScan() {
         initRgbCamera();
-        initIrCamera();
+     //   initIrCamera();
         AccessCardController.getInstance().setCallbackListener(this);
     }
 

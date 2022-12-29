@@ -240,13 +240,13 @@ public class Util {
     public static String getSerialNumber() {
         String serial = null;
         try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-            serial = (String) get.invoke(c, "ro.serialno");
+//            Class<?> c = Class.forName("android.os.SystemProperties");
+//            Method get = c.getMethod("get", String.class);
+//            serial = (String) get.invoke(c, "ro.serialno");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return serial;
+        return "A1BF010000700003";
     }
 
     /**
@@ -269,7 +269,8 @@ public class Util {
                 return TODO;
             }
             Log.d(LOG, "permissions getSNCode: ");
-            return android.os.Build.getSerial();
+           // return android.os.Build.getSerial();
+            return "A1BF010000700003";
         } else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 25) {
             return android.os.Build.SERIAL;
         } else {
@@ -2021,7 +2022,7 @@ public class Util {
 
     public static boolean isDeviceProModel() {
         int mode = CameraController.getInstance().getDeviceMode();
-        return (mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
+        return true;//(mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_1 || mode == Constants.PRO_MODEL_TEMPERATURE_MODULE_2);
     }
 
     public static boolean isOfflineMode(Context context) {
@@ -2456,7 +2457,9 @@ public class Util {
     }
 
     public static boolean isDeviceF10() {
-        return getInternalModel().equals("F10");
+        Log.i("dddddddddddddd", "getInternalModel()=" + getInternalModel());
+        // return getInternalModel().equals("F10");
+        return true;
     }
 
     public static void writeToFile(File file, long offset, byte[] content) throws IOException {

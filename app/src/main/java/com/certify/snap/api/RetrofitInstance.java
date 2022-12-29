@@ -62,12 +62,12 @@ public class RetrofitInstance {
                     .build();
             return chain.proceed(request);
         });
-        httpClient.connectTimeout(2, TimeUnit.MINUTES).writeTimeout(2, TimeUnit.MINUTES).readTimeout(2, TimeUnit.MINUTES);
-        if (AppSettings.isDebugModeEnabled()) {
-            HttpLoggingInterceptor logHttp = new HttpLoggingInterceptor();
-            logHttp.setLevel(HttpLoggingInterceptor.Level.BODY);
-            httpClient.addInterceptor(logHttp);
-        }
+//        httpClient.connectTimeout(2, TimeUnit.MINUTES).writeTimeout(2, TimeUnit.MINUTES).readTimeout(2, TimeUnit.MINUTES);
+//        if (AppSettings.isDebugModeEnabled()) {
+//            HttpLoggingInterceptor logHttp = new HttpLoggingInterceptor();
+//            logHttp.setLevel(HttpLoggingInterceptor.Level.BODY);
+//            httpClient.addInterceptor(logHttp);
+//        }
         return httpClient.build();
     }
 }

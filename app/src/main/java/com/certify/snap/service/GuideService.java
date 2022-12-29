@@ -104,22 +104,26 @@ public class GuideService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mnovate = Application.getInstance().getNovate();
-        sp = Util.getSharedPreferences(this);
+        try {
+            mnovate = Application.getInstance().getNovate();
+            sp = Util.getSharedPreferences(this);
         /*try {
             db = LitePal.getDatabase();
         }catch (Exception e){
             e.printStackTrace();
         }*/
-        Log.d(TAG, "onCreate() executed");
-        getSecretBroadcastReceiver = new GetSecretBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(GET_SECRET);
-        intentFilter.addAction(LIVE_UPDATE_GUEST);
-        intentFilter.addAction(LIVE_UPDATE_PASSWORD);
-        intentFilter.addAction(LIVE_UPDATE_WALLPAPER);
-        intentFilter.addAction(LIVE_UPDATE_LIMIT_TIME);
-        registerReceiver(getSecretBroadcastReceiver, intentFilter);
+            Log.d(TAG, "onCreate() executed");
+            getSecretBroadcastReceiver = new GetSecretBroadcastReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(GET_SECRET);
+            intentFilter.addAction(LIVE_UPDATE_GUEST);
+            intentFilter.addAction(LIVE_UPDATE_PASSWORD);
+            intentFilter.addAction(LIVE_UPDATE_WALLPAPER);
+            intentFilter.addAction(LIVE_UPDATE_LIMIT_TIME);
+            registerReceiver(getSecretBroadcastReceiver, intentFilter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -150,7 +154,7 @@ public class GuideService extends Service {
     }
 
     public class MyBinder extends Binder {
-        public void getDeviceInfo(){
+        public void getDeviceInfo() {
             getSecret();
         }
     }
@@ -230,7 +234,7 @@ public class GuideService extends Service {
         if (s == null)
             return;
         if (s.equals(LIVE_UPDATE_GUEST)) {
-            Log.e("tag","liveGuestTimer start");
+            Log.e("tag", "liveGuestTimer start");
             if (liveGuestTimer == null) {
                 liveGuestTimer = new Timer();
                 liveGuestTimer.schedule(new TimerTask() {
@@ -241,7 +245,7 @@ public class GuideService extends Service {
                 }, 0, 30 * 1000);
             }
         } else if (s.equals(LIVE_UPDATE_PASSWORD) || s.equals(LIVE_UPDATE_WALLPAPER) || s.equals(LIVE_UPDATE_LIMIT_TIME)) {
-            Log.e("tag","liveTimer start");
+            Log.e("tag", "liveTimer start");
             if (s.equals(LIVE_UPDATE_WALLPAPER)) isWallPaper = true;
             if (liveTimer == null) {
                 liveTimer = new Timer();
@@ -282,7 +286,7 @@ public class GuideService extends Service {
                 Log.e("onNext---", "uploadonline success:" + response);
             }
         });
-        Subscription s= mnovate.rxPost(GlobalParameters.UpdateOnlineURL, parameters, new ResponseCallback<Subscription, ResponseBody>() {
+        Subscription s = mnovate.rxPost(GlobalParameters.UpdateOnlineURL, parameters, new ResponseCallback<Subscription, ResponseBody>() {
             @Override
             public Subscription onHandleResponse(ResponseBody response) throws Exception {
                 return null;
@@ -593,33 +597,33 @@ public class GuideService extends Service {
                         }
                         final String wallpaperUrl = secret.getData().getWallpaper();
                         //获取的壁纸url不为空且没更换过壁纸就下载壁纸更换，
-                        if (!TextUtils.isEmpty(wallpaperUrl)&&!sp.getBoolean("wallpaper",false)) {
+                        if (!TextUtils.isEmpty(wallpaperUrl) && !sp.getBoolean("wallpaper", false)) {
                             final String fileName = wallpaperUrl.substring(wallpaperUrl.lastIndexOf("/") + 1);
 //                            sp.edit().putString("wallpaper_url", wallpaperUrl).apply();
-                            if(wallpaperTimer==null){
+                            if (wallpaperTimer == null) {
                                 wallpaperTimer = new Timer();
                                 wallpaperTimer.schedule(new TimerTask() {
                                     @Override
                                     public void run() {
                                         downloadWallpaper(wallpaperUrl, fileName);
                                     }
-                                },0,30*1000);
+                                }, 0, 30 * 1000);
                             }
                         }
                         //是壁纸推送再去下载新壁纸
-                       if(!TextUtils.isEmpty(wallpaperUrl)&&isWallPaper){
-                           final String fileName = wallpaperUrl.substring(wallpaperUrl.lastIndexOf("/") + 1);
+                        if (!TextUtils.isEmpty(wallpaperUrl) && isWallPaper) {
+                            final String fileName = wallpaperUrl.substring(wallpaperUrl.lastIndexOf("/") + 1);
 //                            sp.edit().putString("wallpaper_url", wallpaperUrl).apply();
-                           if(wallpaperTimer==null){
-                               wallpaperTimer = new Timer();
-                               wallpaperTimer.schedule(new TimerTask() {
-                                   @Override
-                                   public void run() {
-                                       downloadWallpaper(wallpaperUrl, fileName);
-                                   }
-                               },0,30*1000);
-                           }
-                       }
+                            if (wallpaperTimer == null) {
+                                wallpaperTimer = new Timer();
+                                wallpaperTimer.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        downloadWallpaper(wallpaperUrl, fileName);
+                                    }
+                                }, 0, 30 * 1000);
+                            }
+                        }
                         Log.e("onNext---", GlobalParameters.Client_id + "-" + GlobalParameters.Client_secret);
                         if (!TextUtils.isEmpty(GlobalParameters.Client_id) && !TextUtils.isEmpty(GlobalParameters.Client_secret) && isFirst) {
                             //finish();
@@ -697,7 +701,7 @@ public class GuideService extends Service {
                         }
                     }).start();
                     isWallPaper = false;
-                    if(wallpaperTimer!=null){
+                    if (wallpaperTimer != null) {
                         wallpaperTimer.cancel();
                         wallpaperTimer = null;
                     }
@@ -734,7 +738,7 @@ public class GuideService extends Service {
             out.close();
             if (source.delete()) {
                 sp.edit().putBoolean("wallpaper", true).apply();
-               // sendBroadcast(new Intent(IrCameraActivity.WALLPAPER_CHANGE));
+                // sendBroadcast(new Intent(IrCameraActivity.WALLPAPER_CHANGE));
                 Log.e("tag", "source wallpaper image delete");
             }
         } catch (IOException e) {

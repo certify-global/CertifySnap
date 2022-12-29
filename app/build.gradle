@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId "com.certify.snap"
         minSdkVersion 25
-        targetSdkVersion 31
+        targetSdkVersion 32
         compileSdkVersion 31
         versionCode = gitVersionCode
         versionName = gitVersionName
@@ -168,6 +168,7 @@ dependencies {
     implementation 'com.google.mlkit:barcode-scanning:16.0.0'
     implementation 'com.google.firebase:firebase-iid:20.2.0'
     implementation 'com.google.firebase:firebase-messaging:20.2.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
 
     implementation 'com.squareup.retrofit2:converter-jackson:2.9.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

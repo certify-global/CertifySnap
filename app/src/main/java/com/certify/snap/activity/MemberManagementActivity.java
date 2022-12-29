@@ -1252,7 +1252,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         Log.v(TAG, "initNfc");
         mNfcAdapter = M1CardUtils.isNfcAble(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_MULTIPLE_TASK), 0);
     }
 
     private void enableNfc() {

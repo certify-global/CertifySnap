@@ -174,12 +174,12 @@ public abstract class BaseActivity extends Activity {
     };
 
     protected void restartApplication() {
-        finishAffinity();
-        Intent intent = new Intent(this, HomeActivity.class);
-        int mPendingIntentId = 111111;
-        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
+//        finishAffinity();
+//        Intent intent = new Intent(this, HomeActivity.class);
+//        int mPendingIntentId = 111111;
+//        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+//        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+//        mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
     }
 
     protected void checkDeviceMode() {
@@ -188,8 +188,8 @@ public abstract class BaseActivity extends Activity {
             Log.d(TAG, "Device mode " + mode);
             if (mode == 0 || (ApplicationController.getInstance().getTemperatureUtil() == null) || cameraError) {
                 Toast.makeText(this, getString(R.string.app_restart_msg), Toast.LENGTH_SHORT).show();
-                finishAffinity();
-                restartApplication();
+             //   finishAffinity();
+              //  restartApplication();
             }
         });
     }

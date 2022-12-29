@@ -611,7 +611,7 @@ public class DeviceSettingsActivity extends SettingsBaseActivity implements JSON
         finishAffinity();
         Intent intent = new Intent(this, HomeActivity.class);
         int mPendingIntentId = 111111;
-        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, intent, PendingIntent.FLAG_MUTABLE);
         AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         mgr.set(AlarmManager.RTC, System.currentTimeMillis(), mPendingIntent);
     }

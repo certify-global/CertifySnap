@@ -70,25 +70,26 @@ public class LoggerUtil {
             out.write(result.toString());
             out.close();
         } catch (IOException e) {
-            Logger.error("LoggerUtil", "logMessagesToFile()","Error in writing to File");
+            Logger.error("LoggerUtil", "logMessagesToFile()", "Error in writing to File");
         }
     }
 
     public void logMessagesToFile(Context context, String filename) {
+        if (true) return;
         Observable
                 .create((ObservableOnSubscribe<String>) emitter -> {
                     Date date = new Date();
                     String dirPath = Environment.getExternalStorageDirectory() + File.separator + "CertifySnap" + File.separator + "Log" + File.separator;
-                    String fileName = dirPath +  filename + ".log";
+                    String fileName = dirPath + filename + ".log";
                     File dir = new File(dirPath);
-                    File file = new File (fileName);
+                    File file = new File(fileName);
                     //Util.writeString(Util.getSharedPreferences(context), GlobalParameters.LogFilePath, fileName); //TODO1: Optimize
 
                     //clears a file
                     if (!dir.exists()) {
                         dir.mkdirs();
                     } else {
-                        long fileSize = file.length()/(1024 * 1024);
+                        long fileSize = file.length() / (1024 * 1024);
                         if (fileSize > 10) {
                             file.delete();
                         }
@@ -108,13 +109,13 @@ public class LoggerUtil {
                         String currentLine = null;
 
                         while ((currentLine = reader.readLine()) != null) {
-                            if(currentLine.contains("skia") || currentLine.contains("expire")) continue;
+                            if (currentLine.contains("skia") || currentLine.contains("expire")) continue;
                             result.append(currentLine);
                             result.append("\n");
                         }
                         Util.writeToFile(file, file.length(), result.toString().getBytes());
                     } catch (IOException e) {
-                        Logger.error("LoggerUtil", "logMessagesToFile()","Error in writing to File"+e.getMessage());
+                        Logger.error("LoggerUtil", "logMessagesToFile()", "Error in writing to File" + e.getMessage());
                     }
                     emitter.onNext(fileName);
                 })

@@ -190,7 +190,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
         if (sharedPreferences != null) {
             Util.writeBoolean(sharedPreferences, GlobalParameters.SETTINGS_RETRIEVED, false);
         }
-        if (!License.activateLicense(HomeActivity.this)) {
+        if (License.activateLicense(HomeActivity.this)) {
             String message = getResources().getString(R.string.active_failed);
             Log.e(TAG, message);
             runOnUiThread(new Runnable() {
@@ -285,7 +285,7 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 if (!Util.isServiceRunning(MemberSyncService.class, HomeActivity.this) && (AppSettings.isFacialDetect()
                         || AppSettings.isRfidEnabled())) {
                     if (sharedPreferences.getBoolean(GlobalParameters.SYNC_ONLINE_MEMBERS, false)) {
-                        startService(new Intent(HomeActivity.this, MemberSyncService.class));
+              //          startService(new Intent(HomeActivity.this, MemberSyncService.class));
                         Application.StartService(HomeActivity.this);
                     }
                 }

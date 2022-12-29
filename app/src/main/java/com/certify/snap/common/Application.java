@@ -58,34 +58,38 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Logger.debug(TAG, "onCreate");
-        sharedPreferences = Util.getSharedPreferences(this);
-        if (sharedPreferences != null && !sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
-            ApplicationController.getInstance().clearSharedPrefData(this);
+        try {
+            Logger.debug(TAG, "onCreate");
+            sharedPreferences = Util.getSharedPreferences(this);
+            if (sharedPreferences != null && !sharedPreferences.getBoolean(GlobalParameters.CLEAR_SHARED_PREF, false)) {
+                ApplicationController.getInstance().clearSharedPrefData(this);
+            }
+            //validateDB();
+            String password = getPragmaKey(this);
+            DatabaseController.getInstance().init(this, password);
+            preference = new SimplePreference(this);
+
+            mInstance = this;
+
+            novate = new Novate.Builder(this).baseUrl(GlobalParameters.BASEURL).addLog(true)
+                    .connectTimeout(20).writeTimeout(15).build();
+
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            if (BuildConfig.BUILD_TYPE != "debug") {
+                initAppCenter();
+            }
+
+            CrashHandler crashHandler = CrashHandler.getInstance();
+            crashHandler.init(this);
+
+            ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
+            registerActivityLifecycleCallbacks(handler);
+            registerComponentCallbacks(handler);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        //validateDB();
-        String password = getPragmaKey(this);
-        DatabaseController.getInstance().init(this, password);
-        preference = new SimplePreference(this);
-
-        mInstance = this;
-
-        novate = new Novate.Builder(this).baseUrl(GlobalParameters.BASEURL).addLog(true)
-                .connectTimeout(20).writeTimeout(15).build();
-
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        if (BuildConfig.BUILD_TYPE != "debug") {
-            initAppCenter();
-        }
-
-        CrashHandler crashHandler = CrashHandler.getInstance();
-        crashHandler.init(this);
-
-        ApplicationLifecycleHandler handler = new ApplicationLifecycleHandler();
-        registerActivityLifecycleCallbacks(handler);
-        registerComponentCallbacks(handler);
 
     }
 
@@ -104,35 +108,35 @@ public class Application extends android.app.Application {
 
     public static void StartService(Context context) {
         Logger.debug(TAG, "StartService - AlarmReceiver");
-        Intent myIntent = new Intent(context, AlarmReceiver.class);
-        PendingIntent restartServicePendingIntent = PendingIntent.getBroadcast(context, 0, myIntent, 0);
-        // PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 1, new Intent(this, BackgroundSyncService.class), PendingIntent.FLAG_ONE_SHOT);
-        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 9);
-        calendar.set(Calendar.MINUTE, 20);
-        calendar.set(Calendar.SECOND, 0);
-
-        if (alarmService != null)
-            alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
-
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.set(Calendar.HOUR_OF_DAY, 15);
-        calendar2.set(Calendar.MINUTE, 0);
-        calendar2.set(Calendar.SECOND, 0);
-        if (alarmService != null)
-            alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
+//        Intent myIntent = new Intent(context, AlarmReceiver.class);
+//        PendingIntent restartServicePendingIntent = PendingIntent.getBroadcast(context, 0, myIntent, 0);
+//        // PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 1, new Intent(this, BackgroundSyncService.class), PendingIntent.FLAG_ONE_SHOT);
+//        AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, 9);
+//        calendar.set(Calendar.MINUTE, 20);
+//        calendar.set(Calendar.SECOND, 0);
+//
+//        if (alarmService != null)
+//            alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
+//
+//        Calendar calendar2 = Calendar.getInstance();
+//        calendar2.set(Calendar.HOUR_OF_DAY, 15);
+//        calendar2.set(Calendar.MINUTE, 0);
+//        calendar2.set(Calendar.SECOND, 0);
+//        if (alarmService != null)
+//            alarmService.setRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(), 24 * 60 * 60 * 1000, restartServicePendingIntent);
     }
 
     public void runDeviceService() {
         Logger.debug(TAG, "runDeviceService");
-        Intent myIntent = new Intent(getApplicationContext(), DeviceHealthService.class);
-        PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE_HEALTH, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-        if (alarmService == null) {
-            Logger.error(TAG, "AlarmManager not available");
-        } else
-            alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (SystemClock.elapsedRealtime() + 2000), 10 * 60 * 1000, restartServicePendingIntent);
+//        Intent myIntent = new Intent(getApplicationContext(), DeviceHealthService.class);
+//        PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), REQUEST_CODE_HEALTH, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+//        if (alarmService == null) {
+//            Logger.error(TAG, "AlarmManager not available");
+//        } else
+//            alarmService.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, (SystemClock.elapsedRealtime() + 2000), 10 * 60 * 1000, restartServicePendingIntent);
 
     }
 
@@ -150,7 +154,7 @@ public class Application extends android.app.Application {
     public void runLoggerService(Context context) {
         Logger.debug(TAG, "runLoggerService");
         Intent myIntent = new Intent(context, LoggerService.class);
-        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 2, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(context, 2, myIntent, PendingIntent.FLAG_MUTABLE);
         AlarmManager alarmService = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmService == null) {
             Logger.error(TAG, "AlarmManager not available runLoggerService");

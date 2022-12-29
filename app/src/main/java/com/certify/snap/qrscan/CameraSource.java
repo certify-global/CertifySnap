@@ -131,7 +131,7 @@ public class CameraSource {
     public CameraSource(Activity activity, GraphicOverlay overlay) {
         this.activity = activity;
         graphicOverlay = overlay;
-        graphicOverlay.clear();
+    //    graphicOverlay.clear();
         processingRunnable = new FrameProcessingRunnable();
     }
 
