@@ -206,7 +206,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     @Override
     protected void onResume() {
         super.onResume();
-        enableNfc();
+     //   enableNfc();
         if (hidReceiver != null) {
             LocalBroadcastManager.getInstance(this).registerReceiver(hidReceiver, new IntentFilter(HIDService.HID_BROADCAST_ACTION));
         }
@@ -218,7 +218,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     @Override
     protected void onPause() {
         super.onPause();
-        disableNfc();
+        //disableNfc();
         if (hidReceiver != null) {
             hidReceiver.clearAbortBroadcast();
             LocalBroadcastManager.getInstance(this).unregisterReceiver(hidReceiver);
@@ -1251,8 +1251,8 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     private void initNfc() {
         Log.v(TAG, "initNfc");
         mNfcAdapter = M1CardUtils.isNfcAble(this);
-        mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_MULTIPLE_TASK), 0);
+//        mPendingIntent = PendingIntent.getActivity(this, 0,
+//                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_MULTIPLE_TASK), 0);
     }
 
     private void enableNfc() {
