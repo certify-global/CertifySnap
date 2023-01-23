@@ -3367,6 +3367,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void resumeScan() {
         try {
+           resetAcknowledgementScreen();
             if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
                 GestureController.getInstance().setLanguageUpdated(false);
                 GestureController.getInstance().setCallback(false);
@@ -4401,7 +4402,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             try {
                 getFragmentManager().beginTransaction().remove(fragment).commitAllowingStateLoss();
             } catch (Exception e) {
-                Log.d(TAG, "Error in closing Acknowledgement fragment");
+                Log.e(TAG, "Error in closing Acknowledgement fragment="+e.getMessage());
             }
         }
     }
