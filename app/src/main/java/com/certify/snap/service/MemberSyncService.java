@@ -89,6 +89,7 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 MemberSyncDataModel.getInstance().init(getApplicationContext());
                 AsyncTaskExecutorService executorService = new AsyncTaskExecutorService();
                 taskExecutorService = executorService.getExecutorService();
+                MemberSyncDataModel.getInstance().setSyncing(true);
                 Util.getmemberList(this, getApplicationContext(), isAllSync);
             }
         } catch (Exception e) {
@@ -133,9 +134,9 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
                 if (activeMemberCount > 0) {
                     MemberSyncDataModel.getInstance().setNumOfRecords(activeMemberCount);
                     doSendBroadcast(MemberSyncDataModel.SYNC_START, activeMemberCount, count);
-                }
+                } else MemberSyncDataModel.getInstance().setSyncing(false);
                 return;
-            }
+            } else MemberSyncDataModel.getInstance().setSyncing(false);
             Log.e(TAG, "MemberList response = " + response.responseCode);
         }
         Log.e(TAG, "MemberList null response");

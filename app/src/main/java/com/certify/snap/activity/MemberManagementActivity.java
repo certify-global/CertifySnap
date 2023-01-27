@@ -1113,7 +1113,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         if (outputImage.exists()) outputImage.delete();
         try {
             outputImage.createNewFile();
-            Log.e("gallaypath----", outputImage.getPath() + "-" + imagePath);
         } catch (IOException e) {
             e.printStackTrace();
         }

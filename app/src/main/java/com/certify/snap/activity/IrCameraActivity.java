@@ -369,6 +369,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         logo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                if (MemberSyncDataModel.getInstance().isSyncing()) return false;
                 if (progressDialog != null && progressDialog.isShowing()) return false;
                 CameraController.getInstance().setAppExitTriggered(true);
                 Logger.debug(TAG, "onLongClick", "Launch Login activity");
@@ -1450,6 +1451,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             tv_sync.setText(String.format("%s %s %s ", (totalCount++), getString(R.string.out_of), memberCount));
         } else if (actionCode == MemberSyncDataModel.SYNC_COMPLETED) {
             tv_sync.setText(getString(R.string.sync_completed));
+            MemberSyncDataModel.getInstance().setSyncing(false);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -3367,7 +3369,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
 
     public void resumeScan() {
         try {
-           resetAcknowledgementScreen();
+            resetAcknowledgementScreen();
             if ((AppSettings.isEnableHandGesture() && Util.isGestureDeviceConnected(this)) || AppSettings.isEnableTouchMode()) {
                 GestureController.getInstance().setLanguageUpdated(false);
                 GestureController.getInstance().setCallback(false);
@@ -4402,7 +4404,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             try {
                 getFragmentManager().beginTransaction().remove(fragment).commitAllowingStateLoss();
             } catch (Exception e) {
-                Log.e(TAG, "Error in closing Acknowledgement fragment="+e.getMessage());
+                Log.e(TAG, "Error in closing Acknowledgement fragment=" + e.getMessage());
             }
         }
     }
@@ -5134,6 +5136,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             hidReceiver = null;
         }
     }
+
     private void sendBroadcastMessage() {
         Intent intent = new Intent();
         intent.setAction(FireBaseMessagingService.NOTIFICATION_BROADCAST_ACTION);
