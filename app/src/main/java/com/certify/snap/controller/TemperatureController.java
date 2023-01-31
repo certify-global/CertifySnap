@@ -993,6 +993,10 @@ public class TemperatureController {
         }
     }
 
+    public boolean isTemperatureScanEnabled(SharedPreferences sharedPreferences) {
+        return (sharedPreferences != null && sharedPreferences.getBoolean(GlobalParameters.EnableTempScan, false));
+    }
+
     /**
      * Method that clears the Temperature data parameters
      */

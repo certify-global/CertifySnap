@@ -43,6 +43,7 @@ import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
 import com.certify.snap.controller.GestureController;
+import com.certify.snap.controller.TemperatureController;
 import com.certify.snap.faceserver.FaceServer;
 import com.certify.snap.localserver.LocalServer;
 import com.certify.snap.localserver.LocalServerTask;
@@ -109,7 +110,9 @@ public class HomeActivity extends Activity implements SettingCallback, JSONObjec
                 CameraController.getInstance().initDeviceMode();
                 if (value != null && value.equals("BootCompleted")) {
                     ApplicationController.getInstance().setDeviceBoot(true);
-                    if (Util.isDeviceProModel() && ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
+                    if (Util.isDeviceProModel() &&
+                            TemperatureController.getInstance().isTemperatureScanEnabled(sharedPreferences) &&
+                            ApplicationController.getInstance().isProDeviceStartScannerTimer(sharedPreferences)) {
                         startProDeviceInitTimer();
                         return;
                     }
