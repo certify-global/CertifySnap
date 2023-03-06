@@ -937,6 +937,8 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         if (!CameraController.getInstance().isPrimarySecondaryMemberMatch()) {
             runOnUiThread(() -> {
                 Toast.makeText(IrCameraActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
+                AccessCardController.getInstance().sendAccessLogInvalid(this, new RegisteredMembers(), 0,
+                        new UserExportedData(rgbBitmap, irBitmap, new RegisteredMembers(), (int) 0));
                 new Handler().postDelayed(() -> {
                     disableLedPower();
                     resetToHomePage();
@@ -2054,7 +2056,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             cancelImageTimer();
             isReadyToScan = false;
             if (isTopFragmentGesture() ||
-                    CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()))
+                    CameraController.getInstance().getTriggerType().equals(CameraController.triggerValue.WAVE.toString()) | (time_attendance_layout.getVisibility() == View.VISIBLE))
                 return;
             if (qrCodeReceived) return;
             qrCodeReceived = true;

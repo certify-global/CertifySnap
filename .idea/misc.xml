@@ -9,10 +9,14 @@
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/qr_code_border_action.xml" value="0.18684895833333334" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/drawable/red_border.xml" value="0.351" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_code_reader.xml" value="0.1657051282051282" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_device.xml" value="0.1" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_eucode_demo.xml" value="0.16826923076923078" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_f10_ir.xml" value="0.1" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_ir.xml" value="0.30453879941434847" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_qrcode_result.xml" value="0.11607992388201713" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_register_device.xml" value="0.33" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/activity_select_device.xml" value="0.14908854166666666" />
+        <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/endpoint_url.xml" value="0.3255208333333333" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/fragment_acknowledge.xml" value="0.1" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/print_layout.xml" value="0.34375" />
         <entry key="..\:/Users/nbijivemula/AndroidStudioProjects/CertifySnap/app/src/main/res/layout/q_five_layout.xml" value="0.34375" />

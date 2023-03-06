@@ -619,6 +619,10 @@ public class AccessCardController {
             try {
                 String qrCodeId = "";
                 String accessId = "";
+                String firstNameAnon = "";
+                if (registeredMembers == null || registeredMembers.getFirstname() == null || registeredMembers.getFirstname().isEmpty())
+                    firstNameAnon = "Anonymous";
+                else firstNameAnon = registeredMembers.getFirstname();
                 String triggerType = CameraController.getInstance().getTriggerType();
                 QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
                 accessLogRequest = new AccessLogRequest();
@@ -626,7 +630,7 @@ public class AccessCardController {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
                     accessLogRequest.id = "0";
                     accessLogRequest.accessId = "";
-                    accessLogRequest.firstName = "Anonymous";
+                    accessLogRequest.firstName = firstNameAnon;
                     accessLogRequest.lastName = "";
                     accessLogRequest.memberId = "";
                     accessLogRequest.memberTypeId = "";
@@ -635,7 +639,7 @@ public class AccessCardController {
                     accessId = mAccessCardID;
                     accessLogRequest.id = "0";
                     accessLogRequest.accessId = accessId;
-                    accessLogRequest.firstName = registeredMembers.getFirstname();
+                    accessLogRequest.firstName = firstNameAnon;
                     accessLogRequest.lastName = registeredMembers.getLastname();
                     accessLogRequest.memberId = registeredMembers.getMemberid();
                     accessLogRequest.memberTypeId = registeredMembers.getMemberType();
@@ -644,7 +648,7 @@ public class AccessCardController {
                 } else {
                     accessLogRequest.id = "0";
                     accessLogRequest.accessId = accessId;
-                    accessLogRequest.firstName = registeredMembers.getFirstname();
+                    accessLogRequest.firstName = firstNameAnon;
                     accessLogRequest.lastName = registeredMembers.getLastname();
                     accessLogRequest.memberId = registeredMembers.getMemberid();
                     accessLogRequest.memberTypeId = registeredMembers.getMemberType();
