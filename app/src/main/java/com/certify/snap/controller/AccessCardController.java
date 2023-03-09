@@ -619,18 +619,17 @@ public class AccessCardController {
             try {
                 String qrCodeId = "";
                 String accessId = "";
-                String firstNameAnon = "";
-                if (registeredMembers == null || registeredMembers.getFirstname() == null || registeredMembers.getFirstname().isEmpty())
-                    firstNameAnon = "Anonymous";
-                else firstNameAnon = registeredMembers.getFirstname();
+                String firstName = "";
+                if (registeredMembers.getFirstname() == null || registeredMembers.getFirstname().isEmpty())
+                    firstName = "Anonymous";
+                else firstName = registeredMembers.getFirstname();
                 String triggerType = CameraController.getInstance().getTriggerType();
-                QrCodeData qrCodeData = CameraController.getInstance().getQrCodeData();
                 accessLogRequest = new AccessLogRequest();
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
                     accessLogRequest.id = "0";
                     accessLogRequest.accessId = "";
-                    accessLogRequest.firstName = firstNameAnon;
+                    accessLogRequest.firstName = firstName;
                     accessLogRequest.lastName = "";
                     accessLogRequest.memberId = "";
                     accessLogRequest.memberTypeId = "";
@@ -639,7 +638,7 @@ public class AccessCardController {
                     accessId = mAccessCardID;
                     accessLogRequest.id = "0";
                     accessLogRequest.accessId = accessId;
-                    accessLogRequest.firstName = firstNameAnon;
+                    accessLogRequest.firstName = firstName;
                     accessLogRequest.lastName = registeredMembers.getLastname();
                     accessLogRequest.memberId = registeredMembers.getMemberid();
                     accessLogRequest.memberTypeId = registeredMembers.getMemberType();
@@ -648,7 +647,7 @@ public class AccessCardController {
                 } else {
                     accessLogRequest.id = "0";
                     accessLogRequest.accessId = accessId;
-                    accessLogRequest.firstName = firstNameAnon;
+                    accessLogRequest.firstName = firstName;
                     accessLogRequest.lastName = registeredMembers.getLastname();
                     accessLogRequest.memberId = registeredMembers.getMemberid();
                     accessLogRequest.memberTypeId = registeredMembers.getMemberType();
