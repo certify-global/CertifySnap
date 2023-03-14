@@ -71,7 +71,10 @@ public class MemberSyncService extends Service implements MemberListCallback, Me
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
             if (!MemberSyncDataModel.getInstance().isSyncing()) {
-                boolean isAllSync = intent.getBooleanExtra(StringConstants.IS_ALL_SYNC, false);
+                boolean isAllSync = false;
+                if (intent != null) {
+                    isAllSync = intent.getBooleanExtra(StringConstants.IS_ALL_SYNC, false);
+                }
                 sharedPreferences = Util.getSharedPreferences(getApplicationContext());
                 //sendNotificationEvent(getString(R.string.app_name), "Alert Background MyRabbit", "", getApplicationContext());
                 restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, new Intent(this, MemberSyncService.class), PendingIntent.FLAG_ONE_SHOT);
