@@ -389,7 +389,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 DeviceSettingsController.getInstance().getLanguageIdOnCode(languageType));
     }
 
-    private void setPrimaryIdentifierListener() {
+    private void setPrimaryIdentifier() {
         int value = Integer.parseInt(sp.getString(GlobalParameters.PRIMARY_IDENTIFIER, "1"));
         if (value == 1) {
             rbFaceRfidPrimary.setChecked(true);
@@ -432,6 +432,10 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             secondaryIdTv.setVisibility(View.GONE);
             secIdentityRg.setVisibility(View.GONE);
         }
+    }
+
+    private void setPrimaryIdentifierListener() {
+        setPrimaryIdentifier();
 
         radio_group_primary.setOnCheckedChangeListener((radioGroup, id) -> {
             if (id != R.id.none_primary) {
@@ -447,6 +451,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbQrCodeSecondary.setVisibility(View.VISIBLE);
                 rbQrCodeSecondary.setEnabled(true);
             } else if (id == R.id.qr_code_rfid_rb_primary) {
+                if (!isHomeScreenViewEnabled) {
+                    showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                    setPrimaryIdentifier();
+                    return;
+                }
                 rbQrCodeRfidPrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "2");
                 rbQrCodeRfidSecondary.setVisibility(View.GONE);
@@ -465,6 +474,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbQrCodeRfidSecondary.setVisibility(View.VISIBLE);
                 rbQrCodeRfidSecondary.setEnabled(true);
             } else if (id == R.id.qrcode_rb_primary) {
+                if (!isHomeScreenViewEnabled) {
+                    showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                    setPrimaryIdentifier();
+                    return;
+                }
                 rbQrCodePrimary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.PRIMARY_IDENTIFIER, "5");
                 rbQrCodeRfidSecondary.setVisibility(View.GONE);
@@ -493,7 +507,7 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
         });
     }
 
-    private void setSecondaryIdentifierListener() {
+    private void setSecondaryIdentifier () {
         int value = Integer.parseInt(sp.getString(GlobalParameters.SECONDARY_IDENTIFIER, "0"));
         if (value == 0) {
             rbNoneSecondary.setChecked(true);
@@ -510,6 +524,10 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbNoneSecondary.setChecked(true);
             }
         }
+    }
+
+    private void setSecondaryIdentifierListener() {
+        setSecondaryIdentifier();
 
         secIdentityRg.setOnCheckedChangeListener((radioGroup, id) -> {
             if (id == R.id.qrcode_rfid_rb_secondary) {
@@ -522,6 +540,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 rbRfidSecondary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "3");
             } else if (id == R.id.qr_code_rb_secondary) {
+                if (!isHomeScreenViewEnabled) {
+                    showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                    setSecondaryIdentifier();
+                    return;
+                }
                 rbQrCodeSecondary.setChecked(true);
                 Util.writeString(sp, GlobalParameters.SECONDARY_IDENTIFIER, "4");
             } else if (id == R.id.none_secondary) {
@@ -542,6 +565,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.offline_qr_code_rb_yes) {
+                    if (!isHomeScreenViewEnabled) {
+                        showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                        offlineQrCodeNo.setChecked(true);
+                        return;
+                    }
                     Util.writeBoolean(sp, GlobalParameters.OFFLINE_QR_CODE, true);
                 } else {
                     Util.writeBoolean(sp, GlobalParameters.OFFLINE_QR_CODE, false);
@@ -559,7 +587,16 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
             vendorQrCodeYes.setChecked(false);
         }
 
-        vendorQrCodeRg.setOnCheckedChangeListener((group, checkedId) -> Util.writeBoolean(sp, GlobalParameters.ENABLE_VENDOR_QR, checkedId == R.id.vendor_qr_rb_yes));
+        vendorQrCodeRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.vendor_qr_rb_yes) {
+                if (!isHomeScreenViewEnabled) {
+                    showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                    vendorQrCodeNo.setChecked(true);
+                    return;
+                }
+            }
+            Util.writeBoolean(sp, GlobalParameters.ENABLE_VENDOR_QR, checkedId == R.id.vendor_qr_rb_yes);
+        });
     }
 
     private void visitorValidations() {
@@ -598,6 +635,11 @@ public class IdentificationSettingsActivity extends SettingsBaseActivity {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     if (checkedId == R.id.visitor_qr_rb_yes) {
+                        if (!isHomeScreenViewEnabled) {
+                            showSnackBarMessage(getString(R.string.enable_home_view_msg));
+                            visitorQrNo.setChecked(true);
+                            return;
+                        }
                         Util.writeBoolean(sp, GlobalParameters.ENABLE_VISITOR_QR, true);
                         llVisitorMode.setVisibility(View.VISIBLE);
                         if (sp.getBoolean(GlobalParameters.ENABLE_VISITOR_MODE_MANUAL, false))

@@ -783,7 +783,6 @@
     <string name="lang_choose_your">Choose your Preferred Language</string>
     <string name="lang_instructions">Enter the Message for Multilanguage Flow</string>
     <string name="touch_instructions">Text for Home Page</string>
-<!--
-    <string name="enable_vendor_qrcode">Enable Vendor QR Code</string>
--->
+    <string name="home_screen_message">Please disable QrCode setting to uncheck this option</string>
+
 </resources>

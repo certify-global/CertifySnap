@@ -201,7 +201,10 @@ public class AppSettings {
                 (primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
                 (secondaryIdentifier == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
                 (secondaryIdentifier == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()) ||
-                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false)) {
+                sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) ||
+                sharedPreferences.getBoolean(GlobalParameters.ENABLE_VENDOR_QR, false) ||
+                sharedPreferences.getBoolean(GlobalParameters.OFFLINE_QR_CODE, false) ||
+                sharedPreferences.getBoolean(GlobalParameters.ENABLE_VISITOR_QR, false)) {
             qrCodeEnabled = true;
         } else {
             qrCodeEnabled = false;

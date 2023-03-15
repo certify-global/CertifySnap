@@ -745,5 +745,6 @@
     <string name="enable_offline_qrcode">Habilitar código QR sin conexión</string>
     <string name="enable_vendor_qrcode">Habilitar código QR de proveedor</string>
     <string name="capture_low_threshold_images">Captura de imágenes de usuarios a baja temperatura</string>
+    <string name="home_screen_message">Desactive la configuración de QrCode para desmarcar esta opción</string>
 
 </resources>

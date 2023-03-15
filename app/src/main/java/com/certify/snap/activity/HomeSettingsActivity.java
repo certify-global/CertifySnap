@@ -8,8 +8,10 @@ import androidx.annotation.Nullable;
 
 import com.certify.snap.api.response.HomePageSettings;
 import com.certify.snap.common.AppSettings;
+import com.certify.snap.controller.CameraController;
 import com.certify.snap.controller.DatabaseController;
 import com.certify.snap.controller.DeviceSettingsController;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import android.view.View;
@@ -17,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.certify.snap.R;
@@ -32,6 +35,7 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
     TextView tv_welcome, titles;
     CheckBox cbHomeText, cbTextOnly;
     private HomePageSettings homePageSettingsDb = null;
+    private LinearLayout parentLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,6 +57,7 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
             btn_save = findViewById(R.id.btn_exit);
             tv_welcome = findViewById(R.id.tv_welcome);
             titles = findViewById(R.id.titles);
+            parentLayout = findViewById(R.id.parent_layout);
             tv_welcome.setTypeface(rubiklight);
             titles.setTypeface(rubiklight);
             btn_save.setTypeface(rubiklight);
@@ -95,11 +100,31 @@ public class HomeSettingsActivity extends SettingsBaseActivity {
             cbHomeText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    SharedPreferences sharedPreferences = Util.getSharedPreferences(HomeSettingsActivity.this);
+                    if (sharedPreferences != null) {
+                        String primaryValue = sharedPreferences.getString(GlobalParameters.PRIMARY_IDENTIFIER, "1");
+                        int primaryIdentifier = Integer.parseInt(primaryValue);
+                        String secondaryValue = sharedPreferences.getString(GlobalParameters.SECONDARY_IDENTIFIER, "0");
+                        int secondaryIdentifier = Integer.parseInt(secondaryValue);
+                        if (!isChecked && (sharedPreferences.getBoolean(GlobalParameters.ANONYMOUS_ENABLE, false) ||
+                                sharedPreferences.getBoolean(GlobalParameters.ENABLE_VENDOR_QR, false) ||
+                                sharedPreferences.getBoolean(GlobalParameters.OFFLINE_QR_CODE, false) ||
+                                sharedPreferences.getBoolean(GlobalParameters.ENABLE_VISITOR_QR, false) ||
+                                (primaryIdentifier == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()) ||
+                                (primaryIdentifier == CameraController.PrimaryIdentification.QR_CODE.getValue()) ||
+                                (secondaryIdentifier == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
+                                (secondaryIdentifier == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue()))) {
+                            Snackbar.make(parentLayout, getString(R.string.home_screen_message), Snackbar.LENGTH_LONG).show();
+                            cbHomeText.setChecked(true);
+                            return;
+                        }
+                    }
                     Util.writeBoolean(sp, GlobalParameters.HOME_TEXT_IS_ENABLE, isChecked);
                     if (isChecked) {
                         cbTextOnly.setChecked(false);
+                    } else {
+                        setIdentificationOptions();
                     }
-                    if(!isChecked)setIdentificationOptions();
                 }
             });
             cbTextOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
