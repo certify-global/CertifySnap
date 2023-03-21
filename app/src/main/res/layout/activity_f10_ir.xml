@@ -106,6 +106,7 @@
                 style="@style/checkInButtonNumberStyle"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
+                android:layout_marginBottom="@dimen/size_10"
                 android:background="@drawable/btn_shape"
                 android:onClick="onCheckInClick"
                 android:text="@string/check_in"
@@ -115,9 +116,8 @@
             <Button
                 android:id="@+id/btn_check_out"
                 style="@style/buttonNumberStyle"
-                android:layout_below="@id/btn_check_in"
                 android:layout_marginLeft="40dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="@dimen/size_20"
                 android:layout_marginRight="40dp"
                 android:layout_marginBottom="@dimen/size_10"
                 android:background="@drawable/btn_checkout_shape"
