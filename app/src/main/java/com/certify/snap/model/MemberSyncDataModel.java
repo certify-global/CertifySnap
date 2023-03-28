@@ -586,7 +586,7 @@ public class MemberSyncDataModel {
                                   String uniqueid, String imgpath, String sync, Context context, RegisteredMembers member, long primaryId) {
         boolean result = false;
         File imageFile = new File(imgpath);
-        if (imageFile.exists() && processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), context)) {
+        if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), context) || !imageFile.exists()) {
             if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                     member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
                     member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
