@@ -9,8 +9,14 @@ public class AccessLogRequest {
     @SerializedName("accessId")
     public String accessId;
 
+    @SerializedName("titleType")
+    public String titleType = "";
+
     @SerializedName("firstName")
     public String firstName;
+
+    @SerializedName("middleName")
+    public String middleName = "";
 
     @SerializedName("lastName")
     public String lastName;

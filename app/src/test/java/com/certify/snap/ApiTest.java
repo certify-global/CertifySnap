@@ -38,7 +38,7 @@ public class ApiTest {
     public void testRecordUserTemperature() throws IOException {
         HttpClient defaultHttpClient = Mockito.mock(HttpClient.class);
         when(context.getApplicationContext()).thenReturn(appContext);
-        when(appContext.getTemperatureUtil()).thenReturn(thermalImageUtil);
+       // when(appContext.getTemperatureUtil()).thenReturn(thermalImageUtil);
         when(defaultHttpClient.execute(Mockito.isA(HttpUriRequest.class))).thenThrow(new java.net.SocketException("invalid address"));
 //        Util.recordUserTemperature(null, context, "37.0", null, null, null, false);
         //Assert.assertTrue();

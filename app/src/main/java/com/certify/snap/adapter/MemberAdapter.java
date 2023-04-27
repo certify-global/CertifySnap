@@ -1,5 +1,6 @@
 package com.certify.snap.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -66,14 +67,17 @@ public class MemberAdapter extends RecyclerView.Adapter<MemberAdapter.MyViewHold
         View itemview = LayoutInflater.from(mcontext).inflate(R.layout.member_item, parent, false);
         return new MyViewHolder(itemview);
     }
+    @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         try {
-            holder.name.setText(mlist.get(position).getFirstname()+" " + mlist.get(position).getLastname());
-            holder.lastname.setText(mlist.get(position).getLastname());
-            holder.mobile.setText("Mobile: " + mlist.get(position).getMobile());
-            holder.id.setText("Id: " + mlist.get(position).getMemberid());
-            holder.email.setText("Email: " + mlist.get(position).getEmail());
+            if(mlist.get(position).getMiddleName().isEmpty())
+            holder.name.setText(String.format( "%s %s",mlist.get(position).getFirstname(), mlist.get(position).getLastname()));
+else             holder.name.setText(String.format("%s %s %s",mlist.get(position).getFirstname(),mlist.get(position).getMiddleName(), mlist.get(position).getLastname()));
+
+           // holder.mobile.setText(String.format("Mobile: %s" , mlist.get(position).getMobile()));
+            holder.id.setText(String.format("Id: %s" , mlist.get(position).getMemberid()));
+           // holder.email.setText("Email: " + mlist.get(position).getEmail());
             //holder.time.setText("ExpireTime: " + mlist.get(position).getExpire_time());
             String path = mlist.get(position).getImage();
             InputStream inputStream;

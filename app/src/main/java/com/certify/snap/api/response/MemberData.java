@@ -18,8 +18,14 @@ public class MemberData {
     @SerializedName("memberId")
     public String memberId;
 
+    @SerializedName("titleType")
+    public String titleType = "";
+
     @SerializedName("firstName")
     public String firstName;
+
+    @SerializedName("middleName")
+    public String middleName = "";
 
     @SerializedName("lastName")
     public String lastName;

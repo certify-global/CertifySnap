@@ -6,13 +6,15 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 
-@Entity(indices={@Index(value="primaryid", unique=true)})
+@Entity(indices = {@Index(value = "primaryid", unique = true)})
 public class RegisteredMembers {
 
     @PrimaryKey
     @NonNull
     public long primaryid;
+    public String titleType;
     public String firstname;
+    public String middleName;
     public String lastname;
     public String expiretime;
     public String status;
@@ -53,12 +55,29 @@ public class RegisteredMembers {
         this.primaryid = primaryId;
     }
 
+    public String getTitleType() {
+        return titleType;
+    }
+
+    public void setTitleType(String titleType) {
+        this.titleType = titleType;
+    }
+
+
     public String getFirstname() {
         return firstname;
     }
 
     public void setFirstname(String firstname) {
         this.firstname = firstname;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
     public String getLastname() {

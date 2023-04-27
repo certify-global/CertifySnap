@@ -114,7 +114,9 @@ public class ManageMemberHelper {
             Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
             RegisteredMembers registeredMembers = new RegisteredMembers();
+            registeredMembers.setTitleType(member.titleType);
             registeredMembers.setFirstname(member.firstName);
+            registeredMembers.setMiddleName(member.middleName);
             registeredMembers.setLastname(member.lastName);
             registeredMembers.setMobile(member.phoneNumber);
             registeredMembers.setStatus("1");
@@ -237,7 +239,9 @@ public class ManageMemberHelper {
 
     public static class MemberResponse {
         public long id;
+        public String titleType;
         public String firstName;
+        public String middleName;
         public String lastName;
         public String email;
         public String phoneNumber;
@@ -252,7 +256,9 @@ public class ManageMemberHelper {
         public String toString() {
             return "MemberResponse{" +
                     "id=" + id +
+                    ", titleType='" + titleType + '\'' +
                     ", firstName='" + firstName + '\'' +
+                    ", middleName='" + middleName + '\'' +
                     ", lastName='" + lastName + '\'' +
                     ", email='" + email + '\'' +
                     ", phoneNumber='" + phoneNumber + '\'' +

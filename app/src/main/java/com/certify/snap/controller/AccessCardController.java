@@ -430,6 +430,8 @@ public class AccessCardController {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
                     //     firstNameAnon = CameraController.getInstance().getQrCodeData().getFirstName();
                 }
+                accessLogRequest.titleType = "";
+                accessLogRequest.middleName= "";
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
@@ -465,9 +467,11 @@ public class AccessCardController {
                         registeredMember.setMemberid(anonymousId);
                         registeredMember.setAccessid(mAccessCardID);
                     }
-                    accessLogRequest.id = "0";
+                    accessLogRequest.id = registeredMember.getUniqueid();
                     accessLogRequest.accessId = registeredMember.getAccessid();
+                    accessLogRequest.titleType = registeredMember.getTitleType();
                     accessLogRequest.firstName = registeredMember.getFirstname();
+                    accessLogRequest.middleName = registeredMember.getMiddleName();
                     accessLogRequest.lastName = registeredMember.getLastname();
                     accessLogRequest.memberId = registeredMember.getMemberid();
                     accessLogRequest.memberTypeId = registeredMember.getMemberType();
@@ -476,9 +480,11 @@ public class AccessCardController {
                 } else if (triggerType.equals(CameraController.triggerValue.FACE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
-                        accessLogRequest.id = "0";
+                        accessLogRequest.id = registeredMember.getUniqueid();
                         accessLogRequest.accessId = registeredMember.getAccessid();
+                        accessLogRequest.titleType = registeredMember.getTitleType();
                         accessLogRequest.firstName = registeredMember.getFirstname();
+                        accessLogRequest.middleName = registeredMember.getMiddleName();
                         accessLogRequest.lastName = registeredMember.getLastname();
                         accessLogRequest.memberId = registeredMember.getMemberid();
                         accessLogRequest.memberTypeId = registeredMember.getMemberType();
@@ -492,9 +498,11 @@ public class AccessCardController {
                 } else if (triggerType.equals(CameraController.triggerValue.WAVE.toString())) {
                     registeredMember = data.member;
                     if (registeredMember != null) {
-                        accessLogRequest.id = "0";
+                        accessLogRequest.id = registeredMember.getUniqueid();
                         accessLogRequest.accessId = registeredMember.getAccessid();
+                        accessLogRequest.middleName = registeredMember.getMiddleName();
                         accessLogRequest.firstName = registeredMember.getFirstname();
+                        accessLogRequest.middleName = registeredMember.getMiddleName();
                         accessLogRequest.lastName = registeredMember.getLastname();
                         accessLogRequest.memberId = registeredMember.getMemberid();
                         accessLogRequest.memberTypeId = registeredMember.getMemberType();
@@ -625,6 +633,8 @@ public class AccessCardController {
                 else firstName = registeredMembers.getFirstname();
                 String triggerType = CameraController.getInstance().getTriggerType();
                 accessLogRequest = new AccessLogRequest();
+                accessLogRequest.titleType = "";
+                accessLogRequest.middleName = "";
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     qrCodeId = CameraController.getInstance().getQrCodeId();
                     accessLogRequest.id = "0";
@@ -636,18 +646,22 @@ public class AccessCardController {
                     accessLogRequest.memberTypeName = "";
                 } else if (triggerType.equals(CameraController.triggerValue.ACCESSID.toString())) {
                     accessId = mAccessCardID;
-                    accessLogRequest.id = "0";
+                    accessLogRequest.id = registeredMembers.getUniqueid();
                     accessLogRequest.accessId = accessId;
+                    accessLogRequest.titleType = registeredMembers.getTitleType();
                     accessLogRequest.firstName = firstName;
+                    accessLogRequest.middleName = registeredMembers.getMiddleName();
                     accessLogRequest.lastName = registeredMembers.getLastname();
                     accessLogRequest.memberId = registeredMembers.getMemberid();
                     accessLogRequest.memberTypeId = registeredMembers.getMemberType();
                     accessLogRequest.memberTypeName = registeredMembers.getMemberTypeName();
                     accessLogRequest.networkId = registeredMembers.getNetworkId();
                 } else {
-                    accessLogRequest.id = "0";
+                    accessLogRequest.id = registeredMembers.getUniqueid();
                     accessLogRequest.accessId = accessId;
+                    accessLogRequest.titleType = registeredMembers.getTitleType();
                     accessLogRequest.firstName = firstName;
+                    accessLogRequest.middleName = registeredMembers.getMiddleName();
                     accessLogRequest.lastName = registeredMembers.getLastname();
                     accessLogRequest.memberId = registeredMembers.getMemberid();
                     accessLogRequest.memberTypeId = registeredMembers.getMemberType();
@@ -729,6 +743,11 @@ public class AccessCardController {
                         if (data.member.lastname != null) {
                             accessLogOfflineRecord.setLastName(data.member.getLastname());
                         }
+                        if (data.member.titleType != null)
+                            accessLogOfflineRecord.setTitleType(data.member.getTitleType());
+                        if (data.member.middleName != null)
+                            accessLogOfflineRecord.setMemberId(data.member.getMiddleName());
+
                     } else {
                         accessLogOfflineRecord.setFirstName("Anonymous");
                     }

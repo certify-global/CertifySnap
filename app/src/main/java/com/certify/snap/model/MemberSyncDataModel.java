@@ -113,7 +113,9 @@ public class MemberSyncDataModel {
                             String certifyId = c.getString("id");
                             String memberId = c.getString("memberId");
                             String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
+                            member.setTitleType(c.isNull("titleType") ? "" : c.getString("titleType"));
                             member.setFirstname(c.getString("firstName"));
+                            member.setMiddleName(c.isNull("middleName") ? "" : c.getString("middleName"));
                             member.setLastname(c.getString("lastName"));
                             member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
@@ -252,7 +254,9 @@ public class MemberSyncDataModel {
                             String memberId = c.getString("memberId");
                             String imagePath = MemberUtilData.getMemberImagePath(c.getString("faceTemplate"), certifyId);
                             String groupId = "0";
+                            member.setTitleType(c.isNull("titleType") ? "" : c.getString("titleType"));
                             member.setFirstname(c.getString("firstName"));
+                            member.setMiddleName(c.isNull("middleName") ? "" : c.getString("middleName"));
                             member.setLastname(c.getString("lastName"));
                             member.setAccessid(c.getString("accessId"));
                             member.setUniqueid(c.getString("id"));
@@ -448,12 +452,12 @@ public class MemberSyncDataModel {
                             boolean isMemberAccessed = memberExist.isMemberAccessed;
                             deleteRecord(member.firstname, member.getPrimaryId());
                             member.setMemberAccessed(isMemberAccessed);
-                            localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                            localRegister(member.getTitleType(), member.getFirstname(), member.getMiddleName(), member.getLastname(), member.getMobile(),
                                     member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                                     member.getImage(), "sync", context, member, member.getPrimaryId());
                         } else {
                             Log.d(TAG, "SnapXT New member update " + i);
-                            localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                            localRegister(member.getTitleType(),member.getFirstname(),member.getMiddleName(), member.getLastname(), member.getMobile(),
                                     member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                                     member.getImage(), "sync", context, member, member.getPrimaryId());
                         }
@@ -484,7 +488,7 @@ public class MemberSyncDataModel {
                     boolean isMemberAccessed = memberExist.isMemberAccessed;
                     deleteRecord(member.firstname, member.getPrimaryId());
                     member.setMemberAccessed(isMemberAccessed);
-                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                    localRegister(member.getTitleType(), member.getFirstname(), member.getMiddleName(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                             member.getImage(), "sync", context, member, member.getPrimaryId());
                     if (listener != null) {
@@ -498,7 +502,7 @@ public class MemberSyncDataModel {
                     membersList.remove(member);
                 } else {
                     Log.d(TAG, "SnapXT New member update " + i);
-                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                    localRegister(member.getTitleType(), member.getFirstname(),member.getMiddleName(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                             member.getImage(), "sync", context, member, member.getPrimaryId());
                     if (listener != null) {
@@ -526,7 +530,7 @@ public class MemberSyncDataModel {
                 doSendBroadcast(SYNC_IN_PROGRESS, 0, 0);
                 RegisteredMembers member = membersList.get(i);
                 Log.d(TAG, "SnapXT New member update " + i);
-                localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                localRegister(member.getTitleType(), member.getFirstname(), member.getMiddleName(), member.getLastname(), member.getMobile(),
                         member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                         member.getImage(), "sync", context, member, member.getPrimaryId());
             }
@@ -582,12 +586,12 @@ public class MemberSyncDataModel {
      * @param member    member
      * @return true or false accordingly
      */
-    private boolean localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid,
+    private boolean localRegister(String titleType, String firstname, String middleName, String lastname, String mobile, String memberId, String email, String accessid,
                                   String uniqueid, String imgpath, String sync, Context context, RegisteredMembers member, long primaryId) {
         boolean result = false;
         File imageFile = new File(imgpath);
         if (processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), context) || !imageFile.exists()) {
-            if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
+            if (registerDatabase(titleType, firstname, middleName, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                     member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
                     member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
@@ -607,7 +611,7 @@ public class MemberSyncDataModel {
                 Log.d(TAG, "SnapXT Error dbSyncErrorMemberList size " + dbSyncErrorMemberList.size());
             }*/
             failedImageSyncCount++;
-            if (registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
+            if (registerDatabase(titleType, firstname,middleName, lastname, mobile, memberId, email, accessid, uniqueid, context, member.getDateTime(), primaryId,
                     member.memberType, member.memberTypeName, member.networkId, member.accessFromTime, member.accessToTime, member.groupId, member.isMemberAccessed,
                     member.groupTypeName, member.isDocument, member.certifyUniversalGuid)) {
                 Log.d(TAG, "SnapXT Record successfully updated in db");
@@ -664,7 +668,7 @@ public class MemberSyncDataModel {
      * @param dateTime  dateTime
      * @return true or false accordingly
      */
-    public boolean registerDatabase(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
+    public boolean registerDatabase(String titleType, String firstname, String middleName, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, Context context,
                                     String dateTime, long primaryId, String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime,
                                     String groupId, boolean isMemberAccessed, String groupTypeName, boolean isDocument, String guid) {
         try {
@@ -675,7 +679,9 @@ public class MemberSyncDataModel {
             Log.e("tag", "image_uri---" + image + "  feature_uri---" + feature);
 
             RegisteredMembers registeredMembers = new RegisteredMembers();
+            registeredMembers.setTitleType(titleType);
             registeredMembers.setFirstname(firstname);
+            registeredMembers.setMiddleName(middleName);
             registeredMembers.setLastname(lastname);
             registeredMembers.setMobile(mobile);
             registeredMembers.setStatus("1");
@@ -731,12 +737,12 @@ public class MemberSyncDataModel {
                     boolean isMemberAccessed = memberExist.isMemberAccessed;
                     deleteRecord(member.firstname, member.getPrimaryId());
                     member.setMemberAccessed(isMemberAccessed);
-                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                    localRegister(member.getTitleType(), member.getFirstname(), member.getMiddleName(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                             member.getImage(), "sync", context, member, member.getPrimaryId());
                 } else {
                     Log.d(TAG, "SnapXT Error member update " + i);
-                    localRegister(member.getFirstname(), member.getLastname(), member.getMobile(),
+                    localRegister(member.getTitleType(), member.getFirstname(),  member.getMiddleName(), member.getLastname(), member.getMobile(),
                             member.getMemberid(), member.getEmail(), member.getAccessid(), member.getUniqueid(),
                             member.getImage(), "sync", context, member, member.getPrimaryId());
                 }
@@ -1034,7 +1040,9 @@ public class MemberSyncDataModel {
     public RegisteredMembers getRegisteredMember(MemberData memberData) {
         RegisteredMembers registeredMember = new RegisteredMembers();
         registeredMember.primaryid = memberData.primaryId;
+        registeredMember.titleType = memberData.titleType;
         registeredMember.firstname = memberData.firstName;
+        registeredMember.middleName = memberData.middleName;
         registeredMember.lastname = memberData.lastName;
         registeredMember.uniqueid = memberData.uniqueId;
         registeredMember.memberid = memberData.memberId;

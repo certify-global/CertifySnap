@@ -388,8 +388,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
     EditText muniqueid;
     //EditText mtime;
     Button mupdate;
-    ImageView medit;
-    LinearLayout textbody;
+
     LinearLayout editbody;
     private Button enrollBtn;
     private Button popupEnrollBtn;
@@ -425,7 +424,6 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
 
 
             //mtime = view.findViewById(R.id.dialog_edit_time);
-            textbody = view.findViewById(R.id.linear_body);
             editbody = view.findViewById(R.id.linear_edit_body);
 
             maccessid.setText(member.getAccessid());
@@ -501,7 +499,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             mupdate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String titleType = "";
                     String firstnamestr = mfirstname.getText().toString();
+                    String middleName = "";
                     String lastnamestr = mlasttname.getText().toString();
                     String mobilestr = mmobile.getText().toString();
                     String idstr = mmemberid.getText().toString();
@@ -541,7 +541,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 isUpdate = true;
                                 JSONObject obj = new JSONObject();
                                 obj.put("id", uniquestr);
+                                obj.put("titleType", titleType);
                                 obj.put("firstName", firstnamestr);
+                                obj.put("middleName", middleName);
                                 obj.put("lastname", lastnamestr);
                                 obj.put("email", emailstr);
                                 obj.put("phoneNumber", mobilestr);
@@ -565,7 +567,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                                 Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                             }
                         } else {
-                            localUpdate(firstnamestr, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "", "", "", "", "", "");
+                            localUpdate(titleType, firstnamestr, middleName, lastnamestr, mobilestr, idstr, emailstr, accessstr, uniquestr, updateimagePath, member.getPrimaryId(), "", "", "", "", "", "", "");
                         }
                     } else if (TextUtils.isEmpty(idstr)) {
                         text_input_member_id.setError(getString(R.string.member_empty_msg));
@@ -715,7 +717,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                             isDeleted = true;
                             JSONObject obj = new JSONObject();
                             obj.put("id", members.getUniqueid());
+                            obj.put("titleType", members.getTitleType());
                             obj.put("firstName", members.getFirstname());
+                            obj.put("middleName", members.getMiddleName());
                             obj.put("lastname", members.getLastname());
                             obj.put("email", members.getEmail());
                             obj.put("phoneNumber", members.getMobile());
@@ -845,7 +849,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         mregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String titleType = "";
                 String firstnamestr = mfirstname.getText().toString();
+                String middleName = "";
                 String lastnamestr = mlastname.getText().toString();
                 String mobilestr = mmobile.getText().toString();
                 String memberidstr = mmemberid.getText().toString();
@@ -879,7 +885,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         try {
                             JSONObject obj = new JSONObject();
                             obj.put("id", "");
+                            obj.put("titleType", titleType);
                             obj.put("firstName", firstnamestr);
+                            obj.put("middleName", middleName);
                             obj.put("lastname", lastnamestr);
                             obj.put("email", emailstr);
                             obj.put("phoneNumber", mobilestr);
@@ -893,7 +901,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                             Logger.error(TAG + "AsyncJSONObjectMemberManage", e.getMessage());
                         }
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "", "", "", "", "", "");
+                        localRegister(titleType, firstnamestr, middleName, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "", Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), "", "", "", "", "", "", "");
                     }
 
                 } else if (TextUtils.isEmpty(memberidstr) || TextUtils.isEmpty(accessstr)) {
@@ -915,13 +923,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         Util.showToast(MemberManagementActivity.this, data);
     }
 
-    private void localRegister(String firstname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId,
+    private void localRegister(String titleType, String firstname,String middleName, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imgpath, String sync, String dateTime, long primaryId,
                                String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime, String groupId, String guid) {
         String data = "";
         Log.d(TAG, "Snap Primary id : " + primaryId);
         File imageFile = new File(imgpath);
         if (MemberSyncDataModel.getInstance().processImg(firstname + "-" + primaryId, imgpath, String.valueOf(primaryId), this) || !imageFile.exists()) {
-            if (MemberSyncDataModel.getInstance().registerDatabase(firstname, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId,
+            if (MemberSyncDataModel.getInstance().registerDatabase(titleType, firstname,middleName, lastname, mobile, memberId, email, accessid, uniqueid, this, dateTime, primaryId,
                     memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, false, "", false, guid)) {
                 if (!sync.equals("sync"))
                     showResult(getString(R.string.Register_success));
@@ -944,7 +952,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
         }
     }
 
-    public void localUpdate(String fistname, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId,
+    public void localUpdate(String titleType, String fistname,String middleName, String lastname, String mobile, String memberId, String email, String accessid, String uniqueid, String imagePath, long primaryId,
                             String memberType, String memberTypeName, String networkId, String accessFromTime, String accessToTime, String groupId, String groupName) {
         String data = "";
         List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
@@ -956,7 +964,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             if (file.exists() && filepath.equalsIgnoreCase(imagePath)) {
                 if (MemberSyncDataModel.getInstance().processImg(fistname + "-" + primaryId, imagePath, String.valueOf(primaryId), this)) {
                     RegisteredMembers Members = list.get(0);
+                    Members.setTitleType(titleType);
                     Members.setFirstname(fistname);
+                    Members.setMiddleName(middleName);
                     Members.setLastname(lastname);
                     Members.setMobile(mobile);
                     Members.setMemberid(memberId);
@@ -1002,7 +1012,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
 //                    newimage = Members.getImage();
 //                    newfeature = Members.getFeatures();
 //                }
+                Members.setTitleType(titleType);
                 Members.setFirstname(fistname);
+                Members.setMiddleName(middleName);
                 Members.setLastname(lastname);
                 Members.setMobile(mobile);
                 Members.setEmail(email);
@@ -1313,7 +1325,9 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
             try {
                 JSONObject json = new JSONObject(reportInfo);
                 if (json.has("responseCode") && json.getInt("responseCode") == 1) {
+                    String titleType = responseData.isNull("titleType") ? "" : responseData.getString("titleType");
                     String firstnamestr = responseData.getString("firstName");
+                    String middleName =responseData.isNull("middleName") ? "" :  responseData.getString("middleName");
                     String lastnamestr = responseData.getString("lastname");
                     String emailstr = responseData.getString("email");
                     String mobilestr = responseData.getString("phoneNumber");
@@ -1360,11 +1374,13 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
 
                     //mprogressDialog = ProgressDialog.show(ManagementActivity.this, getString(R.string.Register), getString(R.string.register_wait));
                     if (isUpdate) {
-                        localUpdate(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId(),
+                        localUpdate(titleType, firstnamestr, middleName, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, updateimagePath, clickMember.getPrimaryId(),
                                 memberType, memberTypeName, networkId, accessFromTime, accessToTime, groupId, groupTypeName);
                     } else if (isDeleted) {
                         RegisteredMembers members = new RegisteredMembers();
+                        members.setTitleType(titleType);
                         members.setFirstname(firstnamestr);
+                        members.setMiddleName(middleName);
                         members.setLastname(lastnamestr);
                         members.setEmail(emailstr);
                         members.setMobile(mobilestr);
@@ -1382,7 +1398,7 @@ public class MemberManagementActivity extends SettingsBaseActivity implements Ma
                         localDelete(members);
                         isDeleted = false;
                     } else {
-                        localRegister(firstnamestr, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "",
+                        localRegister(titleType, firstnamestr, middleName, lastnamestr, mobilestr, memberidstr, emailstr, accessstr, uniquestr, registerpath, "",
                                 Util.currentDate(), DatabaseController.getInstance().lastPrimaryIdOnMember(), memberType, memberTypeName,
                                 networkId, accessFromTime, accessToTime, groupId, certifyUniversalGuid);
                     }

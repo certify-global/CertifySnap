@@ -200,7 +200,9 @@ public class LocalServerController {
         JSONObject obj = new JSONObject();
         try {
             obj.put("primaryId", member.getPrimaryId());
+            obj.put("titleType", member.getTitleType());
             obj.put("firstName", member.getFirstname());
+            obj.put("middleName", member.getMiddleName());
             obj.put("lastname", member.getLastname());
             obj.put("email", member.getEmail());
             obj.put("phoneNumber", member.getMobile());
@@ -224,7 +226,9 @@ public class LocalServerController {
             List<RegisteredMembers> list = DatabaseController.getInstance().findMember(primaryId);
             if (list != null && list.size() > 0) {
                 RegisteredMembers Members = list.get(0);
+                Members.setTitleType(member.isNull("titleType") ? "" : member.getString("titleType"));
                 Members.setFirstname(member.getString("firstName"));
+                Members.setMiddleName(member.isNull("middleName") ? "" : member.getString("middleName"));
                 Members.setLastname(member.getString("lastname"));
                 Members.setMobile(member.getString("phoneNumber"));
                 Members.setMemberid(member.getString("memberId"));

@@ -2424,7 +2424,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
             }
             if (preview != null) {
                 preview.stop();
-                preview.release();
+                preview.release(); //todo
             }
             if (cameraSource != null) {
                 cameraSource.stop();
@@ -2640,7 +2640,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                                 if (registeredMemberslist != null && registeredMemberslist.size() > 0) {
                                     Log.d(TAG, "Snap Matched Database, Run temperature");
                                     RegisteredMembers registeredMembers = registeredMemberslist.get(0);
-                                    if (validateCheckInCheckOut(registeredMembers)) {
+                                    if (validateCheckInCheckOut(registeredMembers)) { //todo
                                         searchFaceDisposable.remove(searchMemberDisposable);
                                         return;
                                     }
@@ -3271,6 +3271,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
         AccessCardController.getInstance().clearData();
         searchFaceInfoList.clear();
         compareResultList.clear();
+        compareResult = null;
         resetMaskStatus();
         mFaceMatchRetry = 0;
         temperature = 0f;
@@ -4562,6 +4563,7 @@ public class IrCameraActivity extends BaseActivity implements ViewTreeObserver.O
                 }
                 resetHomeScreen();
                 compareResultList.clear();
+                compareResult = null;
             } else {
                 ShowLauncherView();
             }

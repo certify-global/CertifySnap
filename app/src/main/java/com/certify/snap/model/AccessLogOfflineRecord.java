@@ -18,7 +18,9 @@ public class AccessLogOfflineRecord {
     public String jsonObj;
     public int offlineSync;
     private int id;
+    private String titleType;
     private String firstName;
+    private String middleName;
     private String lastName;
     private String memberId;
     private String temperature;
@@ -58,6 +60,14 @@ public class AccessLogOfflineRecord {
         this.id = id;
     }
 
+    public String getTitleType() {
+        return titleType;
+    }
+
+    public void setTitleType(String titleType) {
+        this.titleType = titleType;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -65,7 +75,13 @@ public class AccessLogOfflineRecord {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+    public String getMiddleName() {
+        return middleName;
+    }
 
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
     public String getLastName() {
         return lastName;
     }

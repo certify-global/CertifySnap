@@ -877,29 +877,6 @@ public class Util {
         return value;
     }
 
-    private static void updateFaceMemberValues(JSONObject obj, UserExportedData data, Context context) {
-        try {
-            if (data.member == null) data.member = new RegisteredMembers();
-            obj.put("id", data.member.getUniqueid());
-            if (getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
-                obj.put("firstName", data.member.getFirstname());
-                obj.put("lastName", data.member.getLastname());
-            } else {
-                obj.put("firstName", getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, ""));
-                obj.put("lastName", getSharedPreferences(context).getString(GlobalParameters.anonymousLastName, ""));
-                obj.put("vaccineDocumentName", String.format("%s_%s", getSharedPreferences(context).getString(GlobalParameters.anonymousFirstName, "").replace(" ", ""), Util.getUTCDateMMDDYYYYHHMMSS()));
-                obj.put("vaccinationStatus", "1");
-            }
-            obj.put("memberId", data.member.getMemberid());
-            obj.put("memberTypeId", data.member.getMemberType());
-            obj.put("memberTypeName", data.member.getMemberTypeName());
-            obj.put("trqStatus", ""); //Send this empty if not Qr
-            obj.put("networkId", data.member.getNetworkId());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public static int getBatteryLevel(Context context) {
         try {
@@ -1608,7 +1585,9 @@ public class Util {
         try {
             JSONObject responseData = reportInfo.getJSONObject("responseData");
             String id = responseData.isNull("id") ? "" : responseData.getString("id");
+        //    String titleType = responseData.isNull("titleType") ? "" : responseData.getString("titleType");
             String firstName = responseData.isNull("firstName") ? "" : responseData.getString("firstName");
+         //   String middleName = responseData.isNull("middleName") ? "" : responseData.getString("middleName");
             String lastName = responseData.isNull("lastName") ? "" : responseData.getString("lastName");
             String trqStatus = responseData.isNull("trqStatus") ? "" : responseData.getString("trqStatus");
             String memberId = responseData.isNull("memberId") ? "" : responseData.getString("memberId");
@@ -2153,7 +2132,7 @@ public class Util {
                 // for ActivityCompat#requestPermissions for more details.
                 return "";
             }
-            String imei = telephonyManager.getDeviceId();
+            @SuppressLint("MissingPermission") String imei = telephonyManager.getDeviceId();
             if (imei != null && !imei.isEmpty()) {
                 return imei;
             }
