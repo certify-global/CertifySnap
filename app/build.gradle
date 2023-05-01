@@ -83,7 +83,7 @@ android {
         }
         debug {
             minifyEnabled false
-            buildConfigField "String", "ENDPOINT_URL", "\"https://apidemo.certify.me\""
+            buildConfigField "String", "ENDPOINT_URL", "\"https://apiqa.certify.me\""
         }
     }
     testOptions {

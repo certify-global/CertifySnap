@@ -8,7 +8,7 @@ public class AccessLogResponse {
     public int responseCode;
 
     @SerializedName("responseSubCode")
-    public String responseSubCode;
+    public int responseSubCode = 0;
 
     @SerializedName("responseMessage")
     public String responseMessage;

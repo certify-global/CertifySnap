@@ -94,7 +94,7 @@ public class AccessCardController {
 
         void onAccessDenied();
 
-        void onCheckInOutStatus();
+        void onCheckInOutStatus(int attendanceMode, int onCheckInOutStatus);
 
         void onMemberDetailsReceived(MemberData memberData);
 
@@ -431,7 +431,7 @@ public class AccessCardController {
                     //     firstNameAnon = CameraController.getInstance().getQrCodeData().getFirstName();
                 }
                 accessLogRequest.titleType = "";
-                accessLogRequest.middleName= "";
+                accessLogRequest.middleName = "";
                 if (triggerType.equals(CameraController.triggerValue.CODEID.toString())) {
                     if (CameraController.getInstance().getQrCodeData() != null) {
                         qrCodeId = CameraController.getInstance().getQrCodeId();
@@ -549,7 +549,7 @@ public class AccessCardController {
 
                 if (Util.isOfflineMode(context)) {
                     if ((AppSettings.getTimeAndAttendance() == 1) && listener != null) {
-                        listener.onCheckInOutStatus();
+                        listener.onCheckInOutStatus(accessLogRequest.attendanceMode, 0);
                         setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
                     }
                     syncStatus = 1;
@@ -564,23 +564,17 @@ public class AccessCardController {
                         public void onResponse(Call<AccessLogResponse> call, Response<AccessLogResponse> response) {
                             if (response.body() != null) {
                                 if (response.body().responseCode == 1) {
-                                    Log.d(TAG, "Access logs response success");
-                                    if (AppSettings.getTimeAndAttendance() == 1) {
-                                        if (response.body().responseSubCode != null && response.body().responseSubCode.equals("103")) {
-                                            // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_ALREADY.getValue());
-                                            if (listener != null) listener.onCheckInOutStatus();
-                                        } else {
-                                            // setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_SUCCESS.getValue());
-                                            if (listener != null) {
-                                                listener.onCheckInOutStatus();
-                                            }
+                                    if (AppSettings.getTimeAndAttendance() == 1 && accessLogRequest.allowAccess) {
+                                        if (listener != null) {
+                                            listener.onCheckInOutStatus(accessLogRequest.attendanceMode, response.body().responseSubCode);
+
                                         }
                                     }
                                 } else if (response.body().responseCode == 0) {
-                                    if (response.body().responseSubCode != null && response.body().responseSubCode.equals("102")) {
+                                    if (response.body().responseSubCode == 102) {
                                         if (AppSettings.getTimeAndAttendance() == 1) {
                                             if (listener != null) {
-                                                listener.onCheckInOutStatus();
+                                                listener.onAccessDenied();
                                             }
                                         }
                                     }
@@ -590,7 +584,7 @@ public class AccessCardController {
                             if (AppSettings.getTimeAndAttendance() == 1) {
                                 setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
                                 if (listener != null) {
-                                    listener.onCheckInOutStatus();
+                                    listener.onCheckInOutStatus(accessLogRequest.attendanceMode, 0);
                                 }
                             }
                             accessLogRequest.offlineSync = 1;
@@ -604,7 +598,7 @@ public class AccessCardController {
                             if (AppSettings.getTimeAndAttendance() == 1) {
                                 setCheckInResponseCode(AccessCheckInOutStatus.RESPONSE_CODE_FAILED.getValue());
                                 if (listener != null) {
-                                    listener.onCheckInOutStatus();
+                                    listener.onCheckInOutStatus(accessLogRequest.attendanceMode, 0);
                                 }
                             }
                             accessLogRequest.offlineSync = 1;

@@ -714,6 +714,7 @@ public class TemperatureController {
         } else {
             data = CameraController.getInstance().getUserExportedData();
         }
+        AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
         if ((AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QRCODE_OR_RFID.getValue()
                 || AppSettings.getPrimaryIdentifier() == CameraController.PrimaryIdentification.QR_CODE.getValue()
                 || AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()
@@ -733,7 +734,7 @@ public class TemperatureController {
                 TemperatureController.getInstance().recordUserTemperature(dataQR, syncStatus);
             }
         }
-        AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
+        //AccessCardController.getInstance().sendAccessLogValid(context, temperature, data);
     }
 
     /**
@@ -870,7 +871,9 @@ public class TemperatureController {
         if (data.triggerType.equals(CameraController.triggerValue.ACCESSID.toString()) && rfidScanMatchedMember != null) {
             temperatureRecordRequest.id = rfidScanMatchedMember.getUniqueid();
             temperatureRecordRequest.accessId = rfidScanMatchedMember.getAccessid();
+            temperatureRecordRequest.titleType = rfidScanMatchedMember.getTitleType();
             temperatureRecordRequest.firstName = rfidScanMatchedMember.getFirstname();
+            temperatureRecordRequest.middleName = rfidScanMatchedMember.getMiddleName();
             temperatureRecordRequest.lastName = rfidScanMatchedMember.getLastname();
             temperatureRecordRequest.memberId = rfidScanMatchedMember.getMemberid();
             temperatureRecordRequest.memberTypeId = rfidScanMatchedMember.getMemberType();
@@ -884,7 +887,9 @@ public class TemperatureController {
         } else if (data.triggerType.equals(CameraController.triggerValue.CODEID.toString()) && qrCodeData != null) {
             temperatureRecordRequest.id = qrCodeData.getUniqueId();
             temperatureRecordRequest.accessId = qrCodeData.getAccessId();
+            temperatureRecordRequest.titleType = qrCodeData.getTitleType();
             temperatureRecordRequest.firstName = qrCodeData.getFirstName();
+            temperatureRecordRequest.middleName = qrCodeData.getMiddleName();
             temperatureRecordRequest.lastName = qrCodeData.getLastName();
             temperatureRecordRequest.memberId = qrCodeData.getMemberId();
             temperatureRecordRequest.memberTypeId = String.valueOf(qrCodeData.getMemberTypeId());
@@ -950,7 +955,9 @@ public class TemperatureController {
         if (data.member == null) data.member = new RegisteredMembers();
         temperatureRecordRequest.id = data.member.getUniqueid();
         if (Util.getSharedPreferences(getInstance().context).getString(GlobalParameters.anonymousFirstName, "").isEmpty()) {
+            temperatureRecordRequest.titleType = data.member.getTitleType();
             temperatureRecordRequest.firstName = data.member.getFirstname();
+            temperatureRecordRequest.middleName = data.member.getMiddleName();
             temperatureRecordRequest.lastName = data.member.getLastname();
             temperatureRecordRequest.memberId = data.member.getMemberid();
         } else {

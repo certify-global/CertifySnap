@@ -1585,9 +1585,9 @@ public class Util {
         try {
             JSONObject responseData = reportInfo.getJSONObject("responseData");
             String id = responseData.isNull("id") ? "" : responseData.getString("id");
-        //    String titleType = responseData.isNull("titleType") ? "" : responseData.getString("titleType");
+            String titleType = responseData.isNull("titleType") ? "" : responseData.getString("titleType");
             String firstName = responseData.isNull("firstName") ? "" : responseData.getString("firstName");
-         //   String middleName = responseData.isNull("middleName") ? "" : responseData.getString("middleName");
+            String middleName = responseData.isNull("middleName") ? "" : responseData.getString("middleName");
             String lastName = responseData.isNull("lastName") ? "" : responseData.getString("lastName");
             String trqStatus = responseData.isNull("trqStatus") ? "" : responseData.getString("trqStatus");
             String memberId = responseData.isNull("memberId") ? "" : responseData.getString("memberId");
@@ -1599,7 +1599,9 @@ public class Util {
 
             QrCodeData qrCodeData = new QrCodeData();
             qrCodeData.setUniqueId(id);
+            qrCodeData.setTitleType(titleType);
             qrCodeData.setFirstName(firstName);
+            qrCodeData.setMiddleName(middleName);
             qrCodeData.setLastName(lastName);
             qrCodeData.setTrqStatus(trqStatus);
             qrCodeData.setMemberId(memberId);

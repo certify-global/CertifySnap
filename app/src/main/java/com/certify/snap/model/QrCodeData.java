@@ -2,7 +2,11 @@ package com.certify.snap.model;
 
 public class QrCodeData {
     private String uniqueId;
+
+    private String titleType = "";
     private String firstName;
+
+    private String middleName = "";
     private String lastName;
     private String trqStatus;
     private String memberId;
@@ -29,6 +33,22 @@ public class QrCodeData {
         this.uniqueId = snapId;
     }
 
+    public String getTitleType() {
+        return titleType;
+    }
+
+    public void setTitleType(String titleType) {
+        this.titleType = titleType;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -44,7 +64,6 @@ public class QrCodeData {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
     public String getTrqStatus() {
         return trqStatus;
     }

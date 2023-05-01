@@ -70,7 +70,7 @@ public class SoundController {
      * Method that initiates playing of the normal temperature sound
      */
     public void playNormalTemperatureSound() {
-        if (isNormalSoundEnable) {
+        if (isNormalSoundEnable && AppSettings.getTimeAndAttendance() != 1) {
             Util.soundPool(context, "normal", soundPool);
         }
     }
@@ -97,7 +97,7 @@ public class SoundController {
      * Method that initiates playing of the invalid QrCode sound
      */
     public void playInvalidQrSound() {
-        if(startTime)
+        if (startTime)
             return;
         startTime = true;
         startTimer();
@@ -117,6 +117,7 @@ public class SoundController {
                 soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/MatchingSuccess.mp3", 1);
                 soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                     int lastStreamId = -1;
+
                     @Override
                     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                         //soundPool.release();
@@ -140,6 +141,7 @@ public class SoundController {
                 soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/MatchingFailed.mp3", 1);
                 soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                     int lastStreamId = -1;
+
                     @Override
                     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                         //soundPool.release();
@@ -154,8 +156,9 @@ public class SoundController {
 
     /**
      * Method that saves the audio file in the External storage
+     *
      * @param audioSoundFileData Audio file data
-     * @param fileName FileName
+     * @param fileName           FileName
      */
     public void saveAudioFile(String audioSoundFileData, String fileName) {
         final byte[] imgBytesData = android.util.Base64.decode(audioSoundFileData,
@@ -183,7 +186,7 @@ public class SoundController {
     public void deleteAudioFile(String fileName) {
         String dirPath = Environment.getExternalStorageDirectory() + "/Audio/";
         File dirFile = new File(dirPath);
-        if (dirFile.exists()){
+        if (dirFile.exists()) {
             File file = new File(dirPath + fileName);
             if (file.exists()) {
                 boolean result = file.delete();
@@ -193,32 +196,37 @@ public class SoundController {
     }
 
     public void onCheckInOutSound(String type) {
-        if ((!AppSettings.isTemperatureScanEnabled() &&
-                ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
-                        (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue())))) {
-            new Handler().postDelayed(() -> playCheckInOutSound(type), 2 * 1000);
-        } else {
-            playCheckInOutSound(type);
-        }
+//        if ((!AppSettings.isTemperatureScanEnabled() &&
+//                ((AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QR_CODE.getValue()) ||
+//                        (AppSettings.getSecondaryIdentifier() == CameraController.SecondaryIdentification.QRCODE_OR_RFID.getValue())))) {
+//            new Handler().postDelayed(() -> playCheckInOutSound(type), 2 * 1000);
+//        } else {
+        playCheckInOutSound(type);
+        // }
     }
 
     public void playCheckInOutSound(String type) {
         if (soundPool == null) return;
         try {
             File file = new File(Environment.getExternalStorageDirectory() + "/Audio/" + type + ".mp3");
-            if(file.exists()) {
+            if (file.exists()) {
                 soundPool.load(Environment.getExternalStorageDirectory() + "/Audio/" + type + ".mp3", 1);
                 soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
                     int lastStreamId = -1;
+
                     @Override
                     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                         //soundPool.release();
                         lastStreamId = soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f);
                     }
                 });
+            } else {
+                if (isNormalSoundEnable) {
+                    Util.soundPool(context, "normal", soundPool);
+                }
             }
         } catch (Exception e) {
-            Log.e(TAG, "soundPoolCheckInOut error in "+ e.getMessage());
+            Log.e(TAG, "soundPoolCheckInOut error in " + e.getMessage());
         }
 
     }
